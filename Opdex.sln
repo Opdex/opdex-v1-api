@@ -20,13 +20,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Indexer.Application",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Indexer.Application.Abstractions", "src\Opdex.Indexer.Application.Abstractions\Opdex.Indexer.Application.Abstractions.csproj", "{8B41FC73-E260-4FAE-A49F-35CE684A22B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.BasePlatform.Common", "src\Opdex.BasePlatform.Common\Opdex.BasePlatform.Common.csproj", "{01CEF5FB-AA64-4B9B-9461-C8425F951C13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Core.Common", "src\Opdex.Core.Common\Opdex.Core.Common.csproj", "{01CEF5FB-AA64-4B9B-9461-C8425F951C13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.BasePlatform.Infrastructure", "src\Opdex.BasePlatform.Infrastructure\Opdex.BasePlatform.Infrastructure.csproj", "{57DAC247-4066-48A0-B828-ADD5C2F07076}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Core.Infrastructure", "src\Opdex.Core.Infrastructure\Opdex.Core.Infrastructure.csproj", "{57DAC247-4066-48A0-B828-ADD5C2F07076}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.BasePlatform.Infrastructure.Abstractions", "src\Opdex.BasePlatform.Infrastructure.Abstractions\Opdex.BasePlatform.Infrastructure.Abstractions.csproj", "{2EE1C563-09F9-4F49-BBDE-5AABFCD3B6BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Core.Infrastructure.Abstractions", "src\Opdex.Core.Infrastructure.Abstractions\Opdex.Core.Infrastructure.Abstractions.csproj", "{2EE1C563-09F9-4F49-BBDE-5AABFCD3B6BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.BasePlatform.Application", "src\Opdex.BasePlatform.Application\Opdex.BasePlatform.Application.csproj", "{BBE80C05-7167-452E-ADCD-EC94A3552C8E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Core.Application", "src\Opdex.Core.Application\Opdex.Core.Application.csproj", "{BBE80C05-7167-452E-ADCD-EC94A3552C8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,4 +4,18 @@
         <TargetFramework>netstandard2.1</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MediatR" Version="9.0.0" />
+      <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="QueryHandlers" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Opdex.Core.Infrastructure.Abstractions\Opdex.Core.Infrastructure.Abstractions.csproj" />
+      <ProjectReference Include="..\Opdex.Indexer.Infrastructure.Abstractions\Opdex.Indexer.Infrastructure.Abstractions.csproj" />
+    </ItemGroup>
+
 </Project>

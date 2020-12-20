@@ -2,10 +2,12 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
+        <RootNamespace>Opdex.BasePlatform.Common</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Queries" />
+      <Folder Include="Exceptions" />
+      <Folder Include="Extensions" />
     </ItemGroup>
 
     <ItemGroup>
