@@ -1,1 +1,0 @@
-# Opdex.Platform.Integrations.Bitcore
