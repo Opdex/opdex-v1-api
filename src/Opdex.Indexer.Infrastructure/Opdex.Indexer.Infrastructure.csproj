@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="QueryHandlers" />
+      <Folder Include="Data" />
     </ItemGroup>
 
     <ItemGroup>

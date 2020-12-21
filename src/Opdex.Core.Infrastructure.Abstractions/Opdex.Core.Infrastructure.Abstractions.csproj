@@ -5,8 +5,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Commands" />
-      <Folder Include="Queries" />
+      <Folder Include="Data\Commands" />
+      <Folder Include="Data\Queries" />
     </ItemGroup>
 
     <ItemGroup>

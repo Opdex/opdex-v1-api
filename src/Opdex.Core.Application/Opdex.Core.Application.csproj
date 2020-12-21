@@ -10,4 +10,10 @@
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="EntryHandlers" />
+      <Folder Include="Handlers" />
+      <Folder Include="Validators" />
+    </ItemGroup>
+
 </Project>

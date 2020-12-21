@@ -6,8 +6,8 @@ namespace Opdex.BasePlatform.Infrastructure.Abstractions.Models
         public string To { get; set; }
         public string FromToken { get; set; }
         public string ToToken { get; set; }
-        public ulong FromAmount { get; set; }
-        public ulong ToAmount { get; set; }
+        public decimal FromAmount { get; set; }
+        public decimal ToAmount { get; set; }
         public string TxHash { get; set; }
     }
 }

@@ -9,4 +9,9 @@
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Data" />
+      <Folder Include="Integrations\BitcoreNodeApi" />
+    </ItemGroup>
+
 </Project>

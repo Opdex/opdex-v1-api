@@ -1,8 +1,13 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using Serilog;
 
 namespace Opdex.Platform.WebApi
 {
@@ -18,7 +23,26 @@ namespace Opdex.Platform.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services
+                .AddControllers()
+                .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.SerializerSettings.Converters =
+                    new List<JsonConverter>
+                    {
+                        new StringEnumConverter(),
+                        new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK" }
+                    };
+            });
+            
+            services.AddOpenApiDocument(settings =>
+            {
+                settings.Title = $"Opdex Platform API";
+                settings.Version = "v1";
+            });
+            
+            services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -28,12 +52,18 @@ namespace Opdex.Platform.WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
+            
+            app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
+            
+            app.UseOpenApi();
+            
+            app.UseSwaggerUi3();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

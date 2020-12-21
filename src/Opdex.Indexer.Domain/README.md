@@ -1,0 +1,1 @@
+# Opdex.Indexer.Domain

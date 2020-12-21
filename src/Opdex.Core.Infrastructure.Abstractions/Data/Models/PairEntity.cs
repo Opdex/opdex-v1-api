@@ -2,8 +2,9 @@ namespace Opdex.Core.Infrastructure.Abstractions.Models
 {
     public class PairEntity
     {
+        public long Id { get; set; }
         public string Token { get; set; }
-        public ulong CrsLiquidity { get; set; }
-        public ulong TokenLiquidity { get; set; }
+        public decimal CrsLiquidity { get; set; }
+        public decimal TokenLiquidity { get; set; }
     }
 }

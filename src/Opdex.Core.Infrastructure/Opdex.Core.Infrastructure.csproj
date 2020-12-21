@@ -6,8 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="CommandHandlers" />
-      <Folder Include="QueryHandlers" />
+      <Folder Include="Data\Handlers" />
+      <Folder Include="Integrations\CirrusFullNodeApi" />
     </ItemGroup>
 
     <ItemGroup>

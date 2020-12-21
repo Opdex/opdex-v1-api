@@ -28,6 +28,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Core.Infrastructure.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Core.Application", "src\Opdex.Core.Application\Opdex.Core.Application.csproj", "{BBE80C05-7167-452E-ADCD-EC94A3552C8E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Indexer.Domain", "src\Opdex.Indexer.Domain\Opdex.Indexer.Domain.csproj", "{64E30477-5A28-4624-B32D-065309953054}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Platform.Domain", "src\Opdex.Platform.Domain\Opdex.Platform.Domain.csproj", "{E27C3558-3A64-4D58-A435-0A95FD2A48EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Core.Application.Abstractions", "src\Opdex.Core.Application.Abstractions\Opdex.Core.Application.Abstractions.csproj", "{8A124EAC-7845-41DD-97FF-53E8E750CEC7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,5 +96,17 @@ Global
 		{BBE80C05-7167-452E-ADCD-EC94A3552C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBE80C05-7167-452E-ADCD-EC94A3552C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBE80C05-7167-452E-ADCD-EC94A3552C8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64E30477-5A28-4624-B32D-065309953054}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64E30477-5A28-4624-B32D-065309953054}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64E30477-5A28-4624-B32D-065309953054}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64E30477-5A28-4624-B32D-065309953054}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E27C3558-3A64-4D58-A435-0A95FD2A48EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E27C3558-3A64-4D58-A435-0A95FD2A48EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E27C3558-3A64-4D58-A435-0A95FD2A48EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E27C3558-3A64-4D58-A435-0A95FD2A48EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A124EAC-7845-41DD-97FF-53E8E750CEC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A124EAC-7845-41DD-97FF-53E8E750CEC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A124EAC-7845-41DD-97FF-53E8E750CEC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A124EAC-7845-41DD-97FF-53E8E750CEC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
