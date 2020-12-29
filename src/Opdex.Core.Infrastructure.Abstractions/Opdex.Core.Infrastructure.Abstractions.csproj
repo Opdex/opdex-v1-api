@@ -6,12 +6,17 @@
 
     <ItemGroup>
       <Folder Include="Data\Commands" />
-      <Folder Include="Data\Queries" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="MediatR" Version="9.0.0" />
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Opdex.Core.Common\Opdex.Core.Common.csproj" />
+      <ProjectReference Include="..\Opdex.Core.Domain\Opdex.Core.Domain.csproj" />
     </ItemGroup>
 
 </Project>

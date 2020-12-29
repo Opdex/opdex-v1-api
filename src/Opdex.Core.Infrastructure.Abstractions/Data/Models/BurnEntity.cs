@@ -1,6 +1,6 @@
-namespace Opdex.Core.Infrastructure.Abstractions.Models
+namespace Opdex.Core.Infrastructure.Abstractions.Data.Models
 {
-    public class BurnEventEntity
+    public class BurnEntity
     {
         public string TxHash { get; set; }
     }

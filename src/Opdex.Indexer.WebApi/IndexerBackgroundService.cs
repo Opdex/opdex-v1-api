@@ -6,10 +6,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Opdex.Indexer.WebApi
 {
-    /// <summary>
-    /// Hosted background service responsible for kicking off indexer process
-    /// every few seconds.
-    /// </summary>
     public class IndexerBackgroundService : BackgroundService
     {
         private bool _indexActive;

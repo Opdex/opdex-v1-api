@@ -1,4 +1,4 @@
-namespace Opdex.Core.Infrastructure.Abstractions.Models
+namespace Opdex.Core.Infrastructure.Abstractions.Data.Models
 {
     public class TransactionEntity
     {

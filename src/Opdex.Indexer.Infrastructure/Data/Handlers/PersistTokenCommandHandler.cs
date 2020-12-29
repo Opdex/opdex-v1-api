@@ -3,22 +3,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Core.Infrastructure.Abstractions;
-using Opdex.Core.Infrastructure.Abstractions.Models;
-using Opdex.Indexer.Infrastructure.Abstractions.Commands;
+using Opdex.Core.Infrastructure.Abstractions.Data.Models;
+using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
-namespace Opdex.Indexer.Infrastructure.CommandHandlers
+namespace Opdex.Indexer.Infrastructure.Data.Handlers
 {
     public class InsertTokenCommandHandler : IRequestHandler<PersistTokenCommand>
     {
         private static readonly string InsertTokenSql =
-            $@"Insert into token(
+            $@"Insert into token (
                 {nameof(TokenEntity.Address)},
                 {nameof(TokenEntity.Name)},
                 {nameof(TokenEntity.Symbol)},
                 {nameof(TokenEntity.Decimals)},
                 {nameof(TokenEntity.Sats)},
                 {nameof(TokenEntity.MaxSupply)}
-              ) VALUES(
+              ) VALUES (
                 @{nameof(TokenEntity.Address)},
                 @{nameof(TokenEntity.Name)},
                 @{nameof(TokenEntity.Symbol)},

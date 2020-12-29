@@ -12,6 +12,7 @@
     <ItemGroup>
       <Folder Include="Data" />
       <Folder Include="Integrations\BitcoreNodeApi" />
+      <Folder Include="Integrations\CoinMarketCap" />
     </ItemGroup>
 
 </Project>

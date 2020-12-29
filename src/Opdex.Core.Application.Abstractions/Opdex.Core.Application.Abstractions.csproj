@@ -5,9 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="EntryCommands" />
-      <Folder Include="EntryQueries" />
-      <Folder Include="Models" />
+      <PackageReference Include="MediatR" Version="9.0.0" />
     </ItemGroup>
 
 </Project>

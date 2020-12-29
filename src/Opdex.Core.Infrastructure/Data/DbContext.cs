@@ -1,4 +1,4 @@
-namespace Opdex.BasePlatform.Infrastructure
+namespace Opdex.BasePlatform.Infrastructure.Data
 {
     public class DbContext
     {

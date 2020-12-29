@@ -1,7 +1,7 @@
 using System;
 using MediatR;
 
-namespace Opdex.Indexer.Infrastructure.Abstractions.Commands
+namespace Opdex.Indexer.Infrastructure.Abstractions.Data.Commands
 {
     public class PersistTokenCommand : IRequest
     {

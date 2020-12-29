@@ -6,13 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Data\Handlers" />
-      <Folder Include="Integrations\CirrusFullNodeApi" />
+      <PackageReference Include="MediatR" Version="9.0.0" />
+      <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR" Version="9.0.0" />
-      <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+      <ProjectReference Include="..\Opdex.Core.Common\Opdex.Core.Common.csproj" />
+      <ProjectReference Include="..\Opdex.Core.Infrastructure.Abstractions\Opdex.Core.Infrastructure.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>
