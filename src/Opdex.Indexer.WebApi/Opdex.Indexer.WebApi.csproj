@@ -5,11 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers" />
-      <Folder Include="Models" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
         <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="3.1.2" />

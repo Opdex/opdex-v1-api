@@ -1,4 +1,4 @@
-namespace Opdex.Core.Application.Handlers.Cirrus
+namespace Opdex.Indexer.Application.Handlers.Cirrus
 {
     public class RetrieveCirrusSwapEventsByPairQueryHandler
     {
