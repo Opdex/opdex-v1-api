@@ -4,22 +4,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Queries;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
 using Opdex.Core.Infrastructure.Abstractions.Integrations.CirrusFullNodeApi;
+using Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events;
 
 namespace Opdex.Indexer.Application
 {
     public class IndexProcessManager
     {
         private readonly IMediator _mediator;
-        private readonly ICirrusClient _cirrusClient;
         private readonly ILogger<IndexProcessManager> _logger;
         
         public IndexProcessManager(IMediator mediator, ICirrusClient cirrusClient, ILogger<IndexProcessManager> logger)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _cirrusClient = cirrusClient ?? throw new ArgumentNullException(nameof(cirrusClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -36,7 +36,7 @@ namespace Opdex.Indexer.Application
                 if (currentBlock.Height > lastSyncedBlock.Height)
                 {
                     // Get latest Pair events from Cirrus
-                    var pairEvents = await _mediator.Send(new RetrieveCirrusPairEventsQuery(lastSyncedBlock.Height, currentBlock.Height));
+                    var pairEvents = await _mediator.Send(new RetrieveCirrusPairEventsQuery(lastSyncedBlock.Height, currentBlock.Height, "RouterContract"));
 
                     foreach (var pairEvent in pairEvents)
                     {
@@ -47,10 +47,9 @@ namespace Opdex.Indexer.Application
                     // Get all local Opdex Pairs
                     var pairs = await _mediator.Send(new RetrieveAllPairsWithFilterQuery());
 
-                    // Persist transactions per pair
                     foreach (var pair in pairs)
                     {
-                        var pairTransactions = await BuildUniqueTransactions(lastSyncedBlock.Height, currentBlock.Height);
+                        var pairTransactions = await BuildUniqueTransactions(lastSyncedBlock.Height, currentBlock.Height, pair);
 
                         foreach (var tx in pairTransactions.ToList())
                         {
@@ -70,16 +69,16 @@ namespace Opdex.Indexer.Application
             }
         }
 
-        private async Task<IDictionary<string, object>> BuildUniqueTransactions(ulong lastSync, ulong currentHeight)
+        private async Task<IDictionary<string, object>> BuildUniqueTransactions(ulong lastSync, ulong currentHeight, PairDto pair)
         {
             // Get Mint Events
-            var mintEvents = await _mediator.Send(new RetrieveCirrusMintEventsByPairQuery(lastSync, currentHeight));
+            var mintEvents = await _mediator.Send(new RetrieveCirrusMintEventsByPairQuery(lastSync, currentHeight, "pair.Address"));
 
             // Get Burn Events
-            var burnEvents = await _mediator.Send(new RetrieveCirrusBurnEventsByPairQuery(lastSync, currentHeight));
+            var burnEvents = await _mediator.Send(new RetrieveCirrusBurnEventsByPairQuery(lastSync, currentHeight, "pair.Address"));
                         
             // Get Swap Events
-            var swapEvents = await _mediator.Send(new RetrieveCirrusSwapEventsByPairQuery(lastSync, currentHeight));
+            var swapEvents = await _mediator.Send(new RetrieveCirrusSwapEventsByPairQuery(lastSync, currentHeight, "pair.Address"));
 
             // Group By Transaction (Multiple events can occur per transaction)
             // In each events response, it will include the transaction details and ALL event logs. So query each event type log
