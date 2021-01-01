@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Opdex.Core.Infrastructure.Abstractions.Integrations.CirrusFullNodeApi.Models
+namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     public class BlockDto
     {

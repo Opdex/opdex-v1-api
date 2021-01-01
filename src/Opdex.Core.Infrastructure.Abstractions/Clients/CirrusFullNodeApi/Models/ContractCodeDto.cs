@@ -1,4 +1,4 @@
-namespace Opdex.Core.Infrastructure.Abstractions.Integrations.CirrusFullNodeApi.Models
+namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     public class ContractCodeDto
     {

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Opdex.BasePlatform.Common.Extensions;
+using Opdex.Core.Common.Extensions;
 
 namespace Opdex.Core.Domain.Models.CirrusFullNodeApi
 {

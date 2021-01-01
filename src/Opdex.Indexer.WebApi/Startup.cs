@@ -7,6 +7,8 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Opdex.Core.Infrastructure;
+using Opdex.Core.Infrastructure.Clients;
 using Serilog;
 
 namespace Opdex.Indexer.WebApi
@@ -38,13 +40,16 @@ namespace Opdex.Indexer.WebApi
             
             services.AddOpenApiDocument(settings =>
             {
-                settings.Title = $"Opdex Platform API";
+                settings.Title = "Opdex Platform API";
                 settings.Version = "v1";
             });
             
             services.AddHostedService<IndexerBackgroundService>();
             
             services.AddHttpClient();
+            
+            // Register project module services
+            services.AddCoreInfrastructureServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

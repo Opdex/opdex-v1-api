@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Core.Infrastructure.Abstractions.Integrations.CirrusFullNodeApi;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
 
 namespace Opdex.Indexer.Application.Handlers.Cirrus

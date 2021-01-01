@@ -2,12 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <RootNamespace>Opdex.BasePlatform.Common</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Folder Include="Exceptions" />
-    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="MediatR" Version="9.0.0" />

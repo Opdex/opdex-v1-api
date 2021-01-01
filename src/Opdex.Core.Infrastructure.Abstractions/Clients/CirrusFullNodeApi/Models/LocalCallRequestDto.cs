@@ -1,4 +1,4 @@
-namespace Opdex.Core.Infrastructure.Abstractions.Integrations.CirrusFullNodeApi.Models
+namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     /// <summary>
     /// A class containing the necessary parameters to perform a local smart contract method call request.

@@ -1,6 +1,6 @@
 using System;
 using MediatR;
-using Opdex.BasePlatform.Common.Extensions;
+using Opdex.Core.Common.Extensions;
 using Opdex.Core.Domain.Models;
 
 namespace Opdex.Core.Infrastructure.Abstractions.Data.Queries

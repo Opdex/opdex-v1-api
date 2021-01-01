@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Queries;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
-using Opdex.Core.Infrastructure.Abstractions.Integrations.CirrusFullNodeApi;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events;
 
 namespace Opdex.Indexer.Application

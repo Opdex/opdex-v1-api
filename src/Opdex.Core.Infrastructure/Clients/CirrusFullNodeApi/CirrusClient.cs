@@ -2,13 +2,16 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Opdex.BasePlatform.Common.Extensions;
-using Opdex.Core.Infrastructure.Abstractions.Integrations.CirrusFullNodeApi;
-using Opdex.Core.Infrastructure.Abstractions.Integrations.CirrusFullNodeApi.Models;
-using Opdex.Core.Infrastructure.Abstractions.Integrations.CirrusFullNodeApi.Modules;
+using Opdex.Core.Common.Extensions;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 
-namespace Opdex.BasePlatform.Infrastructure.Integrations.CirrusFullNodeApi
+namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi
 {
+    // Todo: Remove this entire client and replace with queries/commands/handlers
+    // This is the class (soon to be handlers) that need to catch and handle all exceptions
+    // and map requests -> responses -> Domain models and return.
     public class CirrusClient : ICirrusClient
     {
 
@@ -24,45 +27,46 @@ namespace Opdex.BasePlatform.Infrastructure.Integrations.CirrusFullNodeApi
             _logger = logger;
         }
 
-        public async Task<ReceiptDto> GetReceiptAsync(string txHash, CancellationToken cancellationToken = default)
-        {
-            var result = await _smartContractsModule.GetReceiptAsync(txHash, cancellationToken);
+        // public async Task<ReceiptDto> GetReceiptAsync(string txHash, CancellationToken cancellationToken)
+        // {
+        //     var result = await _smartContractsModule.GetReceiptAsync(txHash, cancellationToken);
+        //
+        //     return result;
+        // }
 
-            return result;
-        }
+        // public async Task<IEnumerable<ReceiptDto>> ReceiptSearchAsync(string contractAddress, string eventName, 
+        //     ulong fromBlock, ulong toBlock, CancellationToken cancellationToken)
+        // {
+        //     var result = await _smartContractsModule.ReceiptSearchAsync(contractAddress, eventName, fromBlock, toBlock, cancellationToken);
+        //
+        //     return result;
+        // }
 
-        public async Task<IEnumerable<ReceiptDto>> ReceiptSearchAsync(string contractAddress, string eventName, ulong fromBlock, ulong toBlock, CancellationToken cancellationToken = default)
-        {
-            var result = await _smartContractsModule.ReceiptSearchAsync(contractAddress, eventName, fromBlock, toBlock, cancellationToken);
-
-            return result;
-        }
-
-        public async Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken = default)
+        public async Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken)
         {
             var result = await _smartContractsModule.LocalCallAsync(request, cancellationToken);
 
             return result;
         }
 
-        public async Task<BlockDto> GetBlockAsync(string blockHash, CancellationToken cancellationToken = default)
+        public async Task<BlockDto> GetBlockAsync(string blockHash, CancellationToken cancellationToken)
         {
             var result = await _blockStoreModule.GetBlockAsync(blockHash, cancellationToken);
 
             return result;
         }
 
-        public async Task<TokenDto> GetTokenDetails(string address)
+        public async Task<TokenDto> GetTokenDetails(string address, CancellationToken cancellationToken)
         {
             //Todo: Check for validity here
-            var name = await _smartContractsModule.GetContractStorageAsync(address, "Name", "string");
+            var name = await _smartContractsModule.GetContractStorageAsync(address, "Name", "string", cancellationToken);
             if (!name.HasValue())
             {
                 return null;
             }
 
-            var ticker = await _smartContractsModule.GetContractStorageAsync(address, "Symbol", "string");
-            var decimalString = await _smartContractsModule.GetContractStorageAsync(address, "Decimals", "uint");
+            var ticker = await _smartContractsModule.GetContractStorageAsync(address, "Symbol", "string", cancellationToken);
+            var decimalString = await _smartContractsModule.GetContractStorageAsync(address, "Decimals", "uint", cancellationToken);
 
             var parseDecimalsSuccess = short.TryParse(decimalString, out var decimals);
 

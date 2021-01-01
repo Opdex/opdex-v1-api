@@ -1,4 +1,4 @@
-namespace Opdex.BasePlatform.Common.Extensions
+namespace Opdex.Core.Common.Extensions
 {
     public static class StringExtensions
     {
