@@ -1,3 +1,3 @@
 # Opdex.Core.Infrastructure
 
-Core infrastructure for opdex for interacting with database and external API clients.
+Core infrastructure integrations referenced by Opdex.Indexer and Opdex.Platform namespaces. Handles database and external API client interactions.
