@@ -55,6 +55,31 @@ namespace Opdex.Indexer.Application
                     // Get all local Opdex Pairs
                     var pairs = await _mediator.Send(new RetrieveAllPairsWithFilterQuery(), cancellationToken);
 
+                    // Todo: Consider looking at every transaction within the block range being indexed.
+                    // Looping through every pair, to get events, to see whats new or not, can be very expensive. 
+                    // For example, having 1,000 pairs, would be a very long and expensive process. Instead, opt
+                    // for checking every transaction in the block being sent to the Opdex V1 Router then index
+                    // and act on the events from the transaction.
+                    //
+                    // Event starting out, checking transactions may be cheaper. It's at least 5 external calls to a cirrus FN
+                    // per pair checked. If transactions are checked individually, its 1 call for the block + 1 call per transaction.
+                    // In addition to / instead of - checking the "to" property on the transaction for Opdex V1 Router, check all of the events
+                    // in the transaction to see if any of them include Opdex V1 Router address.
+                    //
+                    // This approach would be critical to run in the ascending order to make sure that all PairCreatedEvents are indexed first.
+                    // Before any additional swaps, add/remove liquidity actions are started to be indexed.
+                    //
+                    // 1. Get lastSync - currentHeight range - should pretty much always be 1 block at a time except for initial/re-indexes
+                    // 2. For Each Block
+                    //      a. CallCirrusGetBlockStoreBlockDetailsByHashQuery and Handler
+                    //      b. For Each Transaction in Block
+                    //          - CallCirrusGetSmartContractTransactionByHashQuery and Handler
+                    //          - Transaction.Events.Any(x => x.to == OpdexV1Router) ? process : backOut
+                    //              - OnProcess -IfLastBlockInRange- Update pair reserves and liquidity
+                    //              - OnProcess -IfSwapEvent- Calculate and Index Transaction Fee
+                    //      c. Update Block Details
+                    //          - if (block.time isAround dateTime.UtcNow) Get Latest Strax/Cirrus $ CMC Price and Index
+                    //          - else Get Historical Strax/Cirrus $ CMC Price and Index
                     foreach (var pair in pairs)
                     {
                         var pairTransactions = await BuildUniqueTransactions(lastSyncedBlock.Height, currentBlock.Height, pair, cancellationToken);

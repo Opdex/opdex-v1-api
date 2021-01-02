@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.Application.Abstractions.EntryQueries;
 using Opdex.Platform.WebApi.Models;
 
 
@@ -11,20 +14,25 @@ namespace Opdex.Platform.WebApi.Controllers
     [Route("pairs")]
     public class PairsController : ControllerBase
     {
-        public PairsController()
+        private readonly IMediator _mediator;
+        
+        public PairsController(IMediator mediator)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
         [HttpGet]
-        public async Task<ActionResult<List<PairResponseModel>>> Get(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<PairResponseModel>>> GetAllPairs(CancellationToken cancellationToken)
         {
-            var response = Task.FromResult(new List<string> {"MEDI-CRS"});
+            var query = new GetAllPairsQuery();
             
-            return Ok(response);
+            var result = await _mediator.Send(query, cancellationToken);
+            
+            return Ok(result);
         }
         
-        [HttpGet("{pair}")]
-        public async Task<ActionResult<PairResponseModel>> Get(string pair, CancellationToken cancellationToken)
+        [HttpGet("{pairAddress}")]
+        public async Task<ActionResult<PairResponseModel>> GetPair(string pairAddress, CancellationToken cancellationToken)
         {
             var response = Task.FromResult("Pair");
             

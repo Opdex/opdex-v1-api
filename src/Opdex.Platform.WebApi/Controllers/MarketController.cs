@@ -1,5 +1,7 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -8,14 +10,17 @@ namespace Opdex.Platform.WebApi.Controllers
     [Route("market")]
     public class MarketController : ControllerBase
     {
-        public MarketController()
+        private readonly IMediator _mediator;
+        
+        public MarketController(IMediator mediator)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMarketDetails(CancellationToken cancellationToken)
+        public Task<IActionResult> GetMarketDetails(CancellationToken cancellationToken)
         {
-            return Ok();
+            throw new NotImplementedException();
         }
     }
 }

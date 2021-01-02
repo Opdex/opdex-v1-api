@@ -10,9 +10,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data" />
       <Folder Include="Integrations\BitcoreNodeApi" />
       <Folder Include="Integrations\CoinMarketCap" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Opdex.Platform.Infrastructure.Abstractions\Opdex.Platform.Infrastructure.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

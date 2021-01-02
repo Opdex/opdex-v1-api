@@ -10,10 +10,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Validators" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Opdex.Core.Application.Abstractions\Opdex.Core.Application.Abstractions.csproj" />
       <ProjectReference Include="..\Opdex.Core.Domain\Opdex.Core.Domain.csproj" />
     </ItemGroup>

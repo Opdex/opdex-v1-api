@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.EntryQueries;
 using Opdex.Platform.WebApi.Models;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -11,20 +13,25 @@ namespace Opdex.Platform.WebApi.Controllers
     [Route("tokens")]
     public class TokensController : ControllerBase
     {
-        public TokensController(ILogger<TokensController> logger)
+        private readonly IMediator _mediator;
+        
+        public TokensController(IMediator mediator)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         [HttpGet]
         public async Task<ActionResult<List<TokenResponseModel>>> GetTokens(CancellationToken cancellationToken)
         {
-            var response = Task.FromResult(new List<string> {"Cirrus"});
+            var query = new GetAllTokensQuery();
             
-            return Ok(response);
+            var result = await _mediator.Send(query, cancellationToken);
+            
+            return Ok(result);
         }
         
-        [HttpGet("{token}")]
-        public async Task<ActionResult<TokenResponseModel>> GetToken(string token, CancellationToken cancellationToken)
+        [HttpGet("{tokenAddress}")]
+        public async Task<ActionResult<TokenResponseModel>> GetToken(string tokenAddress, CancellationToken cancellationToken)
         {
             var response = Task.FromResult("Cirrus");
             

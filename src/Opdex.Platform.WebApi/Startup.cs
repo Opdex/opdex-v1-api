@@ -7,7 +7,13 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Opdex.Core.Application;
+using Opdex.Core.Infrastructure;
+using Opdex.Platform.Application;
+using Opdex.Platform.Infrastructure;
 using Serilog;
+using AutoMapper;
+using Opdex.Platform.Application.Mappers;
 
 namespace Opdex.Platform.WebApi
 {
@@ -42,7 +48,18 @@ namespace Opdex.Platform.WebApi
                 settings.Version = "v1";
             });
             
+            // Automapper Profiles
+            services.AddAutoMapper(mapperConfig =>
+            {
+                mapperConfig.AddProfile<PlatformApplicationMapperProfile>();
+            });
+            
             services.AddHttpClient();
+
+            services.AddCoreApplicationServices();
+            services.AddPlatformApplicationServices();
+            services.AddCoreInfrastructureServices();
+            services.AddPlatformInfrastructureServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

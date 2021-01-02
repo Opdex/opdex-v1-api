@@ -5,6 +5,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Autofac" Version="6.1.0" />
+        <PackageReference Include="AutoMapper" Version="10.1.1" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
+        <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.10" />
         <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="3.1.2" />
@@ -20,5 +24,12 @@
     <ItemGroup>
         <Folder Include="Attributes" />
         <Folder Include="Middleware" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Opdex.Core.Application\Opdex.Core.Application.csproj" />
+      <ProjectReference Include="..\Opdex.Core.Infrastructure\Opdex.Core.Infrastructure.csproj" />
+      <ProjectReference Include="..\Opdex.Platform.Application\Opdex.Platform.Application.csproj" />
+      <ProjectReference Include="..\Opdex.Platform.Infrastructure\Opdex.Platform.Infrastructure.csproj" />
     </ItemGroup>
 </Project>
