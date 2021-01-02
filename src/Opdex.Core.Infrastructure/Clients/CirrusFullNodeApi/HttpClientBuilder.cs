@@ -5,13 +5,14 @@ using Polly.Extensions.Http;
 
 namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi
 {
+    // Todo: Move some of this core logic into Http directory
+    // Use Cirrus specific configurations to modify taret params
     public static class HttpClientBuilder
     {
         public static void BuildCirrusHttpClient(this HttpClient client)
         {
             client.BaseAddress = new Uri("http://localhost:37223/api/");
         }
-
 
         public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
         {

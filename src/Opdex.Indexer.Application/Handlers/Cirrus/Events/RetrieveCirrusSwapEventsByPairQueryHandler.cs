@@ -12,13 +12,10 @@ namespace Opdex.Indexer.Application.Handlers.Cirrus.Events
 {
     public class RetrieveCirrusSwapEventsByPairQueryHandler : IRequestHandler<RetrieveCirrusSwapEventsByPairQuery, IEnumerable<object>>
     {
-        private readonly ICirrusClient _cirrusClient;
         private readonly ILogger<RetrieveCirrusSwapEventsByPairQueryHandler> _logger;
         
-        public RetrieveCirrusSwapEventsByPairQueryHandler(ICirrusClient cirrusClient, 
-            ILogger<RetrieveCirrusSwapEventsByPairQueryHandler> logger)
+        public RetrieveCirrusSwapEventsByPairQueryHandler(ILogger<RetrieveCirrusSwapEventsByPairQueryHandler> logger)
         {
-            _cirrusClient = cirrusClient ?? throw new ArgumentNullException(nameof(cirrusClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         

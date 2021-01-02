@@ -1,11 +1,8 @@
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Core.Infrastructure.Http;
@@ -49,22 +46,11 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return GetAsync<IEnumerable<ReceiptDto>>(uri, cancellationToken);
         }
 
-        public async Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken)
+        public Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken)
         {
             const string uri = UriHelper.SmartContracts.LocalCall;
-
-            // Todo: Clean this up with general HttpContent builders
-            var json = JsonConvert.SerializeObject(request, new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
-            
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, uri)
-            {
-                Content = new StringContent(json, Encoding.UTF8, "application/json")
-            };
-
-            return await PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken);
+            var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(request, uri, HttpMethod.Post);
+            return PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken);
         }
     }
 }
