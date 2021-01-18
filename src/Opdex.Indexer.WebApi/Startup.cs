@@ -7,8 +7,13 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Opdex.Core.Application;
 using Opdex.Core.Infrastructure;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Clients;
+using Opdex.Indexer.Application;
+using Opdex.Indexer.Application.Abstractions;
+using Opdex.Indexer.Infrastructure;
 using Serilog;
 
 namespace Opdex.Indexer.WebApi
@@ -47,9 +52,18 @@ namespace Opdex.Indexer.WebApi
             services.AddHostedService<IndexerBackgroundService>();
             
             services.AddHttpClient();
+
+            services.AddTransient<IIndexProcessManager, IndexProcessManager>();
+
+            // Todo: Maybe not needed
+            var cirrusConfiguration = Configuration.GetSection(nameof(CirrusConfiguration));
+            services.Configure<CirrusConfiguration>(cirrusConfiguration);
             
             // Register project module services
-            services.AddCoreInfrastructureServices();
+            services.AddCoreInfrastructureServices(cirrusConfiguration.Get<CirrusConfiguration>());
+            services.AddCoreApplicationServices();
+            services.AddIndexerInfrastructureServices();
+            services.AddIndexerApplicationServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

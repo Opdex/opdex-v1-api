@@ -1,6 +1,11 @@
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi;
+using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.BlockStore;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Modules;
 
 namespace Opdex.Core.Infrastructure
@@ -11,10 +16,11 @@ namespace Opdex.Core.Infrastructure
         /// Where all Core Infrastructure services are registered.
         /// </summary>
         /// <param name="services">IServiceCollection this method extends on.</param>
-        public static void AddCoreInfrastructureServices(this IServiceCollection services)
+        /// <param name="cirrusConfiguration"></param>
+        public static void AddCoreInfrastructureServices(this IServiceCollection services, CirrusConfiguration cirrusConfiguration)
         {
             AddDataServices(services);
-            AddClientServices(services);
+            AddClientServices(services, cirrusConfiguration);
         }
         
         private static void AddDataServices(IServiceCollection services)
@@ -22,18 +28,27 @@ namespace Opdex.Core.Infrastructure
 
         }
 
-        private static void AddClientServices(IServiceCollection services)
+        private static void AddClientServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)
         {
             #region Cirrus Full Node API
             
-            services.AddHttpClient<ISmartContractsModule, SmartContractsModule>(client => client.BuildCirrusHttpClient())
+            // Modules
+            services.AddHttpClient<ISmartContractsModule, SmartContractsModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
                 .AddPolicyHandler(HttpClientBuilder.GetRetryPolicy())
                 .AddPolicyHandler(HttpClientBuilder.GetCircuitBreakerPolicy());
 
-            services.AddHttpClient<IBlockStoreModule, BlockStoreModule>(client => client.BuildCirrusHttpClient())
+            services.AddHttpClient<IBlockStoreModule, BlockStoreModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
                 .AddPolicyHandler(HttpClientBuilder.GetRetryPolicy())
                 .AddPolicyHandler(HttpClientBuilder.GetCircuitBreakerPolicy());
             
+            services.AddHttpClient<INodeModule, NodeModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
+                .AddPolicyHandler(HttpClientBuilder.GetRetryPolicy())
+                .AddPolicyHandler(HttpClientBuilder.GetCircuitBreakerPolicy());
+            
+            // Queries and Handlers
+            services.AddTransient<IRequestHandler<CallCirrusGetCurrentBlockQuery, BlockReceiptDto>, CallCirrusGetCurrentBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetBlockByHashQuery, BlockReceiptDto>, CallCirrusGetBlockByHashQueryHandler>();
+
             #endregion
         }
     }

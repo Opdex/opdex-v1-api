@@ -34,16 +34,16 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return GetAsync<string>(uri, cancellationToken);
         }
 
-        public Task<ReceiptDto> GetReceiptAsync(string txHash, CancellationToken cancellationToken)
+        public Task<TransactionReceiptDto> GetReceiptAsync(string txHash, CancellationToken cancellationToken)
         {
             var uri = string.Format(UriHelper.SmartContracts.GetTransactionReceipt, txHash);
-            return GetAsync<ReceiptDto>(uri, cancellationToken);
+            return GetAsync<TransactionReceiptDto>(uri, cancellationToken);
         }
 
-        public Task<IEnumerable<ReceiptDto>> ReceiptSearchAsync(string contractAddress, string eventName, ulong fromBlock, ulong toBlock, CancellationToken cancellationToken)
+        public Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(string contractAddress, string eventName, ulong fromBlock, ulong toBlock, CancellationToken cancellationToken)
         {
             var uri = string.Format(UriHelper.SmartContracts.GetContractReceiptSearch, contractAddress, eventName, fromBlock, toBlock);
-            return GetAsync<IEnumerable<ReceiptDto>>(uri, cancellationToken);
+            return GetAsync<IEnumerable<TransactionReceiptDto>>(uri, cancellationToken);
         }
 
         public Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken)

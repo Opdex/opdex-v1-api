@@ -1,6 +1,6 @@
 namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
-    public class ReceiptDto
+    public class TransactionReceiptDto
     {
         public string TransactionHash { get; set; }
         public string BlockHash { get; set; }

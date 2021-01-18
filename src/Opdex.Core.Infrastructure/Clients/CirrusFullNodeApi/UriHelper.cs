@@ -16,5 +16,15 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi
         {
             public const string GetBlockByHash = "BlockStore/block?hash={0}&OutputJson={1}";
         }
+
+        public static class Consensus
+        {
+            public const string GetBestBlockHash = "Consensus/getbestblockhash";
+        }
+
+        public static class Node
+        {
+            public const string Status = "Node/status";
+        }
     }
 }

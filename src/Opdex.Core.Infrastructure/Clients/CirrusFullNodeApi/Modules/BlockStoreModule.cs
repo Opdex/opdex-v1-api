@@ -15,11 +15,16 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Modules
         {
         }
 
-        public Task<BlockDto> GetBlockAsync(string blockHash, CancellationToken cancellationToken)
+        public Task<BlockReceiptDto> GetBlockAsync(string blockHash, CancellationToken cancellationToken)
         {
             const bool outputJson = true;
             var uri = string.Format(UriHelper.BlockStore.GetBlockByHash, blockHash, outputJson);
-            return GetAsync<BlockDto>(uri, cancellationToken);
+            return GetAsync<BlockReceiptDto>(uri, cancellationToken);
+        }
+
+        public Task<string> GetBestBlockAsync(CancellationToken cancellationToken)
+        {
+            return GetAsync<string>(UriHelper.Consensus.GetBestBlockHash, cancellationToken);
         }
     }
 }

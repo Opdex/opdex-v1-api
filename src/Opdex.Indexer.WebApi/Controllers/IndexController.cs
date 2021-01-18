@@ -9,7 +9,7 @@ using Opdex.Indexer.WebApi.Models;
 namespace Opdex.Indexer.WebApi.Controllers
 {
     [ApiController]
-    [Route("market")]
+    [Route("index")]
     public class IndexController : ControllerBase
     {
         private readonly IMediator _mediator;

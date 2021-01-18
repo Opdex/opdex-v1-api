@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
-    public class BlockDto
+    public class BlockReceiptDto
     {
         public string Hash { get; set; }
         public ulong Confirmations { get; set; }

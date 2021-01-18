@@ -1,15 +1,15 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Opdex.Indexer.Application.Abstractions;
 
 namespace Opdex.Indexer.WebApi
 {
     public class IndexerBackgroundService : BackgroundService
     {
-        private bool _indexActive;
-
         private readonly ILogger<IndexerBackgroundService> _logger;
         private readonly IServiceProvider _services;
 
@@ -21,24 +21,35 @@ namespace Opdex.Indexer.WebApi
         
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            while (_indexActive)
+            var started = false;
+            
+            while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
-                _logger.LogInformation("Would ping Cirrus FN and kick off sync.");
-                // Runs every few (2-3) seconds
-                // Initiates Process via IndexProcessManager
+                if (!started)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+                }
+                
+                _logger.LogInformation("Attempted process");
+
+                using var scope = _services.CreateScope();
+                var indexManager = 
+                    scope.ServiceProvider
+                        .GetRequiredService<IIndexProcessManager>();
+
+                await indexManager.ProcessAsync(cancellationToken);
+
+                started = true;
             }
         }
         
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            _indexActive = false;
             return base.StopAsync(cancellationToken);
         }
         
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            _indexActive = true;
             return base.StartAsync(cancellationToken);
         }
     }

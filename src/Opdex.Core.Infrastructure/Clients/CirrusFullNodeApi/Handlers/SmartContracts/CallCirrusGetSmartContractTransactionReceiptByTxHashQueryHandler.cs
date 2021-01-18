@@ -10,7 +10,7 @@ using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.S
 namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
 {
     public class CallCirrusGetSmartContractTransactionReceiptByTxHashQueryHandler 
-        : IRequestHandler<CallCirrusGetSmartContractTransactionReceiptByTxHashQuery, ReceiptDto>
+        : IRequestHandler<CallCirrusGetSmartContractTransactionReceiptByTxHashQuery, TransactionReceiptDto>
     {
         private readonly ISmartContractsModule _smartContractsModule;
         private readonly ILogger<CallCirrusGetSmartContractTransactionReceiptByTxHashQueryHandler> _logger;
@@ -24,7 +24,7 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartCont
         
         // Todo: map the result dto to a domain model
         // Todo: try catch requests
-        public async Task<ReceiptDto> Handle(CallCirrusGetSmartContractTransactionReceiptByTxHashQuery request, CancellationToken cancellationToken)
+        public async Task<TransactionReceiptDto> Handle(CallCirrusGetSmartContractTransactionReceiptByTxHashQuery request, CancellationToken cancellationToken)
         {
             var result = await _smartContractsModule.GetReceiptAsync(request.TxHash, cancellationToken);
 

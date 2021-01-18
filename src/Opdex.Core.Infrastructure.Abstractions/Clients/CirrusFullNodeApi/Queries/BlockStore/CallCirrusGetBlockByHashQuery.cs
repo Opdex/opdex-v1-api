@@ -5,9 +5,9 @@ using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
 namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore
 {
-    public class CallCirrusGetBlockStoreBlockDetailsByHashQuery : IRequest<BlockDto>
+    public class CallCirrusGetBlockByHashQuery : IRequest<BlockReceiptDto>
     {
-        public CallCirrusGetBlockStoreBlockDetailsByHashQuery(string hash)
+        public CallCirrusGetBlockByHashQuery(string hash)
         {
             Hash = hash.HasValue() ? hash : throw new ArgumentNullException(nameof(hash));
         }

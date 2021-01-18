@@ -5,7 +5,7 @@ using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
 namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts
 {
-    public class CallCirrusGetSmartContractTransactionReceiptByTxHashQuery : IRequest<ReceiptDto>
+    public class CallCirrusGetSmartContractTransactionReceiptByTxHashQuery : IRequest<TransactionReceiptDto>
     {
         public CallCirrusGetSmartContractTransactionReceiptByTxHashQuery(string txHash)
         {

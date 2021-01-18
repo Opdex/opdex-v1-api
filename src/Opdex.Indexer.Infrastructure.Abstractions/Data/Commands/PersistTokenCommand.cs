@@ -1,15 +1,16 @@
 using System;
 using MediatR;
+using Opdex.Core.Domain.Models;
 
 namespace Opdex.Indexer.Infrastructure.Abstractions.Data.Commands
 {
-    public class PersistTokenCommand : IRequest
+    public class PersistTokenCommand : IRequest<bool>
     {
-        public PersistTokenCommand(object token)
+        public PersistTokenCommand(Token token)
         {
             Token = token ?? throw new ArgumentNullException(nameof(token));
         }
         
-        public object Token { get; }
+        public Token Token { get; }
     }
 }

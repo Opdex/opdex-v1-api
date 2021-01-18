@@ -18,7 +18,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Opdex.Core.Application\Opdex.Core.Application.csproj" />
       <ProjectReference Include="..\Opdex.Indexer.Application\Opdex.Indexer.Application.csproj" />
+      <ProjectReference Include="..\Opdex.Indexer.Infrastructure\Opdex.Indexer.Infrastructure.csproj" />
     </ItemGroup>
 
 

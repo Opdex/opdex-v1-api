@@ -6,6 +6,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modul
 {
     public interface IBlockStoreModule
     {
-        Task<BlockDto> GetBlockAsync(string blockHash, CancellationToken cancellationToken);
+        Task<BlockReceiptDto> GetBlockAsync(string blockHash, CancellationToken cancellationToken);
+        Task<string> GetBestBlockAsync(CancellationToken cancellationToken);
     }
 }

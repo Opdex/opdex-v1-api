@@ -7,12 +7,15 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Queries;
+using Opdex.Core.Common.Extensions;
+using Opdex.Indexer.Application.Abstractions;
+using Opdex.Indexer.Application.Abstractions.Commands;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events;
 
 namespace Opdex.Indexer.Application
 {
-    public class IndexProcessManager
+    public class IndexProcessManager : IIndexProcessManager
     {
         private readonly IMediator _mediator;
         private readonly ILogger<IndexProcessManager> _logger;
@@ -23,76 +26,67 @@ namespace Opdex.Indexer.Application
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        // Todo: Evaluate the usage and necessity of a cancellation token
-        // The sync process will be idempotent and there _shouldn't_ be any case of 
-        // stopping the sync process unless the app is shut down mid process for an unexpected reason.
-        // Using cancellationToken maybe not a good idea in the case that some events from a transaction
-        // are persisted and others are not persisted. Since the entire transaction insertion will not be a 
-        // SQL "transaction", there will be no rollbacks if a transaction is partially synced.
-        // Instead, the lastSyncedBlock would never be updated and the process would attempt to resync
-        // the entire block range and all pairs, tokens, and transactions in it.
         public async Task ProcessAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Processing Block");
+            
             try
             {
-                // Get current block from Cirrus
                 var currentBlock = await _mediator.Send(new RetrieveCirrusCurrentBlockQuery(), cancellationToken);
+                var latestBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
                 
-                // Get the last synced block
-                var lastSyncedBlock = await _mediator.Send(new RetrieveLastSyncedBlockQuery(), cancellationToken);
-                
-                if (currentBlock.Height > lastSyncedBlock.Height)
+                if (currentBlock.Height > latestBlock.Height)
                 {
-                    // Get latest Pair events from Cirrus
-                    var pairEvents = await _mediator.Send(new RetrieveCirrusPairEventsQuery(lastSyncedBlock.Height, currentBlock.Height, "RouterContract"), cancellationToken);
-
-                    foreach (var pairEvent in pairEvents)
-                    {
-                        // Index each pair
-                        // Index each token
-                    }
-
-                    // Get all local Opdex Pairs
-                    var pairs = await _mediator.Send(new RetrieveAllPairsWithFilterQuery(), cancellationToken);
-
-                    // Todo: Consider looking at every transaction within the block range being indexed.
-                    // Looping through every pair, to get events, to see whats new or not, can be very expensive. 
-                    // For example, having 1,000 pairs, would be a very long and expensive process. Instead, opt
-                    // for checking every transaction in the block being sent to the Opdex V1 Router then index
-                    // and act on the events from the transaction.
-                    //
-                    // Event starting out, checking transactions may be cheaper. It's at least 5 external calls to a cirrus FN
-                    // per pair checked. If transactions are checked individually, its 1 call for the block + 1 call per transaction.
-                    // In addition to / instead of - checking the "to" property on the transaction for Opdex V1 Router, check all of the events
-                    // in the transaction to see if any of them include Opdex V1 Router address.
-                    //
-                    // This approach would be critical to run in the ascending order to make sure that all PairCreatedEvents are indexed first.
-                    // Before any additional swaps, add/remove liquidity actions are started to be indexed.
-                    //
-                    // 1. Get lastSync - currentHeight range - should pretty much always be 1 block at a time except for initial/re-indexes
-                    // 2. For Each Block
-                    //      a. CallCirrusGetBlockStoreBlockDetailsByHashQuery and Handler
-                    //      b. For Each Transaction in Block
-                    //          - CallCirrusGetSmartContractTransactionByHashQuery and Handler
-                    //          - Transaction.Events.Any(x => x.to == OpdexV1Router) ? process : backOut
-                    //              - OnProcess -IfLastBlockInRange- Update pair reserves and liquidity
-                    //              - OnProcess -IfSwapEvent- Calculate and Index Transaction Fee
-                    //      c. Update Block Details
-                    //          - if (block.time isAround dateTime.UtcNow) Get Latest Strax/Cirrus $ CMC Price and Index
-                    //          - else Get Historical Strax/Cirrus $ CMC Price and Index
-                    foreach (var pair in pairs)
-                    {
-                        var pairTransactions = await BuildUniqueTransactions(lastSyncedBlock.Height, currentBlock.Height, pair, cancellationToken);
-
-                        foreach (var tx in pairTransactions.ToList())
-                        {
-                            // Index Transaction
-                        }
-
-                        // Update Pair Liquidity
-                    }
+                    var pairs = await ProcessNewPairs(latestBlock.Height, currentBlock.Height, cancellationToken);
+                    var pairsWithTransactions = new List<string>();
                     
-                    // Persist Current Block
+                    var blockIndex = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(latestBlock.Hash), cancellationToken);
+                    
+                    // Loop each block from last sync to current
+                    do
+                    {
+                        foreach (var txHash in blockIndex.Tx)
+                        {
+                            var tx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(txHash), cancellationToken);
+                            var isToRouter = tx.To == "RouterContract";
+                            var distinctPairsWithTransactions = tx.Logs
+                                .Where(l => pairs.TryGetValue(l.Address, out _))
+                                .Select(l => l.Address)
+                                .Distinct().ToList();
+                            
+                            distinctPairsWithTransactions.ForEach(p =>
+                            {
+                                if (!pairsWithTransactions.Contains(p))
+                                {
+                                    pairsWithTransactions.Add(p);
+                                }
+                            });
+                            
+                            if (isToRouter || distinctPairsWithTransactions.Any())
+                            {
+                                // parse all logs to relevant events
+                                // calculate transaction fees
+                                // index events
+                            }
+                        }
+                        
+                        // 2. Update Block Details
+                        //     - if (block.time isAround dateTime.UtcNow) Get Latest Strax/Cirrus $ CMC Price and Index
+                        //     - else Get Historical Strax/Cirrus $ CMC Price and Index
+                        //     - Set sync status boolean 
+                        
+                        
+                        blockIndex = blockIndex.NexBlockHash.HasValue()
+                            ? await _mediator.Send(new RetrieveCirrusBlockByHashQuery(blockIndex.NexBlockHash), cancellationToken)
+                            : null;
+                    } 
+                    while (blockIndex != null && currentBlock.Height >= blockIndex.Height);
+
+                    // Any pairs with transactions, get latest reserves, updating pricing, etc.
+                    foreach (var pair in pairsWithTransactions)
+                    {
+                        
+                    }
                 }
             }
             catch (Exception ex)
@@ -102,26 +96,22 @@ namespace Opdex.Indexer.Application
             }
         }
 
-        // Todo: Evaluate these events at the contract level down, do they need to be different events or the same event with a Type flag?
-        // If they are separate events on the Pair contracts, should these all be different queries, or one query (maybe with an assembler)
-        // that retrieves, groups, and formats all events for each individual transaction.
-        private async Task<IDictionary<string, object>> BuildUniqueTransactions(ulong lastSync, ulong currentHeight, PairDto pair, CancellationToken cancellationToken)
+        private async Task<IDictionary<string, PairDto>> ProcessNewPairs(ulong latestHeight, ulong currentHeight, CancellationToken cancellationToken)
         {
-            // Get Mint Events
-            var mintEvents = await _mediator.Send(new RetrieveCirrusMintEventsByPairQuery(lastSync, currentHeight, "pair.Address"), cancellationToken);
+            // Get latest Pair events from Cirrus
+            var pairEvents = await _mediator.Send(new RetrieveCirrusPairEventsQuery(latestHeight, currentHeight, "RouterContract"), cancellationToken);
 
-            // Get Burn Events
-            var burnEvents = await _mediator.Send(new RetrieveCirrusBurnEventsByPairQuery(lastSync, currentHeight, "pair.Address"), cancellationToken);
-                        
-            // Get Swap Events
-            var swapEvents = await _mediator.Send(new RetrieveCirrusSwapEventsByPairQuery(lastSync, currentHeight, "pair.Address"), cancellationToken);
-
-            // Group By Transaction (Multiple events can occur per transaction)
-            // In each events response, it will include the transaction details and ALL event logs. So query each event type log
-            // then select each distinct tx Id to a dictionary.
-
-            // Todo: Need to standardize a transaction type with a List<IEvent>
-            return new Dictionary<string, object>();
+            // Create new pairs and tokens
+            foreach (var pairEvent in pairEvents)
+            {
+                var token = await _mediator.Send(new MakeTokenCommand(pairEvent.Token), cancellationToken);
+                var pair = await _mediator.Send(new MakePairCommand(pairEvent.Pair), cancellationToken);
+            }
+            
+            // Get latest list of all pairs
+            var allPairs = await _mediator.Send(new RetrieveAllPairsWithFilterQuery(), cancellationToken);
+            
+            return allPairs.ToDictionary(p => p.Address);
         }
     }
 }

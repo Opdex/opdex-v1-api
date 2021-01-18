@@ -11,7 +11,7 @@ using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.S
 namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
 {
     public class CallCirrusSearchSmartContractTransactionReceiptsWithFilterQueryHandler 
-        : IRequestHandler<CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery, IEnumerable<ReceiptDto>>
+        : IRequestHandler<CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery, IEnumerable<TransactionReceiptDto>>
     {
         private readonly ISmartContractsModule _smartContractsModule;
         private readonly ILogger<CallCirrusSearchSmartContractTransactionReceiptsWithFilterQueryHandler> _logger;
@@ -25,7 +25,7 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartCont
         
         // Todo: map the result dto to a domain model
         // Todo: try catch requests
-        public async Task<IEnumerable<ReceiptDto>> Handle(CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TransactionReceiptDto>> Handle(CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery request, CancellationToken cancellationToken)
         {
             var result = await _smartContractsModule.ReceiptSearchAsync(
                 request.ContractAddress, request.EventName, request.From, request.To, cancellationToken);

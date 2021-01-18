@@ -8,9 +8,9 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers
 {
-    public class InsertTokenCommandHandler : IRequestHandler<PersistTokenCommand>
+    public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, bool>
     {
-        private static readonly string InsertTokenSql =
+        private static readonly string SqlCommand =
             $@"Insert into token (
                 {nameof(TokenEntity.Address)},
                 {nameof(TokenEntity.Name)},
@@ -29,19 +29,19 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
 
         private readonly IDbContext _context;
 
-        public InsertTokenCommandHandler(IDbContext context)
+        public PersistTokenCommandHandler(IDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<Unit> Handle(PersistTokenCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(PersistTokenCommand request, CancellationToken cancellationToken)
         {
             // Todo: Create new mapper profile or QueryParams object. Map request to entity to persist
-            var command = DatabaseQuery.Create(InsertTokenSql, request.Token, cancellationToken);
+            var command = DatabaseQuery.Create(SqlCommand, request.Token, cancellationToken);
             
-            await _context.ExecuteScalarAsync<long>(command);
-            
-            return Unit.Value;
+            var result = await _context.ExecuteScalarAsync<long>(command);
+
+            return result > 0;
         }
     }
 }

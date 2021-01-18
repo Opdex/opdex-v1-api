@@ -7,5 +7,6 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models
         public int GasUsed { get; set; }
         public string From { get; set; }
         public ulong Block { get; set; }
+        public string To { get; set; }
     }
 }

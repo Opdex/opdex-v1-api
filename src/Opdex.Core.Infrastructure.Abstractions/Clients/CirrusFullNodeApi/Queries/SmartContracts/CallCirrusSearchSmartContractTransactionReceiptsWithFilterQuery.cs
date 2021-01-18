@@ -7,7 +7,7 @@ using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts
 {
     // Todo: This is Cirrus' Dto, response type will change to a domain model
-    public class CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery : IRequest<IEnumerable<ReceiptDto>>
+    public class CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery : IRequest<IEnumerable<TransactionReceiptDto>>
     {
         public CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery(string contractAddress, ulong from, ulong to, string eventName)
         {

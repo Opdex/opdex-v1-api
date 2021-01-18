@@ -13,6 +13,7 @@ using Opdex.Platform.Application;
 using Opdex.Platform.Infrastructure;
 using Serilog;
 using AutoMapper;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Application.Mappers;
 
 namespace Opdex.Platform.WebApi
@@ -55,10 +56,15 @@ namespace Opdex.Platform.WebApi
             });
             
             services.AddHttpClient();
-
+            
+            // Todo: Maybe not needed
+            var cirrusConfiguration = Configuration.GetSection(nameof(CirrusConfiguration));
+            services.Configure<CirrusConfiguration>(cirrusConfiguration);
+            
+            // Register project module services
             services.AddCoreApplicationServices();
             services.AddPlatformApplicationServices();
-            services.AddCoreInfrastructureServices();
+            services.AddCoreInfrastructureServices(cirrusConfiguration.Get<CirrusConfiguration>());
             services.AddPlatformInfrastructureServices();
         }
 

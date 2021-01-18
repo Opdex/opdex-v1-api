@@ -5,7 +5,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models
         public long Id { get; set; }
         public string Address { get; set; }
         public string TokenId { get; set; }
-        public decimal CrsLiquidity { get; set; }
-        public decimal TokenLiquidity { get; set; }
+        public decimal ReserveToken { get; set; }
+        public decimal ReserveCrs { get; set; }
     }
 }
