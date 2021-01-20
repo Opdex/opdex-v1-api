@@ -9,6 +9,6 @@ namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
         public bool Revert { get; set; }
         public object ErrorMessage { get; set; }
         public object Return { get; set; }
-        public IList<LogDto> Logs { get; set; }
+        public IList<TransactionLogDto> Logs { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
-    public class LogDto
+    public class TransactionLogDto
     {
         public string Address { get; set; }
         public string[] Topics { get; set; }

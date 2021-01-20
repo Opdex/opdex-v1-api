@@ -12,6 +12,8 @@ using Opdex.Indexer.Application.Abstractions;
 using Opdex.Indexer.Application.Abstractions.Commands;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events;
+using Opdex.Indexer.Domain.Models;
+using Opdex.Indexer.Domain.Models.LogEvents;
 
 namespace Opdex.Indexer.Application
 {
@@ -40,49 +42,50 @@ namespace Opdex.Indexer.Application
                     var pairs = await ProcessNewPairs(latestBlock.Height, currentBlock.Height, cancellationToken);
                     var pairsWithTransactions = new List<string>();
                     
-                    var blockIndex = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(latestBlock.Hash), cancellationToken);
+                    // Todo: This really should be getting the latestBlock.Height, use that to query cirrus for latestBlock + 1;
+                    var queuedBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(latestBlock.Hash), cancellationToken);
                     
                     // Loop each block from last sync to current
                     do
                     {
-                        foreach (var txHash in blockIndex.Tx)
+                        // if (block.time isAround dateTime.UtcNow) Persist Latest Strax/Cirrus $ CMC Price
+                        // else Persist Historical Strax/Cirrus $ CMC Price and Index 
+                        await _mediator.Send(new MakeBlockCommand(), cancellationToken);
+                        
+                        // Loop each transaction in the block
+                        foreach (var txHash in queuedBlock.Tx)
                         {
                             var tx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(txHash), cancellationToken);
                             var isToRouter = tx.To == "RouterContract";
-                            var distinctPairsWithTransactions = tx.Logs
+                            var distinctPairsWithTransactions = tx.Events
                                 .Where(l => pairs.TryGetValue(l.Address, out _))
                                 .Select(l => l.Address)
-                                .Distinct().ToList();
+                                .Distinct()
+                                .ToList();
+
+                            // Definitely a more performant way of doing this using a dictionary
+                            pairsWithTransactions
+                                .AddRange(distinctPairsWithTransactions
+                                    .Where(d => !pairsWithTransactions.Contains(d)));
                             
-                            distinctPairsWithTransactions.ForEach(p =>
+                            if (!isToRouter && !distinctPairsWithTransactions.Any())
                             {
-                                if (!pairsWithTransactions.Contains(p))
-                                {
-                                    pairsWithTransactions.Add(p);
-                                }
-                            });
-                            
-                            if (isToRouter || distinctPairsWithTransactions.Any())
-                            {
-                                // parse all logs to relevant events
-                                // calculate transaction fees
-                                // index events
+                                continue;
                             }
+                            
+                            await _mediator.Send(new MakeTransactionCommand(tx), cancellationToken);
                         }
                         
-                        // 2. Update Block Details
-                        //     - if (block.time isAround dateTime.UtcNow) Get Latest Strax/Cirrus $ CMC Price and Index
-                        //     - else Get Historical Strax/Cirrus $ CMC Price and Index
-                        //     - Set sync status boolean 
-                        
-                        
-                        blockIndex = blockIndex.NexBlockHash.HasValue()
-                            ? await _mediator.Send(new RetrieveCirrusBlockByHashQuery(blockIndex.NexBlockHash), cancellationToken)
+                        // Update block sync status to complete
+
+                        queuedBlock = queuedBlock.NexBlockHash.HasValue()
+                            ? await _mediator.Send(new RetrieveCirrusBlockByHashQuery(queuedBlock.NexBlockHash), cancellationToken)
                             : null;
                     } 
-                    while (blockIndex != null && currentBlock.Height >= blockIndex.Height);
+                    while (queuedBlock != null && currentBlock.Height >= queuedBlock.Height);
 
                     // Any pairs with transactions, get latest reserves, updating pricing, etc.
+                    // Todo: This loop may not be necessary
                     foreach (var pair in pairsWithTransactions)
                     {
                         
@@ -96,6 +99,13 @@ namespace Opdex.Indexer.Application
             }
         }
 
+        /// <summary>
+        /// Fetches and persists new tokens and pairs from opdex router contract event logs.
+        /// </summary>
+        /// <param name="latestHeight">Opdex synced latest block height</param>
+        /// <param name="currentHeight">Cirrus chain actual current height</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>Dictionary of pair address keys with pair values</returns>
         private async Task<IDictionary<string, PairDto>> ProcessNewPairs(ulong latestHeight, ulong currentHeight, CancellationToken cancellationToken)
         {
             // Get latest Pair events from Cirrus
@@ -104,8 +114,9 @@ namespace Opdex.Indexer.Application
             // Create new pairs and tokens
             foreach (var pairEvent in pairEvents)
             {
-                var token = await _mediator.Send(new MakeTokenCommand(pairEvent.Token), cancellationToken);
-                var pair = await _mediator.Send(new MakePairCommand(pairEvent.Pair), cancellationToken);
+                // Todo: Error handling / logging
+                await _mediator.Send(new MakeTokenCommand(pairEvent.Token), cancellationToken);
+                await _mediator.Send(new MakePairCommand(pairEvent.Pair), cancellationToken);
             }
             
             // Get latest list of all pairs

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Queries;
+using Opdex.Core.Domain.Models;
 
 namespace Opdex.Core.Application.Handlers
 {

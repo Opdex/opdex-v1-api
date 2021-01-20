@@ -1,12 +1,11 @@
 using System;
 using MediatR;
 using Opdex.Core.Common.Extensions;
-using Opdex.Core.Domain.Models.CirrusFullNodeApi;
-using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Indexer.Domain.Models;
 
 namespace Opdex.Indexer.Application.Abstractions.Queries.Cirrus
 {
-    public class RetrieveCirrusTransactionByHashQuery : IRequest<TransactionReceiptDto>
+    public class RetrieveCirrusTransactionByHashQuery : IRequest<TransactionReceipt>
     {
         public RetrieveCirrusTransactionByHashQuery(string txHash)
         {

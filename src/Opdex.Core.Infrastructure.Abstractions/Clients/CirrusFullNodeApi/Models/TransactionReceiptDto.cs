@@ -13,6 +13,6 @@ namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
         public string ReturnValue { get; set; }
         public string Bloom { get; set; }
         public string Error { get; set; }
-        public LogDto[] Logs { get; set; }
+        public TransactionLogDto[] Logs { get; set; }
     }
 }

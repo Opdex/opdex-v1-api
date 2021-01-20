@@ -5,6 +5,7 @@ using Opdex.Indexer.Application.Abstractions.Commands;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
 using Opdex.Indexer.Application.Handlers;
 using Opdex.Indexer.Application.Handlers.Cirrus;
+using Opdex.Indexer.Domain.Models;
 
 namespace Opdex.Indexer.Application
 {
@@ -15,6 +16,7 @@ namespace Opdex.Indexer.Application
             // Queries
             services.AddTransient<IRequestHandler<RetrieveCirrusCurrentBlockQuery, BlockReceiptDto>, RetrieveCirrusCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusBlockByHashQuery, BlockReceiptDto>, RetrieveCirrusBlockByHashQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveCirrusTransactionByHashQuery, TransactionReceipt>, RetrieveCirrusTransactionByHashQueryHandler>();
             
             // Commands
             services.AddTransient<IRequestHandler<MakeBlockCommand, bool>, MakeBlockCommandHandler>();
