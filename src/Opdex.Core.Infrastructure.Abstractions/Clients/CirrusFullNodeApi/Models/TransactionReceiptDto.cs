@@ -5,7 +5,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
         public string TransactionHash { get; set; }
         public string BlockHash { get; set; }
         public string PostState { get; set; }
-        public ulong GasUsed { get; set; }
+        public int GasUsed { get; set; }
         public string From { get; set; }
         public string To { get; set; }
         public string NewContractAddress { get; set; }

@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Opdex.Core.Domain\Opdex.Core.Domain.csproj" />
+      <ProjectReference Include="..\Opdex.Indexer.Domain\Opdex.Indexer.Domain.csproj" />
     </ItemGroup>
 
 </Project>

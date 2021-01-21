@@ -27,7 +27,7 @@ namespace Opdex.Indexer.Domain.Models
             
             if (transactionReceiptDto.GasUsed == 0)
             {
-                throw new ArgumentNullException(nameof(transactionReceiptDto.GasUsed));
+                throw new ArgumentOutOfRangeException(nameof(transactionReceiptDto.GasUsed));
             }
             
             if (!transactionReceiptDto.From.HasValue())
@@ -61,7 +61,7 @@ namespace Opdex.Indexer.Domain.Models
         
         public string Hash { get; private set; }
         public string BlockHash { get; private set; }
-        public ulong GasUsed { get; private set; }
+        public int GasUsed { get; private set; }
         public string From { get; private set; }
         public string To { get; private set; }
         public bool Success { get; private set; }

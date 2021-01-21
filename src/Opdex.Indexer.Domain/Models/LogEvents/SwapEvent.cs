@@ -2,6 +2,11 @@ namespace Opdex.Indexer.Domain.Models.LogEvents
 {
     public class SwapEvent : LogEventBase
     {
+        public SwapEvent()
+        {
+            
+        }
+        
         public string Sender { get; }
         public string To { get; }
         public ulong AmountCrsIn { get; }
