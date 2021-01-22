@@ -5,8 +5,8 @@ namespace Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events
 {
     public class RetrieveCirrusPairEventsQuery : RetrieveCirrusEventBaseQuery<IEnumerable<PairEvent>>
     {
-        public RetrieveCirrusPairEventsQuery(ulong from, ulong to, string contract)
-            : base (from, to, contract)
+        public RetrieveCirrusPairEventsQuery(string contract, ulong from, ulong? to = null)
+            : base (contract, from, to)
         {
         }
     }

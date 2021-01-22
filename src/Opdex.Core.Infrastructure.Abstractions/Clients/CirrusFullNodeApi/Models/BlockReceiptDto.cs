@@ -24,7 +24,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
         public string PreviousBlockHash { get; set; }
 
         [JsonProperty("nextblockhash")]
-        public string NexBlockHash { get; set; }
+        public string NextBlockHash { get; set; }
 
         [JsonProperty("merkleroot")]
         public string MerkleRoot { get; set; }

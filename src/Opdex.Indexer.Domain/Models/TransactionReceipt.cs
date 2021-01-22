@@ -66,5 +66,16 @@ namespace Opdex.Indexer.Domain.Models
         public string To { get; private set; }
         public bool Success { get; private set; }
         public IReadOnlyCollection<TransactionLog> Events { get; private set; }
+        public IReadOnlyCollection<string> PairsEngaged { get; private set; }
+
+        public void SetPairsEngaged(List<string> pairsEngaged)
+        {
+            if (!pairsEngaged.All(p => Events.Any(e => e.Address == p)))
+            {
+                throw new Exception("Pair engagement not found in transaction events");
+            }
+
+            PairsEngaged = pairsEngaged.Select(p => p).ToList();
+        }
     }
 }

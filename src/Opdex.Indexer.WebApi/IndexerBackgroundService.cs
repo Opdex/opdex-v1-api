@@ -29,17 +29,24 @@ namespace Opdex.Indexer.WebApi
                 {
                     await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
                 }
-                
-                _logger.LogInformation("Attempted process");
 
-                using var scope = _services.CreateScope();
-                var indexManager = 
-                    scope.ServiceProvider
-                        .GetRequiredService<IIndexProcessManager>();
+                try
+                {
+                    using var scope = _services.CreateScope();
+                    var indexManager = 
+                        scope.ServiceProvider
+                            .GetRequiredService<IIndexProcessManager>();
 
-                await indexManager.ProcessAsync(cancellationToken);
-
-                started = true;
+                    await indexManager.ProcessAsync(cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogCritical(ex, "Critical error processing Cirrus blocks");
+                }
+                finally
+                {
+                    started = true;
+                }
             }
         }
         

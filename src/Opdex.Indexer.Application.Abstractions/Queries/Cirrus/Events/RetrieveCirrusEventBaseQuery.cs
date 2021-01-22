@@ -4,7 +4,7 @@ namespace Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events
 {
     public class RetrieveCirrusEventBaseQuery<T> : IRequest<T>
     {
-        public RetrieveCirrusEventBaseQuery(ulong from, ulong to, string contract)
+        public RetrieveCirrusEventBaseQuery(string contract, ulong from, ulong? to = null)
         {
             From = from;
             To = to;
@@ -12,7 +12,7 @@ namespace Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events
         }
         
         public ulong From { get; }
-        public ulong To { get; }
+        public ulong? To { get; }
         public string Contract { get; }
     }
 }

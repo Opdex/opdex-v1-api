@@ -24,10 +24,19 @@ namespace Opdex.Indexer.Domain.Models
             DeserializeLog();
         }
         
+        /// <summary>
+        /// The contract address that logged this event
+        /// </summary>
         public string Address { get; private set; }
         
+        /// <summary>
+        /// The original log object - to be removed soon
+        /// </summary>
         public object Log { get; private set; }
         
+        /// <summary>
+        /// Deserialized log event
+        /// </summary>
         public ILogEvent Event { get; private set; }
 
         private void DeserializeLog()
@@ -36,6 +45,7 @@ namespace Opdex.Indexer.Domain.Models
 
             if (!eventType.HasValue()) return;
 
+            // Todo: These should be created via constructor with validations
             Event = eventType switch
             {
                 nameof(SyncEvent) => Log as SyncEvent,

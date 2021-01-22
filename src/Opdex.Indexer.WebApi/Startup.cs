@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Opdex.Core.Application;
+using Opdex.Core.Application.Abstractions;
 using Opdex.Core.Infrastructure;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Clients;
@@ -58,6 +59,9 @@ namespace Opdex.Indexer.WebApi
             // Todo: Maybe not needed
             var cirrusConfiguration = Configuration.GetSection(nameof(CirrusConfiguration));
             services.Configure<CirrusConfiguration>(cirrusConfiguration);
+            
+            var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
+            services.Configure<OpdexConfiguration>(opdexConfig);
             
             // Register project module services
             services.AddCoreInfrastructureServices(cirrusConfiguration.Get<CirrusConfiguration>());
