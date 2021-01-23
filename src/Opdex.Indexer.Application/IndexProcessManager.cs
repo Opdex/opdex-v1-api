@@ -10,11 +10,11 @@ using Opdex.Core.Application.Abstractions;
 using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Queries;
 using Opdex.Core.Common.Extensions;
+using Opdex.Core.Domain.Models.TransactionReceipt;
 using Opdex.Indexer.Application.Abstractions;
 using Opdex.Indexer.Application.Abstractions.Commands;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events;
-using Opdex.Indexer.Domain.Models;
 
 namespace Opdex.Indexer.Application
 {
@@ -102,8 +102,7 @@ namespace Opdex.Indexer.Application
         /// <returns>Dictionary of pair address keys with pair values</returns>
         private async Task<IDictionary<string, PairDto>> ProcessNewPairs(ulong latestHeight, CancellationToken cancellationToken)
         {
-            // Todo: ControllerContract config should just be used in the handler via DI, not passed from here
-            var pairEvents = await _mediator.Send(new RetrieveCirrusPairEventsQuery(_opdexConfiguration.ControllerContract, latestHeight), cancellationToken);
+            var pairEvents = await _mediator.Send(new RetrieveCirrusPairEventsQuery(latestHeight), cancellationToken);
 
             foreach (var pairEvent in pairEvents)
             {

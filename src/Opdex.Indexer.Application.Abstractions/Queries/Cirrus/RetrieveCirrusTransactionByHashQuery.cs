@@ -1,7 +1,7 @@
 using System;
 using MediatR;
 using Opdex.Core.Common.Extensions;
-using Opdex.Indexer.Domain.Models;
+using Opdex.Core.Domain.Models.TransactionReceipt;
 
 namespace Opdex.Indexer.Application.Abstractions.Queries.Cirrus
 {

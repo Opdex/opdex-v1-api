@@ -6,6 +6,5 @@ namespace Opdex.Core.Application.Abstractions.Queries
 {
     public class RetrieveAllPairsWithFilterQuery : IRequest<IEnumerable<PairDto>>
     {
-        
     }
 }

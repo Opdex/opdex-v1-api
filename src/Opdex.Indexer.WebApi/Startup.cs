@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -48,6 +49,12 @@ namespace Opdex.Indexer.WebApi
             {
                 settings.Title = "Opdex Platform API";
                 settings.Version = "v1";
+            });
+            
+            // Automapper Profiles
+            services.AddAutoMapper(mapperConfig =>
+            {
+                mapperConfig.AddProfile<CoreInfrastructureMapperProfile>();
             });
             
             services.AddHostedService<IndexerBackgroundService>();

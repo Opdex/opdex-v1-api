@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,9 +41,12 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return GetAsync<TransactionReceiptDto>(uri, cancellationToken);
         }
 
-        public Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(string contractAddress, string eventName, ulong fromBlock, ulong toBlock, CancellationToken cancellationToken)
+        public Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(string contractAddress, string eventName, ulong fromBlock, ulong? toBlock, CancellationToken cancellationToken)
         {
             var uri = string.Format(UriHelper.SmartContracts.GetContractReceiptSearch, contractAddress, eventName, fromBlock, toBlock);
+            
+            if (toBlock.GetValueOrDefault() > 0) uri += $"&to={toBlock}";
+            
             return GetAsync<IEnumerable<TransactionReceiptDto>>(uri, cancellationToken);
         }
 

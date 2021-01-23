@@ -1,11 +1,15 @@
+using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Opdex.Core.Domain.Models.TransactionReceipt;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.BlockStore;
+using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Modules;
 
 namespace Opdex.Core.Infrastructure
@@ -48,6 +52,8 @@ namespace Opdex.Core.Infrastructure
             // Queries and Handlers
             services.AddTransient<IRequestHandler<CallCirrusGetCurrentBlockQuery, BlockReceiptDto>, CallCirrusGetCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetBlockByHashQuery, BlockReceiptDto>, CallCirrusGetBlockByHashQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetSmartContractTransactionReceiptByTxHashQuery, TransactionReceipt>, CallCirrusGetSmartContractTransactionReceiptByTxHashQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery, List<TransactionReceipt>>, CallCirrusSearchSmartContractTransactionReceiptsWithFilterQueryHandler>();
 
             #endregion
         }

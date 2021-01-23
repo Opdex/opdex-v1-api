@@ -1,26 +1,29 @@
 using System;
 using Opdex.Core.Common.Extensions;
-using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Indexer.Domain.Models;
 using Opdex.Indexer.Domain.Models.LogEvents;
 
-namespace Opdex.Indexer.Domain.Models
+namespace Opdex.Core.Domain.Models.TransactionReceipt
 {
     public class TransactionLog
     {
-        public TransactionLog(TransactionLogDto transactionLogDto)
+        public TransactionLog(dynamic transactionEventLog)
         {
-            if (!transactionLogDto.Address.HasValue())
+            string address = transactionEventLog?.Address;
+            object log = transactionEventLog?.log;
+            
+            if (!address.HasValue())
             {
-                throw new ArgumentNullException(nameof(transactionLogDto.Address));
+                throw new ArgumentNullException(nameof(address));
             }
             
-            if (transactionLogDto.Log == null)
+            if (log == null)
             {
-                throw new ArgumentNullException(nameof(transactionLogDto.Log));
+                throw new ArgumentNullException(nameof(log));
             }
 
-            Address = transactionLogDto.Address;
-            Log = transactionLogDto.Log;
+            Address = address;
+            Log = log;
             DeserializeLog();
         }
         

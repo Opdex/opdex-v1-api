@@ -2,9 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Opdex.Core.Domain.Models.TransactionReceipt;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
-using Opdex.Indexer.Domain.Models;
 
 namespace Opdex.Indexer.Application.Handlers.Cirrus
 {
@@ -22,9 +22,9 @@ namespace Opdex.Indexer.Application.Handlers.Cirrus
             try
             {
                 var query = new CallCirrusGetSmartContractTransactionReceiptByTxHashQuery(request.TxHash);
-                var transactionReceiptDto = await _mediator.Send(query, cancellationToken);
+                var txReceipt = await _mediator.Send(query, cancellationToken);
 
-                return new TransactionReceipt(transactionReceiptDto);
+                return txReceipt;
             }
             catch (Exception ex)
             {
