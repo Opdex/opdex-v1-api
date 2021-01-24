@@ -1,8 +1,8 @@
-namespace Opdex.Indexer.Domain.Models.LogEvents
+namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
 {
     public class BurnEvent : LogEventBase
     {
-        public BurnEvent()
+        public BurnEvent(dynamic log) : base(nameof(BurnEvent))
         {
             
         }

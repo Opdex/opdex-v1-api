@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Core.Common.Exceptions;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Infrastructure.Abstractions;
+using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data.Queries;
 
@@ -17,7 +17,7 @@ namespace Opdex.Core.Infrastructure.Data.Handlers
                 {nameof(BlockEntity.Height)},
                 {nameof(BlockEntity.Hash)},
                 {nameof(BlockEntity.MedianTime)},
-                {nameof(BlockEntity.Time)},
+                {nameof(BlockEntity.Time)}
             FROM block
             ORDER BY {nameof(BlockEntity.Height)} DESC
             LIMIT 1;";
@@ -40,7 +40,7 @@ namespace Opdex.Core.Infrastructure.Data.Handlers
                 throw new NotFoundException("No blocks found.");
             }
             
-            return new Block(result.Height, result.Hash, result.Time, result.MedianTime);
+            return new Block(result.Height, result.Hash, DateTime.FromBinary(result.Time), DateTime.FromBinary(result.MedianTime));
         }
     }
 }

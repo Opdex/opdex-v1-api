@@ -1,7 +1,7 @@
 using System.Data;
 using System.Threading;
 
-namespace Opdex.Core.Infrastructure.Abstractions
+namespace Opdex.Core.Infrastructure.Abstractions.Data
 {
     public readonly struct DatabaseQuery
     {

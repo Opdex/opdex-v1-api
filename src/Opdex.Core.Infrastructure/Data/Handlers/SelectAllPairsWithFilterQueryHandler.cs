@@ -5,10 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Infrastructure.Abstractions;
+using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Queries;
 
-namespace Opdex.BasePlatform.Infrastructure.Data.Handlers
+namespace Opdex.Core.Infrastructure.Data.Handlers
 {
     public class SelectAllPairsWithFilterQueryHandler : IRequestHandler<SelectAllPairsWithFilterQuery, IEnumerable<Pair>>
     {

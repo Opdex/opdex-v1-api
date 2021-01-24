@@ -8,6 +8,11 @@ namespace Opdex.Indexer.WebApi
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
+            
             CreateHostBuilder(args).Build().Run();
         }
 

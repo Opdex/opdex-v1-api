@@ -1,15 +1,27 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using Opdex.Indexer.Application.Abstractions.Commands;
+using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
 namespace Opdex.Indexer.Application.Handlers
 {
-    public class MakeTokenCommandHandler : IRequestHandler<MakeTokenCommand, bool>
+    public class MakeTokenCommandHandler : IRequestHandler<MakeTokenCommand, long>
     {
-        public Task<bool> Handle(MakeTokenCommand request, CancellationToken cancellationToken)
+        private readonly IMediator _mediator;
+
+        public MakeTokenCommandHandler(IMediator mediator)
         {
-            throw new System.NotImplementedException();
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+        
+        public async Task<long> Handle(MakeTokenCommand request, CancellationToken cancellationToken)
+        {
+            var token = await _mediator.Send(new CallCirrusGetSmartContractTokenDetailsByAddressQuery(request.Address), cancellationToken);
+            
+            return await _mediator.Send(new PersistTokenCommand(token), cancellationToken);
         }
     }
 }

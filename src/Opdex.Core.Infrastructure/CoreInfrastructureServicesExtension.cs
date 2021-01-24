@@ -1,16 +1,21 @@
 using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Opdex.Core.Domain.Models;
 using Opdex.Core.Domain.Models.TransactionReceipt;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
+using Opdex.Core.Infrastructure.Abstractions.Data;
+using Opdex.Core.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.BlockStore;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Modules;
+using Opdex.Core.Infrastructure.Data;
+using Opdex.Core.Infrastructure.Data.Handlers;
 
 namespace Opdex.Core.Infrastructure
 {
@@ -29,7 +34,11 @@ namespace Opdex.Core.Infrastructure
         
         private static void AddDataServices(IServiceCollection services)
         {
-
+            services.AddScoped<IDbContext, DbContext>();
+            
+            services.AddTransient<IRequestHandler<SelectAllPairsWithFilterQuery, IEnumerable<Pair>>, SelectAllPairsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectAllTokensWithFilterQuery, IEnumerable<Token>>, SelectAllTokensWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectLatestBlockQuery, Block>, SelectLatestBlockQueryHandler>();
         }
 
         private static void AddClientServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)

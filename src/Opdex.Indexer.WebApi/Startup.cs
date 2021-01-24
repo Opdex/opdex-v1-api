@@ -10,6 +10,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Opdex.Core.Application;
 using Opdex.Core.Application.Abstractions;
+using Opdex.Core.Common;
 using Opdex.Core.Infrastructure;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Clients;
@@ -55,6 +56,7 @@ namespace Opdex.Indexer.WebApi
             services.AddAutoMapper(mapperConfig =>
             {
                 mapperConfig.AddProfile<CoreInfrastructureMapperProfile>();
+                mapperConfig.AddProfile<IndexerInfrastructureMapperProfile>();
             });
             
             services.AddHostedService<IndexerBackgroundService>();

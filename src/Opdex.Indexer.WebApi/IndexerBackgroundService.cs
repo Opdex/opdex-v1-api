@@ -25,9 +25,9 @@ namespace Opdex.Indexer.WebApi
             
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (!started)
+                if (started)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
                 }
 
                 try

@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Opdex.Core.Application.Abstractions;
+using Opdex.Core.Common;
+using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
-using Opdex.Indexer.Application.Abstractions.Models.Events;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events;
 
 namespace Opdex.Indexer.Application.Handlers.Cirrus.Events
 {
-    public class RetrieveCirrusPairEventsQueryHandler : IRequestHandler<RetrieveCirrusPairEventsQuery, IEnumerable<PairEvent>>
+    public class RetrieveCirrusPairEventsQueryHandler : IRequestHandler<RetrieveCirrusPairEventsQuery, IEnumerable<PairCreatedEvent>>
     {
-        private const string PairCreatedEventName = "PairCreated";
         private readonly OpdexConfiguration _opdexConfiguration;
         private readonly IMediator _mediator;
         private readonly ILogger<RetrieveCirrusPairEventsQueryHandler> _logger;
@@ -28,14 +27,19 @@ namespace Opdex.Indexer.Application.Handlers.Cirrus.Events
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        public async Task<IEnumerable<PairEvent>> Handle(RetrieveCirrusPairEventsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<PairCreatedEvent>> Handle(RetrieveCirrusPairEventsQuery request, CancellationToken cancellationToken)
         {
             var query = new CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery(
-                _opdexConfiguration.ControllerContract, PairCreatedEventName, request.FromBlock, request.ToBlock);
+                _opdexConfiguration.ControllerContract, nameof(PairCreatedEvent), request.FromBlock, request.ToBlock);
             
             var transactionReceipts = await _mediator.Send(query, cancellationToken);
-            
-            return Enumerable.Empty<PairEvent>();
+
+            var pairEvents = transactionReceipts
+                .SelectMany(t => t.Events
+                    .Where(e => e.Event.EventType == nameof(PairCreatedEvent))
+                    .Select(e => e.Event as PairCreatedEvent));
+
+            return pairEvents;
         }
     }
 }

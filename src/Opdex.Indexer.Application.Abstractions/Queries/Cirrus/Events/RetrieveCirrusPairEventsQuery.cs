@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using MediatR;
-using Opdex.Indexer.Application.Abstractions.Models.Events;
+using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
 
 namespace Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events
 {
-    public class RetrieveCirrusPairEventsQuery : IRequest<IEnumerable<PairEvent>>
+    public class RetrieveCirrusPairEventsQuery : IRequest<IEnumerable<PairCreatedEvent>>
     {
         public RetrieveCirrusPairEventsQuery(ulong fromBlock, ulong? toBlock = null)
         {

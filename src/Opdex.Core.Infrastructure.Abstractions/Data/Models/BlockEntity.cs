@@ -6,7 +6,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models
     {
         public ulong Height { get; set; }
         public string Hash { get; set; }
-        public DateTime Time { get; set; }
-        public DateTime MedianTime { get; set; }
+        public long Time { get; set; }
+        public long MedianTime { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using Opdex.Core.Domain.Models;
 
 namespace Opdex.Indexer.Infrastructure.Abstractions.Data.Commands
 {
-    public class PersistTokenCommand : IRequest<bool>
+    public class PersistTokenCommand : IRequest<long>
     {
         public PersistTokenCommand(Token token)
         {

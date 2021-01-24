@@ -14,7 +14,7 @@ namespace Opdex.Indexer.Infrastructure
             // Commands
             services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
             services.AddTransient<IRequestHandler<PersistPairCommand, bool>, PersistPairCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTokenCommand, bool>, PersistTokenCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTokenCommand, long>, PersistTokenCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionCommand, bool>, PersistTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionApprovalEventCommand, Unit>, PersistTransactionApprovalEventCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionBurnEventCommand, Unit>, PersistTransactionBurnEventCommandHandler>();

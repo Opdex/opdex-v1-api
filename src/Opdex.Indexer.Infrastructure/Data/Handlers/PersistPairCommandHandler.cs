@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Opdex.Core.Infrastructure.Abstractions;
+using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
@@ -10,15 +10,14 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
 {
     public class PersistPairCommandHandler : IRequestHandler<PersistPairCommand, bool>
     {
+        // Todo: Insert vs update
         private static readonly string SqlCommand =
             $@"Insert into pair (
-                {nameof(PairEntity.Id)},
                 {nameof(PairEntity.Address)},
                 {nameof(PairEntity.TokenId)},
                 {nameof(PairEntity.ReserveToken)},
                 {nameof(PairEntity.ReserveCrs)}
               ) VALUES (
-                @{nameof(PairEntity.Id)},
                 @{nameof(PairEntity.Address)},
                 @{nameof(PairEntity.TokenId)},
                 @{nameof(PairEntity.ReserveToken)},

@@ -4,11 +4,16 @@ using Opdex.Core.Common.Extensions;
 
 namespace Opdex.Indexer.Application.Abstractions.Commands
 {
-    public class MakeTokenCommand : IRequest<bool>
+    public class MakeTokenCommand : IRequest<long>
     {
         public MakeTokenCommand(string address)
         {
-            Address = address.HasValue() ? address : throw new ArgumentNullException(nameof(address));
+            if (!address.HasValue())
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
+            Address = address;
         }
         
         public string Address { get; }

@@ -1,7 +1,6 @@
 using System;
 using Opdex.Core.Common.Extensions;
-using Opdex.Indexer.Domain.Models;
-using Opdex.Indexer.Domain.Models.LogEvents;
+using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
 
 namespace Opdex.Core.Domain.Models.TransactionReceipt
 {
@@ -10,7 +9,7 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
         public TransactionLog(dynamic transactionEventLog)
         {
             string address = transactionEventLog?.Address;
-            object log = transactionEventLog?.log;
+            var log = transactionEventLog?.Log;
             
             if (!address.HasValue())
             {
@@ -24,6 +23,14 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
 
             Address = address;
             Log = log;
+            
+            // Todo: maybe this should be called externally when we need types of logs
+            // Exceptions can be thrown during creation of domain models but maybe those
+            // should be just thrown away since we're pulling from Cirrus and any contract
+            // transaction can return the event type we're trying to deserialize.
+            //
+            // Maybe some type of service that only deserializes events that are from known 
+            // pair contracts.
             DeserializeLog();
         }
         
@@ -35,7 +42,7 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
         /// <summary>
         /// The original log object - to be removed soon
         /// </summary>
-        public object Log { get; private set; }
+        public dynamic Log { get; private set; }
         
         /// <summary>
         /// Deserialized log event
@@ -44,20 +51,19 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
 
         private void DeserializeLog()
         {
-            var eventType = Log.GetType().GetProperty("EventType")?.GetValue(Log, null).ToString();
+            string eventType = Log?.eventType;
 
             if (!eventType.HasValue()) return;
 
-            // Todo: These should be created via constructor with validations
             Event = eventType switch
             {
-                nameof(SyncEvent) => Log as SyncEvent,
-                nameof(BurnEvent) => Log as BurnEvent,
-                nameof(MintEvent) => Log as MintEvent,
-                nameof(SwapEvent) => Log as SwapEvent,
-                nameof(ApprovalEvent) => Log as ApprovalEvent,
-                nameof(TransferEvent) => Log as TransferEvent,
-                nameof(PairCreatedEvent) => Log as PairCreatedEvent,
+                nameof(SyncEvent) => new SyncEvent(Log),
+                nameof(BurnEvent) => new BurnEvent(Log),
+                nameof(MintEvent) => new MintEvent(Log),
+                nameof(SwapEvent) => new SwapEvent(Log),
+                nameof(ApprovalEvent) => new ApprovalEvent(Log),
+                nameof(TransferEvent) => new TransferEvent(Log),
+                nameof(PairCreatedEvent) => new PairCreatedEvent(Log),
                 _ => null
             };
         }

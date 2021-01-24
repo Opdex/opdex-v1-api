@@ -1,10 +1,9 @@
 using MediatR;
-using Opdex.Core.Application.Abstractions.Models;
+using Opdex.Core.Domain.Models;
 
 namespace Opdex.Core.Application.Abstractions.Queries
 {
-    public class RetrieveLatestBlockQuery : IRequest<BlockDto>
+    public class RetrieveLatestBlockQuery : IRequest<Block>
     {
-        
     }
 }

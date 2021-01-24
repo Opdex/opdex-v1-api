@@ -5,20 +5,63 @@ namespace Opdex.Core.Domain.Models
 {
     public class Token
     {
-        public Token(string address, string name, string symbol, int decimals, int sats)
+        public Token(string address, string name, string symbol, int decimals, long sats, ulong totalSupply)
         {
-            Address = address.HasValue() ? address : throw new ArgumentNullException(nameof(address));
-            Name = name.HasValue() ? name : throw new ArgumentNullException(nameof(name));
-            Symbol = symbol.HasValue() ? symbol : throw new ArgumentNullException(nameof(symbol));
-            Decimals = decimals >= 0 ? decimals : throw new ArgumentOutOfRangeException(nameof(decimals));
-            Sats = sats >= 0 ? sats : throw new ArgumentOutOfRangeException(nameof(sats));
+            if (!address.HasValue())
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+            
+            if (!name.HasValue())
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+            
+            if (!symbol.HasValue())
+            {
+                throw new ArgumentNullException(nameof(symbol));
+            }
+
+            if (decimals < 0 || decimals > 18)
+            {
+                throw new ArgumentOutOfRangeException(nameof(decimals));
+            }
+
+            if (sats < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sats));
+            }
+
+            if (totalSupply < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(totalSupply));
+            }
+
+            Address = address;
+            Name = name;
+            Symbol = symbol;
+            Decimals = decimals;
+            Sats = sats;
+            TotalSupply = totalSupply;
+        }
+
+        protected internal Token(long id, string address, string name, string symbol, int decimals, long sats, ulong totalSupply)
+        {
+            Id = id;
+            Address = address;
+            Name = name;
+            Symbol = symbol;
+            Decimals = decimals;
+            Sats = sats;
+            TotalSupply = totalSupply;
         }
         
+        public long Id { get; }
         public string Address { get; }
         public string Name { get; }
         public string Symbol { get; }
         public int Decimals { get; }
-        // WETH tokens may push this to ulong
-        public int Sats { get; }
+        public long Sats { get; }
+        public ulong TotalSupply { get; }
     }
 }

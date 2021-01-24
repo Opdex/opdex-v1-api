@@ -1,14 +1,16 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
-using Opdex.Core.Infrastructure.Abstractions;
+using Microsoft.Extensions.Logging;
+using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers
 {
-    public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, bool>
+    public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, long>
     {
         private static readonly string SqlCommand =
             $@"Insert into token (
@@ -17,31 +19,41 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
                 {nameof(TokenEntity.Symbol)},
                 {nameof(TokenEntity.Decimals)},
                 {nameof(TokenEntity.Sats)},
-                {nameof(TokenEntity.MaxSupply)}
+                {nameof(TokenEntity.TotalSupply)}
               ) VALUES (
                 @{nameof(TokenEntity.Address)},
                 @{nameof(TokenEntity.Name)},
                 @{nameof(TokenEntity.Symbol)},
                 @{nameof(TokenEntity.Decimals)},
                 @{nameof(TokenEntity.Sats)},
-                @{nameof(TokenEntity.MaxSupply)}
-              );";
+                @{nameof(TokenEntity.TotalSupply)}
+              );
+            SELECT last_insert_rowid();";
 
         private readonly IDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly ILogger<PersistTokenCommandHandler> _logger;
 
-        public PersistTokenCommandHandler(IDbContext context)
+        public PersistTokenCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistTokenCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<bool> Handle(PersistTokenCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(PersistTokenCommand request, CancellationToken cancellationToken)
         {
-            // Todo: Create new mapper profile or QueryParams object. Map request to entity to persist
-            var command = DatabaseQuery.Create(SqlCommand, request.Token, cancellationToken);
-            
-            var result = await _context.ExecuteScalarAsync<long>(command);
-
-            return result > 0;
+            try
+            {
+                var entity = _mapper.Map<TokenEntity>(request.Token);
+                var command = DatabaseQuery.Create(SqlCommand, entity, cancellationToken);
+                return await _context.ExecuteScalarAsync<long>(command);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failure persisting token {request.Token.Address}");
+                return 0;
+            }
         }
     }
 }

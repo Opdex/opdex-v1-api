@@ -1,11 +1,11 @@
 using System;
 using MediatR;
 using Opdex.Core.Common.Extensions;
-using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Core.Domain.Models;
 
 namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens
 {
-    public class CallCirrusGetSmartContractTokenDetailsByAddressQuery : IRequest<TokenDto>
+    public class CallCirrusGetSmartContractTokenDetailsByAddressQuery : IRequest<Token>
     {
         public CallCirrusGetSmartContractTokenDetailsByAddressQuery(string address)
         {

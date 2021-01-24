@@ -1,7 +1,7 @@
 namespace Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents
 {
-    public class MintEventEntity
+    public class TransferEventEntity : EventEntityBase
     {
-        public string TxHash { get; set; }
+        
     }
 }

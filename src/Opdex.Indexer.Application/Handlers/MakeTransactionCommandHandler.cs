@@ -2,9 +2,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
 using Opdex.Indexer.Application.Abstractions.Commands;
-using Opdex.Indexer.Domain.Models;
-using Opdex.Indexer.Domain.Models.LogEvents;
 
 namespace Opdex.Indexer.Application.Handlers
 {

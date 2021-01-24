@@ -1,7 +1,8 @@
-namespace Opdex.Core.Application.Abstractions
+namespace Opdex.Core.Common
 {
     public class OpdexConfiguration
     {
         public string ControllerContract { get; set; }
+        public string ConnectionString { get; set; }
     }
 }

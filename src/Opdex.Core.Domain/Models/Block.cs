@@ -7,10 +7,30 @@ namespace Opdex.Core.Domain.Models
     {
         public Block(ulong height, string hash, DateTime time, DateTime medianTime)
         {
-            Height = height > 0 ? height : throw new ArgumentOutOfRangeException(nameof(height));
-            Hash = hash.HasValue() ? hash : throw new ArgumentNullException(nameof(hash));
-            Time = time.Equals(default) ? throw new ArgumentOutOfRangeException(nameof(time)) : time;
-            MedianTime = medianTime.Equals(default) ? throw new ArgumentOutOfRangeException(nameof(medianTime)) : medianTime;
+            if (height < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(height));
+            }
+
+            if (!hash.HasValue())
+            {
+                throw new ArgumentNullException(nameof(hash));
+            }
+
+            if (time.Equals(default))
+            {
+                throw new ArgumentOutOfRangeException(nameof(time));
+            }
+            
+            if (medianTime.Equals(default))
+            {
+                throw new ArgumentOutOfRangeException(nameof(medianTime));
+            }
+
+            Height = height;
+            Hash = hash;
+            Time = time;
+            MedianTime = medianTime;
         }
         
         public ulong Height { get; }

@@ -1,6 +1,6 @@
 namespace Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents
 {
-    public class SwapEventEntity
+    public class SwapEventEntity : EventEntityBase
     {
         public string From { get; set; }
         public string To { get; set; }
@@ -8,6 +8,5 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents
         public string ToToken { get; set; }
         public decimal FromAmount { get; set; }
         public decimal ToAmount { get; set; }
-        public string TxHash { get; set; }
     }
 }

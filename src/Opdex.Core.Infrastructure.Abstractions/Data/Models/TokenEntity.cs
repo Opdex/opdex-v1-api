@@ -8,6 +8,6 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models
         public string Name { get; set; }
         public int Decimals { get; set; }
         public int Sats { get; set; }
-        public ulong MaxSupply { get; set; }
+        public ulong TotalSupply { get; set; }
     }
 }

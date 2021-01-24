@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Opdex.Core.Infrastructure.Abstractions;
+using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
