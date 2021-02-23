@@ -9,15 +9,21 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
 {
-    public class PersistTransactionMintEventCommandHandler: IRequestHandler<PersistTransactionMintEventCommand>
+    public class PersistTransactionMintEventCommandHandler: IRequestHandler<PersistTransactionMintEventCommand, bool>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO transaction_event_mint (
-                {nameof(MintEventEntity.Id)},
-                {nameof(MintEventEntity.TransactionId)}
+                {nameof(MintEventEntity.TransactionId)},
+                {nameof(MintEventEntity.Address)},
+                {nameof(MintEventEntity.Sender)},
+                {nameof(MintEventEntity.AmountCrs)},
+                {nameof(MintEventEntity.AmountSrc)}
               ) VALUES (
-                @{nameof(MintEventEntity.Id)},
-                @{nameof(MintEventEntity.TransactionId)}
+                @{nameof(MintEventEntity.TransactionId)},
+                @{nameof(MintEventEntity.Address)},
+                @{nameof(MintEventEntity.Sender)},
+                @{nameof(MintEventEntity.AmountCrs)},
+                @{nameof(MintEventEntity.AmountSrc)}
               );";
         
         private readonly IDbContext _context;
@@ -29,9 +35,15 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
-        public Task<Unit> Handle(PersistTransactionMintEventCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(PersistTransactionMintEventCommand request, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            var mintEventEntity = _mapper.Map<TransferEventEntity>(request.MintEvent);
+            
+            var command = DatabaseQuery.Create(SqlCommand, mintEventEntity, cancellationToken);
+            
+            var result = await _context.ExecuteScalarAsync<long>(command);
+            
+            return result > 0;
         }
     }
 }

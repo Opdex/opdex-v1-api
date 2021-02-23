@@ -4,14 +4,14 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
     {
         public SyncEvent(dynamic log) : base(nameof(SyncEvent))
         {
-            ulong reserveCrs = log?.reserveCrs;
-            ulong reserveToken = log?.reserveToken;
+            ulong reserveCrs = log?.ReserveCrs;
+            string reserveSrc = log?.ReserveSrc;
 
             ReserveCrs = reserveCrs;
-            ReserveToken = reserveToken;
+            ReserveSrc = reserveSrc;
         }
         
         public ulong ReserveCrs { get; }
-        public ulong ReserveToken { get; }
+        public string ReserveSrc { get; }
     }
 }

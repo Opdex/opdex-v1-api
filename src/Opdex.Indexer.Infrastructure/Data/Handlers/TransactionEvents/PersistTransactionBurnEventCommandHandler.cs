@@ -9,15 +9,23 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
 {
-    public class PersistTransactionBurnEventCommandHandler: IRequestHandler<PersistTransactionBurnEventCommand>
+    public class PersistTransactionBurnEventCommandHandler: IRequestHandler<PersistTransactionBurnEventCommand, bool>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO transaction_event_burn (
-                {nameof(BurnEventEntity.Id)},
-                {nameof(BurnEventEntity.TransactionId)}
+                {nameof(BurnEventEntity.TransactionId)},
+                {nameof(BurnEventEntity.Address)},
+                {nameof(BurnEventEntity.Sender)},
+                {nameof(BurnEventEntity.To)},
+                {nameof(BurnEventEntity.AmountCrs)},
+                {nameof(BurnEventEntity.AmountSrc)}
               ) VALUES (
-                @{nameof(BurnEventEntity.Id)},
-                @{nameof(BurnEventEntity.TransactionId)}
+                @{nameof(BurnEventEntity.TransactionId)},
+                @{nameof(BurnEventEntity.Address)},
+                @{nameof(BurnEventEntity.Sender)},
+                @{nameof(BurnEventEntity.To)},
+                @{nameof(BurnEventEntity.AmountCrs)},
+                @{nameof(BurnEventEntity.AmountSrc)}
               );";
         
         private readonly IDbContext _context;
@@ -29,9 +37,15 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
-        public Task<Unit> Handle(PersistTransactionBurnEventCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(PersistTransactionBurnEventCommand request, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            var burnEventEntity = _mapper.Map<TransferEventEntity>(request.BurnEvent);
+            
+            var command = DatabaseQuery.Create(SqlCommand, burnEventEntity, cancellationToken);
+            
+            var result = await _context.ExecuteScalarAsync<long>(command);
+            
+            return result > 0;
         }
     }
 }

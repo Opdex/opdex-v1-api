@@ -9,7 +9,7 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
         {
             string sender = log?.sender;
             ulong amountCrs = log?.amountCrs;
-            ulong amountToken = log?.amountToken;
+            ulong amountSrc = log?.amountSrc;
 
             if (!sender.HasValue())
             {
@@ -21,18 +21,18 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
                 throw new ArgumentOutOfRangeException(nameof(amountCrs));
             }
             
-            if (amountToken < 1)
+            if (amountSrc < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(amountCrs));
             }
 
             Sender = sender;
             AmountCrs = amountCrs;
-            AmountToken = amountToken;
+            AmountSrc = amountSrc;
         }
         
         public string Sender { get; }
         public ulong AmountCrs { get; }
-        public ulong AmountToken { get; }
+        public ulong AmountSrc { get; }
     }
 }

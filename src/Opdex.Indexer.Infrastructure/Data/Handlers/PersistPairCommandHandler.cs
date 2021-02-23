@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
@@ -12,7 +13,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
     {
         // Todo: Insert vs update
         private static readonly string SqlCommand =
-            $@"Insert into pair (
+            $@"INSERT INTO pair (
                 {nameof(PairEntity.Address)},
                 {nameof(PairEntity.TokenId)},
                 {nameof(PairEntity.ReserveToken)},
@@ -25,16 +26,19 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
               );";
 
         private readonly IDbContext _context;
+        private readonly IMapper _mapper;
 
-        public PersistPairCommandHandler(IDbContext context)
+        public PersistPairCommandHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<bool> Handle(PersistPairCommand request, CancellationToken cancellationToken)
         {
-            // Todo: Create new mapper profile or QueryParams object. Map request to entity to persist
-            var command = DatabaseQuery.Create(SqlCommand, request.Pair, cancellationToken);
+            var pairEntity = _mapper.Map<PairEntity>(request.Pair);
+            
+            var command = DatabaseQuery.Create(SqlCommand, pairEntity, cancellationToken);
             
             var result = await _context.ExecuteScalarAsync<long>(command);
 

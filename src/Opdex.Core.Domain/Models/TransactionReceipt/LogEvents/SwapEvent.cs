@@ -11,8 +11,8 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
             string to = log?.to;
             ulong amountCrsIn = log?.amountCrsIn;
             ulong amountCrsOut = log?.amountCrsOut;
-            ulong amountTokenIn = log?.amountTokenIn;
-            ulong amountTokenOut = log?.amoungTokenOut;
+            ulong amountSrcIn = log?.amountSrcIn;
+            ulong amountSrcOut = log?.amoungTokenOut;
 
             if (!sender.HasValue())
             {
@@ -29,24 +29,24 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
                 throw new Exception($"{nameof(amountCrsIn)} or {nameof(amountCrsOut)} must be greater than 0.");
             }
             
-            if (amountTokenIn < 1 && amountTokenOut < 1)
+            if (amountSrcIn < 1 && amountSrcOut < 1)
             {
-                throw new Exception($"{nameof(amountTokenIn)} or {nameof(amountTokenOut)} must be greater than 0.");
+                throw new Exception($"{nameof(amountSrcIn)} or {nameof(amountSrcOut)} must be greater than 0.");
             }
 
             Sender = sender;
             To = to;
             AmountCrsIn = amountCrsIn;
             AmountCrsOut = amountCrsOut;
-            AmountTokenIn = amountTokenIn;
-            AmountTokenOut = amountTokenOut;
+            AmountSrcIn = amountSrcIn;
+            AmountSrcOut = amountSrcOut;
         }
         
         public string Sender { get; }
         public string To { get; }
         public ulong AmountCrsIn { get; }
-        public ulong AmountTokenIn { get; }
+        public ulong AmountSrcIn { get; }
         public ulong AmountCrsOut { get; }
-        public ulong AmountTokenOut { get; }
+        public ulong AmountSrcOut { get; }
     }
 }

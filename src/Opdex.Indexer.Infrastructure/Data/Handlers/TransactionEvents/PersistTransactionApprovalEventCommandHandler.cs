@@ -9,15 +9,21 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
 {
-    public class PersistTransactionApprovalEventCommandHandler: IRequestHandler<PersistTransactionApprovalEventCommand>
+    public class PersistTransactionApprovalEventCommandHandler: IRequestHandler<PersistTransactionApprovalEventCommand, bool>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO transaction_event_approval (
-                {nameof(ApprovalEventEntity.Id)},
-                {nameof(ApprovalEventEntity.TransactionId)}
+                {nameof(ApprovalEventEntity.TransactionId)},
+                {nameof(ApprovalEventEntity.Address)},
+                {nameof(ApprovalEventEntity.Owner)},
+                {nameof(ApprovalEventEntity.Spender)},
+                {nameof(ApprovalEventEntity.Amount)}
               ) VALUES (
-                @{nameof(ApprovalEventEntity.Id)},
                 @{nameof(ApprovalEventEntity.TransactionId)}
+                @{nameof(ApprovalEventEntity.Address)}
+                @{nameof(ApprovalEventEntity.Owner)},
+                @{nameof(ApprovalEventEntity.Spender)},
+                @{nameof(ApprovalEventEntity.Amount)}
               );";
         
         private readonly IDbContext _context;
@@ -29,9 +35,15 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
-        public Task<Unit> Handle(PersistTransactionApprovalEventCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(PersistTransactionApprovalEventCommand request, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            var approvalEventEntity = _mapper.Map<ApprovalEventEntity>(request.ApprovalEvent);
+            
+            var command = DatabaseQuery.Create(SqlCommand, approvalEventEntity, cancellationToken);
+            
+            var result = await _context.ExecuteScalarAsync<long>(command);
+            
+            return result > 0;
         }
     }
 }

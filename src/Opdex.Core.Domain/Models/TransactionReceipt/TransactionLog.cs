@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Opdex.Core.Common.Extensions;
 using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
 
@@ -8,12 +9,18 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
     {
         public TransactionLog(dynamic transactionEventLog)
         {
-            string address = transactionEventLog?.Address;
+            string address = transactionEventLog?.Address ?? string.Empty;
+            string[] topics = transactionEventLog?.Topics ?? new string[0];
             var log = transactionEventLog?.Log;
             
             if (!address.HasValue())
             {
                 throw new ArgumentNullException(nameof(address));
+            }
+
+            if (topics.Any() != true)
+            {
+                throw new ArgumentOutOfRangeException(nameof(topics));
             }
             
             if (log == null)
@@ -21,17 +28,9 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
                 throw new ArgumentNullException(nameof(log));
             }
 
+            Topics = topics;
             Address = address;
-            Log = log;
-            
-            // Todo: maybe this should be called externally when we need types of logs
-            // Exceptions can be thrown during creation of domain models but maybe those
-            // should be just thrown away since we're pulling from Cirrus and any contract
-            // transaction can return the event type we're trying to deserialize.
-            //
-            // Maybe some type of service that only deserializes events that are from known 
-            // pair contracts.
-            DeserializeLog();
+            DeserializeLog(log);
         }
         
         /// <summary>
@@ -39,33 +38,37 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
         /// </summary>
         public string Address { get; private set; }
         
-        /// <summary>
-        /// The original log object - to be removed soon
-        /// </summary>
-        public dynamic Log { get; private set; }
+        public string[] Topics { get; private set; }
         
         /// <summary>
         /// Deserialized log event
         /// </summary>
         public ILogEvent Event { get; private set; }
-
-        private void DeserializeLog()
+        
+        public int SortOrder { get; private set; }
+        
+        private void DeserializeLog(dynamic log)
         {
-            string eventType = Log?.eventType;
-
-            if (!eventType.HasValue()) return;
+            var eventType = Topics[0];
 
             Event = eventType switch
             {
-                nameof(SyncEvent) => new SyncEvent(Log),
-                nameof(BurnEvent) => new BurnEvent(Log),
-                nameof(MintEvent) => new MintEvent(Log),
-                nameof(SwapEvent) => new SwapEvent(Log),
-                nameof(ApprovalEvent) => new ApprovalEvent(Log),
-                nameof(TransferEvent) => new TransferEvent(Log),
-                nameof(PairCreatedEvent) => new PairCreatedEvent(Log),
+                nameof(SyncEvent) => new SyncEvent(log),
+                nameof(BurnEvent) => new BurnEvent(log),
+                nameof(MintEvent) => new MintEvent(log),
+                nameof(SwapEvent) => new SwapEvent(log),
+                nameof(ApprovalEvent) => new ApprovalEvent(log),
+                nameof(TransferEvent) => new TransferEvent(log),
+                nameof(PairCreatedEvent) => new PairCreatedEvent(log),
                 _ => null
             };
+
+            Event?.SetAddress(Address);
+        }
+
+        public void UpdateSortOrder(int index)
+        {
+            SortOrder = index;
         }
     }
 }

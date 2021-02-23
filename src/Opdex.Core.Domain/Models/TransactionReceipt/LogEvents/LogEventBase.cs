@@ -15,15 +15,27 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
             EventType = eventType;
         }
 
-        internal LogEventBase(string evenType, long id, long transactionId)
+        internal LogEventBase(string eventType, long id, long transactionId, string address)
         {
-            EventType = evenType;
+            EventType = eventType;
             Id = id;
             TransactionId = transactionId;
+            Address = address;
         }
         
-        public string EventType { get; set; }
+        public string EventType { get; }
         public long Id { get; }
         public long TransactionId { get; }
+        public string Address { get; private set; }
+
+        public void SetAddress(string address)
+        {
+            if (Address.HasValue() || !address.HasValue())
+            {
+                throw new ArgumentException($"{nameof(Address)} is already set.", nameof(Address));
+            }
+
+            Address = address;
+        }
     }
 }

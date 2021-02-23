@@ -4,7 +4,7 @@ using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
 
 namespace Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents
 {
-    public class PersistTransactionMintEventCommand : IRequest
+    public class PersistTransactionMintEventCommand : IRequest<bool>
     {
         public PersistTransactionMintEventCommand(MintEvent mintEvent)
         {

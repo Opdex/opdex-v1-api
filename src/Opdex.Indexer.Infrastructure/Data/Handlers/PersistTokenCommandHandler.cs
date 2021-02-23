@@ -13,7 +13,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
     public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, long>
     {
         private static readonly string SqlCommand =
-            $@"Insert into token (
+            $@"INSERT INTO token (
                 {nameof(TokenEntity.Address)},
                 {nameof(TokenEntity.Name)},
                 {nameof(TokenEntity.Symbol)},

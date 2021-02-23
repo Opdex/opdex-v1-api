@@ -2,11 +2,11 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents
 {
     public class SwapEventEntity : EventEntityBase
     {
-        public string From { get; set; }
+        public string Sender { get; set; }
         public string To { get; set; }
-        public string FromToken { get; set; }
-        public string ToToken { get; set; }
-        public decimal FromAmount { get; set; }
-        public decimal ToAmount { get; set; }
+        public ulong AmountCrsIn { get; set; }
+        public string AmountSrcIn { get; set; }
+        public ulong AmountCrsOut { get; set; }
+        public string AmountSrcOut { get; set; }
     }
 }

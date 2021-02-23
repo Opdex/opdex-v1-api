@@ -45,12 +45,11 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
             }
 
             Hash = txHash;
-            BlockHash = BlockHash;
-            GasUsed = GasUsed;
-            From = From;
-            To = To;
-            Success = Success;
-            Events = logs.Select(log => new TransactionLog(log)).ToList();
+            BlockHash = blockHash;
+            GasUsed = gasUsed;
+            From = from;
+            To = to;
+            DeserializeEvents(logs);
         }
         
         public string Hash { get; private set; }
@@ -58,7 +57,6 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
         public int GasUsed { get; private set; }
         public string From { get; private set; }
         public string To { get; private set; }
-        public bool Success { get; private set; }
         public IReadOnlyCollection<TransactionLog> Events { get; private set; }
         public IReadOnlyCollection<string> PairsEngaged { get; private set; }
 
@@ -70,6 +68,30 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
             }
 
             PairsEngaged = pairsEngaged.Select(p => p).ToList();
+        }
+
+        private void DeserializeEvents(dynamic[] logs)
+        {
+            var events = new List<TransactionLog>();
+            
+            foreach (var log in logs)
+            {
+                try
+                {
+                    var transactionLog = new TransactionLog(log);
+
+                    if (transactionLog.Event != null)
+                    {
+                        events.Add(transactionLog);
+                    }
+                }
+                catch (Exception)
+                {
+                    // Intentionally throw unmatched events away
+                }
+            }
+
+            Events = events;
         }
     }
 }

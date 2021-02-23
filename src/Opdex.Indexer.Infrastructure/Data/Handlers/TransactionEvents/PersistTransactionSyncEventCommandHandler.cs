@@ -9,15 +9,19 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
 {
-    public class PersistTransactionSyncEventCommandHandler: IRequestHandler<PersistTransactionSyncEventCommand>
+    public class PersistTransactionSyncEventCommandHandler: IRequestHandler<PersistTransactionSyncEventCommand, bool>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO transaction_event_sync (
-                {nameof(SyncEventEntity.Id)},
-                {nameof(SyncEventEntity.TransactionId)}
+                {nameof(SyncEventEntity.TransactionId)},
+                {nameof(SyncEventEntity.Address)},
+                {nameof(SyncEventEntity.ReserveCrs)},
+                {nameof(SyncEventEntity.ReserveSrc)}
               ) VALUES (
-                @{nameof(SyncEventEntity.Id)},
-                @{nameof(SyncEventEntity.TransactionId)}
+                @{nameof(SyncEventEntity.TransactionId)},
+                @{nameof(SyncEventEntity.Address)},
+                @{nameof(SyncEventEntity.ReserveCrs)},
+                @{nameof(SyncEventEntity.ReserveSrc)}
               );";
         
         private readonly IDbContext _context;
@@ -29,9 +33,15 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
-        public Task<Unit> Handle(PersistTransactionSyncEventCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(PersistTransactionSyncEventCommand request, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            var syncEventEntity = _mapper.Map<TransferEventEntity>(request.SyncEvent);
+            
+            var command = DatabaseQuery.Create(SqlCommand, syncEventEntity, cancellationToken);
+            
+            var result = await _context.ExecuteScalarAsync<long>(command);
+            
+            return result > 0;
         }
     }
 }

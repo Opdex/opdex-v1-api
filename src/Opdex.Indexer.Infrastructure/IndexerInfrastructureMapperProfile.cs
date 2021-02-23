@@ -1,6 +1,8 @@
 using AutoMapper;
 using Opdex.Core.Domain.Models;
+using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
+using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure
 {
@@ -31,6 +33,74 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
                 .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time))
                 .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<Transaction, TransactionEntity>()
+                .ForMember(dest => dest.Block, opt => opt.MapFrom(src => src.Block))
+                .ForMember(dest => dest.TxHash, opt => opt.MapFrom(src => src.TxHash))
+                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
+                .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            // Transaction Events
+            
+            CreateMap<SyncEvent, SyncEventEntity>()
+                .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.ReserveCrs, opt => opt.MapFrom(src => src.ReserveCrs))
+                .ForMember(dest => dest.ReserveSrc, opt => opt.MapFrom(src => src.ReserveSrc))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<PairCreatedEvent, PairCreatedEventEntity>()
+                .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
+                .ForMember(dest => dest.Pair, opt => opt.MapFrom(src => src.Pair))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<TransferEvent, TransferEventEntity>()
+                .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<BurnEvent, BurnEventEntity>()
+                .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender))
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForMember(dest => dest.AmountCrs, opt => opt.MapFrom(src => src.AmountCrs))
+                .ForMember(dest => dest.AmountSrc, opt => opt.MapFrom(src => src.AmountSrc))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<MintEvent, MintEventEntity>()
+                .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender))
+                .ForMember(dest => dest.AmountCrs, opt => opt.MapFrom(src => src.AmountCrs))
+                .ForMember(dest => dest.AmountSrc, opt => opt.MapFrom(src => src.AmountSrc))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<SwapEvent, SwapEventEntity>()
+                .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender))
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForMember(dest => dest.AmountCrsIn, opt => opt.MapFrom(src => src.AmountCrsIn))
+                .ForMember(dest => dest.AmountSrcIn, opt => opt.MapFrom(src => src.AmountSrcIn))
+                .ForMember(dest => dest.AmountCrsOut, opt => opt.MapFrom(src => src.AmountCrsOut))
+                .ForMember(dest => dest.AmountSrcOut, opt => opt.MapFrom(src => src.AmountSrcOut))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<ApprovalEvent, ApprovalEventEntity>()
+                .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
     }

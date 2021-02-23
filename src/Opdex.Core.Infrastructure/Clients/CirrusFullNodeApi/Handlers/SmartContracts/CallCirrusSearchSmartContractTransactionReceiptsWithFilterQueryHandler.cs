@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Core.Common.Extensions;
 using Opdex.Core.Domain.Models.TransactionReceipt;
-using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 
@@ -30,21 +30,34 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartCont
 
         public async Task<List<TransactionReceipt>> Handle(CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var transactionDtos = Enumerable.Empty<TransactionReceiptDto>();
-
+            var transactionReceipts = new List<TransactionReceipt>();
+            
             try
             {
-                transactionDtos = await _smartContractsModule.ReceiptSearchAsync(
+                var transactionDtos = await _smartContractsModule.ReceiptSearchAsync(
                     request.ContractAddress, request.EventName, request.From, request.To, cancellationToken);
+
+                foreach (var txDto in transactionDtos)
+                {
+                    foreach (var log in txDto.Logs)
+                    {
+                        if (log.Topics.Any())
+                        {
+                            log.Topics[0] = log.Topics[0].HexToString();
+                        }
+                    }
+
+                    var transactionReceipt = _mapper.Map<TransactionReceipt>(txDto);
+                    
+                    transactionReceipts.Add(transactionReceipt);
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error fetching {request.EventName} event type from {request.ContractAddress}");
             }
 
-            return transactionDtos
-                .Select(tx => _mapper.Map<TransactionReceipt>(tx))
-                .ToList();
+            return transactionReceipts;
         }
     }
 }

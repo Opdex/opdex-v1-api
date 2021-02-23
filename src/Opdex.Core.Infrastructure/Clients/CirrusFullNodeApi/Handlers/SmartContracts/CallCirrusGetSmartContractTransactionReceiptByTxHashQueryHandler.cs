@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Core.Common.Extensions;
 using Opdex.Core.Domain.Models.TransactionReceipt;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
@@ -30,6 +32,14 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartCont
         public async Task<TransactionReceipt> Handle(CallCirrusGetSmartContractTransactionReceiptByTxHashQuery request, CancellationToken cancellationToken)
         {
             var transaction = await _smartContractsModule.GetReceiptAsync(request.TxHash, cancellationToken);
+
+            foreach (var log in transaction.Logs)
+            {
+                if (log.Topics.Any())
+                {
+                    log.Topics[0] = log.Topics[0].HexToString();
+                }    
+            }
             
             return _mapper.Map<TransactionReceipt>(transaction);
         }

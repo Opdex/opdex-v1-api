@@ -10,6 +10,6 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
         public string Sender { get; }
         public string To { get; }
         public ulong AmountCrs { get; }
-        public ulong AmountToken { get; }
+        public ulong AmountSrc { get; }
     }
 }
