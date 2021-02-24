@@ -7,16 +7,16 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
 {
     public class TransactionReceipt
     {
-        public TransactionReceipt(string txHash, string blockHash, int gasUsed, string from, string to, bool success, dynamic[] logs)
+        public TransactionReceipt(string txHash, ulong blockHeight, int gasUsed, string from, string to, bool success, dynamic[] logs)
         {
             if (!txHash.HasValue())
             {
                 throw new ArgumentNullException(nameof(txHash));
             }
             
-            if (!blockHash.HasValue())
+            if (blockHeight == 0)
             {
-                throw new ArgumentNullException(nameof(blockHash));
+                throw new ArgumentOutOfRangeException(nameof(blockHeight));
             }
             
             if (gasUsed == 0)
@@ -45,7 +45,7 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
             }
 
             Hash = txHash;
-            BlockHash = blockHash;
+            BlockHeight = blockHeight;
             GasUsed = gasUsed;
             From = from;
             To = to;
@@ -53,7 +53,7 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
         }
         
         public string Hash { get; private set; }
-        public string BlockHash { get; private set; }
+        public ulong BlockHeight { get; private set; }
         public int GasUsed { get; private set; }
         public string From { get; private set; }
         public string To { get; private set; }
@@ -70,6 +70,10 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
             PairsEngaged = pairsEngaged.Select(p => p).ToList();
         }
 
+        /// <summary>
+        /// Deserializes all logs as events in the transaction
+        /// </summary>
+        /// <param name="logs">dynamic list of logs to deserialize</param>
         private void DeserializeEvents(dynamic[] logs)
         {
             var events = new List<TransactionLog>();

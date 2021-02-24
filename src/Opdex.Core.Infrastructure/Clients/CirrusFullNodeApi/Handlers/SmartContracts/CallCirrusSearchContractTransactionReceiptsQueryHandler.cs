@@ -13,22 +13,22 @@ using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.S
 
 namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
 {
-    public class CallCirrusSearchSmartContractTransactionReceiptsWithFilterQueryHandler 
-        : IRequestHandler<CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery, List<TransactionReceipt>>
+    public class CallCirrusSearchContractTransactionReceiptsQueryHandler 
+        : IRequestHandler<CallCirrusSearchContractTransactionReceiptsQuery, List<TransactionReceipt>>
     {
         private readonly ISmartContractsModule _smartContractsModule;
         private readonly IMapper _mapper;
-        private readonly ILogger<CallCirrusSearchSmartContractTransactionReceiptsWithFilterQueryHandler> _logger;
+        private readonly ILogger<CallCirrusSearchContractTransactionReceiptsQueryHandler> _logger;
         
-        public CallCirrusSearchSmartContractTransactionReceiptsWithFilterQueryHandler(ISmartContractsModule smartContractsModule, 
-            IMapper mapper, ILogger<CallCirrusSearchSmartContractTransactionReceiptsWithFilterQueryHandler> logger)
+        public CallCirrusSearchContractTransactionReceiptsQueryHandler(ISmartContractsModule smartContractsModule, 
+            IMapper mapper, ILogger<CallCirrusSearchContractTransactionReceiptsQueryHandler> logger)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<List<TransactionReceipt>> Handle(CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery request, CancellationToken cancellationToken)
+        public async Task<List<TransactionReceipt>> Handle(CallCirrusSearchContractTransactionReceiptsQuery request, CancellationToken cancellationToken)
         {
             var transactionReceipts = new List<TransactionReceipt>();
             

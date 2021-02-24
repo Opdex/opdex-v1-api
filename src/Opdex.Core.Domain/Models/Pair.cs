@@ -5,13 +5,8 @@ namespace Opdex.Core.Domain.Models
 {
     public class Pair
     {
-        public Pair (long id, string address, long tokenId, decimal reserveCrs, decimal reserveToken)
+        public Pair (string address, long tokenId, decimal reserveCrs, decimal reserveToken)
         {
-            if (id < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(id), $"{nameof(id)} must be greater than 0.");
-            }
-
             if (!address.HasValue())
             {
                 throw new ArgumentNullException(nameof(address), $"{nameof(address)} must be provided");
@@ -32,7 +27,6 @@ namespace Opdex.Core.Domain.Models
                 throw new ArgumentOutOfRangeException(nameof(reserveToken), $"{nameof(reserveToken)} must be equal or greater than 0.");
             }
             
-            Id = id;
             Address = address;
             TokenId = tokenId;
             ReserveCrs = reserveCrs;

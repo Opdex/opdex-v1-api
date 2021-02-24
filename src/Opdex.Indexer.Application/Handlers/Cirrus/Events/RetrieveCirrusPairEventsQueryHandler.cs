@@ -29,7 +29,7 @@ namespace Opdex.Indexer.Application.Handlers.Cirrus.Events
         
         public async Task<IEnumerable<PairCreatedEvent>> Handle(RetrieveCirrusPairEventsQuery request, CancellationToken cancellationToken)
         {
-            var query = new CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery(
+            var query = new CallCirrusSearchContractTransactionReceiptsQuery(
                 _opdexConfiguration.ControllerContract, nameof(PairCreatedEvent), request.FromBlock, request.ToBlock);
             
             var transactionReceipts = await _mediator.Send(query, cancellationToken);

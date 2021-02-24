@@ -9,7 +9,7 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers
 {
-    public class PersistTransactionCommandHandler : IRequestHandler<PersistTransactionCommand, bool>
+    public class PersistTransactionCommandHandler : IRequestHandler<PersistTransactionCommand, long>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO transaction (
@@ -24,7 +24,8 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
                 @{nameof(TransactionEntity.TxHash)},
                 @{nameof(TransactionEntity.GasUsed)},
                 @{nameof(TransactionEntity.Block)}
-              );";
+              );
+              SELECT last_insert_rowid();";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -35,7 +36,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<bool> Handle(PersistTransactionCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(PersistTransactionCommand request, CancellationToken cancellationToken)
         {
             var transactionEntity = _mapper.Map<TransactionEntity>(request.Transaction);
             
@@ -43,7 +44,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             
             var result = await _context.ExecuteScalarAsync<long>(command);
 
-            return result > 0;
+            return result;
         }
     }
 }

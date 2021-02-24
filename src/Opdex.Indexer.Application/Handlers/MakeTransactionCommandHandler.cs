@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
 using Opdex.Indexer.Application.Abstractions.Commands;
+using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
 namespace Opdex.Indexer.Application.Handlers
 {
@@ -18,9 +19,11 @@ namespace Opdex.Indexer.Application.Handlers
         public async Task<bool> Handle(MakeTransactionCommand request, CancellationToken cancellationToken)
         {
             // Insert transaction
+            var transactionId = await _mediator.Send(new PersistTransactionCommand(request.Transaction));
             
             foreach (var logEvent in request.Transaction.Events)
             {
+                logEvent.Event.SetTransactionId(transactionId);
                 await MakeTransactionEvent(logEvent.Event);
             }
 

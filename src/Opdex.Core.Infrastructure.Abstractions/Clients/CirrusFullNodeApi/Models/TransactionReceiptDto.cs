@@ -1,3 +1,6 @@
+using System.Linq;
+using Opdex.Core.Common.Extensions;
+
 namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     public class TransactionReceiptDto
@@ -13,6 +16,27 @@ namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
         public string ReturnValue { get; set; }
         public string Bloom { get; set; }
         public string Error { get; set; }
+        
+        public ulong BlockHeight { get; private set; }
         public TransactionLogDto[] Logs { get; set; }
+
+        public void DeserializeLogsEventType()
+        {
+            foreach (var log in Logs)
+            {
+                if (log.Topics.Any())
+                {
+                    log.Topics[0] = log.Topics[0].HexToString();
+                }    
+            }
+        }
+
+        public void SetBlockHeight(ulong height)
+        {
+            if (height > 1)
+            {
+                BlockHeight = height;
+            }
+        }
     }
 }

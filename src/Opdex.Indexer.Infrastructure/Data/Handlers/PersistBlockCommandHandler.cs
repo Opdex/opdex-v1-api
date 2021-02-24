@@ -39,7 +39,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             
             var command = DatabaseQuery.Create(SqlCommand, blockEntity, cancellationToken);
             
-            var result = await _context.ExecuteScalarAsync<long>(command);
+            var result = await _context.ExecuteCommandAsync(command);
             
             return result > 0;
         }

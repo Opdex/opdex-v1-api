@@ -21,7 +21,7 @@ namespace Opdex.Indexer.Application.Handlers.Cirrus
         {
             try
             {
-                var query = new CallCirrusGetSmartContractTransactionReceiptByTxHashQuery(request.TxHash);
+                var query = new CallCirrusGetTransactionReceiptByHashQuery(request.TxHash);
                 var txReceipt = await _mediator.Send(query, cancellationToken);
 
                 return txReceipt;

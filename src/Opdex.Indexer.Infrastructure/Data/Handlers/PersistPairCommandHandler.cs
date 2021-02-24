@@ -9,7 +9,7 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers
 {
-    public class PersistPairCommandHandler : IRequestHandler<PersistPairCommand, bool>
+    public class PersistPairCommandHandler : IRequestHandler<PersistPairCommand, long>
     {
         // Todo: Insert vs update
         private static readonly string SqlCommand =
@@ -23,7 +23,8 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
                 @{nameof(PairEntity.TokenId)},
                 @{nameof(PairEntity.ReserveToken)},
                 @{nameof(PairEntity.ReserveCrs)}
-              );";
+              );
+              SELECT last_insert_rowid();";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -34,7 +35,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<bool> Handle(PersistPairCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(PersistPairCommand request, CancellationToken cancellationToken)
         {
             var pairEntity = _mapper.Map<PairEntity>(request.Pair);
             
@@ -42,7 +43,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             
             var result = await _context.ExecuteScalarAsync<long>(command);
 
-            return result > 0;
+            return result;
         }
     }
 }

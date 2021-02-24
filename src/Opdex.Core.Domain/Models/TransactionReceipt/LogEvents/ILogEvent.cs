@@ -6,5 +6,7 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
         public string Address { get; }
 
         public void SetAddress(string address);
+
+        public void SetTransactionId(long id);
     }
 }

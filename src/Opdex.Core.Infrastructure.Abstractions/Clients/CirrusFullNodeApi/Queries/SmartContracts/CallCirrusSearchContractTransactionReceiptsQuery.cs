@@ -7,9 +7,9 @@ using Opdex.Core.Domain.Models.TransactionReceipt;
 namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts
 {
     // Todo: This is Cirrus' Dto, response type will change to a domain model
-    public class CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery : IRequest<List<TransactionReceipt>>
+    public class CallCirrusSearchContractTransactionReceiptsQuery : IRequest<List<TransactionReceipt>>
     {
-        public CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery(string contractAddress, string eventName, ulong from, ulong? to = null)
+        public CallCirrusSearchContractTransactionReceiptsQuery(string contractAddress, string eventName, ulong from, ulong? to = null)
         {
             ContractAddress = contractAddress.HasValue() ? contractAddress : throw new ArgumentNullException(nameof(contractAddress));
             From = from > 0 ? from : throw new ArgumentOutOfRangeException(nameof(from), "From block must be greater than 0.");

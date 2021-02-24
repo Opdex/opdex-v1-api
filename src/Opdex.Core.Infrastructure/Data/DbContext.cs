@@ -34,7 +34,8 @@ namespace Opdex.Core.Infrastructure.Data
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failure");
+                const string error = "Failure to execute query.";
+                _logger.LogError(ex, error);
                 throw;
             }
         }
@@ -49,7 +50,8 @@ namespace Opdex.Core.Infrastructure.Data
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failure");
+                 const string error = "Failure to execute find.";
+                _logger.LogError(ex, error);
                 throw;
             }
         }
@@ -64,7 +66,8 @@ namespace Opdex.Core.Infrastructure.Data
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failure");
+                 const string error = "Failure to execute scalar.";
+                _logger.LogError(ex, error);
                 throw;
             }
         }
@@ -79,7 +82,8 @@ namespace Opdex.Core.Infrastructure.Data
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failure");
+                 const string error = "Failure to execute command.";
+                _logger.LogError(ex, error);
                 throw;
             }
         }

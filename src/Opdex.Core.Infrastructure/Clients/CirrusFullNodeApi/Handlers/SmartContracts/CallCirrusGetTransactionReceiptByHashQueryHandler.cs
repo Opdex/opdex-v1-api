@@ -12,34 +12,32 @@ using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.S
 
 namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
 {
-    public class CallCirrusGetSmartContractTransactionReceiptByTxHashQueryHandler 
-        : IRequestHandler<CallCirrusGetSmartContractTransactionReceiptByTxHashQuery, TransactionReceipt>
+    public class CallCirrusGetTransactionReceiptByHashQueryHandler 
+        : IRequestHandler<CallCirrusGetTransactionReceiptByHashQuery, TransactionReceipt>
     {
         private readonly ISmartContractsModule _smartContractsModule;
+        private readonly IBlockStoreModule _blockStoreModule;
         private readonly IMapper _mapper;
-        private readonly ILogger<CallCirrusGetSmartContractTransactionReceiptByTxHashQueryHandler> _logger;
+        private readonly ILogger<CallCirrusGetTransactionReceiptByHashQueryHandler> _logger;
         
-        public CallCirrusGetSmartContractTransactionReceiptByTxHashQueryHandler(ISmartContractsModule smartContractsModule, 
-            IMapper mapper,
-            ILogger<CallCirrusGetSmartContractTransactionReceiptByTxHashQueryHandler> logger)
+        public CallCirrusGetTransactionReceiptByHashQueryHandler(ISmartContractsModule smartContractsModule, 
+            IBlockStoreModule blockStoreModule, IMapper mapper,
+            ILogger<CallCirrusGetTransactionReceiptByHashQueryHandler> logger)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+            _blockStoreModule = blockStoreModule ?? throw new ArgumentNullException(nameof(blockStoreModule));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         // Todo: try catch requests
-        public async Task<TransactionReceipt> Handle(CallCirrusGetSmartContractTransactionReceiptByTxHashQuery request, CancellationToken cancellationToken)
+        public async Task<TransactionReceipt> Handle(CallCirrusGetTransactionReceiptByHashQuery request, CancellationToken cancellationToken)
         {
             var transaction = await _smartContractsModule.GetReceiptAsync(request.TxHash, cancellationToken);
+            var block = await _blockStoreModule.GetBlockAsync(transaction.BlockHash, cancellationToken);
 
-            foreach (var log in transaction.Logs)
-            {
-                if (log.Topics.Any())
-                {
-                    log.Topics[0] = log.Topics[0].HexToString();
-                }    
-            }
+            transaction.DeserializeLogsEventType();
+            transaction.SetBlockHeight(block.Height);
             
             return _mapper.Map<TransactionReceipt>(transaction);
         }

@@ -19,7 +19,7 @@ namespace Opdex.Indexer.Application.Handlers
         
         public async Task<long> Handle(MakeTokenCommand request, CancellationToken cancellationToken)
         {
-            var token = await _mediator.Send(new CallCirrusGetSmartContractTokenDetailsByAddressQuery(request.Address), cancellationToken);
+            var token = await _mediator.Send(new CallCirrusGetSrcTokenDetailsByAddressQuery(request.Address), cancellationToken);
             
             return await _mediator.Send(new PersistTokenCommand(token), cancellationToken);
         }

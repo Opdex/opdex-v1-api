@@ -1,5 +1,7 @@
+using System;
 using AutoMapper;
 using Opdex.Core.Domain.Models;
+using Opdex.Core.Domain.Models.TransactionReceipt;
 using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents;
@@ -31,13 +33,13 @@ namespace Opdex.Indexer.Infrastructure
             CreateMap<Block, BlockEntity>()
                 .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
-                .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time))
-                .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
+                .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time.ToBinary()))
+                .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime.ToBinary()))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<Transaction, TransactionEntity>()
-                .ForMember(dest => dest.Block, opt => opt.MapFrom(src => src.Block))
-                .ForMember(dest => dest.TxHash, opt => opt.MapFrom(src => src.TxHash))
+            CreateMap<TransactionReceipt, TransactionEntity>()
+                .ForMember(dest => dest.Block, opt => opt.MapFrom(src => src.BlockHeight))
+                .ForMember(dest => dest.TxHash, opt => opt.MapFrom(src => src.Hash))
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
                 .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))

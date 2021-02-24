@@ -38,6 +38,13 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
         /// </summary>
         public string Address { get; private set; }
         
+        /// <summary>
+        /// Transaction topics including the logged type and indexed properties.
+        /// </summary>
+        /// <remarks>
+        /// - Topics[0] will be the deserialized log event name (e.g. OpdexSyncEvent)
+        /// - The remaining Topics are serialized, indexed property values
+        /// </remarks>
         public string[] Topics { get; private set; }
         
         /// <summary>
@@ -45,8 +52,15 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
         /// </summary>
         public ILogEvent Event { get; private set; }
         
+        /// <summary>
+        /// The sort order of the event in the transaction
+        /// </summary>
         public int SortOrder { get; private set; }
         
+        /// <summary>
+        /// Deserializes the log, sets the event depending on type
+        /// </summary>
+        /// <param name="log"></param>
         private void DeserializeLog(dynamic log)
         {
             var eventType = Topics[0];

@@ -1,16 +1,16 @@
 using System;
-using System.Transactions;
 using MediatR;
+using Opdex.Core.Domain.Models.TransactionReceipt;
 
 namespace Opdex.Indexer.Infrastructure.Abstractions.Data.Commands
 {
-    public class PersistTransactionCommand : IRequest<bool>
+    public class PersistTransactionCommand : IRequest<long>
     {
-        public PersistTransactionCommand(Transaction transaction)
+        public PersistTransactionCommand(TransactionReceipt transaction)
         {
             Transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
         }
         
-        public Transaction Transaction { get; }
+        public TransactionReceipt Transaction { get; }
     }
 }

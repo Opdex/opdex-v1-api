@@ -24,7 +24,7 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
         }
         
         public string EventType { get; }
-        public long Id { get; }
+        public long Id { get; private set; }
         public long TransactionId { get; }
         public string Address { get; private set; }
 
@@ -36,6 +36,14 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
             }
 
             Address = address;
+        }
+
+        public void SetTransactionId(long id)
+        {
+            if (Id == 0 && id > 0)
+            {
+                Id = id;
+            }
         }
     }
 }

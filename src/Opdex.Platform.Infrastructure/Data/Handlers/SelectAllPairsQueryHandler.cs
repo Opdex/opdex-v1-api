@@ -18,8 +18,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers
         {
             var list = new List<Pair> 
             {
-                new Pair(1, "stbdf8n5gxase9ngss0gfaitrexm3j8l234", 1, 8924.23413m, 10842.584923m),
-                new Pair(2, "sgfaitrexm3j8l234stbdf8n5gxase9ngs0", 2, 8924.23413m, 10842.584923m)
+                new Pair("stbdf8n5gxase9ngss0gfaitrexm3j8l234", 1, 8924.23413m, 10842.584923m),
+                new Pair("sgfaitrexm3j8l234stbdf8n5gxase9ngs0", 2, 8924.23413m, 10842.584923m)
             };
 
             return Task.FromResult<IEnumerable<Pair>>(list);

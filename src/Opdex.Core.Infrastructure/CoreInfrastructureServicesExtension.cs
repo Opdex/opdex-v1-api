@@ -8,11 +8,13 @@ using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.BlockStore;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts;
+using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Core.Infrastructure.Data;
 using Opdex.Core.Infrastructure.Data.Handlers;
@@ -61,8 +63,9 @@ namespace Opdex.Core.Infrastructure
             // Queries and Handlers
             services.AddTransient<IRequestHandler<CallCirrusGetCurrentBlockQuery, BlockReceiptDto>, CallCirrusGetCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetBlockByHashQuery, BlockReceiptDto>, CallCirrusGetBlockByHashQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetSmartContractTransactionReceiptByTxHashQuery, TransactionReceipt>, CallCirrusGetSmartContractTransactionReceiptByTxHashQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusSearchSmartContractTransactionReceiptsWithFilterQuery, List<TransactionReceipt>>, CallCirrusSearchSmartContractTransactionReceiptsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetTransactionReceiptByHashQuery, TransactionReceipt>, CallCirrusGetTransactionReceiptByHashQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusSearchContractTransactionReceiptsQuery, List<TransactionReceipt>>, CallCirrusSearchContractTransactionReceiptsQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenDetailsByAddressQuery, Token>, CallCirrusGetSrcTokenDetailsByAddressQueryHandler>();
 
             #endregion
         }

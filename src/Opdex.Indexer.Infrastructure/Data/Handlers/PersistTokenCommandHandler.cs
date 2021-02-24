@@ -51,7 +51,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failure persisting token {request.Token.Address}");
+                _logger.LogError(ex, $"Failure persisting token {request?.Token?.Address}");
                 return 0;
             }
         }

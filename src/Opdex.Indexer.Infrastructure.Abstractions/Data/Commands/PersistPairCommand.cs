@@ -4,7 +4,7 @@ using Opdex.Core.Domain.Models;
 
 namespace Opdex.Indexer.Infrastructure.Abstractions.Data.Commands
 {
-    public class PersistPairCommand : IRequest<bool>
+    public class PersistPairCommand : IRequest<long>
     {
         public PersistPairCommand(Pair pair)
         {

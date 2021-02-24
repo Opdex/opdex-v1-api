@@ -12,7 +12,7 @@ namespace Opdex.Core.Domain.Tests.Models.TransactionReceiptTests
         public void CreateTransactionReceipt_Success()
         {
             const string txHash = "TxHash";
-            const string blockHash = "BlockHash";
+            const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;
             const string from = "From";
             const string to = "To";
@@ -29,10 +29,10 @@ namespace Opdex.Core.Domain.Tests.Models.TransactionReceiptTests
 
             logs.Add(syncEvent);
 
-            var receipt = new TransactionReceipt(txHash, blockHash, gasUsed, from, to, success, logs.ToArray());
+            var receipt = new TransactionReceipt(txHash, blockHeight, gasUsed, from, to, success, logs.ToArray());
 
             receipt.Hash.Should().Be(txHash);
-            receipt.BlockHash.Should().Be(blockHash);
+            receipt.BlockHeight.Should().Be(blockHeight);
             receipt.GasUsed.Should().Be(gasUsed);
             receipt.From.Should().Be(from);
             receipt.To.Should().Be(to);
