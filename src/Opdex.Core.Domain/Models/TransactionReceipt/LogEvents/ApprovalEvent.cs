@@ -7,9 +7,9 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
     {
         public ApprovalEvent(dynamic log) : base(nameof(ApprovalEvent))
         {
-            string owner = log?.owner;
-            string spender = log?.spender;
-            ulong amount = log?.amount;
+            string owner = log?.Owner;
+            string spender = log?.Spender;
+            string amount = log?.Amount;
             
             if (!owner.HasValue())
             {
@@ -20,6 +20,11 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
             {
                 throw new ArgumentNullException(nameof(spender));
             }
+            
+            if (!amount.HasValue())
+            {
+                throw new ArgumentNullException(nameof(amount));
+            }
 
             Owner = owner;
             Spender = spender;
@@ -28,6 +33,6 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
         
         public string Owner { get; }
         public string Spender { get; }
-        public ulong Amount { get; }
+        public string Amount { get; }
     }
 }

@@ -106,8 +106,8 @@ namespace Opdex.Indexer.Application
 
             foreach (var pairEvent in pairEvents)
             {
-                await _mediator.Send(new MakeTokenCommand(pairEvent.Token), cancellationToken);
-                await _mediator.Send(new MakePairCommand(pairEvent.Pair), cancellationToken);
+                var tokenId = await _mediator.Send(new MakeTokenCommand(pairEvent.Token), cancellationToken);
+                await _mediator.Send(new MakePairCommand(pairEvent.Pair, tokenId), cancellationToken);
             }
             
             var allPairs = await _mediator.Send(new RetrieveAllPairsWithFilterQuery(), cancellationToken);

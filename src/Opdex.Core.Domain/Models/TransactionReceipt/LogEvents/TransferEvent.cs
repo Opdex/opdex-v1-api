@@ -7,9 +7,9 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
     {
         public TransferEvent(dynamic log) : base(nameof(TransferEvent))
         {
-            string from = log?.from;
-            string to = log?.to;
-            ulong amount = log?.amount;
+            string from = log?.From;
+            string to = log?.To;
+            string amount = log?.Amount;
 
             if (!from.HasValue())
             {
@@ -21,9 +21,9 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
                 throw new ArgumentNullException(nameof(to));
             }
 
-            if (amount < 1)
+            if (!amount.HasValue())
             {
-                throw new ArgumentOutOfRangeException(nameof(amount));
+                throw new ArgumentNullException(nameof(amount));
             }
 
             From = from;
@@ -33,6 +33,6 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
         
         public string From { get; }
         public string To { get; }
-        public ulong Amount { get; }
+        public string Amount { get; }
     }
 }

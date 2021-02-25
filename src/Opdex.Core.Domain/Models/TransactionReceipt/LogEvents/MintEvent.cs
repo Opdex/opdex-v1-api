@@ -7,9 +7,9 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
     {
         public MintEvent(dynamic log) : base(nameof(MintEvent))
         {
-            string sender = log?.sender;
-            ulong amountCrs = log?.amountCrs;
-            ulong amountSrc = log?.amountSrc;
+            string sender = log?.Sender;
+            ulong amountCrs = log?.AmountCrs;
+            string amountSrc = log?.AmountSrc;
 
             if (!sender.HasValue())
             {
@@ -21,9 +21,9 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
                 throw new ArgumentOutOfRangeException(nameof(amountCrs));
             }
             
-            if (amountSrc < 1)
+            if (!amountSrc.HasValue())
             {
-                throw new ArgumentOutOfRangeException(nameof(amountCrs));
+                throw new ArgumentNullException(nameof(amountCrs));
             }
 
             Sender = sender;
@@ -33,6 +33,6 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
         
         public string Sender { get; }
         public ulong AmountCrs { get; }
-        public ulong AmountSrc { get; }
+        public string AmountSrc { get; }
     }
 }

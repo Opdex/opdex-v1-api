@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Core.Domain.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data;
@@ -18,15 +19,17 @@ namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers
         
         public PersistPairCommandHandlerTests()
         {
-            _dbContext = new Mock<IDbContext>();
             var mapper = new MapperConfiguration(config => config.AddProfile(new IndexerInfrastructureMapperProfile())).CreateMapper();
-            _handler = new PersistPairCommandHandler(_dbContext.Object, mapper);
+            var logger = new NullLogger<PersistPairCommandHandler>();
+            
+            _dbContext = new Mock<IDbContext>();
+            _handler = new PersistPairCommandHandler(_dbContext.Object, mapper, logger);
         }
 
         [Fact]
         public async Task PersistsPair_Success()
         {
-            var pair = new Pair("PairAddress", 1, 1m, 1m);
+            var pair = new Pair("PairAddress", 1, 1, "1");
             var command = new PersistPairCommand(pair);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -40,7 +43,7 @@ namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers
         [Fact]
         public async Task PersistsPair_Fail()
         {
-            var pair = new Pair("PairAddress", 1, 1m, 1m);
+            var pair = new Pair("PairAddress", 1, 1, "1");
             var command = new PersistPairCommand(pair);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

@@ -11,8 +11,8 @@ namespace Opdex.Core.Domain.Tests.Models
         {
             const string address = "Address";
             const long tokenId = 2;
-            const decimal reserveCrs = 1.23m;
-            const decimal reserveSrc = 124m;
+            const ulong reserveCrs = 112;
+            const string reserveSrc = "1234";
 
             var pair = new Pair(address, tokenId, reserveCrs, reserveSrc);
 

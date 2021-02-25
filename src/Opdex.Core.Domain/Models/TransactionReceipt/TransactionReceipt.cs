@@ -52,14 +52,19 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt
             DeserializeEvents(logs);
         }
         
-        public string Hash { get; private set; }
-        public ulong BlockHeight { get; private set; }
-        public int GasUsed { get; private set; }
-        public string From { get; private set; }
-        public string To { get; private set; }
+        public string Hash { get; }
+        public ulong BlockHeight { get; }
+        public int GasUsed { get; }
+        public string From { get; }
+        public string To { get; }
         public IReadOnlyCollection<TransactionLog> Events { get; private set; }
         public IReadOnlyCollection<string> PairsEngaged { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pairsEngaged"></param>
+        /// <exception cref="Exception"></exception>
         public void SetPairsEngaged(List<string> pairsEngaged)
         {
             if (!pairsEngaged.All(p => Events.Any(e => e.Address == p)))

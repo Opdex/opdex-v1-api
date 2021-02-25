@@ -32,12 +32,13 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger<PersistTokenCommandHandler> _logger;
-
-        public PersistTokenCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistTokenCommandHandler> logger)
+        private readonly ILogger _logger;
+        
+        public PersistTokenCommandHandler(IDbContext context, IMapper mapper, 
+            ILogger<PersistTokenCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 

@@ -7,8 +7,8 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
     {
         public PairCreatedEvent(dynamic log) : base(nameof(PairCreatedEvent))
         {
-            string token = log?.token;
-            string pair = log?.pair;
+            string token = log?.Token;
+            string pair = log?.Pair;
             
             if (!token.HasValue())
             {

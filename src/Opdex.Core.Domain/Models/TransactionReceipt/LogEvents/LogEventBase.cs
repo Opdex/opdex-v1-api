@@ -23,8 +23,8 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
             Address = address;
         }
         
-        public string EventType { get; }
         public long Id { get; private set; }
+        public string EventType { get; }
         public long TransactionId { get; }
         public string Address { get; private set; }
 

@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Core.Domain.Models.TransactionReceipt;
 using Opdex.Core.Infrastructure.Abstractions.Data;
@@ -18,9 +19,11 @@ namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers
         
         public PersistTransactionCommandHandlerTests()
         {
-            _dbContext = new Mock<IDbContext>();
             var mapper = new MapperConfiguration(config => config.AddProfile(new IndexerInfrastructureMapperProfile())).CreateMapper();
-            _handler = new PersistTransactionCommandHandler(_dbContext.Object, mapper);
+            var logger = new NullLogger<PersistTransactionCommandHandler>();
+            
+            _dbContext = new Mock<IDbContext>();
+            _handler = new PersistTransactionCommandHandler(_dbContext.Object, mapper, logger);
         }
 
         [Fact]

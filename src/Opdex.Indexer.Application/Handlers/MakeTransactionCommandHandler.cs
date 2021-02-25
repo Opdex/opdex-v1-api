@@ -5,6 +5,7 @@ using MediatR;
 using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
 using Opdex.Indexer.Application.Abstractions.Commands;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
+using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 
 namespace Opdex.Indexer.Application.Handlers
 {
@@ -18,8 +19,13 @@ namespace Opdex.Indexer.Application.Handlers
         
         public async Task<bool> Handle(MakeTransactionCommand request, CancellationToken cancellationToken)
         {
-            // Insert transaction
             var transactionId = await _mediator.Send(new PersistTransactionCommand(request.Transaction));
+
+            if (transactionId < 1)
+            {
+                // Fail or Get transaction? Should that method throw?
+                // Would mean the transaction failed to insert, or already exists and was ignored
+            }
             
             foreach (var logEvent in request.Transaction.Events)
             {
@@ -29,46 +35,33 @@ namespace Opdex.Indexer.Application.Handlers
 
             return true;
         }
-        
-        /// <summary>
-        /// Placeholder method for different event types to persist.
-        /// </summary>
-        /// <param name="logEvent">ILogEvent opdex smart contract logged event</param>
-        /// <returns></returns>
-        private Task MakeTransactionEvent(ILogEvent logEvent)
-        {
-            // calculate transaction fees
-            // index events
-            if (logEvent is SyncEvent syncEvent)
-            {
-                // make sync event command
-            }
-            else if (logEvent is MintEvent mintEvent)
-            {
-                // make mint event command
-            }
-            else if (logEvent is BurnEvent burnEvent)
-            {
-                // make burn event command
-            }
-            else if (logEvent is SwapEvent swapEvent)
-            {
-                // make swap event command
-            }
-            else if (logEvent is ApprovalEvent approvalEvent)
-            {
-                // make approval event command
-            }
-            else if (logEvent is TransferEvent transferEvent)
-            {
-                // make transfer event command
-            }
-            else if (logEvent is PairCreatedEvent pairCreatedEvent)
-            {
-                // make pair created event command
-            }
 
-            return Task.CompletedTask;
+        private async Task MakeTransactionEvent(ILogEvent logEvent)
+        {
+            switch (logEvent)
+            {
+                case SyncEvent syncEvent:
+                    await _mediator.Send(new PersistTransactionSyncEventCommand(syncEvent));
+                    break;
+                case MintEvent mintEvent:
+                    await _mediator.Send(new PersistTransactionMintEventCommand(mintEvent));
+                    break;
+                case BurnEvent burnEvent:
+                    await _mediator.Send(new PersistTransactionBurnEventCommand(burnEvent));
+                    break;
+                case SwapEvent swapEvent:
+                    await _mediator.Send(new PersistTransactionSwapEventCommand(swapEvent));
+                    break;
+                case ApprovalEvent approvalEvent:
+                    await _mediator.Send(new PersistTransactionApprovalEventCommand(approvalEvent));
+                    break;
+                case TransferEvent transferEvent:
+                    await _mediator.Send(new PersistTransactionTransferEventCommand(transferEvent));
+                    break;
+                case PairCreatedEvent pairCreatedEvent:
+                    await _mediator.Send(new PersistTransactionPairCreatedEventCommand(pairCreatedEvent));
+                    break;
+            }
         }
     }
 }

@@ -19,9 +19,11 @@ namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers
         
         public PersistTokenCommandHandlerTests()
         {
-            _dbContext = new Mock<IDbContext>();
             var mapper = new MapperConfiguration(config => config.AddProfile(new IndexerInfrastructureMapperProfile())).CreateMapper();
-            _handler = new PersistTokenCommandHandler(_dbContext.Object, mapper, new NullLogger<PersistTokenCommandHandler>());
+            var logger = new NullLogger<PersistTokenCommandHandler>();
+            
+            _dbContext = new Mock<IDbContext>();
+            _handler = new PersistTokenCommandHandler(_dbContext.Object, mapper, logger);
         }
 
         [Fact]

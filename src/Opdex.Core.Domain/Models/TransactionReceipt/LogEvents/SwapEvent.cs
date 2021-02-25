@@ -7,12 +7,12 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
     {
         public SwapEvent(dynamic log) : base(nameof(SwapEvent))
         {
-            string sender = log?.sender;
-            string to = log?.to;
-            ulong amountCrsIn = log?.amountCrsIn;
-            ulong amountCrsOut = log?.amountCrsOut;
-            ulong amountSrcIn = log?.amountSrcIn;
-            ulong amountSrcOut = log?.amoungTokenOut;
+            string sender = log?.Sender;
+            string to = log?.To;
+            ulong amountCrsIn = log?.AmountCrsIn;
+            ulong amountCrsOut = log?.AmountCrsOut;
+            string amountSrcIn = log?.AmountSrcIn;
+            string amountSrcOut = log?.AmountSrcOut;
 
             if (!sender.HasValue())
             {
@@ -29,7 +29,7 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
                 throw new Exception($"{nameof(amountCrsIn)} or {nameof(amountCrsOut)} must be greater than 0.");
             }
             
-            if (amountSrcIn < 1 && amountSrcOut < 1)
+            if (!amountSrcIn.HasValue() && !amountSrcOut.HasValue())
             {
                 throw new Exception($"{nameof(amountSrcIn)} or {nameof(amountSrcOut)} must be greater than 0.");
             }
@@ -45,8 +45,8 @@ namespace Opdex.Core.Domain.Models.TransactionReceipt.LogEvents
         public string Sender { get; }
         public string To { get; }
         public ulong AmountCrsIn { get; }
-        public ulong AmountSrcIn { get; }
+        public string AmountSrcIn { get; }
         public ulong AmountCrsOut { get; }
-        public ulong AmountSrcOut { get; }
+        public string AmountSrcOut { get; }
     }
 }

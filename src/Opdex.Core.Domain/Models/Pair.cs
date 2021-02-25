@@ -5,7 +5,7 @@ namespace Opdex.Core.Domain.Models
 {
     public class Pair
     {
-        public Pair (string address, long tokenId, decimal reserveCrs, decimal reserveToken)
+        public Pair (string address, long tokenId, ulong reserveCrs, string reserveSrc)
         {
             if (!address.HasValue())
             {
@@ -17,26 +17,26 @@ namespace Opdex.Core.Domain.Models
                 throw new ArgumentOutOfRangeException(nameof(tokenId), $"{nameof(tokenId)} must be greater than 0.");
             }
             
-            if (reserveCrs < 0)
+            if (reserveCrs < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(reserveCrs), $"{nameof(reserveCrs)} must be equal or greater than 0.");
             }
             
-            if (reserveToken < 0)
+            if (!reserveSrc.HasValue())
             {
-                throw new ArgumentOutOfRangeException(nameof(reserveToken), $"{nameof(reserveToken)} must be equal or greater than 0.");
+                throw new ArgumentNullException(nameof(reserveSrc));
             }
             
             Address = address;
             TokenId = tokenId;
             ReserveCrs = reserveCrs;
-            ReserveToken = reserveToken;
+            ReserveToken = reserveSrc;
         }
         
         public long Id { get; }
         public string Address { get; }
         public long TokenId { get; }
-        public decimal ReserveCrs { get; }
-        public decimal ReserveToken { get; }
+        public ulong ReserveCrs { get; }
+        public string ReserveToken { get; }
     }
 }

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Core.Domain.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data;
@@ -19,9 +20,11 @@ namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers
         
         public PersistBlockCommandHandlerTests()
         {
-            _dbContext = new Mock<IDbContext>();
             var mapper = new MapperConfiguration(config => config.AddProfile(new IndexerInfrastructureMapperProfile())).CreateMapper();
-            _handler = new PersistBlockCommandHandler(_dbContext.Object, mapper);
+            var logger = new NullLogger<PersistBlockCommandHandler>();
+            
+            _dbContext = new Mock<IDbContext>();
+            _handler = new PersistBlockCommandHandler(_dbContext.Object, mapper, logger);
         }
 
         [Fact]
