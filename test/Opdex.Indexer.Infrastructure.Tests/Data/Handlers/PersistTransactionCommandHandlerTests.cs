@@ -4,7 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Core.Domain.Models.TransactionReceipt;
+using Opdex.Core.Domain.Models.Transaction;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 using Opdex.Indexer.Infrastructure.Data.Handlers;
@@ -29,7 +29,7 @@ namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers
         [Fact]
         public async Task PersistsTransaction_Success()
         {
-            var transaction = new TransactionReceipt("txHash", ulong.MaxValue, 1, "from", "to", true, new dynamic[] { new object() });
+            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to");
             var command = new PersistTransactionCommand(transaction);
         
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -43,7 +43,7 @@ namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers
         [Fact]
         public async Task PersistsTransaction_Fail()
         {
-            var transaction = new TransactionReceipt("txHash", ulong.MaxValue, 1, "from", "to", true, new dynamic[] { new object() });
+            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to");
             var command = new PersistTransactionCommand(transaction);
         
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

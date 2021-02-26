@@ -18,13 +18,15 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
                 {nameof(TransferEventEntity.Address)},
                 {nameof(TransferEventEntity.From)},
                 {nameof(TransferEventEntity.To)},
-                {nameof(TransferEventEntity.Amount)}
+                {nameof(TransferEventEntity.Amount)},
+                {nameof(TransferEventEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(TransferEventEntity.TransactionId)},
                 @{nameof(TransferEventEntity.Address)},
                 @{nameof(TransferEventEntity.From)},
                 @{nameof(TransferEventEntity.To)},
-                @{nameof(TransferEventEntity.Amount)}
+                @{nameof(TransferEventEntity.Amount)},
+                UTC_TIMESTAMP()
               );";
         
         private readonly IDbContext _context;

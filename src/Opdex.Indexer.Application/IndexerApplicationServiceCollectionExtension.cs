@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Opdex.Core.Domain.Models.TransactionReceipt;
-using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
+using Opdex.Core.Domain.Models.Transaction;
+using Opdex.Core.Domain.Models.Transaction.TransactionEvents;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Indexer.Application.Abstractions.Commands;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
@@ -20,7 +20,7 @@ namespace Opdex.Indexer.Application
             // Queries
             services.AddTransient<IRequestHandler<RetrieveCirrusCurrentBlockQuery, BlockReceiptDto>, RetrieveCirrusCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusBlockByHashQuery, BlockReceiptDto>, RetrieveCirrusBlockByHashQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveCirrusTransactionByHashQuery, TransactionReceipt>, RetrieveCirrusTransactionByHashQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveCirrusTransactionByHashQuery, Transaction>, RetrieveCirrusTransactionByHashQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusPairEventsQuery, IEnumerable<PairCreatedEvent>>, RetrieveCirrusPairEventsQueryHandler>();
             
             // Commands

@@ -5,8 +5,8 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Core.Domain.Models.TransactionReceipt;
-using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
+using Opdex.Core.Domain.Models.Transaction;
+using Opdex.Core.Domain.Models.Transaction.TransactionEvents;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 using Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents;
@@ -31,17 +31,16 @@ namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers.TransactionEvents
         [Fact]
         public async Task PersistsApprovalEvent_Success()
         {
-            dynamic transactionLogObject = new ExpandoObject();
-            transactionLogObject.Address = "SomeAddress";
-            transactionLogObject.Topics = new [] {"ApprovalEvent"};
+            const string address = "SomeAddress";
+            const int sortOrder = 0;
+            
             dynamic txLogEvent = new ExpandoObject();
             txLogEvent.Owner = "Owner";
             txLogEvent.Spender = "Spender";
             txLogEvent.Amount = "Amount";
-            transactionLogObject.Log = txLogEvent;
 
-            var transactionLog = new TransactionLog(transactionLogObject);
-            var command = new PersistTransactionApprovalEventCommand(transactionLog.Event as ApprovalEvent);
+            var transactionLog = new ApprovalEvent(txLogEvent, address, sortOrder);
+            var command = new PersistTransactionApprovalEventCommand(transactionLog);
         
             _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(1));
@@ -54,17 +53,16 @@ namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers.TransactionEvents
         [Fact]
         public async Task PersistsApprovalEvent_Fail()
         {
-            dynamic transactionLogObject = new ExpandoObject();
-            transactionLogObject.Address = "SomeAddress";
-            transactionLogObject.Topics = new [] {"ApprovalEvent"};
+            const string address = "SomeAddress";
+            const int sortOrder = 0;
+            
             dynamic txLogEvent = new ExpandoObject();
             txLogEvent.Owner = "Owner";
             txLogEvent.Spender = "Spender";
             txLogEvent.Amount = "Amount";
-            transactionLogObject.Log = txLogEvent;
 
-            var transactionLog = new TransactionLog(transactionLogObject);
-            var command = new PersistTransactionApprovalEventCommand(transactionLog.Event as ApprovalEvent);
+            var transactionLog = new ApprovalEvent(txLogEvent, address, sortOrder);
+            var command = new PersistTransactionApprovalEventCommand(transactionLog);
         
             _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(0));

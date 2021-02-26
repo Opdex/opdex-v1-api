@@ -1,6 +1,6 @@
 using System;
 using MediatR;
-using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
+using Opdex.Core.Domain.Models.Transaction.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents
 {

@@ -5,7 +5,7 @@ namespace Opdex.Core.Domain.Models
 {
     public class Pair
     {
-        public Pair (string address, long tokenId, ulong reserveCrs, string reserveSrc)
+        public Pair(string address, long tokenId, ulong reserveCrs, string reserveSrc)
         {
             if (!address.HasValue())
             {
@@ -30,13 +30,22 @@ namespace Opdex.Core.Domain.Models
             Address = address;
             TokenId = tokenId;
             ReserveCrs = reserveCrs;
-            ReserveToken = reserveSrc;
+            ReserveSrc = reserveSrc;
+        }
+
+        public Pair(long id, string address, long tokenId, ulong reserveCrs, string reserveSrc)
+        {
+            Id = id;
+            Address = address;
+            TokenId = tokenId;
+            ReserveCrs = reserveCrs;
+            ReserveSrc = reserveSrc;
         }
         
         public long Id { get; }
         public string Address { get; }
         public long TokenId { get; }
         public ulong ReserveCrs { get; }
-        public string ReserveToken { get; }
+        public string ReserveSrc { get; }
     }
 }

@@ -22,7 +22,7 @@ namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new IndexerInfrastructureMapperProfile())).CreateMapper();
             var logger = new NullLogger<PersistBlockCommandHandler>();
-            
+
             _dbContext = new Mock<IDbContext>();
             _handler = new PersistBlockCommandHandler(_dbContext.Object, mapper, logger);
         }

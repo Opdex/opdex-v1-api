@@ -20,17 +20,6 @@ namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
         public ulong BlockHeight { get; private set; }
         public TransactionLogDto[] Logs { get; set; }
 
-        public void DeserializeLogsEventType()
-        {
-            foreach (var log in Logs)
-            {
-                if (log.Topics.Any())
-                {
-                    log.Topics[0] = log.Topics[0].HexToString();
-                }    
-            }
-        }
-
         public void SetBlockHeight(ulong height)
         {
             if (height > 1)

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
+using Opdex.Core.Domain.Models.Transaction.TransactionEvents;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
@@ -19,13 +19,15 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
                 {nameof(MintEventEntity.Address)},
                 {nameof(MintEventEntity.Sender)},
                 {nameof(MintEventEntity.AmountCrs)},
-                {nameof(MintEventEntity.AmountSrc)}
+                {nameof(MintEventEntity.AmountSrc)},
+                {nameof(MintEventEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(MintEventEntity.TransactionId)},
                 @{nameof(MintEventEntity.Address)},
                 @{nameof(MintEventEntity.Sender)},
                 @{nameof(MintEventEntity.AmountCrs)},
-                @{nameof(MintEventEntity.AmountSrc)}
+                @{nameof(MintEventEntity.AmountSrc)},
+                UTC_TIMESTAMP()
               );";
         
         private readonly IDbContext _context;

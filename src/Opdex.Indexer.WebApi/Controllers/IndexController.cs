@@ -32,5 +32,20 @@ namespace Opdex.Indexer.WebApi.Controllers
         {
             return NoContent();
         }
+
+        /// <summary>
+        /// Indexes current up to latest block and publishes an integration event for each new transaction
+        /// </summary>
+        [HttpPost("process-blocks")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> ProcessBlocks()
+        {
+            // Query DB - Get latest synced block
+            // Call Cirrus Get Block
+            // while nextBlockHash != null - Get next block
+            //    - Publish message for every transaction in block
+            //    - Index block related data
+            return NoContent();
+        }
     }
 }

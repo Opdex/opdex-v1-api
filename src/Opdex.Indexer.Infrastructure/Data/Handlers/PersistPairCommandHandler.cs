@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Core.Domain.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
@@ -18,13 +17,15 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             $@"INSERT INTO pair (
                 {nameof(PairEntity.Address)},
                 {nameof(PairEntity.TokenId)},
-                {nameof(PairEntity.ReserveToken)},
-                {nameof(PairEntity.ReserveCrs)}
+                {nameof(PairEntity.ReserveSrc)},
+                {nameof(PairEntity.ReserveCrs)},
+                {nameof(PairEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(PairEntity.Address)},
                 @{nameof(PairEntity.TokenId)},
-                @{nameof(PairEntity.ReserveToken)},
-                @{nameof(PairEntity.ReserveCrs)}
+                @{nameof(PairEntity.ReserveSrc)},
+                @{nameof(PairEntity.ReserveCrs)},
+                UTC_TIMESTAMP()
               );
               SELECT last_insert_rowid();";
 

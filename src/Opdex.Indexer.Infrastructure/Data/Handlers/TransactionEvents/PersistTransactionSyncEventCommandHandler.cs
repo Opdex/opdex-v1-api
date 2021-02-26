@@ -17,12 +17,14 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
                 {nameof(SyncEventEntity.TransactionId)},
                 {nameof(SyncEventEntity.Address)},
                 {nameof(SyncEventEntity.ReserveCrs)},
-                {nameof(SyncEventEntity.ReserveSrc)}
+                {nameof(SyncEventEntity.ReserveSrc)},
+                {nameof(SyncEventEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(SyncEventEntity.TransactionId)},
                 @{nameof(SyncEventEntity.Address)},
                 @{nameof(SyncEventEntity.ReserveCrs)},
-                @{nameof(SyncEventEntity.ReserveSrc)}
+                @{nameof(SyncEventEntity.ReserveSrc)},
+                UTC_TIMESTAMP()
               );";
         
         private readonly IDbContext _context;

@@ -21,7 +21,8 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
                 {nameof(SwapEventEntity.AmountCrsIn)},
                 {nameof(SwapEventEntity.AmountSrcIn)},
                 {nameof(SwapEventEntity.AmountCrsOut)},
-                {nameof(SwapEventEntity.AmountSrcOut)}
+                {nameof(SwapEventEntity.AmountSrcOut)},
+                {nameof(SwapEventEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(SwapEventEntity.TransactionId)},
                 @{nameof(SwapEventEntity.Address)},
@@ -30,7 +31,8 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
                 @{nameof(SwapEventEntity.AmountCrsIn)},
                 @{nameof(SwapEventEntity.AmountSrcIn)},
                 @{nameof(SwapEventEntity.AmountCrsOut)},
-                @{nameof(SwapEventEntity.AmountSrcOut)}
+                @{nameof(SwapEventEntity.AmountSrcOut)},
+                UTC_TIMESTAMP()
               );";
         
         private readonly IDbContext _context;

@@ -7,6 +7,7 @@ using Opdex.Core.Domain.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data.Queries;
+using Polly;
 
 namespace Opdex.Core.Infrastructure.Data.Handlers
 {
@@ -40,7 +41,7 @@ namespace Opdex.Core.Infrastructure.Data.Handlers
                 throw new NotFoundException("No blocks found.");
             }
             
-            return new Block(result.Height, result.Hash, DateTime.FromBinary(result.Time), DateTime.FromBinary(result.MedianTime));
+            return new Block(result.Height, result.Hash, result.Time, result.Time);
         }
     }
 }

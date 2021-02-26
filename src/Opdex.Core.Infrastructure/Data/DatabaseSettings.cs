@@ -1,9 +1,10 @@
 using Microsoft.Data.Sqlite;
+using MySqlConnector;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 
 namespace Opdex.Core.Infrastructure.Data
 {
-    public sealed class DatabaseSettings: IDatabaseSettings<SqliteConnection>
+    public sealed class DatabaseSettings: IDatabaseSettings<MySqlConnection>
     {
         private readonly string _connectionString;
 
@@ -12,9 +13,9 @@ namespace Opdex.Core.Infrastructure.Data
             _connectionString = connectionString;
         }
 
-        public SqliteConnection Create()
+        public MySqlConnection Create()
         {
-            return new SqliteConnection(_connectionString);
+            return new MySqlConnection(_connectionString);
         }
     }
 }

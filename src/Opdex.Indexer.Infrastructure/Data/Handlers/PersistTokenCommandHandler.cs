@@ -19,14 +19,16 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
                 {nameof(TokenEntity.Symbol)},
                 {nameof(TokenEntity.Decimals)},
                 {nameof(TokenEntity.Sats)},
-                {nameof(TokenEntity.TotalSupply)}
+                {nameof(TokenEntity.TotalSupply)},
+                {nameof(TokenEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(TokenEntity.Address)},
                 @{nameof(TokenEntity.Name)},
                 @{nameof(TokenEntity.Symbol)},
                 @{nameof(TokenEntity.Decimals)},
                 @{nameof(TokenEntity.Sats)},
-                @{nameof(TokenEntity.TotalSupply)}
+                @{nameof(TokenEntity.TotalSupply)},
+                UTC_TIMESTAMP()
               );
             SELECT last_insert_rowid();";
 

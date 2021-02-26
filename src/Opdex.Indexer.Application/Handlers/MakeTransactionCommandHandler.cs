@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
+using Opdex.Core.Domain.Models.Transaction.TransactionEvents;
 using Opdex.Indexer.Application.Abstractions.Commands;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
@@ -29,14 +29,14 @@ namespace Opdex.Indexer.Application.Handlers
             
             foreach (var logEvent in request.Transaction.Events)
             {
-                logEvent.Event.SetTransactionId(transactionId);
-                await MakeTransactionEvent(logEvent.Event);
+                // logEvent.Event.SetTransactionId(transactionId);
+                await MakeTransactionEvent(logEvent);
             }
 
             return true;
         }
 
-        private async Task MakeTransactionEvent(ILogEvent logEvent)
+        private async Task MakeTransactionEvent(TransactionEvent logEvent)
         {
             switch (logEvent)
             {

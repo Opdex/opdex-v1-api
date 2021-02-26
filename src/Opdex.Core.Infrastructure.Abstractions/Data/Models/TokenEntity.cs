@@ -1,6 +1,6 @@
 namespace Opdex.Core.Infrastructure.Abstractions.Data.Models
 {
-    public class TokenEntity
+    public class TokenEntity : AuditEntity
     {
         public long Id { get; set; }
         public string Address { get; set; }

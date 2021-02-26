@@ -1,8 +1,8 @@
 using System;
 using AutoMapper;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Domain.Models.TransactionReceipt;
-using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
+using Opdex.Core.Domain.Models.Transaction;
+using Opdex.Core.Domain.Models.Transaction.TransactionEvents;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents;
 
@@ -27,17 +27,17 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
                 .ForMember(dest => dest.ReserveCrs, opt => opt.MapFrom(src => src.ReserveCrs))
-                .ForMember(dest => dest.ReserveToken, opt => opt.MapFrom(src => src.ReserveToken))
+                .ForMember(dest => dest.ReserveSrc, opt => opt.MapFrom(src => src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<Block, BlockEntity>()
                 .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
-                .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time.ToBinary()))
-                .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime.ToBinary()))
+                .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time))
+                .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<TransactionReceipt, TransactionEntity>()
+            CreateMap<Transaction, TransactionEntity>()
                 .ForMember(dest => dest.Block, opt => opt.MapFrom(src => src.BlockHeight))
                 .ForMember(dest => dest.TxHash, opt => opt.MapFrom(src => src.Hash))
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))

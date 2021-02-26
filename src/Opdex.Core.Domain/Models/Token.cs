@@ -45,7 +45,7 @@ namespace Opdex.Core.Domain.Models
             TotalSupply = totalSupply;
         }
 
-        protected internal Token(long id, string address, string name, string symbol, int decimals, long sats, ulong totalSupply)
+        public Token(long id, string address, string name, string symbol, int decimals, long sats, ulong totalSupply)
         {
             Id = id;
             Address = address;

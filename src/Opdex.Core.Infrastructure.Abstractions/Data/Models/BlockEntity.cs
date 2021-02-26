@@ -2,11 +2,11 @@ using System;
 
 namespace Opdex.Core.Infrastructure.Abstractions.Data.Models
 {
-    public class BlockEntity
+    public class BlockEntity : AuditEntity
     {
         public ulong Height { get; set; }
         public string Hash { get; set; }
-        public long Time { get; set; }
-        public long MedianTime { get; set; }
+        public DateTime Time { get; set; }
+        public DateTime MedianTime { get; set; }
     }
 }

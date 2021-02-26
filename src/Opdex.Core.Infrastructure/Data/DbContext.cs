@@ -5,6 +5,7 @@ using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MySqlConnector;
 using Opdex.Core.Common;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 
@@ -15,11 +16,11 @@ namespace Opdex.Core.Infrastructure.Data
     public class DbContext : IDbContext
     {
         private readonly ILogger<DbContext> _logger;
-        private readonly IDatabaseSettings<SqliteConnection> _databaseSettings;
+        private readonly IDatabaseSettings<MySqlConnection> _databaseSettings;
         public DbContext(IOptions<OpdexConfiguration> opdexConfiguration, ILogger<DbContext> logger)
         {
             var configuration = opdexConfiguration.Value ?? throw new ArgumentNullException(nameof(opdexConfiguration));
-            var connectionString = new SqliteConnectionStringBuilder($"Data Source={configuration.ConnectionString};");
+            var connectionString = new MySqlConnectionStringBuilder(configuration.ConnectionString);
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _databaseSettings = new DatabaseSettings(connectionString.ConnectionString);
         }

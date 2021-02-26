@@ -9,10 +9,5 @@ namespace Opdex.Core.Common.Extensions
         {
             return !string.IsNullOrWhiteSpace(value);
         }
-        
-        public static string HexToString(this string value)
-        {
-            return Encoding.UTF8.GetString(value.HexToByteArray());
-        }
     }
 }

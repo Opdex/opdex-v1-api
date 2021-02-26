@@ -17,12 +17,14 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
                 {nameof(BlockEntity.Height)},
                 {nameof(BlockEntity.Hash)},
                 {nameof(BlockEntity.Time)},
-                {nameof(BlockEntity.MedianTime)}
+                {nameof(BlockEntity.MedianTime)},
+                {nameof(BlockEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(BlockEntity.Height)},
                 @{nameof(BlockEntity.Hash)},
                 @{nameof(BlockEntity.Time)},
-                @{nameof(BlockEntity.MedianTime)}
+                @{nameof(BlockEntity.MedianTime)},
+                UTC_TIMESTAMP()
               );";
 
         private readonly IDbContext _context;

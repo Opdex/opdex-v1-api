@@ -10,7 +10,7 @@ using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Queries;
 using Opdex.Core.Common;
 using Opdex.Core.Common.Extensions;
-using Opdex.Core.Domain.Models.TransactionReceipt;
+using Opdex.Core.Domain.Models.Transaction;
 using Opdex.Indexer.Application.Abstractions;
 using Opdex.Indexer.Application.Abstractions.Commands;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
@@ -121,7 +121,7 @@ namespace Opdex.Indexer.Application
         /// <param name="txHash">Transaction hash to process</param>
         /// <param name="pairs">Collection of all known Opdex pairs</param>
         /// <param name="cancellationToken">cancellation token: should probably be removed from indexer methods</param>
-        private async Task<TransactionReceipt> ProcessTransaction(string txHash, IDictionary<string, PairDto> pairs, CancellationToken cancellationToken)
+        private async Task<Transaction> ProcessTransaction(string txHash, IDictionary<string, PairDto> pairs, CancellationToken cancellationToken)
         {
             var tx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(txHash), cancellationToken);
             var isToRouter = tx.To == _opdexConfiguration.ControllerContract;

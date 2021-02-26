@@ -1,6 +1,6 @@
 namespace Opdex.Core.Infrastructure.Abstractions.Data.Models
 {
-    public class TransactionEntity
+    public class TransactionEntity : AuditEntity
     {
         public long Id { get; set; }
         public string TxHash { get; set; }

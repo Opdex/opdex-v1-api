@@ -18,13 +18,15 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
                 {nameof(ApprovalEventEntity.Address)},
                 {nameof(ApprovalEventEntity.Owner)},
                 {nameof(ApprovalEventEntity.Spender)},
-                {nameof(ApprovalEventEntity.Amount)}
+                {nameof(ApprovalEventEntity.Amount)},
+                {nameof(ApprovalEventEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(ApprovalEventEntity.TransactionId)}
                 @{nameof(ApprovalEventEntity.Address)}
                 @{nameof(ApprovalEventEntity.Owner)},
                 @{nameof(ApprovalEventEntity.Spender)},
-                @{nameof(ApprovalEventEntity.Amount)}
+                @{nameof(ApprovalEventEntity.Amount)},
+                UTC_TIMESTAMP()
               );";
         
         private readonly IDbContext _context;

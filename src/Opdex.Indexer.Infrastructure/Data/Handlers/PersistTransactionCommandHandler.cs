@@ -18,13 +18,15 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
                 {nameof(TransactionEntity.To)},
                 {nameof(TransactionEntity.TxHash)},
                 {nameof(TransactionEntity.GasUsed)},
-                {nameof(TransactionEntity.Block)}
+                {nameof(TransactionEntity.Block)},
+                {nameof(TransactionEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(TransactionEntity.From)},
                 @{nameof(TransactionEntity.To)},
                 @{nameof(TransactionEntity.TxHash)},
                 @{nameof(TransactionEntity.GasUsed)},
-                @{nameof(TransactionEntity.Block)}
+                @{nameof(TransactionEntity.Block)},
+                UTC_TIMESTAMP()
               );
               SELECT last_insert_rowid();";
 

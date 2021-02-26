@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Opdex.Core.Common;
-using Opdex.Core.Domain.Models.TransactionReceipt.LogEvents;
+using Opdex.Core.Domain.Models.Transaction.TransactionEvents;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events;
 
@@ -29,15 +29,15 @@ namespace Opdex.Indexer.Application.Handlers.Cirrus.Events
         
         public async Task<IEnumerable<PairCreatedEvent>> Handle(RetrieveCirrusPairEventsQuery request, CancellationToken cancellationToken)
         {
-            var query = new CallCirrusSearchContractTransactionReceiptsQuery(
+            var query = new CallCirrusSearchContractTransactionsQuery(
                 _opdexConfiguration.ControllerContract, nameof(PairCreatedEvent), request.FromBlock, request.ToBlock);
             
             var transactionReceipts = await _mediator.Send(query, cancellationToken);
 
             var pairEvents = transactionReceipts
                 .SelectMany(t => t.Events
-                    .Where(e => e.Event.EventType == nameof(PairCreatedEvent))
-                    .Select(e => e.Event as PairCreatedEvent));
+                    .Where(e => e.EventType == nameof(PairCreatedEvent))
+                    .Select(e => e as PairCreatedEvent));
 
             return pairEvents;
         }

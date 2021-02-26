@@ -1,6 +1,5 @@
-using System.Linq;
 using AutoMapper;
-using Opdex.Core.Domain.Models.TransactionReceipt;
+using Opdex.Core.Domain.Models.Transaction;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
 namespace Opdex.Core.Infrastructure
@@ -9,9 +8,9 @@ namespace Opdex.Core.Infrastructure
     {
         public CoreInfrastructureMapperProfile()
         {
-            CreateMap<TransactionReceiptDto, TransactionReceipt>()
-                .ConstructUsing(src => new TransactionReceipt(src.TransactionHash, src.BlockHeight, src.GasUsed,
-                    src.From, src.To, src.Success, src.Logs))
+            CreateMap<TransactionReceiptDto, Transaction>()
+                .ConstructUsing(src => new Transaction(src.TransactionHash, src.BlockHeight, src.GasUsed,
+                    src.From, src.To))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
     }

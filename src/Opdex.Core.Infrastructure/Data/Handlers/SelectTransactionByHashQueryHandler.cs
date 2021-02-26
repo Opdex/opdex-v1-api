@@ -2,14 +2,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Opdex.Core.Domain.Models;
-using Opdex.Core.Domain.Models.TransactionReceipt;
+using Opdex.Core.Domain.Models.Transaction;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Queries;
 
 namespace Opdex.Core.Infrastructure.Data.Handlers
 {
-    public class SelectTransactionByHashQueryHandler : IRequestHandler<SelectTransactionByHashQuery, TransactionReceipt>
+    public class SelectTransactionByHashQueryHandler : IRequestHandler<SelectTransactionByHashQuery, Transaction>
     {
         private readonly IDbContext _context;
 
@@ -18,9 +17,9 @@ namespace Opdex.Core.Infrastructure.Data.Handlers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<TransactionReceipt> Handle(SelectTransactionByHashQuery request, CancellationToken cancellationToken)
+        public async Task<Transaction> Handle(SelectTransactionByHashQuery request, CancellationToken cancellationToken)
         {
-            return new TransactionReceipt("txHash", ulong.MaxValue, 1, "from", "to", true, new dynamic[0]);
+            return new Transaction("txHash", ulong.MaxValue, 1, "from", "to");
         }
     }
 }
