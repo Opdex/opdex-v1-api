@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Opdex.Core.Common.Extensions;
-using Opdex.Core.Domain.Models.Transaction.TransactionEvents;
+using Opdex.Core.Domain.Models.TransactionEvents;
 
-namespace Opdex.Core.Domain.Models.Transaction
+namespace Opdex.Core.Domain.Models
 {
     public class Transaction
     {

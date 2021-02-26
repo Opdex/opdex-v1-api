@@ -1,7 +1,7 @@
 using System;
 using Opdex.Core.Common.Extensions;
 
-namespace Opdex.Core.Domain.Models.Transaction.TransactionEvents
+namespace Opdex.Core.Domain.Models.TransactionEvents
 {
     public abstract class TransactionEvent
     {

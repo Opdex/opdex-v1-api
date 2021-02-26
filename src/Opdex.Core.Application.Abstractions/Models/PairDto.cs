@@ -4,8 +4,8 @@ namespace Opdex.Core.Application.Abstractions.Models
     {
         public long Id { get; set; }
         public string Address { get; set; }
-        public string TokenId { get; set; }
-        public decimal CrsLiquidity { get; set; }
-        public decimal TokenLiquidity { get; set; }
+        public ulong TokenId { get; set; }
+        public ulong ReserveCrs { get; set; }
+        public string ReserveSrc { get; set; }
     }
 }

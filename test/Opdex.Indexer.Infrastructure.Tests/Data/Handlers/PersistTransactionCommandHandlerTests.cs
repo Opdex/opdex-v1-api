@@ -4,7 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Core.Domain.Models.Transaction;
+using Opdex.Core.Domain.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 using Opdex.Indexer.Infrastructure.Data.Handlers;

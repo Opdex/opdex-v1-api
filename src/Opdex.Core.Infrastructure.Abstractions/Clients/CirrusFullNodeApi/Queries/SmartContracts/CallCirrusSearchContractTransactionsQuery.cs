@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using MediatR;
 using Opdex.Core.Common.Extensions;
-using Opdex.Core.Domain.Models.Transaction;
+using Opdex.Core.Domain.Models;
 
 namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts
 {

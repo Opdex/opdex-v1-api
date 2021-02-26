@@ -56,6 +56,8 @@ namespace Opdex.Indexer.WebApi
             services.AddAutoMapper(mapperConfig =>
             {
                 mapperConfig.AddProfile<CoreInfrastructureMapperProfile>();
+                mapperConfig.AddProfile<IndexerApplicationMapperProfile>();
+                mapperConfig.AddProfile<CoreApplicationMapperProfile>();
                 mapperConfig.AddProfile<IndexerInfrastructureMapperProfile>();
             });
             

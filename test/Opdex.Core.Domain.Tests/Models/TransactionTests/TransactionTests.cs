@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
-using Opdex.Core.Domain.Models.Transaction;
-using Opdex.Core.Domain.Models.Transaction.TransactionEvents;
+using Opdex.Core.Domain.Models;
+using Opdex.Core.Domain.Models.TransactionEvents;
 using Xunit;
 
 namespace Opdex.Core.Domain.Tests.Models.TransactionTests

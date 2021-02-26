@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Queries;
 using Opdex.Core.Application.Handlers;
-using Opdex.Core.Domain.Models;
 
 namespace Opdex.Core.Application
 {
@@ -13,7 +13,7 @@ namespace Opdex.Core.Application
             services.AddScoped<ServiceFactory>(serviceProvider => serviceProvider.GetService);
             services.AddScoped(typeof(IMediator), typeof(Mediator));
             
-            services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, Block>, RetrieveLatestBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();
 
             return services;
         }

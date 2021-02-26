@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Opdex.Core.Domain.Models.Transaction.TransactionEvents;
+using Opdex.Core.Domain.Models.TransactionEvents;
 using Opdex.Indexer.Application.Abstractions.Commands;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;

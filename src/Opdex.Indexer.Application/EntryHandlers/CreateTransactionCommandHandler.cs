@@ -28,8 +28,18 @@ namespace Opdex.Indexer.Application.EntryHandlers
         {
             var tx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), cancellationToken);
             
+            // 
+            // Todo: Return TransactionDto
             var result = await _mediator.Send(new MakeTransactionCommand(tx));
 
+            // Check TransactionDto for PairCreated event
+            // - If exists - add token - add pair
+            
+            // Get Latest Block, Compare to Tx Block
+            // If latestBlock == txBlock
+            // - update pair reserves if new or sync event occurred
+            // - update pair total supply if mint or burn event occurred
+            
             return result;
         }
     }

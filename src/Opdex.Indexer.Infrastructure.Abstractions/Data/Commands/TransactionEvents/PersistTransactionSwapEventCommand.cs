@@ -1,6 +1,6 @@
 using System;
 using MediatR;
-using Opdex.Core.Domain.Models.Transaction.TransactionEvents;
+using Opdex.Core.Domain.Models.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents
 {

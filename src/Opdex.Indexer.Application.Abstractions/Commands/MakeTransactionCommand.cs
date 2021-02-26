@@ -1,6 +1,6 @@
 using System;
 using MediatR;
-using Opdex.Core.Domain.Models.Transaction;
+using Opdex.Core.Domain.Models;
 
 namespace Opdex.Indexer.Application.Abstractions.Commands
 {

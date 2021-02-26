@@ -10,11 +10,10 @@ using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Queries;
 using Opdex.Core.Common;
 using Opdex.Core.Common.Extensions;
-using Opdex.Core.Domain.Models.Transaction;
+using Opdex.Core.Domain.Models;
 using Opdex.Indexer.Application.Abstractions;
 using Opdex.Indexer.Application.Abstractions.Commands;
 using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
-using Opdex.Indexer.Application.Abstractions.Queries.Cirrus.Events;
 
 namespace Opdex.Indexer.Application
 {
@@ -102,17 +101,19 @@ namespace Opdex.Indexer.Application
         /// <returns>Dictionary of pair address keys with pair values</returns>
         private async Task<IDictionary<string, PairDto>> ProcessNewPairs(ulong latestHeight, CancellationToken cancellationToken)
         {
-            var pairEvents = await _mediator.Send(new RetrieveCirrusPairEventsQuery(latestHeight), cancellationToken);
+            // var pairEvents = await _mediator.Send(new RetrieveCirrusPairEventsQuery(latestHeight), cancellationToken);
+            //
+            // foreach (var pairEvent in pairEvents)
+            // {
+            //     var tokenId = await _mediator.Send(new MakeTokenCommand(pairEvent.Token), cancellationToken);
+            //     await _mediator.Send(new MakePairCommand(pairEvent.Pair, tokenId), cancellationToken);
+            // }
+            //
+            // var allPairs = await _mediator.Send(new RetrieveAllPairsWithFilterQuery(), cancellationToken);
+            //
+            // return allPairs.ToDictionary(p => p.Address);
 
-            foreach (var pairEvent in pairEvents)
-            {
-                var tokenId = await _mediator.Send(new MakeTokenCommand(pairEvent.Token), cancellationToken);
-                await _mediator.Send(new MakePairCommand(pairEvent.Pair, tokenId), cancellationToken);
-            }
-            
-            var allPairs = await _mediator.Send(new RetrieveAllPairsWithFilterQuery(), cancellationToken);
-            
-            return allPairs.ToDictionary(p => p.Address);
+            return new Dictionary<string, PairDto>();
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Indexer.Application.Abstractions.EntryCommands;
 using Opdex.Indexer.WebApi.Models;
 
 namespace Opdex.Indexer.WebApi.Controllers
@@ -46,6 +47,21 @@ namespace Opdex.Indexer.WebApi.Controllers
             //    - Publish message for every transaction in block
             //    - Index block related data
             return NoContent();
+        }
+        
+        [HttpPost("process-transaction")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ProcessTransaction(ProcessTransactionRequestModel txRequest)
+        {
+            var response = await _mediator.Send(new CreateTransactionCommand(txRequest.TxHash));
+
+            if (response == false)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
         }
     }
 }

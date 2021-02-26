@@ -1,7 +1,7 @@
 using System;
 using MediatR;
 using Opdex.Core.Common.Extensions;
-using Opdex.Core.Domain.Models.Transaction;
+using Opdex.Core.Domain.Models;
 
 namespace Opdex.Core.Infrastructure.Abstractions.Data.Queries
 {
