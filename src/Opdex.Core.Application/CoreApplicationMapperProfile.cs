@@ -3,7 +3,6 @@ using AutoMapper;
 using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Domain.Models;
 using Opdex.Core.Domain.Models.TransactionEvents;
 
 namespace Opdex.Core.Application

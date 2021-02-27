@@ -45,7 +45,7 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens
             
             // Todo: Get Total Supply
 
-            return new Token(request.Address, name, ticker, decimalsValue, 100_000_000, 100_000_000);
+            return new Token(request.Address, name, ticker, decimalsValue, 100_000_000, "100_000_000");
         }
     }
 }

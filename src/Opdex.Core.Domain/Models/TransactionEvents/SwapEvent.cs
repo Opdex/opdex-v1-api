@@ -43,6 +43,18 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
             AmountSrcOut = amountSrcOut;
         }
         
+        public SwapEvent(long id, long transactionId, string address, int sortOrder, string sender, string to, 
+            ulong amountCrsIn, ulong amountCrsOut, string amountSrcIn, string amountSrcOut)
+            : base(nameof(SwapEvent), id, transactionId, address, sortOrder)
+        {
+            Sender = sender;
+            To = to;
+            AmountCrsIn = amountCrsIn;
+            AmountCrsOut = amountCrsOut;
+            AmountSrcIn = amountSrcIn;
+            AmountSrcOut = amountSrcOut;
+        }
+        
         public string Sender { get; }
         public string To { get; }
         public ulong AmountCrsIn { get; }

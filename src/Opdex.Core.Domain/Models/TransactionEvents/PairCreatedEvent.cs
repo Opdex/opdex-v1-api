@@ -25,6 +25,13 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
             Pair = pair;
         }
         
+        public PairCreatedEvent(long id, long transactionId, string address, int sortOrder, string token, string pair)
+            : base(nameof(PairCreatedEvent), id, transactionId, address, sortOrder)
+        {
+            Token = token;
+            Pair = pair;
+        }
+        
         public string Token { get; }
         public string Pair { get; }
     }

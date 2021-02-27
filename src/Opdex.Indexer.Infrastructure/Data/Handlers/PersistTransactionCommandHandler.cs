@@ -16,14 +16,14 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             $@"INSERT INTO transaction (
                 {nameof(TransactionEntity.From)},
                 {nameof(TransactionEntity.To)},
-                {nameof(TransactionEntity.TxHash)},
+                {nameof(TransactionEntity.Hash)},
                 {nameof(TransactionEntity.GasUsed)},
                 {nameof(TransactionEntity.Block)},
                 {nameof(TransactionEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(TransactionEntity.From)},
                 @{nameof(TransactionEntity.To)},
-                @{nameof(TransactionEntity.TxHash)},
+                @{nameof(TransactionEntity.Hash)},
                 @{nameof(TransactionEntity.GasUsed)},
                 @{nameof(TransactionEntity.Block)},
                 UTC_TIMESTAMP()

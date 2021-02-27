@@ -1,27 +1,23 @@
-# OpdexApi
+# Opdex Platform and Indexer API
 
-Opdex open source platform and indexer repository. 
+Two API composition roots for the platform API and indexer API using Domain Driven Design and CQRS design patterns.
 
-## Opdex.Platform Namespace
+## Architecture
 
-### WebApi Project
+This repository manages 3 core namespaces, 2 composition roots (executable projects) and 1 shared namespace between the two. 
 
-Opdex public API for read access to Opdex indexed data. 
+- Opdex.Platform - Composition Root for Platform API
+- Opdex.Indexer - Composition Root for Indexer API
+- Opdex.Core - Shared between Platform and Indexer
 
-- Will have no rate limits for official Opdex referrers
-- Will have API keys for 3rd party integrations
-- _Might_ need Admin API keys for internal endpoint access (for accessing indexer API, depending on internal admin portal project)
+### Opdex.Platform Namespace
 
-## Opdex.Indexer Namespace
+The platform API is the open gateway to opdex backend infrastructure and services. This API is readonly and can fetch Opdex client UI data from indexed data and other 3rd party integrations such as the Cirrus Full Nodes and Bitcore Nodes.
 
-### WebApi Project
+### Opdex.Indexer Namespace
 
-Indexes opdex pairs, transactions and transaction events. Has private, internal endpoint access when deployed. 
+The Indexer API is hosted privately and only can be internally accessed. This API is responsible for reading and persisting any relevant transactions to Opdex databases for quick reads from the Platform API.
 
-- Currently meant to run as a single instance non-intensive background task.
-
-- Currently pings Cirrus Full Node (CFN) every 3 seconds for new blocks. Indexes all opdex related transactions and effects.
-
-## Opdex.Core Namespace
+### Opdex.Core Namespace
 
 Includes library projects for different domain layers referenced in Opdex.Indexer and Opdex.Platform namespace projects.

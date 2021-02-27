@@ -32,6 +32,14 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
             Amount = amount;
         }
         
+        public TransferEvent(long id, long transactionId, string address, int sortOrder, string from, string to, string amount)
+            : base(nameof(TransferEvent), id, transactionId, address, sortOrder)
+        {
+            From = from;
+            To = to;
+            Amount = amount;
+        }
+        
         public string From { get; }
         public string To { get; }
         public string Amount { get; }

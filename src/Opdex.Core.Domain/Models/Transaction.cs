@@ -43,8 +43,7 @@ namespace Opdex.Core.Domain.Models
             Events = new List<TransactionEvent>();
         }
 
-        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, 
-            string from, string to, IEnumerable<TransactionEvent> events)
+        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, IEnumerable<TransactionEvent> events)
         {
             Id = id;
             Hash = txHash;
@@ -54,6 +53,17 @@ namespace Opdex.Core.Domain.Models
             To = to;
             Events = new List<TransactionEvent>();
             AttachEvents(events);
+        }
+        
+        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to)
+        {
+            Id = id;
+            Hash = txHash;
+            BlockHeight = blockHeight;
+            GasUsed = gasUsed;
+            From = from;
+            To = to;
+            Events = new List<TransactionEvent>();
         }
         
         public long Id { get; }
@@ -91,6 +101,17 @@ namespace Opdex.Core.Domain.Models
 
                 Events.Add(txEvent);
             }
+        }
+        
+        public void AttachEvent(TransactionEvent transactionEvent)
+        {
+            if (Id == 0 || transactionEvent.Id == 0)
+            {
+                throw new Exception($"Unable to add transaction event on incomplete {nameof(Transaction)}.");
+            }
+
+            // Todo: Insert into sorted order
+            Events.Add(transactionEvent);
         }
 
         public void DeserializeEvent(string address, string topic, int sortOrder, dynamic log)

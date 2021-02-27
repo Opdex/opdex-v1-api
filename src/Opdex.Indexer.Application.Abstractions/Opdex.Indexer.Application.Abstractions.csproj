@@ -5,8 +5,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Models" />
-      <Folder Include="Queries" />
+      <Folder Include="EntryCommands\Blocks" />
+      <Folder Include="EntryCommands\Pairs" />
+      <Folder Include="EntryCommands\Tokens" />
+      <Folder Include="Queries\Pairs" />
+      <Folder Include="Queries\Tokens" />
     </ItemGroup>
 
     <ItemGroup>

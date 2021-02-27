@@ -12,4 +12,14 @@
       <ProjectReference Include="..\Opdex.Core.Domain\Opdex.Core.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="EntryQueries\Blocks" />
+      <Folder Include="EntryQueries\Pairs" />
+      <Folder Include="EntryQueries\Tokens" />
+      <Folder Include="EntryQueries\Transactions" />
+      <Folder Include="Queries\Pairs" />
+      <Folder Include="Queries\Tokens" />
+      <Folder Include="Queries\Transactions" />
+    </ItemGroup>
+
 </Project>

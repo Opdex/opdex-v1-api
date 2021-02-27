@@ -5,7 +5,7 @@ namespace Opdex.Core.Domain.Models
 {
     public class Token
     {
-        public Token(string address, string name, string symbol, int decimals, long sats, ulong totalSupply)
+        public Token(string address, string name, string symbol, int decimals, long sats, string totalSupply)
         {
             if (!address.HasValue())
             {
@@ -32,9 +32,9 @@ namespace Opdex.Core.Domain.Models
                 throw new ArgumentOutOfRangeException(nameof(sats));
             }
 
-            if (totalSupply < 1)
+            if (!totalSupply.HasValue())
             {
-                throw new ArgumentOutOfRangeException(nameof(totalSupply));
+                throw new ArgumentNullException(nameof(totalSupply));
             }
 
             Address = address;
@@ -45,7 +45,7 @@ namespace Opdex.Core.Domain.Models
             TotalSupply = totalSupply;
         }
 
-        public Token(long id, string address, string name, string symbol, int decimals, long sats, ulong totalSupply)
+        public Token(long id, string address, string name, string symbol, int decimals, long sats, string totalSupply)
         {
             Id = id;
             Address = address;
@@ -62,6 +62,6 @@ namespace Opdex.Core.Domain.Models
         public string Symbol { get; }
         public int Decimals { get; }
         public long Sats { get; }
-        public ulong TotalSupply { get; }
+        public string TotalSupply { get; }
     }
 }

@@ -31,6 +31,14 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
             Spender = spender;
             Amount = amount;
         }
+
+        public ApprovalEvent(long id, long transactionId, string address, int sortOrder, string owner, string spender, string amount)
+            : base(nameof(ApprovalEvent), id, transactionId, address, sortOrder)
+        {
+            Owner = owner;
+            Spender = spender;
+            Amount = amount;
+        }
         
         public string Owner { get; }
         public string Spender { get; }

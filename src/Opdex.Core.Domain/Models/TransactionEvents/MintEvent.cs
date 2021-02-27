@@ -32,6 +32,14 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
             AmountSrc = amountSrc;
         }
         
+        public MintEvent(long id, long transactionId, string address, int sortOrder, string sender, ulong amountCrs, string amountSrc)
+            : base(nameof(MintEvent), id, transactionId, address, sortOrder)
+        {
+            Sender = sender;
+            AmountCrs = amountCrs;
+            AmountSrc = amountSrc;
+        }
+        
         public string Sender { get; }
         public ulong AmountCrs { get; }
         public string AmountSrc { get; }

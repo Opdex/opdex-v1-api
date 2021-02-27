@@ -1,0 +1,36 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using Opdex.Core.Domain.Models;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
+using Opdex.Indexer.Application.Abstractions.Queries.Transactions;
+
+namespace Opdex.Indexer.Application.Handlers.Transactions
+{
+    public class RetrieveCirrusTransactionByHashQueryHandler : IRequestHandler<RetrieveCirrusTransactionByHashQuery, Transaction>
+    {
+        private readonly IMediator _mediator;
+        
+        public RetrieveCirrusTransactionByHashQueryHandler(IMediator mediator)
+        {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+        
+        public async Task<Transaction> Handle(RetrieveCirrusTransactionByHashQuery request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var query = new CallCirrusGetTransactionByHashQuery(request.TxHash);
+                var txReceipt = await _mediator.Send(query, cancellationToken);
+
+                return txReceipt;
+            }
+            catch (Exception)
+            {
+                // log - should be a not found expection
+                return null;
+            }
+        }
+    }
+}

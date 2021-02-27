@@ -7,13 +7,15 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Core.Application.Abstractions.Queries;
+using Opdex.Core.Application.Abstractions.Queries.Blocks;
 using Opdex.Core.Common;
 using Opdex.Core.Common.Extensions;
 using Opdex.Core.Domain.Models;
 using Opdex.Indexer.Application.Abstractions;
-using Opdex.Indexer.Application.Abstractions.Commands;
-using Opdex.Indexer.Application.Abstractions.Queries.Cirrus;
+using Opdex.Indexer.Application.Abstractions.Commands.Blocks;
+using Opdex.Indexer.Application.Abstractions.Commands.Transactions;
+using Opdex.Indexer.Application.Abstractions.Queries.Blocks;
+using Opdex.Indexer.Application.Abstractions.Queries.Transactions;
 
 namespace Opdex.Indexer.Application
 {
@@ -99,7 +101,7 @@ namespace Opdex.Indexer.Application
         /// <param name="latestHeight">Opdex synced latest block height</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>Dictionary of pair address keys with pair values</returns>
-        private async Task<IDictionary<string, PairDto>> ProcessNewPairs(ulong latestHeight, CancellationToken cancellationToken)
+        private Task<Dictionary<string, PairDto>> ProcessNewPairs(ulong latestHeight, CancellationToken cancellationToken)
         {
             // var pairEvents = await _mediator.Send(new RetrieveCirrusPairEventsQuery(latestHeight), cancellationToken);
             //
@@ -113,7 +115,8 @@ namespace Opdex.Indexer.Application
             //
             // return allPairs.ToDictionary(p => p.Address);
 
-            return new Dictionary<string, PairDto>();
+            var dictionary = new Dictionary<string, PairDto>();
+            return Task.FromResult(dictionary);
         }
 
         /// <summary>

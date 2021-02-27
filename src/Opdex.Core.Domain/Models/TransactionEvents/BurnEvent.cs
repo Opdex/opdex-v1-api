@@ -39,6 +39,15 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
             AmountSrc = amountSrc;
         }
         
+        public BurnEvent(long id, long transactionId, string address, int sortOrder, string sender, string to, ulong amountCrs, string amountSrc)
+            : base(nameof(BurnEvent), id, transactionId, address, sortOrder)
+        {
+            Sender = sender;
+            To = to;
+            AmountCrs = amountCrs;
+            AmountSrc = amountSrc;
+        }
+        
         public string Sender { get; }
         public string To { get; }
         public ulong AmountCrs { get; }

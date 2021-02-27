@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Opdex.Indexer.Application.Abstractions.EntryCommands;
+using Opdex.Indexer.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Indexer.WebApi.Models;
 
 namespace Opdex.Indexer.WebApi.Controllers
@@ -24,14 +24,6 @@ namespace Opdex.Indexer.WebApi.Controllers
         public async Task<IActionResult> GetLastSyncedBlock(CancellationToken cancellationToken)
         {
             return Ok();
-        }
-
-        // Todo: Auth Attribute - InternalAccessOnly
-        [HttpPut("reindex")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> ReIndexBlocks(ReIndexRequest request, CancellationToken cancellationToken)
-        {
-            return NoContent();
         }
 
         /// <summary>

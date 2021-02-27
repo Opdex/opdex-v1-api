@@ -71,7 +71,7 @@ namespace Opdex.Indexer.WebApi
                     
                     if (context.HostingEnvironment.IsProduction())
                     {
-                        
+                        // Todo: Point logging towards service
                     }
                     else
                     {

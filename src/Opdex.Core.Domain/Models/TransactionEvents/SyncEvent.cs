@@ -25,6 +25,13 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
             ReserveSrc = reserveSrc;
         }
         
+        public SyncEvent(long id, long transactionId, string address, int sortOrder, ulong reserveCrs, string reserveSrc)
+            : base(nameof(SyncEvent), id, transactionId, address, sortOrder)
+        {
+            ReserveCrs = reserveCrs;
+            ReserveSrc = reserveSrc;
+        }
+        
         public ulong ReserveCrs { get; }
         public string ReserveSrc { get; }
     }

@@ -48,7 +48,7 @@ namespace Opdex.Indexer.WebApi
             
             services.AddOpenApiDocument(settings =>
             {
-                settings.Title = "Opdex Platform API";
+                settings.Title = "Opdex Indexer API";
                 settings.Version = "v1";
             });
             
@@ -61,17 +61,18 @@ namespace Opdex.Indexer.WebApi
                 mapperConfig.AddProfile<IndexerInfrastructureMapperProfile>();
             });
             
-            services.AddHostedService<IndexerBackgroundService>();
+            // Todo: Remove after refactor
+            // services.AddHostedService<IndexerBackgroundService>();
             
             services.AddHttpClient();
 
-            services.AddTransient<IIndexProcessManager, IndexProcessManager>();
+            // Todo: Remove after refactor
+            // services.AddTransient<IIndexProcessManager, IndexProcessManager>();
 
-            // Todo: Maybe not needed
+            // Todo: Use Azure Key Vault / User Secrets
             var cirrusConfiguration = Configuration.GetSection(nameof(CirrusConfiguration));
-            services.Configure<CirrusConfiguration>(cirrusConfiguration);
-            
             var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
+            services.Configure<CirrusConfiguration>(cirrusConfiguration);
             services.Configure<OpdexConfiguration>(opdexConfig);
             
             // Register project module services

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Domain.Models;
+using Opdex.Core.Domain.Models.TransactionEvents;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
@@ -10,14 +10,22 @@ using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.B
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using Opdex.Core.Infrastructure.Abstractions.Data;
-using Opdex.Core.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Blocks;
+using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Pairs;
+using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Tokens;
+using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Transactions;
+using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionEvents;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.BlockStore;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Core.Infrastructure.Data;
-using Opdex.Core.Infrastructure.Data.Handlers;
+using Opdex.Core.Infrastructure.Data.Handlers.Blocks;
+using Opdex.Core.Infrastructure.Data.Handlers.Pairs;
+using Opdex.Core.Infrastructure.Data.Handlers.Tokens;
+using Opdex.Core.Infrastructure.Data.Handlers.Transactions;
+using Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents;
 
 namespace Opdex.Core.Infrastructure
 {
@@ -38,9 +46,26 @@ namespace Opdex.Core.Infrastructure
         {
             services.AddScoped<IDbContext, DbContext>();
             
-            services.AddTransient<IRequestHandler<SelectAllPairsWithFilterQuery, IEnumerable<Pair>>, SelectAllPairsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectAllTokensWithFilterQuery, IEnumerable<Token>>, SelectAllTokensWithFilterQueryHandler>();
+            // Blocks
             services.AddTransient<IRequestHandler<SelectLatestBlockQuery, Block>, SelectLatestBlockQueryHandler>();
+
+            // Pairs
+            services.AddTransient<IRequestHandler<SelectAllPairsWithFilterQuery, IEnumerable<Pair>>, SelectAllPairsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectPairByAddressQuery, Pair>, SelectPairByAddressQueryHandler>();
+
+            // Tokens
+            services.AddTransient<IRequestHandler<SelectAllTokensWithFilterQuery, IEnumerable<Token>>, SelectAllTokensWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTokenByAddressQuery, Token>, SelectTokenByAddressQueryHandler>();
+            
+            // Transactions
+            services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectBurnEventByTransactionIdQuery, BurnEvent>, SelectBurnEventByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMintEventByTransactionIdQuery, MintEvent>, SelectMintEventByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectSwapEventByTransactionIdQuery, SwapEvent>, SelectSwapEventByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectSyncEventByTransactionIdQuery, SyncEvent>, SelectSyncEventByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTransferEventByTransactionIdQuery, TransferEvent>, SelectTransferEventByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectApprovalEventByTransactionIdQuery, ApprovalEvent>, SelectApprovalEventByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectPairCreatedEventByTransactionIdQuery, PairCreatedEvent>, SelectPairCreatedEventByTransactionIdQueryHandler>();
         }
 
         private static void AddClientServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)
