@@ -14,7 +14,6 @@ using Opdex.Platform.Infrastructure;
 using Serilog;
 using AutoMapper;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
-using Opdex.Platform.Application.Mappers;
 
 namespace Opdex.Platform.WebApi
 {

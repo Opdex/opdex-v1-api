@@ -13,4 +13,9 @@
       <ProjectReference Include="..\Opdex.Core.Infrastructure.Abstractions\Opdex.Core.Infrastructure.Abstractions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Data\Queries\Blocks" />
+      <Folder Include="Data\Queries\Transactions" />
+    </ItemGroup>
+
 </Project>

@@ -10,7 +10,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="EntryQueries\Blocks" />
+      <Folder Include="EntryQueries\Transactions" />
       <Folder Include="Models" />
+      <Folder Include="Queries\Blocks" />
+      <Folder Include="Queries\Transactions" />
     </ItemGroup>
 
     <ItemGroup>

@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Platform.Application.Abstractions.EntryQueries;
-using Opdex.Platform.Application.Abstractions.Queries;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 
-namespace Opdex.Platform.Application.EntryHandlers
+namespace Opdex.Platform.Application.EntryHandlers.Tokens
 {
     public class GetAllTokensQueryHandler : IRequestHandler<GetAllTokensQuery, IEnumerable<TokenDto>>
     {

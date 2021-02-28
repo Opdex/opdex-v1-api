@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Opdex.Platform.Application.Abstractions.EntryQueries;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.WebApi.Models;
 
 namespace Opdex.Platform.WebApi.Controllers

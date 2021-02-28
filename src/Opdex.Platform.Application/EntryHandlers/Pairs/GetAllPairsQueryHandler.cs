@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Platform.Application.Abstractions.EntryQueries;
-using Opdex.Platform.Application.Abstractions.Queries;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Pairs;
+using Opdex.Platform.Application.Abstractions.Queries.Pairs;
 
-namespace Opdex.Platform.Application.EntryHandlers
+namespace Opdex.Platform.Application.EntryHandlers.Pairs
 {
     public class GetAllPairsQueryHandler : IRequestHandler<GetAllPairsQuery, IEnumerable<PairDto>>
     {

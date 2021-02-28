@@ -16,4 +16,11 @@
       <ProjectReference Include="..\Opdex.Platform.Infrastructure.Abstractions\Opdex.Platform.Infrastructure.Abstractions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="EntryHandlers\Blocks" />
+      <Folder Include="EntryHandlers\Transactions" />
+      <Folder Include="Handlers\Blocks" />
+      <Folder Include="Handlers\Transactions" />
+    </ItemGroup>
+
 </Project>

@@ -2,11 +2,14 @@ using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Platform.Application.Abstractions.EntryQueries;
-using Opdex.Platform.Application.Abstractions.Queries;
-using Opdex.Platform.Application.EntryHandlers;
-using Opdex.Platform.Application.Handlers;
-using Opdex.Platform.Application.Mappers;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Pairs;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Pairs;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Application.EntryHandlers.Pairs;
+using Opdex.Platform.Application.EntryHandlers.Tokens;
+using Opdex.Platform.Application.Handlers.Pairs;
+using Opdex.Platform.Application.Handlers.Tokens;
 
 namespace Opdex.Platform.Application
 {

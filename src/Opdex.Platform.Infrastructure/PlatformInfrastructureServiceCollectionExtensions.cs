@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Core.Domain.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Data.Handlers;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
+using Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pairs;
+using Opdex.Platform.Infrastructure.Data.Handlers.Pairs;
 
 namespace Opdex.Platform.Infrastructure
 {

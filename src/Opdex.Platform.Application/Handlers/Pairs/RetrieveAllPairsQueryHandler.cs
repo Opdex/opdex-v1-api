@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Platform.Application.Abstractions.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Application.Abstractions.Queries.Pairs;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pairs;
 
-namespace Opdex.Platform.Application.Handlers
+namespace Opdex.Platform.Application.Handlers.Pairs
 {
     public class RetrieveAllPairsQueryHandler : IRequestHandler<RetrieveAllPairsQuery, IEnumerable<PairDto>>
     {

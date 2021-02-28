@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Core.Domain.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pairs;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Pairs
 {
     public class SelectAllPairsQueryHandler : IRequestHandler<SelectAllPairsQuery, IEnumerable<Pair>>
     {
