@@ -8,9 +8,6 @@ namespace Opdex.Platform.Application
     {
         public PlatformApplicationMapperProfile()
         {
-            CreateMap<Token, TokenDto>();
-            CreateMap<Pair, PairDto>();
-
         }
     }
 }

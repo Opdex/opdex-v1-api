@@ -15,6 +15,7 @@ using Serilog;
 using AutoMapper;
 using Opdex.Core.Common;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
+using Opdex.Platform.WebApi.Mappers;
 
 namespace Opdex.Platform.WebApi
 {
@@ -56,6 +57,7 @@ namespace Opdex.Platform.WebApi
                 mapperConfig.AddProfile<CoreApplicationMapperProfile>();
                 mapperConfig.AddProfile<PlatformInfrastructureMapperProfile>();
                 mapperConfig.AddProfile<CoreInfrastructureMapperProfile>();
+                mapperConfig.AddProfile<PlatformWebApiMapperProfile>();
             });
             
             services.AddHttpClient();

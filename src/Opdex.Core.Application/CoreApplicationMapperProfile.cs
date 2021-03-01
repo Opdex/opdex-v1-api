@@ -36,6 +36,17 @@ namespace Opdex.Core.Application
                 .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
+            CreateMap<MarketSnapshot, MarketSnapshotDto>()
+                .ForMember(dest => dest.Block, opt => opt.MapFrom(src => src.Block))
+                .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
+                .ForMember(dest => dest.TokenCount, opt => opt.MapFrom(src => src.TokenCount))
+                .ForMember(dest => dest.PairCount, opt => opt.MapFrom(src => src.PairCount))
+                .ForMember(dest => dest.DailyTransactionCount, opt => opt.MapFrom(src => src.DailyTransactionCount))
+                .ForMember(dest => dest.CrsPrice, opt => opt.MapFrom(src => src.CrsPrice))
+                .ForMember(dest => dest.DailyFees, opt => opt.MapFrom(src => src.DailyFees))
+                .ForMember(dest => dest.DailyVolume, opt => opt.MapFrom(src => src.DailyVolume))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
             CreateMap<Transaction, TransactionDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))

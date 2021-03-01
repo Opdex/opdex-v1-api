@@ -33,6 +33,10 @@ namespace Opdex.Core.Infrastructure
                 .ConstructUsing(src => new Pair(src.Id, src.Address, src.TokenId, src.ReserveCrs, src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
+            CreateMap<MarketSnapshotEntity, MarketSnapshot>()
+                .ConstructUsing(src => new MarketSnapshot(src.Id, src.TokenCount, src.PairCount, src.DailyTransactionCount, src.CrsPrice, src.Liquidity, src.DailyFees, src.DailyVolume, src.Block))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
             // Transaction Events
             CreateMap<MintEventEntity, MintEvent>()
                 .ConstructUsing(src => new MintEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Sender, src.AmountCrs, src.AmountSrc))

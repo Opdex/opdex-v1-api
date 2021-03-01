@@ -37,7 +37,7 @@ namespace Opdex.Platform.WebApi
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "PLatform Api application start-up failed");
+                Log.Fatal(ex, "Platform Api application start-up failed");
             }
 
             Log.CloseAndFlush();
@@ -61,7 +61,7 @@ namespace Opdex.Platform.WebApi
                     // Log.Information($"Using opdex environment:{opdexDeploymentEnvironment} and dotnet environment:{environment.EnvironmentName}");
 
                     // Qualified Application Name
-                    environment.ApplicationName = "Opdex-PLatformApi";
+                    environment.ApplicationName = "Opdex-PlatformApi";
 
                     // used for logging
                     AppNameForEnvironment = $"{opdexDeploymentEnvironment.ToUpperInvariant()}-{environment.ApplicationName}";
