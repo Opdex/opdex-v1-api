@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Core.Application.Abstractions.EntryQueries.Pairs;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pairs;
 using Opdex.Platform.WebApi.Models;
 
@@ -31,12 +32,14 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(result);
         }
         
-        [HttpGet("{pairAddress}")]
-        public async Task<ActionResult<PairResponseModel>> GetPair(string pairAddress, CancellationToken cancellationToken)
+        [HttpGet("{address}")]
+        public async Task<ActionResult<PairResponseModel>> GetPair(string address, CancellationToken cancellationToken)
         {
-            var response = Task.FromResult("Pair");
+            var query = new GetPairByAddressQuery(address);
             
-            return Ok(response);
+            var result = await _mediator.Send(query, cancellationToken);
+            
+            return Ok(result);
         }
     }
 }

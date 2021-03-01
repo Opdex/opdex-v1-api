@@ -1,28 +1,48 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Core.Domain.Models;
+using Opdex.Core.Infrastructure.Abstractions.Data;
+using Opdex.Core.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pairs;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Pairs
 {
     public class SelectAllPairsQueryHandler : IRequestHandler<SelectAllPairsQuery, IEnumerable<Pair>>
     {
-        public SelectAllPairsQueryHandler()
+        private static readonly string SqlCommand =
+            $@"SELECT
+                {nameof(PairEntity.Id)},
+                {nameof(PairEntity.Address)},
+                {nameof(PairEntity.TokenId)},
+                {nameof(PairEntity.ReserveCrs)},
+                {nameof(PairEntity.ReserveSrc)},
+                {nameof(PairEntity.CreatedDate)}
+            FROM pair;";
+
+        private readonly IDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly ILogger _logger;
+        
+        public SelectAllPairsQueryHandler(IDbContext context, IMapper mapper, 
+            ILogger<SelectAllPairsQueryHandler> logger)
         {
-            
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        public Task<IEnumerable<Pair>> Handle(SelectAllPairsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Pair>> Handle(SelectAllPairsQuery request, CancellationToken cancellationToken)
         {
-            var list = new List<Pair> 
-            {
-                new Pair("stbdf8n5gxase9ngss0gfaitrexm3j8l234", 1, 892423413, "23324"),
-                new Pair("sgfaitrexm3j8l234stbdf8n5gxase9ngs0", 2, 892423413, "234234")
-            };
+            var command = DatabaseQuery.Create(SqlCommand, null, cancellationToken);
+            
+            var tokenEntities =  await _context.ExecuteQueryAsync<PairEntity>(command);
 
-            return Task.FromResult<IEnumerable<Pair>>(list);
+            return _mapper.Map<IEnumerable<Pair>>(tokenEntities);
         }
     }
 }
