@@ -1,10 +1,10 @@
-using System.Transactions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Queries.Blocks;
 using Opdex.Core.Application.Assemblers;
 using Opdex.Core.Application.Handlers.Blocks;
+using Opdex.Core.Domain.Models;
 
 namespace Opdex.Core.Application
 {

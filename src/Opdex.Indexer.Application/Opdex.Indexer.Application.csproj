@@ -11,6 +11,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Opdex.Core.Application.Abstractions\Opdex.Core.Application.Abstractions.csproj" />
+      <ProjectReference Include="..\Opdex.Core.Application\Opdex.Core.Application.csproj" />
       <ProjectReference Include="..\Opdex.Core.Infrastructure.Abstractions\Opdex.Core.Infrastructure.Abstractions.csproj" />
       <ProjectReference Include="..\Opdex.Core.Infrastructure\Opdex.Core.Infrastructure.csproj" />
       <ProjectReference Include="..\Opdex.Indexer.Application.Abstractions\Opdex.Indexer.Application.Abstractions.csproj" />

@@ -2,8 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Opdex.Core.Common.Exceptions;
+using Opdex.Core.Domain.Models;
 using Opdex.Core.Domain.Models.TransactionEvents;
 using Opdex.Indexer.Application.Abstractions.Commands.Transactions;
+using Opdex.Indexer.Application.Abstractions.Queries.Transactions;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 
@@ -20,6 +23,20 @@ namespace Opdex.Indexer.Application.Handlers.Transactions
         public async Task<bool> Handle(MakeTransactionCommand request, CancellationToken cancellationToken)
         {
             // Get Transaction - expect not exists
+            Transaction transaction;
+            try
+            {
+                transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.Transaction.Hash), CancellationToken.None);
+            }
+            catch (NotFoundException ex)
+            {
+                transaction = null;
+            }
+
+            if (transaction != null)
+            {
+                // exists already
+            }
             
             // Create transaction - return bool
             var transactionId = await _mediator.Send(new PersistTransactionCommand(request.Transaction));
@@ -27,7 +44,7 @@ namespace Opdex.Indexer.Application.Handlers.Transactions
             if (transactionId < 1)
             {
                 // Fail or Get transaction? Should that method throw?
-                // Would mean the transaction failed to insert, or already exists and was ignored
+                // Would mean the transaction failed to insert
             }
             
             // Get Transaction
@@ -35,7 +52,6 @@ namespace Opdex.Indexer.Application.Handlers.Transactions
             // Make Events
             foreach (var logEvent in request.Transaction.Events)
             {
-                // logEvent.Event.SetTransactionId(transactionId);
                 await MakeTransactionEvent(logEvent);
             }
 

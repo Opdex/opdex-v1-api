@@ -1,6 +1,5 @@
 using System;
 using MediatR;
-using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Common.Extensions;
 using Opdex.Core.Domain.Models;
 

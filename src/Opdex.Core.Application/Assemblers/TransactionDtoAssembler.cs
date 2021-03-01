@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using System.Transactions;
 using MediatR;
 using Opdex.Core.Application.Abstractions.Models;
+using Opdex.Core.Domain.Models;
 
 namespace Opdex.Core.Application.Assemblers
 {

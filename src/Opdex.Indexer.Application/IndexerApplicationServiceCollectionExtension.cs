@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Domain.Models;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Indexer.Application.Abstractions.Commands.Blocks;

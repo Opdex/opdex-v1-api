@@ -55,5 +55,13 @@ namespace Opdex.Indexer.WebApi.Controllers
 
             return Ok();
         }
+
+        [HttpPost("process-market")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ProcessMarket()
+        {
+            return NoContent();
+        }
     }
 }
