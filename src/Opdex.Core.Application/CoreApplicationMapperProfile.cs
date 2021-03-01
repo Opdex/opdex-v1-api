@@ -33,6 +33,7 @@ namespace Opdex.Core.Application
                 .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
                 .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
                 .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
+                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<Transaction, TransactionDto>()

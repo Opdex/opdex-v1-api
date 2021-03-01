@@ -76,10 +76,10 @@ namespace Opdex.Indexer.WebApi
             services.Configure<OpdexConfiguration>(opdexConfig);
             
             // Register project module services
-            services.AddCoreInfrastructureServices(cirrusConfiguration.Get<CirrusConfiguration>());
             services.AddCoreApplicationServices();
-            services.AddIndexerInfrastructureServices();
             services.AddIndexerApplicationServices();
+            services.AddCoreInfrastructureServices(cirrusConfiguration.Get<CirrusConfiguration>());
+            services.AddIndexerInfrastructureServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

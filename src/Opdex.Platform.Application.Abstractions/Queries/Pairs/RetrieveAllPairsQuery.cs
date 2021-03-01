@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using MediatR;
-using Opdex.Core.Application.Abstractions.Models;
+using Opdex.Core.Domain.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Pairs
 {
-    public class RetrieveAllPairsQuery : IRequest<IEnumerable<PairDto>>
+    public class RetrieveAllPairsQuery : IRequest<IEnumerable<Pair>>
     {
-        
     }
 }

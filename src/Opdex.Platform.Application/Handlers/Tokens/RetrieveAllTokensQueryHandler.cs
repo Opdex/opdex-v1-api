@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Core.Application.Abstractions.Models;
+using Opdex.Core.Domain.Models;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 
 namespace Opdex.Platform.Application.Handlers.Tokens
 {
-    public class RetrieveAllTokensQueryHandler : IRequestHandler<RetrieveAllTokensQuery, IEnumerable<TokenDto>>
+    public class RetrieveAllTokensQueryHandler : IRequestHandler<RetrieveAllTokensQuery, IEnumerable<Token>>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -21,13 +22,11 @@ namespace Opdex.Platform.Application.Handlers.Tokens
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<TokenDto>> Handle(RetrieveAllTokensQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Token>> Handle(RetrieveAllTokensQuery request, CancellationToken cancellationToken)
         {
             var query = new SelectAllTokensQuery();
             
-            var tokens = await _mediator.Send(query, cancellationToken);
-
-            return _mapper.Map<IEnumerable<TokenDto>>(tokens);
+            return await _mediator.Send(query, cancellationToken);
         }
     }
 }

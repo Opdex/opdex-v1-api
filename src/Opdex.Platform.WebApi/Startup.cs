@@ -13,6 +13,7 @@ using Opdex.Platform.Application;
 using Opdex.Platform.Infrastructure;
 using Serilog;
 using AutoMapper;
+using Opdex.Core.Common;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 
 namespace Opdex.Platform.WebApi
@@ -44,7 +45,7 @@ namespace Opdex.Platform.WebApi
             
             services.AddOpenApiDocument(settings =>
             {
-                settings.Title = $"Opdex Platform API";
+                settings.Title = "Opdex Platform API";
                 settings.Version = "v1";
             });
             
@@ -52,13 +53,18 @@ namespace Opdex.Platform.WebApi
             services.AddAutoMapper(mapperConfig =>
             {
                 mapperConfig.AddProfile<PlatformApplicationMapperProfile>();
+                mapperConfig.AddProfile<CoreApplicationMapperProfile>();
+                mapperConfig.AddProfile<PlatformInfrastructureMapperProfile>();
+                mapperConfig.AddProfile<CoreInfrastructureMapperProfile>();
             });
             
             services.AddHttpClient();
             
-            // Todo: Maybe not needed
+            // Todo: Use Azure Key Vault / User Secrets
             var cirrusConfiguration = Configuration.GetSection(nameof(CirrusConfiguration));
+            var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
             services.Configure<CirrusConfiguration>(cirrusConfiguration);
+            services.Configure<OpdexConfiguration>(opdexConfig);
             
             // Register project module services
             services.AddCoreApplicationServices();

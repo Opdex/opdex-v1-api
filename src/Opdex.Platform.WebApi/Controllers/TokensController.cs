@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Core.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.WebApi.Models;
 
@@ -30,12 +31,14 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(result);
         }
         
-        [HttpGet("{tokenAddress}")]
-        public async Task<ActionResult<TokenResponseModel>> GetToken(string tokenAddress, CancellationToken cancellationToken)
+        [HttpGet("{address}")]
+        public async Task<ActionResult<TokenResponseModel>> GetToken(string address, CancellationToken cancellationToken)
         {
-            var response = Task.FromResult("Cirrus");
+            var query = new GetTokenByAddressQuery(address);
             
-            return Ok(response);
+            var result = await _mediator.Send(query, cancellationToken);
+            
+            return Ok(result);
         }
     }
 }

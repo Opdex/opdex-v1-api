@@ -21,7 +21,8 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Tokens
                 {nameof(TokenEntity.Symbol)},
                 {nameof(TokenEntity.Decimals)},
                 {nameof(TokenEntity.Sats)},
-                {nameof(TokenEntity.TotalSupply)}
+                {nameof(TokenEntity.TotalSupply)},
+                {nameof(TokenEntity.CreatedDate)}
             FROM token
             WHERE {nameof(TokenEntity.Address)} = @{nameof(SqlParams.Address)};";
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Core.Application.Abstractions.Models;
+using Opdex.Core.Domain.Models;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pairs;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Pairs;
@@ -22,8 +23,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetAllTokensQuery, IEnumerable<TokenDto>>, GetAllTokensQueryHandler>();
 
             // Queries
-            services.AddTransient<IRequestHandler<RetrieveAllPairsQuery, IEnumerable<PairDto>>, RetrieveAllPairsQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveAllTokensQuery, IEnumerable<TokenDto>>, RetrieveAllTokensQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveAllPairsQuery, IEnumerable<Pair>>, RetrieveAllPairsQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveAllTokensQuery, IEnumerable<Token>>, RetrieveAllTokensQueryHandler>();
 
             return services;
         }
