@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
 using Opdex.Core.Common.Exceptions;
 using Opdex.Core.Domain.Models;
@@ -23,10 +24,12 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Blocks
             LIMIT 1;";
                         
         private readonly IDbContext _context;
+        private readonly IMapper _mapper;
 
-        public SelectLatestBlockQueryHandler(IDbContext context)
+        public SelectLatestBlockQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<Block> Handle(SelectLatestBlockQuery request, CancellationToken cancellationToken)
@@ -39,8 +42,8 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Blocks
             {
                 throw new NotFoundException("No blocks found.");
             }
-            
-            return new Block(result.Height, result.Hash, result.Time, result.Time);
+
+            return _mapper.Map<Block>(result);
         }
     }
 }

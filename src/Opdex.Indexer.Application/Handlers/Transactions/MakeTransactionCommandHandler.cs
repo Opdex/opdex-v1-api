@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Opdex.Core.Application.Abstractions.Queries.Transactions;
 using Opdex.Core.Common.Exceptions;
 using Opdex.Core.Domain.Models;
 using Opdex.Core.Domain.Models.TransactionEvents;

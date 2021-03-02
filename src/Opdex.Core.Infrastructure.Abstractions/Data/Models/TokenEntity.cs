@@ -7,7 +7,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models
         public string Symbol { get; set; }
         public string Name { get; set; }
         public byte Decimals { get; set; }
-        public int Sats { get; set; }
+        public long Sats { get; set; }
         public string TotalSupply { get; set; }
     }
 }

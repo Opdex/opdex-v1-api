@@ -19,7 +19,6 @@
     <ItemGroup>
       <Folder Include="EntryHandlers\Blocks" />
       <Folder Include="EntryHandlers\Transactions" />
-      <Folder Include="Handlers\Transactions" />
     </ItemGroup>
 
 </Project>

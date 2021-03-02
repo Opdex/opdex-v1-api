@@ -15,7 +15,6 @@
     <ItemGroup>
       <Folder Include="EntryQueries\Blocks" />
       <Folder Include="EntryQueries\Transactions" />
-      <Folder Include="Queries\Transactions" />
     </ItemGroup>
 
 </Project>

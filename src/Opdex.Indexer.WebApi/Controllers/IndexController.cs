@@ -38,6 +38,9 @@ namespace Opdex.Indexer.WebApi.Controllers
             // while nextBlockHash != null - Get next block
             //    - Publish message for every transaction in block
             //    - Index block related data
+            
+            // Shortcut, if Block ends in "1" or "6", process snapshot for the previous 5 blocks
+            // (e.g. block number is 16, process snapshots of blocks 11-15)
             return NoContent();
         }
         

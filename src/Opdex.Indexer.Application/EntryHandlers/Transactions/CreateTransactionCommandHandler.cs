@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Queries.Blocks;
+using Opdex.Core.Application.Abstractions.Queries.Transactions;
 using Opdex.Core.Application.Assemblers;
 using Opdex.Core.Domain.Models;
 using Opdex.Core.Domain.Models.TransactionEvents;

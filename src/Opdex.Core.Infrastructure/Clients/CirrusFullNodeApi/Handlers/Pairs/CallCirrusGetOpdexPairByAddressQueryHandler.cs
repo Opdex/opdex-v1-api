@@ -22,7 +22,6 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pairs
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-
         public async Task<Pair> Handle(CallCirrusGetOpdexPairByAddressQuery request, CancellationToken cancellationToken)
         {
             var localCall = new LocalCallRequestDto(request.Address, "Sender", "GetReserves", new string[0]);

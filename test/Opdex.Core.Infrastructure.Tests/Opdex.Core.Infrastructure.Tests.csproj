@@ -19,10 +19,4 @@
       <ProjectReference Include="..\..\src\Opdex.Core.Infrastructure\Opdex.Core.Infrastructure.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Data\Handlers\Blocks" />
-      <Folder Include="Data\Handlers\Pairs" />
-      <Folder Include="Data\Handlers\Tokens" />
-    </ItemGroup>
-
 </Project>

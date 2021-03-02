@@ -82,6 +82,8 @@ namespace Opdex.Platform.WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(options => options.AllowAnyOrigin());
             
             app.UseSerilogRequestLogging();
 

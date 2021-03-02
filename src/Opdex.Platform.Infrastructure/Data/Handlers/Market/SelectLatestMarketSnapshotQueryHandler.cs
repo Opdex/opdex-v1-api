@@ -25,7 +25,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Market
                 {nameof(MarketSnapshotEntity.DailyVolume)},
                 {nameof(MarketSnapshotEntity.Block)},
                 {nameof(MarketSnapshotEntity.CreatedDate)}
-            FROM market_snapshot;";
+            FROM market_snapshot
+            ORDER BY {nameof(MarketSnapshotEntity.Id)} DESC
+            LIMIT 1;";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;

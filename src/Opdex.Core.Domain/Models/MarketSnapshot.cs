@@ -1,3 +1,5 @@
+using System;
+
 namespace Opdex.Core.Domain.Models
 {
     public class MarketSnapshot
@@ -5,6 +7,46 @@ namespace Opdex.Core.Domain.Models
         public MarketSnapshot(long tokenCount, long pairCount, long dailyTransactionCount, decimal crsPrice, decimal liquidity,
             decimal dailyFees, decimal dailyVolume, ulong block)
         {
+            if (tokenCount < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(tokenCount));
+            }
+            
+            if (pairCount < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pairCount));
+            }
+            
+            if (dailyTransactionCount < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dailyTransactionCount));
+            }
+            
+            if (crsPrice < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(crsPrice));
+            }
+            
+            if (liquidity < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(liquidity));
+            }
+            
+            if (dailyFees < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dailyFees));
+            }
+            
+            if (dailyVolume < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dailyVolume));
+            }
+            
+            if (block < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(block));
+            }
+
             TokenCount = tokenCount;
             PairCount = pairCount;
             DailyTransactionCount = dailyTransactionCount;

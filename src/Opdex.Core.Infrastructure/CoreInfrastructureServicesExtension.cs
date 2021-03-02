@@ -59,13 +59,13 @@ namespace Opdex.Core.Infrastructure
             
             // Transactions
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectBurnEventByTransactionIdQuery, BurnEvent>, SelectBurnEventByTransactionIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMintEventByTransactionIdQuery, MintEvent>, SelectMintEventByTransactionIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectSwapEventByTransactionIdQuery, SwapEvent>, SelectSwapEventByTransactionIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectSyncEventByTransactionIdQuery, SyncEvent>, SelectSyncEventByTransactionIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTransferEventByTransactionIdQuery, TransferEvent>, SelectTransferEventByTransactionIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectApprovalEventByTransactionIdQuery, ApprovalEvent>, SelectApprovalEventByTransactionIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectPairCreatedEventByTransactionIdQuery, PairCreatedEvent>, SelectPairCreatedEventByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectBurnEventsByTransactionIdQuery, IEnumerable<BurnEvent>>, SelectBurnEventsByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMintEventsByTransactionIdQuery, IEnumerable<MintEvent>>, SelectMintEventsByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectSwapEventsByTransactionIdQuery, IEnumerable<SwapEvent>>, SelectSwapEventsByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectSyncEventsByTransactionIdQuery, IEnumerable<SyncEvent>>, SelectSyncEventsByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTransferEventsByTransactionIdQuery, IEnumerable<TransferEvent>>, SelectTransferEventsByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectApprovalEventsByTransactionIdQuery, IEnumerable<ApprovalEvent>>, SelectApprovalEventsByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectPairCreatedEventsByTransactionIdQuery, IEnumerable<PairCreatedEvent>>, SelectPairCreatedEventsByTransactionIdQueryHandler>();
         }
 
         private static void AddClientServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)
