@@ -8,8 +8,8 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
         public PairCreatedEvent(dynamic log, string address, int sortOrder) 
             : base(nameof(PairCreatedEvent), address, sortOrder)
         {
-            string token = log?.Token;
-            string pair = log?.Pair;
+            string token = log?.token;
+            string pair = log?.pair;
             
             if (!token.HasValue())
             {

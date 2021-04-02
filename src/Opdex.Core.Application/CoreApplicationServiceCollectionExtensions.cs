@@ -45,6 +45,7 @@ namespace Opdex.Core.Application
             services.AddTransient<IRequestHandler<RetrieveApprovalEventsByTransactionIdQuery, IEnumerable<ApprovalEvent>>, RetrieveApprovalEventsByTransactionIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTransferEventsByTransactionIdQuery, IEnumerable<TransferEvent>>, RetrieveTransferEventsByTransactionIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrievePairCreatedEventsByTransactionIdQuery, IEnumerable<PairCreatedEvent>>, RetrievePairCreatedEventsByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveTransactionEventSummariesByTransactionIdQuery, List<TransactionEventSummary>>, RetrieveTransactionEventSummariesByTransactionIdQueryHandler>();
 
             // Assemblers
             services.AddTransient<IModelAssembler<Transaction, TransactionDto>, TransactionDtoAssembler>();

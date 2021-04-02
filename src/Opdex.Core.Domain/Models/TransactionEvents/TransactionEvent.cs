@@ -36,17 +36,17 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
             SortOrder = sortOrder;
         }
         
-        public long Id { get; private set; }
+        public long Id { get; }
         public string EventType { get; }
-        public long TransactionId { get; }
+        public long TransactionId { get; private set; }
         public string Address { get; }
         public int SortOrder { get; }
 
-        protected internal void SetTransactionId(long id)
+        protected internal void SetTransactionId(long txId)
         {
-            if (Id == 0 && id > 0)
+            if (TransactionId == 0 && txId > 0)
             {
-                Id = id;
+                TransactionId = txId;
             }
         }
     }

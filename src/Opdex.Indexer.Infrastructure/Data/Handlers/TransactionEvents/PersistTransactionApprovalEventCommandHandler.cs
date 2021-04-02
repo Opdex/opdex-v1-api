@@ -10,24 +10,21 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
 {
-    public class PersistTransactionApprovalEventCommandHandler: IRequestHandler<PersistTransactionApprovalEventCommand, bool>
+    public class PersistTransactionApprovalEventCommandHandler: IRequestHandler<PersistTransactionApprovalEventCommand, long>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO transaction_event_approval (
-                {nameof(ApprovalEventEntity.TransactionId)},
-                {nameof(ApprovalEventEntity.Address)},
                 {nameof(ApprovalEventEntity.Owner)},
                 {nameof(ApprovalEventEntity.Spender)},
                 {nameof(ApprovalEventEntity.Amount)},
                 {nameof(ApprovalEventEntity.CreatedDate)}
               ) VALUES (
-                @{nameof(ApprovalEventEntity.TransactionId)}
-                @{nameof(ApprovalEventEntity.Address)}
                 @{nameof(ApprovalEventEntity.Owner)},
                 @{nameof(ApprovalEventEntity.Spender)},
                 @{nameof(ApprovalEventEntity.Amount)},
                 UTC_TIMESTAMP()
-              );";
+              );
+              SELECT LAST_INSERT_ID();";
         
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -41,7 +38,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        public async Task<bool> Handle(PersistTransactionApprovalEventCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(PersistTransactionApprovalEventCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -49,14 +46,14 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
 
                 var command = DatabaseQuery.Create(SqlCommand, approvalEventEntity, cancellationToken);
 
-                var result = await _context.ExecuteCommandAsync(command);
+                var result = await _context.ExecuteScalarAsync<long>(command);
 
-                return result > 0;
+                return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _logger.LogError($"Unable to persist {request.ApprovalEvent}");
-                return false;
+                _logger.LogError(ex, $"Unable to persist {request.ApprovalEvent}");
+                return 0;
             }
         }
     }

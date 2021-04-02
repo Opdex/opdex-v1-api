@@ -83,7 +83,11 @@ namespace Opdex.Platform.WebApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(options => options.AllowAnyOrigin());
+            // Todo: Set correctly for ENV's outside local dev
+            app.UseCors(options => options
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
             
             app.UseSerilogRequestLogging();
 

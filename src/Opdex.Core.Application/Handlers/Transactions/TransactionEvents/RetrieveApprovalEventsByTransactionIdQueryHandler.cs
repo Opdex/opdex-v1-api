@@ -20,7 +20,7 @@ namespace Opdex.Core.Application.Handlers.Transactions.TransactionEvents
         
         public async Task<IEnumerable<ApprovalEvent>> Handle(RetrieveApprovalEventsByTransactionIdQuery request, CancellationToken cancellationToken)
         {
-            var approvalEvents = await _mediator.Send(new SelectApprovalEventsByTransactionIdQuery(request.TransactionId), cancellationToken);
+            var approvalEvents = await _mediator.Send(new SelectApprovalEventsByTransactionIdQuery(request.TransactionEvents), cancellationToken);
 
             return approvalEvents;
         }

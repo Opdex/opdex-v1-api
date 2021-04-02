@@ -18,13 +18,10 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents
         private static readonly string SqlQuery =
             @$"SELECT 
                 {nameof(SyncEventEntity.Id)},
-                {nameof(SyncEventEntity.TransactionId)},
-                {nameof(SyncEventEntity.Address)},
-                {nameof(SyncEventEntity.SortOrder)},
                 {nameof(SyncEventEntity.ReserveCrs)},
                 {nameof(SyncEventEntity.ReserveSrc)}
             FROM transaction_event_sync
-            WHERE {nameof(SyncEventEntity.TransactionId)} = @{nameof(SqlParams.TransactionId)};";
+            WHERE {nameof(SyncEventEntity.Id)} IN @{nameof(SqlParams.TransactionEventIds)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -37,22 +34,41 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents
 
         public async Task<IEnumerable<SyncEvent>> Handle(SelectSyncEventsByTransactionIdQuery request, CancellationToken cancellationTransaction)
         {
-            var queryParams = new SqlParams(request.TransactionId);
+            var transactionEvents = request.TransactionEvents.ToDictionary(k => k.EventId);
+            
+            var queryParams = new SqlParams(transactionEvents.Keys);
+            
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
 
-            var result = await _context.ExecuteQueryAsync<SyncEventEntity>(query);
+            var results = await _context.ExecuteQueryAsync<SyncEventEntity>(query);
 
-            return !result.Any() ? Enumerable.Empty<SyncEvent>() : _mapper.Map<IEnumerable<SyncEvent>>(result);
+            if (!results.Any()) return Enumerable.Empty<SyncEvent>();
+
+            var response = new List<SyncEvent>();
+
+            foreach (var result in results)
+            {
+                var found = transactionEvents.TryGetValue(result.Id, out var txEvent);
+                if (!found)
+                {
+                    continue;
+                }
+                
+                response.Add(new SyncEvent(result.Id, txEvent.TransactionId, txEvent.Contract, 
+                    txEvent.SortOrder, result.ReserveCrs, result.ReserveSrc));
+            }
+
+            return !response.Any() ? Enumerable.Empty<SyncEvent>() : response;
         }
 
         private sealed class SqlParams
         {
-            internal SqlParams(long transactionId)
+            internal SqlParams(IEnumerable<long> transactionEventIds)
             {
-                TransactionId = transactionId;
+                TransactionEventIds = transactionEventIds;
             }
 
-            public long TransactionId { get; }
+            public IEnumerable<long> TransactionEventIds { get; }
         }
     }
 }

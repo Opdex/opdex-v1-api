@@ -6,6 +6,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Core.Common.Exceptions;
+using Opdex.Core.Domain.Models.TransactionEvents;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents;
 using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionEvents;
@@ -44,7 +45,7 @@ namespace Opdex.Core.Infrastructure.Tests.Data.Handlers.Transactions.Transaction
 
             var responseList = new List<MintEventEntity> {expectedResponse}.AsEnumerable();
             
-            var command = new SelectMintEventsByTransactionIdQuery(transactionId);
+            var command = new SelectMintEventsByTransactionIdQuery(new [] { new TransactionEventSummary(1,1,1,1,1,"1") });
         
             _dbContext.Setup(db => db.ExecuteQueryAsync<MintEventEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(responseList));

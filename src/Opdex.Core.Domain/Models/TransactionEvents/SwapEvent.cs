@@ -8,12 +8,12 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
         public SwapEvent(dynamic log, string address, int sortOrder) 
             : base(nameof(SwapEvent), address, sortOrder)
         {
-            string sender = log?.Sender;
-            string to = log?.To;
-            ulong amountCrsIn = log?.AmountCrsIn;
-            ulong amountCrsOut = log?.AmountCrsOut;
-            string amountSrcIn = log?.AmountSrcIn;
-            string amountSrcOut = log?.AmountSrcOut;
+            string sender = log?.sender;
+            string to = log?.to;
+            ulong amountCrsIn = log?.amountCrsIn;
+            ulong amountCrsOut = log?.amountCrsOut;
+            string amountSrcIn = log?.amountSrcIn;
+            string amountSrcOut = log?.amountSrcOut;
 
             if (!sender.HasValue())
             {

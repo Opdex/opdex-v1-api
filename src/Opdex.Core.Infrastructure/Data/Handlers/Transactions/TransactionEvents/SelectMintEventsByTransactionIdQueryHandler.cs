@@ -18,14 +18,11 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents
         private static readonly string SqlQuery =
             @$"SELECT 
                 {nameof(MintEventEntity.Id)},
-                {nameof(MintEventEntity.TransactionId)},
-                {nameof(MintEventEntity.Address)},
-                {nameof(MintEventEntity.SortOrder)},
                 {nameof(MintEventEntity.Sender)},
                 {nameof(MintEventEntity.AmountCrs)},
                 {nameof(MintEventEntity.AmountSrc)}
             FROM transaction_event_mint
-            WHERE {nameof(MintEventEntity.TransactionId)} = @{nameof(SqlParams.TransactionId)};";
+            WHERE {nameof(MintEventEntity.Id)} IN @{nameof(SqlParams.TransactionEventIds)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -38,22 +35,41 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents
 
         public async Task<IEnumerable<MintEvent>> Handle(SelectMintEventsByTransactionIdQuery request, CancellationToken cancellationTransaction)
         {
-            var queryParams = new SqlParams(request.TransactionId);
+            var transactionEvents = request.TransactionEvents.ToDictionary(k => k.EventId);
+            
+            var queryParams = new SqlParams(transactionEvents.Keys);
+            
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
 
-            var result = await _context.ExecuteQueryAsync<MintEventEntity>(query);
+            var results = await _context.ExecuteQueryAsync<MintEventEntity>(query);
 
-            return !result.Any() ? Enumerable.Empty<MintEvent>() : _mapper.Map<IEnumerable<MintEvent>>(result);
+            if (!results.Any()) return Enumerable.Empty<MintEvent>();
+
+            var response = new List<MintEvent>();
+
+            foreach (var result in results)
+            {
+                var found = transactionEvents.TryGetValue(result.Id, out var txEvent);
+                if (!found)
+                {
+                    continue;
+                }
+                
+                response.Add(new MintEvent(result.Id, txEvent.TransactionId, txEvent.Contract, 
+                    txEvent.SortOrder, result.Sender, result.AmountCrs, result.AmountSrc));
+            }
+
+            return !response.Any() ? Enumerable.Empty<MintEvent>() : response;
         }
 
         private sealed class SqlParams
         {
-            internal SqlParams(long transactionId)
+            internal SqlParams(IEnumerable<long> transactionEventIds)
             {
-                TransactionId = transactionId;
+                TransactionEventIds = transactionEventIds;
             }
 
-            public long TransactionId { get; }
+            public IEnumerable<long> TransactionEventIds { get; }
         }
     }
 }

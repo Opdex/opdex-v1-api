@@ -4,18 +4,19 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Core.Domain.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers
 {
-    public class PersistTransactionCommandHandler : IRequestHandler<PersistTransactionCommand, long>
+    public class PersistTransactionCommandHandler : IRequestHandler<PersistTransactionCommand, Transaction>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO transaction (
-                {nameof(TransactionEntity.From)},
-                {nameof(TransactionEntity.To)},
+                `{nameof(TransactionEntity.From)}`,
+                `{nameof(TransactionEntity.To)}`,
                 {nameof(TransactionEntity.Hash)},
                 {nameof(TransactionEntity.GasUsed)},
                 {nameof(TransactionEntity.Block)},
@@ -28,7 +29,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
                 @{nameof(TransactionEntity.Block)},
                 UTC_TIMESTAMP()
               );
-              SELECT last_insert_rowid();";
+              SELECT LAST_INSERT_ID();";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -42,7 +43,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistTransactionCommand request, CancellationToken cancellationToken)
+        public async Task<Transaction> Handle(PersistTransactionCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -52,12 +53,13 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
 
                 var result = await _context.ExecuteScalarAsync<long>(command);
 
-                return result;
+                return new Transaction(result, request.Transaction.Hash, request.Transaction.BlockHeight,
+                    request.Transaction.GasUsed, request.Transaction.From, request.Transaction.To, request.Transaction.Events);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _logger.LogError($"Unable to persist {nameof(request.Transaction)}");
-                return 0;
+                _logger.LogError(ex, $"Unable to persist {nameof(request.Transaction)}");
+                return null;
             }
         }
     }

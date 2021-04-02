@@ -36,17 +36,19 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartCont
             var transaction = await _smartContractsModule.GetReceiptAsync(request.TxHash, cancellationToken);
             var block = await _blockStoreModule.GetBlockAsync(transaction.BlockHash, cancellationToken);
 
-            foreach (var log in transaction.Logs)
-            {
-                if (log.Topics.Any())
-                {
-                    log.Topics[0] = log.Topics[0].HexToString();
-                }    
-            }
-            
             transaction.SetBlockHeight(block.Height);
-            
-            return _mapper.Map<Transaction>(transaction);
+
+            var transactionResponse =  _mapper.Map<Transaction>(transaction);
+
+            for (var i = 0; i < transaction.Logs.Length; i++)
+            {
+                var txEvent = transaction.Logs[i];
+                var eventType = txEvent.Topics[0].HexToString();
+                
+                transactionResponse.DeserializeEvent(txEvent.Address, eventType, i, txEvent.Log);
+            }
+
+            return transactionResponse;
         }
     }
 }

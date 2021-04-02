@@ -20,7 +20,7 @@ namespace Opdex.Core.Application.Handlers.Transactions.TransactionEvents
         
         public async Task<IEnumerable<MintEvent>> Handle(RetrieveMintEventsByTransactionIdQuery request, CancellationToken cancellationToken)
         {
-            var mintEvents = await _mediator.Send(new SelectMintEventsByTransactionIdQuery(request.TransactionId), cancellationToken);
+            var mintEvents = await _mediator.Send(new SelectMintEventsByTransactionIdQuery(request.TransactionEvents), cancellationToken);
 
             return mintEvents;
         }

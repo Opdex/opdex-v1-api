@@ -20,7 +20,7 @@ namespace Opdex.Core.Application.Handlers.Transactions.TransactionEvents
         
         public async Task<IEnumerable<BurnEvent>> Handle(RetrieveBurnEventsByTransactionIdQuery request, CancellationToken cancellationToken)
         {
-            var burnEvents = await _mediator.Send(new SelectBurnEventsByTransactionIdQuery(request.TransactionId), cancellationToken);
+            var burnEvents = await _mediator.Send(new SelectBurnEventsByTransactionIdQuery(request.TransactionEvents), cancellationToken);
 
             return burnEvents;
         }

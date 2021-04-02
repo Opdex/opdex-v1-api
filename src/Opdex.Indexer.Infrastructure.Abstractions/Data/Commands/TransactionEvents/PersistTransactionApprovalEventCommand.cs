@@ -4,7 +4,7 @@ using Opdex.Core.Domain.Models.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents
 {
-    public class PersistTransactionApprovalEventCommand : IRequest<bool>
+    public class PersistTransactionApprovalEventCommand : IRequest<long>
     {
         public PersistTransactionApprovalEventCommand(ApprovalEvent approvalEvent)
         {

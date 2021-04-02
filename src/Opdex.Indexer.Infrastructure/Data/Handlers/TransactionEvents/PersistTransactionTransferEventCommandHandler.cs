@@ -10,24 +10,21 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
 {
-    public class PersistTransactionTransferEventCommandHandler : IRequestHandler<PersistTransactionTransferEventCommand, bool>
+    public class PersistTransactionTransferEventCommandHandler : IRequestHandler<PersistTransactionTransferEventCommand, long>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO transaction_event_transfer (
-                {nameof(TransferEventEntity.TransactionId)},
-                {nameof(TransferEventEntity.Address)},
-                {nameof(TransferEventEntity.From)},
-                {nameof(TransferEventEntity.To)},
+                `{nameof(TransferEventEntity.From)}`,
+                `{nameof(TransferEventEntity.To)}`,
                 {nameof(TransferEventEntity.Amount)},
                 {nameof(TransferEventEntity.CreatedDate)}
               ) VALUES (
-                @{nameof(TransferEventEntity.TransactionId)},
-                @{nameof(TransferEventEntity.Address)},
                 @{nameof(TransferEventEntity.From)},
                 @{nameof(TransferEventEntity.To)},
                 @{nameof(TransferEventEntity.Amount)},
                 UTC_TIMESTAMP()
-              );";
+              );
+              SELECT LAST_INSERT_ID();";
         
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -41,7 +38,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        public async Task<bool> Handle(PersistTransactionTransferEventCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(PersistTransactionTransferEventCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -49,14 +46,14 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
             
                 var command = DatabaseQuery.Create(SqlCommand, transferEventEntity, cancellationToken);
             
-                var result = await _context.ExecuteCommandAsync(command);
+                var result = await _context.ExecuteScalarAsync<long>(command);
             
-                return result > 0;
+                return result;
             } 
-            catch(Exception)
+            catch(Exception ex)
             {
-                _logger.LogError($"Unable to persist {request.TransferEvent}");
-                return false;
+                _logger.LogError(ex, $"Unable to persist {request.TransferEvent}");
+                return 0;
             }
         }
     }

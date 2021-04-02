@@ -3,6 +3,7 @@ using Opdex.Core.Domain.Models;
 using Opdex.Core.Domain.Models.TransactionEvents;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents;
+using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure
 {
@@ -108,6 +109,14 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<PersistTransactionEventSummaryCommand, TransactionEventSummaryEntity>()
+                .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
+                .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
+                .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
+                .ForMember(dest => dest.EventId, opt => opt.MapFrom(src => src.EventId))
+                .ForMember(dest => dest.EventTypeId, opt => opt.MapFrom(src => src.EventTypeId))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
     }

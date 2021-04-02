@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Opdex.Core.Domain.Models;
 using Opdex.Core.Domain.Models.TransactionEvents;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore;
@@ -66,6 +67,7 @@ namespace Opdex.Core.Infrastructure
             services.AddTransient<IRequestHandler<SelectTransferEventsByTransactionIdQuery, IEnumerable<TransferEvent>>, SelectTransferEventsByTransactionIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectApprovalEventsByTransactionIdQuery, IEnumerable<ApprovalEvent>>, SelectApprovalEventsByTransactionIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectPairCreatedEventsByTransactionIdQuery, IEnumerable<PairCreatedEvent>>, SelectPairCreatedEventsByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTransactionEventSummariesByTransactionIdQuery, IEnumerable<TransactionEventSummary>>, SelectTransactionEventSummariesByTransactionIdQueryHandler>();
         }
 
         private static void AddClientServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)
@@ -91,6 +93,7 @@ namespace Opdex.Core.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetTransactionByHashQuery, Transaction>, CallCirrusGetTransactionByHashQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusSearchContractTransactionsQuery, List<Transaction>>, CallCirrusSearchContractTransactionsQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenDetailsByAddressQuery, Token>, CallCirrusGetSrcTokenDetailsByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, string>, CallCirrusCallSmartContractMethodCommandHandler>();
 
             #endregion
         }

@@ -18,13 +18,10 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents
         private static readonly string SqlQuery =
             @$"SELECT 
                 {nameof(PairCreatedEventEntity.Id)},
-                {nameof(PairCreatedEventEntity.TransactionId)},
-                {nameof(PairCreatedEventEntity.Address)},
-                {nameof(PairCreatedEventEntity.SortOrder)},
                 {nameof(PairCreatedEventEntity.Token)},
                 {nameof(PairCreatedEventEntity.Pair)}
             FROM transaction_event_pair_created
-            WHERE {nameof(PairCreatedEventEntity.TransactionId)} = @{nameof(SqlParams.TransactionId)};";
+            WHERE {nameof(PairCreatedEventEntity.Id)} IN @{nameof(SqlParams.TransactionEventIds)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -37,22 +34,41 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents
 
         public async Task<IEnumerable<PairCreatedEvent>> Handle(SelectPairCreatedEventsByTransactionIdQuery request, CancellationToken cancellationTransaction)
         {
-            var queryParams = new SqlParams(request.TransactionId);
+            var transactionEvents = request.TransactionEvents.ToDictionary(k => k.EventId);
+            
+            var queryParams = new SqlParams(transactionEvents.Keys);
+            
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
 
-            var result = await _context.ExecuteQueryAsync<PairCreatedEventEntity>(query);
+            var results = await _context.ExecuteQueryAsync<PairCreatedEventEntity>(query);
 
-            return !result.Any() ? Enumerable.Empty<PairCreatedEvent>() : _mapper.Map<IEnumerable<PairCreatedEvent>>(result);
+            if (!results.Any()) return Enumerable.Empty<PairCreatedEvent>();
+
+            var response = new List<PairCreatedEvent>();
+
+            foreach (var result in results)
+            {
+                var found = transactionEvents.TryGetValue(result.Id, out var txEvent);
+                if (!found)
+                {
+                    continue;
+                }
+                
+                response.Add(new PairCreatedEvent(result.Id, txEvent.TransactionId, txEvent.Contract, 
+                    txEvent.SortOrder, result.Token, result.Pair));
+            }
+
+            return !response.Any() ? Enumerable.Empty<PairCreatedEvent>() : response;
         }
 
         private sealed class SqlParams
         {
-            internal SqlParams(long transactionId)
+            internal SqlParams(IEnumerable<long> transactionEventIds)
             {
-                TransactionId = transactionId;
+                TransactionEventIds = transactionEventIds;
             }
 
-            public long TransactionId { get; }
+            public IEnumerable<long> TransactionEventIds { get; }
         }
     }
 }

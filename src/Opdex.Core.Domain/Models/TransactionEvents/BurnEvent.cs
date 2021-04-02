@@ -8,10 +8,10 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
         public BurnEvent(dynamic log, string address, int sortOrder) 
             : base(nameof(BurnEvent), address, sortOrder)
         {
-            string sender = log?.Sender;
-            string to = log?.To;
-            ulong amountCrs = log?.AmountCrs;
-            string amountSrc = log?.AmountSrc;
+            string sender = log?.sender;
+            string to = log?.to;
+            ulong amountCrs = log?.amountCrs;
+            string amountSrc = log?.amountSrc;
 
             if (!sender.HasValue())
             {

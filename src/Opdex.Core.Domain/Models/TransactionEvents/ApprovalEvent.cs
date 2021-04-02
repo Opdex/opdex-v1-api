@@ -8,9 +8,9 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
         public ApprovalEvent(dynamic log, string address, int sortOrder) 
             : base(nameof(ApprovalEvent), address, sortOrder)
         {
-            string owner = log?.Owner;
-            string spender = log?.Spender;
-            string amount = log?.Amount;
+            string owner = log?.owner;
+            string spender = log?.spender;
+            string amount = log?.amount;
             
             if (!owner.HasValue())
             {

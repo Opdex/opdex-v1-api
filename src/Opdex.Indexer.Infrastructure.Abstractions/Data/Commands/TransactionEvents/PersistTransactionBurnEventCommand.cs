@@ -4,7 +4,7 @@ using Opdex.Core.Domain.Models.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents
 {
-    public class PersistTransactionBurnEventCommand : IRequest<bool>
+    public class PersistTransactionBurnEventCommand : IRequest<long>
     {
         public PersistTransactionBurnEventCommand(BurnEvent burnEvent)
         {

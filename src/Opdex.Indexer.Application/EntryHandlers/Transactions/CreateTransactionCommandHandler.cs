@@ -37,61 +37,62 @@ namespace Opdex.Indexer.Application.EntryHandlers.Transactions
         
         public async Task<bool> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
         {
-            TransactionDto transactionDto = null;
-            
-            try
-            {
-                var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash), cancellationToken);
-                transactionDto = await _assembler.Assemble(transaction);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation($"{nameof(Transaction)} with hash {request.TxHash} is not found. Fetching from Cirrus to index.");
-            }
+            var transactionDto = await TryGetExistingTransaction(request.TxHash, cancellationToken);
+
+            if (transactionDto != null) return true;
 
             var cirrusTx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), cancellationToken);
-            
-            if (transactionDto == null)
-            {
-                var result = await _mediator.Send(new MakeTransactionCommand(cirrusTx));
 
-                if (cirrusTx.Events.FirstOrDefault(e => e.EventType == nameof(PairCreatedEvent)) is PairCreatedEvent pairCreatedEvent)
-                {
-                    // Todo: Break this out of this handler, return TransactionDto from this handler, insert token/pair outside
-                    var tokenId = await _mediator.Send(new MakeTokenCommand(pairCreatedEvent.Token));
-                    await _mediator.Send(new MakePairCommand(pairCreatedEvent.Pair, tokenId));
-                }
-                else
-                {
-                    var latestBlock = await _mediator.Send(new RetrieveLatestBlockQuery());
-                    
-                    if (latestBlock.Height == cirrusTx.BlockHeight)
-                    {
-                        if (cirrusTx.Events.Any(e => e.EventType == nameof(SyncEvent)))
-                        {
-                            // - update pair reserves if sync event occurred
-                        }
-                    
-                        if (cirrusTx.Events.Any(e => new [] { nameof(MintEvent), nameof(BurnEvent)}.Contains(e.EventType)))
-                        {
-                            // - update pair total supply if mint or burn event occurred
-                        }
-                        
-                        // Todo: Update any other relevant data sets
-                    }
-                }
+            if (cirrusTx == null) return false;
+            
+            var result = await _mediator.Send(new MakeTransactionCommand(cirrusTx));
+
+            if (!result) return false;
+            
+            if (cirrusTx.Events.FirstOrDefault(e => e.EventType == nameof(PairCreatedEvent)) is PairCreatedEvent pairCreatedEvent)
+            {
+                // Todo: Break this out of this handler, return TransactionDto from this handler, insert token/pair outside
+                var tokenId = await _mediator.Send(new MakeTokenCommand(pairCreatedEvent.Token));
+                await _mediator.Send(new MakePairCommand(pairCreatedEvent.Pair, tokenId));
             }
             else
             {
-                var missingEvents = cirrusTx.Events.Where(tx => transactionDto.Events.All(dto => dto.SortOrder != tx.SortOrder)).ToList();
-
-                if (missingEvents.Any())
+                var latestBlock = await _mediator.Send(new RetrieveLatestBlockQuery());
+                    
+                if (latestBlock.Height == cirrusTx.BlockHeight)
                 {
-                    // Insert missing events
+                    if (cirrusTx.Events.Any(e => e.EventType == nameof(SyncEvent)))
+                    {
+                        // - update pair reserves if sync event occurred
+                    }
+                    
+                    if (cirrusTx.Events.Any(e => new [] { nameof(MintEvent), nameof(BurnEvent)}.Contains(e.EventType)))
+                    {
+                        // - update pair total supply if mint or burn event occurred
+                    }
+                        
+                    // Todo: Update any other relevant data sets
                 }
             }
             
             return true;
+        }
+
+        private async Task<TransactionDto> TryGetExistingTransaction(string txHash, CancellationToken cancellationToken)
+        {
+            TransactionDto transactionDto = null;
+            
+            try
+            {
+                var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(txHash), cancellationToken);
+                transactionDto = await _assembler.Assemble(transaction);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, $"{nameof(Transaction)} with hash {txHash} is not found. Fetching from Cirrus to index.");
+            }
+
+            return transactionDto;
         }
     }
 }

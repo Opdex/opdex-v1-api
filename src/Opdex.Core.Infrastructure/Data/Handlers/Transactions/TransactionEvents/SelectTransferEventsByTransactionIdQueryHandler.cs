@@ -18,14 +18,11 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents
         private static readonly string SqlQuery =
             @$"SELECT 
                 {nameof(TransferEventEntity.Id)},
-                {nameof(TransferEventEntity.TransactionId)},
-                {nameof(TransferEventEntity.Address)},
-                {nameof(TransferEventEntity.SortOrder)},
-                {nameof(TransferEventEntity.To)},
-                {nameof(TransferEventEntity.From)},
+                `{nameof(TransferEventEntity.To)}`,
+                `{nameof(TransferEventEntity.From)}`,
                 {nameof(TransferEventEntity.Amount)}
             FROM transaction_event_transfer
-            WHERE {nameof(TransferEventEntity.TransactionId)} = @{nameof(SqlParams.TransactionId)};";
+            WHERE {nameof(TransferEventEntity.Id)} IN @{nameof(SqlParams.TransactionEventIds)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -38,22 +35,41 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents
 
         public async Task<IEnumerable<TransferEvent>> Handle(SelectTransferEventsByTransactionIdQuery request, CancellationToken cancellationTransaction)
         {
-            var queryParams = new SqlParams(request.TransactionId);
+            var transactionEvents = request.TransactionEvents.ToDictionary(k => k.EventId);
+            
+            var queryParams = new SqlParams(transactionEvents.Keys);
+            
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
 
-            var result = await _context.ExecuteQueryAsync<TransferEventEntity>(query);
+            var results = await _context.ExecuteQueryAsync<TransferEventEntity>(query);
 
-            return !result.Any() ? Enumerable.Empty<TransferEvent>() : _mapper.Map<IEnumerable<TransferEvent>>(result);
+            if (!results.Any()) return Enumerable.Empty<TransferEvent>();
+
+            var response = new List<TransferEvent>();
+
+            foreach (var result in results)
+            {
+                var found = transactionEvents.TryGetValue(result.Id, out var txEvent);
+                if (!found)
+                {
+                    continue;
+                }
+                
+                response.Add(new TransferEvent(result.Id, txEvent.TransactionId, txEvent.Contract, 
+                    txEvent.SortOrder, result.From, result.To, result.Amount));
+            }
+
+            return !response.Any() ? Enumerable.Empty<TransferEvent>() : response;
         }
 
         private sealed class SqlParams
         {
-            internal SqlParams(long transactionId)
+            internal SqlParams(IEnumerable<long> transactionEventIds)
             {
-                TransactionId = transactionId;
+                TransactionEventIds = transactionEventIds;
             }
 
-            public long TransactionId { get; }
+            public IEnumerable<long> TransactionEventIds { get; }
         }
     }
 }

@@ -13,8 +13,7 @@ namespace Opdex.Core.Infrastructure
         public CoreInfrastructureMapperProfile()
         {
             CreateMap<TransactionReceiptDto, Transaction>()
-                .ConstructUsing(src => new Transaction(src.TransactionHash, src.BlockHeight, src.GasUsed,
-                    src.From, src.To))
+                .ConstructUsing(src => new Transaction(src.TransactionHash, src.BlockHeight, src.GasUsed, src.From, src.To))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TransactionEntity, Transaction>()
@@ -64,6 +63,10 @@ namespace Opdex.Core.Infrastructure
             
             CreateMap<PairCreatedEventEntity, PairCreatedEvent>()
                 .ConstructUsing(src => new PairCreatedEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Token, src.Pair))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<TransactionEventSummaryEntity, TransactionEventSummary>()
+                .ConstructUsing(src => new TransactionEventSummary(src.Id, src.TransactionId, src.EventId, src.EventTypeId, src.SortOrder, src.Contract))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
     }

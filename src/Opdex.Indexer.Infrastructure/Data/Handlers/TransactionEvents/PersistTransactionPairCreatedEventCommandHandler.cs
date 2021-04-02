@@ -10,22 +10,19 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
 {
-    public class PersistTransactionPairCreatedEventCommandHandler : IRequestHandler<PersistTransactionPairCreatedEventCommand, bool>
+    public class PersistTransactionPairCreatedEventCommandHandler : IRequestHandler<PersistTransactionPairCreatedEventCommand, long>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO transaction_event_pair_created (
-                {nameof(PairCreatedEventEntity.TransactionId)},
-                {nameof(PairCreatedEventEntity.Address)},
                 {nameof(PairCreatedEventEntity.Token)},
                 {nameof(PairCreatedEventEntity.Pair)},
                 {nameof(PairCreatedEventEntity.CreatedDate)}
               ) VALUES (
-                @{nameof(PairCreatedEventEntity.TransactionId)},
-                @{nameof(PairCreatedEventEntity.Address)},
                 @{nameof(PairCreatedEventEntity.Token)},
                 @{nameof(PairCreatedEventEntity.Pair)},
                 UTC_TIMESTAMP()
-              );";
+              );
+              SELECT LAST_INSERT_ID();";
         
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -39,7 +36,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        public async Task<bool> Handle(PersistTransactionPairCreatedEventCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(PersistTransactionPairCreatedEventCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -47,14 +44,14 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
             
                 var command = DatabaseQuery.Create(SqlCommand, pairCreatedEventEntity, cancellationToken);
             
-                var result = await _context.ExecuteCommandAsync(command);
+                var result = await _context.ExecuteScalarAsync<long>(command);
             
-                return result > 0;
+                return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _logger.LogError($"Unable to persist {request.PairCreatedEvent}");
-                return false;
+                _logger.LogError(ex, $"Unable to persist {request.PairCreatedEvent}");
+                return 0;
             }
         }
     }

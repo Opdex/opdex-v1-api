@@ -20,7 +20,7 @@ namespace Opdex.Core.Application.Handlers.Transactions.TransactionEvents
         
         public async Task<IEnumerable<SwapEvent>> Handle(RetrieveSwapEventsByTransactionIdQuery request, CancellationToken cancellationToken)
         {
-            var swapEvents = await _mediator.Send(new SelectSwapEventsByTransactionIdQuery(request.TransactionId), cancellationToken);
+            var swapEvents = await _mediator.Send(new SelectSwapEventsByTransactionIdQuery(request.TransactionEvents), cancellationToken);
 
             return swapEvents;
         }

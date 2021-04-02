@@ -8,9 +8,9 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
         public MintEvent(dynamic log, string address, int sortOrder) 
             : base(nameof(MintEvent), address, sortOrder)
         {
-            string sender = log?.Sender;
-            ulong amountCrs = log?.AmountCrs;
-            string amountSrc = log?.AmountSrc;
+            string sender = log?.sender;
+            ulong amountCrs = log?.amountCrs;
+            string amountSrc = log?.amountSrc;
 
             if (!sender.HasValue())
             {

@@ -8,9 +8,9 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
         public TransferEvent(dynamic log, string address, int sortOrder) 
             : base(nameof(TransferEvent), address, sortOrder)
         {
-            string from = log?.From;
-            string to = log?.To;
-            string amount = log?.Amount;
+            string from = log?.from;
+            string to = log?.to;
+            string amount = log?.amount;
 
             if (!from.HasValue())
             {

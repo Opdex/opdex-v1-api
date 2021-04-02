@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Opdex.Core.Domain.Models;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 using Opdex.Indexer.Infrastructure.Data.Handlers;
@@ -15,14 +16,15 @@ namespace Opdex.Indexer.Infrastructure
             services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
             services.AddTransient<IRequestHandler<PersistPairCommand, long>, PersistPairCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTokenCommand, long>, PersistTokenCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionCommand, long>, PersistTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionApprovalEventCommand, bool>, PersistTransactionApprovalEventCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionBurnEventCommand, bool>, PersistTransactionBurnEventCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionMintEventCommand, bool>, PersistTransactionMintEventCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionPairCreatedEventCommand, bool>, PersistTransactionPairCreatedEventCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionSwapEventCommand, bool>, PersistTransactionSwapEventCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionSyncEventCommand, bool>, PersistTransactionSyncEventCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionTransferEventCommand, bool>, PersistTransactionTransferEventCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionCommand, Transaction>, PersistTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionApprovalEventCommand, long>, PersistTransactionApprovalEventCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionBurnEventCommand, long>, PersistTransactionBurnEventCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionMintEventCommand, long>, PersistTransactionMintEventCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionPairCreatedEventCommand, long>, PersistTransactionPairCreatedEventCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionSwapEventCommand, long>, PersistTransactionSwapEventCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionSyncEventCommand, long>, PersistTransactionSyncEventCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionTransferEventCommand, long>, PersistTransactionTransferEventCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionEventSummaryCommand, bool>, PersistTransactionEventSummaryCommandHandler>();
             
             return services;
         }

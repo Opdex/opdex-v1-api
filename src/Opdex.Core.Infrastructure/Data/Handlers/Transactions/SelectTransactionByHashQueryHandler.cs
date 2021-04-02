@@ -19,8 +19,8 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions
                 {nameof(TransactionEntity.Hash)},
                 {nameof(TransactionEntity.Block)},
                 {nameof(TransactionEntity.GasUsed)},
-                {nameof(TransactionEntity.To)},
-                {nameof(TransactionEntity.From)}
+                `{nameof(TransactionEntity.To)}`,
+                `{nameof(TransactionEntity.From)}`
             FROM transaction
             WHERE {nameof(TransactionEntity.Hash)} = @{nameof(SqlParams.Hash)};";
 

@@ -60,19 +60,19 @@ namespace Opdex.Core.Application
                         {
                             return (TransactionEventDto) (txEvent.EventType switch
                             {
-                                nameof(SyncEvent) => ctx.Mapper.Map<SyncEventDto>(src),
-                                nameof(BurnEvent) => ctx.Mapper.Map<BurnEventDto>(src),
-                                nameof(MintEvent) => ctx.Mapper.Map<MintEventDto>(src),
-                                nameof(SwapEvent) => ctx.Mapper.Map<SwapEventDto>(src),
-                                nameof(ApprovalEvent) => ctx.Mapper.Map<ApprovalEventDto>(src),
-                                nameof(TransferEvent) => ctx.Mapper.Map<TransferEventDto>(src),
-                                nameof(PairCreatedEvent) => ctx.Mapper.Map<PairCreatedEventDto>(src),
+                                nameof(SyncEvent) => ctx.Mapper.Map<SyncEventDto>(txEvent),
+                                nameof(BurnEvent) => ctx.Mapper.Map<BurnEventDto>(txEvent),
+                                nameof(MintEvent) => ctx.Mapper.Map<MintEventDto>(txEvent),
+                                nameof(SwapEvent) => ctx.Mapper.Map<SwapEventDto>(txEvent),
+                                nameof(ApprovalEvent) => ctx.Mapper.Map<ApprovalEventDto>(txEvent),
+                                nameof(TransferEvent) => ctx.Mapper.Map<TransferEventDto>(txEvent),
+                                nameof(PairCreatedEvent) => ctx.Mapper.Map<PairCreatedEventDto>(txEvent),
                                 _ => null
                             });
                         })
                         .Where(eventDto => eventDto != null)
                         .ToList();
-
+                
                     dest.Events = events;
                 })
                 .ForAllOtherMembers(opt => opt.Ignore());

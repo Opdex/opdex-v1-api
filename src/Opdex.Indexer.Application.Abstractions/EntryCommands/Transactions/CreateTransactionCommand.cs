@@ -12,8 +12,10 @@ namespace Opdex.Indexer.Application.Abstractions.EntryCommands.Transactions
             {
                 throw new ArgumentNullException(nameof(txHash));
             }
+
+            TxHash = txHash;
         }
         
-        public string TxHash { get; set; }
+        public string TxHash { get; }
     }
 }

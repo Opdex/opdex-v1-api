@@ -12,6 +12,11 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi
             public const string LocalCall = "SmartContracts/local-call";
         }
 
+        public static class SmartContractWallet
+        {
+            public const string Call = "SmartContractWallet/call";
+        }
+
         public static class BlockStore
         {
             public const string GetBlockByHash = "BlockStore/block?hash={0}&OutputJson={1}";

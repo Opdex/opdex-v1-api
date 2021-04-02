@@ -45,7 +45,7 @@ namespace Opdex.Core.Infrastructure.Tests.Data.Handlers.Transactions.Transaction
 
             var responseList = new List<ApprovalEventEntity> {approvalEvent}.AsEnumerable();
             
-            var command = new SelectApprovalEventsByTransactionIdQuery(transactionId);
+            var command = new SelectApprovalEventsByTransactionIdQuery(new [] { new TransactionEventSummary(1,1,1,1,1,"1") });
         
             _dbContext.Setup(db => db.ExecuteQueryAsync<ApprovalEventEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(responseList));

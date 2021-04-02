@@ -8,8 +8,8 @@ namespace Opdex.Core.Domain.Models.TransactionEvents
         public SyncEvent(dynamic log, string address, int sortOrder) 
             : base(nameof(SyncEvent), address, sortOrder)
         {
-            ulong reserveCrs = log?.ReserveCrs;
-            string reserveSrc = log?.ReserveSrc;
+            ulong reserveCrs = log?.reserveCrs;
+            string reserveSrc = log?.reserveSrc;
             
             if (reserveCrs < 1)
             {

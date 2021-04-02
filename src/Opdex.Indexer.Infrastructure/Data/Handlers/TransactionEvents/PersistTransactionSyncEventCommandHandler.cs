@@ -10,22 +10,19 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
 {
-    public class PersistTransactionSyncEventCommandHandler: IRequestHandler<PersistTransactionSyncEventCommand, bool>
+    public class PersistTransactionSyncEventCommandHandler: IRequestHandler<PersistTransactionSyncEventCommand, long>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO transaction_event_sync (
-                {nameof(SyncEventEntity.TransactionId)},
-                {nameof(SyncEventEntity.Address)},
                 {nameof(SyncEventEntity.ReserveCrs)},
                 {nameof(SyncEventEntity.ReserveSrc)},
                 {nameof(SyncEventEntity.CreatedDate)}
               ) VALUES (
-                @{nameof(SyncEventEntity.TransactionId)},
-                @{nameof(SyncEventEntity.Address)},
                 @{nameof(SyncEventEntity.ReserveCrs)},
                 @{nameof(SyncEventEntity.ReserveSrc)},
                 UTC_TIMESTAMP()
-              );";
+              );
+              SELECT LAST_INSERT_ID();";
         
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -39,7 +36,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        public async Task<bool> Handle(PersistTransactionSyncEventCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(PersistTransactionSyncEventCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -47,14 +44,14 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers.TransactionEvents
             
                 var command = DatabaseQuery.Create(SqlCommand, syncEventEntity, cancellationToken);
             
-                var result = await _context.ExecuteCommandAsync(command);
+                var result = await _context.ExecuteScalarAsync<long>(command);
             
-                return result > 0;
+                return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _logger.LogError($"Unable to persist {request.SyncEvent}");
-                return false;
+                _logger.LogError(ex, $"Unable to persist {request.SyncEvent}");
+                return 0;
             }
         }
     }

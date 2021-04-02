@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MediatR;
 using Opdex.Core.Domain.Models.TransactionEvents;
 
@@ -7,16 +8,18 @@ namespace Opdex.Core.Application.Abstractions.Queries.Transactions.TransactionEv
 {
     public class RetrieveBurnEventsByTransactionIdQuery : IRequest<IEnumerable<BurnEvent>>
     {
-        public RetrieveBurnEventsByTransactionIdQuery(long transactionId)
+        public RetrieveBurnEventsByTransactionIdQuery(IEnumerable<TransactionEventSummary> txEvents)
         {
-            if (transactionId < 1)
+            var eventIds = txEvents as TransactionEventSummary[] ?? txEvents.ToArray();
+            
+            if (!eventIds.Any() || eventIds.Any(t => t.EventId < 1))
             {
-                throw new ArgumentOutOfRangeException(nameof(transactionId));
+                throw new ArgumentOutOfRangeException(nameof(txEvents));
             }
 
-            TransactionId = transactionId;
+            TransactionEvents = eventIds;
         }
         
-        public long TransactionId { get; }
+        public IEnumerable<TransactionEventSummary> TransactionEvents { get; }
     }
 }

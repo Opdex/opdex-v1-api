@@ -94,7 +94,7 @@ namespace Opdex.Core.Domain.Models
         {
             foreach (var txEvent in events)
             {
-                if (txEvent.Id == 0)
+                if (txEvent.TransactionId == 0)
                 {
                     txEvent.SetTransactionId(Id);
                 }
@@ -130,6 +130,7 @@ namespace Opdex.Core.Domain.Models
                     nameof(SwapEvent) => new SwapEvent(log, address, sortOrder),
                     nameof(ApprovalEvent) => new ApprovalEvent(log, address, sortOrder),
                     nameof(TransferEvent) => new TransferEvent(log, address, sortOrder),
+                    "TransferLog" => new TransferEvent(log, address, sortOrder),
                     nameof(PairCreatedEvent) => new PairCreatedEvent(log, address, sortOrder),
                     _ => null
                 };

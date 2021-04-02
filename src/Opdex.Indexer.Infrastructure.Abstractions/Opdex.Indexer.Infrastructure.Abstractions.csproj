@@ -5,6 +5,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Folder Include="Clients\CoinMarketCapApi\Models" />
+      <Folder Include="Clients\CoinMarketCapApi\Modules" />
+      <Folder Include="Clients\CoinMarketCapApi\Queries" />
       <Folder Include="Data\Queries" />
     </ItemGroup>
 

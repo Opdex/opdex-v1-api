@@ -15,7 +15,6 @@
       <Folder Include="Data\Handlers\Blocks" />
       <Folder Include="Data\Handlers\Transactions" />
       <Folder Include="Integrations\BitcoreNodeApi" />
-      <Folder Include="Integrations\CoinMarketCap" />
     </ItemGroup>
 
     <ItemGroup>

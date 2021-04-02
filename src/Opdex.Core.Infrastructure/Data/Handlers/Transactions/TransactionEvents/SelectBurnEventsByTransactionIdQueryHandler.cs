@@ -18,15 +18,12 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents
         private static readonly string SqlQuery =
             @$"SELECT 
                 {nameof(BurnEventEntity.Id)},
-                {nameof(BurnEventEntity.TransactionId)},
-                {nameof(BurnEventEntity.Address)},
-                {nameof(BurnEventEntity.SortOrder)},
                 {nameof(BurnEventEntity.Sender)},
-                {nameof(BurnEventEntity.To)},
+                `{nameof(BurnEventEntity.To)}`,
                 {nameof(BurnEventEntity.AmountCrs)},
                 {nameof(BurnEventEntity.AmountSrc)}
             FROM transaction_event_burn
-            WHERE {nameof(BurnEventEntity.TransactionId)} = @{nameof(SqlParams.TransactionId)};";
+            WHERE {nameof(BurnEventEntity.Id)} IN @{nameof(SqlParams.TransactionEventIds)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -39,22 +36,41 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents
 
         public async Task<IEnumerable<BurnEvent>> Handle(SelectBurnEventsByTransactionIdQuery request, CancellationToken cancellationTransaction)
         {
-            var queryParams = new SqlParams(request.TransactionId);
+            var transactionEvents = request.TransactionEvents.ToDictionary(k => k.EventId);
+            
+            var queryParams = new SqlParams(transactionEvents.Keys);
+            
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
 
-            var result = await _context.ExecuteQueryAsync<BurnEventEntity>(query);
+            var results = await _context.ExecuteQueryAsync<BurnEventEntity>(query);
 
-            return !result.Any() ? Enumerable.Empty<BurnEvent>() : _mapper.Map<IEnumerable<BurnEvent>>(result);
+            if (!results.Any()) return Enumerable.Empty<BurnEvent>();
+
+            var response = new List<BurnEvent>();
+
+            foreach (var result in results)
+            {
+                var found = transactionEvents.TryGetValue(result.Id, out var txEvent);
+                if (!found)
+                {
+                    continue;
+                }
+                
+                response.Add(new BurnEvent(result.Id, txEvent.TransactionId, txEvent.Contract, 
+                    txEvent.SortOrder, result.Sender, result.To, result.AmountCrs, result.AmountSrc));
+            }
+
+            return !response.Any() ? Enumerable.Empty<BurnEvent>() : response;
         }
 
         private sealed class SqlParams
         {
-            internal SqlParams(long transactionId)
+            internal SqlParams(IEnumerable<long> transactionEventIds)
             {
-                TransactionId = transactionId;
+                TransactionEventIds = transactionEventIds;
             }
 
-            public long TransactionId { get; }
+            public IEnumerable<long> TransactionEventIds { get; }
         }
     }
 }

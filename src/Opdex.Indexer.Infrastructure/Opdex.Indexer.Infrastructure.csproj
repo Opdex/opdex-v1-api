@@ -12,6 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Clients\CoinMarketCapApi\Handlers" />
+      <Folder Include="Clients\CoinMarketCapApi\Modules" />
       <Folder Include="Data" />
     </ItemGroup>
 
