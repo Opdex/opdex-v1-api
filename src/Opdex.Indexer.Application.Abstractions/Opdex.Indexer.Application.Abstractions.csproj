@@ -6,9 +6,9 @@
 
     <ItemGroup>
       <Folder Include="EntryCommands\Blocks" />
-      <Folder Include="EntryCommands\Pairs" />
+      <Folder Include="EntryCommands\Pools" />
       <Folder Include="EntryCommands\Tokens" />
-      <Folder Include="Queries\Pairs" />
+      <Folder Include="Queries\Pools" />
       <Folder Include="Queries\Tokens" />
     </ItemGroup>
 

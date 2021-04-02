@@ -73,21 +73,21 @@ namespace Opdex.Core.Domain.Models
         public string From { get; }
         public string To { get; }
         public ICollection<TransactionEvent> Events { get; }
-        public IReadOnlyCollection<string> PairsEngaged { get; private set; }
+        public IReadOnlyCollection<string> PoolsEngaged { get; private set; }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="pairsEngaged"></param>
+        /// <param name="poolsEngaged"></param>
         /// <exception cref="Exception"></exception>
-        public void SetPairsEngaged(List<string> pairsEngaged)
+        public void SetPoolsEngaged(List<string> poolsEngaged)
         {
-            if (!pairsEngaged.All(p => Events.Any(e => e.Address == p)))
+            if (!poolsEngaged.All(p => Events.Any(e => e.Address == p)))
             {
-                throw new Exception("Pair engagement not found in transaction events");
+                throw new Exception("Pool engagement not found in transaction events");
             }
 
-            PairsEngaged = pairsEngaged.Select(p => p).ToList();
+            PoolsEngaged = poolsEngaged.Select(p => p).ToList();
         }
 
         private void AttachEvents(IEnumerable<TransactionEvent> events)
@@ -131,7 +131,7 @@ namespace Opdex.Core.Domain.Models
                     nameof(ApprovalEvent) => new ApprovalEvent(log, address, sortOrder),
                     nameof(TransferEvent) => new TransferEvent(log, address, sortOrder),
                     "TransferLog" => new TransferEvent(log, address, sortOrder),
-                    nameof(PairCreatedEvent) => new PairCreatedEvent(log, address, sortOrder),
+                    nameof(PoolCreatedEvent) => new PoolCreatedEvent(log, address, sortOrder),
                     _ => null
                 };
 

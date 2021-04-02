@@ -18,7 +18,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<PairDto, PairResponseModel>()
+            CreateMap<PoolDto, PoolResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
                 .ForMember(dest => dest.ReserveCrs, opt => opt.MapFrom(src => src.ReserveCrs))
@@ -29,7 +29,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Block, opt => opt.MapFrom(src => src.Block))
                 .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
                 .ForMember(dest => dest.TokenCount, opt => opt.MapFrom(src => src.TokenCount))
-                .ForMember(dest => dest.PairCount, opt => opt.MapFrom(src => src.PairCount))
+                .ForMember(dest => dest.PoolCount, opt => opt.MapFrom(src => src.PoolCount))
                 .ForMember(dest => dest.DailyTransactionCount, opt => opt.MapFrom(src => src.DailyTransactionCount))
                 .ForMember(dest => dest.CrsPrice, opt => opt.MapFrom(src => src.CrsPrice))
                 .ForMember(dest => dest.DailyFees, opt => opt.MapFrom(src => src.DailyFees))

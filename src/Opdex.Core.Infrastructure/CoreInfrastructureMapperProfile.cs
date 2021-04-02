@@ -28,12 +28,12 @@ namespace Opdex.Core.Infrastructure
                 .ConstructUsing(src => new Block(src.Height, src.Hash, src.Time, src.MedianTime))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<PairEntity, Pair>()
-                .ConstructUsing(src => new Pair(src.Id, src.Address, src.TokenId, src.ReserveCrs, src.ReserveSrc))
+            CreateMap<PoolEntity, Pool>()
+                .ConstructUsing(src => new Pool(src.Id, src.Address, src.TokenId, src.ReserveCrs, src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<MarketSnapshotEntity, MarketSnapshot>()
-                .ConstructUsing(src => new MarketSnapshot(src.Id, src.TokenCount, src.PairCount, src.DailyTransactionCount, src.CrsPrice, src.Liquidity, src.DailyFees, src.DailyVolume, src.Block))
+                .ConstructUsing(src => new MarketSnapshot(src.Id, src.TokenCount, src.PoolCount, src.DailyTransactionCount, src.CrsPrice, src.Liquidity, src.DailyFees, src.DailyVolume, src.Block))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             // Transaction Events
@@ -61,8 +61,8 @@ namespace Opdex.Core.Infrastructure
                 .ConstructUsing(src => new SyncEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.ReserveCrs, src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<PairCreatedEventEntity, PairCreatedEvent>()
-                .ConstructUsing(src => new PairCreatedEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Token, src.Pair))
+            CreateMap<PoolCreatedEventEntity, PoolCreatedEvent>()
+                .ConstructUsing(src => new PoolCreatedEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Token, src.Pool))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TransactionEventSummaryEntity, TransactionEventSummary>()

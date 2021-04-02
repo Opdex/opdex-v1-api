@@ -3,7 +3,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents
     public enum TransactionEventType
     {
         Unknown = 0,
-        PairCreatedEvent = 1,
+        PoolCreatedEvent = 1,
         MintEvent = 2,
         BurnEvent = 3,
         SwapEvent = 4,

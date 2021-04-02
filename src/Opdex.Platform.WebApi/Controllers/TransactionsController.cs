@@ -23,8 +23,8 @@ namespace Opdex.Platform.WebApi.Controllers
             throw new NotImplementedException();
         }
         
-        [HttpGet("pair/{pairAddress}")]
-        public Task<IActionResult> GetTransactionsForPair(string pairAddress, CancellationToken cancellationToken)
+        [HttpGet("Pool/{PoolAddress}")]
+        public Task<IActionResult> GetTransactionsForPool(string PoolAddress, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

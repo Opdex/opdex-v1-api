@@ -21,7 +21,7 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<Pair, PairEntity>()
+            CreateMap<Pool, PoolEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
@@ -54,12 +54,12 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.ReserveSrc, opt => opt.MapFrom(src => src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<PairCreatedEvent, PairCreatedEventEntity>()
+            CreateMap<PoolCreatedEvent, PoolCreatedEventEntity>()
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
-                .ForMember(dest => dest.Pair, opt => opt.MapFrom(src => src.Pair))
+                .ForMember(dest => dest.Pool, opt => opt.MapFrom(src => src.Pool))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TransferEvent, TransferEventEntity>()

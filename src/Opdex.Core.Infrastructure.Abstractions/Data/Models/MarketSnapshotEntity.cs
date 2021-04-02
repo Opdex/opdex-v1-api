@@ -4,7 +4,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models
     {
         public long Id { get; set; }
         public long TokenCount { get; set; }
-        public long PairCount { get; set; }
+        public long PoolCount { get; set; }
         public long DailyTransactionCount { get; set; }
         public decimal CrsPrice { get; set; }
         public decimal Liquidity { get; set; }

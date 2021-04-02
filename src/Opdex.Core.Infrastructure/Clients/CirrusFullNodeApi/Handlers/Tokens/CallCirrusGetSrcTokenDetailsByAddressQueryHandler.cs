@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Core.Common.Extensions;
 using Opdex.Core.Domain.Models;
+using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 
@@ -27,25 +28,26 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens
         // Todo: TryCatch the module requests
         public async Task<Token> Handle(CallCirrusGetSrcTokenDetailsByAddressQuery request, CancellationToken cancellationToken)
         {
-            //Todo: Check for validity here
-            var name = await _smartContractsModule.GetContractStorageAsync(request.Address, "Name", "string", cancellationToken);
-            if (!name.HasValue())
-            {
-                return null;
-                // Todo: throw on anything other than a valid response
-            }
+            var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Name", new string[0]);
+            var nameResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
+            var name = (string)nameResponse.Return;
+            if (!name.HasValue()) return null;
 
-            var ticker = await _smartContractsModule.GetContractStorageAsync(request.Address, "Symbol", "string", cancellationToken);
+            localCall.MethodName = "get_Symbol";
+            var symbolResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
+            var symbol = (string)symbolResponse.Return;
+            if (!symbol.HasValue()) return null;
+
+            localCall.MethodName = "get_Decimals";
+            var decimalResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
+            if (!short.TryParse(decimalResponse.Return.ToString(), out var decimals)) return null;
             
-            // Todo: Generic type on GetContractStorageAsync - return correct type
-            var decimalString = await _smartContractsModule.GetContractStorageAsync(request.Address, "Decimals", "uint", cancellationToken);
-            var parseDecimalsSuccess = short.TryParse(decimalString, out var decimals);
+            localCall.MethodName = "get_TotalSupply";
+            var totalSupplyResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
+            var totalSupply = totalSupplyResponse.Return.ToString();
+            if (!totalSupply.HasValue()) return null;
 
-            var decimalsValue = parseDecimalsSuccess ? decimals : (short) 8;
-            
-            // Todo: Get Total Supply
-
-            return new Token(request.Address, name, ticker, decimalsValue, 100_000_000, "100_000_000");
+            return new Token(request.Address, name, symbol, decimals, decimals.DecimalsToSatoshis(), totalSupply);
         }
     }
 }

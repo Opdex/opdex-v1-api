@@ -94,7 +94,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             
             var amount = isCrsIn ? request.TokenInAmount : "0";
             
-            var callDto = new SmartContractCallRequestDto("PDxhCnqe78MUt6NGLi4SEFxEVS91Vo99Wx", request.To, amount, methodName, parameters.ToArray());
+            var callDto = new SmartContractCallRequestDto("PWJWxcURnX8yAfRKg7RpVKUF6kkZ1FcGWN", request.To, amount, methodName, parameters.ToArray());
             
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
         }

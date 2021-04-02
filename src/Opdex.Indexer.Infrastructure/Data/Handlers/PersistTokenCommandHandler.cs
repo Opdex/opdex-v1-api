@@ -30,7 +30,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
                 @{nameof(TokenEntity.TotalSupply)},
                 UTC_TIMESTAMP()
               );
-            SELECT last_insert_rowid();";
+            SELECT LAST_INSERT_ID();";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;

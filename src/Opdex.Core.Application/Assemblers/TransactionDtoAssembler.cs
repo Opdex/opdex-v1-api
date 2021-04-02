@@ -48,13 +48,13 @@ namespace Opdex.Core.Application.Assemblers
         {
             return eventType switch
             {
-                TransactionEventType.PairCreatedEvent => await _mediator.Send(new RetrievePairCreatedEventsByTransactionIdQuery(txEvents)),
-                TransactionEventType.BurnEvent => await _mediator.Send(new RetrieveBurnEventsByTransactionIdQuery(txEvents)),
-                TransactionEventType.MintEvent => await _mediator.Send(new RetrieveMintEventsByTransactionIdQuery(txEvents)),
-                TransactionEventType.SwapEvent => await _mediator.Send(new RetrieveSwapEventsByTransactionIdQuery(txEvents)),
-                TransactionEventType.SyncEvent => await _mediator.Send(new RetrieveSyncEventsByTransactionIdQuery(txEvents)),
-                TransactionEventType.ApprovalEvent => await _mediator.Send(new RetrieveApprovalEventsByTransactionIdQuery(txEvents)),
-                TransactionEventType.TransferEvent => await _mediator.Send(new RetrieveTransferEventsByTransactionIdQuery(txEvents)),
+                TransactionEventType.PoolCreatedEvent => await _mediator.Send(new RetrievePoolCreatedEventsByIdsQuery(txEvents)),
+                TransactionEventType.BurnEvent => await _mediator.Send(new RetrieveBurnEventsByIdsQuery(txEvents)),
+                TransactionEventType.MintEvent => await _mediator.Send(new RetrieveMintEventsByIdsQuery(txEvents)),
+                TransactionEventType.SwapEvent => await _mediator.Send(new RetrieveSwapEventsByIdsQuery(txEvents)),
+                TransactionEventType.SyncEvent => await _mediator.Send(new RetrieveSyncEventsByIdsQuery(txEvents)),
+                TransactionEventType.ApprovalEvent => await _mediator.Send(new RetrieveApprovalEventsByIdsQuery(txEvents)),
+                TransactionEventType.TransferEvent => await _mediator.Send(new RetrieveTransferEventsByIdsQuery(txEvents)),
                 _ => null
             };
         }

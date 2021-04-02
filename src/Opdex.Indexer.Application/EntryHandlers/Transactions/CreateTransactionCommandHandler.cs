@@ -11,7 +11,7 @@ using Opdex.Core.Application.Abstractions.Queries.Transactions;
 using Opdex.Core.Application.Assemblers;
 using Opdex.Core.Domain.Models;
 using Opdex.Core.Domain.Models.TransactionEvents;
-using Opdex.Indexer.Application.Abstractions.Commands.Pairs;
+using Opdex.Indexer.Application.Abstractions.Commands.Pools;
 using Opdex.Indexer.Application.Abstractions.Commands.Tokens;
 using Opdex.Indexer.Application.Abstractions.Commands.Transactions;
 using Opdex.Indexer.Application.Abstractions.EntryCommands.Transactions;
@@ -49,11 +49,12 @@ namespace Opdex.Indexer.Application.EntryHandlers.Transactions
 
             if (!result) return false;
             
-            if (cirrusTx.Events.FirstOrDefault(e => e.EventType == nameof(PairCreatedEvent)) is PairCreatedEvent pairCreatedEvent)
+            // Todo: Break this out of this handler
+            // Create token and pair if necessary
+            if (cirrusTx.Events.FirstOrDefault(e => e.EventType == nameof(PoolCreatedEvent)) is PoolCreatedEvent poolCreatedEvent)
             {
-                // Todo: Break this out of this handler, return TransactionDto from this handler, insert token/pair outside
-                var tokenId = await _mediator.Send(new MakeTokenCommand(pairCreatedEvent.Token));
-                await _mediator.Send(new MakePairCommand(pairCreatedEvent.Pair, tokenId));
+                var tokenId = await _mediator.Send(new MakeTokenCommand(poolCreatedEvent.Token));
+                var pairId = await _mediator.Send(new MakePoolCommand(poolCreatedEvent.Pool, tokenId));
             }
             else
             {
@@ -63,12 +64,12 @@ namespace Opdex.Indexer.Application.EntryHandlers.Transactions
                 {
                     if (cirrusTx.Events.Any(e => e.EventType == nameof(SyncEvent)))
                     {
-                        // - update pair reserves if sync event occurred
+                        // - update pool reserves if sync event occurred
                     }
                     
                     if (cirrusTx.Events.Any(e => new [] { nameof(MintEvent), nameof(BurnEvent)}.Contains(e.EventType)))
                     {
-                        // - update pair total supply if mint or burn event occurred
+                        // - update pool total supply if mint or burn event occurred
                     }
                         
                     // Todo: Update any other relevant data sets

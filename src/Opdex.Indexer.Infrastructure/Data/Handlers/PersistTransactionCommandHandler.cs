@@ -59,6 +59,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Unable to persist {nameof(request.Transaction)}");
+                
                 return null;
             }
         }

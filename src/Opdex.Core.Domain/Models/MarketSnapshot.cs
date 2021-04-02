@@ -4,7 +4,7 @@ namespace Opdex.Core.Domain.Models
 {
     public class MarketSnapshot
     {
-        public MarketSnapshot(long tokenCount, long pairCount, long dailyTransactionCount, decimal crsPrice, decimal liquidity,
+        public MarketSnapshot(long tokenCount, long poolCount, long dailyTransactionCount, decimal crsPrice, decimal liquidity,
             decimal dailyFees, decimal dailyVolume, ulong block)
         {
             if (tokenCount < 1)
@@ -12,9 +12,9 @@ namespace Opdex.Core.Domain.Models
                 throw new ArgumentOutOfRangeException(nameof(tokenCount));
             }
             
-            if (pairCount < 1)
+            if (poolCount < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(pairCount));
+                throw new ArgumentOutOfRangeException(nameof(poolCount));
             }
             
             if (dailyTransactionCount < 1)
@@ -48,7 +48,7 @@ namespace Opdex.Core.Domain.Models
             }
 
             TokenCount = tokenCount;
-            PairCount = pairCount;
+            PoolCount = poolCount;
             DailyTransactionCount = dailyTransactionCount;
             CrsPrice = crsPrice;
             Liquidity = liquidity;
@@ -57,12 +57,12 @@ namespace Opdex.Core.Domain.Models
             Block = block;
         }
         
-        public MarketSnapshot(long id, long tokenCount, long pairCount, long dailyTransactionCount, decimal crsPrice, decimal liquidity,
+        public MarketSnapshot(long id, long tokenCount, long poolCount, long dailyTransactionCount, decimal crsPrice, decimal liquidity,
             decimal dailyFees, decimal dailyVolume, ulong block)
         {
             Id = id;
             TokenCount = tokenCount;
-            PairCount = pairCount;
+            PoolCount = poolCount;
             DailyTransactionCount = dailyTransactionCount;
             CrsPrice = crsPrice;
             Liquidity = liquidity;
@@ -73,7 +73,7 @@ namespace Opdex.Core.Domain.Models
         
         public long Id { get; }
         public long TokenCount { get; }
-        public long PairCount { get; }
+        public long PoolCount { get; }
         public long DailyTransactionCount { get; }
         public decimal CrsPrice { get; }
         public decimal Liquidity { get; }

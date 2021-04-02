@@ -7,7 +7,8 @@ namespace Opdex.Core.Common.Extensions
     /// </summary>
     public static class SatoshiConverterExtension
     {
-        private static int DecimalsToSatoshis(this int decimals) => (int)Math.Pow(10, decimals);
+        public static long DecimalsToSatoshis(this int decimals) => (int)Math.Pow(10, decimals);
+        public static long DecimalsToSatoshis(this short decimals) => (int)Math.Pow(10, decimals);
         
         public static decimal ToDecimal(this ulong sats, int decimals)
         {

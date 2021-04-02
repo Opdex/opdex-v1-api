@@ -51,9 +51,9 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             
                 return result > 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _logger.LogError($"Unable to persist {request.Block}");
+                _logger.LogError(ex, $"Unable to persist {request.Block}");
                 return false;
             }
         }

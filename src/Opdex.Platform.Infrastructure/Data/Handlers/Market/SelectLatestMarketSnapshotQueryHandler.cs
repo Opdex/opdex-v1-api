@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Market
             $@"SELECT
                 {nameof(MarketSnapshotEntity.Id)},
                 {nameof(MarketSnapshotEntity.TokenCount)},
-                {nameof(MarketSnapshotEntity.PairCount)},
+                {nameof(MarketSnapshotEntity.PoolCount)},
                 {nameof(MarketSnapshotEntity.DailyTransactionCount)},
                 {nameof(MarketSnapshotEntity.CrsPrice)},
                 {nameof(MarketSnapshotEntity.Liquidity)},

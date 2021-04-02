@@ -18,7 +18,7 @@ namespace Opdex.Core.Application
                 .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<Pair, PairDto>()
+            CreateMap<Pool, PoolDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
@@ -40,7 +40,7 @@ namespace Opdex.Core.Application
                 .ForMember(dest => dest.Block, opt => opt.MapFrom(src => src.Block))
                 .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
                 .ForMember(dest => dest.TokenCount, opt => opt.MapFrom(src => src.TokenCount))
-                .ForMember(dest => dest.PairCount, opt => opt.MapFrom(src => src.PairCount))
+                .ForMember(dest => dest.PoolCount, opt => opt.MapFrom(src => src.PoolCount))
                 .ForMember(dest => dest.DailyTransactionCount, opt => opt.MapFrom(src => src.DailyTransactionCount))
                 .ForMember(dest => dest.CrsPrice, opt => opt.MapFrom(src => src.CrsPrice))
                 .ForMember(dest => dest.DailyFees, opt => opt.MapFrom(src => src.DailyFees))
@@ -66,7 +66,7 @@ namespace Opdex.Core.Application
                                 nameof(SwapEvent) => ctx.Mapper.Map<SwapEventDto>(txEvent),
                                 nameof(ApprovalEvent) => ctx.Mapper.Map<ApprovalEventDto>(txEvent),
                                 nameof(TransferEvent) => ctx.Mapper.Map<TransferEventDto>(txEvent),
-                                nameof(PairCreatedEvent) => ctx.Mapper.Map<PairCreatedEventDto>(txEvent),
+                                nameof(PoolCreatedEvent) => ctx.Mapper.Map<PoolCreatedEventDto>(txEvent),
                                 _ => null
                             });
                         })
@@ -118,9 +118,9 @@ namespace Opdex.Core.Application
                 .ForMember(dest => dest.AmountSrcOut, opt => opt.MapFrom(src => src.AmountSrcOut))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<PairCreatedEvent, PairCreatedEventDto>()
+            CreateMap<PoolCreatedEvent, PoolCreatedEventDto>()
                 .IncludeBase<TransactionEvent, TransactionEventDto>()
-                .ForMember(dest => dest.Pair, opt => opt.MapFrom(src => src.Pair))
+                .ForMember(dest => dest.Pool, opt => opt.MapFrom(src => src.Pool))
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
                 .ForAllOtherMembers(opt => opt.Ignore());
             

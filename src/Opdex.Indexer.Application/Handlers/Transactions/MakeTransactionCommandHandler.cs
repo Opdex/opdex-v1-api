@@ -64,7 +64,7 @@ namespace Opdex.Indexer.Application.Handlers.Transactions
                 SwapEvent swapEvent => await _mediator.Send(new PersistTransactionSwapEventCommand(swapEvent)),
                 ApprovalEvent approvalEvent => await _mediator.Send(new PersistTransactionApprovalEventCommand(approvalEvent)),
                 TransferEvent transferEvent => await _mediator.Send(new PersistTransactionTransferEventCommand(transferEvent)),
-                PairCreatedEvent pairCreatedEvent => await _mediator.Send(new PersistTransactionPairCreatedEventCommand(pairCreatedEvent)),
+                PoolCreatedEvent poolCreatedEvent => await _mediator.Send(new PersistTransactionPoolCreatedEventCommand(poolCreatedEvent)),
                 _ => 0
             };
 

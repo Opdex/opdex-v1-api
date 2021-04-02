@@ -5,6 +5,6 @@ namespace Opdex.Indexer.WebApi.Models
         public ulong From { get; set; }
         public ulong To { get; set; }
         
-        // Todo: Eventually can add other options to target pairs, tokens, transactions<type>
+        // Todo: Eventually can add other options to target pools, tokens, transactions<type>
     }
 }

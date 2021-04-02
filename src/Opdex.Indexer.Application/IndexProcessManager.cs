@@ -42,13 +42,13 @@ namespace Opdex.Indexer.Application
                 return;
             }
             
-            var pairs = await ProcessNewPairs(latestBlock.Height, cancellationToken);
+            var pools = await ProcessNewPools(latestBlock.Height, cancellationToken);
                 
             var queuedBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(latestBlockReceipt.NextBlockHash), cancellationToken);
             
             while (queuedBlock != null && !cancellationToken.IsCancellationRequested)
             {
-                var pairsEngagedInQueuedBlock = new List<string>();
+                var poolsEngagedInQueuedBlock = new List<string>();
                 
                 // Todo: Fetch and persist $ CRS/STRAX price for this block
                 // if (block.time isAround dateTime.UtcNow) Persist Latest Strax/Cirrus $ CMC Price
@@ -58,29 +58,29 @@ namespace Opdex.Indexer.Application
                 
                 foreach (var txHash in queuedBlock.Tx)
                 {
-                    var transaction = await ProcessTransaction(txHash, pairs, cancellationToken);
+                    var transaction = await ProcessTransaction(txHash, pools, cancellationToken);
                     if (transaction == null)
                     {
                         continue;
                     }
                     
-                    var pairsEngagedInTransaction = transaction.PairsEngaged
-                        .Where(d => !pairsEngagedInQueuedBlock.Contains(d));
+                    var poolsEngagedInTransaction = transaction.PoolsEngaged
+                        .Where(d => !poolsEngagedInQueuedBlock.Contains(d));
                     
-                    pairsEngagedInQueuedBlock.AddRange(pairsEngagedInTransaction);
+                    poolsEngagedInQueuedBlock.AddRange(poolsEngagedInTransaction);
                 }
                 
-                foreach (var pairAddress in pairsEngagedInQueuedBlock)
+                foreach (var poolAddress in poolsEngagedInQueuedBlock)
                 {
-                    var foundPair = pairs.TryGetValue(pairAddress, out var pair);
-                    if (!foundPair)
+                    var foundPool = pools.TryGetValue(poolAddress, out var pool);
+                    if (!foundPool)
                     {
-                        _logger.LogError($"Did find pair {pairAddress} to update");
+                        _logger.LogError($"Did find pool {poolAddress} to update");
                         continue;
                     }
                     
                     // Update general info for the block (e.g. SyncEvent would update reserves/pricing. Swap event would update fees)
-                    // Per block, per pair, maybe per token, with reserves, fees, and costs (sats & usd)
+                    // Per block, per pool, maybe per token, with reserves, fees, and costs (sats & usd)
                     // Todo: Consider doing this when transactions and events are processed depending on how heavy the workload is
                 }
                 
@@ -96,26 +96,26 @@ namespace Opdex.Indexer.Application
         }
 
         /// <summary>
-        /// Fetches and persists new tokens and pairs from opdex router contract event logs.
+        /// Fetches and persists new tokens and pools from opdex router contract event logs.
         /// </summary>
         /// <param name="latestHeight">Opdex synced latest block height</param>
         /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>Dictionary of pair address keys with pair values</returns>
-        private Task<Dictionary<string, PairDto>> ProcessNewPairs(ulong latestHeight, CancellationToken cancellationToken)
+        /// <returns>Dictionary of pool address keys with pool values</returns>
+        private Task<Dictionary<string, PoolDto>> ProcessNewPools(ulong latestHeight, CancellationToken cancellationToken)
         {
-            // var pairEvents = await _mediator.Send(new RetrieveCirrusPairEventsQuery(latestHeight), cancellationToken);
+            // var poolEvents = await _mediator.Send(new RetrieveCirrusPoolEventsQuery(latestHeight), cancellationToken);
             //
-            // foreach (var pairEvent in pairEvents)
+            // foreach (var poolEvent in poolEvents)
             // {
-            //     var tokenId = await _mediator.Send(new MakeTokenCommand(pairEvent.Token), cancellationToken);
-            //     await _mediator.Send(new MakePairCommand(pairEvent.Pair, tokenId), cancellationToken);
+            //     var tokenId = await _mediator.Send(new MakeTokenCommand(poolEvent.Token), cancellationToken);
+            //     await _mediator.Send(new MakePoolCommand(poolEvent.Pool, tokenId), cancellationToken);
             // }
             //
-            // var allPairs = await _mediator.Send(new RetrieveAllPairsWithFilterQuery(), cancellationToken);
+            // var allPools = await _mediator.Send(new RetrieveAllPoolsWithFilterQuery(), cancellationToken);
             //
-            // return allPairs.ToDictionary(p => p.Address);
+            // return allPools.ToDictionary(p => p.Address);
 
-            var dictionary = new Dictionary<string, PairDto>();
+            var dictionary = new Dictionary<string, PoolDto>();
             return Task.FromResult(dictionary);
         }
 
@@ -123,21 +123,21 @@ namespace Opdex.Indexer.Application
         /// Fetches and processes an Opdex transaction
         /// </summary>
         /// <param name="txHash">Transaction hash to process</param>
-        /// <param name="pairs">Collection of all known Opdex pairs</param>
+        /// <param name="pools">Collection of all known Opdex pools</param>
         /// <param name="cancellationToken">cancellation token: should probably be removed from indexer methods</param>
-        private async Task<Transaction> ProcessTransaction(string txHash, IDictionary<string, PairDto> pairs, CancellationToken cancellationToken)
+        private async Task<Transaction> ProcessTransaction(string txHash, IDictionary<string, PoolDto> pools, CancellationToken cancellationToken)
         {
             var tx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(txHash), cancellationToken);
             var isToRouter = tx.To == _opdexConfiguration.ControllerContract;
-            var pairsEngaged = tx.Events
-                .Where(l => pairs.TryGetValue(l.Address, out _))
+            var poolsEngaged = tx.Events
+                .Where(l => pools.TryGetValue(l.Address, out _))
                 .Select(l => l.Address)
                 .Distinct()
                 .ToList();
 
-            tx.SetPairsEngaged(pairsEngaged);
+            tx.SetPoolsEngaged(poolsEngaged);
                             
-            if (!isToRouter && !pairsEngaged.Any())
+            if (!isToRouter && !poolsEngaged.Any())
             {
                 return null;
             }

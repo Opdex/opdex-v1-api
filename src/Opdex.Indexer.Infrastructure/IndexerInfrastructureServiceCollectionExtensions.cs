@@ -14,13 +14,13 @@ namespace Opdex.Indexer.Infrastructure
         {
             // Commands
             services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistPairCommand, long>, PersistPairCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistPoolCommand, long>, PersistPoolCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTokenCommand, long>, PersistTokenCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionCommand, Transaction>, PersistTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionApprovalEventCommand, long>, PersistTransactionApprovalEventCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionBurnEventCommand, long>, PersistTransactionBurnEventCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionMintEventCommand, long>, PersistTransactionMintEventCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionPairCreatedEventCommand, long>, PersistTransactionPairCreatedEventCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionPoolCreatedEventCommand, long>, PersistTransactionPoolCreatedEventCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionSwapEventCommand, long>, PersistTransactionSwapEventCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionSyncEventCommand, long>, PersistTransactionSyncEventCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionTransferEventCommand, long>, PersistTransactionTransferEventCommandHandler>();
