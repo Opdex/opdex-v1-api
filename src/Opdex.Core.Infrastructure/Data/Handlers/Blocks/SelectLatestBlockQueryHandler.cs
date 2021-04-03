@@ -14,7 +14,7 @@ namespace Opdex.Core.Infrastructure.Data.Handlers.Blocks
     public class SelectLatestBlockQueryHandler: IRequestHandler<SelectLatestBlockQuery, Block>
     {
         private static readonly string SqlQuery = 
-            @$"Select 
+            @$"SELECT 
                 {nameof(BlockEntity.Height)},
                 {nameof(BlockEntity.Hash)},
                 {nameof(BlockEntity.MedianTime)},

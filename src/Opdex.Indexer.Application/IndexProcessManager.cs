@@ -54,7 +54,7 @@ namespace Opdex.Indexer.Application
                 // if (block.time isAround dateTime.UtcNow) Persist Latest Strax/Cirrus $ CMC Price
                 // else Persist Historical Strax/Cirrus $ CMC Price and Index
                 
-                await _mediator.Send(new MakeBlockCommand(), cancellationToken);
+                // await _mediator.Send(new MakeBlockCommand(), cancellationToken);
                 
                 foreach (var txHash in queuedBlock.Tx)
                 {
