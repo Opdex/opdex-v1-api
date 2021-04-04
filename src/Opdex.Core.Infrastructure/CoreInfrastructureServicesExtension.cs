@@ -97,6 +97,7 @@ namespace Opdex.Core.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenDetailsByAddressQuery, Token>, CallCirrusGetSrcTokenDetailsByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, string>, CallCirrusCallSmartContractMethodCommandHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetOpdexPoolByAddressQuery, Pool>, CallCirrusGetOpdexPoolByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenAllowanceQuery, string>, CallCirrusGetSrcTokenAllowanceQueryHandler>();
 
             #endregion
         }

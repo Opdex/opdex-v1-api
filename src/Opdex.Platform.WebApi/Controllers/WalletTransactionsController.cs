@@ -25,34 +25,48 @@ namespace Opdex.Platform.WebApi.Controllers
             throw new NotImplementedException();
         }
         
-        [HttpGet("pool/poolAddress")]
+        [HttpGet("pool/{poolAddress}")]
         public Task<IActionResult> GetMyTransactionsForPool(string poolAddress, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
         
-        [HttpGet("token/tokenAddress")]
+        [HttpGet("token/{tokenAddress}")]
         public Task<IActionResult> GetMyTransactionsForToken(string tokenAddress, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
         
         [HttpPost("build/approve-allowance")]
-        public Task<IActionResult> ApproveAllowance(CancellationToken cancellationToken)
+        public async Task<IActionResult> ApproveAllowance(ApproveAllowanceRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var command = new CreateWalletApproveAllowanceTransactionCommand(request.Token, request.Amount, request.Owner, request.Spender);
+            
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return Ok(new { TxHash = response });
         }
         
         [HttpPost("build/add-liquidity")]
-        public Task<IActionResult> AddLiquidity(CancellationToken cancellationToken)
+        public async Task<IActionResult> AddLiquidity(AddLiquidityRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var command = new CreateWalletAddLiquidityTransactionCommand(request.Token, request.AmountCrsDesired, request.AmountSrcDesired,
+                request.AmountCrsMin, request.AmountSrcMin, request.To);
+            
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return Ok(new { TxHash = response });
         }
         
         [HttpPost("build/remove-liquidity")]
-        public Task<IActionResult> RemoveLiquidity(CancellationToken cancellationToken)
+        public async Task<IActionResult> RemoveLiquidity(RemoveLiquidityRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var command = new CreateWalletRemoveLiquidityTransactionCommand(request.Token, request.Liquidity,
+                request.AmountCrsMin, request.AmountSrcMin, request.To);
+            
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return Ok(new { TxHash = response });
         }
         
         [HttpPost("build/swap")]
@@ -67,9 +81,13 @@ namespace Opdex.Platform.WebApi.Controllers
         }
         
         [HttpPost("build/create-pool")]
-        public Task<IActionResult> CreatePool(CancellationToken cancellationToken)
+        public async Task<IActionResult> CreatePool(CreatePoolRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var command = new CreateWalletCreateLiquidityPoolTransactionCommand(request.Token, request.Sender);
+            
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return Ok(new { TxHash = response });
         }
     }
 }

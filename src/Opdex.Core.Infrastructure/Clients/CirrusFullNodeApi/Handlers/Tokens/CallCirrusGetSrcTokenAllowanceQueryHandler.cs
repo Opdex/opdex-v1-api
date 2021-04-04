@@ -11,7 +11,7 @@ using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.T
 namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens
 {
     public class CallCirrusGetSrcTokenAllowanceQueryHandler 
-        : IRequestHandler<CallCirrusGetSrcTokenAllowanceQuery, decimal>
+        : IRequestHandler<CallCirrusGetSrcTokenAllowanceQuery, string>
     {
         private readonly ISmartContractsModule _smartContractsModule;
         private readonly ILogger<CallCirrusGetSrcTokenAllowanceQueryHandler> _logger;
@@ -24,15 +24,14 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens
         }
         
         // Todo: try catch requests
-        public async Task<decimal> Handle(CallCirrusGetSrcTokenAllowanceQuery request, CancellationToken cancellationToken)
+        public async Task<string> Handle(CallCirrusGetSrcTokenAllowanceQuery request, CancellationToken cancellationToken)
         {
             var parameters = new[] {$"9#{request.Owner}", $"9#{request.Spender}"};
             var allowanceCall = new LocalCallRequestDto(request.Token, request.Spender, "Allowance", parameters);
 
-            var allowance = await _smartContractsModule.LocalCallAsync(allowanceCall, cancellationToken);
-            ulong.TryParse(allowance.Return.ToString(), out var orderBookAllowance);
+            var allowanceResponse = await _smartContractsModule.LocalCallAsync(allowanceCall, cancellationToken);
 
-            return orderBookAllowance.ToDecimal(request.Decimals);
+            return allowanceResponse.Return.ToString();
         }
     }
 }

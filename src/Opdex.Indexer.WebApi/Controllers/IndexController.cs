@@ -24,7 +24,7 @@ namespace Opdex.Indexer.WebApi.Controllers
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        [HttpGet]
+        [HttpGet("last-synced-block")]
         public async Task<IActionResult> GetLastSyncedBlock(CancellationToken cancellationToken)
         {
             var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery());
@@ -52,7 +52,7 @@ namespace Opdex.Indexer.WebApi.Controllers
                 var time = DateTimeOffset.FromUnixTimeSeconds(timeSeconds).UtcDateTime;
                 var medianTime = DateTimeOffset.FromUnixTimeSeconds(medianTimeSeconds).UtcDateTime;
                 
-                // Todo: Use Crate Query
+                // Todo: Use Create Query
                 var createdBlock = await _mediator.Send(new MakeBlockCommand(cirrusBlockDetails.Height, cirrusBlockDetails.Hash, time, medianTime));
                 if (!createdBlock) return NoContent();
                 

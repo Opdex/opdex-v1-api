@@ -114,6 +114,7 @@ namespace Opdex.Core.Domain.Models
             Events.Add(transactionEvent);
         }
 
+        // Todo: Use TransactionEventType
         public void DeserializeEvent(string address, string topic, int sortOrder, dynamic log)
         {
             if (!topic.Contains("Opdex")) return;
@@ -129,6 +130,7 @@ namespace Opdex.Core.Domain.Models
                     nameof(MintEvent) => new MintEvent(log, address, sortOrder),
                     nameof(SwapEvent) => new SwapEvent(log, address, sortOrder),
                     nameof(ApprovalEvent) => new ApprovalEvent(log, address, sortOrder),
+                    "ApprovalLog" => new ApprovalEvent(log, address, sortOrder),
                     nameof(TransferEvent) => new TransferEvent(log, address, sortOrder),
                     "TransferLog" => new TransferEvent(log, address, sortOrder),
                     nameof(PoolCreatedEvent) => new PoolCreatedEvent(log, address, sortOrder),

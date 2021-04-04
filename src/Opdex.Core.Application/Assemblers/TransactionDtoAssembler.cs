@@ -55,6 +55,18 @@ namespace Opdex.Core.Application.Assemblers
                 TransactionEventType.SyncEvent => await _mediator.Send(new RetrieveSyncEventsByIdsQuery(txEvents)),
                 TransactionEventType.ApprovalEvent => await _mediator.Send(new RetrieveApprovalEventsByIdsQuery(txEvents)),
                 TransactionEventType.TransferEvent => await _mediator.Send(new RetrieveTransferEventsByIdsQuery(txEvents)),
+                TransactionEventType.StakeEvent => null,
+                TransactionEventType.CollectStakingRewardsEvent => null,
+                TransactionEventType.UnstakeEvent => null,
+                TransactionEventType.MineEvent => null,
+                TransactionEventType.CollectMiningRewardsEvent => null,
+                TransactionEventType.ExitMineEvent => null,
+                TransactionEventType.MiningPoolCreatedEvent => null,
+                TransactionEventType.MiningPoolRewardedEvent => null,
+                TransactionEventType.NominationEvent => null,
+                TransactionEventType.MiningPoolRewardedAddedEvent => null,
+                TransactionEventType.OwnerChangeEvent => null,
+                TransactionEventType.DistributionEvent => null,
                 _ => null
             };
         }
