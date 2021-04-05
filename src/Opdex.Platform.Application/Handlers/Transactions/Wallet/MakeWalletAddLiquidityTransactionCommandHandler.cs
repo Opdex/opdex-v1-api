@@ -27,7 +27,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             const string methodName = "AddLiquidity";
             
             // Todo: Convert to decimals
-            var crsToSend = request.AmountCrsDesired.ToString();
+            var crsToSend = Math.Round((decimal)request.AmountCrsDesired / 100_000_000, 8).ToString();
             
             var parameters = new List<string>
             {

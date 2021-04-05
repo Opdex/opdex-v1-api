@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -23,10 +24,14 @@ namespace Opdex.Platform.WebApi.Controllers
             throw new NotImplementedException();
         }
         
-        [HttpGet("Pool/{PoolAddress}")]
-        public Task<IActionResult> GetTransactionsForPool(string PoolAddress, CancellationToken cancellationToken)
+        [HttpGet("pool/{poolAddress}")]
+        public async Task<IActionResult> GetTransactionsForPool(string poolAddress, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var query = new GetTransactionsByPoolWithFilterQuery(poolAddress, new[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+            var response = await _mediator.Send(query, cancellationToken);
+
+            return Ok(response);
         }
         
         [HttpGet("token/{tokenAddress}")]

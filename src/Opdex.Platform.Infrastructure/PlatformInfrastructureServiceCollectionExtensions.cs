@@ -6,8 +6,10 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Market;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Market;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools;
+using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -19,6 +21,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectAllPoolsQuery, IEnumerable<Pool>>, SelectAllPoolsQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAllTokensQuery, IEnumerable<Token>>, SelectAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLatestMarketSnapshotQuery, MarketSnapshot>, SelectLatestMarketSnapshotQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTransactionsByPoolWithFilterQuery, IEnumerable<Transaction>>, SelectTransactionsByPoolWithFilterQueryHandler>();
             
             return services;
         }

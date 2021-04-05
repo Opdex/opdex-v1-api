@@ -13,7 +13,6 @@
 
     <ItemGroup>
       <Folder Include="Data\Handlers\Blocks" />
-      <Folder Include="Data\Handlers\Transactions" />
       <Folder Include="Integrations\BitcoreNodeApi" />
     </ItemGroup>
 
