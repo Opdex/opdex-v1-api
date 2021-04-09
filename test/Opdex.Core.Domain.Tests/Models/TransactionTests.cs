@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Domain.Models.TransactionEvents;
+using Opdex.Core.Domain.Models.TransactionLogs;
 using Xunit;
 
 namespace Opdex.Core.Domain.Tests.Models
@@ -18,20 +18,20 @@ namespace Opdex.Core.Domain.Tests.Models
             const string to = "To";
             var logs = new List<dynamic>();
             
-            dynamic syncEvent = new System.Dynamic.ExpandoObject();
-            syncEvent.Address = "Address";
-            syncEvent.Topics = new[] {"OpdexSyncEvent", "Topics"};
-            syncEvent.Data = "SomeData";
-            syncEvent.Log = new System.Dynamic.ExpandoObject();
-            syncEvent.Log.ReserveCrs = 100ul;
-            syncEvent.Log.ReserveSrc = "1500";
+            dynamic syncLog = new System.Dynamic.ExpandoObject();
+            syncLog.Address = "Address";
+            syncLog.Topics = new[] {"OpdexReservesLog", "Topics"};
+            syncLog.Data = "SomeData";
+            syncLog.Log = new System.Dynamic.ExpandoObject();
+            syncLog.Log.ReserveCrs = 100ul;
+            syncLog.Log.ReserveSrc = "1500";
 
-            logs.Add(syncEvent);
+            logs.Add(syncLog);
 
             var receipt = new Transaction(txHash, blockHeight, gasUsed, from, to);
             foreach (var log in logs)
             {
-                receipt.DeserializeEvent(log.Address, log.Topics[0], 0, log.Log);    
+                receipt.DeserializeLog(log.Address, log.Topics[0], 0, log.Log);    
             }
 
             receipt.Hash.Should().Be(txHash);
@@ -39,15 +39,15 @@ namespace Opdex.Core.Domain.Tests.Models
             receipt.GasUsed.Should().Be(gasUsed);
             receipt.From.Should().Be(from);
             receipt.To.Should().Be(to);
-            receipt.Events.Count.Should().Be(1);
+            receipt.Logs.Count.Should().Be(1);
 
-            foreach (var eventReceipt in receipt.Events)
+            foreach (var logReceipt in receipt.Logs)
             {
-                eventReceipt.Address.Should().Be(syncEvent.Address);
+                logReceipt.Address.Should().Be(syncLog.Address);
                 
-                var syncEventType = (SyncEvent)eventReceipt;
-                syncEventType.ReserveCrs.Should().Be(syncEvent.Log.ReserveCrs);
-                syncEventType.ReserveSrc.Should().Be(syncEvent.Log.ReserveSrc);
+                var syncLogType = (ReservesLog)logReceipt;
+                syncLogType.ReserveCrs.Should().Be(syncLog.Log.ReserveCrs);
+                syncLogType.ReserveSrc.Should().Be(syncLog.Log.ReserveSrc);
             }
         }
     }

@@ -54,7 +54,7 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
                 var result = await _context.ExecuteScalarAsync<long>(command);
 
                 return new Transaction(result, request.Transaction.Hash, request.Transaction.BlockHeight,
-                    request.Transaction.GasUsed, request.Transaction.From, request.Transaction.To, request.Transaction.Events);
+                    request.Transaction.GasUsed, request.Transaction.From, request.Transaction.To, request.Transaction.Logs);
             }
             catch (Exception ex)
             {

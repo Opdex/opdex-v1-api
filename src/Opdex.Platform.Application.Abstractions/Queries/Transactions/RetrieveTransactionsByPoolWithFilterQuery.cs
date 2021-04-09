@@ -8,7 +8,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Transactions
 {
     public class RetrieveTransactionsByPoolWithFilterQuery : IRequest<IEnumerable<Transaction>>
     {
-        public RetrieveTransactionsByPoolWithFilterQuery(string poolAddress, IEnumerable<int> eventTypes)
+        public RetrieveTransactionsByPoolWithFilterQuery(string poolAddress, IEnumerable<int> logTypes)
         {
             if (!poolAddress.HasValue())
             {
@@ -16,10 +16,10 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Transactions
             }
 
             PoolAddress = poolAddress;
-            EventTypes = eventTypes;
+            LogTypes = logTypes;
         }
         
         public string PoolAddress { get; }
-        public IEnumerable<int> EventTypes { get; }
+        public IEnumerable<int> LogTypes { get; }
     }
 }

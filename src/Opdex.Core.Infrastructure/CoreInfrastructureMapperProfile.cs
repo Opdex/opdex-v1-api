@@ -1,10 +1,10 @@
 using System;
 using AutoMapper;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Domain.Models.TransactionEvents;
+using Opdex.Core.Domain.Models.TransactionLogs;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
-using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents;
+using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionLogs;
 
 namespace Opdex.Core.Infrastructure
 {
@@ -17,7 +17,7 @@ namespace Opdex.Core.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TransactionEntity, Transaction>()
-                .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, new TransactionEvent[0]))
+                .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, new TransactionLog[0]))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TokenEntity, Token>()
@@ -36,37 +36,37 @@ namespace Opdex.Core.Infrastructure
                 .ConstructUsing(src => new MarketSnapshot(src.Id, src.TokenCount, src.PoolCount, src.DailyTransactionCount, src.CrsPrice, src.Liquidity, src.DailyFees, src.DailyVolume, src.Block))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            // Transaction Events
-            CreateMap<MintEventEntity, MintEvent>()
-                .ConstructUsing(src => new MintEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Sender, src.AmountCrs, src.AmountSrc))
+            // Transaction Logs
+            CreateMap<MintLogEntity, MintLog>()
+                .ConstructUsing(src => new MintLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Sender, src.AmountCrs, src.AmountSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<BurnEventEntity, BurnEvent>()
-                .ConstructUsing(src => new BurnEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Sender, src.To, src.AmountCrs, src.AmountSrc))
+            CreateMap<BurnLogEntity, BurnLog>()
+                .ConstructUsing(src => new BurnLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Sender, src.To, src.AmountCrs, src.AmountSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<SwapEventEntity, SwapEvent>()
-                .ConstructUsing(src => new SwapEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Sender, src.To, src.AmountCrsIn, src.AmountCrsOut, src.AmountSrcIn, src.AmountSrcOut))
+            CreateMap<SwapLogEntity, SwapLog>()
+                .ConstructUsing(src => new SwapLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Sender, src.To, src.AmountCrsIn, src.AmountCrsOut, src.AmountSrcIn, src.AmountSrcOut))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<TransferEventEntity, TransferEvent>()
-                .ConstructUsing(src => new TransferEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.From, src.To, src.Amount ))
+            CreateMap<TransferLogEntity, TransferLog>()
+                .ConstructUsing(src => new TransferLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.From, src.To, src.Amount ))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<ApprovalEventEntity, ApprovalEvent>()
-                .ConstructUsing(src => new ApprovalEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Owner, src.Spender, src.Amount ))
+            CreateMap<ApprovalLogEntity, ApprovalLog>()
+                .ConstructUsing(src => new ApprovalLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Owner, src.Spender, src.Amount ))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<SyncEventEntity, SyncEvent>()
-                .ConstructUsing(src => new SyncEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.ReserveCrs, src.ReserveSrc))
+            CreateMap<ReservesLogEntity, ReservesLog>()
+                .ConstructUsing(src => new ReservesLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.ReserveCrs, src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<PoolCreatedEventEntity, PoolCreatedEvent>()
-                .ConstructUsing(src => new PoolCreatedEvent(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Token, src.Pool))
+            CreateMap<LiquidityPoolCreatedLogEntity, LiquidityPoolCreatedLog>()
+                .ConstructUsing(src => new LiquidityPoolCreatedLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Token, src.Pool))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<TransactionEventSummaryEntity, TransactionEventSummary>()
-                .ConstructUsing(src => new TransactionEventSummary(src.Id, src.TransactionId, src.EventId, src.EventTypeId, src.SortOrder, src.Contract))
+            CreateMap<TransactionLogSummaryEntity, TransactionLogSummary>()
+                .ConstructUsing(src => new TransactionLogSummary(src.Id, src.TransactionId, src.LogId, src.LogTypeId, src.SortOrder, src.Contract))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
     }

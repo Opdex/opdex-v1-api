@@ -11,7 +11,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modul
         Task<string> GetContractStorageAsync(string address, string storageKey, string dataType, CancellationToken cancellationToken);
         Task<string> GetContractBalanceAsync(string address, CancellationToken cancellationToken);
         Task<TransactionReceiptDto> GetReceiptAsync(string txHash, CancellationToken cancellationToken);
-        Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(string contractAddress, string eventName, ulong fromBlock, ulong? toBlock, CancellationToken cancellationToken);
+        Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(string contractAddress, string logName, ulong fromBlock, ulong? toBlock, CancellationToken cancellationToken);
         Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken);
         Task<string> CallSmartContractAsync(SmartContractCallRequestDto call, CancellationToken cancellationToken);
     }

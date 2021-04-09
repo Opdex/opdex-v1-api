@@ -35,7 +35,7 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartCont
             try
             {
                 var transactionDtos = await _smartContractsModule.ReceiptSearchAsync(
-                    request.ContractAddress, request.EventName, request.From, request.To, cancellationToken);
+                    request.ContractAddress, request.LogName, request.From, request.To, cancellationToken);
 
                 foreach (var txDto in transactionDtos)
                 {
@@ -54,7 +54,7 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartCont
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching {request.EventName} event type from {request.ContractAddress}");
+                _logger.LogError(ex, $"Error fetching {request.LogName} log type from {request.ContractAddress}");
             }
 
             return transactionReceipts;

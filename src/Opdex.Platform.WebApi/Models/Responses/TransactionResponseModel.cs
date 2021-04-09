@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Opdex.Platform.WebApi.Models.Responses.TransactionEvents;
+using Opdex.Platform.WebApi.Models.Responses.TransactionLogs;
 
 namespace Opdex.Platform.WebApi.Models.Responses
 {
@@ -8,7 +8,7 @@ namespace Opdex.Platform.WebApi.Models.Responses
     {
         public TransactionResponseModel()
         {
-            Events = Enumerable.Empty<TransactionEventResponseModelBase>();
+            Logs = Enumerable.Empty<TransactionLogResponseModelBase>();
         }
         
         public string Hash { get; set; }
@@ -16,6 +16,6 @@ namespace Opdex.Platform.WebApi.Models.Responses
         public int GasUsed { get; set; }
         public string From { get; set; }
         public string To { get; set; }
-        public IEnumerable<TransactionEventResponseModelBase> Events { get; set; }
+        public IEnumerable<TransactionLogResponseModelBase> Logs { get; set; }
     }
 }

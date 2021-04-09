@@ -42,10 +42,10 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartCont
 
             for (var i = 0; i < transaction.Logs.Length; i++)
             {
-                var txEvent = transaction.Logs[i];
-                var eventType = txEvent.Topics[0].HexToString();
+                var txLog = transaction.Logs[i];
+                var logType = txLog.Topics[0].HexToString();
                 
-                transactionResponse.DeserializeEvent(txEvent.Address, eventType, i, txEvent.Log);
+                transactionResponse.DeserializeLog(txLog.Address, logType, i, txLog.Log);
             }
 
             return transactionResponse;

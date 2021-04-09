@@ -54,7 +54,7 @@ namespace Opdex.Core.Infrastructure.Tests.Data.Handlers.Transactions
             result.From.Should().Be(expectedResponse.From);
             result.To.Should().Be(expectedResponse.To);
             result.GasUsed.Should().Be(expectedResponse.GasUsed);
-            result.Events.Should().BeEmpty();
+            result.Logs.Should().BeEmpty();
         }
         
         [Fact]

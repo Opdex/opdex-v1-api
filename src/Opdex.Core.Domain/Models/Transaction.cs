@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Opdex.Core.Common.Extensions;
-using Opdex.Core.Domain.Models.TransactionEvents;
+using Opdex.Core.Domain.Models.TransactionLogs;
 
 namespace Opdex.Core.Domain.Models
 {
@@ -40,10 +40,10 @@ namespace Opdex.Core.Domain.Models
             GasUsed = gasUsed;
             From = from;
             To = to;
-            Events = new List<TransactionEvent>();
+            Logs = new List<TransactionLog>();
         }
 
-        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, IEnumerable<TransactionEvent> events)
+        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, IEnumerable<TransactionLog> logs)
         {
             Id = id;
             Hash = txHash;
@@ -51,8 +51,8 @@ namespace Opdex.Core.Domain.Models
             GasUsed = gasUsed;
             From = from;
             To = to;
-            Events = new List<TransactionEvent>();
-            AttachEvents(events);
+            Logs = new List<TransactionLog>();
+            AttachLogs(logs);
         }
         
         public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to)
@@ -63,7 +63,7 @@ namespace Opdex.Core.Domain.Models
             GasUsed = gasUsed;
             From = from;
             To = to;
-            Events = new List<TransactionEvent>();
+            Logs = new List<TransactionLog>();
         }
         
         public long Id { get; }
@@ -72,7 +72,7 @@ namespace Opdex.Core.Domain.Models
         public int GasUsed { get; }
         public string From { get; }
         public string To { get; }
-        public ICollection<TransactionEvent> Events { get; }
+        public ICollection<TransactionLog> Logs { get; }
         public IReadOnlyCollection<string> PoolsEngaged { get; private set; }
 
         /// <summary>
@@ -82,70 +82,64 @@ namespace Opdex.Core.Domain.Models
         /// <exception cref="Exception"></exception>
         public void SetPoolsEngaged(List<string> poolsEngaged)
         {
-            if (!poolsEngaged.All(p => Events.Any(e => e.Address == p)))
+            if (!poolsEngaged.All(p => Logs.Any(e => e.Address == p)))
             {
-                throw new Exception("Pool engagement not found in transaction events");
+                throw new Exception("Pool engagement not found in transaction logs");
             }
 
             PoolsEngaged = poolsEngaged.Select(p => p).ToList();
         }
 
-        private void AttachEvents(IEnumerable<TransactionEvent> events)
+        private void AttachLogs(IEnumerable<TransactionLog> logs)
         {
-            foreach (var txEvent in events)
+            foreach (var txLog in logs)
             {
-                if (txEvent.TransactionId == 0)
+                if (txLog.TransactionId == 0)
                 {
-                    txEvent.SetTransactionId(Id);
+                    txLog.SetTransactionId(Id);
                 }
 
-                Events.Add(txEvent);
+                Logs.Add(txLog);
             }
         }
         
-        public void AttachEvent(TransactionEvent transactionEvent)
+        public void AttachLog(TransactionLog transactionLog)
         {
-            if (Id == 0 || transactionEvent.Id == 0)
+            if (Id == 0 || transactionLog.Id == 0)
             {
-                throw new Exception($"Unable to add transaction event on incomplete {nameof(Transaction)}.");
+                throw new Exception($"Unable to add transaction log on incomplete {nameof(Transaction)}.");
             }
 
             // Todo: Insert into sorted order
-            Events.Add(transactionEvent);
+            Logs.Add(transactionLog);
         }
 
-        // Todo: Use TransactionEventType
-        public void DeserializeEvent(string address, string topic, int sortOrder, dynamic log)
+        // Todo: Use TransactionLogType
+        public void DeserializeLog(string address, string topic, int sortOrder, dynamic log)
         {
-            if (!topic.Contains("Opdex")) return;
-
-            topic = topic.Replace("Opdex", "");
-
             try
             {
-                TransactionEvent opdexEvent = topic switch
+                TransactionLog opdexLog = topic switch
                 {
-                    nameof(SyncEvent) => new SyncEvent(log, address, sortOrder),
-                    nameof(BurnEvent) => new BurnEvent(log, address, sortOrder),
-                    nameof(MintEvent) => new MintEvent(log, address, sortOrder),
-                    nameof(SwapEvent) => new SwapEvent(log, address, sortOrder),
-                    nameof(ApprovalEvent) => new ApprovalEvent(log, address, sortOrder),
-                    "ApprovalLog" => new ApprovalEvent(log, address, sortOrder),
-                    nameof(TransferEvent) => new TransferEvent(log, address, sortOrder),
-                    "TransferLog" => new TransferEvent(log, address, sortOrder),
-                    nameof(PoolCreatedEvent) => new PoolCreatedEvent(log, address, sortOrder),
+                    nameof(ReservesLog) => new ReservesLog(log, address, sortOrder),
+                    nameof(BurnLog) => new BurnLog(log, address, sortOrder),
+                    nameof(MintLog) => new MintLog(log, address, sortOrder),
+                    nameof(SwapLog) => new SwapLog(log, address, sortOrder),
+                    nameof(ApprovalLog) => new ApprovalLog(log, address, sortOrder),
+                    nameof(TransferLog) => new TransferLog(log, address, sortOrder),
+                    nameof(LiquidityPoolCreatedLog) => new LiquidityPoolCreatedLog(log, address, sortOrder),
                     _ => null
                 };
 
-                if (opdexEvent == null) return;
+                if (opdexLog == null) return;
 
-                Events.Add(opdexEvent);
+                Logs.Add(opdexLog);
             }
             catch
             {
                 // ignored
-                // Maybe we want to keep this around incase other events in this transaction
-                // are Opdex events
+                // Maybe we want to keep this around incase other logs in this transaction
+                // are Opdex logs
             }
         }
     }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Domain.Models.TransactionEvents;
+using Opdex.Core.Domain.Models.TransactionLogs;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
@@ -16,7 +16,7 @@ using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Blocks;
 using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Pools;
 using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Tokens;
 using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Transactions;
-using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionEvents;
+using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.BlockStore;
 using Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools;
@@ -28,7 +28,7 @@ using Opdex.Core.Infrastructure.Data.Handlers.Blocks;
 using Opdex.Core.Infrastructure.Data.Handlers.Pools;
 using Opdex.Core.Infrastructure.Data.Handlers.Tokens;
 using Opdex.Core.Infrastructure.Data.Handlers.Transactions;
-using Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionEvents;
+using Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionLogs;
 
 namespace Opdex.Core.Infrastructure
 {
@@ -62,14 +62,14 @@ namespace Opdex.Core.Infrastructure
             
             // Transactions
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectBurnEventsByIdsQuery, IEnumerable<BurnEvent>>, SelectBurnEventsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMintEventsByIdsQuery, IEnumerable<MintEvent>>, SelectMintEventsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectSwapEventsByIdsQuery, IEnumerable<SwapEvent>>, SelectSwapEventsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectSyncEventsByIdsQuery, IEnumerable<SyncEvent>>, SelectSyncEventsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTransferEventsByIdsQuery, IEnumerable<TransferEvent>>, SelectTransferEventsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectApprovalEventsByIdsQuery, IEnumerable<ApprovalEvent>>, SelectApprovalEventsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectPoolCreatedEventsByIdsQuery, IEnumerable<PoolCreatedEvent>>, SelectPoolCreatedEventsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTransactionEventSummariesByTransactionIdQuery, IEnumerable<TransactionEventSummary>>, SelectTransactionEventSummariesByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectBurnLogsByIdsQuery, IEnumerable<BurnLog>>, SelectBurnLogsByIdsQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMintLogsByIdsQuery, IEnumerable<MintLog>>, SelectMintLogsByIdsQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectSwapLogsByIdsQuery, IEnumerable<SwapLog>>, SelectSwapLogsByIdsQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectReservesLogsByIdsQuery, IEnumerable<ReservesLog>>, SelectReservesLogsByIdsQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTransferLogsByIdsQuery, IEnumerable<TransferLog>>, SelectTransferLogsByIdsQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectApprovalLogsByIdsQuery, IEnumerable<ApprovalLog>>, SelectApprovalLogsByIdsQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectLiquidityPoolCreatedLogsByIdsQuery, IEnumerable<LiquidityPoolCreatedLog>>, SelectLiquidityPoolCreatedLogsByIdsQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTransactionLogSummariesByTransactionIdQuery, IEnumerable<TransactionLogSummary>>, SelectTransactionLogSummariesByTransactionIdQueryHandler>();
         }
 
         private static void AddClientServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)

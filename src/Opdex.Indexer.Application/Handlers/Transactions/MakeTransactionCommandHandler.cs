@@ -5,10 +5,10 @@ using MediatR;
 using Opdex.Core.Application.Abstractions.Queries.Transactions;
 using Opdex.Core.Common.Exceptions;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Domain.Models.TransactionEvents;
+using Opdex.Core.Domain.Models.TransactionLogs;
 using Opdex.Indexer.Application.Abstractions.Commands.Transactions;
 using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
-using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
+using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionLogs;
 
 namespace Opdex.Indexer.Application.Handlers.Transactions
 {
@@ -30,9 +30,9 @@ namespace Opdex.Indexer.Application.Handlers.Transactions
 
             if (transactionId == null) return false;
             
-            foreach (var logEvent in request.Transaction.Events)
+            foreach (var log in request.Transaction.Logs)
             {
-                await MakeTransactionEvent(logEvent);
+                await MakeTransactionLog(log);
             }
 
             return true;
@@ -54,23 +54,23 @@ namespace Opdex.Indexer.Application.Handlers.Transactions
             return transaction;
         }
 
-        private async Task MakeTransactionEvent(TransactionEvent logEvent)
+        private async Task MakeTransactionLog(TransactionLog log)
         {
-            var eventId = logEvent switch
+            var logId = log switch
             {
-                SyncEvent syncEvent => await _mediator.Send(new PersistTransactionSyncEventCommand(syncEvent)),
-                MintEvent mintEvent => await _mediator.Send(new PersistTransactionMintEventCommand(mintEvent)),
-                BurnEvent burnEvent => await _mediator.Send(new PersistTransactionBurnEventCommand(burnEvent)),
-                SwapEvent swapEvent => await _mediator.Send(new PersistTransactionSwapEventCommand(swapEvent)),
-                ApprovalEvent approvalEvent => await _mediator.Send(new PersistTransactionApprovalEventCommand(approvalEvent)),
-                TransferEvent transferEvent => await _mediator.Send(new PersistTransactionTransferEventCommand(transferEvent)),
-                PoolCreatedEvent poolCreatedEvent => await _mediator.Send(new PersistTransactionPoolCreatedEventCommand(poolCreatedEvent)),
+                ReservesLog syncLog => await _mediator.Send(new PersistTransactionReservesLogCommand(syncLog)),
+                MintLog mintLog => await _mediator.Send(new PersistTransactionMintLogCommand(mintLog)),
+                BurnLog burnLog => await _mediator.Send(new PersistTransactionBurnLogCommand(burnLog)),
+                SwapLog swapLog => await _mediator.Send(new PersistTransactionSwapLogCommand(swapLog)),
+                ApprovalLog approvalLog => await _mediator.Send(new PersistTransactionApprovalLogCommand(approvalLog)),
+                TransferLog transferLog => await _mediator.Send(new PersistTransactionTransferLogCommand(transferLog)),
+                LiquidityPoolCreatedLog poolCreatedLog => await _mediator.Send(new PersistTransactionLiquidityPoolCreatedLogCommand(poolCreatedLog)),
                 _ => 0
             };
 
-            if (eventId == 0)  return;
+            if (logId == 0)  return;
             
-            var command = new PersistTransactionEventSummaryCommand(logEvent, eventId);
+            var command = new PersistTransactionLogSummaryCommand(log, logId);
             await _mediator.Send(command);
         }
     }

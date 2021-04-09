@@ -32,7 +32,7 @@ namespace Opdex.Indexer.WebApi.Controllers
         }
 
         /// <summary>
-        /// Indexes current up to latest block and publishes an integration event for each new transaction
+        /// Indexes current up to latest block and publishes an integration log for each new transaction
         /// </summary>
         [HttpPost("process-latest-blocks")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

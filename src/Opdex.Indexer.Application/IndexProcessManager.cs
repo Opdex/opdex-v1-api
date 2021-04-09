@@ -79,9 +79,9 @@ namespace Opdex.Indexer.Application
                         continue;
                     }
                     
-                    // Update general info for the block (e.g. SyncEvent would update reserves/pricing. Swap event would update fees)
+                    // Update general info for the block (e.g. ReservesLog would update reserves/pricing. Swap log would update fees)
                     // Per block, per pool, maybe per token, with reserves, fees, and costs (sats & usd)
-                    // Todo: Consider doing this when transactions and events are processed depending on how heavy the workload is
+                    // Todo: Consider doing this when transactions and logs are processed depending on how heavy the workload is
                 }
                 
                 // Todo: Update block sync status to complete
@@ -96,19 +96,19 @@ namespace Opdex.Indexer.Application
         }
 
         /// <summary>
-        /// Fetches and persists new tokens and pools from opdex router contract event logs.
+        /// Fetches and persists new tokens and pools from opdex router contract log logs.
         /// </summary>
         /// <param name="latestHeight">Opdex synced latest block height</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>Dictionary of pool address keys with pool values</returns>
         private Task<Dictionary<string, PoolDto>> ProcessNewPools(ulong latestHeight, CancellationToken cancellationToken)
         {
-            // var poolEvents = await _mediator.Send(new RetrieveCirrusPoolEventsQuery(latestHeight), cancellationToken);
+            // var poolLogs = await _mediator.Send(new RetrieveCirrusPoolLogsQuery(latestHeight), cancellationToken);
             //
-            // foreach (var poolEvent in poolEvents)
+            // foreach (var poolLog in poolLogs)
             // {
-            //     var tokenId = await _mediator.Send(new MakeTokenCommand(poolEvent.Token), cancellationToken);
-            //     await _mediator.Send(new MakePoolCommand(poolEvent.Pool, tokenId), cancellationToken);
+            //     var tokenId = await _mediator.Send(new MakeTokenCommand(poolLog.Token), cancellationToken);
+            //     await _mediator.Send(new MakePoolCommand(poolLog.Pool, tokenId), cancellationToken);
             // }
             //
             // var allPools = await _mediator.Send(new RetrieveAllPoolsWithFilterQuery(), cancellationToken);
@@ -129,7 +129,7 @@ namespace Opdex.Indexer.Application
         {
             var tx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(txHash), cancellationToken);
             var isToRouter = tx.To == _opdexConfiguration.ControllerContract;
-            var poolsEngaged = tx.Events
+            var poolsEngaged = tx.Logs
                 .Where(l => pools.TryGetValue(l.Address, out _))
                 .Select(l => l.Address)
                 .Distinct()

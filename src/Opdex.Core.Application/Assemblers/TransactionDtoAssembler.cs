@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Core.Application.Abstractions.Queries.Transactions.TransactionEvents;
+using Opdex.Core.Application.Abstractions.Queries.Transactions.TransactionLogs;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Domain.Models.TransactionEvents;
-using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents;
+using Opdex.Core.Domain.Models.TransactionLogs;
+using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionLogs;
 
 namespace Opdex.Core.Application.Assemblers
 {
@@ -25,48 +25,48 @@ namespace Opdex.Core.Application.Assemblers
         
         public async Task<TransactionDto> Assemble(Transaction transaction)
         {
-            var transactionEvents = new List<TransactionEvent>();
+            var transactionLogs = new List<TransactionLog>();
 
-            var request = new RetrieveTransactionEventSummariesByTransactionIdQuery(transaction.Id);
+            var request = new RetrieveTransactionLogSummariesByTransactionIdQuery(transaction.Id);
             
             var summaries = await _mediator.Send(request);
 
-            foreach (var group in summaries.GroupBy(s => s.EventTypeId))
+            foreach (var group in summaries.GroupBy(s => s.LogTypeId))
             {
-                var eventType = (TransactionEventType)group.Key;
+                var logType = (TransactionLogType)group.Key;
                 
-                var groupEvents = await GetEvents(eventType, group);
+                var groupLogs = await GetLogs(logType, group);
                 
-                transactionEvents.AddRange(groupEvents);
+                transactionLogs.AddRange(groupLogs);
             }
 
             return _mapper.Map<TransactionDto>(new Transaction(transaction.Id, transaction.Hash, transaction.BlockHeight,
-                transaction.GasUsed, transaction.From, transaction.To, transactionEvents));
+                transaction.GasUsed, transaction.From, transaction.To, transactionLogs));
         }
 
-        private async Task<IEnumerable<TransactionEvent>> GetEvents(TransactionEventType eventType, IEnumerable<TransactionEventSummary> txEvents)
+        private async Task<IEnumerable<TransactionLog>> GetLogs(TransactionLogType logType, IEnumerable<TransactionLogSummary> txLogs)
         {
-            return eventType switch
+            return logType switch
             {
-                TransactionEventType.PoolCreatedEvent => await _mediator.Send(new RetrievePoolCreatedEventsByIdsQuery(txEvents)),
-                TransactionEventType.BurnEvent => await _mediator.Send(new RetrieveBurnEventsByIdsQuery(txEvents)),
-                TransactionEventType.MintEvent => await _mediator.Send(new RetrieveMintEventsByIdsQuery(txEvents)),
-                TransactionEventType.SwapEvent => await _mediator.Send(new RetrieveSwapEventsByIdsQuery(txEvents)),
-                TransactionEventType.SyncEvent => await _mediator.Send(new RetrieveSyncEventsByIdsQuery(txEvents)),
-                TransactionEventType.ApprovalEvent => await _mediator.Send(new RetrieveApprovalEventsByIdsQuery(txEvents)),
-                TransactionEventType.TransferEvent => await _mediator.Send(new RetrieveTransferEventsByIdsQuery(txEvents)),
-                TransactionEventType.StakeEvent => null,
-                TransactionEventType.CollectStakingRewardsEvent => null,
-                TransactionEventType.UnstakeEvent => null,
-                TransactionEventType.MineEvent => null,
-                TransactionEventType.CollectMiningRewardsEvent => null,
-                TransactionEventType.ExitMineEvent => null,
-                TransactionEventType.MiningPoolCreatedEvent => null,
-                TransactionEventType.MiningPoolRewardedEvent => null,
-                TransactionEventType.NominationEvent => null,
-                TransactionEventType.MiningPoolRewardedAddedEvent => null,
-                TransactionEventType.OwnerChangeEvent => null,
-                TransactionEventType.DistributionEvent => null,
+                TransactionLogType.LiquidityPoolCreatedLog => await _mediator.Send(new RetrieveLiquidityPoolCreatedLogsByIdsQuery(txLogs)),
+                TransactionLogType.BurnLog => await _mediator.Send(new RetrieveBurnLogsByIdsQuery(txLogs)),
+                TransactionLogType.MintLog => await _mediator.Send(new RetrieveMintLogsByIdsQuery(txLogs)),
+                TransactionLogType.SwapLog => await _mediator.Send(new RetrieveSwapLogsByIdsQuery(txLogs)),
+                TransactionLogType.ReservesLog => await _mediator.Send(new RetrieveReservesLogsByIdsQuery(txLogs)),
+                TransactionLogType.ApprovalLog => await _mediator.Send(new RetrieveApprovalLogsByIdsQuery(txLogs)),
+                TransactionLogType.TransferLog => await _mediator.Send(new RetrieveTransferLogsByIdsQuery(txLogs)),
+                TransactionLogType.EnterStakingPoolLog => null,
+                TransactionLogType.CollectStakingRewardsLog => null,
+                TransactionLogType.ExitStakingPoolLog => null,
+                TransactionLogType.EnterMiningPoolLog => null,
+                TransactionLogType.CollectMiningRewardsLog => null,
+                TransactionLogType.ExitMiningPoolLog => null,
+                TransactionLogType.MiningPoolCreatedLog => null,
+                TransactionLogType.RewardMiningPoolLog => null,
+                TransactionLogType.NominationLog => null,
+                TransactionLogType.MiningPoolRewardedLog => null,
+                TransactionLogType.OwnerChangeLog => null,
+                TransactionLogType.DistributionLog => null,
                 _ => null
             };
         }

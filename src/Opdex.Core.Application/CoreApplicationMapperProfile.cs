@@ -1,9 +1,9 @@
 using System.Linq;
 using AutoMapper;
 using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Core.Application.Abstractions.Models.TransactionEvents;
+using Opdex.Core.Application.Abstractions.Models.TransactionLogs;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Domain.Models.TransactionEvents;
+using Opdex.Core.Domain.Models.TransactionLogs;
 
 namespace Opdex.Core.Application
 {
@@ -56,60 +56,60 @@ namespace Opdex.Core.Application
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
                 .AfterMap((src, dest, ctx) =>
                 {
-                    var events = src.Events.Select(txEvent =>
+                    var logs = src.Logs.Select(txLog =>
                         {
-                            return (TransactionEventDto) (txEvent.EventType switch
+                            return (TransactionLogDto) (txLog.LogType switch
                             {
-                                nameof(SyncEvent) => ctx.Mapper.Map<SyncEventDto>(txEvent),
-                                nameof(BurnEvent) => ctx.Mapper.Map<BurnEventDto>(txEvent),
-                                nameof(MintEvent) => ctx.Mapper.Map<MintEventDto>(txEvent),
-                                nameof(SwapEvent) => ctx.Mapper.Map<SwapEventDto>(txEvent),
-                                nameof(ApprovalEvent) => ctx.Mapper.Map<ApprovalEventDto>(txEvent),
-                                nameof(TransferEvent) => ctx.Mapper.Map<TransferEventDto>(txEvent),
-                                nameof(PoolCreatedEvent) => ctx.Mapper.Map<PoolCreatedEventDto>(txEvent),
+                                nameof(ReservesLog) => ctx.Mapper.Map<ReservesLogDto>(txLog),
+                                nameof(BurnLog) => ctx.Mapper.Map<BurnLogDto>(txLog),
+                                nameof(MintLog) => ctx.Mapper.Map<MintLogDto>(txLog),
+                                nameof(SwapLog) => ctx.Mapper.Map<SwapLogDto>(txLog),
+                                nameof(ApprovalLog) => ctx.Mapper.Map<ApprovalLogDto>(txLog),
+                                nameof(TransferLog) => ctx.Mapper.Map<TransferLogDto>(txLog),
+                                nameof(LiquidityPoolCreatedLog) => ctx.Mapper.Map<LiquidityPoolCreatedLogDto>(txLog),
                                 _ => null
                             });
                         })
-                        .Where(eventDto => eventDto != null)
+                        .Where(logDto => logDto != null)
                         .ToList();
                 
-                    dest.Events = events;
+                    dest.Logs = logs;
                 })
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            // Transaction Events
+            // Transaction Logs
             
-            CreateMap<TransactionEvent, TransactionEventDto>()
+            CreateMap<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => src.EventType))
+                .ForMember(dest => dest.LogType, opt => opt.MapFrom(src => src.LogType))
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<SyncEvent, SyncEventDto>()
-                .IncludeBase<TransactionEvent, TransactionEventDto>()
+            CreateMap<ReservesLog, ReservesLogDto>()
+                .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.ReserveCrs, opt => opt.MapFrom(src => src.ReserveCrs))
                 .ForMember(dest => dest.ReserveSrc, opt => opt.MapFrom(src => src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<MintEvent, MintEventDto>()
-                .IncludeBase<TransactionEvent, TransactionEventDto>()
+            CreateMap<MintLog, MintLogDto>()
+                .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender))
                 .ForMember(dest => dest.AmountCrs, opt => opt.MapFrom(src => src.AmountCrs))
                 .ForMember(dest => dest.AmountSrc, opt => opt.MapFrom(src => src.AmountSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<BurnEvent, BurnEventDto>()
-                .IncludeBase<TransactionEvent, TransactionEventDto>()
+            CreateMap<BurnLog, BurnLogDto>()
+                .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender))
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
                 .ForMember(dest => dest.AmountCrs, opt => opt.MapFrom(src => src.AmountCrs))
                 .ForMember(dest => dest.AmountSrc, opt => opt.MapFrom(src => src.AmountSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<SwapEvent, SwapEventDto>()
-                .IncludeBase<TransactionEvent, TransactionEventDto>()
+            CreateMap<SwapLog, SwapLogDto>()
+                .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender))
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
                 .ForMember(dest => dest.AmountCrsIn, opt => opt.MapFrom(src => src.AmountCrsIn))
@@ -118,21 +118,21 @@ namespace Opdex.Core.Application
                 .ForMember(dest => dest.AmountSrcOut, opt => opt.MapFrom(src => src.AmountSrcOut))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<PoolCreatedEvent, PoolCreatedEventDto>()
-                .IncludeBase<TransactionEvent, TransactionEventDto>()
+            CreateMap<LiquidityPoolCreatedLog, LiquidityPoolCreatedLogDto>()
+                .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Pool, opt => opt.MapFrom(src => src.Pool))
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<TransferEvent, TransferEventDto>()
-                .IncludeBase<TransactionEvent, TransactionEventDto>()
+            CreateMap<TransferLog, TransferLogDto>()
+                .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<ApprovalEvent, ApprovalEventDto>()
-                .IncludeBase<TransactionEvent, TransactionEventDto>()
+            CreateMap<ApprovalLog, ApprovalLogDto>()
+                .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))

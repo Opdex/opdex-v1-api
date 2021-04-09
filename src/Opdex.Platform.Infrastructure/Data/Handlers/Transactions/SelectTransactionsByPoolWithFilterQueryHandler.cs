@@ -7,7 +7,7 @@ using MediatR;
 using Opdex.Core.Domain.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
-using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents;
+using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
@@ -24,13 +24,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                 t.`{nameof(TransactionEntity.To)}`,
                 t.`{nameof(TransactionEntity.From)}`
             FROM transaction t
-            LEFT JOIN transaction_event_summary tes 
-                ON tes.{nameof(TransactionEventSummaryEntity.TransactionId)} = t.{nameof(TransactionEntity.Id)} 
+            LEFT JOIN transaction_log_summary tls 
+                ON tls.{nameof(TransactionLogSummaryEntity.TransactionId)} = t.{nameof(TransactionEntity.Id)} 
             LEFT JOIN pool p 
-                ON p.{nameof(PoolEntity.Address)} = tes.{nameof(TransactionEventSummaryEntity.Contract)}
-            WHERE tes.{nameof(TransactionEventSummaryEntity.Id)} IS NOT NULL
-                AND {nameof(PoolEntity.Address)} = @{nameof(SqlParams.PoolAddress)}
-                AND {nameof(TransactionEventSummaryEntity.EventTypeId)} IN @{nameof(SqlParams.EventTypes)}
+                ON p.{nameof(PoolEntity.Address)} = tls.{nameof(TransactionLogSummaryEntity.Contract)}
+            WHERE tls.{nameof(TransactionLogSummaryEntity.Id)} IS NOT NULL
+                AND p.{nameof(PoolEntity.Address)} = @{nameof(SqlParams.PoolAddress)}
+                AND tls.{nameof(TransactionLogSummaryEntity.LogTypeId)} IN @{nameof(SqlParams.LogTypes)}
             ORDER BY t.{nameof(TransactionEntity.Id)} DESC
             LIMIT 10;";
 
@@ -46,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
         public async Task<IEnumerable<Transaction>> Handle(SelectTransactionsByPoolWithFilterQuery request,
             CancellationToken cancellationTransaction)
         {
-            var queryParams = new SqlParams(request.PoolAddress, request.EventTypes);
+            var queryParams = new SqlParams(request.PoolAddress, request.LogTypes);
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
 
             var result = await _context.ExecuteQueryAsync<TransactionEntity>(query);
@@ -56,14 +56,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
         private sealed class SqlParams
         {
-            internal SqlParams(string poolAddress, IEnumerable<int> eventTypes)
+            internal SqlParams(string poolAddress, IEnumerable<int> logTypes)
             {
                 PoolAddress = poolAddress;
-                EventTypes = eventTypes;
+                LogTypes = logTypes;
             }
 
             public string PoolAddress { get; }
-            public IEnumerable<int> EventTypes { get; }
+            public IEnumerable<int> LogTypes { get; }
         }
     }
 }

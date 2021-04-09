@@ -26,7 +26,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
         public async Task<IEnumerable<TransactionDto>> Handle(GetTransactionsByPoolWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var query = new RetrieveTransactionsByPoolWithFilterQuery(request.PoolAddress, request.EventTypes);
+            var query = new RetrieveTransactionsByPoolWithFilterQuery(request.PoolAddress, request.LogTypes);
 
             var transactions = await _mediator.Send(query, cancellationToken);
 

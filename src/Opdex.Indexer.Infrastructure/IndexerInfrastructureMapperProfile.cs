@@ -1,9 +1,9 @@
 using AutoMapper;
 using Opdex.Core.Domain.Models;
-using Opdex.Core.Domain.Models.TransactionEvents;
+using Opdex.Core.Domain.Models.TransactionLogs;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
-using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionEvents;
-using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionEvents;
+using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionLogs;
+using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionLogs;
 
 namespace Opdex.Indexer.Infrastructure
 {
@@ -44,9 +44,9 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            // Transaction Events
+            // Transaction Logs
             
-            CreateMap<SyncEvent, SyncEventEntity>()
+            CreateMap<ReservesLog, ReservesLogEntity>()
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
@@ -54,7 +54,7 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.ReserveSrc, opt => opt.MapFrom(src => src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<PoolCreatedEvent, PoolCreatedEventEntity>()
+            CreateMap<LiquidityPoolCreatedLog, LiquidityPoolCreatedLogEntity>()
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
@@ -62,7 +62,7 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.Pool, opt => opt.MapFrom(src => src.Pool))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<TransferEvent, TransferEventEntity>()
+            CreateMap<TransferLog, TransferLogEntity>()
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
@@ -71,7 +71,7 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<BurnEvent, BurnEventEntity>()
+            CreateMap<BurnLog, BurnLogEntity>()
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
@@ -81,7 +81,7 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.AmountSrc, opt => opt.MapFrom(src => src.AmountSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<MintEvent, MintEventEntity>()
+            CreateMap<MintLog, MintLogEntity>()
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
@@ -90,7 +90,7 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.AmountSrc, opt => opt.MapFrom(src => src.AmountSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<SwapEvent, SwapEventEntity>()
+            CreateMap<SwapLog, SwapLogEntity>()
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
@@ -102,7 +102,7 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.AmountSrcOut, opt => opt.MapFrom(src => src.AmountSrcOut))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<ApprovalEvent, ApprovalEventEntity>()
+            CreateMap<ApprovalLog, ApprovalLogEntity>()
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
@@ -111,12 +111,12 @@ namespace Opdex.Indexer.Infrastructure
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<PersistTransactionEventSummaryCommand, TransactionEventSummaryEntity>()
+            CreateMap<PersistTransactionLogSummaryCommand, TransactionLogSummaryEntity>()
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
-                .ForMember(dest => dest.EventId, opt => opt.MapFrom(src => src.EventId))
-                .ForMember(dest => dest.EventTypeId, opt => opt.MapFrom(src => src.EventTypeId))
+                .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId))
+                .ForMember(dest => dest.LogTypeId, opt => opt.MapFrom(src => src.LogTypeId))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
     }

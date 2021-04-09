@@ -1,0 +1,75 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
+using MediatR;
+using Opdex.Core.Common.Exceptions;
+using Opdex.Core.Domain.Models.TransactionLogs;
+using Opdex.Core.Infrastructure.Abstractions.Data;
+using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionLogs;
+using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs;
+
+namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionLogs
+{
+    public class SelectMintLogsByIdsQueryHandler : IRequestHandler<SelectMintLogsByIdsQuery, IEnumerable<MintLog>>
+    {
+        private static readonly string SqlQuery =
+            @$"SELECT 
+                {nameof(MintLogEntity.Id)},
+                {nameof(MintLogEntity.Sender)},
+                {nameof(MintLogEntity.AmountCrs)},
+                {nameof(MintLogEntity.AmountSrc)}
+            FROM transaction_log_mint
+            WHERE {nameof(MintLogEntity.Id)} IN @{nameof(SqlParams.TransactionLogIds)};";
+
+        private readonly IDbContext _context;
+        private readonly IMapper _mapper;
+
+        public SelectMintLogsByIdsQueryHandler(IDbContext context, IMapper mapper)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
+
+        public async Task<IEnumerable<MintLog>> Handle(SelectMintLogsByIdsQuery request, CancellationToken cancellationTransaction)
+        {
+            var transactionLogs = request.TransactionLogs.ToDictionary(k => k.LogId);
+            
+            var queryParams = new SqlParams(transactionLogs.Keys);
+            
+            var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
+
+            var results = await _context.ExecuteQueryAsync<MintLogEntity>(query);
+
+            if (!results.Any()) return Enumerable.Empty<MintLog>();
+
+            var response = new List<MintLog>();
+
+            foreach (var result in results)
+            {
+                var found = transactionLogs.TryGetValue(result.Id, out var txLog);
+                if (!found)
+                {
+                    continue;
+                }
+                
+                response.Add(new MintLog(result.Id, txLog.TransactionId, txLog.Contract, 
+                    txLog.SortOrder, result.Sender, result.AmountCrs, result.AmountSrc));
+            }
+
+            return !response.Any() ? Enumerable.Empty<MintLog>() : response;
+        }
+
+        private sealed class SqlParams
+        {
+            internal SqlParams(IEnumerable<long> transactionLogIds)
+            {
+                TransactionLogIds = transactionLogIds;
+            }
+
+            public IEnumerable<long> TransactionLogIds { get; }
+        }
+    }
+}

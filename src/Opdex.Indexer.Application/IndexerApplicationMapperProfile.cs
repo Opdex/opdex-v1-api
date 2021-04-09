@@ -15,7 +15,7 @@ namespace Opdex.Indexer.Application
                 .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
-                .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
+                .ForMember(dest => dest.Logs, opt => opt.MapFrom(src => src.Logs))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<Block, BlockDto>()
