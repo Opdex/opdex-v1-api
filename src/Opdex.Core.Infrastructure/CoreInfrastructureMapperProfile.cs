@@ -36,37 +36,33 @@ namespace Opdex.Core.Infrastructure
                 .ConstructUsing(src => new MarketSnapshot(src.Id, src.TokenCount, src.PoolCount, src.DailyTransactionCount, src.CrsPrice, src.Liquidity, src.DailyFees, src.DailyVolume, src.Block))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            // Transaction Logs
-            CreateMap<MintLogEntity, MintLog>()
-                .ConstructUsing(src => new MintLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Sender, src.AmountCrs, src.AmountSrc))
-                .ForAllOtherMembers(opt => opt.Ignore());
-            
-            CreateMap<BurnLogEntity, BurnLog>()
-                .ConstructUsing(src => new BurnLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Sender, src.To, src.AmountCrs, src.AmountSrc))
-                .ForAllOtherMembers(opt => opt.Ignore());
-            
-            CreateMap<SwapLogEntity, SwapLog>()
-                .ConstructUsing(src => new SwapLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Sender, src.To, src.AmountCrsIn, src.AmountCrsOut, src.AmountSrcIn, src.AmountSrcOut))
-                .ForAllOtherMembers(opt => opt.Ignore());
-            
-            CreateMap<TransferLogEntity, TransferLog>()
-                .ConstructUsing(src => new TransferLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.From, src.To, src.Amount ))
-                .ForAllOtherMembers(opt => opt.Ignore());
-            
-            CreateMap<ApprovalLogEntity, ApprovalLog>()
-                .ConstructUsing(src => new ApprovalLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Owner, src.Spender, src.Amount ))
-                .ForAllOtherMembers(opt => opt.Ignore());
-            
-            CreateMap<ReservesLogEntity, ReservesLog>()
-                .ConstructUsing(src => new ReservesLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.ReserveCrs, src.ReserveSrc))
-                .ForAllOtherMembers(opt => opt.Ignore());
-            
-            CreateMap<LiquidityPoolCreatedLogEntity, LiquidityPoolCreatedLog>()
-                .ConstructUsing(src => new LiquidityPoolCreatedLog(src.Id, src.TransactionId, src.Address, src.SortOrder, src.Token, src.Pool))
-                .ForAllOtherMembers(opt => opt.Ignore());
-            
-            CreateMap<TransactionLogSummaryEntity, TransactionLogSummary>()
-                .ConstructUsing(src => new TransactionLogSummary(src.Id, src.TransactionId, src.LogId, src.LogTypeId, src.SortOrder, src.Contract))
+            CreateMap<TransactionLogEntity, TransactionLog>()
+                .ConstructUsing((src, ctx) =>
+                {
+                    return src.LogTypeId switch
+                    {
+                        (int)TransactionLogType.ReservesLog => new ReservesLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.BurnLog => new BurnLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.MintLog => new MintLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.SwapLog => new SwapLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.ApprovalLog => new ApprovalLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.TransferLog => new TransferLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.LiquidityPoolCreatedLog => new LiquidityPoolCreatedLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.MiningPoolCreatedLog => new MiningPoolCreatedLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.EnterStakingPoolLog => new EnterStakingPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.EnterMiningPoolLog => new EnterMiningPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.CollectStakingRewardsLog => new CollectStakingRewardsLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.CollectMiningRewardsLog => new CollectMiningRewardsLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.ExitStakingPoolLog => new ExitStakingPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.ExitMiningPoolLog => new ExitMiningPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.RewardMiningPoolLog => new RewardMiningPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.MiningPoolRewardedLog => new MiningPoolRewardedLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.NominationLog => new NominationLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.OwnerChangeLog => new OwnerChangeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.DistributionLog => new DistributionLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        _ => null
+                    };
+                })
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
     }

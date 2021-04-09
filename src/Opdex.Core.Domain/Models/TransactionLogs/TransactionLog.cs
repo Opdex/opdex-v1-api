@@ -49,5 +49,7 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
                 TransactionId = txId;
             }
         }
+
+        public abstract string SerializeLogDetails();
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using Opdex.Core.Common.Extensions;
 
 namespace Opdex.Core.Domain.Models.TransactionLogs
@@ -55,11 +56,51 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             AmountSrcOut = amountSrcOut;
         }
         
+        public SwapLog(long id, long transactionId, string address, int sortOrder, string details)
+            : base(nameof(SwapLog), id, transactionId, address, sortOrder)
+        {
+            var logDetails = DeserializeLogDetails(details);
+            Sender = logDetails.Sender;
+            To = logDetails.To;
+            AmountCrsIn = logDetails.AmountCrsIn;
+            AmountSrcIn = logDetails.AmountSrcIn;
+            AmountCrsOut = logDetails.AmountCrsOut;
+            AmountSrcOut = logDetails.AmountSrcOut;
+        }
+        
         public string Sender { get; }
         public string To { get; }
         public ulong AmountCrsIn { get; }
         public string AmountSrcIn { get; }
         public ulong AmountCrsOut { get; }
         public string AmountSrcOut { get; }
+        
+        private sealed class LogDetails
+        {
+            public string Sender { get; set; }
+            public string To { get; set; }
+            public ulong AmountCrsIn { get; set; }
+            public string AmountSrcIn { get; set; }
+            public ulong AmountCrsOut { get; set; }
+            public string AmountSrcOut { get; set; }
+        }
+
+        private static LogDetails DeserializeLogDetails(string details)
+        {
+            return JsonConvert.DeserializeObject<LogDetails>(details);
+        }
+
+        public override string SerializeLogDetails()
+        {
+            return JsonConvert.SerializeObject(new LogDetails
+            {
+                Sender = Sender,
+                To = To,
+                AmountCrsIn = AmountCrsIn,
+                AmountSrcIn = AmountSrcIn,
+                AmountCrsOut = AmountCrsOut,
+                AmountSrcOut = AmountSrcOut,
+            });
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using Opdex.Core.Common.Extensions;
 
 namespace Opdex.Core.Domain.Models.TransactionLogs
@@ -40,8 +41,39 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             Amount = amount;
         }
         
+        public TransferLog(long id, long transactionId, string address, int sortOrder, string details)
+            : base(nameof(TransferLog), id, transactionId, address, sortOrder)
+        {
+            var logDetails = DeserializeLogDetails(details);
+            From = logDetails.From;
+            To = logDetails.To;
+            Amount = logDetails.Amount;
+        }
+        
         public string From { get; }
         public string To { get; }
         public string Amount { get; }
+        
+        private sealed class LogDetails
+        {
+            public string From { get; set; }
+            public string To { get; set; }
+            public string Amount { get; set; }
+        }
+
+        private static LogDetails DeserializeLogDetails(string details)
+        {
+            return JsonConvert.DeserializeObject<LogDetails>(details);
+        }
+
+        public override string SerializeLogDetails()
+        {
+            return JsonConvert.SerializeObject(new LogDetails
+            {
+                From = From,
+                To = To,
+                Amount = Amount
+            });
+        }
     }
 }

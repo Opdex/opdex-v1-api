@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using Opdex.Core.Common.Extensions;
 
 namespace Opdex.Core.Domain.Models.TransactionLogs
@@ -48,9 +49,43 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             AmountSrc = amountSrc;
         }
         
+        public BurnLog(long id, long transactionId, string address, int sortOrder, string details)
+            : base(nameof(BurnLog), id, transactionId, address, sortOrder)
+        {
+            var logDetails = DeserializeLogDetails(details);
+            Sender = logDetails.Sender;
+            To = logDetails.To;
+            AmountCrs = logDetails.AmountCrs;
+            AmountSrc = logDetails.AmountSrc;
+        }
+        
         public string Sender { get; }
         public string To { get; }
         public ulong AmountCrs { get; }
         public string AmountSrc { get; }
+        
+        private sealed class LogDetails
+        {
+            public string Sender { get; set; }
+            public string To { get; set; }
+            public ulong AmountCrs { get; set; }
+            public string AmountSrc { get; set; }
+        }
+
+        private static LogDetails DeserializeLogDetails(string details)
+        {
+            return JsonConvert.DeserializeObject<LogDetails>(details);
+        }
+
+        public override string SerializeLogDetails()
+        {
+            return JsonConvert.SerializeObject(new LogDetails
+            {
+                Sender = Sender,
+                To = To,
+                AmountCrs = AmountCrs,
+                AmountSrc = AmountSrc
+            });
+        }
     }
 }

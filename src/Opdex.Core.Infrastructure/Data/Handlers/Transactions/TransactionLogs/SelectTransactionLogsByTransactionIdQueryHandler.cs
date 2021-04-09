@@ -12,37 +12,37 @@ using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Transactions.Transacti
 
 namespace Opdex.Core.Infrastructure.Data.Handlers.Transactions.TransactionLogs
 {
-    public class SelectTransactionLogSummariesByTransactionIdQueryHandler
-        : IRequestHandler<SelectTransactionLogSummariesByTransactionIdQuery, IEnumerable<TransactionLogSummary>>
+    public class SelectTransactionLogsByTransactionIdQueryHandler
+        : IRequestHandler<SelectTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>
     {
         private static readonly string SqlQuery =
             @$"SELECT 
-                {nameof(TransactionLogSummaryEntity.Id)},
-                {nameof(TransactionLogSummaryEntity.TransactionId)},
-                {nameof(TransactionLogSummaryEntity.LogId)},
-                {nameof(TransactionLogSummaryEntity.LogTypeId)},
-                {nameof(TransactionLogSummaryEntity.SortOrder)},
-                {nameof(TransactionLogSummaryEntity.Contract)}
-            FROM transaction_log_summary
-            WHERE {nameof(TransactionLogSummaryEntity.TransactionId)} = @{nameof(SqlParams.TransactionId)};";
+                {nameof(TransactionLogEntity.Id)},
+                {nameof(TransactionLogEntity.TransactionId)},
+                {nameof(TransactionLogEntity.LogTypeId)},
+                {nameof(TransactionLogEntity.SortOrder)},
+                {nameof(TransactionLogEntity.Contract)},
+                {nameof(TransactionLogEntity.Details)}
+            FROM transaction_log
+            WHERE {nameof(TransactionLogEntity.TransactionId)} = @{nameof(SqlParams.TransactionId)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
-        public SelectTransactionLogSummariesByTransactionIdQueryHandler(IDbContext context, IMapper mapper)
+        public SelectTransactionLogsByTransactionIdQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<TransactionLogSummary>> Handle(SelectTransactionLogSummariesByTransactionIdQuery request, CancellationToken cancellationTransaction)
+        public async Task<IEnumerable<TransactionLog>> Handle(SelectTransactionLogsByTransactionIdQuery request, CancellationToken cancellationTransaction)
         {
             var queryParams = new SqlParams(request.TransactionId);
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
 
-            var result = await _context.ExecuteQueryAsync<TransactionLogSummaryEntity>(query);
+            var result = await _context.ExecuteQueryAsync<TransactionLogEntity>(query);
 
-            return !result.Any() ? Enumerable.Empty<TransactionLogSummary>() : _mapper.Map<IEnumerable<TransactionLogSummary>>(result);
+            return !result.Any() ? Enumerable.Empty<TransactionLog>() : _mapper.Map<IEnumerable<TransactionLog>>(result);
         }
 
         private sealed class SqlParams

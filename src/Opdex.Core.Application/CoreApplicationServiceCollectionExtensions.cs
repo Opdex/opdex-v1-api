@@ -38,14 +38,7 @@ namespace Opdex.Core.Application
             services.AddTransient<IRequestHandler<RetrieveTokenByAddressQuery, Token>, RetrieveTokenByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrievePoolByAddressQuery, Pool>, RetrievePoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTransactionByHashQuery, Transaction>, RetrieveTransactionByHashQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveMintLogsByIdsQuery, IEnumerable<MintLog>>, RetrieveMintLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveBurnLogsByIdsQuery, IEnumerable<BurnLog>>, RetrieveBurnLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveSwapLogsByIdsQuery, IEnumerable<SwapLog>>, RetrieveSwapLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveReservesLogsByIdsQuery, IEnumerable<ReservesLog>>, RetrieveReservesLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveApprovalLogsByIdsQuery, IEnumerable<ApprovalLog>>, RetrieveApprovalLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveTransferLogsByIdsQuery, IEnumerable<TransferLog>>, RetrieveTransferLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveLiquidityPoolCreatedLogsByIdsQuery, IEnumerable<LiquidityPoolCreatedLog>>, RetrieveLiquidityPoolCreatedLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveTransactionLogSummariesByTransactionIdQuery, List<TransactionLogSummary>>, RetrieveTransactionLogSummariesByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, RetrieveTransactionLogsByTransactionIdQueryHandler>();
 
             // Assemblers
             services.AddTransient<IModelAssembler<Transaction, TransactionDto>, TransactionDtoAssembler>();

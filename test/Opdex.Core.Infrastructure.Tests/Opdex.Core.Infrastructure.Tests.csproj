@@ -19,4 +19,8 @@
       <ProjectReference Include="..\..\src\Opdex.Core.Infrastructure\Opdex.Core.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Data\Handlers\Transactions\TransactionLogs" />
+    </ItemGroup>
+
 </Project>

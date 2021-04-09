@@ -5,15 +5,15 @@ using Opdex.Core.Domain.Models.TransactionLogs;
 
 namespace Opdex.Core.Application.Abstractions.Queries.Transactions.TransactionLogs
 {
-    public class RetrieveTransactionLogSummariesByTransactionIdQuery : IRequest<List<TransactionLogSummary>>
+    public class RetrieveTransactionLogsByTransactionIdQuery : IRequest<IEnumerable<TransactionLog>>
     {
-        public RetrieveTransactionLogSummariesByTransactionIdQuery(long transactionId)
+        public RetrieveTransactionLogsByTransactionIdQuery(long transactionId)
         {
             if (transactionId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(transactionId));
+                throw new ArgumentNullException(nameof(transactionId));
             }
-
+            
             TransactionId = transactionId;
         }
         

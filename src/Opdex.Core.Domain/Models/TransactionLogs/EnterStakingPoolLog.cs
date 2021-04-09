@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using Opdex.Core.Common.Extensions;
 
 namespace Opdex.Core.Domain.Models.TransactionLogs
@@ -32,8 +33,39 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             Weight = weight;
         }
         
+        public EnterStakingPoolLog(long id, long transactionId, string address, int sortOrder, string details)
+            : base(nameof(EnterStakingPoolLog), id, transactionId, address, sortOrder)
+        {
+            var logDetails = DeserializeLogDetails(details);
+            Staker = logDetails.Staker;
+            Amount = logDetails.Amount;
+            Weight = logDetails.Weight;
+        }
+        
         public string Staker { get; }
         public string Amount { get; }
         public string Weight { get; }
+        
+        private sealed class LogDetails
+        {
+            public string Staker { get; set; }
+            public string Amount { get; set; }
+            public string Weight { get; set; }
+        }
+
+        private static LogDetails DeserializeLogDetails(string details)
+        {
+            return JsonConvert.DeserializeObject<LogDetails>(details);
+        }
+
+        public override string SerializeLogDetails()
+        {
+            return JsonConvert.SerializeObject(new LogDetails
+            {
+                Staker = Staker,
+                Amount = Amount,
+                Weight = Weight
+            });
+        }
     }
 }

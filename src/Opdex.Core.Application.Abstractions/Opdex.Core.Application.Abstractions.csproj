@@ -17,4 +17,18 @@
       <Folder Include="EntryQueries\Transactions" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Queries\Transactions\TransactionLogs\RetrieveOwnerChangeLogsByIdsQuery.cs" />
+      <Compile Remove="Queries\Transactions\TransactionLogs\RetrieveNominationLogsByIdsQuery.cs" />
+      <Compile Remove="Queries\Transactions\TransactionLogs\RetrieveMiningPoolRewardedLogsByIdsQuery.cs" />
+      <Compile Remove="Queries\Transactions\TransactionLogs\RetrieveMiningPoolCreatedLogsByIdsQuery.cs" />
+      <Compile Remove="Queries\Transactions\TransactionLogs\RetrieveExitStakingPoolLogsByIdsQuery.cs" />
+      <Compile Remove="Queries\Transactions\TransactionLogs\RetrieveExitMiningPoolLogsByIdsQuery.cs" />
+      <Compile Remove="Queries\Transactions\TransactionLogs\RetrieveEnterStakingPoolLogsByIdsQuery.cs" />
+      <Compile Remove="Queries\Transactions\TransactionLogs\RetrieveEnterMiningPoolLogsByIdsQuery.cs" />
+      <Compile Remove="Queries\Transactions\TransactionLogs\RetrieveDistributionLogsByIdsQuery.cs" />
+      <Compile Remove="Queries\Transactions\TransactionLogs\RetrieveCollectStakingRewardsLogsByIdsQuery.cs" />
+      <Compile Remove="Queries\Transactions\TransactionLogs\RetrieveCollectMiningRewardsLogsByIdsQuery.cs" />
+    </ItemGroup>
+
 </Project>

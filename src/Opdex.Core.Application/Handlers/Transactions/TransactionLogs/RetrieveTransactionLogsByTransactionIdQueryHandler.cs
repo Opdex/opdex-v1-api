@@ -9,20 +9,21 @@ using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Transactions.Transacti
 
 namespace Opdex.Core.Application.Handlers.Transactions.TransactionLogs
 {
-    public class RetrieveSwapLogsByIdsQueryHandler : IRequestHandler<RetrieveSwapLogsByIdsQuery, IEnumerable<SwapLog>>
+    public class RetrieveTransactionLogsByTransactionIdQueryHandler
+        : IRequestHandler<RetrieveTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>
     {
         private readonly IMediator _mediator;
         
-        public RetrieveSwapLogsByIdsQueryHandler(IMediator mediator)
+        public RetrieveTransactionLogsByTransactionIdQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public async Task<IEnumerable<SwapLog>> Handle(RetrieveSwapLogsByIdsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TransactionLog>> Handle(RetrieveTransactionLogsByTransactionIdQuery request, CancellationToken cancellationToken)
         {
-            var swapLogs = await _mediator.Send(new SelectSwapLogsByIdsQuery(request.TransactionLogs), cancellationToken);
+            var transactionLogs = await _mediator.Send(new SelectTransactionLogsByTransactionIdQuery(request.TransactionId), cancellationToken);
 
-            return swapLogs;
+            return transactionLogs;
         }
     }
 }

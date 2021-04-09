@@ -5,9 +5,9 @@ using Opdex.Core.Domain.Models.TransactionLogs;
 
 namespace Opdex.Core.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs
 {
-    public class SelectTransactionLogSummariesByTransactionIdQuery : IRequest<IEnumerable<TransactionLogSummary>>
+    public class SelectTransactionLogsByTransactionIdQuery : IRequest<IEnumerable<TransactionLog>>
     {
-        public SelectTransactionLogSummariesByTransactionIdQuery(long transactionId)
+        public SelectTransactionLogsByTransactionIdQuery(long transactionId)
         {
             if (transactionId < 1)
             {

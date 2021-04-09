@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using Opdex.Core.Common.Extensions;
 
 namespace Opdex.Core.Domain.Models.TransactionLogs
@@ -6,7 +7,7 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
     public class MiningPoolCreatedLog : TransactionLog
     {
         public MiningPoolCreatedLog(dynamic log, string address, int sortOrder)
-            : base(nameof(EnterStakingPoolLog), address, sortOrder)
+            : base(nameof(MiningPoolCreatedLog), address, sortOrder)
         {
             string stakingPool = log?.stakingPool;
             string miningPool = log?.miningPool;
@@ -25,7 +26,35 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             MiningPool = miningPool;
         }
         
+        public MiningPoolCreatedLog(long id, long transactionId, string address, int sortOrder, string details)
+            : base(nameof(MiningPoolCreatedLog), id, transactionId, address, sortOrder)
+        {
+            var logDetails = DeserializeLogDetails(details);
+            StakingPool = logDetails.StakingPool;
+            MiningPool = logDetails.MiningPool;
+        }
+        
         public string StakingPool { get; }
         public string MiningPool { get; }
+        
+        private sealed class LogDetails
+        {
+            public string StakingPool { get; set; }
+            public string MiningPool { get; set; }
+        }
+
+        private static LogDetails DeserializeLogDetails(string details)
+        {
+            return JsonConvert.DeserializeObject<LogDetails>(details);
+        }
+
+        public override string SerializeLogDetails()
+        {
+            return JsonConvert.SerializeObject(new LogDetails
+            {
+                StakingPool = StakingPool,
+                MiningPool = MiningPool
+            });
+        }
     }
 }

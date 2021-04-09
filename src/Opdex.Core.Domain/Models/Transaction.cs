@@ -128,6 +128,18 @@ namespace Opdex.Core.Domain.Models
                     nameof(ApprovalLog) => new ApprovalLog(log, address, sortOrder),
                     nameof(TransferLog) => new TransferLog(log, address, sortOrder),
                     nameof(LiquidityPoolCreatedLog) => new LiquidityPoolCreatedLog(log, address, sortOrder),
+                    nameof(MiningPoolCreatedLog) => new MiningPoolCreatedLog(log, address, sortOrder),
+                    nameof(EnterStakingPoolLog) => new EnterStakingPoolLog(log, address, sortOrder),
+                    nameof(EnterMiningPoolLog) => new EnterMiningPoolLog(log, address, sortOrder),
+                    nameof(CollectStakingRewardsLog) => new CollectStakingRewardsLog(log, address, sortOrder),
+                    nameof(CollectMiningRewardsLog) => new CollectMiningRewardsLog(log, address, sortOrder),
+                    nameof(ExitStakingPoolLog) => new ExitStakingPoolLog(log, address, sortOrder),
+                    nameof(ExitMiningPoolLog) => new ExitMiningPoolLog(log, address, sortOrder),
+                    nameof(RewardMiningPoolLog) => new RewardMiningPoolLog(log, address, sortOrder),
+                    nameof(MiningPoolRewardedLog) => new MiningPoolRewardedLog(log, address, sortOrder),
+                    nameof(NominationLog) => new NominationLog(log, address, sortOrder),
+                    nameof(OwnerChangeLog) => new OwnerChangeLog(log, address, sortOrder),
+                    nameof(DistributionLog) => new DistributionLog(log, address, sortOrder),
                     _ => null
                 };
 

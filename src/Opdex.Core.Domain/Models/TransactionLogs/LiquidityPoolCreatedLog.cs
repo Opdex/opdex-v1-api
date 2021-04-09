@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using Opdex.Core.Common.Extensions;
 
 namespace Opdex.Core.Domain.Models.TransactionLogs
@@ -32,7 +33,35 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             Pool = pool;
         }
         
+        public LiquidityPoolCreatedLog(long id, long transactionId, string address, int sortOrder, string details)
+            : base(nameof(LiquidityPoolCreatedLog), id, transactionId, address, sortOrder)
+        {
+            var logDetails = DeserializeLogDetails(details);
+            Token = logDetails.Token;
+            Pool = logDetails.Pool;
+        }
+        
         public string Token { get; }
         public string Pool { get; }
+        
+        private sealed class LogDetails
+        {
+            public string Token { get; set; }
+            public string Pool { get; set; }
+        }
+
+        private static LogDetails DeserializeLogDetails(string details)
+        {
+            return JsonConvert.DeserializeObject<LogDetails>(details);
+        }
+
+        public override string SerializeLogDetails()
+        {
+            return JsonConvert.SerializeObject(new LogDetails
+            {
+                Token = Token,
+                Pool = Pool
+            });
+        }
     }
 }

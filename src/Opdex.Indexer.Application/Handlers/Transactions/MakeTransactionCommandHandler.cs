@@ -22,6 +22,7 @@ namespace Opdex.Indexer.Application.Handlers.Transactions
         
         public async Task<bool> Handle(MakeTransactionCommand request, CancellationToken cancellationToken)
         {
+            // Todo: This is also checked by this caller, no needed twice
             var transaction = await GetTransaction(request.Transaction.Hash);
 
             if (transaction != null) return false;
@@ -32,7 +33,7 @@ namespace Opdex.Indexer.Application.Handlers.Transactions
             
             foreach (var log in request.Transaction.Logs)
             {
-                await MakeTransactionLog(log);
+                await _mediator.Send(new PersistTransactionLogCommand(log));
             }
 
             return true;
@@ -52,26 +53,6 @@ namespace Opdex.Indexer.Application.Handlers.Transactions
             }
 
             return transaction;
-        }
-
-        private async Task MakeTransactionLog(TransactionLog log)
-        {
-            var logId = log switch
-            {
-                ReservesLog syncLog => await _mediator.Send(new PersistTransactionReservesLogCommand(syncLog)),
-                MintLog mintLog => await _mediator.Send(new PersistTransactionMintLogCommand(mintLog)),
-                BurnLog burnLog => await _mediator.Send(new PersistTransactionBurnLogCommand(burnLog)),
-                SwapLog swapLog => await _mediator.Send(new PersistTransactionSwapLogCommand(swapLog)),
-                ApprovalLog approvalLog => await _mediator.Send(new PersistTransactionApprovalLogCommand(approvalLog)),
-                TransferLog transferLog => await _mediator.Send(new PersistTransactionTransferLogCommand(transferLog)),
-                LiquidityPoolCreatedLog poolCreatedLog => await _mediator.Send(new PersistTransactionLiquidityPoolCreatedLogCommand(poolCreatedLog)),
-                _ => 0
-            };
-
-            if (logId == 0)  return;
-            
-            var command = new PersistTransactionLogSummaryCommand(log, logId);
-            await _mediator.Send(command);
         }
     }
 }

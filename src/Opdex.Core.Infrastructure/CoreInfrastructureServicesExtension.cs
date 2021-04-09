@@ -62,14 +62,7 @@ namespace Opdex.Core.Infrastructure
             
             // Transactions
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectBurnLogsByIdsQuery, IEnumerable<BurnLog>>, SelectBurnLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMintLogsByIdsQuery, IEnumerable<MintLog>>, SelectMintLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectSwapLogsByIdsQuery, IEnumerable<SwapLog>>, SelectSwapLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectReservesLogsByIdsQuery, IEnumerable<ReservesLog>>, SelectReservesLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTransferLogsByIdsQuery, IEnumerable<TransferLog>>, SelectTransferLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectApprovalLogsByIdsQuery, IEnumerable<ApprovalLog>>, SelectApprovalLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectLiquidityPoolCreatedLogsByIdsQuery, IEnumerable<LiquidityPoolCreatedLog>>, SelectLiquidityPoolCreatedLogsByIdsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTransactionLogSummariesByTransactionIdQuery, IEnumerable<TransactionLogSummary>>, SelectTransactionLogSummariesByTransactionIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, SelectTransactionLogsByTransactionIdQueryHandler>();
         }
 
         private static void AddClientServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)

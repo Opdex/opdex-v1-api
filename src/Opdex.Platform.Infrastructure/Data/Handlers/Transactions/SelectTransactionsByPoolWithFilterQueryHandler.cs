@@ -24,13 +24,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                 t.`{nameof(TransactionEntity.To)}`,
                 t.`{nameof(TransactionEntity.From)}`
             FROM transaction t
-            LEFT JOIN transaction_log_summary tls 
-                ON tls.{nameof(TransactionLogSummaryEntity.TransactionId)} = t.{nameof(TransactionEntity.Id)} 
+            LEFT JOIN transaction_log tl 
+                ON tl.{nameof(TransactionLogEntity.TransactionId)} = t.{nameof(TransactionEntity.Id)} 
             LEFT JOIN pool p 
-                ON p.{nameof(PoolEntity.Address)} = tls.{nameof(TransactionLogSummaryEntity.Contract)}
-            WHERE tls.{nameof(TransactionLogSummaryEntity.Id)} IS NOT NULL
+                ON p.{nameof(PoolEntity.Address)} = tl.{nameof(TransactionLogEntity.Contract)}
+            WHERE tl.{nameof(TransactionLogEntity.Id)} IS NOT NULL
                 AND p.{nameof(PoolEntity.Address)} = @{nameof(SqlParams.PoolAddress)}
-                AND tls.{nameof(TransactionLogSummaryEntity.LogTypeId)} IN @{nameof(SqlParams.LogTypes)}
+                AND tl.{nameof(TransactionLogEntity.LogTypeId)} IN @{nameof(SqlParams.LogTypes)}
             ORDER BY t.{nameof(TransactionEntity.Id)} DESC
             LIMIT 10;";
 

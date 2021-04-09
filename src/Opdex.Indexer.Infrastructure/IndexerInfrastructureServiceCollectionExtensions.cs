@@ -16,15 +16,8 @@ namespace Opdex.Indexer.Infrastructure
             services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
             services.AddTransient<IRequestHandler<PersistPoolCommand, long>, PersistPoolCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTokenCommand, long>, PersistTokenCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionCommand, Transaction>, PersistTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionApprovalLogCommand, long>, PersistTransactionApprovalLogCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionBurnLogCommand, long>, PersistTransactionBurnLogCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionMintLogCommand, long>, PersistTransactionMintLogCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionLiquidityPoolCreatedLogCommand, long>, PersistTransactionLiquidityPoolCreatedLogCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionSwapLogCommand, long>, PersistTransactionSwapLogCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionReservesLogCommand, long>, PersistTransactionReservesLogCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionTransferLogCommand, long>, PersistTransactionTransferLogCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionLogSummaryCommand, bool>, PersistTransactionLogSummaryCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionCommand, Transaction>, PersistTransactionCommandHandler>(); 
+            services.AddTransient<IRequestHandler<PersistTransactionLogCommand, bool>, PersistTransactionLogCommandHandler>();
             
             return services;
         }

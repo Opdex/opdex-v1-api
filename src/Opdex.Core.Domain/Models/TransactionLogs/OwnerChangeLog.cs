@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using Opdex.Core.Common.Extensions;
 
 namespace Opdex.Core.Domain.Models.TransactionLogs
@@ -6,7 +7,7 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
     public class OwnerChangeLog : TransactionLog
     {
         public OwnerChangeLog(dynamic log, string address, int sortOrder)
-            : base(nameof(EnterStakingPoolLog), address, sortOrder)
+            : base(nameof(OwnerChangeLog), address, sortOrder)
         {
             string from = log?.from;
             string to = log?.to;
@@ -25,7 +26,35 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             To = to;
         }
         
+        public OwnerChangeLog(long id, long transactionId, string address, int sortOrder, string details)
+            : base(nameof(OwnerChangeLog), id, transactionId, address, sortOrder)
+        {
+            var logDetails = DeserializeLogDetails(details);
+            From = logDetails.From;
+            To = logDetails.To;
+        }
+        
         public string From { get; }
         public string To { get; }
+        
+        private sealed class LogDetails
+        {
+            public string From { get; set; }
+            public string To { get; set; }
+        }
+
+        private static LogDetails DeserializeLogDetails(string details)
+        {
+            return JsonConvert.DeserializeObject<LogDetails>(details);
+        }
+
+        public override string SerializeLogDetails()
+        {
+            return JsonConvert.SerializeObject(new LogDetails
+            {
+                From = From,
+                To = To
+            });
+        }
     }
 }
