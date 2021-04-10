@@ -22,7 +22,7 @@ namespace Opdex.Core.Domain.Tests.Models.TransactionLogs
             log.Id.Should().Be(0);
             log.TransactionId.Should().Be(0);
             log.LogType.Should().Be(nameof(LiquidityPoolCreatedLog));
-            log.Address.Should().Be(address);
+            log.Contract.Should().Be(address);
             log.SortOrder.Should().Be(sortOrder);
             log.Pool.Should().Be(txLog.Pool);
             log.Token.Should().Be(txLog.Token);

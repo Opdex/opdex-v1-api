@@ -130,8 +130,8 @@ namespace Opdex.Indexer.Application
             var tx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(txHash), cancellationToken);
             var isToRouter = tx.To == _opdexConfiguration.ControllerContract;
             var poolsEngaged = tx.Logs
-                .Where(l => pools.TryGetValue(l.Address, out _))
-                .Select(l => l.Address)
+                .Where(l => pools.TryGetValue(l.Contract, out _))
+                .Select(l => l.Contract)
                 .Distinct()
                 .ToList();
 

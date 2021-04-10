@@ -26,13 +26,6 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             Pool = pool;
         }
         
-        public LiquidityPoolCreatedLog(long id, long transactionId, string address, int sortOrder, string token, string pool)
-            : base(nameof(LiquidityPoolCreatedLog), id, transactionId, address, sortOrder)
-        {
-            Token = token;
-            Pool = pool;
-        }
-        
         public LiquidityPoolCreatedLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(nameof(LiquidityPoolCreatedLog), id, transactionId, address, sortOrder)
         {

@@ -56,7 +56,7 @@ namespace Opdex.Indexer.WebApi.Controllers
                 var createdBlock = await _mediator.Send(new MakeBlockCommand(cirrusBlockDetails.Height, cirrusBlockDetails.Hash, time, medianTime));
                 if (!createdBlock) return NoContent();
                 
-                foreach (var tx in cirrusBlockDetails.Tx.Where(tx => tx != cirrusBlockDetails.Hash))
+                foreach (var tx in cirrusBlockDetails.Tx.Where(tx => tx != cirrusBlockDetails.MerkleRoot))
                 {
                     try
                     {
@@ -67,16 +67,36 @@ namespace Opdex.Indexer.WebApi.Controllers
                         // Errrmmmm
                     }
                 }
+                
+                
+                
+                // Every 4 blocks (1 minute)
+                if (cirrusBlockDetails.Height % 4 == 0)
+                {
+                    var processFrom = cirrusBlockDetails.Height - 3;
+                    var processTo = cirrusBlockDetails.Height;
+                    
+                    // Retrieve ALL transactions within block range
+                    // -- Filter for Opdex transactions || -- Filter Supported LiquidityPool/Token/MiningPool
+                    
+                    // Tokens snapshot - Copy Txs List, Group By Token
+                    // -- Track USD price || CRS price
+                    // -- Track Volume
+                    
+                    // Pairs Snapshot - Copy Txs List, Group By Pair
+                    // -- Track Reserves
+                    // -- Track Staking Weight
+                    // -- Transaction Count
+                    // -- Track Mining ????
+                }
+
+                // Every 225 blocks (1 hour)
+                if (cirrusBlockDetails.Height % 225 == 0)
+                {
+                    
+                }
             }
             
-            // Query DB - Get latest synced block
-            // Call Cirrus Get Block
-            // while nextBlockHash != null - Get next block
-            //    - Publish message for every transaction in block
-            //    - Index block related data
-            
-            // Shortcut, if Block ends in "1" or "6", process snapshot for the previous 5 blocks
-            // (e.g. block number is 16, process snapshots of blocks 11-15)
             return NoContent();
         }
         

@@ -82,7 +82,7 @@ namespace Opdex.Core.Domain.Models
         /// <exception cref="Exception"></exception>
         public void SetPoolsEngaged(List<string> poolsEngaged)
         {
-            if (!poolsEngaged.All(p => Logs.Any(e => e.Address == p)))
+            if (!poolsEngaged.All(p => Logs.Any(e => e.Contract == p)))
             {
                 throw new Exception("Pool engagement not found in transaction logs");
             }

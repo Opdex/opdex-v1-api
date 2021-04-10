@@ -23,7 +23,7 @@ namespace Opdex.Core.Domain.Tests.Models.TransactionLogs
             txLog.Id.Should().Be(0);
             txLog.TransactionId.Should().Be(0);
             txLog.LogType.Should().Be(nameof(TransferLog));
-            txLog.Address.Should().Be(address);
+            txLog.Contract.Should().Be(address);
             txLog.SortOrder.Should().Be(sortOrder);
             txLog.From.Should().Be(tx.From);
             txLog.To.Should().Be(tx.To);

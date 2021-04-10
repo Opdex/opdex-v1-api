@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -51,7 +52,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
             var result = await _context.ExecuteQueryAsync<TransactionEntity>(query);
 
-            return _mapper.Map<IEnumerable<Transaction>>(result);
+            return _mapper.Map<IEnumerable<Transaction>>(result.GroupBy(p => p.Hash).Select(g => g.First()));
         }
 
         private sealed class SqlParams

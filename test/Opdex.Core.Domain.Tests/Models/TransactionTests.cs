@@ -43,7 +43,7 @@ namespace Opdex.Core.Domain.Tests.Models
 
             foreach (var logReceipt in receipt.Logs)
             {
-                logReceipt.Address.Should().Be(syncLog.Address);
+                logReceipt.Contract.Should().Be(syncLog.Address);
                 
                 var syncLogType = (ReservesLog)logReceipt;
                 syncLogType.ReserveCrs.Should().Be(syncLog.Log.ReserveCrs);

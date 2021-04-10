@@ -44,18 +44,6 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             AmountSrcOut = amountSrcOut;
         }
         
-        public SwapLog(long id, long transactionId, string address, int sortOrder, string sender, string to, 
-            ulong amountCrsIn, ulong amountCrsOut, string amountSrcIn, string amountSrcOut)
-            : base(nameof(SwapLog), id, transactionId, address, sortOrder)
-        {
-            Sender = sender;
-            To = to;
-            AmountCrsIn = amountCrsIn;
-            AmountCrsOut = amountCrsOut;
-            AmountSrcIn = amountSrcIn;
-            AmountSrcOut = amountSrcOut;
-        }
-        
         public SwapLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(nameof(SwapLog), id, transactionId, address, sortOrder)
         {

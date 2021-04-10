@@ -40,15 +40,6 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             AmountSrc = amountSrc;
         }
         
-        public BurnLog(long id, long transactionId, string address, int sortOrder, string sender, string to, ulong amountCrs, string amountSrc)
-            : base(nameof(BurnLog), id, transactionId, address, sortOrder)
-        {
-            Sender = sender;
-            To = to;
-            AmountCrs = amountCrs;
-            AmountSrc = amountSrc;
-        }
-        
         public BurnLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(nameof(BurnLog), id, transactionId, address, sortOrder)
         {

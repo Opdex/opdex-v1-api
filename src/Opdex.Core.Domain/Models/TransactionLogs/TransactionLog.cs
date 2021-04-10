@@ -5,16 +5,16 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
 {
     public abstract class TransactionLog
     {
-        protected internal TransactionLog(string logType, string address, int sortOrder)
+        protected internal TransactionLog(string logType, string contract, int sortOrder)
         {
             if (!logType.HasValue())
             {
                 throw new ArgumentNullException(nameof(logType));
             }
             
-            if (!address.HasValue())
+            if (!contract.HasValue())
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(contract));
             }
             
             if (sortOrder < 0)
@@ -23,23 +23,23 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             }
             
             LogType = logType;
-            Address = address;
+            Contract = contract;
             SortOrder = sortOrder;
         }
 
-        protected internal TransactionLog(string logType, long id, long transactionId, string address, int sortOrder)
+        protected internal TransactionLog(string logType, long id, long transactionId, string contract, int sortOrder)
         {
             LogType = logType;
             Id = id;
             TransactionId = transactionId;
-            Address = address;
+            Contract = contract;
             SortOrder = sortOrder;
         }
         
         public long Id { get; }
         public string LogType { get; }
         public long TransactionId { get; private set; }
-        public string Address { get; }
+        public string Contract { get; }
         public int SortOrder { get; }
 
         protected internal void SetTransactionId(long txId)

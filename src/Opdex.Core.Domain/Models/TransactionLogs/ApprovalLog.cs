@@ -40,15 +40,6 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             Amount = amount;
             OldAmount = oldAmount;
         }
-
-        public ApprovalLog(long id, long transactionId, string address, int sortOrder, string owner, string spender, string amount, string oldAmount)
-            : base(nameof(ApprovalLog), id, transactionId, address, sortOrder)
-        {
-            Owner = owner;
-            Spender = spender;
-            Amount = amount;
-            OldAmount = oldAmount;
-        }
         
         public ApprovalLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(nameof(ApprovalLog), id, transactionId, address, sortOrder)

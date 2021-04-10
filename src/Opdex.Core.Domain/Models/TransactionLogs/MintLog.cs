@@ -40,15 +40,6 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             AmountSrc = amountSrc;
         }
         
-        public MintLog(long id, long transactionId, string address, int sortOrder, string sender, string to, ulong amountCrs, string amountSrc)
-            : base(nameof(MintLog), id, transactionId, address, sortOrder)
-        {
-            Sender = sender;
-            To = to;
-            AmountCrs = amountCrs;
-            AmountSrc = amountSrc;
-        }
-        
         public MintLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(nameof(MintLog), id, transactionId, address, sortOrder)
         {

@@ -11,9 +11,9 @@ namespace Opdex.Indexer.Infrastructure.Abstractions.Data.Commands.TransactionLog
         public PersistTransactionLogCommand(TransactionLog txLog)
         {
             Enum.TryParse(typeof(TransactionLogType), txLog.LogType, out var logType);
-            LogTypeId = (int)logType; 
+            LogTypeId = (int)logType;
             TransactionId = txLog.TransactionId;
-            Contract = txLog.Address;
+            Contract = txLog.Contract;
             SortOrder = txLog.SortOrder;
             Details = txLog.SerializeLogDetails();
         }

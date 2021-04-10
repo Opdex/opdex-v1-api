@@ -33,14 +33,6 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             Amount = amount;
         }
         
-        public TransferLog(long id, long transactionId, string address, int sortOrder, string from, string to, string amount)
-            : base(nameof(TransferLog), id, transactionId, address, sortOrder)
-        {
-            From = from;
-            To = to;
-            Amount = amount;
-        }
-        
         public TransferLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(nameof(TransferLog), id, transactionId, address, sortOrder)
         {

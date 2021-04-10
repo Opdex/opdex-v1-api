@@ -26,13 +26,6 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
             ReserveSrc = reserveSrc;
         }
         
-        public ReservesLog(long id, long transactionId, string address, int sortOrder, ulong reserveCrs, string reserveSrc)
-            : base(nameof(ReservesLog), id, transactionId, address, sortOrder)
-        {
-            ReserveCrs = reserveCrs;
-            ReserveSrc = reserveSrc;
-        }
-        
         public ReservesLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(nameof(ReservesLog), id, transactionId, address, sortOrder)
         {

@@ -26,7 +26,7 @@ namespace Opdex.Core.Domain.Tests.Models.TransactionLogs
             log.Id.Should().Be(0);
             log.TransactionId.Should().Be(0);
             log.LogType.Should().Be(nameof(SwapLog));
-            log.Address.Should().Be(address);
+            log.Contract.Should().Be(address);
             log.SortOrder.Should().Be(sortOrder);
             log.Sender.Should().Be(txLog.Sender);
             log.To.Should().Be(txLog.To);

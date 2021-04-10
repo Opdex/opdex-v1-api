@@ -23,7 +23,7 @@ namespace Opdex.Core.Domain.Tests.Models.TransactionLogs
             log.Id.Should().Be(0);
             log.TransactionId.Should().Be(0);
             log.LogType.Should().Be(nameof(MintLog));
-            log.Address.Should().Be(address);
+            log.Contract.Should().Be(address);
             log.SortOrder.Should().Be(sortOrder);
             log.Sender.Should().Be(txLog.Sender);
             log.AmountCrs.Should().Be(txLog.AmountCrs);
