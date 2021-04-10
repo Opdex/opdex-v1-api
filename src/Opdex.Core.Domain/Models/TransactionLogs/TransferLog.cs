@@ -46,7 +46,7 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
         public string To { get; }
         public string Amount { get; }
         
-        private sealed class LogDetails
+        private struct LogDetails
         {
             public string From { get; set; }
             public string To { get; set; }

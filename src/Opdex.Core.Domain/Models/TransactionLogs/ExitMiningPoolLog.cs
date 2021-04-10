@@ -37,7 +37,7 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
         public string Miner { get; }
         public string Amount { get; }
         
-        private sealed class LogDetails
+        private struct LogDetails
         {
             public string Miner { get; set; }
             public string Amount { get; set; }

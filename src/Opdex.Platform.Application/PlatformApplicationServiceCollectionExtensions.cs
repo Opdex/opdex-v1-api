@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Core.Application.Abstractions.Models;
+using Opdex.Core.Application.Assemblers;
 using Opdex.Core.Domain.Models;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
@@ -13,6 +14,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Market;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
+using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Market;
 using Opdex.Platform.Application.EntryHandlers.Pools;
 using Opdex.Platform.Application.EntryHandlers.Tokens;
@@ -41,6 +43,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveAllTokensQuery, IEnumerable<Token>>, RetrieveAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLatestMarketSnapshotQuery, MarketSnapshot>, RetrieveLatestMarketSnapshotQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTransactionsByPoolWithFilterQuery,  IEnumerable<Transaction>>, RetrieveTransactionsByPoolWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveTokenByIdQuery, Token>, RetrieveTokenByIdQueryHandler>();
 
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();
@@ -55,6 +58,9 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeWalletRemoveLiquidityTransactionCommand, string>, MakeWalletRemoveLiquidityTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletApproveAllowanceTransactionCommand, string>, MakeWalletApproveAllowanceTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletCreateLiquidityPoolTransactionCommand, string>, MakeWalletCreateLiquidityPoolTransactionCommandHandler>();
+            
+            // Assemblers
+            services.AddTransient<IModelAssembler<Pool, PoolDto>, PoolDtoAssembler>();
             
             return services;
         }

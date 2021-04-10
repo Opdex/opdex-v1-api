@@ -55,7 +55,7 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
         public ulong AmountCrs { get; }
         public string AmountSrc { get; }
         
-        private sealed class LogDetails
+        private struct LogDetails
         {
             public string Sender { get; set; }
             public string To { get; set; }

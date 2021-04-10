@@ -37,7 +37,7 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
         public ulong ReserveCrs { get; }
         public string ReserveSrc { get; }
         
-        private sealed class LogDetails
+        private struct LogDetails
         {
             public ulong ReserveCrs { get; set; }
             public string ReserveSrc { get; set; }

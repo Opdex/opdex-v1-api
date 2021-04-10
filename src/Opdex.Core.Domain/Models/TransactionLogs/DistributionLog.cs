@@ -59,7 +59,7 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
         public string MiningAmount { get; }
         public uint PeriodIndex { get; }
         
-        private sealed class LogDetails
+        private struct LogDetails
         {
             public string OwnerAddress { get; set; }
             public string MiningAddress { get; set; }

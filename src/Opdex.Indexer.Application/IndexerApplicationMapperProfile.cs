@@ -38,7 +38,7 @@ namespace Opdex.Indexer.Application
             CreateMap<Pool, PoolDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-                .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+                // .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
                 .ForMember(dest => dest.ReserveCrs, opt => opt.MapFrom(src => src.ReserveCrs))
                 .ForMember(dest => dest.ReserveSrc, opt => opt.MapFrom(src => src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());

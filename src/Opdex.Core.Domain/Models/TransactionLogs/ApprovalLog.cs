@@ -56,7 +56,7 @@ namespace Opdex.Core.Domain.Models.TransactionLogs
         public string Amount { get; }
         public string OldAmount { get; }
         
-        private class LogDetails
+        private struct LogDetails
         {
             public string Owner { get; set; }
             public string Spender { get; set; }
