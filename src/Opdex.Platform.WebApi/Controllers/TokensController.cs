@@ -65,5 +65,13 @@ namespace Opdex.Platform.WebApi.Controllers
             
             return Ok(response);
         }
+        
+        [HttpGet("{address}/transactions")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<TokenResponseModel>> GetTransasctionsForToken(string address, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -4,9 +4,9 @@ using Opdex.Core.Common.Extensions;
 
 namespace Opdex.Indexer.Application.Abstractions.Commands.Pools
 {
-    public class MakePoolCommand : IRequest<long>
+    public class MakeLiquidityPoolCommand : IRequest<long>
     {
-        public MakePoolCommand(string address, long tokenId)
+        public MakeLiquidityPoolCommand(string address, long tokenId)
         {
             if (!address.HasValue())
             {

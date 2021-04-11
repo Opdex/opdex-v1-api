@@ -19,7 +19,7 @@ namespace Opdex.Core.Application
                 .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<Pool, PoolDto>()
+            CreateMap<LiquidityPool, LiquidityPoolDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 // .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))

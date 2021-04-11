@@ -2,11 +2,11 @@ using System;
 using MediatR;
 using Opdex.Core.Domain.Models;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
+namespace Opdex.Core.Application.Abstractions.Queries.Tokens
 {
-    public class SelectTokenByIdQuery : IRequest<Token>
+    public class RetrieveTokenByIdQuery : IRequest<Token>
     {
-        public SelectTokenByIdQuery(long tokenId)
+        public RetrieveTokenByIdQuery(long tokenId)
         {
             if (tokenId < 1)
             {

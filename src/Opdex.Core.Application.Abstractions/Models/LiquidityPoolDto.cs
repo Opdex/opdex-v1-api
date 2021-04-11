@@ -1,6 +1,6 @@
 namespace Opdex.Core.Application.Abstractions.Models
 {
-    public class PoolDto
+    public class LiquidityPoolDto
     {
         public long Id { get; set; }
         public string Address { get; set; }

@@ -15,24 +15,24 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
 {
-    public class SelectAllPoolsQueryHandlerTests
+    public class SelectAllLiquidityPoolsQueryHandlerTests
     {
         private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectAllPoolsQueryHandler _handler;
+        private readonly SelectAllLiquidityPoolsQueryHandler _handler;
         
-        public SelectAllPoolsQueryHandlerTests()
+        public SelectAllLiquidityPoolsQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new CoreInfrastructureMapperProfile())).CreateMapper();
-            var logger = new NullLogger<SelectAllPoolsQueryHandler>();
+            var logger = new NullLogger<SelectAllLiquidityPoolsQueryHandler>();
             
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectAllPoolsQueryHandler(_dbContext.Object, mapper, logger);
+            _handler = new SelectAllLiquidityPoolsQueryHandler(_dbContext.Object, mapper, logger);
         }
 
         [Fact]
         public async Task SelectAllPools_Success()
         {
-            var expectedEntity = new PoolEntity
+            var expectedEntity = new LiquidityPoolEntity
             {
                 Id = 123454,
                 TokenId = 2,
@@ -41,11 +41,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
                 ReserveSrc = "u76543456789076"
             };
 
-            var responseList = new List<PoolEntity> {expectedEntity}.AsEnumerable();
+            var responseList = new List<LiquidityPoolEntity> {expectedEntity}.AsEnumerable();
                 
-            var command = new SelectAllPoolsQuery();
+            var command = new SelectAllLiquidityPoolsQuery();
         
-            _dbContext.Setup(db => db.ExecuteQueryAsync<PoolEntity>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteQueryAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(responseList));
             
             var results = await _handler.Handle(command, CancellationToken.None);

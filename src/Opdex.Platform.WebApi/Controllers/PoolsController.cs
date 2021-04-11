@@ -7,7 +7,9 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Core.Application.Abstractions.EntryQueries.Pools;
+using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.WebApi.Models;
 
 
@@ -58,12 +60,23 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PoolResponseModel>> GetPool(string address, CancellationToken cancellationToken)
         {
-            var query = new GetPoolByAddressQuery(address);
+            var query = new GetLiquidityPoolByAddressQuery(address);
             
             var result = await _mediator.Send(query, cancellationToken);
             
             var response = _mapper.Map<PoolResponseModel>(result);
             
+            return Ok(response);
+        }
+        
+        [HttpGet("{address}/transactions")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<TransactionDto>>> GetTransactionsForPool(string address, CancellationToken cancellationToken)
+        {
+            var query = new GetTransactionsByPoolWithFilterQuery(address, new[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20});
+
+            var response = await _mediator.Send(query, cancellationToken);
+
             return Ok(response);
         }
     }

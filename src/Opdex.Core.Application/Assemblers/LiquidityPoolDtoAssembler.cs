@@ -3,28 +3,27 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Core.Application.Assemblers;
+using Opdex.Core.Application.Abstractions.Queries.Tokens;
 using Opdex.Core.Domain.Models;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 
-namespace Opdex.Platform.Application.Assemblers
+namespace Opdex.Core.Application.Assemblers
 {
-    public class PoolDtoAssembler: IModelAssembler<Pool, PoolDto>
+    public class LiquidityPoolDtoAssembler: IModelAssembler<LiquidityPool, LiquidityPoolDto>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         
-        public PoolDtoAssembler(IMediator mediator, IMapper mapper)
+        public LiquidityPoolDtoAssembler(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
-        public async Task<PoolDto> Assemble(Pool pool)
+        public async Task<LiquidityPoolDto> Assemble(LiquidityPool pool)
         {
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(pool.TokenId));
             
-            var poolDto = _mapper.Map<PoolDto>(pool);
+            var poolDto = _mapper.Map<LiquidityPoolDto>(pool);
             var tokenDto = _mapper.Map<TokenDto>(token);
 
             poolDto.Token = tokenDto;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Application.Abstractions.Queries.Blocks;
+using Opdex.Core.Application.Abstractions.Queries.Pools;
 using Opdex.Core.Application.Abstractions.Queries.Transactions;
 using Opdex.Core.Application.Assemblers;
 using Opdex.Core.Domain.Models;
@@ -48,13 +50,24 @@ namespace Opdex.Indexer.Application.EntryHandlers.Transactions
             var result = await _mediator.Send(new MakeTransactionCommand(cirrusTx));
 
             if (!result) return false;
-            
-            // Todo: Break this out of this handler
-            // Create token and pair if necessary
-            if (cirrusTx.Logs.FirstOrDefault(e => e.LogType == nameof(LiquidityPoolCreatedLog)) is LiquidityPoolCreatedLog poolCreatedLog)
+
+            if (cirrusTx.Logs.Any(e => e.LogType == nameof(LiquidityPoolCreatedLog)))
             {
-                var tokenId = await _mediator.Send(new MakeTokenCommand(poolCreatedLog.Token));
-                var pairId = await _mediator.Send(new MakePoolCommand(poolCreatedLog.Pool, tokenId));
+                foreach (var log in cirrusTx.Logs.Where(e => e.LogType == nameof(LiquidityPoolCreatedLog)))
+                {
+                    var liquidityPoolLog = log as LiquidityPoolCreatedLog;
+                    var tokenId = await _mediator.Send(new MakeTokenCommand(liquidityPoolLog.Token));
+                    var pairId = await _mediator.Send(new MakeLiquidityPoolCommand(liquidityPoolLog.Pool, tokenId));
+                }
+            }
+            else if (cirrusTx.Logs.Any(e => e.LogType == nameof(MiningPoolCreatedLog)))
+            {
+                foreach (var log in cirrusTx.Logs.Where(e => e.LogType == nameof(MiningPoolCreatedLog)))
+                {
+                    var miningPoolLog = log as MiningPoolCreatedLog;
+                    var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(miningPoolLog.StakingPool));
+                    var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPoolLog.MiningPool, pool.Id));
+                }
             }
             else
             {

@@ -10,21 +10,20 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
 namespace Opdex.Indexer.Infrastructure.Data.Handlers
 {
-    public class PersistPoolCommandHandler : IRequestHandler<PersistPoolCommand, long>
+    public class PersistMiningPoolCommandHandler : IRequestHandler<PersistMiningPoolCommand, long>
     {
-        // Todo: Insert vs update
         private static readonly string SqlCommand =
-            $@"INSERT INTO pool (
-                {nameof(PoolEntity.Address)},
-                {nameof(PoolEntity.TokenId)},
-                {nameof(PoolEntity.ReserveSrc)},
-                {nameof(PoolEntity.ReserveCrs)},
-                {nameof(PoolEntity.CreatedDate)}
+            $@"INSERT INTO pool_mining (
+                {nameof(MiningPoolEntity.LiquidityPoolId)},
+                {nameof(MiningPoolEntity.Address)},
+                {nameof(MiningPoolEntity.RewardRate)},
+                {nameof(MiningPoolEntity.MiningPeriodEndBlock)},
+                {nameof(MiningPoolEntity.CreatedDate)}
               ) VALUES (
-                @{nameof(PoolEntity.Address)},
-                @{nameof(PoolEntity.TokenId)},
-                @{nameof(PoolEntity.ReserveSrc)},
-                @{nameof(PoolEntity.ReserveCrs)},
+                @{nameof(MiningPoolEntity.LiquidityPoolId)},
+                @{nameof(MiningPoolEntity.Address)},
+                @{nameof(MiningPoolEntity.RewardRate)},
+                @{nameof(MiningPoolEntity.MiningPeriodEndBlock)},
                 UTC_TIMESTAMP()
               );
               SELECT LAST_INSERT_ID();";
@@ -33,19 +32,19 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
         
-        public PersistPoolCommandHandler(IDbContext context, IMapper mapper, 
-            ILogger<PersistPoolCommandHandler> logger)
+        public PersistMiningPoolCommandHandler(IDbContext context, IMapper mapper, 
+            ILogger<PersistMiningPoolCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistPoolCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(PersistMiningPoolCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var poolEntity = _mapper.Map<PoolEntity>(request.Pool);
+                var poolEntity = _mapper.Map<MiningPoolEntity>(request.MiningPool);
             
                 var command = DatabaseQuery.Create(SqlCommand, poolEntity, cancellationToken);
             
@@ -53,7 +52,8 @@ namespace Opdex.Indexer.Infrastructure.Data.Handlers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Unable to persist {request.Pool}");
+                _logger.LogError(ex, $"Unable to persist {request.MiningPool}");
+                
                 return 0;
             }
         }

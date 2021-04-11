@@ -12,25 +12,25 @@ using Xunit;
 
 namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers.Pools
 {
-    public class PersistPoolCommandHandlerTests
+    public class PersistLiquidityPoolCommandHandlerTests
     {
         private readonly Mock<IDbContext> _dbContext;
-        private readonly PersistPoolCommandHandler _handler;
+        private readonly PersistLiquidityPoolCommandHandler _handler;
         
-        public PersistPoolCommandHandlerTests()
+        public PersistLiquidityPoolCommandHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new IndexerInfrastructureMapperProfile())).CreateMapper();
-            var logger = new NullLogger<PersistPoolCommandHandler>();
+            var logger = new NullLogger<PersistLiquidityPoolCommandHandler>();
             
             _dbContext = new Mock<IDbContext>();
-            _handler = new PersistPoolCommandHandler(_dbContext.Object, mapper, logger);
+            _handler = new PersistLiquidityPoolCommandHandler(_dbContext.Object, mapper, logger);
         }
 
         [Fact]
         public async Task PersistsPool_Success()
         {
-            var pool = new Pool("PoolAddress", 1, 1, "1");
-            var command = new PersistPoolCommand(pool);
+            var pool = new LiquidityPool("PoolAddress", 1, 1, "1");
+            var command = new PersistLiquidityPoolCommand(pool);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(1234L));
@@ -43,8 +43,8 @@ namespace Opdex.Indexer.Infrastructure.Tests.Data.Handlers.Pools
         [Fact]
         public async Task PersistsPool_Fail()
         {
-            var pool = new Pool("PoolAddress", 1, 1, "1");
-            var command = new PersistPoolCommand(pool);
+            var pool = new LiquidityPool("PoolAddress", 1, 1, "1");
+            var command = new PersistLiquidityPoolCommand(pool);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(0L));

@@ -18,11 +18,10 @@ namespace Opdex.Platform.Infrastructure
         public static IServiceCollection AddPlatformInfrastructureServices(this IServiceCollection services)
         {
             // Data Queries
-            services.AddTransient<IRequestHandler<SelectAllPoolsQuery, IEnumerable<Pool>>, SelectAllPoolsQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectAllLiquidityPoolsQuery, IEnumerable<LiquidityPool>>, SelectAllLiquidityPoolsQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAllTokensQuery, IEnumerable<Token>>, SelectAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLatestMarketSnapshotQuery, MarketSnapshot>, SelectLatestMarketSnapshotQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTransactionsByPoolWithFilterQuery, IEnumerable<Transaction>>, SelectTransactionsByPoolWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTokenByIdQuery, Token>, SelectTokenByIdQueryHandler>();
             
             return services;
         }

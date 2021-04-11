@@ -2,11 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Opdex.Core.Application.Abstractions.Queries.Tokens;
 using Opdex.Core.Domain.Models;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
+using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Tokens;
 
-namespace Opdex.Platform.Application.Handlers.Tokens
+namespace Opdex.Core.Application.Handlers.Tokens
 {
     public class RetrieveTokenByIdQueryHandler : IRequestHandler<RetrieveTokenByIdQuery, Token>
     {

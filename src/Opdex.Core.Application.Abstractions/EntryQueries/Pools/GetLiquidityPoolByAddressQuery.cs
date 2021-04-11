@@ -1,13 +1,13 @@
 using System;
 using MediatR;
+using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Common.Extensions;
-using Opdex.Core.Domain.Models;
 
-namespace Opdex.Core.Application.Abstractions.Queries.Pools
+namespace Opdex.Core.Application.Abstractions.EntryQueries.Pools
 {
-    public class RetrievePoolByAddressQuery : IRequest<Pool>
+    public class GetLiquidityPoolByAddressQuery : IRequest<LiquidityPoolDto>
     {
-        public RetrievePoolByAddressQuery(string address)
+        public GetLiquidityPoolByAddressQuery(string address)
         {
             if (!address.HasValue())
             {

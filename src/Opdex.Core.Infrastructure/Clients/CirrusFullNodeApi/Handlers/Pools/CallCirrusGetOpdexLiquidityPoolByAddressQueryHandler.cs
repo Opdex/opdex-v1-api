@@ -14,19 +14,20 @@ using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.P
 
 namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools
 {
-    public class CallCirrusGetOpdexPoolByAddressQueryHandler : IRequestHandler<CallCirrusGetOpdexPoolByAddressQuery, Pool>
+    public class CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler 
+        : IRequestHandler<CallCirrusGetOpdexLiquidityPoolByAddressQuery, LiquidityPool>
     {
         private readonly ISmartContractsModule _smartContractsModule;
-        private readonly ILogger<CallCirrusGetOpdexPoolByAddressQueryHandler> _logger;
+        private readonly ILogger<CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler> _logger;
         
-        public CallCirrusGetOpdexPoolByAddressQueryHandler(ISmartContractsModule smartContractsModule, 
-            ILogger<CallCirrusGetOpdexPoolByAddressQueryHandler> logger)
+        public CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler(ISmartContractsModule smartContractsModule, 
+            ILogger<CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler> logger)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<Pool> Handle(CallCirrusGetOpdexPoolByAddressQuery request, CancellationToken cancellationToken)
+        public async Task<LiquidityPool> Handle(CallCirrusGetOpdexLiquidityPoolByAddressQuery request, CancellationToken cancellationToken)
         {
             var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Reserves", new string[0]);
             var reservesResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
@@ -42,7 +43,7 @@ namespace Opdex.Core.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools
             var token = (string)tokenResponse.Return;
             if (!token.HasValue()) return null;
 
-            return new Pool(request.Address, token, crsReserves, srcReserves);
+            return new LiquidityPool(request.Address, token, crsReserves, srcReserves);
         }
     }
 }

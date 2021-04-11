@@ -30,7 +30,8 @@ namespace Opdex.Indexer.Application
             services.AddTransient<IRequestHandler<MakeBlockCommand, bool>, MakeBlockCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTokenCommand, long>, MakeTokenCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTransactionCommand, bool>, MakeTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakePoolCommand, long>, MakePoolCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeLiquidityPoolCommand, long>, MakeLiquidityPoolCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeMiningPoolCommand, long>, MakeMiningPoolCommandHandler>();
             
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateTransactionCommand, bool>, CreateTransactionCommandHandler>();

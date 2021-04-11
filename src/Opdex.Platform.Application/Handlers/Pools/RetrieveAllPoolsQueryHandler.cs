@@ -10,7 +10,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
 
 namespace Opdex.Platform.Application.Handlers.Pools
 {
-    public class RetrieveAllPoolsQueryHandler : IRequestHandler<RetrieveAllPoolsQuery, IEnumerable<Pool>>
+    public class RetrieveAllPoolsQueryHandler : IRequestHandler<RetrieveAllPoolsQuery, IEnumerable<LiquidityPool>>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -21,9 +21,9 @@ namespace Opdex.Platform.Application.Handlers.Pools
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<Pool>> Handle(RetrieveAllPoolsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<LiquidityPool>> Handle(RetrieveAllPoolsQuery request, CancellationToken cancellationToken)
         {
-            var query = new SelectAllPoolsQuery();
+            var query = new SelectAllLiquidityPoolsQuery();
             
             return await _mediator.Send(query, cancellationToken);
         }

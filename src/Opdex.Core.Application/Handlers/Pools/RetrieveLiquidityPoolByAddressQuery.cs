@@ -8,18 +8,18 @@ using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Pools;
 
 namespace Opdex.Core.Application.Handlers.Pools
 {
-    public class RetrievePoolByAddressQueryHandler : IRequestHandler<RetrievePoolByAddressQuery, Pool>
+    public class RetrieveLiquidityPoolByAddressQueryHandler : IRequestHandler<RetrieveLiquidityPoolByAddressQuery, LiquidityPool>
     {
         private readonly IMediator _mediator;
         
-        public RetrievePoolByAddressQueryHandler(IMediator mediator)
+        public RetrieveLiquidityPoolByAddressQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public async Task<Pool> Handle(RetrievePoolByAddressQuery request, CancellationToken cancellationToken)
+        public async Task<LiquidityPool> Handle(RetrieveLiquidityPoolByAddressQuery request, CancellationToken cancellationToken)
         {
-            var token = await _mediator.Send(new SelectPoolByAddressQuery(request.Address), cancellationToken);
+            var token = await _mediator.Send(new SelectLiquidityPoolByAddressQuery(request.Address), cancellationToken);
 
             return token;
         }

@@ -3,9 +3,9 @@ using Opdex.Core.Common.Extensions;
 
 namespace Opdex.Core.Domain.Models
 {
-    public class Pool
+    public class LiquidityPool
     {
-        public Pool(string address, long tokenId, ulong reserveCrs, string reserveSrc)
+        public LiquidityPool(string address, long tokenId, ulong reserveCrs, string reserveSrc)
         {
             if (!address.HasValue())
             {
@@ -28,7 +28,7 @@ namespace Opdex.Core.Domain.Models
             ReserveSrc = reserveSrc;
         }
         
-        public Pool(string address, string tokenAddress, ulong reserveCrs, string reserveSrc)
+        public LiquidityPool(string address, string tokenAddress, ulong reserveCrs, string reserveSrc)
         {
             if (!address.HasValue())
             {
@@ -51,7 +51,7 @@ namespace Opdex.Core.Domain.Models
             ReserveSrc = reserveSrc;
         }
 
-        public Pool(long id, string address, long tokenId, ulong reserveCrs, string reserveSrc)
+        public LiquidityPool(long id, string address, long tokenId, ulong reserveCrs, string reserveSrc)
         {
             Id = id;
             Address = address;

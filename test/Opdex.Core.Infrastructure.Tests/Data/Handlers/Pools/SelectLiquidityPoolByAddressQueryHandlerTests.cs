@@ -12,25 +12,25 @@ using Xunit;
 
 namespace Opdex.Core.Infrastructure.Tests.Data.Handlers.Pools
 {
-    public class SelectPoolByAddressQueryHandlerTests
+    public class SelectLiquidityPoolByAddressQueryHandlerTests
     {
         private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectPoolByAddressQueryHandler _handler;
+        private readonly SelectLiquidityPoolByAddressQueryHandler _handler;
         
-        public SelectPoolByAddressQueryHandlerTests()
+        public SelectLiquidityPoolByAddressQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new CoreInfrastructureMapperProfile())).CreateMapper();
             
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectPoolByAddressQueryHandler(_dbContext.Object, mapper);
+            _handler = new SelectLiquidityPoolByAddressQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
-        public async Task SelectPoolByAddress_Success()
+        public async Task SelectLiquidityPoolByAddress_Success()
         {
             const string address = "SomeAddress";
             
-            var expectedEntity = new PoolEntity
+            var expectedEntity = new LiquidityPoolEntity
             {
                 Id = 123454,
                 TokenId = 1235,
@@ -39,9 +39,9 @@ namespace Opdex.Core.Infrastructure.Tests.Data.Handlers.Pools
                 ReserveSrc = "8765456789"
             };
                 
-            var command = new SelectPoolByAddressQuery(address);
+            var command = new SelectLiquidityPoolByAddressQuery(address);
         
-            _dbContext.Setup(db => db.ExecuteFindAsync<PoolEntity>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
             
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -58,15 +58,15 @@ namespace Opdex.Core.Infrastructure.Tests.Data.Handlers.Pools
         {
             const string address = "SomeAddress";
             
-            var command = new SelectPoolByAddressQuery(address);
+            var command = new SelectLiquidityPoolByAddressQuery(address);
         
-            _dbContext.Setup(db => db.ExecuteFindAsync<PoolEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<PoolEntity>(null));
+            _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
 
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
                 .Throw<NotFoundException>()
-                .WithMessage($"{nameof(PoolEntity)} with address {address} was not found.");
+                .WithMessage($"{nameof(LiquidityPoolEntity)} with address {address} was not found.");
         }
     }
 }

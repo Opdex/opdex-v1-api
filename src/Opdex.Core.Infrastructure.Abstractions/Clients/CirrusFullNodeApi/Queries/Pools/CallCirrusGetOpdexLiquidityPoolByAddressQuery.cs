@@ -1,13 +1,13 @@
 using System;
 using MediatR;
-using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Core.Common.Extensions;
+using Opdex.Core.Domain.Models;
 
-namespace Opdex.Core.Application.Abstractions.EntryQueries.Pools
+namespace Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Pools
 {
-    public class GetPoolByAddressQuery : IRequest<PoolDto>
+    public class CallCirrusGetOpdexLiquidityPoolByAddressQuery : IRequest<LiquidityPool>
     {
-        public GetPoolByAddressQuery(string address)
+        public CallCirrusGetOpdexLiquidityPoolByAddressQuery(string address)
         {
             if (!address.HasValue())
             {

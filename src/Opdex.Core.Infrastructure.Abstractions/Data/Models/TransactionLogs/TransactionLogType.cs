@@ -6,7 +6,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionLogs
         // Controller
         LiquidityPoolCreatedLog = 1,
         
-        // Liquidity Pool Logs
+        // Liquidity LiquidityPool Logs
         MintLog = 2,
         BurnLog = 3,
         SwapLog = 4,
@@ -14,7 +14,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionLogs
         ApprovalLog = 6,
         TransferLog = 7,
         
-        // Staking Pool Logs
+        // Staking LiquidityPool Logs
         EnterStakingPoolLog = 8,
         CollectStakingRewardsLog = 9,
         ExitStakingPoolLog = 10,
@@ -24,7 +24,7 @@ namespace Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionLogs
         RewardMiningPoolLog = 12,
         NominationLog = 13,
         
-        // Mining Pool Logs
+        // Mining LiquidityPool Logs
         EnterMiningPoolLog = 14,
         CollectMiningRewardsLog = 15,
         ExitMiningPoolLog = 16,

@@ -11,22 +11,22 @@ using Opdex.Core.Domain.Models;
 
 namespace Opdex.Core.Application.EntryHandlers.Pools
 {
-    public class GetPoolByAddressQueryHandler: IRequestHandler<GetPoolByAddressQuery, PoolDto>
+    public class GetLiquidityPoolByAddressQueryHandler: IRequestHandler<GetLiquidityPoolByAddressQuery, LiquidityPoolDto>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly IModelAssembler<Pool, PoolDto> _assembler;
+        private readonly IModelAssembler<LiquidityPool, LiquidityPoolDto> _assembler;
         
-        public GetPoolByAddressQueryHandler(IMediator mediator, IMapper mapper, IModelAssembler<Pool, PoolDto> assembler)
+        public GetLiquidityPoolByAddressQueryHandler(IMediator mediator, IMapper mapper, IModelAssembler<LiquidityPool, LiquidityPoolDto> assembler)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
         }
         
-        public async Task<PoolDto> Handle(GetPoolByAddressQuery request, CancellationToken cancellationToken)
+        public async Task<LiquidityPoolDto> Handle(GetLiquidityPoolByAddressQuery request, CancellationToken cancellationToken)
         {
-            var pool = await _mediator.Send(new RetrievePoolByAddressQuery(request.Address), cancellationToken);
+            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Address), cancellationToken);
 
             var poolDto = await _assembler.Assemble(pool);
 

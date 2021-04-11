@@ -4,7 +4,7 @@ using Opdex.Core.Domain.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Pools
 {
-    public class RetrieveAllPoolsQuery : IRequest<IEnumerable<Pool>>
+    public class RetrieveAllPoolsQuery : IRequest<IEnumerable<LiquidityPool>>
     {
     }
 }

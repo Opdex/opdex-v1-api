@@ -101,7 +101,7 @@ namespace Opdex.Indexer.Application
         /// <param name="latestHeight">Opdex synced latest block height</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>Dictionary of pool address keys with pool values</returns>
-        private Task<Dictionary<string, PoolDto>> ProcessNewPools(ulong latestHeight, CancellationToken cancellationToken)
+        private Task<Dictionary<string, LiquidityPoolDto>> ProcessNewPools(ulong latestHeight, CancellationToken cancellationToken)
         {
             // var poolLogs = await _mediator.Send(new RetrieveCirrusPoolLogsQuery(latestHeight), cancellationToken);
             //
@@ -115,7 +115,7 @@ namespace Opdex.Indexer.Application
             //
             // return allPools.ToDictionary(p => p.Address);
 
-            var dictionary = new Dictionary<string, PoolDto>();
+            var dictionary = new Dictionary<string, LiquidityPoolDto>();
             return Task.FromResult(dictionary);
         }
 
@@ -125,7 +125,7 @@ namespace Opdex.Indexer.Application
         /// <param name="txHash">Transaction hash to process</param>
         /// <param name="pools">Collection of all known Opdex pools</param>
         /// <param name="cancellationToken">cancellation token: should probably be removed from indexer methods</param>
-        private async Task<Transaction> ProcessTransaction(string txHash, IDictionary<string, PoolDto> pools, CancellationToken cancellationToken)
+        private async Task<Transaction> ProcessTransaction(string txHash, IDictionary<string, LiquidityPoolDto> pools, CancellationToken cancellationToken)
         {
             var tx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(txHash), cancellationToken);
             var isToRouter = tx.To == _opdexConfiguration.ControllerContract;

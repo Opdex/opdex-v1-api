@@ -8,22 +8,22 @@ using Opdex.Indexer.Infrastructure.Abstractions.Data.Commands;
 
 namespace Opdex.Indexer.Application.Handlers.Pools
 {
-    public class MakePoolCommandHandler : IRequestHandler<MakePoolCommand, long>
+    public class MakeMiningPoolCommandHandler : IRequestHandler<MakeMiningPoolCommand, long>
     {
         private readonly IMediator _mediator;
 
-        public MakePoolCommandHandler(IMediator mediator)
+        public MakeMiningPoolCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public async Task<long> Handle(MakePoolCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(MakeMiningPoolCommand request, CancellationToken cancellationToken)
         {
-            var pool = await _mediator.Send(new CallCirrusGetOpdexPoolByAddressQuery(request.Address), cancellationToken);
+            var pool = await _mediator.Send(new CallCirrusGetOpdexMiningPoolByAddressQuery(request.MiningPool), cancellationToken);
             
-            pool.SetTokenId(request.TokenId);
+            pool.SetLiquidityPoolId(request.LiquidityPoolId);
             
-            return await _mediator.Send(new PersistPoolCommand(pool), cancellationToken);
+            return await _mediator.Send(new PersistMiningPoolCommand(pool), cancellationToken);
         }
     }
 }

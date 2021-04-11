@@ -53,11 +53,10 @@ namespace Opdex.Core.Infrastructure
             services.AddTransient<IRequestHandler<SelectLatestBlockQuery, Block>, SelectLatestBlockQueryHandler>();
 
             // Pools
-            services.AddTransient<IRequestHandler<SelectAllPoolsWithFilterQuery, IEnumerable<Pool>>, SelectAllPoolsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectPoolByAddressQuery, Pool>, SelectPoolByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectLiquidityPoolByAddressQuery, LiquidityPool>, SelectLiquidityPoolByAddressQueryHandler>();
 
             // Tokens
-            services.AddTransient<IRequestHandler<SelectAllTokensWithFilterQuery, IEnumerable<Token>>, SelectAllTokensWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTokenByIdQuery, Token>, SelectTokenByIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTokenByAddressQuery, Token>, SelectTokenByAddressQueryHandler>();
             
             // Transactions
@@ -88,7 +87,8 @@ namespace Opdex.Core.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetTransactionByHashQuery, Transaction>, CallCirrusGetTransactionByHashQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusSearchContractTransactionsQuery, List<Transaction>>, CallCirrusSearchContractTransactionsQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenDetailsByAddressQuery, Token>, CallCirrusGetSrcTokenDetailsByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetOpdexPoolByAddressQuery, Pool>, CallCirrusGetOpdexPoolByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolByAddressQuery, LiquidityPool>, CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetOpdexMiningPoolByAddressQuery, MiningPool>, CallCirrusGetOpdexMiningPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenAllowanceQuery, string>, CallCirrusGetSrcTokenAllowanceQueryHandler>();
 
             // Commands

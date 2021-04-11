@@ -12,37 +12,37 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 {
-    public class SelectAllPoolsQueryHandler : IRequestHandler<SelectAllPoolsQuery, IEnumerable<Pool>>
+    public class SelectAllLiquidityPoolsQueryHandler : IRequestHandler<SelectAllLiquidityPoolsQuery, IEnumerable<LiquidityPool>>
     {
         private static readonly string SqlCommand =
             $@"SELECT
-                {nameof(PoolEntity.Id)},
-                {nameof(PoolEntity.Address)},
-                {nameof(PoolEntity.TokenId)},
-                {nameof(PoolEntity.ReserveCrs)},
-                {nameof(PoolEntity.ReserveSrc)},
-                {nameof(PoolEntity.CreatedDate)}
-            FROM pool;";
+                {nameof(LiquidityPoolEntity.Id)},
+                {nameof(LiquidityPoolEntity.Address)},
+                {nameof(LiquidityPoolEntity.TokenId)},
+                {nameof(LiquidityPoolEntity.ReserveCrs)},
+                {nameof(LiquidityPoolEntity.ReserveSrc)},
+                {nameof(LiquidityPoolEntity.CreatedDate)}
+            FROM pool_liquidity;";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
         
-        public SelectAllPoolsQueryHandler(IDbContext context, IMapper mapper, 
-            ILogger<SelectAllPoolsQueryHandler> logger)
+        public SelectAllLiquidityPoolsQueryHandler(IDbContext context, IMapper mapper, 
+            ILogger<SelectAllLiquidityPoolsQueryHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        public async Task<IEnumerable<Pool>> Handle(SelectAllPoolsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<LiquidityPool>> Handle(SelectAllLiquidityPoolsQuery request, CancellationToken cancellationToken)
         {
             var command = DatabaseQuery.Create(SqlCommand, null, cancellationToken);
             
-            var tokenEntities =  await _context.ExecuteQueryAsync<PoolEntity>(command);
+            var tokenEntities =  await _context.ExecuteQueryAsync<LiquidityPoolEntity>(command);
 
-            return _mapper.Map<IEnumerable<Pool>>(tokenEntities);
+            return _mapper.Map<IEnumerable<LiquidityPool>>(tokenEntities);
         }
     }
 }

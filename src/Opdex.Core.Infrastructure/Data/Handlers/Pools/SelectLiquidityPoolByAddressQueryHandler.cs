@@ -11,40 +11,40 @@ using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Pools;
 
 namespace Opdex.Core.Infrastructure.Data.Handlers.Pools
 {
-    public class SelectPoolByAddressQueryHandler : IRequestHandler<SelectPoolByAddressQuery, Pool>
+    public class SelectLiquidityPoolByAddressQueryHandler : IRequestHandler<SelectLiquidityPoolByAddressQuery, LiquidityPool>
     {
         private static readonly string SqlQuery = 
             @$"SELECT 
-                {nameof(PoolEntity.Id)},
-                {nameof(PoolEntity.Address)},
-                {nameof(PoolEntity.TokenId)},
-                {nameof(PoolEntity.ReserveCrs)},
-                {nameof(PoolEntity.ReserveSrc)}
-            FROM pool
-            WHERE {nameof(PoolEntity.Address)} = @{nameof(SqlParams.Address)};";
+                {nameof(LiquidityPoolEntity.Id)},
+                {nameof(LiquidityPoolEntity.Address)},
+                {nameof(LiquidityPoolEntity.TokenId)},
+                {nameof(LiquidityPoolEntity.ReserveCrs)},
+                {nameof(LiquidityPoolEntity.ReserveSrc)}
+            FROM pool_liquidity
+            WHERE {nameof(LiquidityPoolEntity.Address)} = @{nameof(SqlParams.Address)};";
                         
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
         
-        public SelectPoolByAddressQueryHandler(IDbContext context, IMapper mapper)
+        public SelectLiquidityPoolByAddressQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
-        public async Task<Pool> Handle(SelectPoolByAddressQuery request, CancellationToken cancellationToken)
+        public async Task<LiquidityPool> Handle(SelectLiquidityPoolByAddressQuery request, CancellationToken cancellationToken)
         {
             var queryParams = new SqlParams(request.Address);
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
             
-            var result = await _context.ExecuteFindAsync<PoolEntity>(query);
+            var result = await _context.ExecuteFindAsync<LiquidityPoolEntity>(query);
 
             if (result == null)
             {
-                throw new NotFoundException($"{nameof(PoolEntity)} with address {request.Address} was not found.");
+                throw new NotFoundException($"{nameof(LiquidityPoolEntity)} with address {request.Address} was not found.");
             }
 
-            return _mapper.Map<Pool>(result);
+            return _mapper.Map<LiquidityPool>(result);
         }
 
         private sealed class SqlParams

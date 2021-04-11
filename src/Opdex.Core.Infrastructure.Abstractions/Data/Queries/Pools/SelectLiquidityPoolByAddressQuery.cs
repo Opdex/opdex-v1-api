@@ -5,9 +5,9 @@ using Opdex.Core.Domain.Models;
 
 namespace Opdex.Core.Infrastructure.Abstractions.Data.Queries.Pools
 {
-    public class SelectPoolByAddressQuery : IRequest<Pool>
+    public class SelectLiquidityPoolByAddressQuery : IRequest<LiquidityPool>
     {
-        public SelectPoolByAddressQuery(string address)
+        public SelectLiquidityPoolByAddressQuery(string address)
         {
             if (!address.HasValue())
             {

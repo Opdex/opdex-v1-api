@@ -14,7 +14,6 @@ using Opdex.Platform.Application.Abstractions.Queries.Market;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
-using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Market;
 using Opdex.Platform.Application.EntryHandlers.Pools;
 using Opdex.Platform.Application.EntryHandlers.Tokens;
@@ -33,17 +32,16 @@ namespace Opdex.Platform.Application
         public static IServiceCollection AddPlatformApplicationServices(this IServiceCollection services)
         {
             // Entry Queries
-            services.AddTransient<IRequestHandler<GetAllPoolsQuery, IEnumerable<PoolDto>>, GetAllPoolsQueryHandler>();
+            services.AddTransient<IRequestHandler<GetAllPoolsQuery, IEnumerable<LiquidityPoolDto>>, GetAllPoolsQueryHandler>();
             services.AddTransient<IRequestHandler<GetAllTokensQuery, IEnumerable<TokenDto>>, GetAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<GetLatestMarketSnapshotQuery, MarketSnapshotDto>, GetLatestMarketSnapshotQueryHandler>();
             services.AddTransient<IRequestHandler<GetTransactionsByPoolWithFilterQuery, IEnumerable<TransactionDto>>, GetTransactionsByPoolWithFilterQueryHandler>();
 
             // Queries
-            services.AddTransient<IRequestHandler<RetrieveAllPoolsQuery, IEnumerable<Pool>>, RetrieveAllPoolsQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveAllPoolsQuery, IEnumerable<LiquidityPool>>, RetrieveAllPoolsQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAllTokensQuery, IEnumerable<Token>>, RetrieveAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLatestMarketSnapshotQuery, MarketSnapshot>, RetrieveLatestMarketSnapshotQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTransactionsByPoolWithFilterQuery,  IEnumerable<Transaction>>, RetrieveTransactionsByPoolWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveTokenByIdQuery, Token>, RetrieveTokenByIdQueryHandler>();
 
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();
@@ -58,10 +56,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeWalletRemoveLiquidityTransactionCommand, string>, MakeWalletRemoveLiquidityTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletApproveAllowanceTransactionCommand, string>, MakeWalletApproveAllowanceTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletCreateLiquidityPoolTransactionCommand, string>, MakeWalletCreateLiquidityPoolTransactionCommandHandler>();
-            
-            // Assemblers
-            services.AddTransient<IModelAssembler<Pool, PoolDto>, PoolDtoAssembler>();
-            
+
             return services;
         }
     }

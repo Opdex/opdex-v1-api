@@ -7,9 +7,9 @@ using Opdex.Core.Common.Exceptions;
 using Opdex.Core.Domain.Models;
 using Opdex.Core.Infrastructure.Abstractions.Data;
 using Opdex.Core.Infrastructure.Abstractions.Data.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
+using Opdex.Core.Infrastructure.Abstractions.Data.Queries.Tokens;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
+namespace Opdex.Core.Infrastructure.Data.Handlers.Tokens
 {
     public class SelectTokenByIdQueryHandler: IRequestHandler<SelectTokenByIdQuery, Token>
     {

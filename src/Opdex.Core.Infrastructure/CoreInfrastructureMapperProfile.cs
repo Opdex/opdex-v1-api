@@ -28,8 +28,8 @@ namespace Opdex.Core.Infrastructure
                 .ConstructUsing(src => new Block(src.Height, src.Hash, src.Time, src.MedianTime))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<PoolEntity, Pool>()
-                .ConstructUsing(src => new Pool(src.Id, src.Address, src.TokenId, src.ReserveCrs, src.ReserveSrc))
+            CreateMap<LiquidityPoolEntity, LiquidityPool>()
+                .ConstructUsing(src => new LiquidityPool(src.Id, src.Address, src.TokenId, src.ReserveCrs, src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<MarketSnapshotEntity, MarketSnapshot>()

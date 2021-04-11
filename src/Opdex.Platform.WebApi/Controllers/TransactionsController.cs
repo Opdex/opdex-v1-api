@@ -23,21 +23,5 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             throw new NotImplementedException();
         }
-        
-        [HttpGet("pool/{poolAddress}")]
-        public async Task<IActionResult> GetTransactionsForPool(string poolAddress, CancellationToken cancellationToken)
-        {
-            var query = new GetTransactionsByPoolWithFilterQuery(poolAddress, new[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
-
-            var response = await _mediator.Send(query, cancellationToken);
-
-            return Ok(response);
-        }
-        
-        [HttpGet("token/{tokenAddress}")]
-        public Task<IActionResult> GetTransactionsForToken(string tokenAddress, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
