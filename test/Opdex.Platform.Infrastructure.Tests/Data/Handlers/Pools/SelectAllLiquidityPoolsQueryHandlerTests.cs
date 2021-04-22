@@ -6,9 +6,9 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Core.Infrastructure;
-using Opdex.Core.Infrastructure.Abstractions.Data;
-using Opdex.Core.Infrastructure.Abstractions.Data.Models;
+using Opdex.Platform.Infrastructure;
+using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools;
 using Xunit;
@@ -22,7 +22,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         
         public SelectAllLiquidityPoolsQueryHandlerTests()
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new CoreInfrastructureMapperProfile())).CreateMapper();
+            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
             var logger = new NullLogger<SelectAllLiquidityPoolsQueryHandler>();
             
             _dbContext = new Mock<IDbContext>();

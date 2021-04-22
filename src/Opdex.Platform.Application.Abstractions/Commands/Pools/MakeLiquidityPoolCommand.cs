@@ -1,0 +1,28 @@
+using System;
+using MediatR;
+using Opdex.Platform.Common.Extensions;
+
+namespace Opdex.Platform.Application.Abstractions.Commands.Pools
+{
+    public class MakeLiquidityPoolCommand : IRequest<long>
+    {
+        public MakeLiquidityPoolCommand(string address, long tokenId)
+        {
+            if (!address.HasValue())
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+            
+            if (tokenId < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(tokenId));
+            }
+
+            Address = address;
+            TokenId = tokenId;
+        }
+        
+        public string Address { get; }
+        public long TokenId { get; }
+    }
+}

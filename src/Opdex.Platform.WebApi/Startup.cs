@@ -7,14 +7,11 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using Opdex.Core.Application;
-using Opdex.Core.Infrastructure;
 using Opdex.Platform.Application;
 using Opdex.Platform.Infrastructure;
 using Serilog;
-using AutoMapper;
-using Opdex.Core.Common;
-using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
+using Opdex.Platform.Common;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.WebApi.Mappers;
 
 namespace Opdex.Platform.WebApi
@@ -54,9 +51,7 @@ namespace Opdex.Platform.WebApi
             services.AddAutoMapper(mapperConfig =>
             {
                 mapperConfig.AddProfile<PlatformApplicationMapperProfile>();
-                mapperConfig.AddProfile<CoreApplicationMapperProfile>();
                 mapperConfig.AddProfile<PlatformInfrastructureMapperProfile>();
-                mapperConfig.AddProfile<CoreInfrastructureMapperProfile>();
                 mapperConfig.AddProfile<PlatformWebApiMapperProfile>();
             });
             
@@ -69,10 +64,8 @@ namespace Opdex.Platform.WebApi
             services.Configure<OpdexConfiguration>(opdexConfig);
             
             // Register project module services
-            services.AddCoreApplicationServices();
             services.AddPlatformApplicationServices();
-            services.AddCoreInfrastructureServices(cirrusConfiguration.Get<CirrusConfiguration>());
-            services.AddPlatformInfrastructureServices();
+            services.AddPlatformInfrastructureServices(cirrusConfiguration.Get<CirrusConfiguration>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

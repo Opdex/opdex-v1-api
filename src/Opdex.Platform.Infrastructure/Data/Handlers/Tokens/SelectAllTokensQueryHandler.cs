@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Core.Domain.Models;
-using Opdex.Core.Infrastructure.Abstractions.Data;
-using Opdex.Core.Infrastructure.Abstractions.Data.Models;
+using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens

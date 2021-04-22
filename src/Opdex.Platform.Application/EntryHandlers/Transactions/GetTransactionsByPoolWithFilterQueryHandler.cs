@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Core.Application.Assemblers;
-using Opdex.Core.Domain.Models;
+using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 
@@ -15,7 +15,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
         : IRequestHandler<GetTransactionsByPoolWithFilterQuery, IEnumerable<TransactionDto>>
     {
         private readonly IMediator _mediator;
-        private IModelAssembler<Transaction, TransactionDto> _assembler;
+        private readonly IModelAssembler<Transaction, TransactionDto> _assembler;
         
         public GetTransactionsByPoolWithFilterQueryHandler(IMediator mediator, IModelAssembler<Transaction, TransactionDto> assembler)
         {

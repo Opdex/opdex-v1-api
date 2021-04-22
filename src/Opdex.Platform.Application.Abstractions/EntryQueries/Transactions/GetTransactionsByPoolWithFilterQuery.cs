@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using MediatR;
-using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Core.Common.Extensions;
+using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Transactions
 {

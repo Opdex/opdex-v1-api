@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Opdex.Core.Application.Abstractions.Models;
-using Opdex.Core.Domain.Models;
+using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 

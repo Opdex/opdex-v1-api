@@ -5,10 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Opdex.Core.Domain.Models;
-using Opdex.Core.Infrastructure.Abstractions.Data;
-using Opdex.Core.Infrastructure.Abstractions.Data.Models;
-using Opdex.Core.Infrastructure.Abstractions.Data.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions

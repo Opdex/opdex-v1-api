@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Options;
-using Opdex.Core.Common;
-using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
-using Opdex.Core.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Platform.Common;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 
 namespace Opdex.Platform.Application.Handlers.Transactions.Wallet

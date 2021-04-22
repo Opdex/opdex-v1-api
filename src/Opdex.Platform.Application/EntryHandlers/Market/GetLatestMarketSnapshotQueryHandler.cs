@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Opdex.Core.Application.Abstractions.Models;
+using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Market;
 using Opdex.Platform.Application.Abstractions.Queries.Market;
 

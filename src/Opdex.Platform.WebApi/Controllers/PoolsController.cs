@@ -6,9 +6,8 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Opdex.Core.Application.Abstractions.EntryQueries.Pools;
-using Opdex.Core.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
+using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.WebApi.Models;
 

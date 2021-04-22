@@ -6,7 +6,6 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Opdex.Core.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.WebApi.Models;
 
@@ -69,7 +68,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}/transactions")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<TokenResponseModel>> GetTransasctionsForToken(string address, CancellationToken cancellationToken)
+        public Task<ActionResult<TokenResponseModel>> GetTransasctionsForToken(string address, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

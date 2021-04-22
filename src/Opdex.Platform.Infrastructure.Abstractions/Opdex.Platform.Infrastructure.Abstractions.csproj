@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Opdex.Core.Infrastructure.Abstractions\Opdex.Core.Infrastructure.Abstractions.csproj" />
+      <ProjectReference Include="..\Opdex.Platform.Domain\Opdex.Platform.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>

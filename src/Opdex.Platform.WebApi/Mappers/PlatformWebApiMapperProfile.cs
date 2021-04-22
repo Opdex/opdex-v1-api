@@ -1,5 +1,5 @@
 using AutoMapper;
-using Opdex.Core.Application.Abstractions.Models;
+using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses;
 

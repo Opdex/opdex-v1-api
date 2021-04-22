@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Opdex.Core.Application.Abstractions\Opdex.Core.Application.Abstractions.csproj" />
+      <ProjectReference Include="..\Opdex.Platform.Infrastructure.Abstractions\Opdex.Platform.Infrastructure.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>
