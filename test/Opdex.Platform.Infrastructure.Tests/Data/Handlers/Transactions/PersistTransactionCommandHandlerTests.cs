@@ -7,7 +7,9 @@ using Moq;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
 using Opdex.Platform.Infrastructure.Data.Handlers;
+using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
 using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions

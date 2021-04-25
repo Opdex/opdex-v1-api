@@ -11,10 +11,15 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Modules;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.TransactionLogs;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Market;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
@@ -28,31 +33,34 @@ using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules;
+using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi;
+using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi.Handlers;
 using Opdex.Platform.Infrastructure.Data;
-using Opdex.Platform.Infrastructure.Data.Handlers;
 using Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
 using Opdex.Platform.Infrastructure.Data.Handlers.Market;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools;
-using Opdex.Platform.Infrastructure.Data.Handlers.TransactionLogs;
-using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs;
+using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
 
 namespace Opdex.Platform.Infrastructure
 {
     public static class PlatformInfrastructureServiceCollectionExtensions
     {
-        public static IServiceCollection AddPlatformInfrastructureServices(this IServiceCollection services, CirrusConfiguration cirrusConfiguration)
+        public static IServiceCollection AddPlatformInfrastructureServices(this IServiceCollection services, CirrusConfiguration cirrusConfiguration,
+            CoinMarketCapConfiguration cmcConfiguration)
         {
             // Data Services
-            DataQueries(services);
+            AddDataQueries(services);
+            AddDataCommands(services);
             
             // Client Services
-            AddClientServices(services, cirrusConfiguration);
+            AddCirrusServices(services, cirrusConfiguration);
+            AddCmcServices(services, cmcConfiguration);
             
             return services;
         }
 
-        private static void DataCommands(IServiceCollection services)
+        private static void AddDataCommands(IServiceCollection services)
         {
             // Blocks
             services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
@@ -63,13 +71,14 @@ namespace Opdex.Platform.Infrastructure
             
             // Tokens
             services.AddTransient<IRequestHandler<PersistTokenCommand, long>, PersistTokenCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTokenSnapshotCommand, bool>, PersistTokenSnapshotCommandHandler>();
             
             // Transactions
             services.AddTransient<IRequestHandler<PersistTransactionCommand, Transaction>, PersistTransactionCommandHandler>(); 
             services.AddTransient<IRequestHandler<PersistTransactionLogCommand, bool>, PersistTransactionLogCommandHandler>();
         }
         
-        private static void DataQueries(IServiceCollection services)
+        private static void AddDataQueries(IServiceCollection services)
         {
             services.AddScoped<IDbContext, DbContext>();
             
@@ -87,6 +96,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectTokenByIdQuery, Token>, SelectTokenByIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTokenByAddressQuery, Token>, SelectTokenByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAllTokensQuery, IEnumerable<Token>>, SelectAllTokensQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectActiveTokenSnapshotsByTokenIdQuery, IEnumerable<TokenSnapshot>>, SelectActiveTokenSnapshotsByTokenIdQueryHandler>();
 
             // Transactions
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
@@ -94,22 +104,20 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectTransactionsByPoolWithFilterQuery, IEnumerable<Transaction>>, SelectTransactionsByPoolWithFilterQueryHandler>();
         }
         
-        private static void AddClientServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)
+        private static void AddCirrusServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)
         {
-            #region Cirrus Full Node API
-            
             // Modules
             services.AddHttpClient<ISmartContractsModule, SmartContractsModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
-                .AddPolicyHandler(HttpClientBuilder.GetRetryPolicy())
-                .AddPolicyHandler(HttpClientBuilder.GetCircuitBreakerPolicy());
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
             services.AddHttpClient<IBlockStoreModule, BlockStoreModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
-                .AddPolicyHandler(HttpClientBuilder.GetRetryPolicy())
-                .AddPolicyHandler(HttpClientBuilder.GetCircuitBreakerPolicy());
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
             
             services.AddHttpClient<INodeModule, NodeModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
-                .AddPolicyHandler(HttpClientBuilder.GetRetryPolicy())
-                .AddPolicyHandler(HttpClientBuilder.GetCircuitBreakerPolicy());
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
             
             // Queries
             services.AddTransient<IRequestHandler<CallCirrusGetCurrentBlockQuery, BlockReceiptDto>, CallCirrusGetCurrentBlockQueryHandler>();
@@ -123,8 +131,17 @@ namespace Opdex.Platform.Infrastructure
 
             // Commands
             services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, string>, CallCirrusCallSmartContractMethodCommandHandler>();
+        }
 
-            #endregion
+        private static void AddCmcServices(IServiceCollection services, CoinMarketCapConfiguration cmcConfiguration)
+        {
+            // Modules
+            services.AddHttpClient<IQuotesModule, IQuotesModule>(client => client.BuildHttpClient(cmcConfiguration))
+                .AddPolicyHandler(CmcHttpClientBuilder.GetRetryPolicy())
+                .AddPolicyHandler(CmcHttpClientBuilder.GetCircuitBreakerPolicy());
+            
+            // Queries
+            services.AddTransient<IRequestHandler<CallCmcGetStraxQuotePriceQuery, decimal>, CallCmcGetStraxQuotePriceQueryHandler>();
         }
     }
 }

@@ -8,6 +8,7 @@ using Opdex.Platform.Common;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 
 namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 {
@@ -27,7 +28,10 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
         {
             const string methodName = "CreatePool";
             
-            var parameters = new List<string>{ $"9#{request.Token}" }.ToArray();
+            var parameters = new []
+            {
+                request.Token.ToSmartContractParameter(SmartContractParameterType.Address)
+            };
             
             var callDto = new SmartContractCallRequestDto(_opdexConfiguration.ControllerContract, request.Sender, "0", methodName, parameters);
             

@@ -19,8 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Clients\BitcoreNodeApi" />
       <Folder Include="Data\Handlers\Blocks" />
-      <Folder Include="Integrations\BitcoreNodeApi" />
     </ItemGroup>
 
     <ItemGroup>

@@ -6,7 +6,7 @@ using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions

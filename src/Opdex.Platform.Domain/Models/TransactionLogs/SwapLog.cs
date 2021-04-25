@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     public class SwapLog : TransactionLog
     {
         public SwapLog(dynamic log, string address, int sortOrder) 
-            : base(nameof(SwapLog), address, sortOrder)
+            : base(TransactionLogType.SwapLog, address, sortOrder)
         {
             string sender = log?.sender;
             string to = log?.to;
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         }
         
         public SwapLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(nameof(SwapLog), id, transactionId, address, sortOrder)
+            : base(TransactionLogType.SwapLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             Sender = logDetails.Sender;

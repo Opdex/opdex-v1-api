@@ -9,6 +9,7 @@ using Moq;
 using Opdex.Platform.Infrastructure;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools;
 using Xunit;

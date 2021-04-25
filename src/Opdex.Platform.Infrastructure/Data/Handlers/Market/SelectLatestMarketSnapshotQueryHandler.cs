@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Market;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Market
@@ -23,8 +23,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Market
                 {nameof(MarketSnapshotEntity.Liquidity)},
                 {nameof(MarketSnapshotEntity.DailyFees)},
                 {nameof(MarketSnapshotEntity.DailyVolume)},
-                {nameof(MarketSnapshotEntity.Block)},
-                {nameof(MarketSnapshotEntity.CreatedDate)}
+                {nameof(MarketSnapshotEntity.Block)}
             FROM market_snapshot
             ORDER BY {nameof(MarketSnapshotEntity.Id)} DESC
             LIMIT 1;";

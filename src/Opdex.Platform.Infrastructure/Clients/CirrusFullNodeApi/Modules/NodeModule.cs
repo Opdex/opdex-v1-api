@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 
         public Task<NodeStatusDto> GetNodeStatusAsync(CancellationToken cancellationToken)
         {
-            return GetAsync<NodeStatusDto>(UriHelper.Node.Status, cancellationToken);
+            return GetAsync<NodeStatusDto>(CirrusUriHelper.Node.Status, cancellationToken);
         }
     }
 }

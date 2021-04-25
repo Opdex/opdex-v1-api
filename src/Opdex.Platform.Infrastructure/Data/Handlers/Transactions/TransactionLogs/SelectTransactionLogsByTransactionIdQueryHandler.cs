@@ -7,7 +7,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.TransactionLogs;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs

@@ -72,22 +72,20 @@ namespace Opdex.Platform.Domain.Models
         public int GasUsed { get; }
         public string From { get; }
         public string To { get; }
+        
         public ICollection<TransactionLog> Logs { get; }
-        public IReadOnlyCollection<string> PoolsEngaged { get; private set; }
+        
+        // Todo: maybe enum - unknown | maybe | yeah | no
+        public bool IsOpdexTx { get; private set; }
+        
+        // Created Market - maybe a separate collection rather than bool
+        // Created Liquidity Pool - " "
+        // Created Mining Pool - " "
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="poolsEngaged"></param>
-        /// <exception cref="Exception"></exception>
-        public void SetPoolsEngaged(List<string> poolsEngaged)
+
+        public List<T> LogsOfType<T>(TransactionLogType logType)
         {
-            if (!poolsEngaged.All(p => Logs.Any(e => e.Contract == p)))
-            {
-                throw new Exception("Pool engagement not found in transaction logs");
-            }
-
-            PoolsEngaged = poolsEngaged.Select(p => p).ToList();
+            return (List<T>)Logs.Where(log => log.LogType == logType);
         }
 
         private void AttachLogs(IEnumerable<TransactionLog> logs)
@@ -115,6 +113,7 @@ namespace Opdex.Platform.Domain.Models
         }
 
         // Todo: Use TransactionLogType
+        // In general this is ugly
         public void DeserializeLog(string address, string topic, int sortOrder, dynamic log)
         {
             try
@@ -129,18 +128,22 @@ namespace Opdex.Platform.Domain.Models
                     nameof(TransferLog) => new TransferLog(log, address, sortOrder),
                     nameof(LiquidityPoolCreatedLog) => new LiquidityPoolCreatedLog(log, address, sortOrder),
                     nameof(MiningPoolCreatedLog) => new MiningPoolCreatedLog(log, address, sortOrder),
-                    nameof(EnterStakingPoolLog) => new EnterStakingPoolLog(log, address, sortOrder),
-                    nameof(EnterMiningPoolLog) => new EnterMiningPoolLog(log, address, sortOrder),
+                    nameof(StartStakingLog) => new StartStakingLog(log, address, sortOrder),
+                    nameof(StartMiningLog) => new StartMiningLog(log, address, sortOrder),
                     nameof(CollectStakingRewardsLog) => new CollectStakingRewardsLog(log, address, sortOrder),
                     nameof(CollectMiningRewardsLog) => new CollectMiningRewardsLog(log, address, sortOrder),
-                    nameof(ExitStakingPoolLog) => new ExitStakingPoolLog(log, address, sortOrder),
-                    nameof(ExitMiningPoolLog) => new ExitMiningPoolLog(log, address, sortOrder),
+                    nameof(StopStakingLog) => new StopStakingLog(log, address, sortOrder),
+                    nameof(StopMiningLog) => new StopMiningLog(log, address, sortOrder),
                     nameof(RewardMiningPoolLog) => new RewardMiningPoolLog(log, address, sortOrder),
                     nameof(MiningPoolRewardedLog) => new MiningPoolRewardedLog(log, address, sortOrder),
                     nameof(NominationLog) => new NominationLog(log, address, sortOrder),
                     nameof(OwnerChangeLog) => new OwnerChangeLog(log, address, sortOrder),
                     nameof(DistributionLog) => new DistributionLog(log, address, sortOrder),
-                    _ => null
+                    nameof(MarketCreatedLog) => new MarketCreatedLog(log, address, sortOrder),
+                    nameof(MarketOwnerChangeLog) => new MarketOwnerChangeLog(log, address, sortOrder),
+                    nameof(PermissionsChangeLog) => new PermissionsChangeLog(log, address, sortOrder),
+                    nameof(MarketChangeLog) => new MarketChangeLog(log, address, sortOrder),
+                    _ => null // Todo: think about keeping these around incase it is an opdex integrated tx
                 };
 
                 if (opdexLog == null) return;

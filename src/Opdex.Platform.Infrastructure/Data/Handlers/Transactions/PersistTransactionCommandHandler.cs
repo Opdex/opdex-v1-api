@@ -6,10 +6,10 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 {
     public class PersistTransactionCommandHandler : IRequestHandler<PersistTransactionCommand, Transaction>
     {

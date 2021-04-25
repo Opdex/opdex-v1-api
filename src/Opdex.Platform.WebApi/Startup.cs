@@ -12,6 +12,7 @@ using Opdex.Platform.Infrastructure;
 using Serilog;
 using Opdex.Platform.Common;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi;
 using Opdex.Platform.WebApi.Mappers;
 
 namespace Opdex.Platform.WebApi
@@ -31,15 +32,15 @@ namespace Opdex.Platform.WebApi
             services
                 .AddControllers()
                 .AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                options.SerializerSettings.Converters =
-                    new List<JsonConverter>
-                    {
-                        new StringEnumConverter(),
-                        new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK" }
-                    };
-            });
+                {
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.Converters =
+                        new List<JsonConverter>
+                        {
+                            new StringEnumConverter(),
+                            new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK" }
+                        };
+                });
             
             services.AddOpenApiDocument(settings =>
             {
@@ -58,14 +59,18 @@ namespace Opdex.Platform.WebApi
             services.AddHttpClient();
             
             // Todo: Use Azure Key Vault / User Secrets
-            var cirrusConfiguration = Configuration.GetSection(nameof(CirrusConfiguration));
+            var cirrusConfig = Configuration.GetSection(nameof(CirrusConfiguration));
+            services.Configure<CirrusConfiguration>(cirrusConfig);
+            
             var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
-            services.Configure<CirrusConfiguration>(cirrusConfiguration);
             services.Configure<OpdexConfiguration>(opdexConfig);
+            
+            var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
+            services.Configure<CoinMarketCapConfiguration>(cmcConfig);
             
             // Register project module services
             services.AddPlatformApplicationServices();
-            services.AddPlatformInfrastructureServices(cirrusConfiguration.Get<CirrusConfiguration>());
+            services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(), cmcConfig.Get<CoinMarketCapConfiguration>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

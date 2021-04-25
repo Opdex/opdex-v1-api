@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
-using Opdex.Platform.Infrastructure.Data.Handlers;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools;
+using Opdex.Platform.Infrastructure.Data.Handlers.Pools;
 using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools

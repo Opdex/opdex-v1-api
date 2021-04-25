@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 
 namespace Opdex.Platform.Application.Handlers.Tokens
 {

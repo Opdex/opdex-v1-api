@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     public class CollectMiningRewardsLog : TransactionLog
     {
         public CollectMiningRewardsLog(dynamic log, string address, int sortOrder)
-            : base(nameof(CollectMiningRewardsLog), address, sortOrder)
+            : base(TransactionLogType.CollectMiningRewardsLog, address, sortOrder)
         {
             string miner = log?.miner;
             string amount = log?.amount;
@@ -27,7 +27,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         }
         
         public CollectMiningRewardsLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(nameof(CollectMiningRewardsLog), id, transactionId, address, sortOrder)
+            : base(TransactionLogType.CollectMiningRewardsLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             Miner = logDetails.Miner;

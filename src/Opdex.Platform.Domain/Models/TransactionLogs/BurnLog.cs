@@ -7,12 +7,13 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     public class BurnLog : TransactionLog
     {
         public BurnLog(dynamic log, string address, int sortOrder) 
-            : base(nameof(BurnLog), address, sortOrder)
+            : base(TransactionLogType.BurnLog, address, sortOrder)
         {
             string sender = log?.sender;
             string to = log?.to;
             ulong amountCrs = log?.amountCrs;
             string amountSrc = log?.amountSrc;
+            string amountLpt = log?.amountLtp;
 
             if (!sender.HasValue())
             {
@@ -33,27 +34,35 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             {
                 throw new ArgumentNullException(nameof(amountSrc));
             }
+            
+            if (!amountLpt.HasValue())
+            {
+                throw new ArgumentNullException(nameof(amountLpt));
+            }
 
             Sender = sender;
             To = to;
             AmountCrs = amountCrs;
             AmountSrc = amountSrc;
+            AmountLpt = amountLpt;
         }
         
         public BurnLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(nameof(BurnLog), id, transactionId, address, sortOrder)
+            : base(TransactionLogType.BurnLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             Sender = logDetails.Sender;
             To = logDetails.To;
             AmountCrs = logDetails.AmountCrs;
             AmountSrc = logDetails.AmountSrc;
+            AmountLpt = logDetails.AmountLpt;
         }
         
         public string Sender { get; }
         public string To { get; }
         public ulong AmountCrs { get; }
         public string AmountSrc { get; }
+        public string AmountLpt { get; }
         
         private struct LogDetails
         {
@@ -61,6 +70,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             public string To { get; set; }
             public ulong AmountCrs { get; set; }
             public string AmountSrc { get; set; }
+            public string AmountLpt { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)
@@ -75,7 +85,8 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
                 Sender = Sender,
                 To = To,
                 AmountCrs = AmountCrs,
-                AmountSrc = AmountSrc
+                AmountSrc = AmountSrc,
+                AmountLpt = AmountLpt
             });
         }
     }

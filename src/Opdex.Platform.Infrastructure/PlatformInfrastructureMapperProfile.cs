@@ -2,9 +2,14 @@ using AutoMapper;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.TransactionLogs;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.TransactionLogs;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Token;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -22,6 +27,10 @@ namespace Opdex.Platform.Infrastructure
             
             CreateMap<TokenEntity, Token>()
                 .ConstructUsing(src => new Token(src.Id, src.Address, src.Name, src.Symbol, src.Decimals, src.Sats, src.TotalSupply))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<TokenSnapshotEntity, TokenSnapshot>()
+                .ConstructUsing(src => new TokenSnapshot(src.Id, src.TokenId, src.Price, src.SnapshotType, src.SnapshotStartDate, src.SnapshotEndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<BlockEntity, Block>()
@@ -49,17 +58,21 @@ namespace Opdex.Platform.Infrastructure
                         (int)TransactionLogType.TransferLog => new TransferLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.LiquidityPoolCreatedLog => new LiquidityPoolCreatedLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.MiningPoolCreatedLog => new MiningPoolCreatedLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.EnterStakingPoolLog => new EnterStakingPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.EnterMiningPoolLog => new EnterMiningPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.StartStakingLog => new StartStakingLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.StartMiningLog => new StartMiningLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.CollectStakingRewardsLog => new CollectStakingRewardsLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.CollectMiningRewardsLog => new CollectMiningRewardsLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.ExitStakingPoolLog => new ExitStakingPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.ExitMiningPoolLog => new ExitMiningPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.StopStakingLog => new StopStakingLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.StopMiningLog => new StopMiningLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.RewardMiningPoolLog => new RewardMiningPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.MiningPoolRewardedLog => new MiningPoolRewardedLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.NominationLog => new NominationLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.OwnerChangeLog => new OwnerChangeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.DistributionLog => new DistributionLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.MarketCreatedLog => new MarketCreatedLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.MarketOwnerChangeLog => new MarketOwnerChangeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.PermissionsChangeLog => new PermissionsChangeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.MarketChangeLog => new MarketChangeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         _ => null
                     };
                 })
@@ -113,6 +126,15 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
                 .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details))
                 .ForMember(dest => dest.LogTypeId, opt => opt.MapFrom(src => src.LogTypeId))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<TokenSnapshot, TokenSnapshotEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                .ForMember(dest => dest.SnapshotType, opt => opt.MapFrom(src => src.SnapshotType))
+                .ForMember(dest => dest.SnapshotStartDate, opt => opt.MapFrom(src => src.SnapshotStartDate))
+                .ForMember(dest => dest.SnapshotEndDate, opt => opt.MapFrom(src => src.SnapshotEndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
     }

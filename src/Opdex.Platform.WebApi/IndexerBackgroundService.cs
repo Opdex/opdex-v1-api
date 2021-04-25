@@ -33,11 +33,11 @@ namespace Opdex.Platform.WebApi
                 try
                 {
                     using var scope = _services.CreateScope();
-                    var indexManager = 
-                        scope.ServiceProvider
-                            .GetRequiredService<IIndexProcessManager>();
+                    // var indexManager = 
+                    //     scope.ServiceProvider
+                    //         .GetRequiredService<IIndexProcessManager>();
 
-                    await indexManager.ProcessAsync(cancellationToken);
+                    // await indexManager.ProcessAsync(cancellationToken);
                 }
                 catch (Exception ex)
                 {

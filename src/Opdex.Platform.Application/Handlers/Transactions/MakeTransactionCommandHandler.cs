@@ -5,10 +5,9 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
-using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.TransactionLogs;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 
 namespace Opdex.Platform.Application.Handlers.Transactions
 {

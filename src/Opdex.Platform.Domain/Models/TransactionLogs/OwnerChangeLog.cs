@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     public class OwnerChangeLog : TransactionLog
     {
         public OwnerChangeLog(dynamic log, string address, int sortOrder)
-            : base(nameof(OwnerChangeLog), address, sortOrder)
+            : base(TransactionLogType.OwnerChangeLog, address, sortOrder)
         {
             string from = log?.from;
             string to = log?.to;
@@ -27,7 +27,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         }
         
         public OwnerChangeLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(nameof(OwnerChangeLog), id, transactionId, address, sortOrder)
+            : base(TransactionLogType.OwnerChangeLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             From = logDetails.From;

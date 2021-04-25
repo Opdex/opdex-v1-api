@@ -19,31 +19,31 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
         
         public Task<ContractCodeDto> GetContractCodeAsync(string address, CancellationToken cancellationToken)
         {
-            var uri = string.Format(UriHelper.SmartContracts.GetContractCode, address);
+            var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractCode, address);
             return GetAsync<ContractCodeDto>(uri, cancellationToken);
         }
 
         public Task<string> GetContractStorageAsync(string address, string storageKey, string dataType, CancellationToken cancellationToken)
         {
-            var uri = string.Format(UriHelper.SmartContracts.GetContractStorageItem, address, storageKey, dataType);
+            var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractStorageItem, address, storageKey, dataType);
             return GetAsync<string>(uri, cancellationToken);
         }
 
         public Task<string> GetContractBalanceAsync(string address, CancellationToken cancellationToken)
         {
-            var uri = string.Format(UriHelper.SmartContracts.GetContractBalance, address);
+            var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractBalance, address);
             return GetAsync<string>(uri, cancellationToken);
         }
 
         public Task<TransactionReceiptDto> GetReceiptAsync(string txHash, CancellationToken cancellationToken)
         {
-            var uri = string.Format(UriHelper.SmartContracts.GetTransactionReceipt, txHash);
+            var uri = string.Format(CirrusUriHelper.SmartContracts.GetTransactionReceipt, txHash);
             return GetAsync<TransactionReceiptDto>(uri, cancellationToken);
         }
 
         public Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(string contractAddress, string logName, ulong fromBlock, ulong? toBlock, CancellationToken cancellationToken)
         {
-            var uri = string.Format(UriHelper.SmartContracts.GetContractReceiptSearch, contractAddress, logName, fromBlock, toBlock);
+            var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractReceiptSearch, contractAddress, logName, fromBlock, toBlock);
             
             if (toBlock.GetValueOrDefault() > 0) uri += $"&to={toBlock}";
             
@@ -52,14 +52,14 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 
         public Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken)
         {
-            const string uri = UriHelper.SmartContracts.LocalCall;
+            const string uri = CirrusUriHelper.SmartContracts.LocalCall;
             var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(request, uri, HttpMethod.Post);
             return PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken);
         }
 
         public async Task<string> CallSmartContractAsync(SmartContractCallRequestDto call, CancellationToken cancellationToken)
         {
-            const string uri = UriHelper.SmartContractWallet.Call;
+            const string uri = CirrusUriHelper.SmartContractWallet.Call;
             var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(call, uri, HttpMethod.Post);
             var response = await PostAsync<SmartContractCallResponseDto>(uri, httpRequest.Content, cancellationToken);
 

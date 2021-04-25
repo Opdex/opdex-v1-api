@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -8,6 +9,7 @@ using Opdex.Platform.Common;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 
 namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 {
@@ -29,17 +31,17 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             // Todo: Convert to decimals
             var crsToSend = Math.Round((decimal)request.AmountCrsDesired / 100_000_000, 8).ToString();
             
-            var parameters = new List<string>
+            var parameters = new []
             {
-                $"9#{request.Token}", // token
-                $"12#{request.AmountSrcDesired}", // srcDesired
-                $"7#{request.AmountCrsMin}", // crsMin
-                $"12#{request.AmountSrcMin}", // srcMin
-                $"9#{request.To}", // to
-                "7#0", // deadline
+                request.Token.ToSmartContractParameter(SmartContractParameterType.Address),
+                request.AmountSrcDesired.ToSmartContractParameter(SmartContractParameterType.UInt256),
+                request.AmountCrsMin.ToSmartContractParameter(SmartContractParameterType.UInt64),
+                request.AmountSrcMin.ToSmartContractParameter(SmartContractParameterType.UInt256),
+                request.To.ToSmartContractParameter(SmartContractParameterType.Address),
+                0.ToSmartContractParameter(SmartContractParameterType.UInt64)
             };
             
-            var callDto = new SmartContractCallRequestDto(_opdexConfiguration.ControllerContract, request.To, crsToSend, methodName, parameters.ToArray());
+            var callDto = new SmartContractCallRequestDto(_opdexConfiguration.ControllerContract, request.To, crsToSend, methodName, parameters);
             
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
         }

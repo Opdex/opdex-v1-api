@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     public class ApprovalLog : TransactionLog
     {
         public ApprovalLog(dynamic log, string address, int sortOrder) 
-            : base(nameof(ApprovalLog), address, sortOrder)
+            : base(TransactionLogType.ApprovalLog, address, sortOrder)
         {
             string owner = log?.owner;
             string spender = log?.spender;
@@ -41,7 +41,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         }
         
         public ApprovalLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(nameof(ApprovalLog), id, transactionId, address, sortOrder)
+            : base(TransactionLogType.ApprovalLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             Owner = logDetails.Owner;

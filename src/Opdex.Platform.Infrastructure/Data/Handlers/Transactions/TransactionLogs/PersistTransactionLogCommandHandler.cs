@@ -5,10 +5,10 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.TransactionLogs;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.TransactionLogs;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.TransactionLogs
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs
 {
     public class PersistTransactionLogCommandHandler : IRequestHandler<PersistTransactionLogCommand, bool>
     {

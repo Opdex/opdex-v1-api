@@ -5,10 +5,10 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 {
     public class PersistLiquidityPoolCommandHandler : IRequestHandler<PersistLiquidityPoolCommand, long>
     {

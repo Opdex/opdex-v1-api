@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     public class RewardMiningPoolLog : TransactionLog
     {
         public RewardMiningPoolLog(dynamic log, string address, int sortOrder)
-            : base(nameof(RewardMiningPoolLog), address, sortOrder)
+            : base(TransactionLogType.RewardMiningPoolLog, address, sortOrder)
         {
             string stakingPool = log?.stakingPool;
             string miningPool = log?.miningPool;
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         }
         
         public RewardMiningPoolLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(nameof(RewardMiningPoolLog), id, transactionId, address, sortOrder)
+            : base(TransactionLogType.RewardMiningPoolLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             StakingPool = logDetails.StakingPool;

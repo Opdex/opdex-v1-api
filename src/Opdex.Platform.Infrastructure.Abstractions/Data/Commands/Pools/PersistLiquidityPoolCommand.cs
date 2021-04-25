@@ -2,7 +2,7 @@ using System;
 using MediatR;
 using Opdex.Platform.Domain.Models;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools
 {
     public class PersistLiquidityPoolCommand : IRequest<long>
     {

@@ -1,17 +1,13 @@
-using System;
 using MediatR;
-using Newtonsoft.Json;
 using Opdex.Platform.Domain.Models.TransactionLogs;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.TransactionLogs;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.TransactionLogs
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs
 {
     public class PersistTransactionLogCommand  : IRequest<bool>
     {
         public PersistTransactionLogCommand(TransactionLog txLog)
         {
-            Enum.TryParse(typeof(TransactionLogType), txLog.LogType, out var logType);
-            LogTypeId = (int)logType;
+            LogTypeId = (int)txLog.LogType;
             TransactionId = txLog.TransactionId;
             Contract = txLog.Contract;
             SortOrder = txLog.SortOrder;

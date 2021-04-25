@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +6,6 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Models;
-using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Assemblers;
@@ -17,7 +15,9 @@ using Opdex.Platform.Application.Abstractions.Commands.Pools;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Application.Abstractions.Queries.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Application.Handlers.Pools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
@@ -39,54 +39,59 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
         
         public async Task<bool> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
         {
-            var transactionDto = await TryGetExistingTransaction(request.TxHash, cancellationToken);
+            var transactionDto = await TryGetExistingTransaction(request.TxHash, CancellationToken.None);
 
             if (transactionDto != null) return true;
 
-            var cirrusTx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), cancellationToken);
+            var cirrusTx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
 
             if (cirrusTx == null) return false;
             
-            var result = await _mediator.Send(new MakeTransactionCommand(cirrusTx));
+            var result = await _mediator.Send(new MakeTransactionCommand(cirrusTx), CancellationToken.None);
 
             if (!result) return false;
+            
+            // Get latest CRS price
+            // Get active market snapshots
+            // Get active pool snapshots
+            // get active token snapshots
+            
+            var marketCreatedLogs = cirrusTx.LogsOfType<MarketCreatedLog>(TransactionLogType.MarketCreatedLog);
+            foreach (var log in marketCreatedLogs)
+            {
+                // Check our market deployer address, index only our created markets.
+                // Create new market
+            }
+            
+            var liquidityPoolCreatedLogs = cirrusTx.LogsOfType<LiquidityPoolCreatedLog>(TransactionLogType.LiquidityPoolCreatedLog);
+            foreach (var log in liquidityPoolCreatedLogs)
+            {
+                var tokenId = await _mediator.Send(new MakeTokenCommand(log.Token), CancellationToken.None);
+                var pairId = await _mediator.Send(new MakeLiquidityPoolCommand(log.Pool, tokenId), CancellationToken.None);
+            }
+            
+            var miningPoolCreatedLogs = cirrusTx.LogsOfType<MiningPoolCreatedLog>(TransactionLogType.MiningPoolCreatedLog);
+            foreach (var log in miningPoolCreatedLogs)
+            {
+                var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(log.StakingPool), CancellationToken.None);
+                var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(log.MiningPool, pool.Id), CancellationToken.None);
+            }
 
-            if (cirrusTx.Logs.Any(e => e.LogType == nameof(LiquidityPoolCreatedLog)))
+            var reservesLogs = cirrusTx.LogsOfType<ReservesLog>(TransactionLogType.ReservesLog);
+            foreach (var log in reservesLogs)
             {
-                foreach (var log in cirrusTx.Logs.Where(e => e.LogType == nameof(LiquidityPoolCreatedLog)))
-                {
-                    var liquidityPoolLog = log as LiquidityPoolCreatedLog;
-                    var tokenId = await _mediator.Send(new MakeTokenCommand(liquidityPoolLog.Token));
-                    var pairId = await _mediator.Send(new MakeLiquidityPoolCommand(liquidityPoolLog.Pool, tokenId));
-                }
+                var pool = await _mediator.Send(new GetLiquidityPoolByAddressQuery(log.Contract), CancellationToken.None);
+                var tokenSnapshots = await _mediator.Send(new RetrieveActiveTokenSnapshotsByTokenIdQuery(pool.Token.Id), CancellationToken.None);
+                // Update token snapshots of price between reserves
+                
+                // - update pool snapshot reserves
+                // - update pool/market snapshot volume
+                // - update pool/market snapshot liquidity
             }
-            else if (cirrusTx.Logs.Any(e => e.LogType == nameof(MiningPoolCreatedLog)))
+            
+            if (cirrusTx.Logs.Any(e => new [] { TransactionLogType.StartStakingLog, TransactionLogType.StopStakingLog}.Contains(e.LogType)))
             {
-                foreach (var log in cirrusTx.Logs.Where(e => e.LogType == nameof(MiningPoolCreatedLog)))
-                {
-                    var miningPoolLog = log as MiningPoolCreatedLog;
-                    var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(miningPoolLog.StakingPool));
-                    var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPoolLog.MiningPool, pool.Id));
-                }
-            }
-            else
-            {
-                var latestBlock = await _mediator.Send(new RetrieveLatestBlockQuery());
-                    
-                if (latestBlock.Height == cirrusTx.BlockHeight)
-                {
-                    if (cirrusTx.Logs.Any(e => e.LogType == nameof(ReservesLog)))
-                    {
-                        // - update pool reserves if sync log occurred
-                    }
-                    
-                    if (cirrusTx.Logs.Any(e => new [] { nameof(MintLog), nameof(BurnLog)}.Contains(e.LogType)))
-                    {
-                        // - update pool total supply if mint or burn log occurred
-                    }
-                        
-                    // Todo: Update any other relevant data sets
-                }
+                // - update snapshot/market staking weight
             }
             
             return true;

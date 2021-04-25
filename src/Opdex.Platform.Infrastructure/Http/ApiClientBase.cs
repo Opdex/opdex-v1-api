@@ -19,29 +19,29 @@ namespace Opdex.Platform.Infrastructure.Http
             _logger = logger;
         }
 
-        protected async Task<TReturn> GetAsync<TReturn>(string uri, CancellationToken cancellationToken)
+        protected Task<TReturn> GetAsync<TReturn>(string uri, CancellationToken cancellationToken)
         {
-            return await ExecuteCallAsync<TReturn>(() => _httpClient.GetAsync(uri, cancellationToken), uri);
+            return ExecuteCallAsync<TReturn>(() => _httpClient.GetAsync(uri, cancellationToken), uri);
         }
 
-        protected async Task<TReturn> PostAsync<TReturn>(string uri, HttpContent httpContent, CancellationToken cancellationToken)
+        protected Task<TReturn> PostAsync<TReturn>(string uri, HttpContent httpContent, CancellationToken cancellationToken)
         {
-            return await ExecuteCallAsync<TReturn>(() => _httpClient.PostAsync(uri, httpContent, cancellationToken), uri);
+            return ExecuteCallAsync<TReturn>(() => _httpClient.PostAsync(uri, httpContent, cancellationToken), uri);
         }
 
-        protected async Task<TReturn> PutAsync<TReturn>(string uri, HttpContent httpContent, CancellationToken cancellationToken)
+        protected Task<TReturn> PutAsync<TReturn>(string uri, HttpContent httpContent, CancellationToken cancellationToken)
         {
-            return await ExecuteCallAsync<TReturn>(() => _httpClient.PutAsync(uri, httpContent, cancellationToken), uri);
+            return ExecuteCallAsync<TReturn>(() => _httpClient.PutAsync(uri, httpContent, cancellationToken), uri);
         }
 
-        protected async Task<TReturn> PatchAsync<TReturn>(string uri, HttpContent httpContent, CancellationToken cancellationToken)
+        protected Task<TReturn> PatchAsync<TReturn>(string uri, HttpContent httpContent, CancellationToken cancellationToken)
         {
-            return await ExecuteCallAsync<TReturn>(() => _httpClient.PatchAsync(uri, httpContent, cancellationToken), uri);
+            return ExecuteCallAsync<TReturn>(() => _httpClient.PatchAsync(uri, httpContent, cancellationToken), uri);
         }
 
-        protected async Task<TReturn> DeleteAsync<TReturn>(string uri, CancellationToken cancellationToken)
+        protected Task<TReturn> DeleteAsync<TReturn>(string uri, CancellationToken cancellationToken)
         {
-            return await ExecuteCallAsync<TReturn>(() => _httpClient.DeleteAsync(uri, cancellationToken), uri);
+            return ExecuteCallAsync<TReturn>(() => _httpClient.DeleteAsync(uri, cancellationToken), uri);
         }
         
         private async Task<TReturn> ExecuteCallAsync<TReturn>(Func<Task<HttpResponseMessage>> call, string uri)

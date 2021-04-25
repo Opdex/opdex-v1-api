@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     public class NominationLog : TransactionLog
     {
         public NominationLog(dynamic log, string address, int sortOrder)
-            : base(nameof(NominationLog), address, sortOrder)
+            : base(TransactionLogType.NominationLog, address, sortOrder)
         {
             string stakingPool = log?.stakingPool;
             string miningPool = log?.miningPool;
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         }
         
         public NominationLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(nameof(NominationLog), id, transactionId, address, sortOrder)
+            : base(TransactionLogType.NominationLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             StakingPool = logDetails.StakingPool;

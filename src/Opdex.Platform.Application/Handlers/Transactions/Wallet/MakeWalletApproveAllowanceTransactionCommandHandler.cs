@@ -9,6 +9,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Comma
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 
 namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 {
@@ -29,13 +30,13 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 
             var currentAllowanceRequest = new CallCirrusGetSrcTokenAllowanceQuery(request.Token, request.Owner, request.Spender);
             var currentAllowance = await _mediator.Send(currentAllowanceRequest, cancellationToken);
-            
-            var parameters = new List<string>
+
+            var parameters = new []
             {
-                $"9#{request.Spender}", // spender
-                $"12#{currentAllowance}", // currentAmount
-                $"12#{request.Amount}" // amount
-            }.ToArray();
+                request.Spender.ToSmartContractParameter(SmartContractParameterType.Address),
+                currentAllowance.ToSmartContractParameter(SmartContractParameterType.UInt256),
+                request.Amount.ToSmartContractParameter(SmartContractParameterType.UInt256)
+            };
             
             var callDto = new SmartContractCallRequestDto(request.Token, request.Owner, amountToSend, methodName, parameters);
             

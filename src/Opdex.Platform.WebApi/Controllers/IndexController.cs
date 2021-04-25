@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Models;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -26,73 +28,49 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("last-synced-block")]
         public async Task<IActionResult> GetLastSyncedBlock(CancellationToken cancellationToken)
         {
-            var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery());
+            var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
             return Ok(latestSyncedBlock);
         }
-
-        /// <summary>
-        /// Indexes current up to latest block and publishes an integration log for each new transaction
-        /// </summary>
+        
         [HttpPost("process-latest-blocks")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ProcessLatestBlocks()
         {
-            // Todo: Add Get Query
+            // Todo: Use Get Query
             var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery());
-            var cirrusBlockDetails = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(latestSyncedBlock.Hash));
+            var blockDetails = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(latestSyncedBlock.Hash));
 
-            while (cirrusBlockDetails?.NextBlockHash != null)
+            while (blockDetails?.NextBlockHash != null)
             {
-                // Todo: Move through Domain
-                cirrusBlockDetails = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(cirrusBlockDetails.NextBlockHash));
+                // Todo: Move through Domain, at least a new CirrusBlock model
+                // Todo: Probably need to get all blockDetails and filter for nonstandard transactions
+                blockDetails = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(blockDetails.NextBlockHash));
 
-                long.TryParse(cirrusBlockDetails.Time, out var timeSeconds);
-                long.TryParse(cirrusBlockDetails.MedianTime, out var medianTimeSeconds);
-                var time = DateTimeOffset.FromUnixTimeSeconds(timeSeconds).UtcDateTime;
-                var medianTime = DateTimeOffset.FromUnixTimeSeconds(medianTimeSeconds).UtcDateTime;
+                // Todo: Use CreateBlockCommand
+                var blockCommand = new MakeBlockCommand(blockDetails.Height, blockDetails.Hash,
+                    blockDetails.Time.FromUnixTimeSeconds(), blockDetails.MedianTime.FromUnixTimeSeconds());
                 
-                // Todo: Use Create Query
-                var createdBlock = await _mediator.Send(new MakeBlockCommand(cirrusBlockDetails.Height, cirrusBlockDetails.Hash, time, medianTime));
+                var createdBlock = await _mediator.Send(blockCommand);
+                
                 if (!createdBlock) return NoContent();
+
+                // Once a minute sync CRS price
+                if (blockDetails.Height % 4 == 0)
+                {
+                    await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockDetails.MedianTime.FromUnixTimeSeconds()));
+                }
                 
-                foreach (var tx in cirrusBlockDetails.Tx.Where(tx => tx != cirrusBlockDetails.MerkleRoot))
+                foreach (var tx in blockDetails.Tx.Where(tx => tx != blockDetails.MerkleRoot))
                 {
                     try
                     {
+                        // Todo: return out transactionDto or Id to get by
                         await _mediator.Send(new CreateTransactionCommand(tx));
                     }
                     catch (Exception ex)
                     {
                         // Errrmmmm
                     }
-                }
-                
-                
-                
-                // Every 4 blocks (1 minute)
-                if (cirrusBlockDetails.Height % 4 == 0)
-                {
-                    var processFrom = cirrusBlockDetails.Height - 3;
-                    var processTo = cirrusBlockDetails.Height;
-                    
-                    // Retrieve ALL transactions within block range
-                    // -- Filter for Opdex transactions || -- Filter Supported LiquidityPool/Token/MiningPool
-                    
-                    // Tokens snapshot - Copy Txs List, Group By Token
-                    // -- Track USD price || CRS price
-                    // -- Track Volume
-                    
-                    // Pairs Snapshot - Copy Txs List, Group By Pair
-                    // -- Track Reserves
-                    // -- Track Staking Weight
-                    // -- Transaction Count
-                    // -- Track Mining ????
-                }
-
-                // Every 225 blocks (1 hour)
-                if (cirrusBlockDetails.Height % 225 == 0)
-                {
-                    
                 }
             }
             
@@ -112,14 +90,6 @@ namespace Opdex.Platform.WebApi.Controllers
             }
 
             return Ok();
-        }
-
-        [HttpPost("process-market")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ProcessMarket()
-        {
-            return NoContent();
         }
     }
 }

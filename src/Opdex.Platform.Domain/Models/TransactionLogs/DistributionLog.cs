@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     public class DistributionLog : TransactionLog
     {
         public DistributionLog(dynamic log, string address, int sortOrder)
-            : base(nameof(DistributionLog), address, sortOrder)
+            : base(TransactionLogType.DistributionLog, address, sortOrder)
         {
             string ownerAddress = log?.ownerAddress;
             string miningAddress = log?.miningAddress;
@@ -43,7 +43,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         }
         
         public DistributionLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(nameof(DistributionLog), id, transactionId, address, sortOrder)
+            : base(TransactionLogType.DistributionLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             OwnerAddress = logDetails.OwnerAddress;

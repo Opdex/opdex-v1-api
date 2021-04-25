@@ -95,24 +95,24 @@ namespace Opdex.Platform.Application
                         {
                             return (TransactionLogDto) (txLog.LogType switch
                             {
-                                nameof(ReservesLog) => ctx.Mapper.Map<ReservesLogDto>(txLog),
-                                nameof(BurnLog) => ctx.Mapper.Map<BurnLogDto>(txLog),
-                                nameof(MintLog) => ctx.Mapper.Map<MintLogDto>(txLog),
-                                nameof(SwapLog) => ctx.Mapper.Map<SwapLogDto>(txLog),
-                                nameof(ApprovalLog) => ctx.Mapper.Map<ApprovalLogDto>(txLog),
-                                nameof(TransferLog) => ctx.Mapper.Map<TransferLogDto>(txLog),
-                                nameof(LiquidityPoolCreatedLog) => ctx.Mapper.Map<LiquidityPoolCreatedLogDto>(txLog),
-                                nameof(MiningPoolCreatedLog) => ctx.Mapper.Map<MiningPoolCreatedLogDto>(txLog),
-                                nameof(EnterMiningPoolLog) => ctx.Mapper.Map<EnterMiningPoolLogDto>(txLog),
-                                nameof(EnterStakingPoolLog) => ctx.Mapper.Map<EnterStakingPoolLogDto>(txLog),
-                                nameof(ExitMiningPoolLog) => ctx.Mapper.Map<ExitMiningPoolLogDto>(txLog),
-                                nameof(ExitStakingPoolLog) => ctx.Mapper.Map<ExitStakingPoolLogDto>(txLog),
-                                nameof(DistributionLog) => ctx.Mapper.Map<DistributionLogDto>(txLog),
-                                nameof(OwnerChangeLog) => ctx.Mapper.Map<OwnerChangeLogDto>(txLog),
-                                nameof(MiningPoolRewardedLog) => ctx.Mapper.Map<MiningPoolRewardedLogDto>(txLog),
-                                nameof(RewardMiningPoolLog) => ctx.Mapper.Map<RewardMiningPoolLogDto>(txLog),
-                                nameof(CollectStakingRewardsLog) => ctx.Mapper.Map<CollectStakingRewardsLogDto>(txLog),
-                                nameof(CollectMiningRewardsLog) => ctx.Mapper.Map<CollectMiningRewardsLogDto>(txLog),
+                                TransactionLogType.ReservesLog => ctx.Mapper.Map<ReservesLogDto>(txLog),
+                                TransactionLogType.BurnLog => ctx.Mapper.Map<BurnLogDto>(txLog),
+                                TransactionLogType.MintLog => ctx.Mapper.Map<MintLogDto>(txLog),
+                                TransactionLogType.SwapLog => ctx.Mapper.Map<SwapLogDto>(txLog),
+                                TransactionLogType.ApprovalLog => ctx.Mapper.Map<ApprovalLogDto>(txLog),
+                                TransactionLogType.TransferLog => ctx.Mapper.Map<TransferLogDto>(txLog),
+                                TransactionLogType.LiquidityPoolCreatedLog => ctx.Mapper.Map<LiquidityPoolCreatedLogDto>(txLog),
+                                TransactionLogType.MiningPoolCreatedLog => ctx.Mapper.Map<MiningPoolCreatedLogDto>(txLog),
+                                TransactionLogType.StartMiningLog => ctx.Mapper.Map<StartMiningLogDto>(txLog),
+                                TransactionLogType.StartStakingLog => ctx.Mapper.Map<StartStakingLogDto>(txLog),
+                                TransactionLogType.StopMiningLog => ctx.Mapper.Map<StopMiningLogDto>(txLog),
+                                TransactionLogType.StopStakingLog => ctx.Mapper.Map<StopMiningLogDto>(txLog),
+                                TransactionLogType.DistributionLog => ctx.Mapper.Map<DistributionLogDto>(txLog),
+                                TransactionLogType.OwnerChangeLog => ctx.Mapper.Map<OwnerChangeLogDto>(txLog),
+                                TransactionLogType.MiningPoolRewardedLog => ctx.Mapper.Map<MiningPoolRewardedLogDto>(txLog),
+                                TransactionLogType.RewardMiningPoolLog => ctx.Mapper.Map<RewardMiningPoolLogDto>(txLog),
+                                TransactionLogType.CollectStakingRewardsLog => ctx.Mapper.Map<CollectStakingRewardsLogDto>(txLog),
+                                TransactionLogType.CollectMiningRewardsLog => ctx.Mapper.Map<CollectMiningRewardsLogDto>(txLog),
                                 _ => null
                             });
                         })
@@ -185,8 +185,7 @@ namespace Opdex.Platform.Application
             CreateMap<CollectStakingRewardsLog, CollectStakingRewardsLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
-                .ForMember(dest => dest.Reward, opt => opt.MapFrom(src => src.Reward))
-                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
+                .ForMember(dest => dest.Reward, opt => opt.MapFrom(src => src.Reward));
 
             CreateMap<DistributionLog, DistributionLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()
@@ -196,26 +195,27 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.MiningAmount, opt => opt.MapFrom(src => src.MiningAmount))
                 .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex));
             
-            CreateMap<EnterMiningPoolLog, EnterMiningPoolLogDto>()
+            CreateMap<StartMiningLog, StartMiningLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Miner, opt => opt.MapFrom(src => src.Miner))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
             
-            CreateMap<EnterStakingPoolLog, EnterStakingPoolLogDto>()
+            CreateMap<StartStakingLog, StartStakingLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
-                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
+                .ForMember(dest => dest.TotalStaked, opt => opt.MapFrom(src => src.TotalStaked))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
             
-            CreateMap<ExitMiningPoolLog, ExitMiningPoolLogDto>()
+            CreateMap<StopMiningLog, StopMiningLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Miner, opt => opt.MapFrom(src => src.Miner))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
-            
-            CreateMap<ExitStakingPoolLog, ExitStakingPoolLogDto>()
+
+            CreateMap<StopStakingLog, StopStakingLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
-                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.TotalStaked, opt => opt.MapFrom(src => src.TotalStaked));
             
             CreateMap<MiningPoolCreatedLog, MiningPoolCreatedLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()

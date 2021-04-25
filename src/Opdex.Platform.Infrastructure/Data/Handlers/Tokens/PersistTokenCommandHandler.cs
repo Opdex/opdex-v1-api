@@ -5,10 +5,10 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Token;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 {
     public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, long>
     {

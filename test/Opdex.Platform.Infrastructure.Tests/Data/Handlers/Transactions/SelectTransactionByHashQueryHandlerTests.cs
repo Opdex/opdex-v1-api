@@ -7,6 +7,7 @@ using Moq;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
 using Xunit;

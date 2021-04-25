@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     public class TransferLog : TransactionLog
     {
         public TransferLog(dynamic log, string address, int sortOrder) 
-            : base(nameof(TransferLog), address, sortOrder)
+            : base(TransactionLogType.TransferLog, address, sortOrder)
         {
             string from = log?.from;
             string to = log?.to;
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         }
         
         public TransferLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(nameof(TransferLog), id, transactionId, address, sortOrder)
+            : base(TransactionLogType.TransferLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             From = logDetails.From;

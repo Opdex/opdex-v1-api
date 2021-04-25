@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     public class ReservesLog : TransactionLog
     {
         public ReservesLog(dynamic log, string address, int sortOrder) 
-            : base(nameof(ReservesLog), address, sortOrder)
+            : base(TransactionLogType.ReservesLog, address, sortOrder)
         {
             ulong reserveCrs = log?.reserveCrs;
             string reserveSrc = log?.reserveSrc;
@@ -27,7 +27,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         }
         
         public ReservesLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(nameof(ReservesLog), id, transactionId, address, sortOrder)
+            : base(TransactionLogType.ReservesLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             ReserveCrs = logDetails.ReserveCrs;

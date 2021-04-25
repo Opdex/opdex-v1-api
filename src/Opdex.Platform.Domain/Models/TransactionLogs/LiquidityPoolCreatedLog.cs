@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     public class LiquidityPoolCreatedLog : TransactionLog
     {
         public LiquidityPoolCreatedLog(dynamic log, string address, int sortOrder) 
-            : base(nameof(LiquidityPoolCreatedLog), address, sortOrder)
+            : base(TransactionLogType.LiquidityPoolCreatedLog, address, sortOrder)
         {
             string token = log?.token;
             string pool = log?.pool;
@@ -27,7 +27,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         }
         
         public LiquidityPoolCreatedLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(nameof(LiquidityPoolCreatedLog), id, transactionId, address, sortOrder)
+            : base(TransactionLogType.LiquidityPoolCreatedLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             Token = logDetails.Token;

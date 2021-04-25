@@ -30,7 +30,8 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        // Todo: try catch requests
+        // Todo: try catch with retry external from polly for 400 Bad Requests based on flag
+        // (incase transaction has not been included in block yet)
         public async Task<Transaction> Handle(CallCirrusGetTransactionByHashQuery request, CancellationToken cancellationToken)
         {
             var transaction = await _smartContractsModule.GetReceiptAsync(request.TxHash, cancellationToken);

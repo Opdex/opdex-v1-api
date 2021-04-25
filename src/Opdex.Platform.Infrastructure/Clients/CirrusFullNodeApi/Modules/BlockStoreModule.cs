@@ -18,13 +18,13 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
         public Task<BlockReceiptDto> GetBlockAsync(string blockHash, CancellationToken cancellationToken)
         {
             const bool outputJson = true;
-            var uri = string.Format(UriHelper.BlockStore.GetBlockByHash, blockHash, outputJson);
+            var uri = string.Format(CirrusUriHelper.BlockStore.GetBlockByHash, blockHash, outputJson);
             return GetAsync<BlockReceiptDto>(uri, cancellationToken);
         }
 
         public Task<string> GetBestBlockAsync(CancellationToken cancellationToken)
         {
-            return GetAsync<string>(UriHelper.Consensus.GetBestBlockHash, cancellationToken);
+            return GetAsync<string>(CirrusUriHelper.Consensus.GetBestBlockHash, cancellationToken);
         }
     }
 }
