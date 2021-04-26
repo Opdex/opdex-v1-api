@@ -16,6 +16,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Handlers.Pools;
 
@@ -52,7 +53,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             if (!result) return false;
             
             // Get latest CRS price
+            
             // Get active market snapshots
+            var marketSnapshots = await _mediator.Send(new RetrieveActiveMarketSnapshotsByMarketIdQuery(0, DateTime.UtcNow), CancellationToken.None);
+            
             // Get active pool snapshots
             // get active token snapshots
             
@@ -87,6 +91,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 // - update pool snapshot reserves
                 // - update pool/market snapshot volume
                 // - update pool/market snapshot liquidity
+                var poolSnapshots = await _mediator.Send(new RetrieveActiveLiquidityPoolSnapshotsByPoolIdQuery(0, DateTime.UtcNow), CancellationToken.None);
+
             }
             
             if (cirrusTx.Logs.Any(e => new [] { TransactionLogType.StartStakingLog, TransactionLogType.StopStakingLog}.Contains(e.LogType)))

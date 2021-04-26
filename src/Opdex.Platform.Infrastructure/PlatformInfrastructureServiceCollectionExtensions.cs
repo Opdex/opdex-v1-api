@@ -16,12 +16,14 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Module
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Market;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Deployers;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
@@ -37,7 +39,8 @@ using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi;
 using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi.Handlers;
 using Opdex.Platform.Infrastructure.Data;
 using Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
-using Opdex.Platform.Infrastructure.Data.Handlers.Market;
+using Opdex.Platform.Infrastructure.Data.Handlers.Deployers;
+using Opdex.Platform.Infrastructure.Data.Handlers.Markets;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
@@ -62,12 +65,17 @@ namespace Opdex.Platform.Infrastructure
 
         private static void AddDataCommands(IServiceCollection services)
         {
+            // Markets
+            services.AddTransient<IRequestHandler<PersistMarketCommand, long>, PersistMarketCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistMarketSnapshotCommand, bool>, PersistMarketSnapshotCommandHandler>();
+
             // Blocks
             services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
             
             // Pools
             services.AddTransient<IRequestHandler<PersistLiquidityPoolCommand, long>, PersistLiquidityPoolCommandHandler>();
             services.AddTransient<IRequestHandler<PersistMiningPoolCommand, long>, PersistMiningPoolCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistLiquidityPoolSnapshotCommand, bool>, PersistLiquidityPoolSnapshotCommandHandler>();
             
             // Tokens
             services.AddTransient<IRequestHandler<PersistTokenCommand, long>, PersistTokenCommandHandler>();
@@ -82,8 +90,13 @@ namespace Opdex.Platform.Infrastructure
         {
             services.AddScoped<IDbContext, DbContext>();
             
+            // Deployer
+            services.AddTransient<IRequestHandler<SelectDeployerByAddressQuery, Deployer>, SelectDeployerByAddressQueryHandler>();
+
             // Market 
             services.AddTransient<IRequestHandler<SelectLatestMarketSnapshotQuery, MarketSnapshot>, SelectLatestMarketSnapshotQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMarketByAddressQuery, Market>, SelectMarketByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectActiveMarketSnapshotsByMarketIdQuery, IEnumerable<MarketSnapshot>>, SelectActiveMarketSnapshotsByMarketIdQueryHandler>();
 
             // Blocks
             services.AddTransient<IRequestHandler<SelectLatestBlockQuery, Block>, SelectLatestBlockQueryHandler>();
@@ -91,6 +104,7 @@ namespace Opdex.Platform.Infrastructure
             // Pools
             services.AddTransient<IRequestHandler<SelectLiquidityPoolByAddressQuery, LiquidityPool>, SelectLiquidityPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAllLiquidityPoolsQuery, IEnumerable<LiquidityPool>>, SelectAllLiquidityPoolsQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectActiveLiquidityPoolSnapshotsByPoolIdQuery, IEnumerable<LiquidityPoolSnapshot>>, SelectActiveLiquidityPoolSnapshotsByPoolIdQueryHandler>();
 
             // Tokens
             services.AddTransient<IRequestHandler<SelectTokenByIdQuery, Token>, SelectTokenByIdQueryHandler>();

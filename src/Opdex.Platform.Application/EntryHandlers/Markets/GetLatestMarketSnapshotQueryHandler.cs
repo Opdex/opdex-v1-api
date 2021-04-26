@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Market;
-using Opdex.Platform.Application.Abstractions.Queries.Market;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Markets;
 
-namespace Opdex.Platform.Application.EntryHandlers.Market
+namespace Opdex.Platform.Application.EntryHandlers.Markets
 {
     public class GetLatestMarketSnapshotQueryHandler : IRequestHandler<GetLatestMarketSnapshotQuery, MarketSnapshotDto>
     {

@@ -9,8 +9,8 @@ namespace Opdex.Platform.Domain.Models
             TokenId = tokenId;
             Price = price;
             SnapshotType = type;
-            SnapshotStartDate = startDate;
-            SnapshotEndDate = endDate;
+            StartDate = startDate;
+            EndDate = endDate;
         }
         
         public TokenSnapshot(long id, long tokenId, decimal price, int snapshotType, DateTime startDate, DateTime endDate)
@@ -19,16 +19,16 @@ namespace Opdex.Platform.Domain.Models
             TokenId = tokenId;
             Price = price;
             SnapshotType = (SnapshotType)snapshotType;
-            SnapshotStartDate = startDate;
-            SnapshotEndDate = endDate;
+            StartDate = startDate;
+            EndDate = endDate;
         }
         
         public long Id { get; }
         public long TokenId { get; }
         public decimal Price { get; private set; }
         public SnapshotType SnapshotType { get; }
-        public DateTime SnapshotStartDate { get; }
-        public DateTime SnapshotEndDate { get; }
+        public DateTime StartDate { get; }
+        public DateTime EndDate { get; }
         public DateTime LastUpdated { get; private set; }
 
         public void UpdatePrice(decimal price)

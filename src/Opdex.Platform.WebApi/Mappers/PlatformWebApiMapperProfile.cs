@@ -26,14 +26,16 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<MarketSnapshotDto, MarketSnapshotResponseModel>()
-                .ForMember(dest => dest.Block, opt => opt.MapFrom(src => src.Block))
+                .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
+                .ForMember(dest => dest.TransactionCount, opt => opt.MapFrom(src => src.TransactionCount))
                 .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
-                .ForMember(dest => dest.TokenCount, opt => opt.MapFrom(src => src.TokenCount))
-                .ForMember(dest => dest.PoolCount, opt => opt.MapFrom(src => src.PoolCount))
-                .ForMember(dest => dest.DailyTransactionCount, opt => opt.MapFrom(src => src.DailyTransactionCount))
-                .ForMember(dest => dest.CrsPrice, opt => opt.MapFrom(src => src.CrsPrice))
-                .ForMember(dest => dest.DailyFees, opt => opt.MapFrom(src => src.DailyFees))
-                .ForMember(dest => dest.DailyVolume, opt => opt.MapFrom(src => src.DailyVolume))
+                .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
+                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
+                .ForMember(dest => dest.ProviderRewards, opt => opt.MapFrom(src => src.ProviderRewards))
+                .ForMember(dest => dest.StakerRewards, opt => opt.MapFrom(src => src.StakerRewards))
+                .ForMember(dest => dest.SnapshotType, opt => opt.MapFrom(src => src.SnapshotType))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
     }

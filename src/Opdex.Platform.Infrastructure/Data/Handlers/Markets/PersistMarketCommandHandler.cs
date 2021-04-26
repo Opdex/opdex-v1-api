@@ -8,7 +8,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Market
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 {
     public class PersistMarketCommandHandler: IRequestHandler<PersistMarketCommand, long>
     {

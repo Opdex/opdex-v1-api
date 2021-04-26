@@ -5,7 +5,7 @@ namespace Opdex.Platform.Domain.Models
 {
     public class Market
     {
-        public Market(string address, bool authPoolCreators, bool authProviders, bool authTraders, uint fee)
+        public Market(string address, bool authPoolCreators, bool authProviders, bool authTraders, uint fee, bool staking)
         {
             if (!address.HasValue())
             {
@@ -17,9 +17,10 @@ namespace Opdex.Platform.Domain.Models
             AuthProviders = authProviders;
             AuthTraders = authTraders;
             Fee = fee;
+            Staking = staking;
         }
         
-        public Market(long id, string address, bool authPoolCreators, bool authProviders, bool authTraders, uint fee)
+        public Market(long id, string address, bool authPoolCreators, bool authProviders, bool authTraders, uint fee, bool staking)
         {
             Id = id;
             Address = address;
@@ -27,6 +28,7 @@ namespace Opdex.Platform.Domain.Models
             AuthProviders = authProviders;
             AuthTraders = authTraders;
             Fee = fee;
+            Staking = staking;
         }
         
         public long Id { get; }
@@ -35,5 +37,6 @@ namespace Opdex.Platform.Domain.Models
         public bool AuthProviders { get; }
         public bool AuthTraders { get; }
         public uint Fee { get; }
+        public bool Staking { get; }
     }
 }

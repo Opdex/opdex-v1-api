@@ -7,23 +7,23 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
 {
     public class SelectActiveTokenSnapshotsByTokenIdQuery : IRequest<IEnumerable<TokenSnapshot>>
     {
-        public SelectActiveTokenSnapshotsByTokenIdQuery(long tokenId, DateTime now)
+        public SelectActiveTokenSnapshotsByTokenIdQuery(long tokenId, DateTime time)
         {
             if (tokenId < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(tokenId));
             }
 
-            if (now.Equals(default))
+            if (time.Equals(default))
             {
-                throw new ArgumentOutOfRangeException(nameof(now));
+                throw new ArgumentOutOfRangeException(nameof(time));
             }
 
             TokenId = tokenId;
-            Now = now;
+            Time = time;
         }
         
         public long TokenId { get; }
-        public DateTime Now { get; }
+        public DateTime Time { get; }
     }
 }

@@ -17,14 +17,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
                 {nameof(TokenSnapshotEntity.TokenId)},
                 {nameof(TokenSnapshotEntity.Price)},
                 {nameof(TokenSnapshotEntity.SnapshotType)},
-                {nameof(TokenSnapshotEntity.SnapshotStartDate)},
-                {nameof(TokenSnapshotEntity.SnapshotEndDate)}
+                {nameof(TokenSnapshotEntity.StartDate)},
+                {nameof(TokenSnapshotEntity.EndDate)}
               ) VALUES (
                 @{nameof(TokenSnapshotEntity.TokenId)},
                 @{nameof(TokenSnapshotEntity.Price)},
                 @{nameof(TokenSnapshotEntity.SnapshotType)},
-                @{nameof(TokenSnapshotEntity.SnapshotStartDate)},
-                @{nameof(TokenSnapshotEntity.SnapshotEndDate)}
+                @{nameof(TokenSnapshotEntity.StartDate)},
+                @{nameof(TokenSnapshotEntity.EndDate)}
               );";
         
         private static readonly string UpdateSqlCommand =

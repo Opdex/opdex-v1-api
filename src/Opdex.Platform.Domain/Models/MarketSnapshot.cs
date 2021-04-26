@@ -4,81 +4,57 @@ namespace Opdex.Platform.Domain.Models
 {
     public class MarketSnapshot
     {
-        public MarketSnapshot(long tokenCount, long poolCount, long dailyTransactionCount, decimal crsPrice, decimal liquidity,
-            decimal dailyFees, decimal dailyVolume, ulong block)
+        public MarketSnapshot(long marketId, long transactionCount, decimal liquidity, decimal volume, decimal weight,
+            decimal providerRewards, decimal stakerRewards, SnapshotType snapshotType, DateTime startDate, DateTime endDate)
         {
-            if (tokenCount < 1)
+            if (marketId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(tokenCount));
+                throw new ArgumentOutOfRangeException(nameof(marketId));
             }
             
-            if (poolCount < 1)
+            if (transactionCount < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(poolCount));
-            }
-            
-            if (dailyTransactionCount < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(dailyTransactionCount));
-            }
-            
-            if (crsPrice < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(crsPrice));
-            }
-            
-            if (liquidity < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(liquidity));
-            }
-            
-            if (dailyFees < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(dailyFees));
-            }
-            
-            if (dailyVolume < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(dailyVolume));
-            }
-            
-            if (block < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(block));
+                throw new ArgumentOutOfRangeException(nameof(transactionCount));
             }
 
-            TokenCount = tokenCount;
-            PoolCount = poolCount;
-            DailyTransactionCount = dailyTransactionCount;
-            CrsPrice = crsPrice;
+            MarketId = marketId;
+            TransactionCount = transactionCount;
             Liquidity = liquidity;
-            DailyFees = dailyFees;
-            DailyVolume = dailyVolume;
-            Block = block;
+            Volume = volume;
+            Weight = weight;
+            ProviderRewards = providerRewards;
+            StakerRewards = stakerRewards;
+            SnapshotType = snapshotType;
+            StartDate = startDate;
+            EndDate = endDate;
         }
         
-        public MarketSnapshot(long id, long tokenCount, long poolCount, long dailyTransactionCount, decimal crsPrice, decimal liquidity,
-            decimal dailyFees, decimal dailyVolume, ulong block)
+        public MarketSnapshot(long id, long marketId, long transactionCount, decimal liquidity, decimal volume, decimal weight,
+            decimal providerRewards, decimal stakerRewards, SnapshotType snapshotType, DateTime startDate, DateTime endDate)
         {
             Id = id;
-            TokenCount = tokenCount;
-            PoolCount = poolCount;
-            DailyTransactionCount = dailyTransactionCount;
-            CrsPrice = crsPrice;
+            MarketId = marketId;
+            TransactionCount = transactionCount;
             Liquidity = liquidity;
-            DailyFees = dailyFees;
-            DailyVolume = dailyVolume;
-            Block = block;
+            Volume = volume;
+            Weight = weight;
+            ProviderRewards = providerRewards;
+            StakerRewards = stakerRewards;
+            SnapshotType = snapshotType;
+            StartDate = startDate;
+            EndDate = endDate;
         }
         
         public long Id { get; }
-        public long TokenCount { get; }
-        public long PoolCount { get; }
-        public long DailyTransactionCount { get; }
-        public decimal CrsPrice { get; }
+        public long MarketId { get; }
+        public long TransactionCount { get; }
         public decimal Liquidity { get; }
-        public decimal DailyFees { get; }
-        public decimal DailyVolume { get; }
-        public ulong Block { get; }
+        public decimal Volume { get; }
+        public decimal Weight { get; }
+        public decimal ProviderRewards { get; }
+        public decimal StakerRewards { get; }
+        public SnapshotType SnapshotType { get; }
+        public DateTime StartDate { get; }
+        public DateTime EndDate { get; }
     }
 }

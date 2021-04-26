@@ -7,23 +7,26 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Market;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Market
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 {
     public class SelectLatestMarketSnapshotQueryHandler : IRequestHandler<SelectLatestMarketSnapshotQuery, MarketSnapshot>
     {
         private static readonly string SqlCommand =
             $@"SELECT
                 {nameof(MarketSnapshotEntity.Id)},
-                {nameof(MarketSnapshotEntity.TokenCount)},
-                {nameof(MarketSnapshotEntity.PoolCount)},
-                {nameof(MarketSnapshotEntity.DailyTransactionCount)},
-                {nameof(MarketSnapshotEntity.CrsPrice)},
+                {nameof(MarketSnapshotEntity.MarketId)},
+                {nameof(MarketSnapshotEntity.TransactionCount)},
                 {nameof(MarketSnapshotEntity.Liquidity)},
-                {nameof(MarketSnapshotEntity.DailyFees)},
-                {nameof(MarketSnapshotEntity.DailyVolume)},
-                {nameof(MarketSnapshotEntity.Block)}
+                {nameof(MarketSnapshotEntity.Volume)},
+                {nameof(MarketSnapshotEntity.Weight)},
+                {nameof(MarketSnapshotEntity.ProviderRewards)},
+                {nameof(MarketSnapshotEntity.StakerRewards)},
+                {nameof(MarketSnapshotEntity.SnapshotType)},
+                {nameof(MarketSnapshotEntity.StartDate)},
+                {nameof(MarketSnapshotEntity.EndDate)},
+                {nameof(MarketSnapshotEntity.CreatedDate)}
             FROM market_snapshot
             ORDER BY {nameof(MarketSnapshotEntity.Id)} DESC
             LIMIT 1;";

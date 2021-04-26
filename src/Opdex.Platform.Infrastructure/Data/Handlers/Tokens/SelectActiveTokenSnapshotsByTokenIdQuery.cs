@@ -11,7 +11,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 {
-    // Todo: This isn't designed particularly well for resyncs or scanning historical transactions
     public class SelectActiveTokenSnapshotsByTokenIdQueryHandler : IRequestHandler<SelectActiveTokenSnapshotsByTokenIdQuery, IEnumerable<TokenSnapshot>>
     {
         private static readonly string SqlQuery =
@@ -19,13 +18,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
                 {nameof(TokenSnapshotEntity.Id)},
                 {nameof(TokenSnapshotEntity.TokenId)},
                 {nameof(TokenSnapshotEntity.Price)},
-                {nameof(TokenSnapshotEntity.SnapshotStartDate)},
-                {nameof(TokenSnapshotEntity.SnapshotEndDate)},
+                {nameof(TokenSnapshotEntity.StartDate)},
+                {nameof(TokenSnapshotEntity.EndDate)},
                 {nameof(TokenSnapshotEntity.SnapshotType)}
             FROM token_snapshot
             WHERE {nameof(TokenSnapshotEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
-                AND {nameof(TokenSnapshotEntity.SnapshotEndDate)} >= @{nameof(SqlParams.Now)}
-            LIMIT 1;";
+                AND @{nameof(SqlParams.Time)} BETWEEN 
+                    {nameof(TokenSnapshotEntity.StartDate)} AND {nameof(TokenSnapshotEntity.EndDate)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -38,7 +37,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
         public async Task<IEnumerable<TokenSnapshot>> Handle(SelectActiveTokenSnapshotsByTokenIdQuery request, CancellationToken cancellationToken)
         {
-            var queryParams = new SqlParams(request.TokenId, request.Now);
+            var queryParams = new SqlParams(request.TokenId, request.Time);
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
             var result = await _context.ExecuteQueryAsync<TokenSnapshotEntity>(query);
@@ -48,14 +47,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
         private sealed class SqlParams
         {
-            internal SqlParams(long tokenId, DateTime now)
+            internal SqlParams(long tokenId, DateTime time)
             {
                 TokenId = tokenId;
-                Now = now;
+                Time = time;
             }
 
             public long TokenId { get; }
-            public DateTime Now { get; }
+            public DateTime Time { get; }
         }
     }
 }

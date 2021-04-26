@@ -13,8 +13,9 @@ namespace Opdex.Platform.Domain.Tests.Models
             const long tokenId = 2;
             const ulong reserveCrs = 112;
             const string reserveSrc = "1234";
+            const long marketId = 1;
 
-            var pool = new LiquidityPool(address, tokenId, reserveCrs, reserveSrc);
+            var pool = new LiquidityPool(address, tokenId, marketId, reserveCrs, reserveSrc);
 
             pool.Id.Should().Be(0);
             pool.Address.Should().Be(address);

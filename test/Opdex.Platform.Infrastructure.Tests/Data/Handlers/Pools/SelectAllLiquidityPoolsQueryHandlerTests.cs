@@ -42,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
                 ReserveSrc = "u76543456789076"
             };
 
-            var responseList = new List<LiquidityPoolEntity> {expectedEntity}.AsEnumerable();
+            var responseList = new [] { expectedEntity }.AsEnumerable();
                 
             var command = new SelectAllLiquidityPoolsQuery();
         

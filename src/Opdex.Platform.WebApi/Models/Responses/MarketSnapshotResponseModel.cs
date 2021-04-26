@@ -1,14 +1,19 @@
+using System;
+
 namespace Opdex.Platform.WebApi.Models.Responses
 {
     public class MarketSnapshotResponseModel
     {
-        public long TokenCount { get; set; }
-        public long PoolCount { get; set; }
-        public long DailyTransactionCount { get; set; }
-        public decimal CrsPrice { get; set; }
+        public long Id { get; set; }
+        public long MarketId { get; set; }
+        public long TransactionCount { get; set; }
         public decimal Liquidity { get; set; }
-        public decimal DailyFees { get; set; }
-        public decimal DailyVolume { get; set; }
-        public ulong Block { get; set; }
+        public decimal Volume { get; set; }
+        public decimal Weight { get; set; }
+        public decimal ProviderRewards { get; set; }
+        public decimal StakerRewards { get; set; }
+        public int SnapshotType { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 }
