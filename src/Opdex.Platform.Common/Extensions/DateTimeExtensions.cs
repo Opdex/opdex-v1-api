@@ -1,5 +1,4 @@
 using System;
-using Org.BouncyCastle.Asn1.Cms;
 
 namespace Opdex.Platform.Common.Extensions
 {

@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,11 +9,12 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Opdex.Platform.Application;
 using Opdex.Platform.Infrastructure;
-using Serilog;
 using Opdex.Platform.Common;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi;
 using Opdex.Platform.WebApi.Mappers;
+using Serilog;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi
 {
@@ -71,6 +72,11 @@ namespace Opdex.Platform.WebApi
             // Register project module services
             services.AddPlatformApplicationServices();
             services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(), cmcConfig.Get<CoinMarketCapConfiguration>());
+
+            services.AddControllers(o =>
+            {
+                o.Conventions.Add(new ActionHidingConvention());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -100,6 +106,22 @@ namespace Opdex.Platform.WebApi
             app.UseSwaggerUi3();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+        
+        /// <summary>
+        /// Hide Stratis related endpoints in Swagger shown due to using Nuget packages
+        /// in WebApi project for serialization.
+        /// </summary>
+        public class ActionHidingConvention : IActionModelConvention
+        {
+            public void Apply(ActionModel action)
+            {
+                // Replace with any logic you want
+                if (!action.Controller.DisplayName.Contains("Opdex"))
+                {
+                    action.ApiExplorer.IsVisible = false;
+                }
+            }
         }
     }
 }

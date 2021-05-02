@@ -50,7 +50,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
                         break;
                     case SnapshotType.Daily:
                         start = start.StartOfDay();
-                        end = end.StartOfHour();
+                        end = end.EndOfDay();
                         break;
                     default:
                         start = start.StartOfHour();
