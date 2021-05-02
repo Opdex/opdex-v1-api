@@ -14,18 +14,18 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             const int sortOrder = 1;
 
             dynamic txLog = new ExpandoObject();
-            txLog.ReserveCrs = 876543456789ul;
-            txLog.ReserveSrc = "87654345678";
+            txLog.reserveCrs = 876543456789ul;
+            txLog.reserveSrc = "87654345678";
 
             var log = new ReservesLog(txLog, address, sortOrder);
 
             log.Id.Should().Be(0);
             log.TransactionId.Should().Be(0);
-            log.LogType.Should().Be(nameof(ReservesLog));
+            log.LogType.Should().Be(TransactionLogType.ReservesLog);
             log.Contract.Should().Be(address);
             log.SortOrder.Should().Be(sortOrder);
-            log.ReserveCrs.Should().Be(txLog.ReserveCrs);
-            log.ReserveSrc.Should().Be(txLog.ReserveSrc);
+            log.ReserveCrs.Should().Be(txLog.reserveCrs);
+            log.ReserveSrc.Should().Be(txLog.reserveSrc);
         }
     }
 }

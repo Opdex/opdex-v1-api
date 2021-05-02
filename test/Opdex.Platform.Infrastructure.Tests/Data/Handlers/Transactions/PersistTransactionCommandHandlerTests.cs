@@ -31,29 +31,31 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         [Fact]
         public async Task PersistsTransaction_Success()
         {
+            const long id = 1234;
             var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to");
             var command = new PersistTransactionCommand(transaction);
         
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(1234L));
+                .Returns(() => Task.FromResult(id));
             
             var result = await _handler.Handle(command, CancellationToken.None);
         
-            result.Should().Be(1234);
+            result.Id.Should().Be(id);
         }
         
         [Fact]
         public async Task PersistsTransaction_Fail()
         {
+            const long id = 0;
             var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to");
             var command = new PersistTransactionCommand(transaction);
         
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(0L));
+                .Returns(() => Task.FromResult(id));
         
             var result = await _handler.Handle(command, CancellationToken.None);
         
-            result.Should().Be(0);
+            result.Should().Be(null);
         }
     }
 }

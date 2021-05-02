@@ -2,7 +2,7 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs
 {
-    public class TransactionLogEntity
+    public class TransactionLogEntity : AuditEntity
     {
         public long Id { get; set; }
         public long TransactionId { get; set; }
@@ -10,6 +10,5 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.Tr
         public string Contract { get; set; }
         public int SortOrder { get; set; }
         public string Details { get; set; }
-        public DateTime CreatedDate { get; set; }
     }
 }

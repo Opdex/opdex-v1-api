@@ -14,18 +14,18 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             const int sortOrder = 1;
 
             dynamic txLog = new ExpandoObject();
-            txLog.Pool = "Pool";
-            txLog.Token = "Token";
+            txLog.pool = "Pool";
+            txLog.token = "Token";
 
             var log = new LiquidityPoolCreatedLog(txLog, address, sortOrder);
 
             log.Id.Should().Be(0);
             log.TransactionId.Should().Be(0);
-            log.LogType.Should().Be(nameof(LiquidityPoolCreatedLog));
+            log.LogType.Should().Be(TransactionLogType.LiquidityPoolCreatedLog);
             log.Contract.Should().Be(address);
             log.SortOrder.Should().Be(sortOrder);
-            log.Pool.Should().Be(txLog.Pool);
-            log.Token.Should().Be(txLog.Token);
+            log.Pool.Should().Be(txLog.pool);
+            log.Token.Should().Be(txLog.token);
         }
     }
 }

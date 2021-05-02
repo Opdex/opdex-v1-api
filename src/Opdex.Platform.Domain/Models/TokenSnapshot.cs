@@ -1,4 +1,5 @@
 using System;
+using Opdex.Platform.Domain.Models.TransactionLogs;
 
 namespace Opdex.Platform.Domain.Models
 {
@@ -35,6 +36,11 @@ namespace Opdex.Platform.Domain.Models
         {
             Price = price;
             LastUpdated = DateTime.UtcNow;
+        }
+
+        public void ProcessReservesLog(ReservesLog log)
+        {
+            
         }
     }
 }

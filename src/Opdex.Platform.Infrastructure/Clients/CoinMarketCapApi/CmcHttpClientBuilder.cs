@@ -11,6 +11,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi
         public static void BuildHttpClient(this HttpClient client, CoinMarketCapConfiguration cmcConfiguration)
         {
             client.BaseAddress = new Uri(cmcConfiguration.ApiUrl);
+            client.DefaultRequestHeaders.Add(cmcConfiguration.HeaderName, cmcConfiguration.ApiKey);
         }
         
         public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()

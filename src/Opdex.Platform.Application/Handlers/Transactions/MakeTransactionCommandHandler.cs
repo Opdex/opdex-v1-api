@@ -26,13 +26,13 @@ namespace Opdex.Platform.Application.Handlers.Transactions
 
             if (transaction != null) return false;
             
-            var transactionId = await _mediator.Send(new PersistTransactionCommand(request.Transaction));
+            var transactionId = await _mediator.Send(new PersistTransactionCommand(request.Transaction), CancellationToken.None);
 
             if (transactionId == null) return false;
             
             foreach (var log in request.Transaction.Logs)
             {
-                await _mediator.Send(new PersistTransactionLogCommand(log));
+                await _mediator.Send(new PersistTransactionLogCommand(log), CancellationToken.None);
             }
 
             return true;

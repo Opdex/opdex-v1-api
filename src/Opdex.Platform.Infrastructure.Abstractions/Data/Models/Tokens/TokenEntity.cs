@@ -1,4 +1,4 @@
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Token
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens
 {
     public class TokenEntity : AuditEntity
     {
@@ -7,7 +7,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Token
         public string Symbol { get; set; }
         public string Name { get; set; }
         public byte Decimals { get; set; }
-        public long Sats { get; set; }
+        public ulong Sats { get; set; }
         public string TotalSupply { get; set; }
     }
 }

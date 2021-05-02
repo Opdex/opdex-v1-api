@@ -21,7 +21,6 @@
 
     <ItemGroup>
       <Folder Include="EntryHandlers\Blocks" />
-      <Folder Include="Handlers\Blocks" />
     </ItemGroup>
 
 </Project>

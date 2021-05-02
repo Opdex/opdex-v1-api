@@ -14,7 +14,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
     {
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO pool_liquidity_snapshot (
-                {nameof(LiquidityPoolSnapshotEntity.PoolId)},
+                {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)},
                 {nameof(LiquidityPoolSnapshotEntity.TransactionCount)},
                 {nameof(LiquidityPoolSnapshotEntity.ReserveCrs)},
                 {nameof(LiquidityPoolSnapshotEntity.ReserveSrc)},
@@ -25,11 +25,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 {nameof(LiquidityPoolSnapshotEntity.VolumeUsd)},
                 {nameof(LiquidityPoolSnapshotEntity.StakingWeight)},
                 {nameof(LiquidityPoolSnapshotEntity.StakingUsd)},
+                {nameof(LiquidityPoolSnapshotEntity.ProviderRewards)},
+                {nameof(LiquidityPoolSnapshotEntity.StakerRewards)},
                 {nameof(LiquidityPoolSnapshotEntity.SnapshotType)},
                 {nameof(LiquidityPoolSnapshotEntity.StartDate)},
                 {nameof(LiquidityPoolSnapshotEntity.EndDate)}
               ) VALUES (
-                @{nameof(LiquidityPoolSnapshotEntity.PoolId)},
+                @{nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)},
                 @{nameof(LiquidityPoolSnapshotEntity.TransactionCount)},
                 @{nameof(LiquidityPoolSnapshotEntity.ReserveCrs)},
                 @{nameof(LiquidityPoolSnapshotEntity.ReserveSrc)},
@@ -40,6 +42,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 @{nameof(LiquidityPoolSnapshotEntity.VolumeUsd)},
                 @{nameof(LiquidityPoolSnapshotEntity.StakingWeight)},
                 @{nameof(LiquidityPoolSnapshotEntity.StakingUsd)},
+                @{nameof(LiquidityPoolSnapshotEntity.ProviderRewards)},
+                @{nameof(LiquidityPoolSnapshotEntity.StakerRewards)},
                 @{nameof(LiquidityPoolSnapshotEntity.SnapshotType)},
                 @{nameof(LiquidityPoolSnapshotEntity.StartDate)},
                 @{nameof(LiquidityPoolSnapshotEntity.EndDate)}
@@ -57,6 +61,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                     {nameof(LiquidityPoolSnapshotEntity.VolumeUsd)} = @{nameof(LiquidityPoolSnapshotEntity.VolumeUsd)},
                     {nameof(LiquidityPoolSnapshotEntity.StakingWeight)} = @{nameof(LiquidityPoolSnapshotEntity.StakingWeight)},
                     {nameof(LiquidityPoolSnapshotEntity.StakingUsd)} = @{nameof(LiquidityPoolSnapshotEntity.StakingUsd)}
+                    {nameof(LiquidityPoolSnapshotEntity.ProviderRewards)} = @{nameof(LiquidityPoolSnapshotEntity.ProviderRewards)}
+                    {nameof(LiquidityPoolSnapshotEntity.StakerRewards)} = @{nameof(LiquidityPoolSnapshotEntity.StakerRewards)}
                 WHERE {nameof(LiquidityPoolSnapshotEntity.Id)} = @{nameof(LiquidityPoolSnapshotEntity.Id)};";
 
         private readonly IDbContext _context;
@@ -84,7 +90,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failure persisting liquidity pool snapshot for poolId {request?.Snapshot?.PoolId} and type {request?.Snapshot?.SnapshotType}");
+                _logger.LogError(ex, $"Failure persisting liquidity pool snapshot for poolId {request?.Snapshot?.LiquidityPoolId} and type {request?.Snapshot?.SnapshotType}");
                 
                 return false;
             }

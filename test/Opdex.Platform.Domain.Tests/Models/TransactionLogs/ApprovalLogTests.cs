@@ -14,20 +14,22 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             const int sortOrder = 1;
 
             dynamic txLog = new ExpandoObject();
-            txLog.Owner = "Owner";
-            txLog.Spender = "Spender";
-            txLog.Amount = "Amount";
+            txLog.owner = "Owner";
+            txLog.spender = "Spender";
+            txLog.amount = "1";
+            txLog.oldAmount = "0";
 
             var log = new ApprovalLog(txLog, address, sortOrder);
 
             log.Id.Should().Be(0);
             log.TransactionId.Should().Be(0);
-            log.LogType.Should().Be(nameof(ApprovalLog));
+            log.LogType.Should().Be(TransactionLogType.ApprovalLog);
             log.Contract.Should().Be(address);
             log.SortOrder.Should().Be(sortOrder);
-            log.Amount.Should().Be(txLog.Amount);
-            log.Spender.Should().Be(txLog.Spender);
-            log.Owner.Should().Be(txLog.Owner);
+            log.Amount.Should().Be(txLog.amount);
+            log.OldAmount.Should().Be(txLog.oldAmount);
+            log.Spender.Should().Be(txLog.spender);
+            log.Owner.Should().Be(txLog.owner);
         }
     }
 }

@@ -20,7 +20,6 @@
 
     <ItemGroup>
       <Folder Include="Clients\BitcoreNodeApi" />
-      <Folder Include="Data\Handlers\Blocks" />
     </ItemGroup>
 
     <ItemGroup>

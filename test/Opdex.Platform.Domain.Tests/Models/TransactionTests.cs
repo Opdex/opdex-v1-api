@@ -20,11 +20,11 @@ namespace Opdex.Platform.Domain.Tests.Models
             
             dynamic syncLog = new System.Dynamic.ExpandoObject();
             syncLog.Address = "Address";
-            syncLog.Topics = new[] {"OpdexReservesLog", "Topics"};
+            syncLog.Topics = new[] {"ReservesLog", "Topics"};
             syncLog.Data = "SomeData";
             syncLog.Log = new System.Dynamic.ExpandoObject();
-            syncLog.Log.ReserveCrs = 100ul;
-            syncLog.Log.ReserveSrc = "1500";
+            syncLog.Log.reserveCrs = 100ul;
+            syncLog.Log.reserveSrc = "1500";
 
             logs.Add(syncLog);
 
@@ -46,8 +46,8 @@ namespace Opdex.Platform.Domain.Tests.Models
                 logReceipt.Contract.Should().Be(syncLog.Address);
                 
                 var syncLogType = (ReservesLog)logReceipt;
-                syncLogType.ReserveCrs.Should().Be(syncLog.Log.ReserveCrs);
-                syncLogType.ReserveSrc.Should().Be(syncLog.Log.ReserveSrc);
+                syncLogType.ReserveCrs.Should().Be(syncLog.Log.reserveCrs);
+                syncLogType.ReserveSrc.Should().Be(syncLog.Log.reserveSrc);
             }
         }
     }

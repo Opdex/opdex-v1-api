@@ -5,7 +5,7 @@ namespace Opdex.Platform.Domain.Models
 {
     public class Token
     {
-        public Token(string address, string name, string symbol, int decimals, long sats, string totalSupply)
+        public Token(string address, string name, string symbol, int decimals, ulong sats, string totalSupply)
         {
             if (!address.HasValue())
             {
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Domain.Models
             TotalSupply = totalSupply;
         }
 
-        public Token(long id, string address, string name, string symbol, int decimals, long sats, string totalSupply)
+        public Token(long id, string address, string name, string symbol, int decimals, ulong sats, string totalSupply)
         {
             Id = id;
             Address = address;
@@ -61,7 +61,7 @@ namespace Opdex.Platform.Domain.Models
         public string Name { get; }
         public string Symbol { get; }
         public int Decimals { get; }
-        public long Sats { get; }
+        public ulong Sats { get; }
         public string TotalSupply { get; }
     }
 }

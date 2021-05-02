@@ -35,6 +35,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
             {
                 Id = 123454,
                 TokenId = 1235,
+                MarketId = 1,
                 Address = "SomeAddress",
                 ReserveCrs = 7654567890,
                 ReserveSrc = "8765456789"
@@ -49,6 +50,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
 
             result.Id.Should().Be(expectedEntity.Id);
             result.TokenId.Should().Be(expectedEntity.TokenId);
+            result.MarketId.Should().Be(expectedEntity.MarketId);
             result.Address.Should().Be(expectedEntity.Address);
             result.ReserveCrs.Should().Be(expectedEntity.ReserveCrs);
             result.ReserveSrc.Should().Be(expectedEntity.ReserveSrc);

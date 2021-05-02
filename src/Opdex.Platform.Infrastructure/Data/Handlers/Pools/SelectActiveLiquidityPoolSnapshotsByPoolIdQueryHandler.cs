@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
         private static readonly string SqlQuery =
             @$"Select 
                 {nameof(LiquidityPoolSnapshotEntity.Id)},
-                {nameof(LiquidityPoolSnapshotEntity.PoolId)},
+                {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)},
                 {nameof(LiquidityPoolSnapshotEntity.TransactionCount)},
                 {nameof(LiquidityPoolSnapshotEntity.ReserveCrs)},
                 {nameof(LiquidityPoolSnapshotEntity.ReserveSrc)},
@@ -27,11 +27,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 {nameof(LiquidityPoolSnapshotEntity.VolumeUsd)},
                 {nameof(LiquidityPoolSnapshotEntity.StakingWeight)},
                 {nameof(LiquidityPoolSnapshotEntity.StakingUsd)},
+                {nameof(LiquidityPoolSnapshotEntity.ProviderRewards)},
+                {nameof(LiquidityPoolSnapshotEntity.StakerRewards)},
                 {nameof(LiquidityPoolSnapshotEntity.SnapshotType)},
                 {nameof(LiquidityPoolSnapshotEntity.StartDate)},
                 {nameof(LiquidityPoolSnapshotEntity.EndDate)}
             FROM market_snapshot
-            WHERE {nameof(LiquidityPoolSnapshotEntity.PoolId)} = @{nameof(SqlParams.PoolId)}
+            WHERE {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)} = @{nameof(SqlParams.PoolId)}
                 AND @{nameof(SqlParams.Time)} BETWEEN 
                     {nameof(LiquidityPoolSnapshotEntity.StartDate)} AND {nameof(LiquidityPoolSnapshotEntity.EndDate)};";
 

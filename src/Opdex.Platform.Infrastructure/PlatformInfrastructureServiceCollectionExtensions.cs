@@ -100,6 +100,7 @@ namespace Opdex.Platform.Infrastructure
 
             // Blocks
             services.AddTransient<IRequestHandler<SelectLatestBlockQuery, Block>, SelectLatestBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectBlockByHeightQuery, Block>, SelectBlockByHeightQueryHandler>();
 
             // Pools
             services.AddTransient<IRequestHandler<SelectLiquidityPoolByAddressQuery, LiquidityPool>, SelectLiquidityPoolByAddressQueryHandler>();
@@ -111,6 +112,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectTokenByAddressQuery, Token>, SelectTokenByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAllTokensQuery, IEnumerable<Token>>, SelectAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<SelectActiveTokenSnapshotsByTokenIdQuery, IEnumerable<TokenSnapshot>>, SelectActiveTokenSnapshotsByTokenIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectLatestTokenSnapshotByTokenIdQuery, TokenSnapshot>, SelectLatestTokenSnapshotByTokenIdQueryHandler>();
 
             // Transactions
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();

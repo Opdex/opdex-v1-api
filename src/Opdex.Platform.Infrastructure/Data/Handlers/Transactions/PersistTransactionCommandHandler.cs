@@ -53,6 +53,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
                 var result = await _context.ExecuteScalarAsync<long>(command);
 
+                if (result == 0)
+                {
+                    throw new Exception("Error persisting transaction.");
+                }
+
                 return new Transaction(result, request.Transaction.Hash, request.Transaction.BlockHeight,
                     request.Transaction.GasUsed, request.Transaction.From, request.Transaction.To, request.Transaction.Logs);
             }

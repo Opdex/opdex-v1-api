@@ -13,8 +13,4 @@
       <ProjectReference Include="..\Opdex.Platform.Domain\Opdex.Platform.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Data\Queries\Blocks" />
-    </ItemGroup>
-
 </Project>

@@ -13,7 +13,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             string to = log?.to;
             ulong amountCrs = log?.amountCrs;
             string amountSrc = log?.amountSrc;
-            string amountLpt = log?.amountLtp;
+            string amountLpt = log?.amountLpt;
 
             if (!sender.HasValue())
             {

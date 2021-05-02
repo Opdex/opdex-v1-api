@@ -77,15 +77,22 @@ namespace Opdex.Platform.Domain.Models
         
         // Todo: maybe enum - unknown | maybe | yeah | no
         public bool IsOpdexTx { get; private set; }
-        
-        // Created Market - maybe a separate collection rather than bool
-        // Created Liquidity Pool - " "
-        // Created Mining Pool - " "
-
 
         public List<T> LogsOfType<T>(TransactionLogType logType)
         {
             return (List<T>)Logs.Where(log => log.LogType == logType);
+        }
+
+        public IEnumerable<TransactionLog> LogsOfTypes(IEnumerable<TransactionLogType> logTypes)
+        {
+            return Logs.Where(log => logTypes.Contains(log.LogType)).ToList();
+        }
+
+        public IDictionary<string, List<TransactionLog>> GroupedLogsOfTypes(IEnumerable<TransactionLogType> logTypes)
+        {
+            return LogsOfTypes(logTypes)
+                .GroupBy(log => log.Contract)
+                .ToDictionary(k => k.FirstOrDefault()?.Contract, logs => logs.ToList());
         }
 
         private void AttachLogs(IEnumerable<TransactionLog> logs)

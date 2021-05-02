@@ -14,26 +14,26 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             const int sortOrder = 1;
 
             dynamic txLog = new ExpandoObject();
-            txLog.Sender = "Sender";
-            txLog.To = "To";
-            txLog.AmountCrsIn = 0ul;
-            txLog.AmountSrcIn = "876543";
-            txLog.AmountCrsOut = 2342323ul;
-            txLog.AmountSrcOut = "0";
+            txLog.sender = "Sender";
+            txLog.to = "To";
+            txLog.amountCrsIn = 0ul;
+            txLog.amountSrcIn = "876543";
+            txLog.amountCrsOut = 2342323ul;
+            txLog.amountSrcOut = "0";
 
             var log = new SwapLog(txLog, address, sortOrder);
 
             log.Id.Should().Be(0);
             log.TransactionId.Should().Be(0);
-            log.LogType.Should().Be(nameof(SwapLog));
+            log.LogType.Should().Be(TransactionLogType.SwapLog);
             log.Contract.Should().Be(address);
             log.SortOrder.Should().Be(sortOrder);
-            log.Sender.Should().Be(txLog.Sender);
-            log.To.Should().Be(txLog.To);
-            log.AmountCrsIn.Should().Be(txLog.AmountCrsIn);
-            log.AmountSrcIn.Should().Be(txLog.AmountSrcIn);
-            log.AmountCrsOut.Should().Be(txLog.AmountCrsOut);
-            log.AmountSrcOut.Should().Be(txLog.AmountSrcOut);
+            log.Sender.Should().Be(txLog.sender);
+            log.To.Should().Be(txLog.to);
+            log.AmountCrsIn.Should().Be(txLog.amountCrsIn);
+            log.AmountSrcIn.Should().Be(txLog.amountSrcIn);
+            log.AmountCrsOut.Should().Be(txLog.amountCrsOut);
+            log.AmountSrcOut.Should().Be(txLog.amountSrcOut);
         }
     }
 }

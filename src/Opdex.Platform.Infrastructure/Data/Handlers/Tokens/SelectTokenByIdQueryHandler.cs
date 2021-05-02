@@ -6,7 +6,7 @@ using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Token;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens

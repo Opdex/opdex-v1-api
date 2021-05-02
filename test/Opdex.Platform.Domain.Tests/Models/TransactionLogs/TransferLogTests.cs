@@ -14,20 +14,20 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             const int sortOrder = 1;
 
             dynamic tx = new ExpandoObject();
-            tx.From = "From";
-            tx.To = "To";
-            tx.Amount = "87654345678";
+            tx.from = "From";
+            tx.to = "To";
+            tx.amount = "87654345678";
 
             var txLog = new TransferLog(tx, address, sortOrder);
 
             txLog.Id.Should().Be(0);
             txLog.TransactionId.Should().Be(0);
-            txLog.LogType.Should().Be(nameof(TransferLog));
+            txLog.LogType.Should().Be(TransactionLogType.TransferLog);
             txLog.Contract.Should().Be(address);
             txLog.SortOrder.Should().Be(sortOrder);
-            txLog.From.Should().Be(tx.From);
-            txLog.To.Should().Be(tx.To);
-            txLog.Amount.Should().Be(tx.Amount);
+            txLog.From.Should().Be(tx.from);
+            txLog.To.Should().Be(tx.to);
+            txLog.Amount.Should().Be(tx.amount);
         }
     }
 }

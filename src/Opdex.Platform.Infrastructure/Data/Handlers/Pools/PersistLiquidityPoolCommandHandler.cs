@@ -17,12 +17,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             $@"INSERT INTO pool_liquidity (
                 {nameof(LiquidityPoolEntity.Address)},
                 {nameof(LiquidityPoolEntity.TokenId)},
+                {nameof(LiquidityPoolEntity.MarketId)},
                 {nameof(LiquidityPoolEntity.ReserveSrc)},
                 {nameof(LiquidityPoolEntity.ReserveCrs)},
                 {nameof(LiquidityPoolEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(LiquidityPoolEntity.Address)},
                 @{nameof(LiquidityPoolEntity.TokenId)},
+                @{nameof(LiquidityPoolEntity.MarketId)},
                 @{nameof(LiquidityPoolEntity.ReserveSrc)},
                 @{nameof(LiquidityPoolEntity.ReserveCrs)},
                 UTC_TIMESTAMP()
