@@ -71,6 +71,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveDeployerByAddressQuery, Deployer>, RetrieveDeployerByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLatestTokenSnapshotByTokenIdQuery, TokenSnapshot>, RetrieveLatestTokenSnapshotByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveBlockByHeightQuery, Block>, RetrieveBlockByHeightQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMarketByAddressQuery, Market>, RetrieveMarketByAddressQueryHandler>();
 
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();

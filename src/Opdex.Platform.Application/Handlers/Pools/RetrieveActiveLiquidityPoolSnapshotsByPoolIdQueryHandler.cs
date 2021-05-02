@@ -13,7 +13,7 @@ namespace Opdex.Platform.Application.Handlers.Pools
     {
         private readonly IMediator _mediator;
         
-        private RetrieveActiveLiquidityPoolSnapshotsByPoolIdQueryHandler(IMediator mediator)
+        public RetrieveActiveLiquidityPoolSnapshotsByPoolIdQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }

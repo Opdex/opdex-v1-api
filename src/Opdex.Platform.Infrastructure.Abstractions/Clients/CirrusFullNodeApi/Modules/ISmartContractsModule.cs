@@ -14,5 +14,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(string contractAddress, string logName, ulong fromBlock, ulong? toBlock, CancellationToken cancellationToken);
         Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken);
         Task<string> CallSmartContractAsync(SmartContractCallRequestDto call, CancellationToken cancellationToken);
+        Task<string> CreateSmartContractAsync(SmartContractCreateRequestDto call, CancellationToken cancellationToken);
     }
 }

@@ -42,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
         
         public async Task<Market> Handle(SelectMarketByAddressQuery request, CancellationToken cancellationToken)
         {
-            var command = DatabaseQuery.Create(SqlCommand, null, cancellationToken);
+            var command = DatabaseQuery.Create(SqlCommand, request, cancellationToken);
             
             var marketEntity =  await _context.ExecuteFindAsync<MarketEntity>(command);
 

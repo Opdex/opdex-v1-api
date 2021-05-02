@@ -13,14 +13,14 @@ namespace Opdex.Platform.Application.Handlers.Tokens
     {
         private readonly IMediator _mediator;
         
-        private RetrieveActiveTokenSnapshotsByTokenIdQueryHandler(IMediator mediator)
+        public RetrieveActiveTokenSnapshotsByTokenIdQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
         public Task<IEnumerable<TokenSnapshot>> Handle(RetrieveActiveTokenSnapshotsByTokenIdQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectActiveTokenSnapshotsByTokenIdQuery(request.TokenId, DateTime.UtcNow), cancellationToken);
+            return _mediator.Send(new SelectActiveTokenSnapshotsByTokenIdQuery(request.TokenId, request.Time), cancellationToken);
         }
     }
 }

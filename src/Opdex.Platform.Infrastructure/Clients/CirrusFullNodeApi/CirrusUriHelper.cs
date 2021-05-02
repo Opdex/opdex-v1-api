@@ -15,6 +15,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi
         public static class SmartContractWallet
         {
             public const string Call = "SmartContractWallet/call";
+            public const string Create = "SmartContractWallet/create";
         }
 
         public static class BlockStore

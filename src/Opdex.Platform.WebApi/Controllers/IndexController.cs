@@ -55,7 +55,7 @@ namespace Opdex.Platform.WebApi.Controllers
                 if (!createdBlock) return NoContent();
 
                 // Once a minute sync CRS price
-                if (blockDetails.Height % 4 == 0)
+                if (blockDetails.Height % 20 == 0)
                 {
                     await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockDetails.MedianTime.FromUnixTimeSeconds()));
                 }

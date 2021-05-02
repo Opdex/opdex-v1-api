@@ -19,7 +19,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
                 {nameof(DeployerEntity.Id)},
                 {nameof(DeployerEntity.Address)},
                 {nameof(DeployerEntity.CreatedDate)}
-            FROM market
+            FROM deployer
             WHERE {nameof(DeployerEntity.Address)} = @{nameof(DeployerEntity.Address)}
             LIMIT 1;";
 
@@ -37,16 +37,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
         
         public async Task<Deployer> Handle(SelectDeployerByAddressQuery request, CancellationToken cancellationToken)
         {
-            var command = DatabaseQuery.Create(SqlCommand, null, cancellationToken);
+            var command = DatabaseQuery.Create(SqlCommand, request, cancellationToken);
             
-            var marketEntity =  await _context.ExecuteFindAsync<DeployerEntity>(command);
+            var entity =  await _context.ExecuteFindAsync<DeployerEntity>(command);
 
-            if (marketEntity == null)
+            if (entity == null)
             {
                 throw new NotFoundException($"{nameof(Deployer)} not found with address {request.Address}");
             }
 
-            return _mapper.Map<Deployer>(marketEntity);
+            return _mapper.Map<Deployer>(entity);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Opdex.Platform.Domain.Models
 {
     public class Transaction
     {
-        public Transaction(string txHash, ulong blockHeight, int gasUsed, string from, string to)
+        public Transaction(string txHash, ulong blockHeight, int gasUsed, string from, string to, string newContractAddress = null)
         {
             if (!txHash.HasValue())
             {
@@ -30,7 +30,7 @@ namespace Opdex.Platform.Domain.Models
                 throw new ArgumentNullException(nameof(from));
             }
             
-            if (!to.HasValue())
+            if (!to.HasValue() && !newContractAddress.HasValue())
             {
                 throw new ArgumentNullException(nameof(to));
             }
@@ -40,10 +40,11 @@ namespace Opdex.Platform.Domain.Models
             GasUsed = gasUsed;
             From = from;
             To = to;
+            NewContractAddress = newContractAddress;
             Logs = new List<TransactionLog>();
         }
 
-        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, IEnumerable<TransactionLog> logs)
+        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, IEnumerable<TransactionLog> logs, string newContractAddress = null)
         {
             Id = id;
             Hash = txHash;
@@ -51,11 +52,12 @@ namespace Opdex.Platform.Domain.Models
             GasUsed = gasUsed;
             From = from;
             To = to;
+            NewContractAddress = newContractAddress;
             Logs = new List<TransactionLog>();
             AttachLogs(logs);
         }
         
-        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to)
+        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, string newContractAddress = null)
         {
             Id = id;
             Hash = txHash;
@@ -63,6 +65,7 @@ namespace Opdex.Platform.Domain.Models
             GasUsed = gasUsed;
             From = from;
             To = to;
+            NewContractAddress = newContractAddress;
             Logs = new List<TransactionLog>();
         }
         
@@ -72,15 +75,16 @@ namespace Opdex.Platform.Domain.Models
         public int GasUsed { get; }
         public string From { get; }
         public string To { get; }
+        public string NewContractAddress { get; }
         
         public ICollection<TransactionLog> Logs { get; }
         
         // Todo: maybe enum - unknown | maybe | yeah | no
         public bool IsOpdexTx { get; private set; }
 
-        public List<T> LogsOfType<T>(TransactionLogType logType)
+        public List<T> LogsOfType<T>(TransactionLogType logType) where T : TransactionLog
         {
-            return (List<T>)Logs.Where(log => log.LogType == logType);
+            return Logs.Where(log => log.LogType == logType).Select(log => log as T).ToList();
         }
 
         public IEnumerable<TransactionLog> LogsOfTypes(IEnumerable<TransactionLogType> logTypes)

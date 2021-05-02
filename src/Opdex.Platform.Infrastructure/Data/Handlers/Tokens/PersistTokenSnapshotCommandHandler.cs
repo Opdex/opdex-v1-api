@@ -16,13 +16,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
             $@"INSERT INTO token_snapshot (
                 {nameof(TokenSnapshotEntity.TokenId)},
                 {nameof(TokenSnapshotEntity.Price)},
-                {nameof(TokenSnapshotEntity.SnapshotType)},
+                {nameof(TokenSnapshotEntity.SnapshotTypeId)},
                 {nameof(TokenSnapshotEntity.StartDate)},
                 {nameof(TokenSnapshotEntity.EndDate)}
               ) VALUES (
                 @{nameof(TokenSnapshotEntity.TokenId)},
                 @{nameof(TokenSnapshotEntity.Price)},
-                @{nameof(TokenSnapshotEntity.SnapshotType)},
+                @{nameof(TokenSnapshotEntity.SnapshotTypeId)},
                 @{nameof(TokenSnapshotEntity.StartDate)},
                 @{nameof(TokenSnapshotEntity.EndDate)}
               );";

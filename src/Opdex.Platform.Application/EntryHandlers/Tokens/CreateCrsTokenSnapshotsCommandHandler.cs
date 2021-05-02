@@ -26,7 +26,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
             var crs = await _mediator.Send(new GetTokenByAddressQuery("CRS"), CancellationToken.None);
                     
             // Get active minute, hourly, daily snapshots if available based on DateTime.Now
-            var snapshots = await _mediator.Send(new RetrieveActiveTokenSnapshotsByTokenIdQuery(crs.Id), CancellationToken.None);
+            var snapshots = await _mediator.Send(new RetrieveActiveTokenSnapshotsByTokenIdQuery(crs.Id, request.BlockTime), CancellationToken.None);
             
             // Get current cmc price for strax
             var price = await _mediator.Send(new RetrieveCmcStraxPriceQuery(), CancellationToken.None);
@@ -47,6 +47,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
                     case SnapshotType.Hourly:
                         start = start.StartOfHour();
                         end = end.EndOfHour();
+                        break;
+                    case SnapshotType.Daily:
+                        start = start.StartOfDay();
+                        end = end.StartOfHour();
                         break;
                     default:
                         start = start.StartOfHour();

@@ -14,7 +14,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
     {
         // Todo: Insert vs update
         private static readonly string SqlCommand =
-            $@"INSERT INTO pool_liquidity (
+            $@"INSERT INTO market (
                 {nameof(MarketEntity.Address)},
                 {nameof(MarketEntity.AuthPoolCreators)},
                 {nameof(MarketEntity.AuthProviders)},

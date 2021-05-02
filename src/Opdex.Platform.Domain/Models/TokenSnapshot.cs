@@ -8,7 +8,7 @@ namespace Opdex.Platform.Domain.Models
         public TokenSnapshot(long tokenId, decimal price, SnapshotType type, DateTime startDate, DateTime endDate)
         {
             TokenId = tokenId;
-            Price = price;
+            Price = Math.Round(price, 2, MidpointRounding.ToEven);
             SnapshotType = type;
             StartDate = startDate;
             EndDate = endDate;
@@ -18,7 +18,7 @@ namespace Opdex.Platform.Domain.Models
         {
             Id = id;
             TokenId = tokenId;
-            Price = price;
+            Price = Math.Round(price, 2, MidpointRounding.ToEven);;
             SnapshotType = (SnapshotType)snapshotType;
             StartDate = startDate;
             EndDate = endDate;

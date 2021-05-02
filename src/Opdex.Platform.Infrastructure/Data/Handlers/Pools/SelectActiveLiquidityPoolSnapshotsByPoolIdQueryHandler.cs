@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 {nameof(LiquidityPoolSnapshotEntity.StakingUsd)},
                 {nameof(LiquidityPoolSnapshotEntity.ProviderRewards)},
                 {nameof(LiquidityPoolSnapshotEntity.StakerRewards)},
-                {nameof(LiquidityPoolSnapshotEntity.SnapshotType)},
+                {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)},
                 {nameof(LiquidityPoolSnapshotEntity.StartDate)},
                 {nameof(LiquidityPoolSnapshotEntity.EndDate)}
             FROM market_snapshot

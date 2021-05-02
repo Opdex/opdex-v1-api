@@ -60,10 +60,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             foreach (var log in marketCreatedLogs)
             {
                 // Check our market deployer address, index only our created markets.
-                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(log.Contract), CancellationToken.None);
-
-                // Ignore if it's not one of Opdex deployers
-                if (deployer == null) continue;
+                // var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(log.Contract), CancellationToken.None);
+                //
+                // // Ignore if it's not one of Opdex deployers
+                // if (deployer == null) continue;
                 
                 // Create new market
                 // Todo: Need to know if its staking or not
@@ -75,8 +75,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             var liquidityPoolCreatedLogs = cirrusTx.LogsOfType<LiquidityPoolCreatedLog>(TransactionLogType.LiquidityPoolCreatedLog);
             foreach (var log in liquidityPoolCreatedLogs)
             {
+                var marketI = await _mediator.Send(new RetrieveMarketByAddressQuery(log.Contract), CancellationToken.None);
                 var tokenId = await _mediator.Send(new MakeTokenCommand(log.Token), CancellationToken.None);
-                var pairId = await _mediator.Send(new MakeLiquidityPoolCommand(log.Pool, tokenId), CancellationToken.None);
+                var pairId = await _mediator.Send(new MakeLiquidityPoolCommand(log.Pool, tokenId, marketI.Id), CancellationToken.None);
             }
             
             // Process Mining Pool Created Logs
@@ -166,7 +167,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
         
         private async Task ProcessTokenSnapshot(LiquidityPoolDto pool, SnapshotType snapshotType, ReservesLog log, DateTime snapshotStart, DateTime snapshotEnd)
         {
-            var poolTokenSnapshots = await _mediator.Send(new RetrieveActiveTokenSnapshotsByTokenIdQuery(pool.Token.Id), CancellationToken.None);
+            var poolTokenSnapshots = await _mediator.Send(new RetrieveActiveTokenSnapshotsByTokenIdQuery(pool.Token.Id, snapshotStart), CancellationToken.None);
 
             var poolTokenSnapshot = poolTokenSnapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
                                     new TokenSnapshot(pool.Token.Id, 0m, snapshotType, snapshotStart, snapshotEnd);

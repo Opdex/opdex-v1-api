@@ -16,6 +16,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Module
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
@@ -37,6 +38,7 @@ using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi;
 using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi.Handlers;
+using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi.Modules;
 using Opdex.Platform.Infrastructure.Data;
 using Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
 using Opdex.Platform.Infrastructure.Data.Handlers.Deployers;
@@ -84,6 +86,10 @@ namespace Opdex.Platform.Infrastructure
             // Transactions
             services.AddTransient<IRequestHandler<PersistTransactionCommand, Transaction>, PersistTransactionCommandHandler>(); 
             services.AddTransient<IRequestHandler<PersistTransactionLogCommand, bool>, PersistTransactionLogCommandHandler>();
+            
+            // Deployers
+            services.AddTransient<IRequestHandler<PersistDeployerCommand, long>, PersistDeployerCommandHandler>();
+
         }
         
         private static void AddDataQueries(IServiceCollection services)
@@ -147,12 +153,13 @@ namespace Opdex.Platform.Infrastructure
 
             // Commands
             services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, string>, CallCirrusCallSmartContractMethodCommandHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusCreateSmartContractCommand, string>, CallCirrusCreateSmartContractCommandHandler>();
         }
 
         private static void AddCmcServices(IServiceCollection services, CoinMarketCapConfiguration cmcConfiguration)
         {
             // Modules
-            services.AddHttpClient<IQuotesModule, IQuotesModule>(client => client.BuildHttpClient(cmcConfiguration))
+            services.AddHttpClient<IQuotesModule, QuotesModule>(client => client.BuildHttpClient(cmcConfiguration))
                 .AddPolicyHandler(CmcHttpClientBuilder.GetRetryPolicy())
                 .AddPolicyHandler(CmcHttpClientBuilder.GetCircuitBreakerPolicy());
             

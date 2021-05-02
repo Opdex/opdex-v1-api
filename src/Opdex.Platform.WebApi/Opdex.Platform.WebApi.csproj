@@ -16,6 +16,8 @@
         <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
         <PackageReference Include="Serilog.Sinks.Http" Version="7.2.0" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
+        <PackageReference Include="Stratis.SmartContracts.CLR" Version="2.0.1" />
+        <PackageReference Include="Stratis.SmartContracts.Networks" Version="2.0.1" />
     </ItemGroup>
 
     <ItemGroup>

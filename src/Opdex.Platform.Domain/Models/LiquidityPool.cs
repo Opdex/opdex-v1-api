@@ -82,5 +82,13 @@ namespace Opdex.Platform.Domain.Models
                 TokenId = tokenId;
             }
         }
+        
+        public void SetMarketId(long marketId)
+        {
+            if (MarketId == 0 && marketId > 0)
+            {
+                MarketId = marketId;
+            }
+        }
     }
 }
