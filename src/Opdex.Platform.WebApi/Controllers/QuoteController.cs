@@ -1,9 +1,11 @@
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
 using Opdex.Platform.WebApi.Models.Requests.Quotes;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -22,9 +24,15 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         [HttpPost("swap")]
-        public Task<IActionResult> CreateSwapQuote(SwapQuoteRequestModel request, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> CreateSwapQuote(SwapQuoteRequestModel request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var query = new GetLiquidityPoolSwapQuoteQuery(request.TokenIn, request.TokenOut, request.TokenInAmount, 
+                request.TokenOutAmount, request.TokenInExactAmount, request.Market);
+
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
         }
         
         [HttpPost("add-liquidity")]

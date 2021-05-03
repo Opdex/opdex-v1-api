@@ -55,6 +55,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetAllTokensQuery, IEnumerable<TokenDto>>, GetAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<GetLatestMarketSnapshotQuery, MarketSnapshotDto>, GetLatestMarketSnapshotQueryHandler>();
             services.AddTransient<IRequestHandler<GetTransactionsByPoolWithFilterQuery, IEnumerable<TransactionDto>>, GetTransactionsByPoolWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<GetLiquidityPoolSwapQuoteQuery, string>, GetLiquidityPoolSwapQuoteQueryHandler>();
 
             // Queries
             services.AddTransient<IRequestHandler<RetrieveAllPoolsQuery, IEnumerable<LiquidityPool>>, RetrieveAllPoolsQueryHandler>();
