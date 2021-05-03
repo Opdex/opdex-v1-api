@@ -6,7 +6,5 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools
         public string Address { get; set; }
         public long TokenId { get; set; }
         public long MarketId { get; set; }
-        public ulong ReserveCrs { get; set; }
-        public string ReserveSrc { get; set; }
     }
 }

@@ -15,12 +15,10 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
     public class MakeWalletRemoveLiquidityTransactionCommandHandler : IRequestHandler<MakeWalletRemoveLiquidityTransactionCommand, string>
     {
         private readonly IMediator _mediator;
-        private readonly OpdexConfiguration _opdexConfiguration;
         
-        public MakeWalletRemoveLiquidityTransactionCommandHandler(IMediator mediator, IOptions<OpdexConfiguration> opdexConfiguration)
+        public MakeWalletRemoveLiquidityTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _opdexConfiguration = opdexConfiguration.Value ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
         public Task<string> Handle(MakeWalletRemoveLiquidityTransactionCommand request, CancellationToken cancellationToken)
@@ -38,7 +36,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                 0.ToSmartContractParameter(SmartContractParameterType.UInt64)
             };
             
-            var callDto = new SmartContractCallRequestDto(_opdexConfiguration.ControllerContract, request.To, amountToSend, methodName, parameters);
+            var callDto = new SmartContractCallRequestDto(request.Market, request.To, amountToSend, methodName, parameters);
             
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
         }

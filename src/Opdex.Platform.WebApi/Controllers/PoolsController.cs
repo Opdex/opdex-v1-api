@@ -10,7 +10,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.WebApi.Models;
-
+using Opdex.Platform.WebApi.Models.Responses;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -37,13 +37,13 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>List of pools</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<PoolResponseModel>>> GetAllPools(CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(CancellationToken cancellationToken)
         {
             var query = new GetAllPoolsQuery();
             
             var result = await _mediator.Send(query, cancellationToken);
 
-            var response = _mapper.Map<IEnumerable<PoolResponseModel>>(result);
+            var response = _mapper.Map<IEnumerable<LiquidityPoolResponseModel>>(result);
             
             return Ok(response);
         }
@@ -57,13 +57,13 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PoolResponseModel>> GetPool(string address, CancellationToken cancellationToken)
+        public async Task<ActionResult<LiquidityPoolResponseModel>> GetPool(string address, CancellationToken cancellationToken)
         {
             var query = new GetLiquidityPoolByAddressQuery(address);
             
             var result = await _mediator.Send(query, cancellationToken);
             
-            var response = _mapper.Map<PoolResponseModel>(result);
+            var response = _mapper.Map<LiquidityPoolResponseModel>(result);
             
             return Ok(response);
         }

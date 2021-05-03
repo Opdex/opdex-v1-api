@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         [Fact]
         public async Task PersistsPool_Success()
         {
-            var pool = new LiquidityPool("PoolAddress", 1, 1, 1, "1");
+            var pool = new LiquidityPool("PoolAddress", 1, 1);
             var command = new PersistLiquidityPoolCommand(pool);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -43,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         [Fact]
         public async Task PersistsPool_Fail()
         {
-            var pool = new LiquidityPool("PoolAddress", 1, 1, 1, "1");
+            var pool = new LiquidityPool("PoolAddress", 1, 1);
             var command = new PersistLiquidityPoolCommand(pool);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

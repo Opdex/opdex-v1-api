@@ -29,21 +29,11 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools
 
         public async Task<LiquidityPool> Handle(CallCirrusGetOpdexLiquidityPoolByAddressQuery request, CancellationToken cancellationToken)
         {
-            var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Reserves", new string[0]);
-            var reservesResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-            var reserves = ((JArray)reservesResponse.Return).ToArray();
-            
-            if (reserves.Any() != true) return null;
-
-            var crsReserves = reserves[0].ToObject<ulong>();
-            var srcReserves = reserves[1].ToString();
-            
-            localCall.MethodName = "get_Token";
+            var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Token", new string[0]);
             var tokenResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
             var token = (string)tokenResponse.Return;
-            if (!token.HasValue()) return null;
-
-            return new LiquidityPool(request.Address, token, crsReserves, srcReserves);
+            
+            return !token.HasValue() ? null : new LiquidityPool(request.Address, token);
         }
     }
 }

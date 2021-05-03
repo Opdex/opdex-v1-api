@@ -37,7 +37,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<LiquidityPoolEntity, LiquidityPool>()
-                .ConstructUsing(src => new LiquidityPool(src.Id, src.Address, src.TokenId, src.MarketId, src.ReserveCrs, src.ReserveSrc))
+                .ConstructUsing(src => new LiquidityPool(src.Id, src.Address, src.TokenId, src.MarketId))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<LiquidityPoolSnapshotEntity, LiquidityPoolSnapshot>()
@@ -136,8 +136,6 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
-                .ForMember(dest => dest.ReserveCrs, opt => opt.MapFrom(src => src.ReserveCrs))
-                .ForMember(dest => dest.ReserveSrc, opt => opt.MapFrom(src => src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<LiquidityPoolSnapshot, LiquidityPoolSnapshotEntity>()
@@ -154,7 +152,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.StakingUsd, opt => opt.MapFrom(src => src.StakingUsd))
                 .ForMember(dest => dest.ProviderRewards, opt => opt.MapFrom(src => src.ProviderRewards))
                 .ForMember(dest => dest.StakerRewards, opt => opt.MapFrom(src => src.StakerRewards))
-                .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => src.SnapshotType))
+                .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => (int)src.SnapshotType))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());

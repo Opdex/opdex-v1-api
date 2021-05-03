@@ -21,7 +21,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             CancellationToken cancellationToken)
         {
             var command = new MakeWalletAddLiquidityTransactionCommand(request.Token, request.AmountCrsDesired, request.AmountSrcDesired,
-                request.AmountCrsMin, request.AmountSrcMin, request.To);
+                request.AmountCrsMin, request.AmountSrcMin, request.To, request.Market);
             
             return _mediator.Send(command, cancellationToken);
         }

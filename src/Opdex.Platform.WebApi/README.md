@@ -8,7 +8,7 @@ This composition root references all projects of Opdex.Platform and Opdex.Core n
 
 ### Create DB
 
-Using [Opdex DB Scripts](), create the Maria DB database and update the connection string in `appsettings.Development.json`.
+Using [Opdex DB Scripts](https://github.com/Opdex/opdex-db-scripts), create the Maria DB database and update the connection string in `appsettings.Development.json`.
 
 ### CMC API KEY
 
@@ -46,7 +46,7 @@ Once this is done, all necessary contracts are deployed.
 
 ### Process Transactions
 
-Using Opdex swagger, hit `index/process-blocks` to begin syncing from the block manually entered from the previous step for Opdex transactions.
+Using Opdex swagger, hit `index/process-latest-blocks` to begin syncing from the block manually entered from the previous step for Opdex transactions.
 
 DB must be setup prior with tables and connection strings with the correct configuration.
 

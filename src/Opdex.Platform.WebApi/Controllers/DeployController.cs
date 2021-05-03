@@ -1,18 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Stratis.Bitcoin.Features.PoA;
-using Stratis.SmartContracts;
 using Stratis.SmartContracts.CLR.Serialization;
 using Stratis.SmartContracts.Core;
 
@@ -24,16 +25,29 @@ namespace Opdex.Platform.WebApi.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<DeployController> _logger;
-        private readonly ISerializer _serializer;
+        private readonly Serializer _serializer = new Serializer(new ContractPrimitiveSerializer(new PoANetwork()));
 
         public DeployController(IMediator mediator, ILogger<DeployController> logger)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _serializer = new Serializer(new ContractPrimitiveSerializer(new PoANetwork()));
         }
         
+        /// <summary>
+        /// Long running (5 minutes) deployment of local environment opdex smart contracts.
+        /// </summary>
+        /// <remarks>
+        /// Deploys ODX token, deploys the core Opdex Market Deployer contract, creates 4 additional SRC tokens and
+        /// approves allowances to create liquidity pools and provide liquidity within Opdex staking market.
+        /// Serializes the 4 SRC token liquidity pool addresses and distributes ODX tokens to you, as the owner and to the mining
+        /// governance contract (already deployed during ODX creation). Finally, creates an ODX liquidity pool, approves an allowance and adds liquidity
+        /// to the pool.
+        /// </remarks>
+        /// <param name="request">The wallet parameters needed for local env smart contract transactions.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns>Success</returns>
         [HttpPost("dev-contracts")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeployDevModeEnvironment(DeployRequest request, CancellationToken cancellationToken)
         {
             // Deploy ODX
@@ -52,8 +66,10 @@ namespace Opdex.Platform.WebApi.Controllers
             var createLiquidityPoolTransactions = new List<Transaction>();
             
             // Create 4 Tokens
-            foreach (var tokenParams in _createSrcTokensParams)
+            for (var i = 0; i < _createSrcTokensParams.Length; i++)
             {
+                var tokenParams = _createSrcTokensParams[i];
+                
                 // Create Tokens
                 var createTokenRequest = new SmartContractCreateRequestDto(srcByteCode, request.WalletAddress, tokenParams, request.WalletName, request.WalletPassword);
                 var createTokenCommand = new CallCirrusCreateSmartContractCommand(createTokenRequest);
@@ -74,6 +90,12 @@ namespace Opdex.Platform.WebApi.Controllers
                 createLiquidityPoolTransactions.Add(createLiquidityPoolTransaction);
                 
                 // Add Liquidity to pools
+                var addValues = _tokenAddLiquidityValues[i];
+                var crs = ulong.Parse(addValues[0]);
+                var src = addValues[1];
+                var addLiquidityCommand = new CreateWalletAddLiquidityTransactionCommand(createTokenTransaction.NewContractAddress, crs, src, 0, "0",
+                    request.WalletAddress, stakingMarket.Market);
+                var addLiquidityTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(addLiquidityCommand, cancellationToken));
             }
             
             // Serialize Liquidity Pool Addresses and Distribute ODX
@@ -89,7 +111,16 @@ namespace Opdex.Platform.WebApi.Controllers
             var createOdxPoolCommand = new CallCirrusCallSmartContractMethodCommand(createOdxPoolRequest);
             var createOdxPoolTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createOdxPoolCommand, cancellationToken));
 
+            // Add ODX Allowance to Market
+            var approveOdxParams = new[] { $"9#{stakingMarket.Market}", "12#0", "12#10000000000000000"};
+            var approveOdxAllowanceRequest = new SmartContractCallRequestDto(odxTransaction.NewContractAddress, request.WalletAddress, "0.00", "Approve", approveOdxParams);
+            var approveOdxAllowanceCommand = new CallCirrusCallSmartContractMethodCommand(approveOdxAllowanceRequest);
+            var approveOdxAllowanceTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(approveOdxAllowanceCommand, cancellationToken));
+            
             // Add liquidity to ODX
+            var addOdxLiquidityCommand = new CreateWalletAddLiquidityTransactionCommand(odxTransaction.NewContractAddress, 100000000000, "1000000000000", 0, "0",
+                request.WalletAddress, stakingMarket.Market);
+            var addOdxLiquidityTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(addOdxLiquidityCommand, cancellationToken));
             
             return Ok("Successful");
         }
@@ -154,7 +185,6 @@ namespace Opdex.Platform.WebApi.Controllers
         private const string _ownerDistributionSchedule = "10#F8A5A000004EB9EFA12A00000000000000000000000000000000000000000000000000A00080FACA73F91F00000000000000000000000000000000000000000000000000A00000A7DCF7501500000000000000000000000000000000000000000000000000A0008053EE7BA80A00000000000000000000000000000000000000000000000000A000E094FB1EAA0200000000000000000000000000000000000000000000000000";
         private const string _minerDistributionSchedule = "10#F8A5A00000B605DA796300000000000000000000000000000000000000000000000000A000804884639B4A00000000000000000000000000000000000000000000000000A00000DB02EDBC3100000000000000000000000000000000000000000000000000A000806D8176DE1800000000000000000000000000000000000000000000000000A000605BA09D370600000000000000000000000000000000000000000000000000";
         private const string _distributionSchedulePeriodDuration = "7#1000";
-
         private readonly string[][] _createSrcTokensParams =
         {
             new[]
@@ -184,6 +214,30 @@ namespace Opdex.Platform.WebApi.Controllers
                 "4#GLUON",
                 "4#GLU",
                 "2#8"
+            },
+        };
+
+        private readonly string[][] _tokenAddLiquidityValues =
+        {
+            new[]
+            {
+                "100000000000", // 1000 crs
+                "1000000000", // 10 btc
+            },
+            new[]
+            {
+                "100000000000", // 1000 crs
+                "10000000000000000000", // 10 wEth
+            },
+            new[]
+            {
+                "100000000000", // 1000 crs
+                "20000000000000000000", // 20 bnb
+            },
+            new[]
+            {
+                "100000000000", // 1000 crs
+                "1000000000000", // 10,000 GLU
             },
         };
     }

@@ -1,14 +1,9 @@
-namespace Opdex.Platform.WebApi.Models
+namespace Opdex.Platform.WebApi.Models.Responses
 {
-    public class PoolResponseModel
+    public class LiquidityPoolResponseModel
     {
         public string Address { get; set; }
         
         public TokenResponseModel Token { get; set; }
-        
-        // Todo: Should move to a PoolSnapshot model
-        public ulong ReserveCrs { get; set; }
-        
-        public string ReserveSrc { get; set; }
     }
 }
