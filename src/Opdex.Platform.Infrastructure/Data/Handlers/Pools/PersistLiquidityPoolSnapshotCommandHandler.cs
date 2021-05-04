@@ -58,8 +58,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                     {nameof(LiquidityPoolSnapshotEntity.VolumeSrc)} = @{nameof(LiquidityPoolSnapshotEntity.VolumeSrc)},
                     {nameof(LiquidityPoolSnapshotEntity.VolumeUsd)} = @{nameof(LiquidityPoolSnapshotEntity.VolumeUsd)},
                     {nameof(LiquidityPoolSnapshotEntity.StakingWeight)} = @{nameof(LiquidityPoolSnapshotEntity.StakingWeight)},
-                    {nameof(LiquidityPoolSnapshotEntity.StakingUsd)} = @{nameof(LiquidityPoolSnapshotEntity.StakingUsd)}
-                    {nameof(LiquidityPoolSnapshotEntity.ProviderRewards)} = @{nameof(LiquidityPoolSnapshotEntity.ProviderRewards)}
+                    {nameof(LiquidityPoolSnapshotEntity.StakingUsd)} = @{nameof(LiquidityPoolSnapshotEntity.StakingUsd)},
+                    {nameof(LiquidityPoolSnapshotEntity.ProviderRewards)} = @{nameof(LiquidityPoolSnapshotEntity.ProviderRewards)},
                     {nameof(LiquidityPoolSnapshotEntity.StakerRewards)} = @{nameof(LiquidityPoolSnapshotEntity.StakerRewards)}
                 WHERE {nameof(LiquidityPoolSnapshotEntity.Id)} = @{nameof(LiquidityPoolSnapshotEntity.Id)};";
 

@@ -22,10 +22,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.Quotes
         /// </summary>
         public string TokenOutAmount { get; set; }
         
-        public string TokenInPool { get; set; }
-        
-        public string TokenOutPool { get; set; }
-        
         public string Market { get; set; }
     }
 }

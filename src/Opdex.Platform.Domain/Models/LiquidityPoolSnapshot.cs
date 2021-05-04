@@ -54,7 +54,7 @@ namespace Opdex.Platform.Domain.Models
         
         public long Id { get; }
         public long LiquidityPoolId { get; }
-        public long TransactionCount { get; }
+        public long TransactionCount { get; private set; }
         public string ReserveCrs { get; private set; }
         public string ReserveSrc { get; private set; }
         public decimal ReserveUsd { get; private set; }
@@ -77,7 +77,7 @@ namespace Opdex.Platform.Domain.Models
             var volumeSrc = log.AmountSrcIn.Add(log.AmountSrcOut);
             VolumeSrc = VolumeSrc.Add(volumeSrc);
 
-            var crsVolumeDecimal = VolumeCrs.ToRoundedDecimal(2, crs.Decimals);
+            var crsVolumeDecimal = VolumeCrs.ToRoundedDecimal(8, crs.Decimals);
             VolumeUsd = Math.Round(crsVolumeDecimal * crsSnapshot.Price, 2, MidpointRounding.AwayFromZero);
             
             var rewards = Math.Round(VolumeUsd * .003m / 6, 2, MidpointRounding.AwayFromZero);
@@ -113,6 +113,11 @@ namespace Opdex.Platform.Domain.Models
 
             StakingWeight = StakingWeight.Add(weight);
             StakingUsd += odxWeightUsd;
+        }
+
+        public void IncrementTransactionCount()
+        {
+            TransactionCount += 1;
         }
     }
 }

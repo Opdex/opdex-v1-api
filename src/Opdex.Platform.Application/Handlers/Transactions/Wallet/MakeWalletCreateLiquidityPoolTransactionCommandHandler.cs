@@ -25,12 +25,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
         public Task<string> Handle(MakeWalletCreateLiquidityPoolTransactionCommand request, CancellationToken cancellationToken)
         {
             const string methodName = "CreatePool";
-            
-            var parameters = new []
-            {
-                request.Token.ToSmartContractParameter(SmartContractParameterType.Address)
-            };
-            
+            var parameters = new [] { request.Token.ToSmartContractParameter(SmartContractParameterType.Address) };
             var callDto = new SmartContractCallRequestDto(request.Market, request.Sender, "0", methodName, parameters);
             
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);

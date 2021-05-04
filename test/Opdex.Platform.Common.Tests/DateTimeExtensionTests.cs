@@ -17,7 +17,7 @@ namespace Opdex.Platform.Common.Tests
         }
 
         [Fact]
-        public void RoundsToStartOfDay()
+        public void RoundsToStartOfDay_Success()
         {
             var dateTime = new DateTime(2021, 6, 2, 5, 2, 1);
 
@@ -33,24 +33,24 @@ namespace Opdex.Platform.Common.Tests
         }
 
         [Fact]
-        public void RoundToEndOfDay()
+        public void RoundToEndOfDay_Success()
         {
             var dateTime = new DateTime(2021, 6, 2, 5, 2, 1);
 
             var endOfDay = dateTime.EndOfDay();
 
-            endOfDay.Day.Should().Be(dateTime.Day + 1);
-            endOfDay.Hour.Should().Be(0);
-            endOfDay.Minute.Should().Be(0);
-            endOfDay.Second.Should().Be(0);
-            endOfDay.Should().Be(new DateTime(2021, 6, 3));
+            endOfDay.Day.Should().Be(dateTime.Day);
+            endOfDay.Hour.Should().Be(23);
+            endOfDay.Minute.Should().Be(59);
+            endOfDay.Second.Should().Be(59);
+            endOfDay.Should().Be(new DateTime(2021, 6, 2, 23, 59, 59));
 
             _testOutputHelper.WriteLine(dateTime.ToString(CultureInfo.InvariantCulture));
             _testOutputHelper.WriteLine(endOfDay.ToString(CultureInfo.InvariantCulture));
         }
         
         [Fact]
-        public void RoundsToStartOfHour()
+        public void RoundsToStartOfHour_Success()
         {
             var dateTime = new DateTime(2021, 6, 2, 5, 2, 1);
 
@@ -67,17 +67,17 @@ namespace Opdex.Platform.Common.Tests
         }
 
         [Fact]
-        public void RoundToEndOfHour()
+        public void RoundToEndOfHour_Success()
         {
             var dateTime = new DateTime(2021, 6, 2, 5, 2, 1);
 
             var endOfHour = dateTime.EndOfHour();
 
             endOfHour.Day.Should().Be(dateTime.Day);
-            endOfHour.Hour.Should().Be(6);
-            endOfHour.Minute.Should().Be(0);
-            endOfHour.Second.Should().Be(0);
-            endOfHour.Should().Be(new DateTime(2021, 6, 2, 6, 0, 0));
+            endOfHour.Hour.Should().Be(5);
+            endOfHour.Minute.Should().Be(59);
+            endOfHour.Second.Should().Be(59);
+            endOfHour.Should().Be(new DateTime(2021, 6, 2, 5, 59, 59));
 
             _testOutputHelper.WriteLine(dateTime.ToString(CultureInfo.InvariantCulture));
             _testOutputHelper.WriteLine(endOfHour.ToString(CultureInfo.InvariantCulture));

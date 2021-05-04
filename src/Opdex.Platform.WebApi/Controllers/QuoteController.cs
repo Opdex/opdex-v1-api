@@ -27,8 +27,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetSwapQuote(SwapQuoteRequestModel request, CancellationToken cancellationToken)
         {
-            var query = new GetLiquidityPoolSwapQuoteQuery(request.TokenIn, request.TokenOut, request.TokenInAmount, 
-                request.TokenOutAmount, request.TokenInPool, request.TokenOutPool, request.Market);
+            var query = new GetLiquidityPoolSwapQuoteQuery(request.TokenIn, request.TokenOut, request.TokenInAmount, request.TokenOutAmount, request.Market);
 
             var result = await _mediator.Send(query, cancellationToken);
 

@@ -134,7 +134,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     var snapshotEnd = snapshotType == SnapshotType.Hourly ? block.MedianTime.EndOfHour() : block.MedianTime.EndOfDay();
                     var poolSnapshot = poolSnapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
                                        new LiquidityPoolSnapshot(pool.Id, snapshotType, snapshotStart, snapshotEnd);
-
+                    
                     // Each log to process
                     foreach (var poolLog in value)
                     {
@@ -163,9 +163,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                                 poolSnapshot.ProcessStakingLog((StopStakingLog)poolLog, crsSnapshot, crsToken);
                                 break;
                         }
-                        
-                        await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(poolSnapshot), CancellationToken.None); 
                     }
+                    
+                    poolSnapshot.IncrementTransactionCount();
+                    
+                    await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(poolSnapshot), CancellationToken.None);
                 }
             }
         }

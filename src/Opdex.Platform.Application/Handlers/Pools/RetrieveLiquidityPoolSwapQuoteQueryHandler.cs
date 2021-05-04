@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Pools.SwapQuotes;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
 
 namespace Opdex.Platform.Application.Handlers.Pools
 {
@@ -28,8 +29,10 @@ namespace Opdex.Platform.Application.Handlers.Pools
             // Get SrcSrc quote
             if (isSrcToSrc)
             {
-                var tokenInReserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(request.TokenInPool), cancellationToken);
-                var tokenOutReserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(request.TokenOutPool), cancellationToken);
+                var tokenInPool = await _mediator.Send(new SelectLiquidityPoolByAddressQuery(request.TokenIn), cancellationToken);
+                var tokenOutPool = await _mediator.Send(new SelectLiquidityPoolByAddressQuery(request.TokenOut), cancellationToken);
+                var tokenInReserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(tokenInPool.Address), cancellationToken);
+                var tokenOutReserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(tokenOutPool.Address), cancellationToken);
 
                 return request.TokenInAmount.HasValue()
                     ? await _mediator.Send(new CallCirrusGetAmountOutMultiHopQuoteQuery(request.Market, request.TokenInAmount, tokenInReserves[0], tokenInReserves[1], tokenOutReserves[0], tokenOutReserves[1]), cancellationToken)
@@ -37,8 +40,9 @@ namespace Opdex.Platform.Application.Handlers.Pools
             }
             
             // Get CrsSrc quote
-            var pool = isCrsOut ? request.TokenInPool : request.TokenOutPool;
-            var reserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(pool), cancellationToken);
+            var srcToken = isCrsOut ? request.TokenIn : request.TokenOut;
+            var srcPool = await _mediator.Send(new SelectLiquidityPoolByAddressQuery(srcToken), cancellationToken);
+            var reserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(srcPool.Address), cancellationToken);
 
             var reservesIn = isCrsIn ? reserves[0] : reserves[1];
             var reservesOut = isCrsIn ? reserves[1] : reserves[0];
