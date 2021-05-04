@@ -5,13 +5,14 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Pools
     public class RetrieveLiquidityPoolSwapQuoteQuery : IRequest<string>
     {
         public RetrieveLiquidityPoolSwapQuoteQuery(string tokenIn, string tokenOut, string tokenInAmount, string tokenOutAmount, 
-            bool tokenInExactAmount, string market)
+            string tokenInPool, string tokenOutPool, string market)
         {
             TokenIn = tokenIn;
             TokenOut = tokenOut;
             TokenInAmount = tokenInAmount;
             TokenOutAmount = tokenOutAmount;
-            TokenInExactAmount = tokenInExactAmount;
+            TokenInPool = tokenInPool;
+            TokenOutPool = tokenOutPool;
             Market = market;
         }
         
@@ -19,7 +20,8 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Pools
         public string TokenOut { get; }
         public string TokenInAmount { get; }
         public string TokenOutAmount { get; }
-        public bool TokenInExactAmount { get; }
+        public string TokenInPool { get; }
+        public string TokenOutPool { get; }
         public string Market { get; }
     }
 }

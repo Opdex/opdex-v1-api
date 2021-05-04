@@ -22,10 +22,9 @@ namespace Opdex.Platform.WebApi.Models.Requests.Quotes
         /// </summary>
         public string TokenOutAmount { get; set; }
         
-        /// <summary>
-        /// Flag either token in amount is exact or token out amount
-        /// </summary>
-        public bool TokenInExactAmount { get; set; }
+        public string TokenInPool { get; set; }
+        
+        public string TokenOutPool { get; set; }
         
         public string Market { get; set; }
     }

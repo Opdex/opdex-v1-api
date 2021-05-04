@@ -28,7 +28,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
             FROM transaction t
             LEFT JOIN transaction_log tl 
                 ON tl.{nameof(TransactionLogEntity.TransactionId)} = t.{nameof(TransactionEntity.Id)} 
-            LEFT JOIN pool p 
+            LEFT JOIN pool_liquidity p 
                 ON p.{nameof(LiquidityPoolEntity.Address)} = tl.{nameof(TransactionLogEntity.Contract)}
             WHERE tl.{nameof(TransactionLogEntity.Id)} IS NOT NULL
                 AND p.{nameof(LiquidityPoolEntity.Address)} = @{nameof(SqlParams.PoolAddress)}

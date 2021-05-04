@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools
         
         public Task<string> Handle(GetLiquidityPoolSwapQuoteQuery request, CancellationToken cancellationToken)
         {
-            var query = new RetrieveLiquidityPoolSwapQuoteQuery(request.TokenIn, request.TokenOut, request.TokenInAmount, request.TokenOutAmount, request.TokenInExactAmount, request.Market);
+            var query = new RetrieveLiquidityPoolSwapQuoteQuery(request.TokenIn, request.TokenOut, request.TokenInAmount, request.TokenOutAmount, request.TokenInPool, request.TokenOutPool, request.Market);
 
             return _mediator.Send(query, cancellationToken);
         }
