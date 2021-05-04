@@ -58,7 +58,7 @@ stages:
 - stage: Deploy
   displayName: Deploy
   dependsOn: Package
-  condition: succeeded()
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
 
   jobs:
     - deployment: Testnet
