@@ -16,7 +16,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             : base(httpClient, logger)
         {
         }
-        
+
         public Task<ContractCodeDto> GetContractCodeAsync(string address, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractCode, address);
@@ -43,10 +43,10 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 
         public Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(string contractAddress, string logName, ulong fromBlock, ulong? toBlock, CancellationToken cancellationToken)
         {
-            var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractReceiptSearch, contractAddress, logName, fromBlock, toBlock);
-            
+            var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractReceiptSearch, contractAddress, logName, fromBlock);
+
             if (toBlock.GetValueOrDefault() > 0) uri += $"&to={toBlock}";
-            
+
             return GetAsync<IEnumerable<TransactionReceiptDto>>(uri, cancellationToken);
         }
 
