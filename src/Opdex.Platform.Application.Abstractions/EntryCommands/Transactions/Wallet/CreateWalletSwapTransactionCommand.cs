@@ -1,11 +1,12 @@
 using MediatR;
+using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet
 {
     public class CreateWalletSwapTransactionCommand : IRequest<string>
     {
         public CreateWalletSwapTransactionCommand(string tokenIn, string tokenOut, string tokenInAmount, string tokenOutAmount, 
-            bool tokenInExactAmount, decimal tolerance, string to)
+            bool tokenInExactAmount, decimal tolerance, string to, string market)
         {
             TokenIn = tokenIn;
             TokenOut = tokenOut;
@@ -14,6 +15,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             TokenInExactAmount = tokenInExactAmount;
             Tolerance = tolerance;
             To = to;
+            Market = market;
         }
         
         public string TokenIn { get; }
@@ -23,5 +25,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
         public bool TokenInExactAmount { get; }
         public decimal Tolerance { get; }
         public string To { get; }
+        public string Market { get; }
     }
 }

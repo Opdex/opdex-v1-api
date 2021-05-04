@@ -20,7 +20,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
                 {nameof(TokenSnapshotEntity.Price)},
                 {nameof(TokenSnapshotEntity.StartDate)},
                 {nameof(TokenSnapshotEntity.EndDate)},
-                {nameof(TokenSnapshotEntity.SnapshotType)}
+                {nameof(TokenSnapshotEntity.SnapshotTypeId)}
             FROM token_snapshot
             WHERE {nameof(TokenSnapshotEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
                 AND @{nameof(SqlParams.Time)} BETWEEN 

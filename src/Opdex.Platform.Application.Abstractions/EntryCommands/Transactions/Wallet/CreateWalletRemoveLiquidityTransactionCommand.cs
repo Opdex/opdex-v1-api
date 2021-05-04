@@ -5,13 +5,14 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
     public class CreateWalletRemoveLiquidityTransactionCommand : IRequest<string>
     {
         public CreateWalletRemoveLiquidityTransactionCommand(string token, string liquidity,
-            ulong amountCrsMin, string amountSrcMin, string to)
+            ulong amountCrsMin, string amountSrcMin, string to, string market)
         {
             Token = token;
             Liquidity = liquidity;
             AmountCrsMin = amountCrsMin;
             AmountSrcMin = amountSrcMin;
             To = to;
+            Market = market;
         }
         
         public string Token { get; }
@@ -19,5 +20,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
         public ulong AmountCrsMin { get; }
         public string AmountSrcMin { get; }
         public string To { get; }
+        public string Market { get; }
     }
 }

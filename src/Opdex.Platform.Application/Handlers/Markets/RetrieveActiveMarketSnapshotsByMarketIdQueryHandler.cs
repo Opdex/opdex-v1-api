@@ -13,7 +13,7 @@ namespace Opdex.Platform.Application.Handlers.Markets
     {
         private readonly IMediator _mediator;
         
-        private RetrieveActiveMarketSnapshotsByMarketIdQueryHandler(IMediator mediator)
+        public RetrieveActiveMarketSnapshotsByMarketIdQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }

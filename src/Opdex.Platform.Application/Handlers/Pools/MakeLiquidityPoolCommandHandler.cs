@@ -22,6 +22,7 @@ namespace Opdex.Platform.Application.Handlers.Pools
             var pool = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolByAddressQuery(request.Address), cancellationToken);
             
             pool.SetTokenId(request.TokenId);
+            pool.SetMarketId(request.MarketId);
             
             return await _mediator.Send(new PersistLiquidityPoolCommand(pool), cancellationToken);
         }

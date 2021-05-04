@@ -5,7 +5,7 @@ namespace Opdex.Platform.Domain.Models
 {
     public class LiquidityPool
     {
-        public LiquidityPool(string address, long tokenId, long marketId, ulong reserveCrs, string reserveSrc)
+        public LiquidityPool(string address, long tokenId, long marketId)
         {
             if (!address.HasValue())
             {
@@ -21,20 +21,13 @@ namespace Opdex.Platform.Domain.Models
             {
                 throw new ArgumentOutOfRangeException(nameof(marketId), $"{nameof(marketId)} must be greater than 0.");
             }
-
-            if (!reserveSrc.HasValue())
-            {
-                throw new ArgumentNullException(nameof(reserveSrc));
-            }
             
             Address = address;
             TokenId = tokenId;
             MarketId = marketId;
-            ReserveCrs = reserveCrs;
-            ReserveSrc = reserveSrc;
         }
         
-        public LiquidityPool(string address, string tokenAddress, ulong reserveCrs, string reserveSrc)
+        public LiquidityPool(string address, string tokenAddress)
         {
             if (!address.HasValue())
             {
@@ -46,25 +39,16 @@ namespace Opdex.Platform.Domain.Models
                 throw new ArgumentNullException(nameof(tokenAddress), $"{nameof(tokenAddress)} must be provided");
             }
             
-            if (!reserveSrc.HasValue())
-            {
-                throw new ArgumentNullException(nameof(reserveSrc));
-            }
-            
             Address = address;
             TokenAddress = tokenAddress;
-            ReserveCrs = reserveCrs;
-            ReserveSrc = reserveSrc;
         }
 
-        public LiquidityPool(long id, string address, long tokenId, long marketId, ulong reserveCrs, string reserveSrc)
+        public LiquidityPool(long id, string address, long tokenId, long marketId)
         {
             Id = id;
             Address = address;
             TokenId = tokenId;
             MarketId = marketId;
-            ReserveCrs = reserveCrs;
-            ReserveSrc = reserveSrc;
         }
         
         public long Id { get; }
@@ -72,14 +56,20 @@ namespace Opdex.Platform.Domain.Models
         public long TokenId { get; private set; }
         public long MarketId { get; private set; }
         public string TokenAddress { get; }
-        public ulong ReserveCrs { get; }
-        public string ReserveSrc { get; }
 
         public void SetTokenId(long tokenId)
         {
             if (TokenId == 0 && tokenId > 0)
             {
                 TokenId = tokenId;
+            }
+        }
+        
+        public void SetMarketId(long marketId)
+        {
+            if (MarketId == 0 && marketId > 0)
+            {
+                MarketId = marketId;
             }
         }
     }

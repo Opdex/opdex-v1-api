@@ -21,13 +21,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 {nameof(LiquidityPoolSnapshotEntity.ReserveUsd)},
                 {nameof(LiquidityPoolSnapshotEntity.VolumeCrs)},
                 {nameof(LiquidityPoolSnapshotEntity.VolumeSrc)},
-                {nameof(LiquidityPoolSnapshotEntity.VolumeSrc)},
                 {nameof(LiquidityPoolSnapshotEntity.VolumeUsd)},
                 {nameof(LiquidityPoolSnapshotEntity.StakingWeight)},
                 {nameof(LiquidityPoolSnapshotEntity.StakingUsd)},
                 {nameof(LiquidityPoolSnapshotEntity.ProviderRewards)},
                 {nameof(LiquidityPoolSnapshotEntity.StakerRewards)},
-                {nameof(LiquidityPoolSnapshotEntity.SnapshotType)},
+                {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)},
                 {nameof(LiquidityPoolSnapshotEntity.StartDate)},
                 {nameof(LiquidityPoolSnapshotEntity.EndDate)}
               ) VALUES (
@@ -38,13 +37,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 @{nameof(LiquidityPoolSnapshotEntity.ReserveUsd)},
                 @{nameof(LiquidityPoolSnapshotEntity.VolumeCrs)},
                 @{nameof(LiquidityPoolSnapshotEntity.VolumeSrc)},
-                @{nameof(LiquidityPoolSnapshotEntity.VolumeSrc)},
                 @{nameof(LiquidityPoolSnapshotEntity.VolumeUsd)},
                 @{nameof(LiquidityPoolSnapshotEntity.StakingWeight)},
                 @{nameof(LiquidityPoolSnapshotEntity.StakingUsd)},
                 @{nameof(LiquidityPoolSnapshotEntity.ProviderRewards)},
                 @{nameof(LiquidityPoolSnapshotEntity.StakerRewards)},
-                @{nameof(LiquidityPoolSnapshotEntity.SnapshotType)},
+                @{nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)},
                 @{nameof(LiquidityPoolSnapshotEntity.StartDate)},
                 @{nameof(LiquidityPoolSnapshotEntity.EndDate)}
               );";

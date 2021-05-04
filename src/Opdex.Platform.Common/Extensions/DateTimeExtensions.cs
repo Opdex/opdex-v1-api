@@ -32,7 +32,7 @@ namespace Opdex.Platform.Common.Extensions
 
         public static DateTime EndOfDay(this DateTime date)
         {
-            return date.EndOfHour().AddHours(24 - date.Hour);
+            return date.StartOfHour().AddHours(24 - date.Hour);
         }
         
         public static DateTime StartOfDay(this DateTime date)
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Common.Extensions
         
         public static DateTime EndOfHour(this DateTime date)
         {
-            return date.EndOfMinute().AddMinutes(60 - date.Minute);
+            return date.StartOfMinute().AddMinutes(60 - date.Minute);
         }
         
         public static DateTime StartOfMinute(this DateTime date)

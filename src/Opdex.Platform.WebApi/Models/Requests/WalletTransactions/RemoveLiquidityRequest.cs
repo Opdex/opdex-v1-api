@@ -7,5 +7,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         public ulong AmountCrsMin { get; set; }
         public string AmountSrcMin { get; set; }
         public string To { get; set; }
+        public string Market { get; set; }
     }
 }

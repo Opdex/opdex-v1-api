@@ -20,10 +20,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
                 {nameof(TokenSnapshotEntity.Price)},
                 {nameof(TokenSnapshotEntity.StartDate)},
                 {nameof(TokenSnapshotEntity.EndDate)},
-                {nameof(TokenSnapshotEntity.SnapshotType)}
+                {nameof(TokenSnapshotEntity.SnapshotTypeId)}
             FROM token_snapshot
             WHERE {nameof(TokenSnapshotEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
-            ORDER BY {nameof(TokenSnapshotEntity.EndDate)}, {nameof(TokenSnapshotEntity.SnapshotType)} DESC
+            ORDER BY {nameof(TokenSnapshotEntity.EndDate)}, {nameof(TokenSnapshotEntity.SnapshotTypeId)} DESC
             LIMIT 1;";
 
         private readonly IDbContext _context;

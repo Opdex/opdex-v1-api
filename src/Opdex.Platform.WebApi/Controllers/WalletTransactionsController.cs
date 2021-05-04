@@ -51,7 +51,7 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<IActionResult> AddLiquidity(AddLiquidityRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletAddLiquidityTransactionCommand(request.Token, request.AmountCrsDesired, request.AmountSrcDesired,
-                request.AmountCrsMin, request.AmountSrcMin, request.To);
+                request.AmountCrsMin, request.AmountSrcMin, request.To, request.Market);
             
             var response = await _mediator.Send(command, cancellationToken);
 
@@ -62,7 +62,7 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<IActionResult> RemoveLiquidity(RemoveLiquidityRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletRemoveLiquidityTransactionCommand(request.Token, request.Liquidity,
-                request.AmountCrsMin, request.AmountSrcMin, request.To);
+                request.AmountCrsMin, request.AmountSrcMin, request.To, request.Market);
             
             var response = await _mediator.Send(command, cancellationToken);
 
@@ -73,7 +73,7 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<IActionResult> SwapExactTokens(SwapRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletSwapTransactionCommand(request.TokenIn, request.TokenOut, request.TokenInAmount, 
-                request.TokenOutAmount, request.TokenInExactAmount, request.Tolerance, request.To);
+                request.TokenOutAmount, request.TokenInExactAmount, request.Tolerance, request.To, request.Market);
             
             var response = await _mediator.Send(command, cancellationToken);
 
@@ -83,7 +83,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("build/create-pool")]
         public async Task<IActionResult> CreatePool(CreatePoolRequest request, CancellationToken cancellationToken)
         {
-            var command = new CreateWalletCreateLiquidityPoolTransactionCommand(request.Token, request.Sender);
+            var command = new CreateWalletCreateLiquidityPoolTransactionCommand(request.Token, request.Sender, request.Market);
             
             var response = await _mediator.Send(command, cancellationToken);
 

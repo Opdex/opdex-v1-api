@@ -20,8 +20,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 {nameof(LiquidityPoolEntity.Address)},
                 {nameof(LiquidityPoolEntity.TokenId)},
                 {nameof(LiquidityPoolEntity.MarketId)},
-                {nameof(LiquidityPoolEntity.ReserveCrs)},
-                {nameof(LiquidityPoolEntity.ReserveSrc)},
                 {nameof(LiquidityPoolEntity.CreatedDate)}
             FROM pool_liquidity;";
 

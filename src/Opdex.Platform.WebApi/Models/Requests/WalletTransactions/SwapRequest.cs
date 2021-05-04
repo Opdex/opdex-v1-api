@@ -33,5 +33,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         public decimal Tolerance { get; set; }
         
         public string To { get; set; }
+        
+        public string Market { get; set; }
     }
 }

@@ -22,7 +22,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 {nameof(MarketSnapshotEntity.StakingUsd)},
                 {nameof(MarketSnapshotEntity.ProviderRewards)},
                 {nameof(MarketSnapshotEntity.StakerRewards)},
-                {nameof(MarketSnapshotEntity.SnapshotType)},
+                {nameof(MarketSnapshotEntity.SnapshotTypeId)},
                 {nameof(MarketSnapshotEntity.StartDate)},
                 {nameof(MarketSnapshotEntity.EndDate)}
               ) VALUES (
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 @{nameof(MarketSnapshotEntity.StakingUsd)},
                 @{nameof(MarketSnapshotEntity.ProviderRewards)},
                 @{nameof(MarketSnapshotEntity.StakerRewards)},
-                @{nameof(MarketSnapshotEntity.SnapshotType)},
+                @{nameof(MarketSnapshotEntity.SnapshotTypeId)},
                 @{nameof(MarketSnapshotEntity.StartDate)},
                 @{nameof(MarketSnapshotEntity.EndDate)}
               );";

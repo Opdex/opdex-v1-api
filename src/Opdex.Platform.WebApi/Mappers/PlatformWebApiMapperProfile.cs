@@ -18,11 +18,9 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
-            CreateMap<LiquidityPoolDto, PoolResponseModel>()
+            CreateMap<LiquidityPoolDto, LiquidityPoolResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
-                .ForMember(dest => dest.ReserveCrs, opt => opt.MapFrom(src => src.ReserveCrs))
-                .ForMember(dest => dest.ReserveSrc, opt => opt.MapFrom(src => src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<MarketSnapshotDto, MarketSnapshotResponseModel>()

@@ -65,5 +65,14 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 
             return response.TransactionId;
         }
+
+        public async Task<string> CreateSmartContractAsync(SmartContractCreateRequestDto call, CancellationToken cancellationToken)
+        {
+            const string uri = CirrusUriHelper.SmartContractWallet.Create;
+            var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(call, uri, HttpMethod.Post);
+            var transactionHash = await PostAsync<string>(uri, httpRequest.Content, cancellationToken);
+
+            return transactionHash;
+        }
     }
 }

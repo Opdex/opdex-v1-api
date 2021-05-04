@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Extensions.Options;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
@@ -15,12 +13,10 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
     public class MakeWalletSwapTransactionCommandHandler : IRequestHandler<MakeWalletSwapTransactionCommand, string>
     {
         private readonly IMediator _mediator;
-        private readonly OpdexConfiguration _opdexConfiguration;
 
-        public MakeWalletSwapTransactionCommandHandler(IMediator mediator, IOptions<OpdexConfiguration> opdexConfiguration)
+        public MakeWalletSwapTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _opdexConfiguration = opdexConfiguration.Value ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
         
         public Task<string> Handle(MakeWalletSwapTransactionCommand request, CancellationToken cancellationToken)
@@ -98,7 +94,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             
             var amount = isCrsIn ? request.TokenInAmount : "0";
             
-            var callDto = new SmartContractCallRequestDto(_opdexConfiguration.ControllerContract, request.To, amount, methodName, parameters.ToArray());
+            var callDto = new SmartContractCallRequestDto(request.Market, request.To, amount, methodName, parameters.ToArray());
             
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
         }

@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
         : IRequestHandler<SelectActiveLiquidityPoolSnapshotsByPoolIdQuery, IEnumerable<LiquidityPoolSnapshot>>
     {
         private static readonly string SqlQuery =
-            @$"Select 
+            @$"SELECT 
                 {nameof(LiquidityPoolSnapshotEntity.Id)},
                 {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)},
                 {nameof(LiquidityPoolSnapshotEntity.TransactionCount)},
@@ -29,10 +29,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 {nameof(LiquidityPoolSnapshotEntity.StakingUsd)},
                 {nameof(LiquidityPoolSnapshotEntity.ProviderRewards)},
                 {nameof(LiquidityPoolSnapshotEntity.StakerRewards)},
-                {nameof(LiquidityPoolSnapshotEntity.SnapshotType)},
+                {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)},
                 {nameof(LiquidityPoolSnapshotEntity.StartDate)},
                 {nameof(LiquidityPoolSnapshotEntity.EndDate)}
-            FROM market_snapshot
+            FROM pool_liquidity_snapshot
             WHERE {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)} = @{nameof(SqlParams.PoolId)}
                 AND @{nameof(SqlParams.Time)} BETWEEN 
                     {nameof(LiquidityPoolSnapshotEntity.StartDate)} AND {nameof(LiquidityPoolSnapshotEntity.EndDate)};";

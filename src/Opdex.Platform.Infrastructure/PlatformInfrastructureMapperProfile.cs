@@ -17,11 +17,11 @@ namespace Opdex.Platform.Infrastructure
         public PlatformInfrastructureMapperProfile()
         {
             CreateMap<TransactionReceiptDto, Transaction>()
-                .ConstructUsing(src => new Transaction(src.TransactionHash, src.BlockHeight, src.GasUsed, src.From, src.To))
+                .ConstructUsing(src => new Transaction(src.TransactionHash, src.BlockHeight, src.GasUsed, src.From, src.To, src.NewContractAddress))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TransactionEntity, Transaction>()
-                .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, new TransactionLog[0]))
+                .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, new TransactionLog[0], null))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TokenEntity, Token>()
@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TokenSnapshotEntity, TokenSnapshot>()
-                .ConstructUsing(src => new TokenSnapshot(src.Id, src.TokenId, src.Price, src.SnapshotType, src.StartDate, src.EndDate))
+                .ConstructUsing(src => new TokenSnapshot(src.Id, src.TokenId, src.Price, src.SnapshotTypeId, src.StartDate, src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<BlockEntity, Block>()
@@ -37,12 +37,12 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<LiquidityPoolEntity, LiquidityPool>()
-                .ConstructUsing(src => new LiquidityPool(src.Id, src.Address, src.TokenId, src.MarketId, src.ReserveCrs, src.ReserveSrc))
+                .ConstructUsing(src => new LiquidityPool(src.Id, src.Address, src.TokenId, src.MarketId))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<LiquidityPoolSnapshotEntity, LiquidityPoolSnapshot>()
                 .ConstructUsing(src => new LiquidityPoolSnapshot(src.Id, src.LiquidityPoolId, src.TransactionCount, src.ReserveCrs, src.ReserveSrc, src.ReserveUsd,
-                    src.VolumeCrs, src.VolumeSrc, src.VolumeUsd, src.StakingWeight, src.StakingUsd, src.ProviderRewards, src.StakerRewards, (SnapshotType)src.SnapshotType, src.StartDate, src.EndDate))
+                    src.VolumeCrs, src.VolumeSrc, src.VolumeUsd, src.StakingWeight, src.StakingUsd, src.ProviderRewards, src.StakerRewards, (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketEntity, Market>()
@@ -51,7 +51,7 @@ namespace Opdex.Platform.Infrastructure
             
             CreateMap<MarketSnapshotEntity, MarketSnapshot>()
                 .ConstructUsing(src => new MarketSnapshot(src.Id, src.MarketId, src.TransactionCount, src.Liquidity, src.Volume, src.StakingWeight, src.StakingUsd, 
-                    src.ProviderRewards, src.StakerRewards, (SnapshotType)src.SnapshotType, src.StartDate, src.EndDate))
+                    src.ProviderRewards, src.StakerRewards, (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TransactionLogEntity, TransactionLog>()
@@ -107,7 +107,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.StakingUsd, opt => opt.MapFrom(src => src.WeightUsd))
                 .ForMember(dest => dest.ProviderRewards, opt => opt.MapFrom(src => src.ProviderRewards))
                 .ForMember(dest => dest.StakerRewards, opt => opt.MapFrom(src => src.StakerRewards))
-                .ForMember(dest => dest.SnapshotType, opt => opt.MapFrom(src => src.SnapshotType))
+                .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => src.SnapshotType))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
@@ -126,7 +126,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
-                .ForMember(dest => dest.SnapshotType, opt => opt.MapFrom(src => src.SnapshotType))
+                .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => (int)src.SnapshotType))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
@@ -136,8 +136,6 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
-                .ForMember(dest => dest.ReserveCrs, opt => opt.MapFrom(src => src.ReserveCrs))
-                .ForMember(dest => dest.ReserveSrc, opt => opt.MapFrom(src => src.ReserveSrc))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<LiquidityPoolSnapshot, LiquidityPoolSnapshotEntity>()
@@ -154,7 +152,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.StakingUsd, opt => opt.MapFrom(src => src.StakingUsd))
                 .ForMember(dest => dest.ProviderRewards, opt => opt.MapFrom(src => src.ProviderRewards))
                 .ForMember(dest => dest.StakerRewards, opt => opt.MapFrom(src => src.StakerRewards))
-                .ForMember(dest => dest.SnapshotType, opt => opt.MapFrom(src => src.SnapshotType))
+                .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => (int)src.SnapshotType))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());

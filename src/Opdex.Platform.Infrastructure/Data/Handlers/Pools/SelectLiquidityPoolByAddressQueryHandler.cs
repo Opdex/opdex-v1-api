@@ -18,9 +18,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 {nameof(LiquidityPoolEntity.Id)},
                 {nameof(LiquidityPoolEntity.Address)},
                 {nameof(LiquidityPoolEntity.TokenId)},
-                {nameof(LiquidityPoolEntity.MarketId)},
-                {nameof(LiquidityPoolEntity.ReserveCrs)},
-                {nameof(LiquidityPoolEntity.ReserveSrc)}
+                {nameof(LiquidityPoolEntity.MarketId)}
             FROM pool_liquidity
             WHERE {nameof(LiquidityPoolEntity.Address)} = @{nameof(SqlParams.Address)};";
                         
