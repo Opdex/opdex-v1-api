@@ -8,17 +8,17 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         public string Token { get; set; }
         
         /// <summary>
-        /// The amount of liquidity pool tokens to remove.
+        /// Decimal as a string of the amount of liquidity pool tokens to remove.
         /// </summary>
         public string Liquidity { get; set; }
         
         /// <summary>
-        /// The minimum amount of CRS to receive or fail.
+        /// Decimal as a string of the minimum amount of CRS to receive or fail the transaction.
         /// </summary>
-        public ulong AmountCrsMin { get; set; }
+        public string AmountCrsMin { get; set; }
         
         /// <summary>
-        /// The minimum amount of SRC to receive or fail.
+        /// Decimal as a string of the minimum amount of SRC to receive or fail the transaction.
         /// </summary>
         public string AmountSrcMin { get; set; }
         

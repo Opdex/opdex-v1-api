@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Extensions.Options;
-using Opdex.Platform.Common;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
@@ -21,11 +18,8 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<string> Handle(MakeWalletRemoveLiquidityTransactionCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(MakeWalletRemoveLiquidityTransactionCommand request, CancellationToken cancellationToken)
         {
-            const string methodName = "RemoveLiquidity";
-            const string amountToSend = "0";
-            
             var parameters = new []
             {
                 request.Token.ToSmartContractParameter(SmartContractParameterType.Address),
@@ -36,9 +30,9 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                 0.ToSmartContractParameter(SmartContractParameterType.UInt64)
             };
             
-            var callDto = new SmartContractCallRequestDto(request.Market, request.To, amountToSend, methodName, parameters);
+            var callDto = new SmartContractCallRequestDto(request.Market, request.To, "0", "RemoveLiquidity", parameters);
             
-            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
+            return await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
         }
     }
 }
