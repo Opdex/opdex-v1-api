@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Opdex.Platform.Common.Extensions
 {
@@ -19,6 +20,31 @@ namespace Opdex.Platform.Common.Extensions
         {
             var sats = decimals.DecimalsToSatoshis();
             return (ulong)Math.Floor(value * sats);
+        }
+
+        public static string ToSatoshis(this string value, int decimals)
+        {
+            var decimalIndex = value.IndexOf('.');
+            
+            var existingDecimalPlaces = value.Length - decimalIndex - 1;
+
+            if (existingDecimalPlaces > decimals)
+            {
+                value = value.Substring(decimalIndex + decimals, value.Length - (existingDecimalPlaces - decimals));
+            }
+            
+            if (value.Contains('.'))
+            {
+                value = value.Replace(".", "");
+            }
+
+            var remainder = decimals >= existingDecimalPlaces
+                ? decimals - existingDecimalPlaces
+                : 0;
+            
+            value = value.PadRight(value.Length + remainder, '0');
+
+            return value.TrimStart('0').Length > 0 ? value.TrimStart('0') : "0";
         }
         
         public static string InsertDecimal(this string value, int decimals)

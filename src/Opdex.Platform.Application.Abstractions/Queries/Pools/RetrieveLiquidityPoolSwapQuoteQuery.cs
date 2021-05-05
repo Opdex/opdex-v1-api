@@ -1,10 +1,11 @@
 using MediatR;
+using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Pools
 {
     public class RetrieveLiquidityPoolSwapQuoteQuery : IRequest<string>
     {
-        public RetrieveLiquidityPoolSwapQuoteQuery(string tokenIn, string tokenOut, string tokenInAmount, string tokenOutAmount, string market)
+        public RetrieveLiquidityPoolSwapQuoteQuery(Token tokenIn, Token tokenOut, string tokenInAmount, string tokenOutAmount, string market)
         {
             TokenIn = tokenIn;
             TokenOut = tokenOut;
@@ -13,8 +14,8 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Pools
             Market = market;
         }
         
-        public string TokenIn { get; }
-        public string TokenOut { get; }
+        public Token TokenIn { get; }
+        public Token TokenOut { get; }
         public string TokenInAmount { get; }
         public string TokenOutAmount { get; }
         public string Market { get; }
