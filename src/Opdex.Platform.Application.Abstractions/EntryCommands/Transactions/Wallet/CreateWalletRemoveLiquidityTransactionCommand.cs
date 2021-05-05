@@ -4,22 +4,22 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 {
     public class CreateWalletRemoveLiquidityTransactionCommand : IRequest<string>
     {
-        public CreateWalletRemoveLiquidityTransactionCommand(string token, string liquidity,
-            string amountCrsMin, string amountSrcMin, string to, string market)
+        public CreateWalletRemoveLiquidityTransactionCommand(string pool, string liquidity,
+            string amountCrsMin, string amountSrcMin, string walletAddress, string market)
         {
-            Token = token;
+            Pool = pool;
             Liquidity = liquidity;
             AmountCrsMin = amountCrsMin;
             AmountSrcMin = amountSrcMin;
-            To = to;
+            WalletAddress = walletAddress;
             Market = market;
         }
         
-        public string Token { get; }
         public string Liquidity { get; }
         public string AmountCrsMin { get; }
         public string AmountSrcMin { get; }
-        public string To { get; }
+        public string WalletAddress { get; }
+        public string Pool { get; }
         public string Market { get; }
     }
 }

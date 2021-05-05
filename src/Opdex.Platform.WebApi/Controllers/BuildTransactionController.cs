@@ -43,8 +43,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("remove-liquidity")]
         public async Task<IActionResult> RemoveLiquidity(RemoveLiquidityRequest request, CancellationToken cancellationToken)
         {
-            var command = new CreateWalletRemoveLiquidityTransactionCommand(request.Token, request.Liquidity,
-                request.AmountCrsMin, request.AmountSrcMin, request.To, request.Market);
+            var command = new CreateWalletRemoveLiquidityTransactionCommand(request.Pool, request.Liquidity,
+                request.AmountCrsMin, request.AmountSrcMin, request.WalletAddress, request.Market);
             
             var response = await _mediator.Send(command, cancellationToken);
 

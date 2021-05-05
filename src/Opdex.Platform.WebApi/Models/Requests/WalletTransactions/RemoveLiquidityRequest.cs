@@ -3,11 +3,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
     public class RemoveLiquidityRequest
     {
         /// <summary>
-        /// The SRC token's smart contract address
-        /// </summary>
-        public string Token { get; set; }
-        
-        /// <summary>
         /// Decimal as a string of the amount of liquidity pool tokens to remove.
         /// </summary>
         public string Liquidity { get; set; }
@@ -25,7 +20,12 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// <summary>
         /// The recipient of the CRS and SRC tokens.
         /// </summary>
-        public string To { get; set; }
+        public string WalletAddress { get; set; }
+        
+        /// <summary>
+        /// The liquidity pool's smart contract address to remove liquidity from.
+        /// </summary>
+        public string Pool { get; set; }
         
         /// <summary>
         /// The address of the market the pool belongs to.
