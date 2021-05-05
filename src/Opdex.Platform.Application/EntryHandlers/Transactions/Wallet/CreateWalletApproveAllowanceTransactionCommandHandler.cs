@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 {
@@ -17,12 +19,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<string> Handle(CreateWalletApproveAllowanceTransactionCommand request,
-            CancellationToken cancellationToken)
+        public async Task<string> Handle(CreateWalletApproveAllowanceTransactionCommand request, CancellationToken cancellationToken)
         {
-            var command = new MakeWalletApproveAllowanceTransactionCommand(request.Token, request.Amount, request.Owner, request.Spender);
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token), cancellationToken);
+
+            var amount = request.Amount.ToSatoshis(token.Decimals);
             
-            return _mediator.Send(command, cancellationToken);
+            var command = new MakeWalletApproveAllowanceTransactionCommand(request.Token, amount, request.Owner, request.Spender);
+            
+            return await _mediator.Send(command, cancellationToken);
         }
     }
 }

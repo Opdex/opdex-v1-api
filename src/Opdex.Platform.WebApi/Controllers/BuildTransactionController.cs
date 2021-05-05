@@ -32,8 +32,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("add-liquidity")]
         public async Task<IActionResult> AddLiquidity(AddLiquidityRequest request, CancellationToken cancellationToken)
         {
-            var command = new CreateWalletAddLiquidityTransactionCommand(request.Token, request.AmountCrsDesired, request.AmountSrcDesired,
-                request.AmountCrsMin, request.AmountSrcMin, request.To, request.Market);
+            var command = new CreateWalletAddLiquidityTransactionCommand(request.Pool, request.AmountCrs, request.AmountSrc,
+                request.Tolerance, request.WalletAddress, request.Market);
             
             var response = await _mediator.Send(command, cancellationToken);
 
@@ -52,7 +52,7 @@ namespace Opdex.Platform.WebApi.Controllers
         }
         
         [HttpPost("swap")]
-        public async Task<IActionResult> SwapExactTokens(SwapRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Swap(SwapRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletSwapTransactionCommand(request.TokenIn, request.TokenOut, request.TokenInAmount, 
                 request.TokenOutAmount, request.TokenInExactAmount, request.Tolerance, request.To, request.Market);

@@ -14,5 +14,11 @@ namespace Opdex.Platform.Common
             public const string Ticker = "ODX";
             public const int Decimals = 8;
         }
+
+        public static class LiquidityPoolToken
+        {
+            public const string Ticker = "LPT";
+            public const int Decimals = 8;
+        }
     }
 }

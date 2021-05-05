@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Pools.SwapQuotes;
@@ -23,9 +24,17 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools
 
         public async Task<string> Handle(CallCirrusGetAmountInMultiHopQuoteQuery request, CancellationToken cancellationToken)
         {
-            var quoteParams = new[] { $"12#{request.TokenOutAmount}", $"12#{request.TokenOutReserveCrs}", $"12#{request.TokenOutReserveSrc}", 
-                $"12#{request.TokenInReserveCrs}", $"12#{request.TokenInReserveSrc}" };
+            var quoteParams = new[]
+            {
+                request.TokenOutAmount.ToSmartContractParameter(SmartContractParameterType.UInt256),
+                request.TokenOutReserveCrs.ToSmartContractParameter(SmartContractParameterType.UInt256),
+                request.TokenOutReserveSrc.ToSmartContractParameter(SmartContractParameterType.UInt256),
+                request.TokenInReserveCrs.ToSmartContractParameter(SmartContractParameterType.UInt256),
+                request.TokenInReserveSrc.ToSmartContractParameter(SmartContractParameterType.UInt256)
+            };
+            
             var localCall = new LocalCallRequestDto(request.Market, request.Market, "GetAmountIn", quoteParams);
+            
             var amountIn = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 
             if (amountIn.ErrorMessage != null)

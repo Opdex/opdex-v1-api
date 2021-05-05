@@ -32,8 +32,14 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// </summary>
         public decimal Tolerance { get; set; }
         
+        /// <summary>
+        /// The recipient of the swapped tokens.
+        /// </summary>
         public string To { get; set; }
         
+        /// <summary>
+        /// The address of the market the pools are located in.
+        /// </summary>
         public string Market { get; set; }
     }
 }

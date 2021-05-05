@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 {
@@ -16,12 +18,18 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public Task<string> Handle(CreateWalletSwapTransactionCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(CreateWalletSwapTransactionCommand request, CancellationToken cancellationToken)
         {
-            var command = new MakeWalletSwapTransactionCommand(request.TokenIn, request.TokenOut, request.TokenInAmount, 
-                request.TokenOutAmount, request.TokenInExactAmount, request.Tolerance, request.To, request.Market);
+            var tokenIn = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenIn), cancellationToken);
+            var tokenInAmount = request.TokenInAmount.ToSatoshis(tokenIn.Decimals);
             
-            return _mediator.Send(command, cancellationToken);
+            var tokenOut = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenOut), cancellationToken);
+            var tokenOutAmount = request.TokenOutAmount.ToSatoshis(tokenOut.Decimals);
+            
+            var command = new MakeWalletSwapTransactionCommand(request.TokenIn, request.TokenOut, tokenInAmount, 
+                tokenOutAmount, request.TokenInExactAmount, request.Tolerance, request.To, request.Market);
+            
+            return await _mediator.Send(command, cancellationToken);
         }
     }
 }
