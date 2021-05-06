@@ -106,7 +106,7 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(new { TxHash = response });
         }
         
-        [HttpPost("unstake")]
+        [HttpPost("exit-staking")]
         public async Task<IActionResult> StopStaking(UnstakeRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletStopStakingTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword, 
@@ -122,6 +122,61 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             var command = new CreateWalletCollectStakingRewardsTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword, 
                 request.Recipient, request.LiquidityPool, request.Liquidate);
+            
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return Ok(new { TxHash = response });
+        }
+        
+        [HttpPost("mine")]
+        public async Task<IActionResult> StartMining(MineRequest request, CancellationToken cancellationToken)
+        {
+            var command = new CreateWalletStartMiningTransactionCommand(request.WalletName, request.WalletAddress, 
+                request.WalletPassword, request.Amount, request.LiquidityPool);
+            
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return Ok(new { TxHash = response });
+        }
+        
+        [HttpPost("exit-mining")]
+        public async Task<IActionResult> StopMining(ExitMiningRequest request, CancellationToken cancellationToken)
+        {
+            var command = new CreateWalletStopMiningTransactionCommand(request.WalletName, request.WalletAddress, 
+                request.WalletPassword, request.LiquidityPool);
+            
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return Ok(new { TxHash = response });
+        }
+        
+        [HttpPost("collect-mining-rewards")]
+        public async Task<IActionResult> CollectMiningRewards(CollectMiningRewardsRequest request, CancellationToken cancellationToken)
+        {
+            var command = new CreateWalletCollectMiningRewardsTransactionCommand(request.WalletName, request.WalletAddress, 
+                request.WalletPassword, request.LiquidityPool);
+            
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return Ok(new { TxHash = response });
+        }
+        
+        [HttpPost("distribute-odx")]
+        public async Task<IActionResult> DistributeOdxTokens(DistributeTokensRequest request, CancellationToken cancellationToken)
+        {
+            var command = new CreateWalletDistributeTokensTransactionCommand(request.WalletName, request.WalletAddress, 
+                request.WalletPassword, request.Token);
+            
+            var response = await _mediator.Send(command, cancellationToken);
+
+            return Ok(new { TxHash = response });
+        }
+        
+        [HttpPost("reward-mining-pools")]
+        public async Task<IActionResult> RewardMiningPools(RewardMiningPoolsRequest request, CancellationToken cancellationToken)
+        {
+            var command = new CreateWalletRewardMiningPoolsTransactionCommand(request.WalletName, request.WalletAddress, 
+                request.WalletPassword, request.Governance);
             
             var response = await _mediator.Send(command, cancellationToken);
 

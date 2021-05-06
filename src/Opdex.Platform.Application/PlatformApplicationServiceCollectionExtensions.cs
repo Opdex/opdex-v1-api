@@ -76,6 +76,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveMarketByAddressQuery, Market>, RetrieveMarketByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolSwapQuoteQuery, string>, RetrieveLiquidityPoolSwapQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolAddLiquidityQuoteQuery, string>, RetrieveLiquidityPoolAddLiquidityQuoteQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMiningPoolByLiquidityPoolIdQuery, MiningPool>, RetrieveMiningPoolByLiquidityPoolIdQueryHandler>();
 
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();
@@ -90,7 +91,12 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateWalletStartStakingTransactionCommand, string>, CreateWalletStartStakingTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateWalletStopStakingTransactionCommand, string>, CreateWalletStopStakingTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateWalletCollectStakingRewardsTransactionCommand, string>, CreateWalletCollectStakingRewardsTransactionCommandHandler>();
-
+            services.AddTransient<IRequestHandler<CreateWalletStartMiningTransactionCommand, string>, CreateWalletStartMiningTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletStopMiningTransactionCommand, string>, CreateWalletStopMiningTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletCollectMiningRewardsTransactionCommand, string>, CreateWalletCollectMiningRewardsTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletDistributeTokensTransactionCommand, string>, CreateWalletDistributeTokensTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletRewardMiningPoolsTransactionCommand, string>, CreateWalletRewardMiningPoolsTransactionCommandHandler>();
+            
             // Commands
             services.AddTransient<IRequestHandler<MakeWalletSwapTransactionCommand, string>, MakeWalletSwapTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletAddLiquidityTransactionCommand, string>, MakeWalletAddLiquidityTransactionCommandHandler>();
@@ -110,7 +116,12 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeWalletStartStakingTransactionCommand, string>, MakeWalletStartStakingTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletStopStakingTransactionCommand, string>, MakeWalletStopStakingTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletCollectStakingRewardsTransactionCommand, string>, MakeWalletCollectStakingRewardsTransactionCommandHandler>();
-            
+            services.AddTransient<IRequestHandler<MakeWalletStartMiningTransactionCommand, string>, MakeWalletStartMiningTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletStopMiningTransactionCommand, string>, MakeWalletStopMiningTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletCollectMiningRewardsTransactionCommand, string>, MakeWalletCollectMiningRewardsTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletDistributeTokensTransactionCommand, string>, MakeWalletDistributeTokensTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletRewardMiningPoolsTransactionCommand, string>, MakeWalletRewardMiningPoolsTransactionCommandHandler>();
+
             // Entry Handlers
             services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenByAddressQuery, TokenDto>, GetTokenByAddressQueryHandler>();
