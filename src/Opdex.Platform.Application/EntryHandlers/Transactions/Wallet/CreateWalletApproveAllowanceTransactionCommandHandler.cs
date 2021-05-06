@@ -25,7 +25,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 
             var amount = request.Amount.ToSatoshis(token.Decimals);
             
-            var command = new MakeWalletApproveAllowanceTransactionCommand(request.Token, amount, request.Owner, request.Spender);
+            var command = new MakeWalletApproveAllowanceTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
+                request.Token, amount, request.Spender);
             
             return await _mediator.Send(command, cancellationToken);
         }

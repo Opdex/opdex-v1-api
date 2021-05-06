@@ -78,13 +78,15 @@ namespace Opdex.Platform.WebApi.Controllers
                 
                 // Approve market allowance for the full owner amount
                 var approveParams = new[] { $"9#{stakingMarket.Market}", "12#0", tokenParams[0]};
-                var approveAllowanceRequest = new SmartContractCallRequestDto(createTokenTransaction.NewContractAddress, request.WalletAddress, "0.00", "Approve", approveParams);
+                var approveAllowanceRequest = new SmartContractCallRequestDto(createTokenTransaction.NewContractAddress, request.WalletName, request.WalletAddress, 
+                    request.WalletPassword, "0.00", "Approve", approveParams);
                 var approveAllowanceCommand = new CallCirrusCallSmartContractMethodCommand(approveAllowanceRequest);
                 var approveAllowanceTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(approveAllowanceCommand, cancellationToken));
 
                 // Create SRC liquidity pools
                 var createLiquidityPoolParams = new[] {$"9#{createTokenTransaction.NewContractAddress}"};
-                var createLiquidityPoolRequest = new SmartContractCallRequestDto(stakingMarket.Market, request.WalletAddress, "0.00", "CreatePool", createLiquidityPoolParams);
+                var createLiquidityPoolRequest = new SmartContractCallRequestDto(stakingMarket.Market, request.WalletName, request.WalletAddress, 
+                    request.WalletPassword, "0.00", "CreatePool", createLiquidityPoolParams);
                 var createLiquidityPoolCommand = new CallCirrusCallSmartContractMethodCommand(createLiquidityPoolRequest);
                 var createLiquidityPoolTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createLiquidityPoolCommand, cancellationToken));
                 
@@ -94,33 +96,36 @@ namespace Opdex.Platform.WebApi.Controllers
                 var addValues = _tokenAddLiquidityValues[i];
                 var crs = addValues[0];
                 var src = addValues[1];
-                var addLiquidityCommand = new CreateWalletAddLiquidityTransactionCommand(createTokenTransaction.NewContractAddress, crs, src, 0.1m,
-                    request.WalletAddress, stakingMarket.Market);
+                var addLiquidityCommand = new CreateWalletAddLiquidityTransactionCommand(request.WalletName, request.WalletAddress, 
+                    request.WalletPassword, createTokenTransaction.NewContractAddress, crs, src, 0.1m, request.WalletAddress, stakingMarket.Market);
                 var addLiquidityTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(addLiquidityCommand, cancellationToken));
             }
             
             // Serialize Liquidity Pool Addresses and Distribute ODX
             var pools = createLiquidityPoolTransactions.Select(t => _serializer.ToAddress(((LiquidityPoolCreatedLog)t.Logs.FirstOrDefault())?.Pool)).ToArray();
             var serializedPools = _serializer.Serialize(pools).ToHexString();
-            var distributeOdxRequest = new SmartContractCallRequestDto(odxTransaction.NewContractAddress, request.WalletAddress, "0.00", "Distribute", new[] {$"10#{serializedPools}"});
+            var distributeOdxRequest = new SmartContractCallRequestDto(odxTransaction.NewContractAddress, request.WalletName, request.WalletAddress, 
+                request.WalletPassword, "0.00", "Distribute", new[] {$"10#{serializedPools}"});
             var distributeOdxCommand = new CallCirrusCallSmartContractMethodCommand(distributeOdxRequest);
             var distributeOdxTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(distributeOdxCommand, cancellationToken));
             
             // Create ODX Liquidity Pool
             var createOdxPoolParams = new[] {$"9#{odxTransaction.NewContractAddress}"};
-            var createOdxPoolRequest = new SmartContractCallRequestDto(stakingMarket.Market, request.WalletAddress, "0.00", "CreatePool", createOdxPoolParams);
+            var createOdxPoolRequest = new SmartContractCallRequestDto(stakingMarket.Market, request.WalletName, request.WalletAddress, 
+                request.WalletPassword, "0.00", "CreatePool", createOdxPoolParams);
             var createOdxPoolCommand = new CallCirrusCallSmartContractMethodCommand(createOdxPoolRequest);
             var createOdxPoolTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createOdxPoolCommand, cancellationToken));
 
             // Add ODX Allowance to Market
             var approveOdxParams = new[] { $"9#{stakingMarket.Market}", "12#0", "12#10000000000000000"};
-            var approveOdxAllowanceRequest = new SmartContractCallRequestDto(odxTransaction.NewContractAddress, request.WalletAddress, "0.00", "Approve", approveOdxParams);
+            var approveOdxAllowanceRequest = new SmartContractCallRequestDto(odxTransaction.NewContractAddress, request.WalletName, 
+                request.WalletAddress, request.WalletPassword, "0.00", "Approve", approveOdxParams);
             var approveOdxAllowanceCommand = new CallCirrusCallSmartContractMethodCommand(approveOdxAllowanceRequest);
             var approveOdxAllowanceTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(approveOdxAllowanceCommand, cancellationToken));
             
             // Add liquidity to ODX
-            var addOdxLiquidityCommand = new CreateWalletAddLiquidityTransactionCommand(odxTransaction.NewContractAddress, "1000.00000000", "10000.00000000", .01m,
-                request.WalletAddress, stakingMarket.Market);
+            var addOdxLiquidityCommand = new CreateWalletAddLiquidityTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword, 
+                odxTransaction.NewContractAddress, "1000.00000000", "10000.00000000", .01m, request.WalletAddress, stakingMarket.Market);
             var addOdxLiquidityTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(addOdxLiquidityCommand, cancellationToken));
             
             return Ok("Successful");
@@ -215,22 +220,22 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             new[]
             {
-                "1000.00000000", // 1000 crs
-                "10.00000000", // 10 btc
+                "13400.00000000", // 23,400 crs
+                "30000.00000000", // 30,000 btc
             },
             new[]
             {
-                "1000.00000000", // 1000 crs
-                "10.000000000000000000", // 10 wEth
+                "11000.00000000", // 21,000 crs
+                "10000.000000000000000000", // 10,000 wEth
             },
             new[]
             {
-                "1000.00000000", // 1000 crs
-                "20.000000000000000000", // 20 bnb
+                "13000.00000000", // 23,000 crs
+                "20000.000000000000000000", // 20,000 bnb
             },
             new[]
             {
-                "1000.00000000", // 1000 crs
+                "19000.00000000", // 19,000 crs
                 "10000.00000000", // 10,000 GLU
             },
         };

@@ -51,5 +51,16 @@ namespace Opdex.Platform.Common.Tests
         {
             value.CutPrecisely(precision).Should().Be(expected);
         }
+        
+        [Theory]
+        [InlineData("1.32", true)]
+        [InlineData("1.32e", false)]
+        [InlineData("132", false)]
+        [InlineData("", false)]
+        [InlineData(null, false)]
+        public void ValidDecimalNumber_Success(string value, bool expected)
+        {
+            value.IsValidDecimalNumber().Should().Be(expected);
+        }
     }
 }

@@ -1,6 +1,6 @@
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
-    public class AddLiquidityRequest
+    public class AddLiquidityRequest : LocalWalletCredentials
     {
         /// <summary>
         /// Decimal as a string of the amount of CRS to deposit.
@@ -18,14 +18,14 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         public decimal Tolerance { get; set; }
         
         /// <summary>
-        /// The receiving wallet address of the liquidity pool tokens.
+        /// The recipient of the liquidity pool tokens.
         /// </summary>
-        public string WalletAddress { get; set; }
+        public string Recipient { get; set; }
         
         /// <summary>
         /// The address of the liquidity pool tokens are being deposited to.
         /// </summary>
-        public string Pool { get; set; }
+        public string LiquidityPool { get; set; }
         
         /// <summary>
         /// The address of the marker the pool belongs to.

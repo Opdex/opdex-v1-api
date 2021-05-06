@@ -14,7 +14,8 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
         : IRequestHandler<MakeWalletApproveAllowanceTransactionCommand, string>
     {
         private readonly IMediator _mediator;
-        
+        private const string MethodName = "Approve";
+        private const string CrsToSend = "0";
         public MakeWalletApproveAllowanceTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -22,7 +23,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 
         public async Task<string> Handle(MakeWalletApproveAllowanceTransactionCommand request, CancellationToken cancellationToken)
         {
-            var currentAllowanceRequest = new CallCirrusGetSrcTokenAllowanceQuery(request.Token, request.Owner, request.Spender);
+            var currentAllowanceRequest = new CallCirrusGetSrcTokenAllowanceQuery(request.Token, request.WalletAddress, request.Spender);
             var currentAllowance = await _mediator.Send(currentAllowanceRequest, cancellationToken);
 
             var parameters = new []
@@ -32,7 +33,8 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                 request.Amount.ToSmartContractParameter(SmartContractParameterType.UInt256)
             };
             
-            var callDto = new SmartContractCallRequestDto(request.Token, request.Owner, "0", "Approve", parameters);
+            var callDto = new SmartContractCallRequestDto(request.Token, request.WalletName, request.WalletAddress, 
+                request.WalletPassword, CrsToSend, MethodName, parameters);
             
             return await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
         }

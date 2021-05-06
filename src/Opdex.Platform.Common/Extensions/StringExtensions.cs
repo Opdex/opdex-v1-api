@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 
 namespace Opdex.Platform.Common.Extensions
 {
@@ -7,6 +8,16 @@ namespace Opdex.Platform.Common.Extensions
         public static bool HasValue(this string value)
         {
             return !string.IsNullOrWhiteSpace(value);
+        }
+
+        public static bool IsValidDecimalNumber(this string value)
+        {
+            return value.HasValue() && value.Contains('.') && value.Replace(".", "").IsNumeric();
+        }
+
+        public static bool IsNumeric(this string value)
+        {
+            return value.HasValue() && Regex.IsMatch(value, @"^\d+$");
         }
 
         public static string ToleranceAsSatoshis(this string value, decimal tolerance)

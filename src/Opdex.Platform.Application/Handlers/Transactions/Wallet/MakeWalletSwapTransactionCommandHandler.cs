@@ -41,7 +41,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                         request.TokenInAmount.ToSmartContractParameter(SmartContractParameterType.UInt256),
                         amountCrsOutMin.ToSmartContractParameter(SmartContractParameterType.UInt64),
                         request.TokenIn.ToSmartContractParameter(SmartContractParameterType.Address),
-                        request.To.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
                         0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
                     };
                 }
@@ -54,7 +54,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                         request.TokenOutAmount.ToSmartContractParameter(SmartContractParameterType.UInt64),
                         amountSrcInMax.ToSmartContractParameter(SmartContractParameterType.UInt256),
                         request.TokenIn.ToSmartContractParameter(SmartContractParameterType.Address),
-                        request.To.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
                         0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
                     };
                 }
@@ -72,7 +72,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                     {
                         amountSrcOutMin.ToSmartContractParameter(SmartContractParameterType.UInt256), // amountSrcOutMin
                         request.TokenOut.ToSmartContractParameter(SmartContractParameterType.Address),
-                        request.To.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
                         0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
                     };
                 }
@@ -82,7 +82,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                     {
                         request.TokenOutAmount.ToSmartContractParameter(SmartContractParameterType.UInt256), // amountSrcOut
                         request.TokenOut.ToSmartContractParameter(SmartContractParameterType.Address),
-                        request.To.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
                         0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
                     };
                 }
@@ -101,7 +101,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                         request.TokenIn.ToSmartContractParameter(SmartContractParameterType.Address),
                         amountSrcOutMin.ToSmartContractParameter(SmartContractParameterType.UInt256), // amountSrcOutMin
                         request.TokenOut.ToSmartContractParameter(SmartContractParameterType.Address),
-                        request.To.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
                         0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
                     };
                 }
@@ -115,13 +115,14 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                         request.TokenIn.ToSmartContractParameter(SmartContractParameterType.Address),
                         request.TokenOutAmount.ToSmartContractParameter(SmartContractParameterType.UInt256),
                         request.TokenOut.ToSmartContractParameter(SmartContractParameterType.Address),
-                        request.To.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
                         0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
                     };
                 }
             }
             
-            var callDto = new SmartContractCallRequestDto(request.Market, request.To, crsToSend, methodName, parameters);
+            var callDto = new SmartContractCallRequestDto(request.Market, request.WalletName, request.WalletAddress, request.WalletPassword, 
+                crsToSend, methodName, parameters);
             
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
         }

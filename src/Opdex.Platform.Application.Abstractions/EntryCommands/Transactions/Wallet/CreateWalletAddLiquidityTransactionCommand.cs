@@ -1,37 +1,37 @@
 using System;
-using MediatR;
 using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet
 {
-    public class CreateWalletAddLiquidityTransactionCommand : IRequest<string>
+    public class CreateWalletAddLiquidityTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletAddLiquidityTransactionCommand(string pool, string amountCrs, string amountSrc, 
-            decimal tolerance, string to, string market)
+        public CreateWalletAddLiquidityTransactionCommand(string walletName, string walletAddress, string walletPassword, string pool, 
+            string amountCrs, string amountSrc, decimal tolerance, string recipient, string market) 
+            : base(walletName, walletAddress, walletPassword)
         {
             if (!pool.HasValue())
             {
                 throw new ArgumentNullException(nameof(pool));
             }
 
-            if (!amountCrs.HasValue() || !amountCrs.Contains('.'))
+            if (!amountCrs.IsValidDecimalNumber())
             {
                 throw new ArgumentException(nameof(amountCrs));
             }
             
-            if (!amountSrc.HasValue() || !amountSrc.Contains('.'))
+            if (!amountSrc.IsValidDecimalNumber())
             {
                 throw new ArgumentException(nameof(amountSrc));
             }
             
-            if (tolerance > 1 || tolerance < .01m)
+            if (tolerance > .9999m || tolerance < .0001m)
             {
                 throw new ArgumentOutOfRangeException(nameof(tolerance));
             }
 
-            if (!to.HasValue())
+            if (!recipient.HasValue())
             {
-                throw new ArgumentNullException(nameof(to));
+                throw new ArgumentNullException(nameof(recipient));
             }
             
             if (!market.HasValue())
@@ -39,19 +39,19 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
                 throw new ArgumentNullException(nameof(market));
             }
             
-            Pool = pool;
+            LiquidityPool = pool;
             AmountCrs = amountCrs;
             AmountSrc = amountSrc;
             Tolerance = tolerance;
-            To = to;
+            Recipient = recipient;
             Market = market;
         }
         
-        public string Pool { get; }
+        public string LiquidityPool { get; }
         public string AmountCrs { get; }
         public string AmountSrc { get; }
         public decimal Tolerance { get; }
-        public string To { get; }
+        public string Recipient { get; }
         public string Market { get; }
     }
 }

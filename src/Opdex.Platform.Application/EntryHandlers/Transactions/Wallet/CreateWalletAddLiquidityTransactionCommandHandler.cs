@@ -22,7 +22,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 
         public async Task<string> Handle(CreateWalletAddLiquidityTransactionCommand request, CancellationToken cancellationToken)
         {
-            var pool = await _mediator.Send(new GetLiquidityPoolByAddressQuery(request.Pool), cancellationToken);
+            var pool = await _mediator.Send(new GetLiquidityPoolByAddressQuery(request.LiquidityPool), cancellationToken);
             
             if (!decimal.TryParse(request.AmountCrs, out var amountCrsDecimal))
             {
@@ -34,8 +34,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             var amountSrc = request.AmountSrc.ToSatoshis(pool.Token.Decimals);
             var amountSrcMin = amountSrc.ToleranceAsSatoshis(request.Tolerance);
                 
-            var command = new MakeWalletAddLiquidityTransactionCommand(pool.Token.Address, request.AmountCrs, amountSrc,
-                amountCrsMin.ToString(), amountSrcMin, request.To, request.Market);
+            var command = new MakeWalletAddLiquidityTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword, 
+                pool.Token.Address, request.AmountCrs, amountSrc, amountCrsMin.ToString(), amountSrcMin, request.Recipient, request.Market);
             
             return await _mediator.Send(command, cancellationToken);
         }

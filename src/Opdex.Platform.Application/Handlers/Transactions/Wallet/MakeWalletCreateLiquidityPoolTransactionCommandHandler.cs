@@ -13,7 +13,8 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
         : IRequestHandler<MakeWalletCreateLiquidityPoolTransactionCommand, string>
     {
         private readonly IMediator _mediator;
-        
+        private const string MethodName = "CreatePool";
+        private const string CrsToSend = "0";
         public MakeWalletCreateLiquidityPoolTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -26,7 +27,8 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                 request.Token.ToSmartContractParameter(SmartContractParameterType.Address)
             };
             
-            var callDto = new SmartContractCallRequestDto(request.Market, request.Sender, "0", "CreatePool", parameters);
+            var callDto = new SmartContractCallRequestDto(request.Market, request.WalletName, request.WalletAddress, 
+                request.WalletPassword, CrsToSend, MethodName, parameters);
             
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
         }

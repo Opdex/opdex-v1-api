@@ -25,11 +25,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             var liquidity = request.Liquidity.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals);
             var amountCrsMin = request.AmountCrsMin.ToSatoshis(TokenConstants.Cirrus.Decimals);
 
-            var pool = await _mediator.Send(new GetLiquidityPoolByAddressQuery(request.Pool), cancellationToken);
+            var pool = await _mediator.Send(new GetLiquidityPoolByAddressQuery(request.LiquidityPool), cancellationToken);
             var amountSrcMin = request.AmountSrcMin.ToSatoshis(pool.Token.Decimals);
             
-            var command = new MakeWalletRemoveLiquidityTransactionCommand(pool.Token.Address, liquidity, amountCrsMin, amountSrcMin, 
-                request.WalletAddress, request.Market);
+            var command = new MakeWalletRemoveLiquidityTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
+                pool.Token.Address, liquidity, amountCrsMin, amountSrcMin, request.Recipient, request.Market);
             
             return await _mediator.Send(command, cancellationToken);
         }

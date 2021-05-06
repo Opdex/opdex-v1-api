@@ -26,8 +26,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             var tokenOut = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenOut), cancellationToken);
             var tokenOutAmount = request.TokenOutAmount.ToSatoshis(tokenOut.Decimals);
             
-            var command = new MakeWalletSwapTransactionCommand(request.TokenIn, request.TokenOut, tokenInAmount, 
-                tokenOutAmount, request.TokenInExactAmount, request.Tolerance, request.To, request.Market);
+            var command = new MakeWalletSwapTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword, 
+                request.TokenIn, request.TokenOut, tokenInAmount, tokenOutAmount, request.TokenInExactAmount, 
+                request.Tolerance, request.Recipient, request.Market);
             
             return await _mediator.Send(command, cancellationToken);
         }
