@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -7,6 +6,8 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
+using Opdex.Platform.Common;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 
 namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 {
@@ -21,10 +22,11 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
         
         public Task<string> Handle(MakeWalletSwapTransactionCommand request, CancellationToken cancellationToken)
         {
-            var isCrsOut = !request.TokenOut.HasValue();
-            var isCrsIn = !request.TokenIn.HasValue();
-            var methodName = string.Empty;
-            var parameters = new List<string>();
+            var isCrsOut = request.TokenOut == TokenConstants.Cirrus.Address;
+            var isCrsIn = request.TokenIn == TokenConstants.Cirrus.Address;
+            string[] parameters;
+            string methodName;
+            var crsToSend = "0";
             
             if (isCrsOut)
             {
@@ -32,49 +34,56 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 
                 if (methodName == "SwapExactSrcForCrs")
                 {
-                    parameters = new List<string>
+                    var amountCrsOutMin = request.TokenOutAmount.ToleranceAsSatoshis(request.Tolerance);
+                    
+                    parameters = new[]
                     {
-                        $"12#{request.TokenInAmount}", // amountSrcIn
-                        "7#0", // amountCrsOutMin
-                        $"9#{request.TokenIn}", // token
-                        $"9#{request.To}", // to
-                        "7#0", // deadline
+                        request.TokenInAmount.ToSmartContractParameter(SmartContractParameterType.UInt256),
+                        amountCrsOutMin.ToSmartContractParameter(SmartContractParameterType.UInt64),
+                        request.TokenIn.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
+                        0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
                     };
                 }
-                else
+                else // SwapSrcForExactCrs
                 {
-                    parameters = new List<string>
+                    var amountSrcInMax = request.TokenInAmount.ToleranceAsSatoshis(request.Tolerance);
+                    
+                    parameters = new[]
                     {
-                        $"7#{request.TokenOutAmount}", // amountCrsOut
-                        "12#10000000000000000000000000000000000", // amountSrcInMax
-                        $"9#{request.TokenIn}", // token
-                        $"9#{request.To}", // to
-                        "7#0", // deadline
+                        request.TokenOutAmount.ToSmartContractParameter(SmartContractParameterType.UInt64),
+                        amountSrcInMax.ToSmartContractParameter(SmartContractParameterType.UInt256),
+                        request.TokenIn.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
+                        0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
                     };
                 }
             }
             else if (isCrsIn)
             {
                 methodName = request.TokenInExactAmount ? "SwapExactCrsForSrc" : "SwapCrsForExactSrc";
-                
+                crsToSend = request.TokenInAmount.InsertDecimal(TokenConstants.Cirrus.Decimals);
+
                 if (methodName == "SwapExactCrsForSrc")
                 {
-                    parameters = new List<string>
+                    var amountSrcOutMin = request.TokenOutAmount.ToleranceAsSatoshis(request.Tolerance);
+                    
+                    parameters = new[]
                     {
-                        "12#0", // amountSrcOutMin
-                        $"9#{request.TokenOut}", // token
-                        $"9#{request.To}", // to
-                        "7#0", // deadline
+                        amountSrcOutMin.ToSmartContractParameter(SmartContractParameterType.UInt256), // amountSrcOutMin
+                        request.TokenOut.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
+                        0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
                     };
                 }
-                else
+                else // SwapCrsForExactSrc
                 {
-                    parameters = new List<string>
+                    parameters = new[]
                     {
-                        $"12#{request.TokenOutAmount}", // amountSrcOut
-                        $"9#{request.TokenOut}", // token
-                        $"9#{request.To}", // to
-                        "7#0", // deadline
+                        request.TokenOutAmount.ToSmartContractParameter(SmartContractParameterType.UInt256), // amountSrcOut
+                        request.TokenOut.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
+                        0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
                     };
                 }
             }
@@ -84,17 +93,36 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                 
                 if (methodName == "SwapExactSrcForSrc")
                 {
+                    var amountSrcOutMin = request.TokenOutAmount.ToleranceAsSatoshis(request.Tolerance);
                     
+                    parameters = new[]
+                    {
+                        request.TokenInAmount.ToSmartContractParameter(SmartContractParameterType.UInt256),
+                        request.TokenIn.ToSmartContractParameter(SmartContractParameterType.Address),
+                        amountSrcOutMin.ToSmartContractParameter(SmartContractParameterType.UInt256), // amountSrcOutMin
+                        request.TokenOut.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
+                        0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
+                    };
                 }
-                else
+                else // SwapSrcForExactSrc
                 {
-                    
+                    var amountSrcInMax = request.TokenInAmount.ToleranceAsSatoshis(request.Tolerance);
+
+                    parameters = new[]
+                    {
+                        amountSrcInMax.ToSmartContractParameter(SmartContractParameterType.UInt256), // amountSrcInMax
+                        request.TokenIn.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.TokenOutAmount.ToSmartContractParameter(SmartContractParameterType.UInt256),
+                        request.TokenOut.ToSmartContractParameter(SmartContractParameterType.Address),
+                        request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
+                        0.ToSmartContractParameter(SmartContractParameterType.UInt64) // deadline
+                    };
                 }
             }
             
-            var amount = isCrsIn ? request.TokenInAmount : "0";
-            
-            var callDto = new SmartContractCallRequestDto(request.Market, request.To, amount, methodName, parameters.ToArray());
+            var callDto = new SmartContractCallRequestDto(request.Market, request.WalletName, request.WalletAddress, request.WalletPassword, 
+                crsToSend, methodName, parameters);
             
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
         }

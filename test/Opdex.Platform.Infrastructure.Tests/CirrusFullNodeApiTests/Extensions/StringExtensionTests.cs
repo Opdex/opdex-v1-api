@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions;
 using Xunit;
 

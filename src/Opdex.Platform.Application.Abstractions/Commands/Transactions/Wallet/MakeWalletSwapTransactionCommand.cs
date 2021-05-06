@@ -1,20 +1,56 @@
-using MediatR;
-using Opdex.Platform.Domain.Models;
+using System;
+using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
-    public class MakeWalletSwapTransactionCommand : IRequest<string>
+    public class MakeWalletSwapTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletSwapTransactionCommand(string tokenIn, string tokenOut, string tokenInAmount, string tokenOutAmount, 
-            bool tokenInExactAmount, decimal tolerance, string to, string market)
+        public MakeWalletSwapTransactionCommand(string walletName, string walletAddress, string walletPassword, string tokenIn, string tokenOut, 
+            string tokenInAmount, string tokenOutAmount, bool tokenInExactAmount, decimal tolerance, string recipient, string market)
+            : base(walletName, walletAddress, walletPassword)
         {
+            if (!tokenIn.HasValue())
+            {
+                throw new ArgumentNullException(nameof(tokenIn));
+            }
+            
+            if (!tokenOut.HasValue())
+            {
+                throw new ArgumentNullException(nameof(tokenOut));
+            }
+            
+            if (!tokenInAmount.IsNumeric())
+            {
+                throw new ArgumentException(nameof(tokenInAmount));
+            }
+            
+            if (!tokenOutAmount.IsNumeric())
+            {
+                throw new ArgumentException(nameof(tokenInAmount));
+            }
+
+            if (tolerance > .9999m || tolerance < .0001m)
+            {
+                throw new ArgumentOutOfRangeException(nameof(tolerance));
+            }
+            
+            if (!recipient.HasValue())
+            {
+                throw new ArgumentNullException(nameof(recipient));
+            }
+            
+            if (!market.HasValue())
+            {
+                throw new ArgumentNullException(nameof(market));
+            }
+            
             TokenIn = tokenIn;
             TokenOut = tokenOut;
             TokenInAmount = tokenInAmount;
             TokenOutAmount = tokenOutAmount;
             TokenInExactAmount = tokenInExactAmount;
             Tolerance = tolerance;
-            To = to;
+            Recipient = recipient;
             Market = market;
         }
         
@@ -24,7 +60,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
         public string TokenOutAmount { get; }
         public bool TokenInExactAmount { get; }
         public decimal Tolerance { get; }
-        public string To { get; }
+        public string Recipient { get; }
         public string Market { get; }
     }
 }

@@ -17,11 +17,5 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-
-        [HttpGet]
-        public Task<IActionResult> GetAllTransactions(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

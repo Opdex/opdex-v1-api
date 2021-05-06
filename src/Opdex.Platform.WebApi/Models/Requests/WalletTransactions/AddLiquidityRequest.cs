@@ -1,17 +1,35 @@
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
-    public class AddLiquidityRequest
+    public class AddLiquidityRequest : LocalWalletCredentials
     {
-        public string Token { get; set; }
+        /// <summary>
+        /// Decimal as a string of the amount of CRS to deposit.
+        /// </summary>
+        public string AmountCrs { get; set; }
         
         /// <summary>
-        /// Amount of CRS in statoshis (e.g 1 crs = 100000000)
+        /// Decimal as a string of the amount of SRC to deposit.
         /// </summary>
-        public ulong AmountCrsDesired { get; set; }
-        public string AmountSrcDesired { get; set; }
-        public ulong AmountCrsMin { get; set; }
-        public string AmountSrcMin { get; set; }
-        public string To { get; set; }
+        public string AmountSrc { get; set; }
+        
+        /// <summary>
+        /// Decimal number between .9999 and .0001 (99.99% to 0.01%)
+        /// </summary>
+        public decimal Tolerance { get; set; }
+        
+        /// <summary>
+        /// The recipient of the liquidity pool tokens.
+        /// </summary>
+        public string Recipient { get; set; }
+        
+        /// <summary>
+        /// The address of the liquidity pool tokens are being deposited to.
+        /// </summary>
+        public string LiquidityPool { get; set; }
+        
+        /// <summary>
+        /// The address of the marker the pool belongs to.
+        /// </summary>
         public string Market { get; set; }
     }
 }

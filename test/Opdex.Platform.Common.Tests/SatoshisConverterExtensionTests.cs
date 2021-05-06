@@ -27,5 +27,15 @@ namespace Opdex.Platform.Common.Tests
 
             value.Should().Be(expected);
         }
+
+        [Theory]
+        [InlineData("10012000000", "100.12", 8)]
+        [InlineData("12000000", "0.12", 8)]
+        [InlineData("1", "0.00000001", 8)]
+        [InlineData("0", "0.00000001", 1)]
+        public void ConvertDecimalAsStringToSatoshis_Success(string expected, string value, int decimals)
+        {
+            value.ToSatoshis(decimals).Should().Be(expected);
+        }
     }
 }

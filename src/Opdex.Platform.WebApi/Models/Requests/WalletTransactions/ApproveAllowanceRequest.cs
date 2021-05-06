@@ -1,10 +1,20 @@
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
-    public class ApproveAllowanceRequest
+    public class ApproveAllowanceRequest : LocalWalletCredentials
     {
+        /// <summary>
+        /// The address of the token's smart contract.
+        /// </summary>
         public string Token { get; set; }
+
+        /// <summary>
+        /// The allowance amount to approve
+        /// </summary>
         public string Amount { get; set; }
-        public string Owner { get; set; }
+        
+        /// <summary>
+        /// The spender of the allowance.
+        /// </summary>
         public string Spender { get; set; }
     }
 }

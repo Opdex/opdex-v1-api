@@ -1,18 +1,28 @@
-using MediatR;
+using System;
+using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet
 {
-    public class CreateWalletCreateLiquidityPoolTransactionCommand : IRequest<string>
+    public class CreateWalletCreateLiquidityPoolTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletCreateLiquidityPoolTransactionCommand(string token, string sender, string market)
+        public CreateWalletCreateLiquidityPoolTransactionCommand(string walletName, string walletAddress, string walletPassword, string token, string market)
+            : base(walletName, walletAddress, walletPassword)
         {
+            if (!token.HasValue())
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+            
+            if (!market.HasValue())
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+            
             Token = token;
-            Sender = sender;
             Market = market;
         }
         
         public string Token { get; }
-        public string Sender { get; }
         public string Market { get; }
     }
 }

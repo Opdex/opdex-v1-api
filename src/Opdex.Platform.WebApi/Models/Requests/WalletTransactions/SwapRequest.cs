@@ -1,6 +1,6 @@
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
-    public class SwapRequest
+    public class SwapRequest : LocalWalletCredentials
     {
         /// <summary>
         /// The address of the token being deposited. Null if CRS
@@ -32,8 +32,14 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// </summary>
         public decimal Tolerance { get; set; }
         
-        public string To { get; set; }
+        /// <summary>
+        /// The recipient of the swapped tokens.
+        /// </summary>
+        public string Recipient { get; set; }
         
+        /// <summary>
+        /// The address of the market the pools are located in.
+        /// </summary>
         public string Market { get; set; }
     }
 }

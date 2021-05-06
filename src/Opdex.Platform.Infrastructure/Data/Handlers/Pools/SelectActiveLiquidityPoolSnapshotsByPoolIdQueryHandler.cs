@@ -58,9 +58,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 
         private sealed class SqlParams
         {
-            internal SqlParams(long tokenId, DateTime time)
+            internal SqlParams(long poolId, DateTime time)
             {
-                PoolId = tokenId;
+                PoolId = poolId;
                 Time = time;
             }
 
