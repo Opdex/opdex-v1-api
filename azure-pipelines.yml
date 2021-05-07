@@ -1,0 +1,80 @@
+trigger:
+  - develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  ARTIFACT_NAME: platform-api
+
+stages:
+- stage: Package
+  displayName: Package
+
+  jobs:
+  - job: Build
+    displayName: Create Artifact
+
+    variables:
+      SOLUTION: 'Opdex.sln'
+      BUILD_CONFIGURATION: 'Release'
+    
+    steps:
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'restore'
+          projects: $(SOLUTION)
+        displayName: Restore
+
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'build'
+          projects: $(SOLUTION)
+          arguments: '--configuration $(BUILD_CONFIGURATION) --no-restore'
+        displayName: 'Build'
+
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'test'
+          projects: test/**/*.Tests.csproj
+          arguments: '--configuration $(BUILD_CONFIGURATION) --no-build'
+        displayName: 'Unit Test'
+      
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'publish'
+          projects: $(SOLUTION)
+          publishWebProjects: True
+          arguments: '--configuration $(BUILD_CONFIGURATION) --no-build --output $(Build.ArtifactStagingDirectory)'
+          zipAfterPublish: True
+        displayName: Publish
+      
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+          artifactName: '$(ARTIFACT_NAME)'
+        displayName: Share
+
+- stage: Deploy
+  displayName: Deploy
+  dependsOn: Package
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+
+  jobs:
+    - deployment: Testnet
+      displayName: Configure Testnet
+      environment: Testnet
+
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: AzureWebApp@1
+                inputs:
+                  azureSubscription: 'Opdex(11e39196-fac6-4d5e-80c9-1365db389b2d)'
+                  appType: 'webApp'
+                  appName: 'opdex-api-platform-testnet'
+                  package: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/*.zip'
+                  deploymentMethod: 'auto'
+                displayName: Deploy to App Service
+        
