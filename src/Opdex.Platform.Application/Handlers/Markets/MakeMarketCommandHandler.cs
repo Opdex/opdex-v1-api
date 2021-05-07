@@ -19,8 +19,8 @@ namespace Opdex.Platform.Application.Handlers.Markets
         
         public Task<long> Handle(MakeMarketCommand request, CancellationToken cancellationToken)
         {
-            var market = new Market(request.Address, request.AuthPoolCreators, request.AuthProviders, request.AuthTraders,
-                request.Fee, request.Staking);
+            var market = new Market(request.Address, request.DeployerId, request.StakingTokenId, request.AuthPoolCreators, 
+                request.AuthProviders, request.AuthTraders, request.Fee);
             
             return _mediator.Send(new PersistMarketCommand(market), CancellationToken.None);
         }

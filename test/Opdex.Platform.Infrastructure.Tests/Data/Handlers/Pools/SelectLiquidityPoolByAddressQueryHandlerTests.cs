@@ -53,7 +53,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         }
         
         [Fact]
-        public void SelectTransactionByHash_Throws_NotFoundException()
+        public void SelectLiquidityPoolByAddress_Throws_NotFoundException()
         {
             const string address = "SomeAddress";
             

@@ -1,4 +1,5 @@
 using System;
+using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 
@@ -69,7 +70,7 @@ namespace Opdex.Platform.Domain.Models
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }
 
-        public void ProcessSwapLog(SwapLog log, TokenSnapshot crsSnapshot, Token crs)
+        public void ProcessSwapLog(SwapLog log, TokenSnapshot crsSnapshot)
         {
             var volumeCrs = log.AmountCrsIn + log.AmountCrsOut;
             VolumeCrs = VolumeCrs.Add(volumeCrs.ToString());
@@ -77,7 +78,7 @@ namespace Opdex.Platform.Domain.Models
             var volumeSrc = log.AmountSrcIn.Add(log.AmountSrcOut);
             VolumeSrc = VolumeSrc.Add(volumeSrc);
 
-            var crsVolumeDecimal = VolumeCrs.ToRoundedDecimal(8, crs.Decimals);
+            var crsVolumeDecimal = VolumeCrs.ToRoundedDecimal(8, TokenConstants.Cirrus.Decimals);
             VolumeUsd = Math.Round(crsVolumeDecimal * crsSnapshot.Price, 2, MidpointRounding.AwayFromZero);
             
             var rewards = Math.Round(VolumeUsd * .003m / 6, 2, MidpointRounding.AwayFromZero);
@@ -86,18 +87,18 @@ namespace Opdex.Platform.Domain.Models
             ProviderRewards = Math.Round(rewards * 5, 2, MidpointRounding.AwayFromZero); // 5/6
         }
         
-        public void ProcessReservesLog(ReservesLog log, TokenSnapshot crsSnapshot, Token crs)
+        public void ProcessReservesLog(ReservesLog log, TokenSnapshot crsSnapshot)
         {
             ReserveCrs = log.ReserveCrs.ToString();
             ReserveSrc = log.ReserveSrc;
 
-            var reserveCrsRounded = ReserveCrs.ToRoundedDecimal(2, crs.Decimals);
+            var reserveCrsRounded = ReserveCrs.ToRoundedDecimal(2, TokenConstants.Cirrus.Decimals);
             
             // * 2, for reserve Crs USD amount and reserve Src, they are equal
             ReserveUsd = Math.Round(reserveCrsRounded * crsSnapshot.Price * 2, 2, MidpointRounding.AwayFromZero);
         }
         
-        public void ProcessStakingLog<T>(T log, TokenSnapshot odxSnapshot, Token odx) 
+        public void ProcessStakingLog<T>(T log, TokenSnapshot odxSnapshot) 
             where T : TransactionLog
         {
             var weight = log switch
@@ -108,7 +109,7 @@ namespace Opdex.Platform.Domain.Models
             };
             
             const int precision = 2;
-            var odxDecimal = weight.ToRoundedDecimal(precision, odx.Decimals);
+            var odxDecimal = weight.ToRoundedDecimal(precision, TokenConstants.Opdex.Decimals);
             var odxWeightUsd = Math.Round(odxDecimal * odxSnapshot.Price, precision, MidpointRounding.AwayFromZero);
 
             StakingWeight = StakingWeight.Add(weight);

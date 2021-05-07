@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -21,11 +22,13 @@ namespace Opdex.Platform.WebApi.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<IndexController> _logger;
+        private readonly IHostingEnvironment _hostingEnv;
         
-        public IndexController(IMediator mediator, ILogger<IndexController> logger)
+        public IndexController(IMediator mediator, ILogger<IndexController> logger, IHostingEnvironment hostingEnv)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _hostingEnv = hostingEnv ?? throw new ArgumentNullException(nameof(hostingEnv));
         }
 
         [HttpGet("last-synced-block")]
@@ -66,15 +69,18 @@ namespace Opdex.Platform.WebApi.Controllers
 
                 if (!createdBlock)
                 {
-                    return NoContent();
+                    break;
                 }
 
-                // Once a minute sync CRS price
-                if (blockDetails.Height % 20 == 0)
+                // 4 = 1 minute || 60 = 15 minutes
+                var timeToRefreshCirrus = _hostingEnv.IsDevelopment() ? 4ul : 60ul;
+                if (blockDetails.Height % timeToRefreshCirrus == 0)
                 {
                     await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockDetails.MedianTime.FromUnixTimeSeconds()), CancellationToken.None);
+                    // Todo should also snapshot ODX Token
                 }
                 
+                // Index each transaction in the block
                 foreach (var tx in blockDetails.Tx.Where(tx => tx != blockDetails.MerkleRoot))
                 {
                     try
@@ -86,6 +92,8 @@ namespace Opdex.Platform.WebApi.Controllers
                         _logger.LogError(ex, $"Unable to create transaction with error: {ex.Message}");
                     }
                 }
+                
+                // Index Market Snapshots based on Pool Snapshots in time tx time range
             }
             
             return NoContent();

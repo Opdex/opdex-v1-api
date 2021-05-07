@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 {
@@ -16,19 +16,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
         private static readonly string SqlCommand =
             $@"INSERT INTO market (
                 {nameof(MarketEntity.Address)},
+                {nameof(MarketEntity.DeployerId)},
+                {nameof(MarketEntity.StakingTokenId)},
                 {nameof(MarketEntity.AuthPoolCreators)},
                 {nameof(MarketEntity.AuthProviders)},
                 {nameof(MarketEntity.AuthTraders)},
                 {nameof(MarketEntity.Fee)},
-                {nameof(MarketEntity.Staking)},
                 {nameof(MarketEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(MarketEntity.Address)},
+                @{nameof(MarketEntity.DeployerId)},
+                @{nameof(MarketEntity.StakingTokenId)},
                 @{nameof(MarketEntity.AuthPoolCreators)},
                 @{nameof(MarketEntity.AuthProviders)},
                 @{nameof(MarketEntity.AuthTraders)},
                 @{nameof(MarketEntity.Fee)},
-                @{nameof(MarketEntity.Staking)},
                 UTC_TIMESTAMP()
               );
               SELECT LAST_INSERT_ID();";

@@ -1,11 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Deployers;
+using Opdex.Platform.Application.Abstractions.Commands.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
@@ -20,8 +21,11 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
@@ -59,27 +63,57 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             var marketCreatedLogs = cirrusTx.LogsOfType<MarketCreatedLog>(TransactionLogType.MarketCreatedLog);
             foreach (var log in marketCreatedLogs)
             {
-                // Check our market deployer address, index only our created markets.
-                // var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(log.Contract), CancellationToken.None);
-                //
-                // // Ignore if it's not one of Opdex deployers
-                // if (deployer == null) continue;
+                long deployerId;
+                long? stakingTokenId = null;
+                var isStakingMarket = cirrusTx.NewContractAddress.HasValue();
                 
-                // If this transaction has a new contract address, it was the tx that deployed the deployer contract which 
-                // creates the only available staking market.
-                var isStaking = cirrusTx.NewContractAddress.HasValue();
+                if (isStakingMarket)
+                {
+                    // Staking market is deployed immediately with the deployer contract
+                    deployerId = await _mediator.Send(new MakeDeployerCommand(cirrusTx.NewContractAddress), CancellationToken.None);
+                    stakingTokenId = await _mediator.Send(new MakeTokenCommand(log.StakingToken), CancellationToken.None);
+
+                    // Get staking token summary
+                    var stakingTokenRequest = new RetrieveStakingTokenContractSummaryByAddressQuery(log.StakingToken);
+                    var stakingTokenSummary = await _mediator.Send(stakingTokenRequest, CancellationToken.None);
+
+                    // Get mining governance summary
+                    var miningGovernanceRequest = new RetrieveMiningGovernanceContractSummaryByAddressQuery(stakingTokenSummary.MiningGovernance);
+                    var miningGovernanceSummary = await _mediator.Send(miningGovernanceRequest, CancellationToken.None);
+
+                    // Create mining governance record
+                    var miningGovernance = new MiningGovernance(stakingTokenSummary.MiningGovernance, stakingTokenId.GetValueOrDefault(), miningGovernanceSummary.NominationPeriodEnd, miningGovernanceSummary.Balance,
+                        (int)miningGovernanceSummary.MiningPoolsFunded, miningGovernanceSummary.MiningPoolReward);
+                    
+                    var miningGovernanceId = await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance), CancellationToken.None);
+
+                    // Create token distribution record
+                    var tokenDistribution = new TokenDistribution(stakingTokenId.GetValueOrDefault(), miningGovernanceId, stakingTokenSummary.Owner,
+                        stakingTokenSummary.Genesis, stakingTokenSummary.PeriodDuration, (int)stakingTokenSummary.PeriodIndex);
+                    
+                    var tokenDistributionId = await _mediator.Send(new MakeTokenDistributionCommand(tokenDistribution), CancellationToken.None);
+                }
+                else
+                {
+                    var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(log.Contract), CancellationToken.None);
+                    deployerId = deployer.Id;
+
+                }
+
+                if (deployerId == 0) continue;
                 
-                // Create new market
-                var marketId = await _mediator.Send(new MakeMarketCommand(log.Market, log.AuthPoolCreators, log.AuthProviders, log.AuthTraders, log.Fee, isStaking), CancellationToken.None);
+                var marketId = await _mediator.Send(new MakeMarketCommand(log.Market, deployerId, stakingTokenId, log.AuthPoolCreators, 
+                    log.AuthProviders, log.AuthTraders, log.Fee), CancellationToken.None);
             }
             
             // Process Liquidity Pool Created Logs
             var liquidityPoolCreatedLogs = cirrusTx.LogsOfType<LiquidityPoolCreatedLog>(TransactionLogType.LiquidityPoolCreatedLog);
             foreach (var log in liquidityPoolCreatedLogs)
             {
-                var marketI = await _mediator.Send(new RetrieveMarketByAddressQuery(log.Contract), CancellationToken.None);
+                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(log.Contract), CancellationToken.None);
+                // Todo: Only if the token doesn't currently exist.
                 var tokenId = await _mediator.Send(new MakeTokenCommand(log.Token), CancellationToken.None);
-                var pairId = await _mediator.Send(new MakeLiquidityPoolCommand(log.Pool, tokenId, marketI.Id), CancellationToken.None);
+                var pairId = await _mediator.Send(new MakeLiquidityPoolCommand(log.Pool, tokenId, market.Id), CancellationToken.None);
             }
             
             // Process Mining Pool Created Logs
@@ -88,6 +122,29 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             {
                 var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(log.StakingPool), CancellationToken.None);
                 var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(log.MiningPool, pool.Id), CancellationToken.None);
+            }
+            
+            // Todo: Only for qualified distribution tokens (odx)
+            // Todo: Or OwnerChangeLog
+            var tokenDistributionLogs = cirrusTx.LogsOfType<DistributionLog>(TransactionLogType.DistributionLog);
+            foreach (var log in tokenDistributionLogs)
+            {
+                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(log.Contract), CancellationToken.None);
+                if (token == null)
+                {
+                    continue;
+                }
+
+                var tokenDistribution = await _mediator.Send(new RetrieveTokenDistributionByTokenIdQuery(token.Id), CancellationToken.None);
+                
+                // Technically should exist already but could be requested for a token thats something else
+                if (tokenDistribution == null)
+                {
+                    tokenDistribution = new TokenDistribution(token.Id, 0, log.OwnerAddress, 0, 0, (int)log.PeriodIndex);
+                }
+                
+                // Update token distribution records
+                var tokenDistributionId = await _mediator.Send(new MakeTokenDistributionCommand(tokenDistribution), CancellationToken.None);
             }
 
             await ProcessSnapshots(cirrusTx);
@@ -99,17 +156,17 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
         // Still considering other approaches to this
         // This processes liquidity pool and token related snapshots for historical analytic purposes
         // Consider a snapshot for mining pools, is historical data ever needed or only current data?
-        // Todo: Consider when pulling a SRC token snapshot that may be stale because the pool is low volume
+        // Todo: Consider when pulling an SRC token snapshot that may be stale because the pool is low volume
         // If the reserves don't change often but CRS token price still does, token snapshots still need to 
         // occur regularly 
         private async Task ProcessSnapshots(Transaction tx)
         {
-            var crsToken = await _mediator.Send(new RetrieveTokenByAddressQuery("CRS"), CancellationToken.None);
+            var crsToken = await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address), CancellationToken.None);
             // Todo: Should not be latest, should be by snapshot time
             var crsSnapshot = await _mediator.Send(new RetrieveLatestTokenSnapshotByTokenIdQuery(crsToken.Id), CancellationToken.None);
             var block = await _mediator.Send(new RetrieveBlockByHeightQuery(tx.BlockHeight), CancellationToken.None);
             
-            var poolSnapshotLogTypes = new List<TransactionLogType>
+            var poolSnapshotLogTypes = new[]
             {
                 TransactionLogType.ReservesLog,
                 TransactionLogType.SwapLog,
@@ -140,27 +197,21 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     {
                         switch (poolLog.LogType)
                         {
-                            // Update pool liquidity(reserves) snapshot | CRS, SRC, USD
-                            // Update src token price snapshots | USD
                             case TransactionLogType.ReservesLog:
                                 var reservesLog = (ReservesLog)poolLog;
-                                await ProcessTokenSnapshot(pool, snapshotType, reservesLog, snapshotStart, snapshotEnd, crsSnapshot, crsToken);
-                                poolSnapshot.ProcessReservesLog(reservesLog, crsSnapshot, crsToken);
+                                await ProcessTokenSnapshot(pool, snapshotType, reservesLog, snapshotStart, snapshotEnd, crsSnapshot);
+                                poolSnapshot.ProcessReservesLog(reservesLog, crsSnapshot);
                                 break;
-                            // - update pool volume snapshot | CRS, SRC, USD
-                            // - update pool rewards snapshot | USD
                             case TransactionLogType.SwapLog:
-                                poolSnapshot.ProcessSwapLog((SwapLog)poolLog, crsSnapshot, crsToken);
+                                poolSnapshot.ProcessSwapLog((SwapLog)poolLog, crsSnapshot);
                                 break;
-                            // - update pool staking weight snapshot | SRC, USD
                             case TransactionLogType.StartStakingLog:
-                                // Todo: Should be odx snapshot / token
-                                poolSnapshot.ProcessStakingLog((StartStakingLog)poolLog, crsSnapshot, crsToken);
+                                // Todo: Should be odx snapshot
+                                poolSnapshot.ProcessStakingLog((StartStakingLog)poolLog, crsSnapshot);
                                 break;
-                            // - update pool staking weight snapshot | SRC, USD
                             case TransactionLogType.StopStakingLog:
-                                // Todo: Should be odx snapshot / token
-                                poolSnapshot.ProcessStakingLog((StopStakingLog)poolLog, crsSnapshot, crsToken);
+                                // Todo: Should be odx snapshot
+                                poolSnapshot.ProcessStakingLog((StopStakingLog)poolLog, crsSnapshot);
                                 break;
                         }
                     }
@@ -173,14 +224,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
         }
         
         private async Task ProcessTokenSnapshot(LiquidityPoolDto pool, SnapshotType snapshotType, ReservesLog log, DateTime snapshotStart, DateTime snapshotEnd,
-            TokenSnapshot crsSnapshot, Token crsToken)
+            TokenSnapshot crsSnapshot)
         {
             var poolTokenSnapshots = await _mediator.Send(new RetrieveActiveTokenSnapshotsByTokenIdQuery(pool.Token.Id, snapshotStart), CancellationToken.None);
 
             var poolTokenSnapshot = poolTokenSnapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
                                     new TokenSnapshot(pool.Token.Id, 0m, snapshotType, snapshotStart, snapshotEnd);
                     
-            poolTokenSnapshot.ProcessReservesLog(log, crsSnapshot, crsToken, pool.Token.Decimals);
+            poolTokenSnapshot.ProcessReservesLog(log, crsSnapshot, pool.Token.Decimals);
 
             await _mediator.Send(new MakeTokenSnapshotCommand(poolTokenSnapshot), CancellationToken.None);
         }

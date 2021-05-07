@@ -5,7 +5,7 @@ using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Pools
 {
-    public class CallCirrusGetOpdexMiningPoolByAddressQuery : IRequest<MiningPool>
+    public class CallCirrusGetOpdexMiningPoolByAddressQuery : IRequest<MiningPoolSmartContractSummary>
     {
         public CallCirrusGetOpdexMiningPoolByAddressQuery(string address)
         {

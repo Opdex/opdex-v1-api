@@ -14,10 +14,16 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             bool authProviders = log?.authProviders;
             bool authTraders = log?.authTraders;
             uint fee = log?.fee;
+            string stakingToken = log?.stakingToken;
 
             if (!market.HasValue())
             {
                 throw new ArgumentNullException(nameof(market));
+            }
+
+            if (!stakingToken.HasValue())
+            {
+                throw new ArgumentNullException(nameof(stakingToken));
             }
 
             Market = market;
@@ -25,6 +31,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             AuthProviders = authProviders;
             AuthTraders = authTraders;
             Fee = fee;
+            StakingToken = stakingToken;
         }
 
         public MarketCreatedLog(long id, long transactionId, string address, int sortOrder, string details)
@@ -36,6 +43,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             AuthProviders = logDetails.AuthProviders;
             AuthTraders = logDetails.AuthTraders;
             Fee = logDetails.Fee;
+            StakingToken = logDetails.StakingToken;
         }
         
         public string Market { get; }
@@ -43,6 +51,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         public bool AuthProviders { get; }
         public bool AuthTraders { get; }
         public uint Fee { get; }
+        public string StakingToken { get; }
 
         public struct LogDetails
         {
@@ -51,6 +60,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             public bool AuthProviders { get; set; }
             public bool AuthTraders { get; set; }
             public uint Fee { get; set; }
+            public string StakingToken { get; set; }
         }
         
         private static LogDetails DeserializeLogDetails(string details)
@@ -66,7 +76,8 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
                 AuthPoolCreators = AuthPoolCreators,
                 AuthProviders = AuthProviders,
                 AuthTraders = AuthTraders,
-                Fee = Fee
+                Fee = Fee,
+                StakingToken = StakingToken
             });
         }
     }

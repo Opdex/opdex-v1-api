@@ -59,7 +59,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         }
         
         [Fact]
-        public void SelectTransactionByHash_Throws_NotFoundException()
+        public void SelectTokenByAddress_Throws_NotFoundException()
         {
             const string address = "SomeAddress";
             

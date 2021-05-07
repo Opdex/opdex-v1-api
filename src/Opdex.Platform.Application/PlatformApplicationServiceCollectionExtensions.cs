@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
+using Opdex.Platform.Application.Abstractions.Commands.Deployers;
+using Opdex.Platform.Application.Abstractions.Commands.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.Commands.Pools;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
@@ -19,6 +21,7 @@ using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
@@ -32,11 +35,13 @@ using Opdex.Platform.Application.Handlers;
 using Opdex.Platform.Application.Handlers.Blocks;
 using Opdex.Platform.Application.Handlers.Deployers;
 using Opdex.Platform.Application.Handlers.Markets;
+using Opdex.Platform.Application.Handlers.MiningGovernance;
 using Opdex.Platform.Application.Handlers.Pools;
 using Opdex.Platform.Application.Handlers.Tokens;
 using Opdex.Platform.Application.Handlers.Transactions;
 using Opdex.Platform.Application.Handlers.Transactions.TransactionLogs;
 using Opdex.Platform.Application.Handlers.Transactions.Wallet;
+using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDto;
@@ -77,6 +82,10 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolSwapQuoteQuery, string>, RetrieveLiquidityPoolSwapQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolAddLiquidityQuoteQuery, string>, RetrieveLiquidityPoolAddLiquidityQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningPoolByLiquidityPoolIdQuery, MiningPool>, RetrieveMiningPoolByLiquidityPoolIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMiningGovernanceByTokenIdQuery, MiningGovernance>, RetrieveMiningGovernanceByTokenIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveTokenDistributionByTokenIdQuery, TokenDistribution>, RetrieveTokenDistributionByTokenIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMiningGovernanceContractSummaryByAddressQuery, MiningGovernanceContractSummary>, RetrieveMiningGovernanceContractSummaryByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveStakingTokenContractSummaryByAddressQuery, StakingTokenContractSummary>, RetrieveStakingTokenContractSummaryByAddressQueryHandler>();
 
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();
@@ -121,6 +130,9 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeWalletCollectMiningRewardsTransactionCommand, string>, MakeWalletCollectMiningRewardsTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletDistributeTokensTransactionCommand, string>, MakeWalletDistributeTokensTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletRewardMiningPoolsTransactionCommand, string>, MakeWalletRewardMiningPoolsTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeDeployerCommand, long>, MakeDeployerCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeMiningGovernanceCommand, long>, MakeMiningGovernanceCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeTokenDistributionCommand, long>, MakeTokenDistributionCommandHandler>();
 
             // Entry Handlers
             services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();

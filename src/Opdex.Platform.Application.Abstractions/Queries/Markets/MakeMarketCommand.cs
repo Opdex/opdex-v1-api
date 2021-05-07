@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets
 {
     public class MakeMarketCommand : IRequest<long>
     {
-        public MakeMarketCommand(string address, bool authPoolCreators, bool authProviders, bool authTraders, uint fee, bool staking)
+        public MakeMarketCommand(string address, long deployerId, long? stakingTokenId, bool authPoolCreators, bool authProviders, bool authTraders, uint fee)
         {
             if (!address.HasValue())
             {
@@ -17,20 +17,27 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets
             {
                 throw new ArgumentOutOfRangeException(nameof(fee));
             }
+
+            if (deployerId < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(deployerId));
+            }
             
             Address = address;
+            DeployerId = deployerId;
+            StakingTokenId = stakingTokenId;
             AuthPoolCreators = authPoolCreators;
             AuthProviders = authProviders;
             AuthTraders = authTraders;
             Fee = fee;
-            Staking = staking;
         }
         
         public string Address { get; }
+        public long DeployerId { get; }
+        public long? StakingTokenId { get; }
         public bool AuthPoolCreators { get; }
         public bool AuthProviders { get; }
         public bool AuthTraders { get; }
         public uint Fee { get; }
-        public bool Staking { get; }
     }
 }

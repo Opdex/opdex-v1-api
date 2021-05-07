@@ -1,10 +1,12 @@
 using AutoMapper;
+using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernance;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
@@ -32,6 +34,10 @@ namespace Opdex.Platform.Infrastructure
                 .ConstructUsing(src => new TokenSnapshot(src.Id, src.TokenId, src.Price, src.SnapshotTypeId, src.StartDate, src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
+            CreateMap<TokenDistributionEntity, TokenDistribution>()
+                .ConstructUsing(src => new TokenDistribution(src.Id, src.TokenId, src.MiningGovernanceId, src.Owner, src.Genesis, src.PeriodDuration, src.PeriodIndex))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
             CreateMap<BlockEntity, Block>()
                 .ConstructUsing(src => new Block(src.Height, src.Hash, src.Time, src.MedianTime))
                 .ForAllOtherMembers(opt => opt.Ignore());
@@ -46,15 +52,24 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<MiningPoolEntity, MiningPool>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.LiquidityPoolId, opt => opt.MapFrom(src => src.LiquidityPoolId))
-                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-                .ForMember(dest => dest.RewardRate, opt => opt.MapFrom(src => src.RewardRate))
-                .ForMember(dest => dest.MiningPeriodEndBlock, opt => opt.MapFrom(src => src.MiningPeriodEndBlock))
+                .ConstructUsing(src => new MiningPool(src.Id, src.LiquidityPoolId, src.Address, src.RewardPerBlock, src.RewardPerLpt, src.MiningPeriodEndBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<MiningPoolSnapshotEntity, MiningPoolSnapshot>()
+                .ConstructUsing(src => new MiningPoolSnapshot(src.Id, src.MiningPoolId, src.MiningWeight, src.MiningUsd, src.RemainingRewards, 
+                    (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketEntity, Market>()
-                .ConstructUsing(src => new Market(src.Id, src.Address, src.AuthPoolCreators, src.AuthProviders, src.AuthTraders, src.Fee, src.Staking))
+                .ConstructUsing(src => new Market(src.Id, src.Address, src.DeployerId, src.StakingTokenId, src.AuthPoolCreators, src.AuthProviders, src.AuthTraders, src.Fee))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<MiningGovernanceEntity, MiningGovernance>()
+                .ConstructUsing(src => new MiningGovernance(src.Id, src.Address, src.TokenId, src.NominationPeriodEnd, src.Balance, src.MiningPoolsFunded, src.MiningPoolReward))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<DeployerEntity, Deployer>()
+                .ConstructUsing(src => new Deployer(src.Id, src.Address))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<MarketSnapshotEntity, MarketSnapshot>()
@@ -102,7 +117,8 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
                 .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
                 .ForMember(dest => dest.Fee, opt => opt.MapFrom(src => src.Fee))
-                .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
+                .ForMember(dest => dest.StakingTokenId, opt => opt.MapFrom(src => src.StakingTokenId))
+                .ForMember(dest => dest.DeployerId, opt => opt.MapFrom(src => src.DeployerId))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<MarketSnapshot, MarketSnapshotEntity>()
@@ -118,6 +134,21 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => src.SnapshotType))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<Deployer, DeployerEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<MiningGovernance, MiningGovernanceEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+                .ForMember(dest => dest.NominationPeriodEnd, opt => opt.MapFrom(src => src.NominationPeriodEnd))
+                .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
+                .ForMember(dest => dest.MiningPoolsFunded, opt => opt.MapFrom(src => src.MiningPoolsFunded))
+                .ForMember(dest => dest.MiningPoolReward, opt => opt.MapFrom(src => src.MiningPoolReward))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<Token, TokenEntity>()
@@ -137,6 +168,16 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => (int)src.SnapshotType))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<TokenDistribution, TokenDistributionEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+                .ForMember(dest => dest.MiningGovernanceId, opt => opt.MapFrom(src => src.MiningGovernanceId))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
+                .ForMember(dest => dest.PeriodDuration, opt => opt.MapFrom(src => src.PeriodDuration))
+                .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<LiquidityPool, LiquidityPoolEntity>()
@@ -169,8 +210,20 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.LiquidityPoolId, opt => opt.MapFrom(src => src.LiquidityPoolId))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-                .ForMember(dest => dest.RewardRate, opt => opt.MapFrom(src => src.RewardRate))
+                .ForMember(dest => dest.RewardPerBlock, opt => opt.MapFrom(src => src.RewardPerBlock))
+                .ForMember(dest => dest.RewardPerLpt, opt => opt.MapFrom(src => src.RewardPerLpt))
                 .ForMember(dest => dest.MiningPeriodEndBlock, opt => opt.MapFrom(src => src.MiningPeriodEndBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<MiningPoolSnapshot, MiningPoolSnapshotEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.MiningPoolId, opt => opt.MapFrom(src => src.MiningPoolId))
+                .ForMember(dest => dest.MiningWeight, opt => opt.MapFrom(src => src.MiningWeight))
+                .ForMember(dest => dest.MiningUsd, opt => opt.MapFrom(src => src.MiningUsd))
+                .ForMember(dest => dest.RemainingRewards, opt => opt.MapFrom(src => src.RemainingRewards))
+                .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => (int)src.SnapshotType))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<Block, BlockEntity>()

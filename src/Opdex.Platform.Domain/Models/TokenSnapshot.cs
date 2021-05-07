@@ -1,4 +1,5 @@
 using System;
+using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 
@@ -39,9 +40,9 @@ namespace Opdex.Platform.Domain.Models
             LastUpdated = DateTime.UtcNow;
         }
 
-        public void ProcessReservesLog(ReservesLog log, TokenSnapshot crsSnapshot, Token crs, int srcDecimals)
+        public void ProcessReservesLog(ReservesLog log, TokenSnapshot crsSnapshot, int srcDecimals)
         {
-            var crsReservesRounded = log.ReserveCrs.ToString().ToRoundedDecimal(8, crs.Decimals);
+            var crsReservesRounded = log.ReserveCrs.ToString().ToRoundedDecimal(8, TokenConstants.Cirrus.Decimals);
             var srcReservesRounded = log.ReserveSrc.ToRoundedDecimal(8, srcDecimals);
             
             var srcTokensPerCrsToken = Math.Round(crsReservesRounded / srcReservesRounded, 2, MidpointRounding.AwayFromZero);

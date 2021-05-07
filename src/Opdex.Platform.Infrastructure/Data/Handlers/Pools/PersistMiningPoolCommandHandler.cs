@@ -12,21 +12,32 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 {
     public class PersistMiningPoolCommandHandler : IRequestHandler<PersistMiningPoolCommand, long>
     {
-        private static readonly string SqlCommand =
+        private static readonly string InsertSqlCommand =
             $@"INSERT INTO pool_mining (
                 {nameof(MiningPoolEntity.LiquidityPoolId)},
                 {nameof(MiningPoolEntity.Address)},
-                {nameof(MiningPoolEntity.RewardRate)},
+                {nameof(MiningPoolEntity.RewardPerBlock)},
+                {nameof(MiningPoolEntity.RewardPerLpt)},
                 {nameof(MiningPoolEntity.MiningPeriodEndBlock)},
                 {nameof(MiningPoolEntity.CreatedDate)}
               ) VALUES (
                 @{nameof(MiningPoolEntity.LiquidityPoolId)},
                 @{nameof(MiningPoolEntity.Address)},
-                @{nameof(MiningPoolEntity.RewardRate)},
+                @{nameof(MiningPoolEntity.RewardPerBlock)},
+                @{nameof(MiningPoolEntity.RewardPerLpt)},
                 @{nameof(MiningPoolEntity.MiningPeriodEndBlock)},
                 UTC_TIMESTAMP()
               );
               SELECT LAST_INSERT_ID();";
+        
+        private static readonly string UpdateSqlCommand = 
+            $@"UPDATE pool_mining
+                SET 
+                  {nameof(MiningPoolEntity.RewardPerBlock)} = @{nameof(MiningPoolEntity.RewardPerBlock)},
+                  {nameof(MiningPoolEntity.RewardPerLpt)} = @{nameof(MiningPoolEntity.RewardPerLpt)},
+                  {nameof(MiningPoolEntity.MiningPeriodEndBlock)} = @{nameof(MiningPoolEntity.MiningPeriodEndBlock)}
+                WHERE
+                  {nameof(MiningPoolEntity.Id)} = @{nameof(MiningPoolEntity.Id)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -45,10 +56,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             try
             {
                 var poolEntity = _mapper.Map<MiningPoolEntity>(request.MiningPool);
+
+                var isUpdate = poolEntity.Id > 1;
+                
+                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+
+                var command = DatabaseQuery.Create(sql, poolEntity, cancellationToken);
             
-                var command = DatabaseQuery.Create(SqlCommand, poolEntity, cancellationToken);
-            
-                return await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<long>(command);
+
+                return isUpdate ? poolEntity.Id : result;
             }
             catch (Exception ex)
             {

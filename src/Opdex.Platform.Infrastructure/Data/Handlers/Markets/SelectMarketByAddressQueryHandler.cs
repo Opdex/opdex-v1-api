@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
@@ -18,11 +18,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
             $@"SELECT
                 {nameof(MarketEntity.Id)},
                 {nameof(MarketEntity.Address)},
+                {nameof(MarketEntity.DeployerId)},
+                {nameof(MarketEntity.StakingTokenId)},
                 {nameof(MarketEntity.AuthPoolCreators)},
                 {nameof(MarketEntity.AuthProviders)},
                 {nameof(MarketEntity.AuthTraders)},
                 {nameof(MarketEntity.Fee)},
-                {nameof(MarketEntity.Staking)},
                 {nameof(MarketEntity.CreatedDate)}
             FROM market
             WHERE {nameof(MarketEntity.Address)} = @{nameof(MarketEntity.Address)}
