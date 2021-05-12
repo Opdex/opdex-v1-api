@@ -15,6 +15,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi;
 using Opdex.Platform.WebApi.Mappers;
 using Serilog;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using System;
+using Opdex.Platform.WebApi.Auth;
+using Microsoft.IdentityModel.Logging;
 
 namespace Opdex.Platform.WebApi
 {
@@ -42,13 +48,32 @@ namespace Opdex.Platform.WebApi
                             new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK" }
                         };
                 });
-            
+
+            var authenticationConfiguration = new AuthenticationConfiguration();
+            Configuration.GetSection(nameof(AuthenticationConfiguration)).Bind(authenticationConfiguration);
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    var rsa = RSA.Create();
+                    rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(authenticationConfiguration.RsaPublicKey), out _);
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new RsaSecurityKey(rsa)
+                    };
+                });
+
             services.AddOpenApiDocument(settings =>
             {
                 settings.Title = "Opdex Platform API";
                 settings.Version = "v1";
             });
-            
+
             // Automapper Profiles
             services.AddAutoMapper(mapperConfig =>
             {
@@ -56,19 +81,18 @@ namespace Opdex.Platform.WebApi
                 mapperConfig.AddProfile<PlatformInfrastructureMapperProfile>();
                 mapperConfig.AddProfile<PlatformWebApiMapperProfile>();
             });
-            
+
             services.AddHttpClient();
-            
-            // Todo: Use Azure Key Vault / User Secrets
+
             var cirrusConfig = Configuration.GetSection(nameof(CirrusConfiguration));
             services.Configure<CirrusConfiguration>(cirrusConfig);
-            
+
             var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
             services.Configure<OpdexConfiguration>(opdexConfig);
-            
+
             var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
             services.Configure<CoinMarketCapConfiguration>(cmcConfig);
-            
+
             // Register project module services
             services.AddPlatformApplicationServices();
             services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(), cmcConfig.Get<CoinMarketCapConfiguration>());
@@ -85,6 +109,7 @@ namespace Opdex.Platform.WebApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                IdentityModelEventSource.ShowPII = true;
             }
 
             // Todo: Set correctly for ENV's outside local dev
@@ -92,22 +117,23 @@ namespace Opdex.Platform.WebApi
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod());
-            
+
             app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseOpenApi();
-            
+
             app.UseSwaggerUi3();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
-        
+
         /// <summary>
         /// Hide Stratis related endpoints in Swagger shown due to using Nuget packages
         /// in WebApi project for serialization.
