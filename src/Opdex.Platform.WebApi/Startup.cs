@@ -95,7 +95,7 @@ namespace Opdex.Platform.WebApi
             
             app.UseSerilogRequestLogging();
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 

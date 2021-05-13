@@ -7,8 +7,9 @@ using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Tokens
 {

@@ -51,6 +51,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ProcessLatestBlocks(CancellationToken cancellationToken)
         {
+            // Todo: Only if getting the active deployer is not null
+            
             // Todo: Use Get Query
             var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), CancellationToken.None);
             var blockDetails = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(latestSyncedBlock.Hash), CancellationToken.None);
@@ -93,9 +95,31 @@ namespace Opdex.Platform.WebApi.Controllers
                     }
                 }
                 
+                // Maybe create liquidity pool snapshots after each block
+                // Maybe create mining pool snapshots after each block
                 // Index Market Snapshots based on Pool Snapshots in time tx time range
             }
             
+            return NoContent();
+        }
+        
+        [HttpPost("process-odx-deployment")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ProcessOdxDeploymentTransaction(ProcessTransactionRequestModel txRequest)
+        {
+            await _mediator.Send(new ProcessOdxDeploymentTransactionCommand(txRequest.TxHash));
+
+            return NoContent();
+        }
+        
+        [HttpPost("process-deployer-deployment")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ProcessDeployerDeploymentTransaction(ProcessTransactionRequestModel txRequest)
+        {
+            await _mediator.Send(new ProcessDeployerDeploymentTransactionCommand(txRequest.TxHash));
+
             return NoContent();
         }
         

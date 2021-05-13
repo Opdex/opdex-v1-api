@@ -1,10 +1,10 @@
 using System;
 using MediatR;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.ODX;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Tokens
 {
-    public class MakeTokenDistributionCommand : IRequest<long>
+    public class MakeTokenDistributionCommand : IRequest<bool>
     {
         public MakeTokenDistributionCommand(TokenDistribution tokenDistribution)
         {

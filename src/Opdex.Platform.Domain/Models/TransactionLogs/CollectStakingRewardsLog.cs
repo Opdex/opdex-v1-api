@@ -17,7 +17,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
                 throw new ArgumentNullException(nameof(staker));
             }
             
-            if (!reward.HasValue())
+            if (!reward.IsNumeric())
             {
                 throw new ArgumentNullException(nameof(reward));
             }

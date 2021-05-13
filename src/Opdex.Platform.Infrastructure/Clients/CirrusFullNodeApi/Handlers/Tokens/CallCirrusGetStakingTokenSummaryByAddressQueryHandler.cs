@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
@@ -33,9 +33,9 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Token
             var periodIndexResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
             var periodIndex = uint.Parse(periodIndexResponse.Return.ToString());
 
-            localCall.MethodName = "get_Owner";
-            var ownerResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
-            var owner = ownerResponse.Return.ToString();
+            localCall.MethodName = "get_Vault";
+            var vaultResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
+            var vault = vaultResponse.Return.ToString();
             
             localCall.MethodName = "get_Genesis";
             var genesisResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Token
             var periodDurationResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
             var periodDuration = ulong.Parse(periodDurationResponse.Return.ToString());
 
-            return new StakingTokenContractSummary(request.Address, miningGovernance, periodIndex, owner, genesis, periodDuration);
+            return new StakingTokenContractSummary(request.Address, miningGovernance, periodIndex, vault, genesis, periodDuration);
         }
     }
 }

@@ -2,6 +2,9 @@ using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Domain.Models.Pools;
+using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using System.Linq;
 
@@ -104,11 +107,14 @@ namespace Opdex.Platform.Application
                                 TransactionLogType.StopMiningLog => ctx.Mapper.Map<StopMiningLogDto>(txLog),
                                 TransactionLogType.StopStakingLog => ctx.Mapper.Map<StopMiningLogDto>(txLog),
                                 TransactionLogType.DistributionLog => ctx.Mapper.Map<DistributionLogDto>(txLog),
-                                TransactionLogType.OwnerChangeLog => ctx.Mapper.Map<OwnerChangeLogDto>(txLog),
+                                TransactionLogType.VaultOwnerChangeLog => ctx.Mapper.Map<VaultOwnerChangeLogDto>(txLog),
                                 TransactionLogType.MiningPoolRewardedLog => ctx.Mapper.Map<MiningPoolRewardedLogDto>(txLog),
                                 TransactionLogType.RewardMiningPoolLog => ctx.Mapper.Map<RewardMiningPoolLogDto>(txLog),
                                 TransactionLogType.CollectStakingRewardsLog => ctx.Mapper.Map<CollectStakingRewardsLogDto>(txLog),
                                 TransactionLogType.CollectMiningRewardsLog => ctx.Mapper.Map<CollectMiningRewardsLogDto>(txLog),
+                                TransactionLogType.VaultCertificateCreatedLog => ctx.Mapper.Map<VaultCertificateCreatedLogDto>(txLog),
+                                TransactionLogType.VaultCertificateUpdatedLog => ctx.Mapper.Map<VaultCertificateUpdatedLogDto>(txLog),
+                                TransactionLogType.VaultCertificateRedeemedLog => ctx.Mapper.Map<VaultCertificateRedeemedLogDto>(txLog),
                                 _ => null
                             });
                         })
@@ -185,9 +191,7 @@ namespace Opdex.Platform.Application
 
             CreateMap<DistributionLog, DistributionLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()
-                .ForMember(dest => dest.OwnerAddress, opt => opt.MapFrom(src => src.OwnerAddress))
-                .ForMember(dest => dest.MiningAddress, opt => opt.MapFrom(src => src.MiningAddress))
-                .ForMember(dest => dest.OwnerAmount, opt => opt.MapFrom(src => src.OwnerAmount))
+                .ForMember(dest => dest.VaultAmount, opt => opt.MapFrom(src => src.VaultAmount))
                 .ForMember(dest => dest.MiningAmount, opt => opt.MapFrom(src => src.MiningAmount))
                 .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex));
             
@@ -228,7 +232,7 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
                 .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight));
 
-            CreateMap<OwnerChangeLog, OwnerChangeLogDto>()
+            CreateMap<VaultOwnerChangeLog, VaultOwnerChangeLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To));

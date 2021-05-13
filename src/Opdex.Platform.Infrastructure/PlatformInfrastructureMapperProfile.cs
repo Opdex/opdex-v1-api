@@ -1,16 +1,21 @@
 using AutoMapper;
+using Opdex.Platform.Common;
 using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Domain.Models.Pools;
+using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernance;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -35,7 +40,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TokenDistributionEntity, TokenDistribution>()
-                .ConstructUsing(src => new TokenDistribution(src.Id, src.TokenId, src.MiningGovernanceId, src.Owner, src.Genesis, src.PeriodDuration, src.PeriodIndex))
+                .ConstructUsing(src => new TokenDistribution(src.Id, src.VaultDistribution, src.MiningGovernanceDistribution, src.PeriodIndex, src.DistributionBlock, src.NextDistributionBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<BlockEntity, Block>()
@@ -61,7 +66,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketEntity, Market>()
-                .ConstructUsing(src => new Market(src.Id, src.Address, src.DeployerId, src.StakingTokenId, src.AuthPoolCreators, src.AuthProviders, src.AuthTraders, src.Fee))
+                .ConstructUsing(src => new Market(src.Id, src.Address, src.DeployerId, src.StakingTokenId, src.Owner, src.AuthPoolCreators, src.AuthProviders, src.AuthTraders, src.Fee))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<MiningGovernanceEntity, MiningGovernance>()
@@ -75,6 +80,14 @@ namespace Opdex.Platform.Infrastructure
             CreateMap<MarketSnapshotEntity, MarketSnapshot>()
                 .ConstructUsing(src => new MarketSnapshot(src.Id, src.MarketId, src.TransactionCount, src.Liquidity, src.Volume, src.StakingWeight, src.StakingUsd, 
                     src.ProviderRewards, src.StakerRewards, (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<VaultEntity, Vault>()
+                .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.Owner))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<VaultCertificateEntity, VaultCertificate>()
+                .ConstructUsing(src => new VaultCertificate(src.Id, src.VaultId, src.Owner, src.Amount, src.VestedBlock, src.Redeemed))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TransactionLogEntity, TransactionLog>()
@@ -99,7 +112,7 @@ namespace Opdex.Platform.Infrastructure
                         (int)TransactionLogType.RewardMiningPoolLog => new RewardMiningPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.MiningPoolRewardedLog => new MiningPoolRewardedLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.NominationLog => new NominationLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.OwnerChangeLog => new OwnerChangeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.VaultOwnerChangeLog => new VaultOwnerChangeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.DistributionLog => new DistributionLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.MarketCreatedLog => new MarketCreatedLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.MarketOwnerChangeLog => new MarketOwnerChangeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
@@ -118,6 +131,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
                 .ForMember(dest => dest.Fee, opt => opt.MapFrom(src => src.Fee))
                 .ForMember(dest => dest.StakingTokenId, opt => opt.MapFrom(src => src.StakingTokenId))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.DeployerId, opt => opt.MapFrom(src => src.DeployerId))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
@@ -172,11 +186,10 @@ namespace Opdex.Platform.Infrastructure
             
             CreateMap<TokenDistribution, TokenDistributionEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
-                .ForMember(dest => dest.MiningGovernanceId, opt => opt.MapFrom(src => src.MiningGovernanceId))
-                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
-                .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
-                .ForMember(dest => dest.PeriodDuration, opt => opt.MapFrom(src => src.PeriodDuration))
+                .ForMember(dest => dest.VaultDistribution, opt => opt.MapFrom(src => src.VaultDistribution))
+                .ForMember(dest => dest.MiningGovernanceDistribution, opt => opt.MapFrom(src => src.MiningGovernanceDistribution))
+                .ForMember(dest => dest.NextDistributionBlock, opt => opt.MapFrom(src => src.NextDistributionBlock))
+                .ForMember(dest => dest.DistributionBlock, opt => opt.MapFrom(src => src.DistributionBlock))
                 .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
@@ -247,6 +260,21 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
                 .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details))
                 .ForMember(dest => dest.LogTypeId, opt => opt.MapFrom(src => src.LogTypeId))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<Vault, VaultEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<VaultCertificate, VaultCertificateEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock))
+                .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
     }

@@ -5,7 +5,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernance;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernance;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
@@ -21,7 +21,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
                 {nameof(MiningGovernanceEntity.Balance)},
                 {nameof(MiningGovernanceEntity.MiningPoolsFunded)},
                 {nameof(MiningGovernanceEntity.MiningPoolReward)}
-            FROM mining_governance
+            FROM odx_mining_governance
             WHERE {nameof(MiningGovernanceEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;";
                         

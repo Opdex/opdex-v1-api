@@ -9,35 +9,21 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         public DistributionLog(dynamic log, string address, int sortOrder)
             : base(TransactionLogType.DistributionLog, address, sortOrder)
         {
-            string ownerAddress = log?.ownerAddress;
-            string miningAddress = log?.miningAddress;
-            string ownerAmount = log?.ownerAmount;
+            string vaultAmount = log?.vaultAmount;
             string miningAmount = log?.miningAmount;
             uint periodIndex = log?.periodIndex;
 
-            if (!ownerAddress.HasValue())
+            if (!vaultAmount.HasValue())
             {
-                throw new ArgumentNullException(nameof(ownerAddress));
-            }
-            
-            if (!miningAddress.HasValue())
-            {
-                throw new ArgumentNullException(nameof(miningAddress));
-            }
-            
-            if (!ownerAmount.HasValue())
-            {
-                throw new ArgumentNullException(nameof(ownerAmount));
+                throw new ArgumentNullException(nameof(vaultAmount));
             }
             
             if (!miningAmount.HasValue())
             {
                 throw new ArgumentNullException(nameof(miningAmount));
             }
-
-            OwnerAddress = ownerAddress;
-            MiningAddress = miningAddress;
-            OwnerAmount = ownerAmount;
+            
+            VaultAmount = vaultAmount;
             MiningAmount = miningAmount;
             PeriodIndex = periodIndex;
         }
@@ -46,24 +32,18 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             : base(TransactionLogType.DistributionLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
-            OwnerAddress = logDetails.OwnerAddress;
-            MiningAddress = logDetails.MiningAddress;
-            OwnerAmount = logDetails.OwnerAmount;
+            VaultAmount = logDetails.VaultAmount;
             MiningAmount = logDetails.MiningAmount;
             PeriodIndex = logDetails.PeriodIndex;
         }
-        
-        public string OwnerAddress { get; }
-        public string MiningAddress { get; }
-        public string OwnerAmount { get; }
+
+        public string VaultAmount { get; }
         public string MiningAmount { get; }
         public uint PeriodIndex { get; }
         
         private struct LogDetails
         {
-            public string OwnerAddress { get; set; }
-            public string MiningAddress { get; set; }
-            public string OwnerAmount { get; set; }
+            public string VaultAmount { get; set; }
             public string MiningAmount { get; set; }
             public uint PeriodIndex { get; set; }
         }
@@ -77,9 +57,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         {
             return JsonConvert.SerializeObject(new LogDetails
             {
-                OwnerAddress = OwnerAddress,
-                MiningAddress = MiningAddress,
-                OwnerAmount = OwnerAmount,
+                VaultAmount = VaultAmount,
                 MiningAmount = MiningAmount,
                 PeriodIndex = PeriodIndex
             });

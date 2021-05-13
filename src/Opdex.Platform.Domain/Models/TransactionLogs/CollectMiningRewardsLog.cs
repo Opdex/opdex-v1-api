@@ -17,7 +17,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
                 throw new ArgumentNullException(nameof(miner));
             }
             
-            if (!amount.HasValue())
+            if (!amount.IsNumeric())
             {
                 throw new ArgumentNullException(nameof(amount));
             }

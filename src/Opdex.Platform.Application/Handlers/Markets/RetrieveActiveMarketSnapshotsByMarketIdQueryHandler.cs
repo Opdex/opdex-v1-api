@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
 namespace Opdex.Platform.Application.Handlers.Markets

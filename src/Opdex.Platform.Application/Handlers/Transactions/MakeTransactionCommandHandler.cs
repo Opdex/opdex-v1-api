@@ -26,12 +26,15 @@ namespace Opdex.Platform.Application.Handlers.Transactions
 
             if (transaction != null) return false;
             
+            // Todo: this actually returns out a full Transaction
             var transactionId = await _mediator.Send(new PersistTransactionCommand(request.Transaction), CancellationToken.None);
 
             if (transactionId == null) return false;
             
             foreach (var log in request.Transaction.Logs)
             {
+                // TBH I have no idea how log.TransactionId is being populated correctly here, we don't have it at the request. 
+                // Currently a reference bug working in our favor...resolve
                 await _mediator.Send(new PersistTransactionLogCommand(log), CancellationToken.None);
             }
 

@@ -4,7 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools;

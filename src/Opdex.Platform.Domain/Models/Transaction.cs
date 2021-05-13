@@ -148,12 +148,15 @@ namespace Opdex.Platform.Domain.Models
                     nameof(RewardMiningPoolLog) => new RewardMiningPoolLog(log, address, sortOrder),
                     nameof(MiningPoolRewardedLog) => new MiningPoolRewardedLog(log, address, sortOrder),
                     nameof(NominationLog) => new NominationLog(log, address, sortOrder),
-                    nameof(OwnerChangeLog) => new OwnerChangeLog(log, address, sortOrder),
+                    nameof(VaultOwnerChangeLog) => new VaultOwnerChangeLog(log, address, sortOrder),
                     nameof(DistributionLog) => new DistributionLog(log, address, sortOrder),
                     nameof(MarketCreatedLog) => new MarketCreatedLog(log, address, sortOrder),
                     nameof(MarketOwnerChangeLog) => new MarketOwnerChangeLog(log, address, sortOrder),
                     nameof(PermissionsChangeLog) => new PermissionsChangeLog(log, address, sortOrder),
                     nameof(MarketChangeLog) => new MarketChangeLog(log, address, sortOrder),
+                    nameof(VaultCertificateCreatedLog) => new VaultCertificateCreatedLog(log, address, sortOrder),
+                    nameof(VaultCertificateUpdatedLog) => new VaultCertificateUpdatedLog(log, address, sortOrder),
+                    nameof(VaultCertificateRedeemedLog) => new VaultCertificateRedeemedLog(log, address, sortOrder),
                     _ => null // Todo: think about keeping these around incase it is an opdex integrated tx
                 };
 

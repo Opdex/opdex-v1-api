@@ -42,7 +42,12 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         MiningPoolRewardedLog = 21,
 
         // Mined token logs
-        OwnerChangeLog = 22,
-        DistributionLog = 23
+        DistributionLog = 22,
+        
+        // Vault
+        VaultCertificateCreatedLog = 23,
+        VaultCertificateUpdatedLog = 24,
+        VaultCertificateRedeemedLog = 25,
+        VaultOwnerChangeLog = 26
     }
 }

@@ -6,14 +6,14 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MiningGovernance;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernance;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
 {
     public class PersistMiningGovernanceCommandHandler : IRequestHandler<PersistMiningGovernanceCommand, long>
     {
         private static readonly string InsertSqlCommand =
-            $@"INSERT INTO mining_governance (
+            $@"INSERT INTO odx_mining_governance (
                 {nameof(MiningGovernanceEntity.Address)},
                 {nameof(MiningGovernanceEntity.TokenId)},
                 {nameof(MiningGovernanceEntity.NominationPeriodEnd)},
@@ -30,7 +30,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
               );";
         
         private static readonly string UpdateSqlCommand =
-            $@"UPDATE mining_governance 
+            $@"UPDATE odx_mining_governance 
                 SET 
                     {nameof(MiningGovernanceEntity.NominationPeriodEnd)} = @{nameof(MiningGovernanceEntity.NominationPeriodEnd)},
                     {nameof(MiningGovernanceEntity.Balance)} = @{nameof(MiningGovernanceEntity.Balance)},

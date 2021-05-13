@@ -5,7 +5,7 @@ using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernance;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernance;
 using Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance;
 using Xunit;

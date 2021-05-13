@@ -9,9 +9,17 @@ using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Domain.Models.Pools;
+using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
+using Opdex.Platform.Application.Abstractions.Commands.Vault;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
@@ -26,10 +34,12 @@ using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions.TransactionLogs;
+using Opdex.Platform.Application.Abstractions.Queries.Vault;
 using Opdex.Platform.Application.EntryHandlers.Markets;
 using Opdex.Platform.Application.EntryHandlers.Pools;
 using Opdex.Platform.Application.EntryHandlers.Tokens;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
+using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs;
 using Opdex.Platform.Application.EntryHandlers.Transactions.Wallet;
 using Opdex.Platform.Application.Handlers;
 using Opdex.Platform.Application.Handlers.Blocks;
@@ -41,8 +51,7 @@ using Opdex.Platform.Application.Handlers.Tokens;
 using Opdex.Platform.Application.Handlers.Transactions;
 using Opdex.Platform.Application.Handlers.Transactions.TransactionLogs;
 using Opdex.Platform.Application.Handlers.Transactions.Wallet;
-using Opdex.Platform.Domain;
-using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Application.Handlers.vault;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDto;
 
@@ -83,9 +92,12 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolAddLiquidityQuoteQuery, string>, RetrieveLiquidityPoolAddLiquidityQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningPoolByLiquidityPoolIdQuery, MiningPool>, RetrieveMiningPoolByLiquidityPoolIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceByTokenIdQuery, MiningGovernance>, RetrieveMiningGovernanceByTokenIdQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveTokenDistributionByTokenIdQuery, TokenDistribution>, RetrieveTokenDistributionByTokenIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveLatestTokenDistributionQuery, TokenDistribution>, RetrieveLatestTokenDistributionQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceContractSummaryByAddressQuery, MiningGovernanceContractSummary>, RetrieveMiningGovernanceContractSummaryByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveStakingTokenContractSummaryByAddressQuery, StakingTokenContractSummary>, RetrieveStakingTokenContractSummaryByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveVaultQuery, Vault>, RetrieveVaultQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, RetrieveVaultCertificatesByOwnerAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveCirrusBlockHashByHeightQuery, string>, RetrieveCirrusBlockHashByHeightQueryHandler>();
 
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();
@@ -105,6 +117,34 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateWalletCollectMiningRewardsTransactionCommand, string>, CreateWalletCollectMiningRewardsTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateWalletDistributeTokensTransactionCommand, string>, CreateWalletDistributeTokensTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateWalletRewardMiningPoolsTransactionCommand, string>, CreateWalletRewardMiningPoolsTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessOdxDeploymentTransactionCommand, Unit>, ProcessOdxDeploymentTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessDeployerDeploymentTransactionCommand, Unit>, ProcessDeployerDeploymentTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessLiquidityPoolCreatedLogCommand, bool>, ProcessLiquidityPoolCreatedLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessMiningPoolCreatedLogCommand, bool>, ProcessMiningPoolCreatedLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessApprovalLogCommand, bool>, ProcessApprovalLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessTransferLogCommand, bool>, ProcessTransferLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessMarketCreatedLogCommand, bool>, ProcessMarketCreatedLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessDistributionLogCommand, bool>, ProcessDistributionLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessVaultOwnerChangeLogCommand, bool>, ProcessVaultOwnerChangeLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessMarketOwnerChangeLogCommand, bool>, ProcessMarketOwnerChangeLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessStopMiningLogCommand, bool>, ProcessStopMiningLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessStartMiningLogCommand, bool>, ProcessStartMiningLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessNominationLogCommand, bool>, ProcessNominationLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessPermissionsChangeLogCommand, bool>, ProcessPermissionsChangeLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessMintLogCommand, bool>, ProcessMintLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessBurnLogCommand, bool>, ProcessBurnLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessSwapLogCommand, bool>, ProcessSwapLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessReservesLogCommand, bool>, ProcessReservesLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessMarketChangeLogCommand, bool>, ProcessMarketChangeLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessCollectMiningRewardsLogCommand, bool>, ProcessCollectMiningRewardsLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessMiningPoolRewardedLogCommand, bool>, ProcessMiningPoolRewardedLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessStartStakingLogCommand, bool>, ProcessStartStakingLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessStopStakingLogCommand, bool>, ProcessStopStakingLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessCollectStakingRewardsLogCommand, bool>, ProcessCollectStakingRewardsLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessRewardMiningPoolLogCommand, bool>, ProcessRewardMiningPoolLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessVaultCertificateCreatedLogCommand, bool>, ProcessVaultCertificateCreatedLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessVaultCertificateUpdatedLogCommand, bool>, ProcessVaultCertificateUpdatedLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessVaultCertificateRedeemedLogCommand, bool>, ProcessVaultCertificateRedeemedLogCommandHandler>();
             
             // Commands
             services.AddTransient<IRequestHandler<MakeWalletSwapTransactionCommand, string>, MakeWalletSwapTransactionCommandHandler>();
@@ -132,7 +172,9 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeWalletRewardMiningPoolsTransactionCommand, string>, MakeWalletRewardMiningPoolsTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeDeployerCommand, long>, MakeDeployerCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMiningGovernanceCommand, long>, MakeMiningGovernanceCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeTokenDistributionCommand, long>, MakeTokenDistributionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeTokenDistributionCommand, bool>, MakeTokenDistributionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeVaultCommand, long>, MakeVaultCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeVaultCertificateCommand, bool>, MakeVaultCertificateCommandHandler>();
 
             // Entry Handlers
             services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();

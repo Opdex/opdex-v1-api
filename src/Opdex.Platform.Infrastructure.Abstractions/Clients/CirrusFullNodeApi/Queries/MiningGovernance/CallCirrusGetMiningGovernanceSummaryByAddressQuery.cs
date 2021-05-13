@@ -1,7 +1,7 @@
 using System;
 using MediatR;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.ODX;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.MiningGovernance
 {

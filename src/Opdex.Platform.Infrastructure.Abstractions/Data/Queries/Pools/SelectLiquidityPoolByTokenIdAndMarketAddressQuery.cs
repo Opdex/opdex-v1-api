@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using MediatR;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools
 {

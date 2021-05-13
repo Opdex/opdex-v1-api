@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets
 {
     public class MakeMarketCommand : IRequest<long>
     {
-        public MakeMarketCommand(string address, long deployerId, long? stakingTokenId, bool authPoolCreators, bool authProviders, bool authTraders, uint fee)
+        public MakeMarketCommand(string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders, bool authTraders, uint fee)
         {
             if (!address.HasValue())
             {
@@ -26,6 +26,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets
             Address = address;
             DeployerId = deployerId;
             StakingTokenId = stakingTokenId;
+            Owner = owner;
             AuthPoolCreators = authPoolCreators;
             AuthProviders = authProviders;
             AuthTraders = authTraders;
@@ -35,6 +36,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets
         public string Address { get; }
         public long DeployerId { get; }
         public long? StakingTokenId { get; }
+        public string Owner { get; }
         public bool AuthPoolCreators { get; }
         public bool AuthProviders { get; }
         public bool AuthTraders { get; }

@@ -5,36 +5,28 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
 {
-    public class PersistTokenDistributionCommandHandler : IRequestHandler<PersistTokenDistributionCommand, long>
+    public class PersistTokenDistributionCommandHandler : IRequestHandler<PersistTokenDistributionCommand, bool>
     {
         private static readonly string InsertSqlCommand =
-            $@"INSERT INTO token_distribution (
-                {nameof(TokenDistributionEntity.TokenId)},
-                {nameof(TokenDistributionEntity.MiningGovernanceId)},
-                {nameof(TokenDistributionEntity.Owner)},
-                {nameof(TokenDistributionEntity.Genesis)},
-                {nameof(TokenDistributionEntity.PeriodDuration)},
-                {nameof(TokenDistributionEntity.PeriodIndex)}
+            $@"INSERT INTO odx_token_distribution (
+                {nameof(TokenDistributionEntity.VaultDistribution)},
+                {nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
+                {nameof(TokenDistributionEntity.PeriodIndex)},
+                {nameof(TokenDistributionEntity.DistributionBlock)},
+                {nameof(TokenDistributionEntity.NextDistributionBlock)}
               ) VALUES (
-                @{nameof(TokenDistributionEntity.TokenId)},
-                @{nameof(TokenDistributionEntity.MiningGovernanceId)},
-                @{nameof(TokenDistributionEntity.Owner)},
-                @{nameof(TokenDistributionEntity.Genesis)},
-                @{nameof(TokenDistributionEntity.PeriodDuration)},
-                @{nameof(TokenDistributionEntity.PeriodIndex)}
+                @{nameof(TokenDistributionEntity.Id)},
+                @{nameof(TokenDistributionEntity.VaultDistribution)},
+                @{nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
+                @{nameof(TokenDistributionEntity.PeriodIndex)},
+                @{nameof(TokenDistributionEntity.DistributionBlock)},
+                @{nameof(TokenDistributionEntity.NextDistributionBlock)}
               );";
-        
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE token_distribution 
-                SET 
-                    {nameof(TokenDistributionEntity.Owner)} = @{nameof(TokenDistributionEntity.Owner)},
-                    {nameof(TokenDistributionEntity.PeriodIndex)} = @{nameof(TokenDistributionEntity.PeriodIndex)}
-                WHERE {nameof(TokenDistributionEntity.Id)} = @{nameof(TokenDistributionEntity.Id)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -47,27 +39,23 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistTokenDistributionCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(PersistTokenDistributionCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 var poolEntity = _mapper.Map<TokenDistributionEntity>(request.TokenDistribution);
-
-                var isUpdate = poolEntity.Id > 1;
                 
-                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, poolEntity, cancellationToken);
+                var command = DatabaseQuery.Create(InsertSqlCommand, poolEntity, cancellationToken);
             
-                var result = await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteCommandAsync(command);
 
-                return isUpdate ? poolEntity.Id : result;
+                return result >= 1;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure persisting {nameof(TokenDistributionEntity)} record.");
                 
-                return 0;
+                return false;
             }
         }
     }

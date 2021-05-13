@@ -24,12 +24,12 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
                 throw new ArgumentNullException(nameof(spender));
             }
             
-            if (!amount.HasValue())
+            if (!amount.IsNumeric())
             {
                 throw new ArgumentNullException(nameof(amount));
             }
             
-            if (!oldAmount.HasValue())
+            if (!oldAmount.IsNumeric())
             {
                 throw new ArgumentNullException(nameof(oldAmount));
             }

@@ -4,7 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution;
@@ -29,31 +29,29 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task PersistsTokenDistribution_Success()
         {
-            const long expectedId = 1234567;
-            
-            var tokenDistribution = new TokenDistribution(1, 2, "OWNER", 3, 4, 5);
+            var tokenDistribution = new TokenDistribution(1, "100.11", "1000.11", 1, 2, 3);
             var command = new PersistTokenDistributionCommand(tokenDistribution);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedId));
+            _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult(1));
             
             var result = await _handler.Handle(command, CancellationToken.None);
 
-            result.Should().Be(expectedId);
+            result.Should().BeTrue();
         }
 
         [Fact]
         public async Task PersistsTokenDistribution_Fail()
         {
-            var token = new TokenDistribution(1, 2, "OWNER", 3, 4, 5);
-            var command = new PersistTokenDistributionCommand(token);
+            var tokenDistribution = new TokenDistribution(1, "100.11", "1000.11", 1, 2, 3);
+            var command = new PersistTokenDistributionCommand(tokenDistribution);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(0L));
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
-            result.Should().Be(0);
+            result.Should().BeFalse();
         }
     }
 }

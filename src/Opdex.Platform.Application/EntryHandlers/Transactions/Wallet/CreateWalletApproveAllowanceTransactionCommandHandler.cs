@@ -10,7 +10,8 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Domain.Models.Pools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 {

@@ -1,10 +1,10 @@
 using System;
 using MediatR;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.ODX;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens
 {
-    public class PersistTokenDistributionCommand : IRequest<long>
+    public class PersistTokenDistributionCommand : IRequest<bool>
     {
         public PersistTokenDistributionCommand(TokenDistribution tokenDistribution)
         {

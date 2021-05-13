@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Domain.Models;
@@ -57,12 +58,18 @@ namespace Opdex.Platform.WebApi.Controllers
             var createOdxCommand = new CallCirrusCreateSmartContractCommand(createOdxRequest);
             var odxTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createOdxCommand, cancellationToken));
             
+            // Process ODX deployment
+            await _mediator.Send(new ProcessOdxDeploymentTransactionCommand(odxTransaction.Hash), CancellationToken.None);
+            
             // Deploy Market Deployer
             var createMarketDeployerParams = new[] {$"9#{odxTransaction.NewContractAddress}"};
             var createDeployerRequest = new SmartContractCreateRequestDto(marketDeployerByteCode, request.WalletAddress, createMarketDeployerParams, request.WalletName, request.WalletPassword);
             var createDeployerCommand = new CallCirrusCreateSmartContractCommand(createDeployerRequest);
             var deployerTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createDeployerCommand, cancellationToken));
-
+            
+            // Process Deployer deployment
+            await _mediator.Send(new ProcessDeployerDeploymentTransactionCommand(deployerTransaction.Hash), CancellationToken.None);
+            
             var stakingMarket = (MarketCreatedLog)deployerTransaction.Logs.FirstOrDefault();
             var createLiquidityPoolTransactions = new List<Transaction>();
             
@@ -241,3 +248,4 @@ namespace Opdex.Platform.WebApi.Controllers
         };
     }
 }
+//https://www.epidemicsound.com/track/kxiDF8xmJN/

@@ -30,12 +30,12 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
                 throw new ArgumentOutOfRangeException(nameof(amountCrs));
             }
             
-            if (!amountSrc.HasValue())
+            if (!amountSrc.IsNumeric())
             {
                 throw new ArgumentNullException(nameof(amountSrc));
             }
             
-            if (!amountLpt.HasValue())
+            if (!amountLpt.IsNumeric())
             {
                 throw new ArgumentNullException(nameof(amountLpt));
             }
