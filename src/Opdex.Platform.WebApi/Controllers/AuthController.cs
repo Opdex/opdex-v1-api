@@ -53,7 +53,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="wallet">The wallet address of the user</param>
         /// <returns>An access token</returns>
         [HttpPost("authorize")]
-        public IActionResult Authorize([FromQuery][FromBody] string market, [FromQuery][FromBody] string wallet)
+        public IActionResult Authorize([FromQuery] string market, [FromQuery] string wallet)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.Value.Opdex.SigningKey));
             var tokenHandler = new JwtSecurityTokenHandler();
