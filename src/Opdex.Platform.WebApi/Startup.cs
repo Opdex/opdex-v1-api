@@ -17,10 +17,12 @@ using Serilog;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
-using System;
 using Opdex.Platform.WebApi.Auth;
 using Microsoft.IdentityModel.Logging;
+using NSwag;
+using Microsoft.Net.Http.Headers;
+using NSwag.Generation.Processors.Security;
+using System.Text;
 
 namespace Opdex.Platform.WebApi
 {
@@ -49,29 +51,36 @@ namespace Opdex.Platform.WebApi
                         };
                 });
 
-            var authenticationConfiguration = new AuthenticationConfiguration();
-            Configuration.GetSection(nameof(AuthenticationConfiguration)).Bind(authenticationConfiguration);
+            var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
+            services.Configure<AuthConfiguration>(authConfig);
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    var rsa = RSA.Create();
-                    rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(authenticationConfiguration.RsaPublicKey), out _);
-
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    .AddJwtBearer(options =>
                     {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateIssuerSigningKey = true,
-                        ValidateLifetime = true,
-                        IssuerSigningKey = new RsaSecurityKey(rsa)
-                    };
-                });
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = false,
+                            ValidateAudience = false,
+                            ValidateIssuerSigningKey = true,
+                            ValidateLifetime = true,
+                            // temp solution, OAuth will prefer assymmetric key
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
+                        };
+                    });
 
             services.AddOpenApiDocument(settings =>
             {
                 settings.Title = "Opdex Platform API";
                 settings.Version = "v1";
+                settings.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Description = "Type into textbox: Bearer [your jwt]",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Name = HeaderNames.Authorization,
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
+                });
+                settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
             });
 
             // Automapper Profiles
