@@ -61,13 +61,17 @@ namespace Opdex.Platform.WebApi.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim("market", market),
-                    new Claim("wallet", wallet)
+                    new Claim("market", market)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 IssuedAt = DateTime.UtcNow,
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
             };
+
+            if (!string.IsNullOrEmpty(wallet))
+            {
+                tokenDescriptor.Subject.AddClaim(new Claim("wallet", wallet));
+            }
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return new OkObjectResult(tokenHandler.WriteToken(token));
