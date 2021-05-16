@@ -19,6 +19,7 @@ using Hellang.Middleware.ProblemDetails;
 using System;
 using Microsoft.AspNetCore.Http;
 using Opdex.Platform.Common.Exceptions;
+using Hellang.Middleware.ProblemDetails.Mvc;
 
 namespace Opdex.Platform.WebApi
 {
@@ -44,6 +45,7 @@ namespace Opdex.Platform.WebApi
 
             services
                 .AddControllers()
+                .AddProblemDetailsConventions()
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
