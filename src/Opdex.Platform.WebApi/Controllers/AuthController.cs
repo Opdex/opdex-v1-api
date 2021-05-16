@@ -1,8 +1,13 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Opdex.Platform.WebApi.Auth;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -10,11 +15,11 @@ namespace Opdex.Platform.WebApi.Controllers
     [Route("auth")]
     public class AuthController : ControllerBase
     {
-        private readonly IMediator _mediator;
-        
-        public AuthController(IMediator mediator)
+        private readonly IOptions<AuthConfiguration> _authConfiguration;
+
+        public AuthController(IOptions<AuthConfiguration> authConfiguration)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
         }
 
         /// <summary>
@@ -42,16 +47,34 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>
-        /// Validates a client signed message and returns a valid JWT to be authed during each request.
+        /// Authorizes access to a specific market
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        [HttpPost("validate")]
-        public Task<IActionResult> ValidateMessageAuthWallet(string message, CancellationToken cancellationToken)
+        /// <param name="market">The market to request access to</param>
+        /// <param name="wallet">The wallet address of the user</param>
+        /// <returns>An access token</returns>
+        [HttpPost("authorize")]
+        public IActionResult Authorize([FromQuery] string market, [FromQuery] string wallet)
         {
-            throw new NotImplementedException();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.Value.Opdex.SigningKey));
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim("market", market)
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                IssuedAt = DateTime.UtcNow,
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            if (!string.IsNullOrEmpty(wallet))
+            {
+                tokenDescriptor.Subject.AddClaim(new Claim("wallet", wallet));
+            }
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return new OkObjectResult(tokenHandler.WriteToken(token));
         }
     }
 }

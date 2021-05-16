@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -16,12 +17,13 @@ using Opdex.Platform.WebApi.Models;
 namespace Opdex.Platform.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("index")]
     public class IndexController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly ILogger<IndexController> _logger;
-        
+
         public IndexController(IMediator mediator, ILogger<IndexController> logger)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -34,7 +36,7 @@ namespace Opdex.Platform.WebApi.Controllers
             var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
             return Ok(latestSyncedBlock);
         }
-        
+
         /// /// <summary>
         /// Processes all blocks and transactions after the most recent synced block in the DB.
         /// </summary>
@@ -61,7 +63,7 @@ namespace Opdex.Platform.WebApi.Controllers
                 // Todo: Use CreateBlockCommand
                 var blockCommand = new MakeBlockCommand(blockDetails.Height, blockDetails.Hash,
                     blockDetails.Time.FromUnixTimeSeconds(), blockDetails.MedianTime.FromUnixTimeSeconds());
-                
+
                 var createdBlock = await _mediator.Send(blockCommand, CancellationToken.None);
 
                 if (!createdBlock)
@@ -74,7 +76,7 @@ namespace Opdex.Platform.WebApi.Controllers
                 {
                     await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockDetails.MedianTime.FromUnixTimeSeconds()), CancellationToken.None);
                 }
-                
+
                 foreach (var tx in blockDetails.Tx.Where(tx => tx != blockDetails.MerkleRoot))
                 {
                     try
@@ -87,10 +89,10 @@ namespace Opdex.Platform.WebApi.Controllers
                     }
                 }
             }
-            
+
             return NoContent();
         }
-        
+
         [HttpPost("process-transaction")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
 using Opdex.Platform.WebApi.Models.Requests.Quotes;
@@ -14,6 +15,7 @@ namespace Opdex.Platform.WebApi.Controllers
     /// Find quoted transaction outputs for swaps and liquidity providing.
     /// </summary>
     [ApiController]
+    [Authorize]
     [Route("quote")]
     public class QuoteController : ControllerBase
     {
@@ -46,7 +48,7 @@ namespace Opdex.Platform.WebApi.Controllers
 
             return Ok(result);
         }
-        
+
         /// <summary>
         /// Gets a quote for how many tokens are required to be input given the other token in a pool's desired input amount.
         /// </summary>
@@ -57,9 +59,9 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CreateAddLiquidityQuote(AddLiquidityQuoteRequestModel request, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetLiquidityPoolAddLiquidityQuoteQuery(request.AmountIn, request.TokenIn, 
+            var result = await _mediator.Send(new GetLiquidityPoolAddLiquidityQuoteQuery(request.AmountIn, request.TokenIn,
                 request.Pool, request.Market), cancellationToken);
-            
+
             return Ok(result);
         }
     }
