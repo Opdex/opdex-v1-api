@@ -25,7 +25,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs
             {
                 // Retrieve all nominations and update db
                 
-                throw new NotImplementedException();
+                return true;
             }
             catch (Exception ex)
             {

@@ -45,9 +45,9 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         DistributionLog = 22,
         
         // Vault
-        VaultCertificateCreatedLog = 23,
-        VaultCertificateUpdatedLog = 24,
-        VaultCertificateRedeemedLog = 25,
-        VaultOwnerChangeLog = 26
+        CreateVaultCertificateLog = 23,
+        UpdateVaultCertificateLog = 24,
+        RedeemVaultCertificateLog = 25,
+        ChangeVaultOwnerLog = 26
     }
 }

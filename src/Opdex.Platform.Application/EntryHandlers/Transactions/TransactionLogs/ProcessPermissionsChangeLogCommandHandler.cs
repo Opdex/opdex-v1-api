@@ -25,7 +25,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs
             {
                 // Update the wallet permissions in the market
                 
-                throw new NotImplementedException();
+                return true;
             }
             catch (Exception ex)
             {

@@ -111,9 +111,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools
             TokenSnapshot crsSnapshot)
         {
             var poolTokenSnapshots = await _mediator.Send(new RetrieveActiveTokenSnapshotsByTokenIdQuery(pool.Token.Id, snapshotStart), CancellationToken.None);
-
+            
             var poolTokenSnapshot = poolTokenSnapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
-                                    new TokenSnapshot(pool.Token.Id, 0m, snapshotType, snapshotStart, snapshotEnd);
+                                    new TokenSnapshot(pool.Token.Id, pool.Market.Id, 0m, snapshotType, snapshotStart, snapshotEnd);
                     
             poolTokenSnapshot.ProcessReservesLog(log, crsSnapshot, pool.Token.Decimals);
 

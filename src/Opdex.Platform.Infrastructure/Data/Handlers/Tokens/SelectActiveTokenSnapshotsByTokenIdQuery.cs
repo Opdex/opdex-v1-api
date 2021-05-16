@@ -17,6 +17,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
             @$"Select 
                 {nameof(TokenSnapshotEntity.Id)},
                 {nameof(TokenSnapshotEntity.TokenId)},
+                {nameof(TokenSnapshotEntity.MarketId)},
                 {nameof(TokenSnapshotEntity.Price)},
                 {nameof(TokenSnapshotEntity.StartDate)},
                 {nameof(TokenSnapshotEntity.EndDate)},

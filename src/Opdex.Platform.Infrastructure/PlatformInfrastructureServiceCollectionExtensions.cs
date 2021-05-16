@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Pools;
@@ -23,6 +24,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
@@ -32,6 +34,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vault;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
@@ -56,6 +59,7 @@ using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi;
 using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi.Handlers;
 using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi.Modules;
 using Opdex.Platform.Infrastructure.Data;
+using Opdex.Platform.Infrastructure.Data.Handlers.Addresses;
 using Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
 using Opdex.Platform.Infrastructure.Data.Handlers.Deployers;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets;
@@ -118,6 +122,12 @@ namespace Opdex.Platform.Infrastructure
             // Vault
             services.AddTransient<IRequestHandler<PersistVaultCommand, long>, PersistVaultCommandHandler>();
             services.AddTransient<IRequestHandler<PersistVaultCertificateCommand, bool>, PersistVaultCertificateCommandHandler>();
+            
+            // Addresses
+            services.AddTransient<IRequestHandler<PersistAddressBalanceCommand, long>, PersistAddressBalanceCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistAddressAllowanceCommand, long>, PersistAddressAllowanceCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistAddressMiningCommand, long>, PersistAddressMiningCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistAddressStakingCommand, long>, PersistAddressStakingCommandHandler>();
         }
         
         private static void AddDataQueries(IServiceCollection services)
@@ -131,6 +141,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectLatestMarketSnapshotQuery, MarketSnapshot>, SelectLatestMarketSnapshotQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMarketByAddressQuery, Market>, SelectMarketByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectActiveMarketSnapshotsByMarketIdQuery, IEnumerable<MarketSnapshot>>, SelectActiveMarketSnapshotsByMarketIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMarketByIdQuery, Market>, SelectMarketByIdQueryHandler>();
 
             // Blocks
             services.AddTransient<IRequestHandler<SelectLatestBlockQuery, Block>, SelectLatestBlockQueryHandler>();
@@ -162,6 +173,12 @@ namespace Opdex.Platform.Infrastructure
             // Vault
             services.AddTransient<IRequestHandler<SelectVaultQuery, Vault>, SelectVaultQueryHandler>();
             services.AddTransient<IRequestHandler<SelectVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesByOwnerAddressQueryHandler>();
+            
+            // Addresses
+            services.AddTransient<IRequestHandler<SelectAddressBalanceByLiquidityPoolIdAndOwnerQuery, AddressBalance>, SelectAddressBalanceByLiquidityPoolIdAndOwnerQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectAddressBalanceByTokenIdAndOwnerQuery, AddressBalance>, SelectAddressBalanceByTokenIdAndOwnerQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>, SelectAddressMiningByMiningPoolIdAndOwnerQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>, SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler>();
         }
         
         private static void AddCirrusServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)
@@ -213,5 +230,9 @@ namespace Opdex.Platform.Infrastructure
             // Queries
             services.AddTransient<IRequestHandler<CallCmcGetStraxQuotePriceQuery, decimal>, CallCmcGetStraxQuotePriceQueryHandler>();
         }
+    }
+
+    internal class SelectAddressMiningByMiningPoolIdIdAndOwnerQuery
+    {
     }
 }

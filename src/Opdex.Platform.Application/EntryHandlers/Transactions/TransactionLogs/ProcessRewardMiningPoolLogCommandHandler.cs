@@ -25,7 +25,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs
             {
                 // Update the amount the user was using to mine
                 
-                throw new NotImplementedException();
+                return true;
             }
             catch (Exception ex)
             {

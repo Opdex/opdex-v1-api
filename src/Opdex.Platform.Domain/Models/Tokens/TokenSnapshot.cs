@@ -7,19 +7,21 @@ namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class TokenSnapshot
     {
-        public TokenSnapshot(long tokenId, decimal price, SnapshotType type, DateTime startDate, DateTime endDate)
+        public TokenSnapshot(long tokenId, long marketId, decimal price, SnapshotType type, DateTime startDate, DateTime endDate)
         {
             TokenId = tokenId;
+            MarketId = marketId;
             Price = Math.Round(price, 2, MidpointRounding.ToEven);
             SnapshotType = type;
             StartDate = startDate;
             EndDate = endDate;
         }
         
-        public TokenSnapshot(long id, long tokenId, decimal price, int snapshotType, DateTime startDate, DateTime endDate)
+        public TokenSnapshot(long id, long tokenId, long marketId, decimal price, int snapshotType, DateTime startDate, DateTime endDate)
         {
             Id = id;
             TokenId = tokenId;
+            MarketId = marketId;
             Price = Math.Round(price, 2, MidpointRounding.ToEven);;
             SnapshotType = (SnapshotType)snapshotType;
             StartDate = startDate;
@@ -28,6 +30,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
         
         public long Id { get; }
         public long TokenId { get; }
+        public long MarketId { get; }
         public decimal Price { get; private set; }
         public SnapshotType SnapshotType { get; }
         public DateTime StartDate { get; }

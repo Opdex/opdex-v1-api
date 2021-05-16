@@ -31,6 +31,15 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
+            CreateMap<Market, MarketDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.AuthPoolCreators, opt => opt.MapFrom(src => src.AuthPoolCreators))
+                .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
+                .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
             CreateMap<Token, TokenDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
@@ -107,14 +116,14 @@ namespace Opdex.Platform.Application
                                 TransactionLogType.StopMiningLog => ctx.Mapper.Map<StopMiningLogDto>(txLog),
                                 TransactionLogType.StopStakingLog => ctx.Mapper.Map<StopMiningLogDto>(txLog),
                                 TransactionLogType.DistributionLog => ctx.Mapper.Map<DistributionLogDto>(txLog),
-                                TransactionLogType.VaultOwnerChangeLog => ctx.Mapper.Map<VaultOwnerChangeLogDto>(txLog),
+                                TransactionLogType.ChangeVaultOwnerLog => ctx.Mapper.Map<ChangeVaultOwnerLogDto>(txLog),
                                 TransactionLogType.MiningPoolRewardedLog => ctx.Mapper.Map<MiningPoolRewardedLogDto>(txLog),
                                 TransactionLogType.RewardMiningPoolLog => ctx.Mapper.Map<RewardMiningPoolLogDto>(txLog),
                                 TransactionLogType.CollectStakingRewardsLog => ctx.Mapper.Map<CollectStakingRewardsLogDto>(txLog),
                                 TransactionLogType.CollectMiningRewardsLog => ctx.Mapper.Map<CollectMiningRewardsLogDto>(txLog),
-                                TransactionLogType.VaultCertificateCreatedLog => ctx.Mapper.Map<VaultCertificateCreatedLogDto>(txLog),
-                                TransactionLogType.VaultCertificateUpdatedLog => ctx.Mapper.Map<VaultCertificateUpdatedLogDto>(txLog),
-                                TransactionLogType.VaultCertificateRedeemedLog => ctx.Mapper.Map<VaultCertificateRedeemedLogDto>(txLog),
+                                TransactionLogType.CreateVaultCertificateLog => ctx.Mapper.Map<CreateVaultCertificateLogDto>(txLog),
+                                TransactionLogType.UpdateVaultCertificateLog => ctx.Mapper.Map<UpdateVaultCertificateLogDto>(txLog),
+                                TransactionLogType.RedeemVaultCertificateLog => ctx.Mapper.Map<RedeemVaultCertificateLogDto>(txLog),
                                 _ => null
                             });
                         })
@@ -232,7 +241,7 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
                 .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight));
 
-            CreateMap<VaultOwnerChangeLog, VaultOwnerChangeLogDto>()
+            CreateMap<ChangeVaultOwnerLog, ChangeVaultOwnerLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To));

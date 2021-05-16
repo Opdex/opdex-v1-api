@@ -64,23 +64,25 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                         TransactionLogType.SwapLog => await _mediator.Send(new ProcessSwapLogCommand(log), CancellationToken.None),
                         TransactionLogType.ReservesLog => await _mediator.Send(new ProcessReservesLogCommand(log), CancellationToken.None),
                         TransactionLogType.ApprovalLog => await _mediator.Send(new ProcessApprovalLogCommand(log), CancellationToken.None),
-                        TransactionLogType.TransferLog => await _mediator.Send(new ProcessTransferLogCommand(log), CancellationToken.None),
+                        TransactionLogType.TransferLog => await _mediator.Send(new ProcessTransferLogCommand(log, transaction.From, transaction.BlockHeight), CancellationToken.None),
                         TransactionLogType.MarketChangeLog => await _mediator.Send(new ProcessMarketChangeLogCommand(log), CancellationToken.None),
-                        TransactionLogType.StartStakingLog => await _mediator.Send(new ProcessStartStakingLogCommand(log), CancellationToken.None),
+                        TransactionLogType.StartStakingLog => await _mediator.Send(new ProcessStartStakingLogCommand(log, transaction.BlockHeight), CancellationToken.None),
                         TransactionLogType.CollectStakingRewardsLog => await _mediator.Send(new ProcessCollectStakingRewardsLogCommand(log), CancellationToken.None),
-                        TransactionLogType.StopStakingLog => await _mediator.Send(new ProcessStopStakingLogCommand(log), CancellationToken.None),
+                        TransactionLogType.StopStakingLog => await _mediator.Send(new ProcessStopStakingLogCommand(log, transaction.BlockHeight), CancellationToken.None),
                         TransactionLogType.MiningPoolCreatedLog => await _mediator.Send(new ProcessMiningPoolCreatedLogCommand(log), CancellationToken.None),
                         TransactionLogType.RewardMiningPoolLog => await _mediator.Send(new ProcessRewardMiningPoolLogCommand(log), CancellationToken.None),
                         TransactionLogType.NominationLog => await _mediator.Send(new ProcessNominationLogCommand(log), CancellationToken.None),
-                        TransactionLogType.StartMiningLog => await _mediator.Send(new ProcessStartMiningLogCommand(log), CancellationToken.None),
+                        TransactionLogType.StartMiningLog => await _mediator.Send(new ProcessStartMiningLogCommand(log, transaction.BlockHeight), CancellationToken.None),
                         TransactionLogType.CollectMiningRewardsLog => await _mediator.Send(new ProcessCollectMiningRewardsLogCommand(log), CancellationToken.None),
-                        TransactionLogType.StopMiningLog => await _mediator.Send(new ProcessStopMiningLogCommand(log), CancellationToken.None),
+                        TransactionLogType.StopMiningLog => await _mediator.Send(new ProcessStopMiningLogCommand(log, transaction.BlockHeight), CancellationToken.None),
                         TransactionLogType.MiningPoolRewardedLog => await _mediator.Send(new ProcessMiningPoolRewardedLogCommand(log), CancellationToken.None),
                         TransactionLogType.DistributionLog => await _mediator.Send(new ProcessDistributionLogCommand(log, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.VaultCertificateCreatedLog => await _mediator.Send(new ProcessVaultCertificateCreatedLogCommand(log), CancellationToken.None),
-                        TransactionLogType.VaultCertificateUpdatedLog => await _mediator.Send(new ProcessVaultCertificateUpdatedLogCommand(log), CancellationToken.None),
-                        TransactionLogType.VaultCertificateRedeemedLog => await _mediator.Send(new ProcessVaultCertificateRedeemedLogCommand(log), CancellationToken.None),
-                        TransactionLogType.VaultOwnerChangeLog => await _mediator.Send(new ProcessVaultOwnerChangeLogCommand(log), CancellationToken.None)
+                        TransactionLogType.CreateVaultCertificateLog => await _mediator.Send(new ProcessCreateVaultCertificateLogCommand(log), CancellationToken.None),
+                        TransactionLogType.UpdateVaultCertificateLog => await _mediator.Send(new ProcessUpdateVaultCertificateLogCommand(log), CancellationToken.None),
+                        TransactionLogType.RedeemVaultCertificateLog => await _mediator.Send(new ProcessRedeemVaultCertificateLogCommand(log), CancellationToken.None),
+                        TransactionLogType.ChangeVaultOwnerLog => await _mediator.Send(new ProcessChangeVaultOwnerLogCommand(log), CancellationToken.None),
+                        TransactionLogType.Unknown => true, // Unknown logs from 3rd party contracts ok to pass through and not process
+                        _ => throw new ArgumentOutOfRangeException(nameof(TransactionLogType))
                     };
                 }
                 catch (Exception ex)
@@ -92,16 +94,17 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                 if (!success)
                 {
-                    throw new Exception("");
                     // Handle the transaction, maybe delete all related logs and flag it as errored
                 }
-                
-                // Mark transaction confirming logs all relevant logs were processed
             }
+            
+            // Mark transaction confirming logs all relevant logs were processed
 
-            // Maybe do this per block rather than per transaction?
+
             // Process snapshots the transaction affects should update or create records
             // Consider flagging logs as snapshotProcessed or something else?
+            // Maybe process these snapshots once per block after all transactions have been processed for performance.
+            // Returning out the Transactions from this query that require snapshots to be processed.
             await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(transaction.Hash), CancellationToken.None);
             // Todo: Process mining pool snapshots this transaction affects
             // Todo: Process token snapshots this transaction has Transfer logs for

@@ -1,16 +1,31 @@
 using System;
 using MediatR;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs
 {
     public class ProcessTransferLogCommand : IRequest<bool>
     {
-        public ProcessTransferLogCommand(TransactionLog log)
+        public ProcessTransferLogCommand(TransactionLog log, string sender, ulong blockHeight)
         {
-            Log = log as LiquidityPoolCreatedLog ?? throw new ArgumentNullException(nameof(log));
+            if (!sender.HasValue())
+            {
+                throw new ArgumentNullException(nameof(sender));
+            }
+
+            if (blockHeight < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockHeight));
+            }
+            
+            Log = log as TransferLog ?? throw new ArgumentNullException(nameof(log));
+            Sender = sender;
+            BlockHeight = blockHeight;
         }
         
-        public LiquidityPoolCreatedLog Log { get; }
+        public TransferLog Log { get; }
+        public string Sender { get; }
+        public ulong BlockHeight { get; }
     }
 }

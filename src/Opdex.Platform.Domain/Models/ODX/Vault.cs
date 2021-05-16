@@ -41,7 +41,7 @@ namespace Opdex.Platform.Domain.Models.ODX
         public long TokenId { get; }
         public string Owner { get; private set; }
 
-        public void SetOwner(VaultOwnerChangeLog log)
+        public void SetOwner(ChangeVaultOwnerLog log)
         {
             Owner = log.To;
         }

@@ -25,7 +25,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs
             {
                 // Update the owner LP token balances
                 
-                throw new NotImplementedException();
+                return true;
             }
             catch (Exception ex)
             {

@@ -52,7 +52,7 @@ namespace Opdex.Platform.Domain.Models.ODX
         public ulong VestedBlock { get; }
         public bool Redeemed { get; private set; }
 
-        public void UpdateAmount(VaultCertificateUpdatedLog log)
+        public void UpdateAmount(UpdateVaultCertificateLog log)
         {
             if (log.Owner != Owner)
             {
@@ -62,7 +62,7 @@ namespace Opdex.Platform.Domain.Models.ODX
             Amount = log.Amount;
         }
         
-        public void Redeem(VaultCertificateRedeemedLog log)
+        public void Redeem(RedeemVaultCertificateLog log)
         {
             if (log.Owner != Owner)
             {

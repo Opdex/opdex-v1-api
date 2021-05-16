@@ -3,7 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs;
+using Opdex.Platform.Application.Abstractions.Queries.Addresses;
+using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs
@@ -23,9 +27,24 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs
         {
             try
             {
-                // Update the users staking amount
+                var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract), CancellationToken.None);
                 
-                throw new NotImplementedException();
+                var stakingBalance = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(pool.Id, request.Log.Staker), CancellationToken.None) 
+                                     ?? new AddressStaking(pool.Id, request.Log.Staker, request.Log.Amount, request.BlockHeight, request.BlockHeight);
+
+                if (request.BlockHeight <= stakingBalance.ModifiedBlock)
+                {
+                    return true;
+                }
+                
+                if (stakingBalance.Id != 0)
+                {
+                    stakingBalance.SetWeight(request.Log, request.BlockHeight);
+                }
+                
+                var stakingBalanceId = await _mediator.Send(new MakeAddressStakingCommand(stakingBalance), CancellationToken.None);
+                    
+                return stakingBalanceId > 0;
             }
             catch (Exception ex)
             {

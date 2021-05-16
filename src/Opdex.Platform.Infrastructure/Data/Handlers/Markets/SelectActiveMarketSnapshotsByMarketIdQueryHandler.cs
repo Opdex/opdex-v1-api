@@ -46,6 +46,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
         public async Task<IEnumerable<MarketSnapshot>> Handle(SelectActiveMarketSnapshotsByMarketIdQuery request, CancellationToken cancellationToken)
         {
             var queryParams = new SqlParams(request.MarketId, request.Time);
+            
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
             var result = await _context.ExecuteQueryAsync<MarketSnapshotEntity>(query);
@@ -55,9 +56,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
         private sealed class SqlParams
         {
-            internal SqlParams(long tokenId, DateTime time)
+            internal SqlParams(long marketId, DateTime time)
             {
-                MarketId = tokenId;
+                MarketId = marketId;
                 Time = time;
             }
 

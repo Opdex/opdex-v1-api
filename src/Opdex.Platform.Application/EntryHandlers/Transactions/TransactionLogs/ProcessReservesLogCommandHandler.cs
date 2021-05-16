@@ -23,7 +23,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs
         {
             try
             {
-                throw new NotImplementedException();
+                return true;
             }
             catch (Exception ex)
             {

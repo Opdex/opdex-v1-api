@@ -26,8 +26,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs
                 // Get/Set user balances and allowances
                 // Could be liquidity pool token or src token
                 // Could be allowance update and/or balance update
-                
-                throw new NotImplementedException();
+
+                return true;
             }
             catch (Exception ex)
             {
