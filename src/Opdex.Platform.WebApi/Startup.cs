@@ -20,6 +20,14 @@ using System;
 using Microsoft.AspNetCore.Http;
 using Opdex.Platform.Common.Exceptions;
 using Hellang.Middleware.ProblemDetails.Mvc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Opdex.Platform.WebApi.Auth;
+using Microsoft.IdentityModel.Logging;
+using NSwag;
+using Microsoft.Net.Http.Headers;
+using NSwag.Generation.Processors.Security;
+using System.Text;
 
 namespace Opdex.Platform.WebApi
 {
@@ -57,10 +65,36 @@ namespace Opdex.Platform.WebApi
                         };
                 });
 
+            var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
+            services.Configure<AuthConfiguration>(authConfig);
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = false,
+                            ValidateAudience = false,
+                            ValidateIssuerSigningKey = true,
+                            ValidateLifetime = true,
+                            // temp solution, OAuth will prefer assymmetric key
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
+                        };
+                    });
+
             services.AddOpenApiDocument(settings =>
             {
                 settings.Title = "Opdex Platform API";
                 settings.Version = "v1";
+                settings.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Description = "Type into textbox: Bearer [your jwt]",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Name = HeaderNames.Authorization,
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
+                });
+                settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
             });
 
             // Automapper Profiles
@@ -73,7 +107,6 @@ namespace Opdex.Platform.WebApi
 
             services.AddHttpClient();
 
-            // Todo: Use Azure Key Vault / User Secrets
             var cirrusConfig = Configuration.GetSection(nameof(CirrusConfiguration));
             services.Configure<CirrusConfiguration>(cirrusConfig);
 
@@ -99,6 +132,7 @@ namespace Opdex.Platform.WebApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                IdentityModelEventSource.ShowPII = true;
             }
 
             app.UseProblemDetails();
@@ -115,6 +149,7 @@ namespace Opdex.Platform.WebApi
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseOpenApi();
