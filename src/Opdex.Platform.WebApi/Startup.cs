@@ -15,6 +15,11 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi;
 using Opdex.Platform.WebApi.Mappers;
 using Serilog;
 using System.Collections.Generic;
+using Hellang.Middleware.ProblemDetails;
+using System;
+using Microsoft.AspNetCore.Http;
+using Opdex.Platform.Common.Exceptions;
+using Hellang.Middleware.ProblemDetails.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Opdex.Platform.WebApi.Auth;
@@ -38,8 +43,18 @@ namespace Opdex.Platform.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddProblemDetails(options =>
+            {
+                options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
+                options.Map<BadRequestException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
+                options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
+                options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
+                options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+            });
+
             services
                 .AddControllers()
+                .AddProblemDetailsConventions()
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
@@ -120,6 +135,8 @@ namespace Opdex.Platform.WebApi
                 app.UseDeveloperExceptionPage();
                 IdentityModelEventSource.ShowPII = true;
             }
+
+            app.UseProblemDetails();
 
             // Todo: Set correctly for ENV's outside local dev
             app.UseCors(options => options
