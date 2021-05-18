@@ -11,7 +11,8 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Domain.Models;
-using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
+using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
@@ -70,7 +71,7 @@ namespace Opdex.Platform.WebApi.Controllers
             // Process Deployer deployment
             await _mediator.Send(new ProcessDeployerDeploymentTransactionCommand(deployerTransaction.Hash), CancellationToken.None);
             
-            var stakingMarket = (MarketCreatedLog)deployerTransaction.Logs.FirstOrDefault();
+            var stakingMarket = (CreateMarketLog)deployerTransaction.Logs.FirstOrDefault();
             var createLiquidityPoolTransactions = new List<Transaction>();
             
             // Create 4 Tokens
@@ -109,7 +110,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
             
             // Serialize Liquidity Pool Addresses and Distribute ODX
-            var pools = createLiquidityPoolTransactions.Select(t => _serializer.ToAddress(((LiquidityPoolCreatedLog)t.Logs.FirstOrDefault())?.Pool)).ToArray();
+            var pools = createLiquidityPoolTransactions.Select(t => _serializer.ToAddress(((CreateLiquidityPoolLog)t.Logs.FirstOrDefault())?.Pool)).ToArray();
             var serializedPools = _serializer.Serialize(pools).ToHexString();
             var distributeOdxRequest = new SmartContractCallRequestDto(odxTransaction.NewContractAddress, request.WalletName, request.WalletAddress, 
                 request.WalletPassword, "0.00", "Distribute", new[] {$"10#{serializedPools}"});

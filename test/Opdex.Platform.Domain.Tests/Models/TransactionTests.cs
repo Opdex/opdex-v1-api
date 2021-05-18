@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using Opdex.Platform.Domain.Models;
-using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Xunit;
 
 namespace Opdex.Platform.Domain.Tests.Models

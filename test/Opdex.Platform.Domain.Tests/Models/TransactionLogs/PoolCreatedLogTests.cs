@@ -1,14 +1,15 @@
 using System.Dynamic;
 using FluentAssertions;
 using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Xunit;
 
 namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
 {
-    public class LiquidityPoolCreatedLogTests
+    public class CreateLiquidityPoolLogTests
     {
         [Fact]
-        public void CreatesLiquidityPoolCreatedLog_Success()
+        public void CreatesCreateLiquidityPoolLog_Success()
         {
             const string address = "Address";
             const int sortOrder = 1;
@@ -17,11 +18,11 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             txLog.pool = "Pool";
             txLog.token = "Token";
 
-            var log = new LiquidityPoolCreatedLog(txLog, address, sortOrder);
+            var log = new CreateLiquidityPoolLog(txLog, address, sortOrder);
 
             log.Id.Should().Be(0);
             log.TransactionId.Should().Be(0);
-            log.LogType.Should().Be(TransactionLogType.LiquidityPoolCreatedLog);
+            log.LogType.Should().Be(TransactionLogType.CreateLiquidityPoolLog);
             log.Contract.Should().Be(address);
             log.SortOrder.Should().Be(sortOrder);
             log.Pool.Should().Be(txLog.pool);

@@ -17,6 +17,7 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Pools
 {

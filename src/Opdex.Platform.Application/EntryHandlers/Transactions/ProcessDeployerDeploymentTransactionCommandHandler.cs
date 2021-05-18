@@ -15,6 +15,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
@@ -52,7 +53,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             
             var blockCreated = await _mediator.Send(blockCommand, CancellationToken.None);
 
-            var log = transaction.LogsOfType<MarketCreatedLog>(TransactionLogType.MarketCreatedLog).Single();
+            var log = transaction.LogsOfType<CreateMarketLog>(TransactionLogType.CreateMarketLog).Single();
             
             try
             {

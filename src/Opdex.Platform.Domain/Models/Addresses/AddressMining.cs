@@ -1,6 +1,6 @@
 using System;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 
 namespace Opdex.Platform.Domain.Models.Addresses
 {

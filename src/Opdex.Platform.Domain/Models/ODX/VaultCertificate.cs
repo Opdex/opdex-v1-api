@@ -1,6 +1,6 @@
 using System;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
 
 namespace Opdex.Platform.Domain.Models.ODX
 {
@@ -52,14 +52,14 @@ namespace Opdex.Platform.Domain.Models.ODX
         public ulong VestedBlock { get; }
         public bool Redeemed { get; private set; }
 
-        public void UpdateAmount(UpdateVaultCertificateLog log)
+        public void UpdateAmount(RevokeVaultCertificateLog log)
         {
             if (log.Owner != Owner)
             {
                 throw new ArgumentException($"Log owner {log.Owner} is not the certificate owner {Owner}.");
             }
             
-            Amount = log.Amount;
+            Amount = log.NewAmount;
         }
         
         public void Redeem(RedeemVaultCertificateLog log)

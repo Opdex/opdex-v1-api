@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Pools
     {
         public IReadOnlyList<TransactionLogType> PoolSnapshotLogTypes = new[]
         {
-            TransactionLogType.MiningPoolRewardedLog,
+            TransactionLogType.EnableMiningLog,
             TransactionLogType.CollectMiningRewardsLog,
             TransactionLogType.StartMiningLog,
             TransactionLogType.StopMiningLog
