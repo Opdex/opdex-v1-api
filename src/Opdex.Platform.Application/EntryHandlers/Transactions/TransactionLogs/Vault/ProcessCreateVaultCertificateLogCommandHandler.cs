@@ -15,6 +15,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
     {
         private readonly IMediator _mediator;
         private readonly ILogger<ProcessCreateVaultCertificateLogCommandHandler> _logger;
+        private const bool FindOrThrow = true;
 
         public ProcessCreateVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessCreateVaultCertificateLogCommandHandler> logger)
         {
@@ -26,13 +27,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var vault = await _mediator.Send(new RetrieveVaultQuery());
+                var vault = await _mediator.Send(new RetrieveVaultQuery(FindOrThrow), CancellationToken.None);
+
+                var vaultCertificate = new VaultCertificate(vault.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
                 
-                return await _mediator.Send(new MakeVaultCertificateCommand(new VaultCertificate(vault.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock)), CancellationToken.None);
+                return await _mediator.Send(new MakeVaultCertificateCommand(vaultCertificate), CancellationToken.None);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failure processing {nameof(CreateVaultCertificateLog)}");
+                _logger.LogError(ex, $"Failure processing {nameof(CreateVaultCertificateLog)}.");
                
                 return false;
             }

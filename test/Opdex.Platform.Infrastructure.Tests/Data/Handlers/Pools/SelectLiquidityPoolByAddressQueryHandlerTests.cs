@@ -4,6 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
@@ -65,7 +66,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
                 .Throw<NotFoundException>()
-                .WithMessage($"{nameof(LiquidityPoolEntity)} with address {address} was not found.");
+                .WithMessage($"{nameof(LiquidityPool)} not found.");
         }
     }
 }

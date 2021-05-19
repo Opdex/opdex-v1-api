@@ -12,8 +12,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 {
     public class PersistMarketCommandHandler: IRequestHandler<PersistMarketCommand, long>
     {
-        // Todo: Insert vs update
-        private static readonly string SqlCommand =
+        private static readonly string InsertSqlCommand =
             $@"INSERT INTO market (
                 {nameof(MarketEntity.Address)},
                 {nameof(MarketEntity.DeployerId)},
@@ -23,7 +22,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 {nameof(MarketEntity.AuthProviders)},
                 {nameof(MarketEntity.AuthTraders)},
                 {nameof(MarketEntity.Fee)},
-                {nameof(MarketEntity.CreatedDate)}
+                {nameof(MarketEntity.CreatedBlock)},
+                {nameof(MarketEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(MarketEntity.Address)},
                 @{nameof(MarketEntity.DeployerId)},
@@ -33,9 +33,17 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 @{nameof(MarketEntity.AuthProviders)},
                 @{nameof(MarketEntity.AuthTraders)},
                 @{nameof(MarketEntity.Fee)},
-                UTC_TIMESTAMP()
+                @{nameof(MarketEntity.CreatedBlock)},
+                @{nameof(MarketEntity.ModifiedBlock)}
               );
               SELECT LAST_INSERT_ID();";
+        
+        private static readonly string UpdateSqlCommand =
+            $@"UPDATE market 
+                SET 
+                    {nameof(MarketEntity.Owner)} = @{nameof(MarketEntity.Owner)},
+                    {nameof(MarketEntity.ModifiedBlock)} = @{nameof(MarketEntity.ModifiedBlock)}
+                WHERE {nameof(MarketEntity.Id)} = @{nameof(MarketEntity.Id)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -52,15 +60,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
         {
             try
             {
-                var market = _mapper.Map<MarketEntity>(request.Market);
+                var entity = _mapper.Map<MarketEntity>(request.Market);
+                
+                var isUpdate = entity.Id >= 1;
+
+                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
             
-                var command = DatabaseQuery.Create(SqlCommand, market, cancellationToken);
+                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
             
-                return await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<long>(command);
+                
+                return isUpdate ? entity.Id : result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Unable to persist {request.Market}");
+                _logger.LogError(ex, $"Failure persisting {request.Market}.");
                 
                 return 0;
             }

@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Handlers.Pools
         
         public Task<MiningPool> Handle(RetrieveMiningPoolByLiquidityPoolIdQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectMiningPoolByLiquidityPoolIdQuery(request.LiquidityPoolId), cancellationToken);
+            return _mediator.Send(new SelectMiningPoolByLiquidityPoolIdQuery(request.LiquidityPoolId, request.FindOrThrow), cancellationToken);
         }
     }
 }

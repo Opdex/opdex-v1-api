@@ -19,14 +19,18 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
                 {nameof(MiningGovernanceEntity.NominationPeriodEnd)},
                 {nameof(MiningGovernanceEntity.Balance)},
                 {nameof(MiningGovernanceEntity.MiningPoolsFunded)},
-                {nameof(MiningGovernanceEntity.MiningPoolReward)}
+                {nameof(MiningGovernanceEntity.MiningPoolReward)},
+                {nameof(MiningGovernanceEntity.CreatedBlock)},
+                {nameof(MiningGovernanceEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(MiningGovernanceEntity.Address)},
                 @{nameof(MiningGovernanceEntity.TokenId)},
                 @{nameof(MiningGovernanceEntity.NominationPeriodEnd)},
                 @{nameof(MiningGovernanceEntity.Balance)},
                 @{nameof(MiningGovernanceEntity.MiningPoolsFunded)},
-                @{nameof(MiningGovernanceEntity.MiningPoolReward)}
+                @{nameof(MiningGovernanceEntity.MiningPoolReward)},
+                @{nameof(MiningGovernanceEntity.CreatedBlock)},
+                @{nameof(MiningGovernanceEntity.ModifiedBlock)}
               );";
         
         private static readonly string UpdateSqlCommand =
@@ -35,7 +39,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
                     {nameof(MiningGovernanceEntity.NominationPeriodEnd)} = @{nameof(MiningGovernanceEntity.NominationPeriodEnd)},
                     {nameof(MiningGovernanceEntity.Balance)} = @{nameof(MiningGovernanceEntity.Balance)},
                     {nameof(MiningGovernanceEntity.MiningPoolsFunded)} = @{nameof(MiningGovernanceEntity.MiningPoolsFunded)},
-                    {nameof(MiningGovernanceEntity.MiningPoolReward)} = @{nameof(MiningGovernanceEntity.MiningPoolReward)}
+                    {nameof(MiningGovernanceEntity.MiningPoolReward)} = @{nameof(MiningGovernanceEntity.MiningPoolReward)},
+                    {nameof(MiningGovernanceEntity.ModifiedBlock)} = @{nameof(MiningGovernanceEntity.ModifiedBlock)}
                 WHERE {nameof(MiningGovernanceEntity.Id)} = @{nameof(MiningGovernanceEntity.Id)};";
 
         private readonly IDbContext _context;
@@ -67,7 +72,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failure persisting {nameof(MiningGovernanceEntity)} record.");
+                _logger.LogError(ex, $"Failure persisting {request.MiningGovernance}.");
                 
                 return 0;
             }

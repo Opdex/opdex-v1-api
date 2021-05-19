@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Handlers.Deployers
         
         public Task<Deployer> Handle(RetrieveDeployerByAddressQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectDeployerByAddressQuery(request.Address), cancellationToken);
+            return _mediator.Send(new SelectDeployerByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
         }
     }
 }

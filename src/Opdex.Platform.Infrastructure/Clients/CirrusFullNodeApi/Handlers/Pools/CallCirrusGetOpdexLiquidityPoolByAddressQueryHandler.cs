@@ -30,7 +30,8 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools
             var tokenResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
             var token = (string)tokenResponse.Return;
             
-            return !token.HasValue() ? null : new LiquidityPool(request.Address, token);
+            // Todo: Should return a LiquidityPoolContractSummary response
+            return !token.HasValue() ? null : new LiquidityPool(request.Address, token, 1, 1);
         }
     }
 }

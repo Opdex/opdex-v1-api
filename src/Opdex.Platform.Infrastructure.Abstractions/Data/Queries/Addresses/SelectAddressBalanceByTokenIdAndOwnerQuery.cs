@@ -1,13 +1,14 @@
 using System;
 using MediatR;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Addresses;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 {
-    public class SelectAddressBalanceByTokenIdAndOwnerQuery : IRequest<AddressBalance>
+    public class SelectAddressBalanceByTokenIdAndOwnerQuery : FindQuery<AddressBalance>
     {
-        public SelectAddressBalanceByTokenIdAndOwnerQuery(long tokenId, string owner)
+        public SelectAddressBalanceByTokenIdAndOwnerQuery(long tokenId, string owner, bool findOrThrow = true) : base(findOrThrow)
         {
             if (tokenId < 1)
             {

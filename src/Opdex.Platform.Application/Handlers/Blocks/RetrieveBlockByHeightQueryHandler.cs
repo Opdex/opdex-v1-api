@@ -20,7 +20,9 @@ namespace Opdex.Platform.Application.Handlers.Blocks
 
         public Task<Block> Handle(RetrieveBlockByHeightQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectBlockByHeightQuery(request.Height), cancellationToken);
+            var query = new SelectBlockByHeightQuery(request.Height, request.FindOrThrow);
+            
+            return _mediator.Send(query, cancellationToken);
         }
     }
 }

@@ -1,6 +1,6 @@
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX
 {
-    public class VaultCertificateEntity
+    public class VaultCertificateEntity : AuditEntity
     {
         public long Id { get; set; }
         public long VaultId { get; set; }

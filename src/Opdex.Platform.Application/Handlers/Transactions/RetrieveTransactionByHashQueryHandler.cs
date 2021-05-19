@@ -17,11 +17,9 @@ namespace Opdex.Platform.Application.Handlers.Transactions
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public async Task<Transaction> Handle(RetrieveTransactionByHashQuery request, CancellationToken cancellationToken)
+        public Task<Transaction> Handle(RetrieveTransactionByHashQuery request, CancellationToken cancellationToken)
         {
-            var transaction = await _mediator.Send(new SelectTransactionByHashQuery(request.Hash), cancellationToken);
-
-            return transaction;
+            return _mediator.Send(new SelectTransactionByHashQuery(request.Hash, request.FindOrThrow), cancellationToken);
         }
     }
 }

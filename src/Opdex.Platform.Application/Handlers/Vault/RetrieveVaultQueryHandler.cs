@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Handlers.vault
 
         public Task<Vault> Handle(RetrieveVaultQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectVaultQuery(), cancellationToken);
+            return _mediator.Send(new SelectVaultQuery(request.FindOrThrow), cancellationToken);
         }
     }
 }

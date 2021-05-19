@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers
@@ -28,8 +30,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract), CancellationToken.None);
                 
                 // Todo: Check to make sure the market doesn't exist first
-                var marketId = await _mediator.Send(new MakeMarketCommand(request.Log.Market, deployer.Id, null, request.Sender, request.Log.AuthPoolCreators,
-                    request.Log.AuthProviders, request.Log.AuthTraders, request.Log.Fee), CancellationToken.None);
+
+                // Todo: Catch thrown errors or null check - standardization is coming...
+                var stakingToken = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.StakingToken), CancellationToken.None);
+
+                var market = new Market(request.Log.Market, deployer.Id, stakingToken.Id, request.Log.Owner, request.Log.AuthPoolCreators,
+                    request.Log.AuthProviders, request.Log.AuthTraders, request.Log.Fee, request.BlockHeight, request.BlockHeight);
+                
+                var marketId = await _mediator.Send(new MakeMarketCommand(market), CancellationToken.None);
 
                 return true;
             }

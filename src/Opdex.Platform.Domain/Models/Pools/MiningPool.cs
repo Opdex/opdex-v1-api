@@ -5,7 +5,7 @@ namespace Opdex.Platform.Domain.Models.Pools
 {
     public class MiningPool
     {
-        public MiningPool(long id, long liquidityPoolId, string address, string rewardPerBlock, string rewardPerLpt, ulong miningPeriodEndBlock)
+        public MiningPool(long id, long liquidityPoolId, string address, string rewardPerBlock, string rewardPerLpt, ulong miningPeriodEndBlock, ulong createdBlock, ulong modifiedBlock)
         {
             Id = id;
             LiquidityPoolId = liquidityPoolId;
@@ -13,9 +13,11 @@ namespace Opdex.Platform.Domain.Models.Pools
             RewardPerBlock = rewardPerBlock;
             RewardPerLpt = rewardPerLpt;
             MiningPeriodEndBlock = miningPeriodEndBlock;
+            CreatedBlock = createdBlock;
+            ModifiedBlock = modifiedBlock;
         }
         
-        public MiningPool(long liquidityPoolId, string address, string rewardPerBlock, string rewardPerLpt, ulong miningPeriodEndBlock)
+        public MiningPool(long liquidityPoolId, string address, string rewardPerBlock, string rewardPerLpt, ulong miningPeriodEndBlock, ulong createdBlock, ulong modifiedBlock)
         {
             if (!address.HasValue())
             {
@@ -41,12 +43,24 @@ namespace Opdex.Platform.Domain.Models.Pools
             {
                 throw new ArgumentOutOfRangeException(nameof(miningPeriodEndBlock));
             }
+            
+            if (createdBlock < 1)
+            {
+                throw new ArgumentNullException(nameof(createdBlock));
+            }
+            
+            if (modifiedBlock < 1)
+            {
+                throw new ArgumentNullException(nameof(modifiedBlock));
+            }
 
             Address = address;
             LiquidityPoolId = liquidityPoolId;
             RewardPerBlock = rewardPerBlock;
             RewardPerLpt = rewardPerBlock;
             MiningPeriodEndBlock = miningPeriodEndBlock;
+            CreatedBlock = createdBlock;
+            ModifiedBlock = modifiedBlock;
         }
         
         public long Id { get; }
@@ -55,6 +69,8 @@ namespace Opdex.Platform.Domain.Models.Pools
         public string RewardPerBlock { get; }
         public string RewardPerLpt { get; }
         public ulong MiningPeriodEndBlock { get; }
+        public ulong CreatedBlock { get; }
+        public ulong ModifiedBlock { get; }
 
         public void SetLiquidityPoolId(long liquidityPoolId)
         {

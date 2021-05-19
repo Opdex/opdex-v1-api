@@ -1,6 +1,6 @@
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX
 {
-    public class MiningGovernanceEntity
+    public class MiningGovernanceEntity : AuditEntity
     {
         public long Id { get; set; }
         public long TokenId { get; set; }

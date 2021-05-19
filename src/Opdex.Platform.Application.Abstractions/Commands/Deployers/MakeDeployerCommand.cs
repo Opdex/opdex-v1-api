@@ -1,21 +1,17 @@
 using System;
 using MediatR;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Deployers
 {
     public class MakeDeployerCommand : IRequest<long>
     {
-        public MakeDeployerCommand(string address)
+        public MakeDeployerCommand(Deployer deployer)
         {
-            if (!address.HasValue())
-            {
-                throw new ArgumentNullException(nameof(address));
-            }
-
-            Address = address;
+            Deployer = deployer ?? throw new ArgumentNullException(nameof(deployer));
         }
         
-        public string Address { get; }
+        public Deployer Deployer { get; }
     }
 }

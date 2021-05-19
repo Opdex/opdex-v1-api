@@ -37,7 +37,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         private static readonly string UpdateSqlCommand =
             $@"UPDATE address_allowance 
                 SET 
-                    {nameof(AddressAllowanceEntity.Allowance)} = @{nameof(AddressAllowanceEntity.Allowance)}
+                    {nameof(AddressAllowanceEntity.Allowance)} = @{nameof(AddressAllowanceEntity.Allowance)},
+                    {nameof(AddressAllowanceEntity.ModifiedBlock)} = @{nameof(AddressAllowanceEntity.ModifiedBlock)}
                 WHERE {nameof(AddressAllowanceEntity.Id)} = @{nameof(AddressAllowanceEntity.Id)};";
 
         private readonly IDbContext _context;

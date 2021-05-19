@@ -19,14 +19,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 {nameof(MiningPoolEntity.RewardPerBlock)},
                 {nameof(MiningPoolEntity.RewardPerLpt)},
                 {nameof(MiningPoolEntity.MiningPeriodEndBlock)},
-                {nameof(MiningPoolEntity.CreatedDate)}
+                {nameof(MiningPoolEntity.CreatedBlock)},
+                {nameof(MiningPoolEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(MiningPoolEntity.LiquidityPoolId)},
                 @{nameof(MiningPoolEntity.Address)},
                 @{nameof(MiningPoolEntity.RewardPerBlock)},
                 @{nameof(MiningPoolEntity.RewardPerLpt)},
                 @{nameof(MiningPoolEntity.MiningPeriodEndBlock)},
-                UTC_TIMESTAMP()
+                @{nameof(MiningPoolEntity.CreatedBlock)},
+                @{nameof(MiningPoolEntity.ModifiedBlock)}
               );
               SELECT LAST_INSERT_ID();";
         
@@ -35,7 +37,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 SET 
                   {nameof(MiningPoolEntity.RewardPerBlock)} = @{nameof(MiningPoolEntity.RewardPerBlock)},
                   {nameof(MiningPoolEntity.RewardPerLpt)} = @{nameof(MiningPoolEntity.RewardPerLpt)},
-                  {nameof(MiningPoolEntity.MiningPeriodEndBlock)} = @{nameof(MiningPoolEntity.MiningPeriodEndBlock)}
+                  {nameof(MiningPoolEntity.MiningPeriodEndBlock)} = @{nameof(MiningPoolEntity.MiningPeriodEndBlock)},
+                  {nameof(MiningPoolEntity.ModifiedBlock)} = @{nameof(MiningPoolEntity.ModifiedBlock)}
                 WHERE
                   {nameof(MiningPoolEntity.Id)} = @{nameof(MiningPoolEntity.Id)};";
 

@@ -8,18 +8,18 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Tra
 {
     public class ProcessCreateMarketLogCommand : IRequest<bool>
     {
-        public ProcessCreateMarketLogCommand(TransactionLog log, string sender)
+        public ProcessCreateMarketLogCommand(TransactionLog log, ulong blockHeight)
         {
-            if (!sender.HasValue())
+            if (blockHeight < 1)
             {
-                throw new ArgumentNullException(nameof(sender));
+                throw new ArgumentNullException(nameof(blockHeight));
             }
             
-            Sender = sender;
             Log = log as CreateMarketLog ?? throw new ArgumentNullException(nameof(log));
+            BlockHeight = blockHeight;
         }
         
         public CreateMarketLog Log { get; }
-        public string Sender { get; }
+        public ulong BlockHeight { get; }
     }
 }

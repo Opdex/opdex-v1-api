@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.Handlers.Deployers
         
         public Task<long> Handle(MakeDeployerCommand request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new PersistDeployerCommand(request.Address), cancellationToken);
+            return _mediator.Send(new PersistDeployerCommand(request.Deployer), cancellationToken);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Handlers.Tokens
         
         public Task<Token> Handle(RetrieveTokenByIdQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectTokenByIdQuery(request.TokenId));
+            return _mediator.Send(new SelectTokenByIdQuery(request.TokenId, request.FindOrThrow), cancellationToken);
         }
     }
 }

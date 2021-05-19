@@ -38,12 +38,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
             
             var result = await _context.ExecuteFindAsync<BlockEntity>(query);
 
-            if (result == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException("No blocks found.");
+                throw new NotFoundException($"{nameof(Block)} not found.");
             }
 
-            return _mapper.Map<Block>(result);
+            return result == null ? null : _mapper.Map<Block>(result);
         }
     }
 }

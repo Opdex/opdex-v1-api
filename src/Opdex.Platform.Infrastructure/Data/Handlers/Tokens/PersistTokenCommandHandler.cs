@@ -12,7 +12,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 {
     public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, long>
     {
-        private static readonly string SqlCommand =
+        private static readonly string InsertSqlCommand =
             $@"INSERT INTO token (
                 {nameof(TokenEntity.Address)},
                 {nameof(TokenEntity.Name)},
@@ -20,7 +20,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
                 {nameof(TokenEntity.Decimals)},
                 {nameof(TokenEntity.Sats)},
                 {nameof(TokenEntity.TotalSupply)},
-                {nameof(TokenEntity.CreatedDate)}
+                {nameof(TokenEntity.CreatedBlock)},
+                {nameof(TokenEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(TokenEntity.Address)},
                 @{nameof(TokenEntity.Name)},
@@ -28,9 +29,17 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
                 @{nameof(TokenEntity.Decimals)},
                 @{nameof(TokenEntity.Sats)},
                 @{nameof(TokenEntity.TotalSupply)},
-                UTC_TIMESTAMP()
+                @{nameof(TokenEntity.CreatedBlock)},
+                @{nameof(TokenEntity.ModifiedBlock)}
               );
             SELECT LAST_INSERT_ID();";
+        
+        private static readonly string UpdateSqlCommand =
+            $@"UPDATE token 
+                SET 
+                    {nameof(TokenEntity.TotalSupply)} = @{nameof(TokenEntity.TotalSupply)},
+                    {nameof(TokenEntity.ModifiedBlock)} = @{nameof(TokenEntity.ModifiedBlock)}
+                WHERE {nameof(TokenEntity.Id)} = @{nameof(TokenEntity.Id)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -49,12 +58,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
             try
             {
                 var entity = _mapper.Map<TokenEntity>(request.Token);
-                var command = DatabaseQuery.Create(SqlCommand, entity, cancellationToken);
-                return await _context.ExecuteScalarAsync<long>(command);
+
+                var isUpdate = entity.Id >= 1;
+
+                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+                
+                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+                
+                var result = await _context.ExecuteScalarAsync<long>(command);
+                
+                return isUpdate ? entity.Id : result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure persisting token {request?.Token?.Address}");
+                
                 return 0;
             }
         }

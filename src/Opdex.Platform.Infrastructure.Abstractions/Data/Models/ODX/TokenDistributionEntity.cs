@@ -1,6 +1,8 @@
+using Opdex.Platform.Domain.Models.Addresses;
+
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX
 {
-    public class TokenDistributionEntity
+    public class TokenDistributionEntity : AuditEntity
     {
         public long Id { get; set; }
         public string VaultDistribution { get; set; }

@@ -12,18 +12,20 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 {
     public class PersistLiquidityPoolCommandHandler : IRequestHandler<PersistLiquidityPoolCommand, long>
     {
-        // Todo: Insert vs update
+        // Todo: Consider schema changes around MarketId and the ability to update markets
         private static readonly string SqlCommand =
             $@"INSERT INTO pool_liquidity (
                 {nameof(LiquidityPoolEntity.Address)},
                 {nameof(LiquidityPoolEntity.TokenId)},
                 {nameof(LiquidityPoolEntity.MarketId)},
-                {nameof(LiquidityPoolEntity.CreatedDate)}
+                {nameof(LiquidityPoolEntity.CreatedBlock)},
+                {nameof(LiquidityPoolEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(LiquidityPoolEntity.Address)},
                 @{nameof(LiquidityPoolEntity.TokenId)},
                 @{nameof(LiquidityPoolEntity.MarketId)},
-                UTC_TIMESTAMP()
+                @{nameof(LiquidityPoolEntity.CreatedBlock)},
+                @{nameof(LiquidityPoolEntity.ModifiedBlock)}
               );
               SELECT LAST_INSERT_ID();";
 

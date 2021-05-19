@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task PersistsTokenDistribution_Success()
         {
-            var tokenDistribution = new TokenDistribution(1, "100.11", "1000.11", 1, 2, 3);
+            var tokenDistribution = new TokenDistribution("10011", "100011", 1, 2, 3, 4, 5);
             var command = new PersistTokenDistributionCommand(tokenDistribution);
 
             _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
@@ -43,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task PersistsTokenDistribution_Fail()
         {
-            var tokenDistribution = new TokenDistribution(1, "100.11", "1000.11", 1, 2, 3);
+            var tokenDistribution = new TokenDistribution("10011", "100011", 1, 2, 3, 4, 5);
             var command = new PersistTokenDistributionCommand(tokenDistribution);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

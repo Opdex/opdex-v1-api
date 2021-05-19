@@ -20,9 +20,10 @@ namespace Opdex.Platform.Application.Handlers.Blocks
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
+        // Todo: Should return Block domain object out
         public async Task<BlockDto> Handle(RetrieveLatestBlockQuery request, CancellationToken cancellationToken)
         {
-            var block = await _mediator.Send(new SelectLatestBlockQuery(), cancellationToken);
+            var block = await _mediator.Send(new SelectLatestBlockQuery(request.FindOrThrow), cancellationToken);
             
             return _mapper.Map<BlockDto>(block);
         }

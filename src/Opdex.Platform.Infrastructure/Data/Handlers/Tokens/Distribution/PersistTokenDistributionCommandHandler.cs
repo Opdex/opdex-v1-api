@@ -18,14 +18,18 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
                 {nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
                 {nameof(TokenDistributionEntity.PeriodIndex)},
                 {nameof(TokenDistributionEntity.DistributionBlock)},
-                {nameof(TokenDistributionEntity.NextDistributionBlock)}
+                {nameof(TokenDistributionEntity.NextDistributionBlock)},
+                {nameof(TokenDistributionEntity.CreatedBlock)},
+                {nameof(TokenDistributionEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(TokenDistributionEntity.Id)},
                 @{nameof(TokenDistributionEntity.VaultDistribution)},
                 @{nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
                 @{nameof(TokenDistributionEntity.PeriodIndex)},
                 @{nameof(TokenDistributionEntity.DistributionBlock)},
-                @{nameof(TokenDistributionEntity.NextDistributionBlock)}
+                @{nameof(TokenDistributionEntity.NextDistributionBlock)},
+                @{nameof(TokenDistributionEntity.CreatedBlock)},
+                @{nameof(TokenDistributionEntity.ModifiedBlock)}
               );";
 
         private readonly IDbContext _context;

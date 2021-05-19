@@ -19,15 +19,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                 `{nameof(TransactionEntity.To)}`,
                 {nameof(TransactionEntity.Hash)},
                 {nameof(TransactionEntity.GasUsed)},
-                {nameof(TransactionEntity.Block)},
-                {nameof(TransactionEntity.CreatedDate)}
+                {nameof(TransactionEntity.Block)}
               ) VALUES (
                 @{nameof(TransactionEntity.From)},
                 @{nameof(TransactionEntity.To)},
                 @{nameof(TransactionEntity.Hash)},
                 @{nameof(TransactionEntity.GasUsed)},
-                @{nameof(TransactionEntity.Block)},
-                UTC_TIMESTAMP()
+                @{nameof(TransactionEntity.Block)}
               );
               SELECT LAST_INSERT_ID();";
 

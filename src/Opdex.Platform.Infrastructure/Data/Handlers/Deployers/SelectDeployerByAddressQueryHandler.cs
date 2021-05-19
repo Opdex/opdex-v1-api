@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
@@ -18,35 +17,46 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
             $@"SELECT
                 {nameof(DeployerEntity.Id)},
                 {nameof(DeployerEntity.Address)},
-                {nameof(DeployerEntity.CreatedDate)}
-            FROM deployer
-            WHERE {nameof(DeployerEntity.Address)} = @{nameof(DeployerEntity.Address)}
+                {nameof(DeployerEntity.Owner)},
+                {nameof(DeployerEntity.CreatedBlock)},
+                {nameof(DeployerEntity.ModifiedBlock)}
+            FROM market_deployer
+            WHERE {nameof(DeployerEntity.Address)} = @{nameof(SqlParams.Address)}
             LIMIT 1;";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
         
-        public SelectDeployerByAddressQueryHandler(IDbContext context, IMapper mapper, 
-            ILogger<SelectDeployerByAddressQueryHandler> logger)
+        public SelectDeployerByAddressQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Deployer> Handle(SelectDeployerByAddressQuery request, CancellationToken cancellationToken)
         {
-            var command = DatabaseQuery.Create(SqlCommand, request, cancellationToken);
+            var sqlParams = new SqlParams(request.Address);
             
-            var entity =  await _context.ExecuteFindAsync<DeployerEntity>(command);
+            var command = DatabaseQuery.Create(SqlCommand, sqlParams, cancellationToken);
+            
+            var result =  await _context.ExecuteFindAsync<DeployerEntity>(command);
 
-            if (entity == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException($"{nameof(Deployer)} not found with address {request.Address}");
+                throw new NotFoundException($"{nameof(Deployer)} not found.");
             }
 
-            return _mapper.Map<Deployer>(entity);
+            return result == null ? null : _mapper.Map<Deployer>(result);
+        }
+        
+        private sealed class SqlParams
+        {
+            internal SqlParams(string address)
+            {
+                Address = address;
+            }
+
+            public string Address { get; }
         }
     }
 }

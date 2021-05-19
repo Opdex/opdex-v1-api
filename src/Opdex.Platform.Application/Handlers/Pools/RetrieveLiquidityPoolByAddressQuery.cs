@@ -17,11 +17,9 @@ namespace Opdex.Platform.Application.Handlers.Pools
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public async Task<LiquidityPool> Handle(RetrieveLiquidityPoolByAddressQuery request, CancellationToken cancellationToken)
+        public Task<LiquidityPool> Handle(RetrieveLiquidityPoolByAddressQuery request, CancellationToken cancellationToken)
         {
-            var token = await _mediator.Send(new SelectLiquidityPoolByAddressQuery(request.Address), cancellationToken);
-
-            return token;
+            return _mediator.Send(new SelectLiquidityPoolByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
         }
     }
 }

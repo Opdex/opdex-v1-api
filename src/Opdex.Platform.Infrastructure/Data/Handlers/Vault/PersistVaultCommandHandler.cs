@@ -12,17 +12,28 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
 {
     public class PersistVaultCommandHandler : IRequestHandler<PersistVaultCommand, long>
     {
-        private static readonly string SqlCommand =
+        private static readonly string InsertSqlCommand =
             $@"INSERT INTO odx_vault (
                 {nameof(VaultEntity.Address)},
                 {nameof(VaultEntity.TokenId)},
-                {nameof(VaultEntity.Owner)}
+                {nameof(VaultEntity.Owner)},
+                {nameof(VaultEntity.CreatedBlock)},
+                {nameof(VaultEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(VaultEntity.Address)},
                 @{nameof(VaultEntity.TokenId)},
-                @{nameof(VaultEntity.Owner)}
+                @{nameof(VaultEntity.Owner)},
+                @{nameof(VaultEntity.CreatedBlock)},
+                @{nameof(VaultEntity.ModifiedBlock)}
               );
               SELECT LAST_INSERT_ID()";
+        
+        private static readonly string UpdateSqlCommand =
+            $@"UPDATE address_allowance 
+                SET 
+                    {nameof(VaultEntity.Owner)} = @{nameof(VaultEntity.Owner)},
+                    {nameof(VaultEntity.ModifiedBlock)} = @{nameof(VaultEntity.ModifiedBlock)}
+                WHERE {nameof(VaultEntity.Id)} = @{nameof(VaultEntity.Id)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -41,12 +52,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
             try
             {
                 var entity = _mapper.Map<VaultEntity>(request.Vault);
-                var command = DatabaseQuery.Create(SqlCommand, entity, cancellationToken);
-                return await _context.ExecuteScalarAsync<long>(command);
+
+                var isUpdate = entity.Id >= 1;
+
+                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+                
+                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+                
+                var result = await _context.ExecuteScalarAsync<long>(command);
+                
+                return isUpdate ? entity.Id : result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failure persisting vault.");
+                _logger.LogError(ex, $"Failure persisting {nameof(request.Vault)}.");
+                
                 return 0;
             }
         }

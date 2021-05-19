@@ -5,7 +5,8 @@ namespace Opdex.Platform.Domain.Models.Markets
 {
     public class Market
     {
-        public Market(string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders, bool authTraders, uint fee)
+        public Market(string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders, 
+            bool authTraders, uint fee, ulong createdBlock, ulong modifiedBlock)
         {
             if (!address.HasValue())
             {
@@ -22,6 +23,16 @@ namespace Opdex.Platform.Domain.Models.Markets
                 throw new ArgumentNullException(nameof(owner));
             }
 
+            if (createdBlock < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(createdBlock));
+            }
+            
+            if (modifiedBlock < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(modifiedBlock));
+            }
+
             Address = address;
             DeployerId = deployerId;
             StakingTokenId = stakingTokenId;
@@ -30,19 +41,24 @@ namespace Opdex.Platform.Domain.Models.Markets
             AuthProviders = authProviders;
             AuthTraders = authTraders;
             Fee = fee;
+            CreatedBlock = createdBlock;
+            ModifiedBlock = modifiedBlock;
         }
         
-        public Market(long id, string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders, bool authTraders, uint fee)
+        public Market(long id, string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders,
+            bool authTraders, uint fee, ulong createdBlock, ulong modifiedBlock)
         {
             Id = id;
             Address = address;
             DeployerId = deployerId;
             StakingTokenId = stakingTokenId;
-            Owner = Owner;
+            Owner = owner;
             AuthPoolCreators = authPoolCreators;
             AuthProviders = authProviders;
             AuthTraders = authTraders;
             Fee = fee;
+            CreatedBlock = createdBlock;
+            ModifiedBlock = modifiedBlock;
         }
         
         public long Id { get; }
@@ -54,5 +70,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         public bool AuthProviders { get; }
         public bool AuthTraders { get; }
         public uint Fee { get; }
+        public ulong CreatedBlock { get; }
+        public ulong ModifiedBlock { get; }
     }
 }

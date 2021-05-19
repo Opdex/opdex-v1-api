@@ -5,7 +5,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class Token
     {
-        public Token(string address, string name, string symbol, int decimals, ulong sats, string totalSupply)
+        public Token(string address, string name, string symbol, int decimals, ulong sats, string totalSupply, ulong createdBlock, ulong modifiedBlock)
         {
             if (!address.HasValue())
             {
@@ -36,6 +36,16 @@ namespace Opdex.Platform.Domain.Models.Tokens
             {
                 throw new ArgumentNullException(nameof(totalSupply));
             }
+            
+            if (createdBlock < 1)
+            {
+                throw new ArgumentNullException(nameof(createdBlock));
+            }
+            
+            if (modifiedBlock < 1)
+            {
+                throw new ArgumentNullException(nameof(modifiedBlock));
+            }
 
             Address = address;
             Name = name;
@@ -43,9 +53,11 @@ namespace Opdex.Platform.Domain.Models.Tokens
             Decimals = decimals;
             Sats = sats;
             TotalSupply = totalSupply;
+            CreatedBlock = createdBlock;
+            ModifiedBlock = modifiedBlock;
         }
 
-        public Token(long id, string address, string name, string symbol, int decimals, ulong sats, string totalSupply)
+        public Token(long id, string address, string name, string symbol, int decimals, ulong sats, string totalSupply, ulong createdBlock, ulong modifiedBlock)
         {
             Id = id;
             Address = address;
@@ -54,6 +66,8 @@ namespace Opdex.Platform.Domain.Models.Tokens
             Decimals = decimals;
             Sats = sats;
             TotalSupply = totalSupply;
+            CreatedBlock = createdBlock;
+            ModifiedBlock = modifiedBlock;
         }
         
         public long Id { get; }
@@ -63,5 +77,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
         public int Decimals { get; }
         public ulong Sats { get; }
         public string TotalSupply { get; }
+        public ulong CreatedBlock { get; }
+        public ulong ModifiedBlock { get; }
     }
 }

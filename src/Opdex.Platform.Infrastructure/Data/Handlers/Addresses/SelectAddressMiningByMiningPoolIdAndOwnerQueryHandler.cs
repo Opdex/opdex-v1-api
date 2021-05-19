@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
@@ -42,7 +43,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 
             var result = await _context.ExecuteQueryAsync<AddressMiningEntity>(query);
 
-            return _mapper.Map<AddressMining>(result);
+            if (request.FindOrThrow && result == null)
+            {
+                throw new NotFoundException($"{nameof(AddressMining)} not found.");
+            }
+
+            return result == null ? null : _mapper.Map<AddressMining>(result);
         }
 
         private sealed class SqlParams

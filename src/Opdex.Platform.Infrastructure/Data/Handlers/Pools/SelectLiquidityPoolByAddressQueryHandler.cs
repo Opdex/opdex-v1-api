@@ -38,12 +38,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             
             var result = await _context.ExecuteFindAsync<LiquidityPoolEntity>(query);
 
-            if (result == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException($"{nameof(LiquidityPoolEntity)} with address {request.Address} was not found.");
+                throw new NotFoundException($"{nameof(LiquidityPool)} not found.");
             }
 
-            return _mapper.Map<LiquidityPool>(result);
+            return result == null ? null : _mapper.Map<LiquidityPool>(result);
         }
 
         private sealed class SqlParams

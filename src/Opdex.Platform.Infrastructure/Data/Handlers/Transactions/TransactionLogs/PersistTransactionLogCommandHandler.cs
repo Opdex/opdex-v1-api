@@ -19,14 +19,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLo
                 {nameof(TransactionLogEntity.Contract)},
                 {nameof(TransactionLogEntity.SortOrder)},
                 {nameof(TransactionLogEntity.Details)},
-                {nameof(TransactionLogEntity.CreatedDate)}
+                {nameof(TransactionLogEntity.CreatedBlock)},
+                {nameof(TransactionLogEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(TransactionLogEntity.TransactionId)},
                 @{nameof(TransactionLogEntity.LogTypeId)},
                 @{nameof(TransactionLogEntity.Contract)},
                 @{nameof(TransactionLogEntity.SortOrder)},
                 @{nameof(TransactionLogEntity.Details)},
-                UTC_TIMESTAMP()
+                @{nameof(TransactionLogEntity.CreatedBlock)},
+                @{nameof(TransactionLogEntity.ModifiedBlock)}
               );";
         
         private readonly IDbContext _context;

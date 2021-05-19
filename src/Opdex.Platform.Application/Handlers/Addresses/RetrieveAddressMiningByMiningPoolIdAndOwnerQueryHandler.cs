@@ -20,7 +20,9 @@ namespace Opdex.Platform.Application.Handlers.Addresses
 
         public Task<AddressMining> Handle(RetrieveAddressMiningByMiningPoolIdAndOwnerQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectAddressMiningByMiningPoolIdAndOwnerQuery(request.MiningPoolId, request.Owner), cancellationToken);
+            var query = new SelectAddressMiningByMiningPoolIdAndOwnerQuery(request.MiningPoolId, request.Owner, request.FindOrThrow);
+            
+            return _mediator.Send(query, cancellationToken);
         }
     }
 }

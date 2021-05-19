@@ -1,21 +1,17 @@
 using System;
 using MediatR;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers
 {
     public class PersistDeployerCommand : IRequest<long>
     {
-        public PersistDeployerCommand(string address)
+        public PersistDeployerCommand(Deployer deployer)
         {
-            if (!address.HasValue())
-            {
-                throw new ArgumentNullException(nameof(address));
-            }
-
-            Address = address;
+            Deployer = deployer ?? throw new ArgumentNullException(nameof(deployer));
         }
         
-        public string Address { get; }
+        public Deployer Deployer { get; }
     }
 }

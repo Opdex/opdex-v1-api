@@ -26,7 +26,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             try
             {
                 var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.StakingPool), CancellationToken.None);
-                var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(request.Log.MiningPool, pool.Id), CancellationToken.None);
+                var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(request.Log.MiningPool, pool.Id, request.BlockHeight, request.BlockHeight), CancellationToken.None);
 
                 return miningPoolId > 0;
             }

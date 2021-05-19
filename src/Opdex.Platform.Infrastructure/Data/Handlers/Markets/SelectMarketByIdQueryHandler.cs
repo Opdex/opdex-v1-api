@@ -25,21 +25,19 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 {nameof(MarketEntity.AuthProviders)},
                 {nameof(MarketEntity.AuthTraders)},
                 {nameof(MarketEntity.Fee)},
-                {nameof(MarketEntity.CreatedDate)}
+                {nameof(MarketEntity.CreatedBlock)},
+                {nameof(MarketEntity.ModifiedBlock)}
             FROM market
-            WHERE {nameof(MarketEntity.Address)} = @{nameof(MarketEntity.Address)}
+            WHERE {nameof(MarketEntity.Id)} = @{nameof(SqlParams.MarketId)}
             LIMIT 1;";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
         
-        public SelectMarketByIdQueryHandler(IDbContext context, IMapper mapper, 
-            ILogger<SelectMarketByIdQueryHandler> logger)
+        public SelectMarketByIdQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Market> Handle(SelectMarketByIdQuery request, CancellationToken cancellationToken)
@@ -48,14 +46,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
             
             var command = DatabaseQuery.Create(SqlCommand,  queryParams, cancellationToken);
             
-            var marketEntity =  await _context.ExecuteFindAsync<MarketEntity>(command);
+            var result =  await _context.ExecuteFindAsync<MarketEntity>(command);
 
-            if (marketEntity == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException($"{nameof(Market)} not found with Id {request.MarketId}");
+                throw new NotFoundException($"{nameof(Market)} not found.");
             }
 
-            return _mapper.Map<Market>(marketEntity);
+            return result == null ? null : _mapper.Map<Market>(result);
         }
         
         private sealed class SqlParams

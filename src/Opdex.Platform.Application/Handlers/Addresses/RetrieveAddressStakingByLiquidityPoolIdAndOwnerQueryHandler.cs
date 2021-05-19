@@ -20,7 +20,9 @@ namespace Opdex.Platform.Application.Handlers.Addresses
 
         public Task<AddressStaking> Handle(RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectAddressStakingByLiquidityPoolIdAndOwnerQuery(request.LiquidityPoolId, request.Owner), cancellationToken);
+            var query = new SelectAddressStakingByLiquidityPoolIdAndOwnerQuery(request.LiquidityPoolId, request.Owner, request.FindOrThrow);
+            
+            return _mediator.Send(query, cancellationToken);
         }
     }
 }

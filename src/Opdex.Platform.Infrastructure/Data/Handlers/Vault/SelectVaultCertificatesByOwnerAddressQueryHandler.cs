@@ -20,9 +20,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
                 {nameof(VaultCertificateEntity.Owner)},
                 {nameof(VaultCertificateEntity.Amount)},
                 {nameof(VaultCertificateEntity.VestedBlock)},
-                {nameof(VaultCertificateEntity.Redeemed)}
+                {nameof(VaultCertificateEntity.Redeemed)},
+                {nameof(VaultCertificateEntity.CreatedBlock)},
+                {nameof(VaultCertificateEntity.ModifiedBlock)}
             FROM odx_vault_certificate
-            WHERE {nameof(VaultCertificateEntity.Owner)} = @{nameof(VaultCertificateEntity.Owner)};";
+            WHERE {nameof(VaultCertificateEntity.Owner)} = @{nameof(SqlParams.Owner)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -32,7 +34,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-
         
         public async Task<IEnumerable<VaultCertificate>> Handle(SelectVaultCertificatesByOwnerAddressQuery request, CancellationToken cancellationToken)
         {
@@ -46,12 +47,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
 
         private sealed class SqlParams
         {
-            internal SqlParams(string ownerAddress)
+            internal SqlParams(string owner)
             {
-                OwnerAddress = ownerAddress;
+                Owner = owner;
             }
 
-            public string OwnerAddress { get; }
+            public string Owner { get; }
         }
     }
 }

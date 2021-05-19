@@ -18,20 +18,25 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
                 {nameof(VaultCertificateEntity.Owner)},
                 {nameof(VaultCertificateEntity.Amount)},
                 {nameof(VaultCertificateEntity.VestedBlock)},
-                {nameof(VaultCertificateEntity.Redeemed)}
+                {nameof(VaultCertificateEntity.Redeemed)},
+                {nameof(VaultCertificateEntity.CreatedBlock)},
+                {nameof(VaultCertificateEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(VaultCertificateEntity.VaultId)},
                 @{nameof(VaultCertificateEntity.Owner)},
                 @{nameof(VaultCertificateEntity.Amount)},
                 @{nameof(VaultCertificateEntity.VestedBlock)},
-                @{nameof(VaultCertificateEntity.Redeemed)}
+                @{nameof(VaultCertificateEntity.Redeemed)},
+                @{nameof(VaultCertificateEntity.CreatedBlock)},
+                @{nameof(VaultCertificateEntity.ModifiedBlock)}
               );";
         
         private static readonly string UpdateSqlCommand =
-            $@"UPDATE vault_certificate 
+            $@"UPDATE odx_vault_certificate 
                 SET 
                     {nameof(VaultCertificateEntity.Amount)} = @{nameof(VaultCertificateEntity.Amount)},
                     {nameof(VaultCertificateEntity.Redeemed)} = @{nameof(VaultCertificateEntity.Redeemed)},
+                    {nameof(VaultCertificateEntity.ModifiedBlock)} = @{nameof(VaultCertificateEntity.ModifiedBlock)}
                 WHERE {nameof(VaultCertificateEntity.Id)} = @{nameof(VaultCertificateEntity.Id)};";
 
         private readonly IDbContext _context;
@@ -60,7 +65,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failure persisting vault.");
+                _logger.LogError(ex, $"Failure persisting {nameof(request.VaultCertificate)}.");
+                
                 return false;
             }
         }

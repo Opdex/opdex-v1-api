@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Handlers.Tokens
         
         public Task<TokenDistribution> Handle(RetrieveLatestTokenDistributionQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectLatestTokenDistributionQuery(), cancellationToken);
+            return _mediator.Send(new SelectLatestTokenDistributionQuery(request.FindOrThrow), cancellationToken);
         }
     }
 }

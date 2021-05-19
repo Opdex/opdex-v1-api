@@ -1,13 +1,14 @@
 using System;
 using MediatR;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Addresses;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Addresses
 {
-    public class RetrieveAddressMiningByMiningPoolIdAndOwnerQuery : IRequest<AddressMining>
+    public class RetrieveAddressMiningByMiningPoolIdAndOwnerQuery : FindQuery<AddressMining>
     {
-        public RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(long miningPoolId, string owner)
+        public RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(long miningPoolId, string owner, bool findOrThrow = true) : base(findOrThrow)
         {
             if (miningPoolId < 1)
             {

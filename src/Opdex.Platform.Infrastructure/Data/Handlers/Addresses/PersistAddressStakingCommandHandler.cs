@@ -33,7 +33,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         private static readonly string UpdateSqlCommand =
             $@"UPDATE address_staking 
                 SET 
-                    {nameof(AddressStakingEntity.Weight)} = @{nameof(AddressStakingEntity.Weight)}
+                    {nameof(AddressStakingEntity.Weight)} = @{nameof(AddressStakingEntity.Weight)},
+                    {nameof(AddressStakingEntity.ModifiedBlock)} = @{nameof(AddressStakingEntity.ModifiedBlock)}
                 WHERE {nameof(AddressStakingEntity.Id)} = @{nameof(AddressStakingEntity.Id)};";
 
         private readonly IDbContext _context;

@@ -22,7 +22,7 @@ namespace Opdex.Platform.Application.Handlers.Pools
         {
             var pool = await _mediator.Send(new CallCirrusGetOpdexMiningPoolByAddressQuery(request.MiningPool), cancellationToken);
 
-            var miningPool = new MiningPool(request.LiquidityPoolId, request.MiningPool, pool.RewardRate, "0", pool.MiningPeriodEnd);
+            var miningPool = new MiningPool(request.LiquidityPoolId, request.MiningPool, pool.RewardRate, "0", pool.MiningPeriodEnd, request.CreatedBlock, request.ModifiedBlock);
             
             return await _mediator.Send(new PersistMiningPoolCommand(miningPool), cancellationToken);
         }

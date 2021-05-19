@@ -20,7 +20,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
                 {nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
                 {nameof(TokenDistributionEntity.PeriodIndex)},
                 {nameof(TokenDistributionEntity.DistributionBlock)},
-                {nameof(TokenDistributionEntity.NextDistributionBlock)}
+                {nameof(TokenDistributionEntity.NextDistributionBlock)},
+                {nameof(TokenDistributionEntity.CreatedBlock)},
+                {nameof(TokenDistributionEntity.ModifiedBlock)}
             FROM odx_token_distribution
             ORDER BY {nameof(TokenDistributionEntity.NextDistributionBlock)} DESC
             LIMIT 1;";
@@ -40,12 +42,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
             
             var result = await _context.ExecuteFindAsync<TokenDistributionEntity>(query);
 
-            if (result == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException($"{nameof(TokenDistributionEntity)} was not found.");
+                throw new NotFoundException($"{nameof(TokenDistribution)} not found.");
             }
 
-            return _mapper.Map<TokenDistribution>(result);
+            return result == null ? null : _mapper.Map<TokenDistribution>(result);
         }
     }
 }

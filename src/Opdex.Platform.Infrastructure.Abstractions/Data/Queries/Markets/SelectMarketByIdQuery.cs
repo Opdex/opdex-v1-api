@@ -1,12 +1,13 @@
 using System;
 using MediatR;
+using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Markets;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets
 {
-    public class SelectMarketByIdQuery : IRequest<Market>
+    public class SelectMarketByIdQuery : FindQuery<Market>
     {
-        public SelectMarketByIdQuery(long marketId)
+        public SelectMarketByIdQuery(long marketId, bool findOrThrow = true) : base(findOrThrow) 
         {
             if (marketId < 1)
             {

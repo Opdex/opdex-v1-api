@@ -1,11 +1,12 @@
 using System;
 using MediatR;
+using Opdex.Platform.Common.Queries;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernance
 {
-    public class SelectMiningGovernanceByTokenIdQuery : IRequest<Domain.MiningGovernance>
+    public class SelectMiningGovernanceByTokenIdQuery : FindQuery<Domain.MiningGovernance>
     {
-        public SelectMiningGovernanceByTokenIdQuery(long tokenId)
+        public SelectMiningGovernanceByTokenIdQuery(long tokenId, bool findOrThrow = true) : base(findOrThrow)
         {
             if (tokenId < 1)
             {

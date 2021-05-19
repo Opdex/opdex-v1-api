@@ -62,7 +62,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 {
                     success = log.LogType switch
                     {
-                        TransactionLogType.CreateMarketLog => await _mediator.Send(new ProcessCreateMarketLogCommand(log, transaction.From), CancellationToken.None),
+                        TransactionLogType.CreateMarketLog => await _mediator.Send(new ProcessCreateMarketLogCommand(log, transaction.BlockHeight), CancellationToken.None),
                         TransactionLogType.CreateLiquidityPoolLog => await _mediator.Send(new ProcessCreateLiquidityPoolLogCommand(log), CancellationToken.None),
                         TransactionLogType.ChangeMarketOwnerLog => await _mediator.Send(new ProcessChangeMarketOwnerLogCommand(log), CancellationToken.None),
                         TransactionLogType.ChangeMarketPermissionLog =>  await _mediator.Send(new ProcessChangeMarketPermissionLogCommand(log), CancellationToken.None),
@@ -76,7 +76,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                         TransactionLogType.StartStakingLog => await _mediator.Send(new ProcessStartStakingLogCommand(log, transaction.BlockHeight), CancellationToken.None),
                         TransactionLogType.CollectStakingRewardsLog => await _mediator.Send(new ProcessCollectStakingRewardsLogCommand(log), CancellationToken.None),
                         TransactionLogType.StopStakingLog => await _mediator.Send(new ProcessStopStakingLogCommand(log, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.CreateMiningPoolLog => await _mediator.Send(new ProcessCreateMiningPoolLogCommand(log), CancellationToken.None),
+                        TransactionLogType.CreateMiningPoolLog => await _mediator.Send(new ProcessCreateMiningPoolLogCommand(log, transaction.BlockHeight), CancellationToken.None),
                         TransactionLogType.RewardMiningPoolLog => await _mediator.Send(new ProcessRewardMiningPoolLogCommand(log), CancellationToken.None),
                         TransactionLogType.NominationLog => await _mediator.Send(new ProcessNominationLogCommand(log), CancellationToken.None),
                         TransactionLogType.StartMiningLog => await _mediator.Send(new ProcessStartMiningLogCommand(log, transaction.BlockHeight), CancellationToken.None),
@@ -84,7 +84,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                         TransactionLogType.StopMiningLog => await _mediator.Send(new ProcessStopMiningLogCommand(log, transaction.BlockHeight), CancellationToken.None),
                         TransactionLogType.EnableMiningLog => await _mediator.Send(new ProcessEnableMiningLogCommand(log), CancellationToken.None),
                         TransactionLogType.DistributionLog => await _mediator.Send(new ProcessDistributionLogCommand(log, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.CreateVaultCertificateLog => await _mediator.Send(new ProcessCreateVaultCertificateLogCommand(log), CancellationToken.None),
+                        TransactionLogType.CreateVaultCertificateLog => await _mediator.Send(new ProcessCreateVaultCertificateLogCommand(log, transaction.BlockHeight), CancellationToken.None),
                         TransactionLogType.RevokeVaultCertificateLog => await _mediator.Send(new ProcessRevokeVaultCertificateLogCommand(log), CancellationToken.None),
                         TransactionLogType.RedeemVaultCertificateLog => await _mediator.Send(new ProcessRedeemVaultCertificateLogCommand(log), CancellationToken.None),
                         TransactionLogType.ChangeVaultOwnerLog => await _mediator.Send(new ProcessChangeVaultOwnerLogCommand(log), CancellationToken.None),

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using AutoMapper;
 using FluentAssertions;
 using Moq;
@@ -39,7 +40,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
                 To = "To",
                 GasUsed = 60923,
                 Hash = hash,
-                CreatedDate = DateTime.Now
+                CreatedBlock = 1245
             };
             
             var command = new SelectTransactionByHashQuery(hash);
@@ -71,7 +72,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
                 .Throw<NotFoundException>()
-                .WithMessage($"{nameof(TransactionEntity)} with hash {hash} was not found.");
+                .WithMessage($"{nameof(Transaction)} not found.");
         }
     }
 }

@@ -70,7 +70,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernance
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
                 .Throw<NotFoundException>()
-                .WithMessage($"{nameof(MiningGovernanceEntity)} with tokenId {tokenId} was not found.");
+                .WithMessage($"{nameof(MiningGovernance)} not found.");
         }
     }
 }

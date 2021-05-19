@@ -1,13 +1,14 @@
 using System;
 using MediatR;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Transactions
 {
-    public class RetrieveTransactionByHashQuery : IRequest<Transaction>
+    public class RetrieveTransactionByHashQuery : FindQuery<Transaction>
     {
-        public RetrieveTransactionByHashQuery(string hash)
+        public RetrieveTransactionByHashQuery(string hash, bool findOrThrow = true) : base(findOrThrow)
         {
             if (!hash.HasValue())
             {

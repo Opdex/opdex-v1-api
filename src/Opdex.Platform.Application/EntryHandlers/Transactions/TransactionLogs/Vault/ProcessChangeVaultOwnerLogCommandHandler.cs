@@ -14,7 +14,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
     {
         private readonly IMediator _mediator;
         private readonly ILogger<ProcessChangeVaultOwnerLogCommandHandler> _logger;
-
+        private const bool FindOrThrow = true;
+        
         public ProcessChangeVaultOwnerLogCommandHandler(IMediator mediator, ILogger<ProcessChangeVaultOwnerLogCommandHandler> logger)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -25,7 +26,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var vault = await _mediator.Send(new RetrieveVaultQuery(), CancellationToken.None);
+                var vault = await _mediator.Send(new RetrieveVaultQuery(FindOrThrow), CancellationToken.None);
                 
                 vault.SetOwner(request.Log);
                 

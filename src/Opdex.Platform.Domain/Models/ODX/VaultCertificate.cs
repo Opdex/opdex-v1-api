@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.ODX
 {
     public class VaultCertificate
     {
-        public VaultCertificate(long vaultId, string owner, string amount, ulong vestedBlock)
+        public VaultCertificate(long vaultId, string owner, string amount, ulong vestedBlock, ulong createdBlock)
         {
             if (vaultId < 1)
             {
@@ -28,14 +28,21 @@ namespace Opdex.Platform.Domain.Models.ODX
                 throw new ArgumentNullException(nameof(vestedBlock));
             }
             
+            if (createdBlock < 1)
+            {
+                throw new ArgumentNullException(nameof(createdBlock));
+            }
+            
             VaultId = vaultId;
             Owner = owner;
             Amount = amount;
             VestedBlock = vestedBlock;
             Redeemed = false;
+            CreatedBlock = createdBlock;
+            ModifiedBlock = createdBlock;
         }
         
-        public VaultCertificate(long id, long vaultId, string owner, string amount, ulong vestedBlock, bool redeemed)
+        public VaultCertificate(long id, long vaultId, string owner, string amount, ulong vestedBlock, bool redeemed, ulong createdBlock, ulong modifiedBlock)
         {
             Id = id;
             VaultId = vaultId;
@@ -43,6 +50,8 @@ namespace Opdex.Platform.Domain.Models.ODX
             Amount = amount;
             VestedBlock = vestedBlock;
             Redeemed = redeemed;
+            CreatedBlock = createdBlock;
+            ModifiedBlock = modifiedBlock;
         }
 
         public long Id { get; }
@@ -51,6 +60,8 @@ namespace Opdex.Platform.Domain.Models.ODX
         public string Amount { get; private set; }
         public ulong VestedBlock { get; }
         public bool Redeemed { get; private set; }
+        public ulong CreatedBlock { get; }
+        public ulong ModifiedBlock { get; }
 
         public void UpdateAmount(RevokeVaultCertificateLog log)
         {

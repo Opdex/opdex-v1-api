@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Handlers.Markets
 
         public Task<Market> Handle(RetrieveMarketByAddressQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectMarketByAddressQuery(request.Address), cancellationToken);
+            return _mediator.Send(new SelectMarketByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
         }
     }
 }

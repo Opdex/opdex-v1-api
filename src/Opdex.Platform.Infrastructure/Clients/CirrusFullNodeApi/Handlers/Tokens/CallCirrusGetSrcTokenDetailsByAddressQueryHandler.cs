@@ -47,7 +47,8 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Token
             var totalSupply = totalSupplyResponse.Return.ToString();
             if (!totalSupply.HasValue()) return null;
 
-            return new Token(request.Address, name, symbol, decimals, decimals.DecimalsToSatoshis(), totalSupply);
+            // Todo: Return TokenContractSummary model
+            return new Token(request.Address, name, symbol, decimals, decimals.DecimalsToSatoshis(), totalSupply, 1,1);
         }
     }
 }

@@ -63,7 +63,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             var odxTokenSummary = await _mediator.Send(new RetrieveStakingTokenContractSummaryByAddressQuery(odxAddress), CancellationToken.None);
             
             // Insert Vault
-            var vaultId = await _mediator.Send(new MakeVaultCommand(new Vault(odxTokenSummary.Vault, odxId, transaction.From)), CancellationToken.None);
+            var vaultId = await _mediator.Send(new MakeVaultCommand(new Vault(odxTokenSummary.Vault, odxId, transaction.From, transaction.BlockHeight, transaction.BlockHeight)), CancellationToken.None);
             
             // Insert Governance Contract
             var miningGovernanceRequest = new RetrieveMiningGovernanceContractSummaryByAddressQuery(odxTokenSummary.MiningGovernance);
@@ -71,7 +71,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             var miningGovernanceSummary = await _mediator.Send(miningGovernanceRequest, CancellationToken.None);
 
             var miningGovernance = new MiningGovernance(odxTokenSummary.MiningGovernance, odxId, miningGovernanceSummary.NominationPeriodEnd,
-                miningGovernanceSummary.Balance, (int)miningGovernanceSummary.MiningPoolsFunded, miningGovernanceSummary.MiningPoolReward);
+                miningGovernanceSummary.Balance, (int)miningGovernanceSummary.MiningPoolsFunded, miningGovernanceSummary.MiningPoolReward,
+                transaction.BlockHeight, transaction.BlockHeight);
                     
             var miningGovernanceId = await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance), CancellationToken.None);
 

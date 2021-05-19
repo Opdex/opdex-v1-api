@@ -36,10 +36,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 
                 if (request.Log.PeriodIndex <= latestDistribution.PeriodIndex) return false;
 
-                var distributionBlock = request.BlockHeight;
-                var nexDistributionBlock = distributionBlock + 1_971_000;
+                var blockHeight = request.BlockHeight;
+                var nexDistributionBlock = blockHeight + 1_971_000;
+                
                 var odxDistribution = new TokenDistribution(request.Log.VaultAmount, request.Log.MiningAmount, (int)request.Log.PeriodIndex, request.BlockHeight, 
-                    nexDistributionBlock);
+                    nexDistributionBlock, blockHeight, blockHeight);
                 
                 return await _mediator.Send(new MakeTokenDistributionCommand(odxDistribution), CancellationToken.None);
             }

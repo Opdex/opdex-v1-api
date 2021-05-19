@@ -20,7 +20,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
                 {nameof(BlockEntity.MedianTime)},
                 {nameof(BlockEntity.Time)}
             FROM block
-            WHERE {nameof(BlockEntity.Height)} = @{nameof(BlockEntity.Height)}
+            WHERE {nameof(BlockEntity.Height)} = @{nameof(SqlParams.Height)}
             LIMIT 1;";
                         
         private readonly IDbContext _context;
@@ -34,16 +34,28 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
 
         public async Task<Block> Handle(SelectBlockByHeightQuery request, CancellationToken cancellationToken)
         {
-            var query = DatabaseQuery.Create(SqlQuery, new { request.Height }, token: cancellationToken);
+            var sqlParams = new SqlParams(request.Height);
+            
+            var query = DatabaseQuery.Create(SqlQuery, sqlParams, cancellationToken);
             
             var result = await _context.ExecuteFindAsync<BlockEntity>(query);
 
-            if (result == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException("No block found at height ${request.Height}.");
+                throw new NotFoundException($"{nameof(Block)} not found.");
             }
 
-            return _mapper.Map<Block>(result);
+            return result == null ? null : _mapper.Map<Block>(result);
+        }
+
+        private sealed class SqlParams
+        {
+            internal SqlParams(ulong height)
+            {
+                Height = height;
+            }
+
+            public ulong Height { get; }
         }
     }
 }

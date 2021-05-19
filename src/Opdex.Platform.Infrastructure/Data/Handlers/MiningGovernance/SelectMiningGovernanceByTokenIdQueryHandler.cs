@@ -20,7 +20,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
                 {nameof(MiningGovernanceEntity.NominationPeriodEnd)},
                 {nameof(MiningGovernanceEntity.Balance)},
                 {nameof(MiningGovernanceEntity.MiningPoolsFunded)},
-                {nameof(MiningGovernanceEntity.MiningPoolReward)}
+                {nameof(MiningGovernanceEntity.MiningPoolReward)},
+                {nameof(MiningGovernanceEntity.CreatedBlock)},
+                {nameof(MiningGovernanceEntity.ModifiedBlock)}
             FROM odx_mining_governance
             WHERE {nameof(MiningGovernanceEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;";
@@ -42,12 +44,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
             
             var result = await _context.ExecuteFindAsync<MiningGovernanceEntity>(query);
 
-            if (result == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException($"{nameof(MiningGovernanceEntity)} with tokenId {request.TokenId} was not found.");
+                throw new NotFoundException($"{nameof(MiningGovernance)} not found.");
             }
 
-            return _mapper.Map<Domain.MiningGovernance>(result);
+            return result == null ? null : _mapper.Map<Domain.MiningGovernance>(result);
         }
 
         private sealed class SqlParams

@@ -27,16 +27,22 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract), CancellationToken.None);
+                var poolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
                 
-                var stakingBalance = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(pool.Id, request.Log.Staker), CancellationToken.None) 
-                                     ?? new AddressStaking(pool.Id, request.Log.Staker, request.Log.Amount, request.BlockHeight, request.BlockHeight);
+                var pool = await _mediator.Send(poolQuery, CancellationToken.None);
+                
+                var addressBalanceQuery = new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(pool.Id, request.Log.Staker, findOrThrow: false);
+                
+                var stakingBalance = await _mediator.Send(addressBalanceQuery, CancellationToken.None) 
+                                     ?? new AddressStaking(pool.Id, request.Log.Staker, request.Log.Amount, request.BlockHeight);
 
+                // potentially stale log, ignore
                 if (request.BlockHeight <= stakingBalance.ModifiedBlock)
                 {
                     return true;
                 }
                 
+                // Update if if it's not a new record, else it's already been created and is current
                 if (stakingBalance.Id != 0)
                 {
                     stakingBalance.SetWeight(request.Log, request.BlockHeight);

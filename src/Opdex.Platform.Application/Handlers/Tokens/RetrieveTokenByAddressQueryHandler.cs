@@ -17,11 +17,9 @@ namespace Opdex.Platform.Application.Handlers.Tokens
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public async Task<Token> Handle(RetrieveTokenByAddressQuery request, CancellationToken cancellationToken)
+        public Task<Token> Handle(RetrieveTokenByAddressQuery request, CancellationToken cancellationToken)
         {
-            var token = await _mediator.Send(new SelectTokenByAddressQuery(request.Address), cancellationToken);
-
-            return token;
+            return _mediator.Send(new SelectTokenByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
         }
     }
 }

@@ -24,10 +24,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         public SelectAllLiquidityPoolsQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            var logger = new NullLogger<SelectAllLiquidityPoolsQueryHandler>();
             
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectAllLiquidityPoolsQueryHandler(_dbContext.Object, mapper, logger);
+            _handler = new SelectAllLiquidityPoolsQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]

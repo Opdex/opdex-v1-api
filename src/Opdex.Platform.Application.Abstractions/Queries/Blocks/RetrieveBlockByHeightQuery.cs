@@ -1,12 +1,13 @@
 using System;
 using MediatR;
+using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Blocks
 {
-    public class RetrieveBlockByHeightQuery: IRequest<Block>
+    public class RetrieveBlockByHeightQuery: FindQuery<Block>
     {
-        public RetrieveBlockByHeightQuery(ulong height)
+        public RetrieveBlockByHeightQuery(ulong height, bool findOrThrow = true) : base(findOrThrow)
         {
             if (height < 1)
             {

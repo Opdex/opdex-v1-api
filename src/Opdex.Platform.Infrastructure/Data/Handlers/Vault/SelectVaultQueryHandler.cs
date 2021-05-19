@@ -13,11 +13,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
     public class SelectVaultQueryHandler : IRequestHandler<SelectVaultQuery, Domain.Models.ODX.Vault>
     {
         private static readonly string SqlQuery =
-            @$"Select 
+            @$"SELECT 
                 {nameof(VaultEntity.Id)},
                 {nameof(VaultEntity.Address)},
                 {nameof(VaultEntity.TokenId)},
-                {nameof(VaultEntity.Owner)}
+                {nameof(VaultEntity.Owner)},
+                {nameof(VaultEntity.CreatedBlock)},
+                {nameof(VaultEntity.ModifiedBlock)}
             FROM odx_vault
             LIMIT 1;";
 
@@ -36,12 +38,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
 
             var result = await _context.ExecuteFindAsync<VaultEntity>(query);
 
-            if (result == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException($"Vault not found.");
+                throw new NotFoundException($"{nameof(Vault)} not found.");
             }
 
-            return _mapper.Map<Domain.Models.ODX.Vault>(result);
+            return result == null ? null : _mapper.Map<Domain.Models.ODX.Vault>(result);
         }
     }
 }

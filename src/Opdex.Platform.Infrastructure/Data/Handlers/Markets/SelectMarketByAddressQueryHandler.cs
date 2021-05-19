@@ -25,35 +25,45 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 {nameof(MarketEntity.AuthProviders)},
                 {nameof(MarketEntity.AuthTraders)},
                 {nameof(MarketEntity.Fee)},
-                {nameof(MarketEntity.CreatedDate)}
+                {nameof(MarketEntity.CreatedBlock)},
+                {nameof(MarketEntity.ModifiedBlock)}
             FROM market
-            WHERE {nameof(MarketEntity.Address)} = @{nameof(MarketEntity.Address)}
+            WHERE {nameof(MarketEntity.Address)} = @{nameof(SqlParams.Address)}
             LIMIT 1;";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
         
-        public SelectMarketByAddressQueryHandler(IDbContext context, IMapper mapper, 
-            ILogger<SelectMarketByAddressQueryHandler> logger)
+        public SelectMarketByAddressQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Market> Handle(SelectMarketByAddressQuery request, CancellationToken cancellationToken)
         {
-            var command = DatabaseQuery.Create(SqlCommand, request, cancellationToken);
+            var sqlParams = new SqlParams(request.Address);
             
-            var marketEntity =  await _context.ExecuteFindAsync<MarketEntity>(command);
+            var command = DatabaseQuery.Create(SqlCommand, sqlParams, cancellationToken);
+            
+            var result = await _context.ExecuteFindAsync<MarketEntity>(command);
 
-            if (marketEntity == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException($"{nameof(Market)} not found with address {request.Address}");
+                throw new NotFoundException($"{nameof(Market)} not found.");
             }
 
-            return _mapper.Map<Market>(marketEntity);
+            return result == null ? null : _mapper.Map<Market>(result);
+        }
+        
+        private sealed class SqlParams
+        {
+            internal SqlParams(string address)
+            {
+                Address = address;
+            }
+
+            public string Address { get; }
         }
     }
 }

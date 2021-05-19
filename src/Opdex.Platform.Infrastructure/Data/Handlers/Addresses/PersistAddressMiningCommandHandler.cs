@@ -33,7 +33,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         private static readonly string UpdateSqlCommand =
             $@"UPDATE address_mining 
                 SET 
-                    {nameof(AddressMiningEntity.Balance)} = @{nameof(AddressMiningEntity.Balance)}
+                    {nameof(AddressMiningEntity.Balance)} = @{nameof(AddressMiningEntity.Balance)},
+                    {nameof(AddressMiningEntity.ModifiedBlock)} = @{nameof(AddressMiningEntity.ModifiedBlock)}
                 WHERE {nameof(AddressMiningEntity.Id)} = @{nameof(AddressMiningEntity.Id)};";
 
         private readonly IDbContext _context;

@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.Handlers.MiningGovernance
         
         public Task<Domain.MiningGovernance> Handle(RetrieveMiningGovernanceByTokenIdQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectMiningGovernanceByTokenIdQuery(request.TokenId));
+            return _mediator.Send(new SelectMiningGovernanceByTokenIdQuery(request.TokenId, request.FindOrThrow), cancellationToken);
         }
     }
 }

@@ -14,6 +14,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
@@ -58,11 +59,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             try
             {
                 var odx = await _mediator.Send(new RetrieveTokenByAddressQuery(log.StakingToken), CancellationToken.None);
+
+                var deployer = new Deployer(log.Contract, log.Owner, transaction.BlockHeight, transaction.BlockHeight);
                 
-                var deployer = await _mediator.Send(new MakeDeployerCommand(log.Contract), CancellationToken.None);
+                var deployerId = await _mediator.Send(new MakeDeployerCommand(deployer), CancellationToken.None);
+
+                var market = new Market(log.Market, deployerId, odx.Id, transaction.From, log.AuthPoolCreators, log.AuthProviders, log.AuthTraders, 
+                    log.Fee, transaction.BlockHeight, transaction.BlockHeight);
                 
-                var marketId = await _mediator.Send(new MakeMarketCommand(log.Market, deployer, odx.Id, transaction.From, log.AuthPoolCreators,
-                    log.AuthProviders, log.AuthTraders, log.Fee), CancellationToken.None);
+                var marketId = await _mediator.Send(new MakeMarketCommand(market), CancellationToken.None);
                 
                 // Insert Transaction
                 await _mediator.Send(new MakeTransactionCommand(transaction), CancellationToken.None);

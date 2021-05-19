@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
@@ -42,7 +43,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 
             var result = await _context.ExecuteQueryAsync<AddressBalance>(query);
 
-            return _mapper.Map<AddressBalance>(result);
+            if (request.FindOrThrow && result == null)
+            {
+                throw new NotFoundException($"{nameof(AddressBalance)} not found.");
+            }
+
+            return result == null ? null : _mapper.Map<AddressBalance>(result);
         }
 
         private sealed class SqlParams

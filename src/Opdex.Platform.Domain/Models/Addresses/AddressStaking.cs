@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
 {
     public class AddressStaking
     {
-        public AddressStaking(long liquidityPoolId, string owner, string weight, ulong createdBlock, ulong modifiedBlock) 
+        public AddressStaking(long liquidityPoolId, string owner, string weight, ulong createdBlock) 
         {
             if (liquidityPoolId < 1)
             {
@@ -27,17 +27,12 @@ namespace Opdex.Platform.Domain.Models.Addresses
             {
                 throw new ArgumentOutOfRangeException(nameof(createdBlock));
             }
-
-            if (modifiedBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(modifiedBlock));
-            }
             
             LiquidityPoolId = liquidityPoolId;
             Owner = owner;
             Weight = weight;
             CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
+            ModifiedBlock = createdBlock;
         }
         
         public AddressStaking(long id, long liquidityPoolId, string owner, string weight, ulong createdBlock, ulong modifiedBlock) 
@@ -63,9 +58,18 @@ namespace Opdex.Platform.Domain.Models.Addresses
             SetModifiedBlock(block);
         }
         
-        public void SetWeight(StopStakingLog log, ulong block)
+        public void ResetWeight(StopStakingLog log, ulong block)
         {
-            Weight = log.Amount;
+            if (!log.Amount.Equals(Weight))
+            {
+                // Todo: Should this just return, maybe throw?
+                // This check enforces that we only ever reset at the correct times
+                // For every unstake, we reset to 0, the log amount should reflect the 
+                // same amount that _was_ staked by the user.
+                return;
+            }
+            
+            Weight = "0";
             SetModifiedBlock(block);
         }
         
