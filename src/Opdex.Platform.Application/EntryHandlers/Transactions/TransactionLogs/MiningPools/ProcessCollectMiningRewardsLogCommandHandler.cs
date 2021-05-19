@@ -8,14 +8,12 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningPools
 {
-    public class ProcessCollectMiningRewardsLogCommandHandler : IRequestHandler<ProcessCollectMiningRewardsLogCommand, bool>
+    public class ProcessCollectMiningRewardsLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessCollectMiningRewardsLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessCollectMiningRewardsLogCommandHandler> _logger;
 
-        public ProcessCollectMiningRewardsLogCommandHandler(IMediator mediator, ILogger<ProcessCollectMiningRewardsLogCommandHandler> logger)
+        public ProcessCollectMiningRewardsLogCommandHandler(IMediator mediator, ILogger<ProcessCollectMiningRewardsLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,6 +21,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
+                
                 return true;
             }
             catch (Exception ex)

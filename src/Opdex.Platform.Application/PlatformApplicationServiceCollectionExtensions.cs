@@ -119,6 +119,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>, RetrieveAddressMiningByMiningPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAddressBalanceByLiquidityPoolIdAndOwnerQuery, AddressBalance>, RetrieveAddressBalanceByLiquidityPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAddressBalanceByTokenIdAndOwnerQuery, AddressBalance>, RetrieveAddressBalanceByTokenIdAndOwnerQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMiningPoolByAddressQuery, MiningPool>, RetrieveMiningPoolByAddressQueryHandler>();
 
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();
@@ -176,7 +177,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeWalletCreateLiquidityPoolTransactionCommand, string>, MakeWalletCreateLiquidityPoolTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeBlockCommand, bool>, MakeBlockCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTokenCommand, long>, MakeTokenCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeTransactionCommand, bool>, MakeTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeTransactionCommand, long>, MakeTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeLiquidityPoolCommand, long>, MakeLiquidityPoolCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMiningPoolCommand, long>, MakeMiningPoolCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTokenSnapshotCommand, bool>, MakeTokenSnapshotCommandHandler>();

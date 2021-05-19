@@ -31,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools
             var token = (string)tokenResponse.Return;
             
             // Todo: Should return a LiquidityPoolContractSummary response
-            return !token.HasValue() ? null : new LiquidityPool(request.Address, token, 1, 1);
+            return !token.HasValue() ? null : new LiquidityPool(request.Address, token, 1);
         }
     }
 }

@@ -7,18 +7,18 @@ using Opdex.Platform.Application.Abstractions.Commands.Pools;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets
 {
-    public class ProcessCreateLiquidityPoolLogCommandHandler : IRequestHandler<ProcessCreateLiquidityPoolLogCommand, bool>
+    public class ProcessCreateLiquidityPoolLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessCreateLiquidityPoolLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessCreateLiquidityPoolLogCommandHandler> _logger;
 
-        public ProcessCreateLiquidityPoolLogCommandHandler(IMediator mediator, ILogger<ProcessCreateLiquidityPoolLogCommandHandler> logger)
+        public ProcessCreateLiquidityPoolLogCommandHandler(IMediator mediator, ILogger<ProcessCreateLiquidityPoolLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -26,11 +26,28 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract), CancellationToken.None);
-                var tokenId = await _mediator.Send(new MakeTokenCommand(request.Log.Token), CancellationToken.None);
-                var pairId = await _mediator.Send(new MakeLiquidityPoolCommand(request.Log.Pool, tokenId, market.Id), CancellationToken.None);
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
                 
-                return true;
+                var marketQuery = new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: true);
+                var market = await _mediator.Send(marketQuery, CancellationToken.None);
+
+                var tokenQuery = new RetrieveTokenByAddressQuery(request.Log.Token, findOrThrow: false);
+                var token = await _mediator.Send(tokenQuery, CancellationToken.None);
+
+                var tokenCommand = new MakeTokenCommand(request.Log.Token);
+                var tokenId = token?.Id ?? await _mediator.Send(tokenCommand, CancellationToken.None);
+
+                var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false);
+                var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
+
+                var liquidityPoolCommand = new MakeLiquidityPoolCommand(request.Log.Pool, tokenId, market.Id);
+                var liquidityPoolId = liquidityPool?.Id ?? await _mediator.Send(liquidityPoolCommand, CancellationToken.None);
+                
+                return liquidityPoolId > 0;
             }
             catch (Exception ex)
             {

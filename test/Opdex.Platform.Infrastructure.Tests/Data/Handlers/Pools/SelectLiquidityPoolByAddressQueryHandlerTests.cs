@@ -37,7 +37,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
                 Id = 123454,
                 TokenId = 1235,
                 MarketId = 1,
-                Address = "SomeAddress"
+                Address = "SomeAddress",
+                CreatedBlock = 1,
+                ModifiedBlock = 1
             };
                 
             var command = new SelectLiquidityPoolByAddressQuery(address);

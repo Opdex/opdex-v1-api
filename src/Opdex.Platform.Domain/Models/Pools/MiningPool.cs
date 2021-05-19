@@ -1,23 +1,13 @@
 using System;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 
 namespace Opdex.Platform.Domain.Models.Pools
 {
-    public class MiningPool
+    public class MiningPool : BlockAudit
     {
-        public MiningPool(long id, long liquidityPoolId, string address, string rewardPerBlock, string rewardPerLpt, ulong miningPeriodEndBlock, ulong createdBlock, ulong modifiedBlock)
-        {
-            Id = id;
-            LiquidityPoolId = liquidityPoolId;
-            Address = address;
-            RewardPerBlock = rewardPerBlock;
-            RewardPerLpt = rewardPerLpt;
-            MiningPeriodEndBlock = miningPeriodEndBlock;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
-        }
         
-        public MiningPool(long liquidityPoolId, string address, string rewardPerBlock, string rewardPerLpt, ulong miningPeriodEndBlock, ulong createdBlock, ulong modifiedBlock)
+        public MiningPool(long liquidityPoolId, string address, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
             {
@@ -28,49 +18,32 @@ namespace Opdex.Platform.Domain.Models.Pools
             {
                 throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
             }
-            
-            if (!rewardPerBlock.IsNumeric())
-            {
-                throw new ArgumentNullException(nameof(rewardPerBlock));
-            }
-            
-            if (!rewardPerLpt.IsNumeric())
-            {
-                throw new ArgumentNullException(nameof(rewardPerBlock));
-            }
-            
-            if (miningPeriodEndBlock < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(miningPeriodEndBlock));
-            }
-            
-            if (createdBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(createdBlock));
-            }
-            
-            if (modifiedBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(modifiedBlock));
-            }
 
             Address = address;
             LiquidityPoolId = liquidityPoolId;
+            RewardPerBlock = "0";
+            RewardPerLpt = "0";
+            MiningPeriodEndBlock = 0;
+        }
+        
+        
+        public MiningPool(long id, long liquidityPoolId, string address, string rewardPerBlock, string rewardPerLpt, ulong miningPeriodEndBlock, 
+            ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+        {
+            Id = id;
+            LiquidityPoolId = liquidityPoolId;
+            Address = address;
             RewardPerBlock = rewardPerBlock;
-            RewardPerLpt = rewardPerBlock;
+            RewardPerLpt = rewardPerLpt;
             MiningPeriodEndBlock = miningPeriodEndBlock;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
         }
         
         public long Id { get; }
         public long LiquidityPoolId { get; private set; }
         public string Address { get; }
-        public string RewardPerBlock { get; }
+        public string RewardPerBlock { get; private set; }
         public string RewardPerLpt { get; }
-        public ulong MiningPeriodEndBlock { get; }
-        public ulong CreatedBlock { get; }
-        public ulong ModifiedBlock { get; }
+        public ulong MiningPeriodEndBlock { get; private set; }
 
         public void SetLiquidityPoolId(long liquidityPoolId)
         {
@@ -78,6 +51,13 @@ namespace Opdex.Platform.Domain.Models.Pools
             {
                 LiquidityPoolId = liquidityPoolId;
             }
+        }
+
+        public void EnableMiningPool(EnableMiningLog log, ulong block)
+        {
+            RewardPerBlock = log.RewardRate;
+            MiningPeriodEndBlock = log.MiningPeriodEndBlock;
+            SetModifiedBlock(block);
         }
     }
 }

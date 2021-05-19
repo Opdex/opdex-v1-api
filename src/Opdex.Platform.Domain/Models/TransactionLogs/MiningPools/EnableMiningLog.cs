@@ -10,13 +10,27 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             : base(TransactionLogType.EnableMiningLog, address, sortOrder)
         {
             string amount = log?.amount;
+            string rewardRate = log?.rewardRate;
+            ulong miningPeriodEndBlock = log?.miningPeriodEndBlock;
 
             if (!amount.HasValue())
             {
                 throw new ArgumentNullException(nameof(amount));
             }
+            
+            if (!rewardRate.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException(nameof(rewardRate));
+            }
+
+            if (miningPeriodEndBlock < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(miningPeriodEndBlock));
+            }
 
             Amount = amount;
+            RewardRate = rewardRate;
+            MiningPeriodEndBlock = miningPeriodEndBlock;
         }
         
         public EnableMiningLog(long id, long transactionId, string address, int sortOrder, string details)
@@ -24,13 +38,19 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
         {
             var logDetails = DeserializeLogDetails(details);
             Amount = logDetails.Amount;
+            RewardRate = logDetails.RewardRate;
+            MiningPeriodEndBlock = logDetails.MiningPeriodEndBlock;
         }
         
         public string Amount { get; }
+        public string RewardRate { get; }
+        public ulong MiningPeriodEndBlock { get; }
         
         private struct LogDetails
         {
             public string Amount { get; set; }
+            public string RewardRate { get; set; }
+            public ulong MiningPeriodEndBlock { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)
@@ -42,7 +62,9 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
         {
             return JsonConvert.SerializeObject(new LogDetails
             {
-                Amount = Amount
+                Amount = Amount,
+                RewardRate = RewardRate,
+                MiningPeriodEndBlock = MiningPeriodEndBlock
             });
         }
     }

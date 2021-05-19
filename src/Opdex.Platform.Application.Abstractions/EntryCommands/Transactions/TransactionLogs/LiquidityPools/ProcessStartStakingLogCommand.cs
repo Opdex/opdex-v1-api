@@ -5,20 +5,13 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools
 {
-    public class ProcessStartStakingLogCommand : IRequest<bool>
+    public class ProcessStartStakingLogCommand : ProcessTransactionLogCommand
     {
-        public ProcessStartStakingLogCommand(TransactionLog log, ulong blockHeight)
+        public ProcessStartStakingLogCommand(TransactionLog log, string sender, ulong blockHeight) : base(sender, blockHeight)
         {
-            if (blockHeight < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight));
-            }
-            
             Log = log as StartStakingLog ?? throw new ArgumentNullException(nameof(log));
-            BlockHeight = blockHeight;
         }
         
         public StartStakingLog Log { get; }
-        public ulong BlockHeight { get; }
     }
 }

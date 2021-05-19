@@ -8,14 +8,12 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernance;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernance
 {
-    public class ProcessRewardMiningPoolLogCommandHandler : IRequestHandler<ProcessRewardMiningPoolLogCommand, bool>
+    public class ProcessRewardMiningPoolLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessRewardMiningPoolLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessRewardMiningPoolLogCommandHandler> _logger;
 
-        public ProcessRewardMiningPoolLogCommandHandler(IMediator mediator, ILogger<ProcessRewardMiningPoolLogCommandHandler> logger)
+        public ProcessRewardMiningPoolLogCommandHandler(IMediator mediator, ILogger<ProcessRewardMiningPoolLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,8 +21,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                // Update the amount the user was using to mine
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
                 
+                // likely nothing to do here, we receive the stakingPool, miningPool, and amount
                 return true;
             }
             catch (Exception ex)

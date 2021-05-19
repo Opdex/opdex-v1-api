@@ -30,7 +30,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vault
         public async Task Insert_Vault_Success()
         {
             const long expectedId = 10;
-            var allowance = new Domain.Models.ODX.Vault("VaultAddress", 1, "VaultOwner", 2, 3);
+            var allowance = new Domain.Models.ODX.Vault("VaultAddress", 1, "VaultOwner", 2, 4);
             var command = new PersistVaultCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vault
         public async Task Update_Vault_Success()
         {
             const long expectedId = 10;
-            var allowance = new Domain.Models.ODX.Vault(expectedId, "VaultAddress", 1, "VaultOwner", 2, 3);
+            var allowance = new Domain.Models.ODX.Vault(expectedId, "VaultAddress", 1, "VaultOwner", 2, 3, 4);
             var command = new PersistVaultCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -60,7 +60,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vault
         public async Task PersistsVault_Fail()
         {
             const long expectedId = 0;
-            var allowance = new Domain.Models.ODX.Vault("VaultAddress", 1, "VaultOwner", 2, 3);
+            var allowance = new Domain.Models.ODX.Vault("VaultAddress", 1, "VaultOwner", 2, 4);
             var command = new PersistVaultCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

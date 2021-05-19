@@ -3,9 +3,9 @@ using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Domain.Models.Addresses
 {
-    public class AddressBalance
+    public class AddressBalance : BlockAudit
     {
-        public AddressBalance(long tokenId, long liquidityPoolId, string owner, string balance, ulong createdBlock, ulong modifiedBlock)
+        public AddressBalance(long tokenId, long liquidityPoolId, string owner, string balance, ulong createdBlock) : base(createdBlock)
         {
             if (tokenId < 1 && liquidityPoolId < 1)
             {
@@ -26,34 +26,21 @@ namespace Opdex.Platform.Domain.Models.Addresses
             {
                 throw new ArgumentOutOfRangeException(nameof(balance));
             }
-
-            if (createdBlock < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(createdBlock));
-            }
-
-            if (modifiedBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(modifiedBlock));
-            }
             
             TokenId = tokenId;
             LiquidityPoolId = liquidityPoolId;
             Owner = owner;
             Balance = balance;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
         }
         
         public AddressBalance(long id, long tokenId, long liquidityPoolId, string owner, string balance, ulong createdBlock, ulong modifiedBlock)
+            : base(createdBlock, modifiedBlock)
         {
             Id = id;
             TokenId = tokenId;
             LiquidityPoolId = liquidityPoolId;
             Owner = owner;
             Balance = balance;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
         }
         
         public long Id { get; }
@@ -61,7 +48,5 @@ namespace Opdex.Platform.Domain.Models.Addresses
         public long LiquidityPoolId { get; }
         public string Owner { get; }
         public string Balance { get; }
-        public ulong CreatedBlock { get; }
-        public ulong ModifiedBlock { get; }
     }
 }

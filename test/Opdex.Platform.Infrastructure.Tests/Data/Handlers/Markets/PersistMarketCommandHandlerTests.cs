@@ -31,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         public async Task Insert_Market_Success()
         {
             const long expectedId = 10;
-            var market = new Market("MarketAddress", 1, 2, "Owner", true, true, true, 3, 4, 5);
+            var market = new Market("MarketAddress", 1, 2, "Owner", true, true, true, 3, 4);
             var command = new PersistMarketCommand(market);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

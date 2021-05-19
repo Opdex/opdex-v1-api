@@ -11,14 +11,13 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vault
 {
-    public class ProcessRedeemVaultCertificateLogCommandHandler : IRequestHandler<ProcessRedeemVaultCertificateLogCommand, bool>
+    public class ProcessRedeemVaultCertificateLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessRedeemVaultCertificateLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessRedeemVaultCertificateLogCommandHandler> _logger;
 
         public ProcessRedeemVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessRedeemVaultCertificateLogCommandHandler> logger)
+            : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -26,13 +25,22 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                // Mark certificate as redeemed
-                var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner), CancellationToken.None);
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
+                
+                var certificatesQuery = new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner);
+                var certificates = await _mediator.Send(certificatesQuery, CancellationToken.None);
+                
+                // Todo: Maybe create a specific query for this and a unique index on (owner, vestedBlock) 
                 var certificateToUpdate = certificates.Single(c => c.VestedBlock == request.Log.VestedBlock);
                 
-                certificateToUpdate.Redeem(request.Log);
-                
-                return await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate), CancellationToken.None);
+                certificateToUpdate.Redeem(request.Log, request.BlockHeight);
+
+                var certificateCommand = new MakeVaultCertificateCommand(certificateToUpdate);
+                return await _mediator.Send(certificateCommand, CancellationToken.None);
             }
             catch (Exception ex)
             {

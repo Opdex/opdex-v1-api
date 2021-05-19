@@ -8,14 +8,12 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets
 {
-    public class ProcessChangeMarketPermissionLogCommandHandler : IRequestHandler<ProcessChangeMarketPermissionLogCommand, bool>
+    public class ProcessChangeMarketPermissionLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessChangeMarketPermissionLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessChangeMarketPermissionLogCommandHandler> _logger;
 
-        public ProcessChangeMarketPermissionLogCommandHandler(IMediator mediator, ILogger<ProcessChangeMarketPermissionLogCommandHandler> logger)
+        public ProcessChangeMarketPermissionLogCommandHandler(IMediator mediator, ILogger<ProcessChangeMarketPermissionLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,6 +21,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
+                
                 // Update the wallet permissions in the market
                 
                 return true;

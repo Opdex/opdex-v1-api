@@ -12,14 +12,12 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens
 {
-    public class ProcessTransferLogCommandHandler : IRequestHandler<ProcessTransferLogCommand, bool>
+    public class ProcessTransferLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessTransferLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessTransferLogCommandHandler> _logger;
 
-        public ProcessTransferLogCommandHandler(IMediator mediator, ILogger<ProcessTransferLogCommandHandler> logger)
+        public ProcessTransferLogCommandHandler(IMediator mediator, ILogger<ProcessTransferLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -27,23 +25,31 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
+                
                 var isAllowanceTransfer = request.Sender != request.Log.From;
-
                 var tokenAddress = request.Log.Contract;
                 
-                // Check DB, is either a liquidity pool token or standard token
                 long tokenId = 0;
                 long liquidityPoolId = 0;
                 
-                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(tokenAddress), CancellationToken.None);
-                if (liquidityPool == null)
+                var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(tokenAddress, findOrThrow: false);
+                var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
+                
+                if (liquidityPool != null)
                 {
-                    var token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress), CancellationToken.None);
-                    tokenId = token.Id;
+                    liquidityPoolId = liquidityPool.Id;
                 }
                 else
                 {
-                    liquidityPoolId = liquidityPool.Id;
+                    var tokenQuery = new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: true);
+                    var token = await _mediator.Send(tokenQuery, CancellationToken.None);
+                    
+                    tokenId = token.Id;
                 }
                 
                 if (isAllowanceTransfer)

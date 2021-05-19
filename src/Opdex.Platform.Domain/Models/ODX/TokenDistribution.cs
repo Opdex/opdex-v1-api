@@ -3,23 +3,10 @@ using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Domain.Models.ODX
 {
-    public class TokenDistribution
+    public class TokenDistribution : BlockAudit
     {
-        public TokenDistribution(long id, string vaultDistribution, string miningGovernanceDistribution, int periodIndex, ulong distributionBlock, ulong nextDistributionBlock,
-            ulong createdBlock, ulong modifiedBlock)
-        {
-            Id = id;
-            VaultDistribution = vaultDistribution;
-            MiningGovernanceDistribution = miningGovernanceDistribution;
-            PeriodIndex = periodIndex;
-            DistributionBlock = distributionBlock;
-            NextDistributionBlock = nextDistributionBlock;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
-        }
-        
         public TokenDistribution(string vaultDistribution, string miningGovernanceDistribution, int periodIndex, ulong distributionBlock, ulong nextDistributionBlock,
-            ulong createdBlock, ulong modifiedBlock)
+            ulong createdBlock) : base(createdBlock)
         {
             if (!vaultDistribution.IsNumeric())
             {
@@ -40,33 +27,30 @@ namespace Opdex.Platform.Domain.Models.ODX
             {
                 throw new ArgumentOutOfRangeException(nameof(nextDistributionBlock));
             }
-            
-            if (createdBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(createdBlock));
-            }
-            
-            if (modifiedBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(modifiedBlock));
-            }
 
             VaultDistribution = vaultDistribution;
             MiningGovernanceDistribution = miningGovernanceDistribution;
             PeriodIndex = periodIndex;
             DistributionBlock = distributionBlock;
             NextDistributionBlock = nextDistributionBlock;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
         }
 
+        public TokenDistribution(long id, string vaultDistribution, string miningGovernanceDistribution, int periodIndex, ulong distributionBlock, ulong nextDistributionBlock,
+            ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+        {
+            Id = id;
+            VaultDistribution = vaultDistribution;
+            MiningGovernanceDistribution = miningGovernanceDistribution;
+            PeriodIndex = periodIndex;
+            DistributionBlock = distributionBlock;
+            NextDistributionBlock = nextDistributionBlock;
+        }
+        
         public long Id { get; }
         public string VaultDistribution { get; }
         public string MiningGovernanceDistribution { get; }
         public int PeriodIndex { get; }
         public ulong DistributionBlock { get; }
         public ulong NextDistributionBlock { get; }
-        public ulong CreatedBlock { get; }
-        public ulong ModifiedBlock { get; }
     }
 }

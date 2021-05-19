@@ -8,14 +8,12 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernance;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernance
 {
-    public class ProcessNominationLogCommandHandler : IRequestHandler<ProcessNominationLogCommand, bool>
+    public class ProcessNominationLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessNominationLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessNominationLogCommandHandler> _logger;
 
-        public ProcessNominationLogCommandHandler(IMediator mediator, ILogger<ProcessNominationLogCommandHandler> logger)
+        public ProcessNominationLogCommandHandler(IMediator mediator, ILogger<ProcessNominationLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,6 +21,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
+                
                 // Retrieve all nominations and update db
                 
                 return true;

@@ -11,15 +11,13 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vault
 {
-    public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<ProcessCreateVaultCertificateLogCommand, bool>
+    public class ProcessCreateVaultCertificateLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessCreateVaultCertificateLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessCreateVaultCertificateLogCommandHandler> _logger;
-        private const bool FindOrThrow = true;
 
         public ProcessCreateVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessCreateVaultCertificateLogCommandHandler> logger)
+            : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -27,11 +25,19 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var vault = await _mediator.Send(new RetrieveVaultQuery(FindOrThrow), CancellationToken.None);
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
+                
+                var vaultQuery = new RetrieveVaultQuery(findOrThrow: true);
+                var vault = await _mediator.Send(vaultQuery, CancellationToken.None);
 
                 var vaultCertificate = new VaultCertificate(vault.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
-                
-                return await _mediator.Send(new MakeVaultCertificateCommand(vaultCertificate), CancellationToken.None);
+
+                var vaultCommand = new MakeVaultCertificateCommand(vaultCertificate);
+                return await _mediator.Send(vaultCommand, CancellationToken.None);
             }
             catch (Exception ex)
             {

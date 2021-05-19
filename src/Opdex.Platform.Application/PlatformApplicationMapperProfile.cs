@@ -245,7 +245,9 @@ namespace Opdex.Platform.Application
 
             CreateMap<EnableMiningLog, EnableMiningLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()
-                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.RewardRate, opt => opt.MapFrom(src => src.RewardRate))
+                .ForMember(dest => dest.MiningPeriodEndBlock, opt => opt.MapFrom(src => src.MiningPeriodEndBlock));
             
             CreateMap<NominationLog, NominationLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()

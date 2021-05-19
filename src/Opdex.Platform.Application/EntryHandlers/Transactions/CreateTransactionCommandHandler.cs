@@ -2,13 +2,9 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
-using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Pools;
@@ -25,70 +21,82 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
     public class CreateTransactionCommandHandler : IRequestHandler<CreateTransactionCommand, bool>
     {
-        private readonly IMapper _mapper;
         private readonly IMediator _mediator;
         private readonly ILogger _logger;
-        private readonly IModelAssembler<Transaction, TransactionDto> _assembler;
         
-        public CreateTransactionCommandHandler(IMapper mapper, IMediator mediator,
-            ILogger<CreateTransactionCommandHandler> logger, IModelAssembler<Transaction, TransactionDto> assembler)
+        public CreateTransactionCommandHandler(IMediator mediator, ILogger<CreateTransactionCommandHandler> logger)
         {
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
         }
         
         public async Task<bool> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
         {
-            var transactionDto = await TryGetExistingTransaction(request.TxHash, CancellationToken.None);
+            var transactionQuery = new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false);
+            var transaction = await _mediator.Send(transactionQuery, CancellationToken.None);
 
-            if (transactionDto != null) return true;
+            // Currently stop here, partially captured transactions cannot be synced again...for now.
+            if (transaction != null)
+            {
+                return true;
+            }
 
-            var transaction = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
+            var transactionReceiptQuery = new RetrieveCirrusTransactionByHashQuery(request.TxHash);
+            transaction = await _mediator.Send(transactionReceiptQuery, CancellationToken.None);
 
-            if (transaction == null) return false;
+            if (transaction == null)
+            {
+                return false;
+            }
             
-            var result = await _mediator.Send(new MakeTransactionCommand(transaction), CancellationToken.None);
+            // Todo: Only persist if IsOpdexTransaction
+            
+            var transactionId = await _mediator.Send(new MakeTransactionCommand(transaction), CancellationToken.None);
+            if (transactionId == 0)
+            {
+                return false;
+            }
+            
+            transaction.SetId(transactionId);
 
-            if (!result) return false;
+            var height = transaction.BlockHeight;
+            var sender = transaction.From;
 
-            // Todo: These "Process" handlers should persist log as not processed, process log, update log marking it as processed
             foreach (var log in transaction.Logs.OrderBy(l => l.SortOrder))
             {
-                bool success = false;
+                var success = false;
                 
                 try
                 {
                     success = log.LogType switch
                     {
-                        TransactionLogType.CreateMarketLog => await _mediator.Send(new ProcessCreateMarketLogCommand(log, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.CreateLiquidityPoolLog => await _mediator.Send(new ProcessCreateLiquidityPoolLogCommand(log), CancellationToken.None),
-                        TransactionLogType.ChangeMarketOwnerLog => await _mediator.Send(new ProcessChangeMarketOwnerLogCommand(log), CancellationToken.None),
-                        TransactionLogType.ChangeMarketPermissionLog =>  await _mediator.Send(new ProcessChangeMarketPermissionLogCommand(log), CancellationToken.None),
-                        TransactionLogType.MintLog => await _mediator.Send(new ProcessMintLogCommand(log), CancellationToken.None),
-                        TransactionLogType.BurnLog => await _mediator.Send(new ProcessBurnLogCommand(log), CancellationToken.None),
-                        TransactionLogType.SwapLog => await _mediator.Send(new ProcessSwapLogCommand(log), CancellationToken.None),
-                        TransactionLogType.ReservesLog => await _mediator.Send(new ProcessReservesLogCommand(log), CancellationToken.None),
-                        TransactionLogType.ApprovalLog => await _mediator.Send(new ProcessApprovalLogCommand(log), CancellationToken.None),
-                        TransactionLogType.TransferLog => await _mediator.Send(new ProcessTransferLogCommand(log, transaction.From, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.ChangeMarketLog => await _mediator.Send(new ProcessChangeMarketLogCommand(log), CancellationToken.None),
-                        TransactionLogType.StartStakingLog => await _mediator.Send(new ProcessStartStakingLogCommand(log, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.CollectStakingRewardsLog => await _mediator.Send(new ProcessCollectStakingRewardsLogCommand(log), CancellationToken.None),
-                        TransactionLogType.StopStakingLog => await _mediator.Send(new ProcessStopStakingLogCommand(log, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.CreateMiningPoolLog => await _mediator.Send(new ProcessCreateMiningPoolLogCommand(log, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.RewardMiningPoolLog => await _mediator.Send(new ProcessRewardMiningPoolLogCommand(log), CancellationToken.None),
-                        TransactionLogType.NominationLog => await _mediator.Send(new ProcessNominationLogCommand(log), CancellationToken.None),
-                        TransactionLogType.StartMiningLog => await _mediator.Send(new ProcessStartMiningLogCommand(log, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.CollectMiningRewardsLog => await _mediator.Send(new ProcessCollectMiningRewardsLogCommand(log), CancellationToken.None),
-                        TransactionLogType.StopMiningLog => await _mediator.Send(new ProcessStopMiningLogCommand(log, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.EnableMiningLog => await _mediator.Send(new ProcessEnableMiningLogCommand(log), CancellationToken.None),
-                        TransactionLogType.DistributionLog => await _mediator.Send(new ProcessDistributionLogCommand(log, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.CreateVaultCertificateLog => await _mediator.Send(new ProcessCreateVaultCertificateLogCommand(log, transaction.BlockHeight), CancellationToken.None),
-                        TransactionLogType.RevokeVaultCertificateLog => await _mediator.Send(new ProcessRevokeVaultCertificateLogCommand(log), CancellationToken.None),
-                        TransactionLogType.RedeemVaultCertificateLog => await _mediator.Send(new ProcessRedeemVaultCertificateLogCommand(log), CancellationToken.None),
-                        TransactionLogType.ChangeVaultOwnerLog => await _mediator.Send(new ProcessChangeVaultOwnerLogCommand(log), CancellationToken.None),
-                        TransactionLogType.ChangeDeployerOwnerLog => await _mediator.Send(new ProcessChangeDeployerOwnerLogCommand(log), CancellationToken.None),
+                        TransactionLogType.CreateMarketLog => await _mediator.Send(new ProcessCreateMarketLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.CreateLiquidityPoolLog => await _mediator.Send(new ProcessCreateLiquidityPoolLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ChangeMarketOwnerLog => await _mediator.Send(new ProcessChangeMarketOwnerLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ChangeMarketPermissionLog =>  await _mediator.Send(new ProcessChangeMarketPermissionLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.MintLog => await _mediator.Send(new ProcessMintLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.BurnLog => await _mediator.Send(new ProcessBurnLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.SwapLog => await _mediator.Send(new ProcessSwapLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ReservesLog => await _mediator.Send(new ProcessReservesLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ApprovalLog => await _mediator.Send(new ProcessApprovalLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.TransferLog => await _mediator.Send(new ProcessTransferLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ChangeMarketLog => await _mediator.Send(new ProcessChangeMarketLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.StartStakingLog => await _mediator.Send(new ProcessStartStakingLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.CollectStakingRewardsLog => await _mediator.Send(new ProcessCollectStakingRewardsLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.StopStakingLog => await _mediator.Send(new ProcessStopStakingLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.CreateMiningPoolLog => await _mediator.Send(new ProcessCreateMiningPoolLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.RewardMiningPoolLog => await _mediator.Send(new ProcessRewardMiningPoolLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.NominationLog => await _mediator.Send(new ProcessNominationLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.StartMiningLog => await _mediator.Send(new ProcessStartMiningLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.CollectMiningRewardsLog => await _mediator.Send(new ProcessCollectMiningRewardsLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.StopMiningLog => await _mediator.Send(new ProcessStopMiningLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.EnableMiningLog => await _mediator.Send(new ProcessEnableMiningLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.DistributionLog => await _mediator.Send(new ProcessDistributionLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.CreateVaultCertificateLog => await _mediator.Send(new ProcessCreateVaultCertificateLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.RevokeVaultCertificateLog => await _mediator.Send(new ProcessRevokeVaultCertificateLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.RedeemVaultCertificateLog => await _mediator.Send(new ProcessRedeemVaultCertificateLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ChangeVaultOwnerLog => await _mediator.Send(new ProcessChangeVaultOwnerLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ChangeDeployerOwnerLog => await _mediator.Send(new ProcessChangeDeployerOwnerLogCommand(log, sender, height), CancellationToken.None),
                         _ => throw new ArgumentOutOfRangeException(nameof(TransactionLogType), "Unknown transaction log type.")
                     };
                 }
@@ -99,7 +107,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                 if (!success)
                 {
-                    // Handle the transaction, maybe delete all related logs and flag it as errored
+                    _logger.LogError($"Failed to persist transaction log type {log.LogType}.");
                 }
             }
             
@@ -115,23 +123,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             // Todo: Process token snapshots this transaction has Transfer logs for
             
             return true;
-        }
-
-        private async Task<TransactionDto> TryGetExistingTransaction(string txHash, CancellationToken cancellationToken)
-        {
-            TransactionDto transactionDto = null;
-            
-            try
-            {
-                var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(txHash), cancellationToken);
-                transactionDto = await _assembler.Assemble(transaction);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex, $"{nameof(Transaction)} with hash {txHash} is not found. Fetching from Cirrus to index.");
-            }
-
-            return transactionDto;
         }
     }
 }

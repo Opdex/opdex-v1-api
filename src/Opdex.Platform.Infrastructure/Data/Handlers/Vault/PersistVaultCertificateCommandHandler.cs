@@ -19,6 +19,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
                 {nameof(VaultCertificateEntity.Amount)},
                 {nameof(VaultCertificateEntity.VestedBlock)},
                 {nameof(VaultCertificateEntity.Redeemed)},
+                {nameof(VaultCertificateEntity.Revoked)},
                 {nameof(VaultCertificateEntity.CreatedBlock)},
                 {nameof(VaultCertificateEntity.ModifiedBlock)}
               ) VALUES (
@@ -27,6 +28,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
                 @{nameof(VaultCertificateEntity.Amount)},
                 @{nameof(VaultCertificateEntity.VestedBlock)},
                 @{nameof(VaultCertificateEntity.Redeemed)},
+                @{nameof(VaultCertificateEntity.Revoked)},
                 @{nameof(VaultCertificateEntity.CreatedBlock)},
                 @{nameof(VaultCertificateEntity.ModifiedBlock)}
               );";
@@ -36,6 +38,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
                 SET 
                     {nameof(VaultCertificateEntity.Amount)} = @{nameof(VaultCertificateEntity.Amount)},
                     {nameof(VaultCertificateEntity.Redeemed)} = @{nameof(VaultCertificateEntity.Redeemed)},
+                    {nameof(VaultCertificateEntity.Revoked)} = @{nameof(VaultCertificateEntity.Revoked)},
                     {nameof(VaultCertificateEntity.ModifiedBlock)} = @{nameof(VaultCertificateEntity.ModifiedBlock)}
                 WHERE {nameof(VaultCertificateEntity.Id)} = @{nameof(VaultCertificateEntity.Id)};";
 

@@ -12,14 +12,12 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools
 {
-    public class ProcessStartStakingLogCommandHandler : IRequestHandler<ProcessStartStakingLogCommand, bool>
+    public class ProcessStartStakingLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessStartStakingLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessStartStakingLogCommandHandler> _logger;
 
-        public ProcessStartStakingLogCommandHandler(IMediator mediator, ILogger<ProcessStartStakingLogCommandHandler> logger)
+        public ProcessStartStakingLogCommandHandler(IMediator mediator, ILogger<ProcessStartStakingLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -27,30 +25,33 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var poolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
                 
-                var pool = await _mediator.Send(poolQuery, CancellationToken.None);
+                var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
+                var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
                 
-                var addressBalanceQuery = new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(pool.Id, request.Log.Staker, findOrThrow: false);
-                
+                var addressBalanceQuery = new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liquidityPool.Id, request.Log.Staker, findOrThrow: false);
                 var stakingBalance = await _mediator.Send(addressBalanceQuery, CancellationToken.None) 
-                                     ?? new AddressStaking(pool.Id, request.Log.Staker, request.Log.Amount, request.BlockHeight);
+                                     ?? new AddressStaking(liquidityPool.Id, request.Log.Staker, request.Log.Amount, request.BlockHeight);
 
-                // potentially stale log, ignore
                 if (request.BlockHeight <= stakingBalance.ModifiedBlock)
                 {
                     return true;
                 }
                 
-                // Update if if it's not a new record, else it's already been created and is current
                 if (stakingBalance.Id != 0)
                 {
                     stakingBalance.SetWeight(request.Log, request.BlockHeight);
                 }
-                
-                var stakingBalanceId = await _mediator.Send(new MakeAddressStakingCommand(stakingBalance), CancellationToken.None);
+
+                var addressStakingCommand = new MakeAddressStakingCommand(stakingBalance);
+                var addressStakingId = await _mediator.Send(addressStakingCommand, CancellationToken.None);
                     
-                return stakingBalanceId > 0;
+                return addressStakingId > 0;
             }
             catch (Exception ex)
             {

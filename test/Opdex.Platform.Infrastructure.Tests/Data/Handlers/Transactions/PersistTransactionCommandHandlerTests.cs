@@ -40,7 +40,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             
             var result = await _handler.Handle(command, CancellationToken.None);
         
-            result.Id.Should().Be(id);
+            result.Should().Be(id);
         }
         
         [Fact]
@@ -55,7 +55,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         
             var result = await _handler.Handle(command, CancellationToken.None);
         
-            result.Should().Be(null);
+            result.Should().Be(0);
         }
     }
 }

@@ -5,20 +5,13 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernance;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningGovernance
 {
-    public class ProcessCreateMiningPoolLogCommand : IRequest<bool>
+    public class ProcessCreateMiningPoolLogCommand : ProcessTransactionLogCommand
     {
-        public ProcessCreateMiningPoolLogCommand(TransactionLog log, ulong blockHeight)
+        public ProcessCreateMiningPoolLogCommand(TransactionLog log, string sender, ulong blockHeight) : base(sender, blockHeight)
         {
-            if (blockHeight < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight));
-            }
-            
             Log = log as CreateMiningPoolLog ?? throw new ArgumentNullException(nameof(log));
-            BlockHeight = blockHeight;
         }
         
         public CreateMiningPoolLog Log { get; }
-        public ulong BlockHeight { get; }
     }
 }

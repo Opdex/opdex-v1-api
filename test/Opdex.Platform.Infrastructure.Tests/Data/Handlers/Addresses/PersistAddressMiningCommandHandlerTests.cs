@@ -31,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task Insert_AddressMining_Success()
         {
             const long expectedId = 10;
-            var mining = new AddressMining(1, "Owner", "100000000", 3, 4);
+            var mining = new AddressMining(1, "Owner", "100000000", 3);
             var command = new PersistAddressMiningCommand(mining);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

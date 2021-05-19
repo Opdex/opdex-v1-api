@@ -36,7 +36,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
                 MiningGovernanceDistribution = "10000000",
                 DistributionBlock = 87654,
                 NextDistributionBlock = 19876543,
-                PeriodIndex = 1
+                PeriodIndex = 1,
+                CreatedBlock = 1,
+                ModifiedBlock = 1
             };
                 
             var command = new SelectLatestTokenDistributionQuery();

@@ -4,9 +4,9 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
 
 namespace Opdex.Platform.Domain.Models.ODX
 {
-    public class VaultCertificate
+    public class VaultCertificate : BlockAudit
     {
-        public VaultCertificate(long vaultId, string owner, string amount, ulong vestedBlock, ulong createdBlock)
+        public VaultCertificate(long vaultId, string owner, string amount, ulong vestedBlock, ulong createdBlock) : base(createdBlock)
         {
             if (vaultId < 1)
             {
@@ -28,21 +28,16 @@ namespace Opdex.Platform.Domain.Models.ODX
                 throw new ArgumentNullException(nameof(vestedBlock));
             }
             
-            if (createdBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(createdBlock));
-            }
-            
             VaultId = vaultId;
             Owner = owner;
             Amount = amount;
             VestedBlock = vestedBlock;
             Redeemed = false;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = createdBlock;
+            Revoked = false;
         }
         
-        public VaultCertificate(long id, long vaultId, string owner, string amount, ulong vestedBlock, bool redeemed, ulong createdBlock, ulong modifiedBlock)
+        public VaultCertificate(long id, long vaultId, string owner, string amount, ulong vestedBlock, bool redeemed, bool revoked, ulong createdBlock, ulong modifiedBlock)
+            : base(createdBlock, modifiedBlock)
         {
             Id = id;
             VaultId = vaultId;
@@ -50,42 +45,28 @@ namespace Opdex.Platform.Domain.Models.ODX
             Amount = amount;
             VestedBlock = vestedBlock;
             Redeemed = redeemed;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
+            Revoked = revoked;
         }
 
         public long Id { get; }
         public long VaultId { get; }
         public string Owner { get; }
         public string Amount { get; private set; }
+        public bool Revoked { get; private set; }
         public ulong VestedBlock { get; }
         public bool Redeemed { get; private set; }
-        public ulong CreatedBlock { get; }
-        public ulong ModifiedBlock { get; }
 
-        public void UpdateAmount(RevokeVaultCertificateLog log)
+        public void Revoke(RevokeVaultCertificateLog log, ulong block)
         {
-            if (log.Owner != Owner)
-            {
-                throw new ArgumentException($"Log owner {log.Owner} is not the certificate owner {Owner}.");
-            }
-            
             Amount = log.NewAmount;
+            Revoked = true;
+            SetModifiedBlock(block);
         }
         
-        public void Redeem(RedeemVaultCertificateLog log)
+        public void Redeem(RedeemVaultCertificateLog log, ulong block)
         {
-            if (log.Owner != Owner)
-            {
-                throw new ArgumentException($"Log owner {log.Owner} is not the certificate owner {Owner}.");
-            }
-            
-            if (log.Amount != Amount)
-            {
-                throw new ArgumentException($"Log amount {log.Amount} must match the certificate amount {Amount}.");
-            }
-            
             Redeemed = true;
+            SetModifiedBlock(block);
         }
     }
 }

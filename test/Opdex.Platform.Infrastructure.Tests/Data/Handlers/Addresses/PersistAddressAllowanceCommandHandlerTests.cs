@@ -31,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task Insert_AddressAllowance_Success()
         {
             const long expectedId = 10;
-            var allowance = new AddressAllowance(1, 2, "Owner", "Spender", "100000000", 3, 4);
+            var allowance = new AddressAllowance(1, 2, "Owner", "Spender", "100000000", 3);
             var command = new PersistAddressAllowanceCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

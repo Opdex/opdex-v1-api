@@ -18,7 +18,7 @@ namespace Opdex.Platform.Domain.Tests.Models
             const ulong createdBlock = 3;
             const ulong modifiedBlock = 4;
 
-            var token = new Token(address, name, symbol, decimals, sats, totalSupply, createdBlock, modifiedBlock);
+            var token = new Token(address, name, symbol, decimals, sats, totalSupply, createdBlock);
 
             token.Id.Should().Be(0);
             token.Address.Should().Be(address);

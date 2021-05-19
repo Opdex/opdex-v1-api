@@ -5,9 +5,9 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools
 {
-    public class ProcessChangeMarketLogCommand : IRequest<bool>
+    public class ProcessChangeMarketLogCommand : ProcessTransactionLogCommand
     {
-        public ProcessChangeMarketLogCommand(TransactionLog log)
+        public ProcessChangeMarketLogCommand(TransactionLog log, string sender, ulong blockHeight) : base(sender, blockHeight)
         {
             Log = log as ChangeMarketLog ?? throw new ArgumentNullException(nameof(log));
         }

@@ -8,14 +8,12 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools
 {
-    public class ProcessMintLogCommandHandler : IRequestHandler<ProcessMintLogCommand, bool>
+    public class ProcessMintLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessMintLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessMintLogCommandHandler> _logger;
 
-        public ProcessMintLogCommandHandler(IMediator mediator, ILogger<ProcessMintLogCommandHandler> logger)
+        public ProcessMintLogCommandHandler(IMediator mediator, ILogger<ProcessMintLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,6 +21,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
+                
                 // Update user liquidity pool token balances
                 
                 // Todo: Create IsLpt flag on the token table

@@ -8,14 +8,12 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools
 {
-    public class ProcessSwapLogCommandHandler : IRequestHandler<ProcessSwapLogCommand, bool>
+    public class ProcessSwapLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessSwapLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessSwapLogCommandHandler> _logger;
 
-        public ProcessSwapLogCommandHandler(IMediator mediator, ILogger<ProcessSwapLogCommandHandler> logger)
+        public ProcessSwapLogCommandHandler(IMediator mediator, ILogger<ProcessSwapLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,6 +21,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
+                
                 return true;
             }
             catch (Exception ex)

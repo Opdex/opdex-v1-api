@@ -3,9 +3,9 @@ using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Domain.Models.Pools
 {
-    public class LiquidityPool
+    public class LiquidityPool : BlockAudit
     {
-        public LiquidityPool(string address, long tokenId, long marketId, ulong createdBlock, ulong modifiedBlock)
+        public LiquidityPool(string address, long tokenId, long marketId, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
             {
@@ -22,24 +22,12 @@ namespace Opdex.Platform.Domain.Models.Pools
                 throw new ArgumentOutOfRangeException(nameof(marketId), $"{nameof(marketId)} must be greater than 0.");
             }
             
-            if (createdBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(createdBlock));
-            }
-            
-            if (modifiedBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(modifiedBlock));
-            }
-            
             Address = address;
             TokenId = tokenId;
             MarketId = marketId;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
         }
         
-        public LiquidityPool(string address, string tokenAddress, ulong createdBlock, ulong modifiedBlock)
+        public LiquidityPool(string address, string tokenAddress, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
             {
@@ -51,30 +39,17 @@ namespace Opdex.Platform.Domain.Models.Pools
                 throw new ArgumentNullException(nameof(tokenAddress), $"{nameof(tokenAddress)} must be provided");
             }
             
-            if (createdBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(createdBlock));
-            }
-            
-            if (modifiedBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(modifiedBlock));
-            }
-            
             Address = address;
             TokenAddress = tokenAddress;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
         }
 
         public LiquidityPool(long id, string address, long tokenId, long marketId, ulong createdBlock, ulong modifiedBlock)
+            : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
             TokenId = tokenId;
             MarketId = marketId;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
         }
         
         public long Id { get; }
@@ -82,8 +57,6 @@ namespace Opdex.Platform.Domain.Models.Pools
         public long TokenId { get; private set; }
         public long MarketId { get; private set; }
         public string TokenAddress { get; }
-        public ulong CreatedBlock { get; }
-        public ulong ModifiedBlock { get; }
 
         public void SetTokenId(long tokenId)
         {

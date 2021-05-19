@@ -12,14 +12,12 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningPools
 {
-    public class ProcessStartMiningLogCommandHandler : IRequestHandler<ProcessStartMiningLogCommand, bool>
+    public class ProcessStartMiningLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessStartMiningLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessStartMiningLogCommandHandler> _logger;
 
-        public ProcessStartMiningLogCommandHandler(IMediator mediator, ILogger<ProcessStartMiningLogCommandHandler> logger)
+        public ProcessStartMiningLogCommandHandler(IMediator mediator, ILogger<ProcessStartMiningLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -27,13 +25,23 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract), CancellationToken.None);
-                var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id), CancellationToken.None);
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
                 
-                var miningBalance = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, request.Log.Miner), CancellationToken.None) 
-                                    ?? new AddressMining(miningPool.Id, request.Log.Miner, request.Log.Amount, request.BlockHeight, request.BlockHeight);
+                var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
+                var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
 
-                if (request.BlockHeight <= miningBalance.ModifiedBlock)
+                var miningPoolQuery = new RetrieveMiningPoolByLiquidityPoolIdQuery(liquidityPool.Id);
+                var miningPool = await _mediator.Send(miningPoolQuery, CancellationToken.None);
+
+                var addressMiningQuery = new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, request.Log.Miner, findOrThrow: false);
+                var miningBalance = await _mediator.Send(addressMiningQuery, CancellationToken.None) 
+                                    ?? new AddressMining(miningPool.Id, request.Log.Miner, request.Log.Amount, request.BlockHeight);
+
+                if (request.BlockHeight < miningBalance.ModifiedBlock)
                 {
                     return true;
                 }
@@ -42,8 +50,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     miningBalance.SetBalance(request.Log, request.BlockHeight);
                 }
-                
-                var miningBalanceId = await _mediator.Send(new MakeAddressMiningCommand(miningBalance), CancellationToken.None);
+
+                var miningBalanceCommand = new MakeAddressMiningCommand(miningBalance);
+                var miningBalanceId = await _mediator.Send(miningBalanceCommand, CancellationToken.None);
 
                 return miningBalanceId > 0;
             }

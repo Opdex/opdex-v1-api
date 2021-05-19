@@ -31,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Deployers
         public async Task Insert_Deployer_Success()
         {
             const long expectedId = 10;
-            var deployer = new Deployer("DeployerAddress", "Owner", 1, 2);
+            var deployer = new Deployer("DeployerAddress", "Owner", 1);
             var command = new PersistDeployerCommand(deployer);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

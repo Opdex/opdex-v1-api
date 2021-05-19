@@ -8,14 +8,12 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools
 {
-    public class ProcessBurnLogCommandHandler : IRequestHandler<ProcessBurnLogCommand, bool>
+    public class ProcessBurnLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessBurnLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessBurnLogCommandHandler> _logger;
 
-        public ProcessBurnLogCommandHandler(IMediator mediator, ILogger<ProcessBurnLogCommandHandler> logger)
+        public ProcessBurnLogCommandHandler(IMediator mediator, ILogger<ProcessBurnLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,6 +21,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
+                
                 // Update the owner LP token balances
                 
                 return true;

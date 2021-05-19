@@ -17,12 +17,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
                 {nameof(VaultEntity.Address)},
                 {nameof(VaultEntity.TokenId)},
                 {nameof(VaultEntity.Owner)},
+                {nameof(VaultEntity.Genesis)},
                 {nameof(VaultEntity.CreatedBlock)},
                 {nameof(VaultEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(VaultEntity.Address)},
                 @{nameof(VaultEntity.TokenId)},
                 @{nameof(VaultEntity.Owner)},
+                @{nameof(VaultEntity.Genesis)},
                 @{nameof(VaultEntity.CreatedBlock)},
                 @{nameof(VaultEntity.ModifiedBlock)}
               );

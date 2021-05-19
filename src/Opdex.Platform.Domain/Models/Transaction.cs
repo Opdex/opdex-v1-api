@@ -76,7 +76,7 @@ namespace Opdex.Platform.Domain.Models
             Logs = new List<TransactionLog>();
         }
         
-        public long Id { get; }
+        public long Id { get; private set; }
         public string Hash { get; }
         public ulong BlockHeight { get; }
         public int GasUsed { get; }
@@ -119,19 +119,21 @@ namespace Opdex.Platform.Domain.Models
             }
         }
         
-        public void AttachLog(TransactionLog transactionLog)
+        public void SetId(long id)
         {
-            if (Id == 0 || transactionLog.Id == 0)
+            if (Id != 0)
             {
-                throw new Exception($"Unable to add transaction log on incomplete {nameof(Transaction)}.");
+                throw new Exception("TransactionId already set.");
             }
 
-            // Todo: Insert into sorted order
-            Logs.Add(transactionLog);
-        }
+            Id = id;
 
-        // Todo: Use TransactionLogType
-        // In general this is ugly
+            foreach (var log in Logs)
+            {
+                log.SetTransactionId(Id);
+            }
+        }
+        
         public void DeserializeLog(string address, string topic, int sortOrder, dynamic log)
         {
             try
@@ -174,8 +176,6 @@ namespace Opdex.Platform.Domain.Models
             catch
             {
                 // ignored
-                // Maybe we want to keep this around incase other logs in this transaction
-                // are Opdex logs
             }
         }
     }

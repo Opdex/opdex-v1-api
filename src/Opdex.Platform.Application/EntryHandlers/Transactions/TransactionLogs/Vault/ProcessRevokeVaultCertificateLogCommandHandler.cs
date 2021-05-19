@@ -11,14 +11,13 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vault
 {
-    public class ProcessRevokeVaultCertificateLogCommandHandler : IRequestHandler<ProcessRevokeVaultCertificateLogCommand, bool>
+    public class ProcessRevokeVaultCertificateLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessRevokeVaultCertificateLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessRevokeVaultCertificateLogCommandHandler> _logger;
 
-        public ProcessRevokeVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessRevokeVaultCertificateLogCommandHandler> logger)
+        public ProcessRevokeVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessRevokeVaultCertificateLogCommandHandler> logger) 
+            : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -26,13 +25,23 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                // Update the owners certificate using VestedBlock to determine which certificate to update
-                var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner), CancellationToken.None);
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
+                
+                var certificatesQuery = new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner);
+                var certificates = await _mediator.Send(certificatesQuery, CancellationToken.None);
+                
+                // Todo: Maybe create a specific query for this and a unique index on (owner, vestedBlock) 
                 var certificateToUpdate = certificates.Single(c => c.VestedBlock == request.Log.VestedBlock);
                 
-                certificateToUpdate.UpdateAmount(request.Log);
+                certificateToUpdate.Revoke(request.Log, request.BlockHeight);
+
+                var certificateCommand = new MakeVaultCertificateCommand(certificateToUpdate);
                 
-                return await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate), CancellationToken.None);
+                return await _mediator.Send(certificateCommand, CancellationToken.None);
             }
             catch (Exception ex)
             {

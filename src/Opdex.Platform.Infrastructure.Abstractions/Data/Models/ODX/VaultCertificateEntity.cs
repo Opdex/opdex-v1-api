@@ -8,5 +8,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX
         public string Amount { get; set; }
         public ulong VestedBlock { get; set; }
         public bool Redeemed { get; set; }
+        public bool Revoked { get; set; }
     }
 }

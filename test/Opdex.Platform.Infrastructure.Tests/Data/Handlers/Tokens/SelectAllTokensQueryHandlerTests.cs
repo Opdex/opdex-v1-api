@@ -41,7 +41,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
                 Symbol = "SomeSymbol",
                 Decimals = 8,
                 Sats = 1000000000,
-                TotalSupply = "987656789098765"
+                TotalSupply = "987656789098765",
+                CreatedBlock = 1,
+                ModifiedBlock = 1
             };
 
             var responseList = new List<TokenEntity> {expectedEntity}.AsEnumerable();

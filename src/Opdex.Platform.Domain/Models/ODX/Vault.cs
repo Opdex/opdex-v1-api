@@ -5,9 +5,9 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
 
 namespace Opdex.Platform.Domain.Models.ODX
 {
-    public class Vault
+    public class Vault : BlockAudit
     {
-        public Vault(string address, long tokenId, string owner, ulong createdBlock, ulong modifiedBlock)
+        public Vault(string address, long tokenId, string owner, ulong genesis, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
             {
@@ -23,44 +23,38 @@ namespace Opdex.Platform.Domain.Models.ODX
             {
                 Owner = owner;
             }
-            
-            if (createdBlock < 1)
+
+            if (genesis < 1)
             {
-                throw new ArgumentNullException(nameof(createdBlock));
-            }
-            
-            if (modifiedBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(modifiedBlock));
+                throw new ArgumentNullException(nameof(genesis));
             }
             
             Address = address;
             TokenId = tokenId;
             Owner = owner;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
+            Genesis = genesis;
         }
         
-        public Vault(long id, string address, long tokenId, string owner, ulong createdBlock, ulong modifiedBlock)
+        public Vault(long id, string address, long tokenId, string owner, ulong genesis, ulong createdBlock, ulong modifiedBlock)
+            : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
             TokenId = tokenId;
             Owner = owner;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
+            Genesis = genesis;
         }
         
         public long Id { get; }
         public string Address { get; }
         public long TokenId { get; }
         public string Owner { get; private set; }
-        public ulong CreatedBlock { get; }
-        public ulong ModifiedBlock { get; }
+        public ulong Genesis { get; }
 
-        public void SetOwner(ChangeVaultOwnerLog log)
+        public void SetOwner(ChangeVaultOwnerLog log, ulong block)
         {
             Owner = log.To;
+            SetModifiedBlock(block);
         }
     }
 }

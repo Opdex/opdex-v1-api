@@ -60,12 +60,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             {
                 var odx = await _mediator.Send(new RetrieveTokenByAddressQuery(log.StakingToken), CancellationToken.None);
 
-                var deployer = new Deployer(log.Contract, log.Owner, transaction.BlockHeight, transaction.BlockHeight);
+                var deployer = new Deployer(log.Contract, log.Owner, transaction.BlockHeight);
                 
                 var deployerId = await _mediator.Send(new MakeDeployerCommand(deployer), CancellationToken.None);
 
                 var market = new Market(log.Market, deployerId, odx.Id, transaction.From, log.AuthPoolCreators, log.AuthProviders, log.AuthTraders, 
-                    log.Fee, transaction.BlockHeight, transaction.BlockHeight);
+                    log.Fee, transaction.BlockHeight);
                 
                 var marketId = await _mediator.Send(new MakeMarketCommand(market), CancellationToken.None);
                 

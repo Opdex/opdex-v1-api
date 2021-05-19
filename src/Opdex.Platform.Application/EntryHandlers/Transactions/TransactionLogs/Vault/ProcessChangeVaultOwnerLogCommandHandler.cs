@@ -10,15 +10,13 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vault
 {
-    public class ProcessChangeVaultOwnerLogCommandHandler : IRequestHandler<ProcessChangeVaultOwnerLogCommand, bool>
+    public class ProcessChangeVaultOwnerLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessChangeVaultOwnerLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessChangeVaultOwnerLogCommandHandler> _logger;
-        private const bool FindOrThrow = true;
         
         public ProcessChangeVaultOwnerLogCommandHandler(IMediator mediator, ILogger<ProcessChangeVaultOwnerLogCommandHandler> logger)
+            : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -26,11 +24,19 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var vault = await _mediator.Send(new RetrieveVaultQuery(FindOrThrow), CancellationToken.None);
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
                 
-                vault.SetOwner(request.Log);
+                var vaultQuery = new RetrieveVaultQuery(findOrThrow: true);
+                var vault = await _mediator.Send(vaultQuery, CancellationToken.None);
                 
-                var vaultId = await _mediator.Send(new MakeVaultCommand(vault), CancellationToken.None);
+                vault.SetOwner(request.Log, request.BlockHeight);
+
+                var vaultCommand = new MakeVaultCommand(vault);
+                var vaultId = await _mediator.Send(vaultCommand, CancellationToken.None);
 
                 return vaultId > 1;
             }

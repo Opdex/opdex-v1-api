@@ -3,20 +3,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
+using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
-using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers
 {
-    public class ProcessChangeDeployerOwnerLogCommandHandler : IRequestHandler<ProcessChangeDeployerOwnerLogCommand, bool>
+    public class ProcessChangeDeployerOwnerLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessChangeDeployerOwnerLogCommand, bool>
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<ProcessChangeDeployerOwnerLogCommandHandler> _logger;
 
-        public ProcessChangeDeployerOwnerLogCommandHandler(IMediator mediator, ILogger<ProcessChangeDeployerOwnerLogCommandHandler> logger)
+        public ProcessChangeDeployerOwnerLogCommandHandler(IMediator mediator, ILogger<ProcessChangeDeployerOwnerLogCommandHandler> logger) : base(mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -24,9 +23,21 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                // Update the owner address of the market
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted)
+                {
+                    return false;
+                }
                 
-                return true;
+                var deployerQuery = new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true);
+                var marketDeployer = await _mediator.Send(deployerQuery, CancellationToken.None);
+                
+                marketDeployer.SetOwner(request.Log, request.BlockHeight);
+
+                var deployerCommand = new MakeDeployerCommand(marketDeployer);
+                var deployed = await _mediator.Send(deployerCommand, CancellationToken.None);
+                
+                return deployed > 1;
             }
             catch (Exception ex)
             {

@@ -97,11 +97,11 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<VaultEntity, Vault>()
-                .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.Owner, src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.Owner, src.Genesis, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<VaultCertificateEntity, VaultCertificate>()
-                .ConstructUsing(src => new VaultCertificate(src.Id, src.VaultId, src.Owner, src.Amount, src.VestedBlock, src.Redeemed, src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new VaultCertificate(src.Id, src.VaultId, src.Owner, src.Amount, src.VestedBlock, src.Redeemed, src.Revoked, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<AddressBalanceEntity, AddressBalance>()
@@ -322,6 +322,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock))
                 .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
+                .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());

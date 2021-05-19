@@ -21,6 +21,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vault
                 {nameof(VaultCertificateEntity.Amount)},
                 {nameof(VaultCertificateEntity.VestedBlock)},
                 {nameof(VaultCertificateEntity.Redeemed)},
+                {nameof(VaultCertificateEntity.Revoked)},
                 {nameof(VaultCertificateEntity.CreatedBlock)},
                 {nameof(VaultCertificateEntity.ModifiedBlock)}
             FROM odx_vault_certificate

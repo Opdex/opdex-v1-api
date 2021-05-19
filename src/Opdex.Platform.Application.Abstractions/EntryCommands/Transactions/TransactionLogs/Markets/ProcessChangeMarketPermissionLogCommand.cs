@@ -5,9 +5,9 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets
 {
-    public class ProcessChangeMarketPermissionLogCommand : IRequest<bool>
+    public class ProcessChangeMarketPermissionLogCommand : ProcessTransactionLogCommand
     {
-        public ProcessChangeMarketPermissionLogCommand(TransactionLog log)
+        public ProcessChangeMarketPermissionLogCommand(TransactionLog log, string sender, ulong blockHeight) : base(sender, blockHeight)
         {
             Log = log as ChangeMarketPermissionLog ?? throw new ArgumentNullException(nameof(log));
         }

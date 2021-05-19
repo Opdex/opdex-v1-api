@@ -5,9 +5,9 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools
 {
-    public class ProcessEnableMiningLogCommand : IRequest<bool>
+    public class ProcessEnableMiningLogCommand : ProcessTransactionLogCommand
     {
-        public ProcessEnableMiningLogCommand(TransactionLog log)
+        public ProcessEnableMiningLogCommand(TransactionLog log, string sender, ulong blockHeight) : base(sender, blockHeight)
         {
             Log = log as EnableMiningLog ?? throw new ArgumentNullException(nameof(log));
         }

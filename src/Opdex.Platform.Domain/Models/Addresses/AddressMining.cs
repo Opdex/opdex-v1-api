@@ -4,9 +4,9 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 
 namespace Opdex.Platform.Domain.Models.Addresses
 {
-    public class AddressMining
+    public class AddressMining : BlockAudit
     {
-        public AddressMining(long miningPoolId, string owner, string balance, ulong createdBlock, ulong modifiedBlock) 
+        public AddressMining(long miningPoolId, string owner, string balance, ulong createdBlock) : base(createdBlock)
         {
             if (miningPoolId < 1)
             {
@@ -23,39 +23,24 @@ namespace Opdex.Platform.Domain.Models.Addresses
                 throw new ArgumentOutOfRangeException(nameof(balance));
             }
 
-            if (createdBlock < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(createdBlock));
-            }
-
-            if (modifiedBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(modifiedBlock));
-            }
-            
             MiningPoolId = miningPoolId;
             Owner = owner;
             Balance = balance;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
         }
         
         public AddressMining(long id, long miningPoolId, string owner, string balance, ulong createdBlock, ulong modifiedBlock) 
+            : base(createdBlock, modifiedBlock)
         {
             Id = id;
             MiningPoolId = miningPoolId;
             Owner = owner;
             Balance = balance;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
         }
         
         public long Id { get; }
         public long MiningPoolId { get; }
         public string Owner { get; }
         public string Balance { get; private set; }
-        public ulong CreatedBlock { get; }
-        public ulong ModifiedBlock { get; private set; }
         
         public void SetBalance(StartMiningLog log, ulong block)
         {
@@ -63,20 +48,15 @@ namespace Opdex.Platform.Domain.Models.Addresses
             SetModifiedBlock(block);
         }
         
-        public void SetBalance(StopMiningLog log, ulong block)
+        public void ResetBalance(StopMiningLog log, ulong block)
         {
-            Balance = log.Amount;
-            SetModifiedBlock(block);
-        }
-
-        private void SetModifiedBlock(ulong block)
-        {
-            if (block < CreatedBlock)
+            if (!log.Amount.Equals(Balance) || Id == 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(block));
+                throw new Exception("Unable to reset mining balance");
             }
             
-            ModifiedBlock = block;
+            Balance = "0";
+            SetModifiedBlock(block);
         }
     }
 }

@@ -4,7 +4,7 @@ using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions
 {
-    public class PersistTransactionCommand : IRequest<Transaction>
+    public class PersistTransactionCommand : IRequest<long>
     {
         public PersistTransactionCommand(Transaction transaction)
         {

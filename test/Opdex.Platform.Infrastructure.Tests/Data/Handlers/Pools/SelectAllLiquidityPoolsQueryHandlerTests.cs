@@ -37,7 +37,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
                 Id = 123454,
                 TokenId = 2,
                 MarketId = 3,
-                Address = "SomeAddress"
+                Address = "SomeAddress",
+                CreatedBlock = 1,
+                ModifiedBlock = 1
             };
 
             var responseList = new [] { expectedEntity }.AsEnumerable();

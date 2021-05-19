@@ -5,9 +5,9 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools
 {
-    public class ProcessCollectStakingRewardsLogCommand : IRequest<bool>
+    public class ProcessCollectStakingRewardsLogCommand : ProcessTransactionLogCommand
     {
-        public ProcessCollectStakingRewardsLogCommand(TransactionLog log)
+        public ProcessCollectStakingRewardsLogCommand(TransactionLog log, string sender, ulong blockHeight) : base(sender, blockHeight)
         {
             Log = log as CollectStakingRewardsLog ?? throw new ArgumentNullException(nameof(log));
         }

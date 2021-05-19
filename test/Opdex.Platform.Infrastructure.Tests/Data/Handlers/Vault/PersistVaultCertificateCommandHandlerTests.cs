@@ -44,7 +44,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vault
         [Fact]
         public async Task Update_VaultCertificate_Success()
         {
-            var allowance = new VaultCertificate(10, 1, "Owner", "1234", 10000, true,  123, 123);
+            var allowance = new VaultCertificate(10, 1, "Owner", "1234", 10000, true,  false, 123, 423);
             var command = new PersistVaultCertificateCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
@@ -58,7 +58,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vault
         [Fact]
         public async Task PersistsVaultCertificate_Fail()
         {
-            var allowance = new VaultCertificate(10, 1, "Owner", "1234", 10000, true,  123, 123);
+            var allowance = new VaultCertificate(10, 1, "Owner", "1234", 10000, true,  false, 123, 322);
             var command = new PersistVaultCertificateCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

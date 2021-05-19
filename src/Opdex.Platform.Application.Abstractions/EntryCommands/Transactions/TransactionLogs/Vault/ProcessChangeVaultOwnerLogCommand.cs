@@ -5,9 +5,9 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vault
 {
-    public class ProcessChangeVaultOwnerLogCommand : IRequest<bool>
+    public class ProcessChangeVaultOwnerLogCommand : ProcessTransactionLogCommand
     {
-        public ProcessChangeVaultOwnerLogCommand(TransactionLog log)
+        public ProcessChangeVaultOwnerLogCommand(TransactionLog log, string sender, ulong blockHeight) : base(sender, blockHeight)
         {
             Log = log as ChangeVaultOwnerLog ?? throw new ArgumentNullException(nameof(log));
         }
