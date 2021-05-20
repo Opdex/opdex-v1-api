@@ -41,7 +41,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var miningBalance = await _mediator.Send(addressMiningQuery, CancellationToken.None) 
                                     ?? new AddressMining(miningPool.Id, request.Log.Miner, request.Log.Amount, request.BlockHeight);
 
-                if (request.BlockHeight < miningBalance.ModifiedBlock)
+                if (miningBalance.ModifiedBlock > request.BlockHeight)
                 {
                     return true;
                 }

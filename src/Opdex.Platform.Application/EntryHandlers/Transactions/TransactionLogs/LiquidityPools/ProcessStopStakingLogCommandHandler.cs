@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var stakingBalance = await _mediator.Send(addressBalanceQuery, CancellationToken.None) 
                                      ?? new AddressStaking(liquidityPool.Id, request.Log.Staker, request.Log.Amount, request.BlockHeight);
 
-                if (request.BlockHeight <= stakingBalance.ModifiedBlock)
+                if (stakingBalance.ModifiedBlock > request.BlockHeight)
                 {
                     return true;
                 }

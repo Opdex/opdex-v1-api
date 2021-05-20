@@ -1,11 +1,11 @@
 using System;
 using MediatR;
 
-namespace Opdex.Platform.Application.Abstractions.EntryQueries.Tokens
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens
 {
-    public class CreateCrsTokenSnapshotsCommand : IRequest<Unit>
+    public class ProcessOdxTokenSnapshotsCommand : IRequest<Unit>
     {
-        public CreateCrsTokenSnapshotsCommand(DateTime blockTime)
+        public ProcessOdxTokenSnapshotsCommand(DateTime blockTime)
         {
             if (blockTime.Equals(default))
             {

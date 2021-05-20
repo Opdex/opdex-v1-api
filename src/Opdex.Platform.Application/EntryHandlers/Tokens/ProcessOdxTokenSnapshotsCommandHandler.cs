@@ -9,29 +9,36 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Vault;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Tokens
 {
-    public class CreateCrsTokenSnapshotsCommandHandler : IRequestHandler<CreateCrsTokenSnapshotsCommand, Unit>
+    public class ProcessOdxTokenSnapshotsCommandHandler : IRequestHandler<ProcessOdxTokenSnapshotsCommand, Unit>
     {
         private readonly IMediator _mediator;
-        
-        private const long CrsMarketId = 0;
         private readonly SnapshotType[] _snapshotTypes = { SnapshotType.Minute, SnapshotType.Hourly, SnapshotType.Daily };
 
-        public CreateCrsTokenSnapshotsCommandHandler(IMediator mediator)
+        public ProcessOdxTokenSnapshotsCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public async Task<Unit> Handle(CreateCrsTokenSnapshotsCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ProcessOdxTokenSnapshotsCommand request, CancellationToken cancellationToken)
         {
-            var crs = await _mediator.Send(new GetTokenByAddressQuery(TokenConstants.Cirrus.Address), CancellationToken.None);
+            var vaultQuery = new RetrieveVaultQuery(findOrThrow: true);
+            var vault = await _mediator.Send(vaultQuery, CancellationToken.None);
+
+            var odxQuery = new RetrieveTokenByIdQuery(vault.TokenId, findOrThrow: true);
+            var odx = await _mediator.Send(odxQuery, CancellationToken.None);
+
+            // Todo: Need to get the staking market
+            // really, we need "GetStakingMarket" "GetStakingToken" 
+            const long marketId = 1;
             
-            var snapshotsQuery = new RetrieveTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery(crs.Id, CrsMarketId, request.BlockTime);
+            var snapshotsQuery = new RetrieveTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery(odx.Id, marketId, request.BlockTime);
             var snapshots = await _mediator.Send(snapshotsQuery, CancellationToken.None);
 
             // If we've already got a minute snapshot, skip
@@ -39,29 +46,24 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
             {
                 return Unit.Value;
             }
-
-            var isFiveMinutesOrOlder = DateTime.UtcNow.Subtract(request.BlockTime) > TimeSpan.FromMinutes(5);
-
-            var price = isFiveMinutesOrOlder
-                // Should be getting historical if its an old transaction when we start paying
-                ? await _mediator.Send(new RetrieveCmcStraxPriceQuery(), CancellationToken.None)
-                : await _mediator.Send(new RetrieveCmcStraxPriceQuery(), CancellationToken.None);
             
             foreach (var snapshotType in _snapshotTypes)
             {
-                await ProcessTokenSnapshot(snapshotType, request.BlockTime, snapshots, crs.Id, price);
+                // Todo: Need to calculate price
+                var price = 0m;
+                await ProcessTokenSnapshot(snapshotType, request.BlockTime, snapshots, odx.Id, price, marketId);
             }
             
             return Unit.Value;
         }
 
-        private async Task ProcessTokenSnapshot(SnapshotType snapshotType, DateTime blockTime, IEnumerable<TokenSnapshot> snapshots, long tokenId, decimal price)
+        private async Task ProcessTokenSnapshot(SnapshotType snapshotType, DateTime blockTime, IEnumerable<TokenSnapshot> snapshots, long tokenId, decimal price, long marketId)
         {
             var start = blockTime.ToStartOf(snapshotType);
             var end = start.ToEndOf(snapshotType);
 
             var snapshot = snapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
-                           new TokenSnapshot(tokenId, CrsMarketId, price, snapshotType, start, end);
+                           new TokenSnapshot(tokenId, marketId, price, snapshotType, start, end);
 
             if (snapshot.Id > 1)
             {

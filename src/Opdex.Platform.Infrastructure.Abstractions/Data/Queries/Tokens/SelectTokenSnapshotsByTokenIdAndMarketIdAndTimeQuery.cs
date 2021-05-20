@@ -5,13 +5,18 @@ using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
 {
-    public class SelectActiveTokenSnapshotsByTokenIdQuery : IRequest<IEnumerable<TokenSnapshot>>
+    public class SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery : IRequest<IEnumerable<TokenSnapshot>>
     {
-        public SelectActiveTokenSnapshotsByTokenIdQuery(long tokenId, DateTime time)
+        public SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery(long tokenId, long marketId, DateTime time)
         {
             if (tokenId < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(tokenId));
+            }
+            
+            if (marketId < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(marketId));
             }
 
             if (time.Equals(default))
@@ -20,10 +25,12 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
             }
 
             TokenId = tokenId;
+            MarketId = marketId;
             Time = time;
         }
         
         public long TokenId { get; }
+        public long MarketId { get; }
         public DateTime Time { get; }
     }
 }
