@@ -42,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
             
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
-            var result = await _context.ExecuteQueryAsync<AddressStakingEntity>(query);
+            var result = await _context.ExecuteFindAsync<AddressStakingEntity>(query);
 
             if (request.FindOrThrow && result == null)
             {

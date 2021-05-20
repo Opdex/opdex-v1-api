@@ -15,7 +15,7 @@ namespace Opdex.Platform.Domain.Models
 {
     public class Transaction
     {
-        public Transaction(string txHash, ulong blockHeight, int gasUsed, string from, string to, string newContractAddress = null)
+        public Transaction(string txHash, ulong blockHeight, int gasUsed, string from, string to, bool success, string newContractAddress = null)
         {
             if (!txHash.HasValue())
             {
@@ -47,11 +47,12 @@ namespace Opdex.Platform.Domain.Models
             GasUsed = gasUsed;
             From = from;
             To = to;
+            Success = success;
             NewContractAddress = newContractAddress;
             Logs = new List<TransactionLog>();
         }
 
-        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, IEnumerable<TransactionLog> logs, string newContractAddress = null)
+        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, bool success, IEnumerable<TransactionLog> logs, string newContractAddress = null)
         {
             Id = id;
             Hash = txHash;
@@ -59,21 +60,10 @@ namespace Opdex.Platform.Domain.Models
             GasUsed = gasUsed;
             From = from;
             To = to;
+            Success = success;
             NewContractAddress = newContractAddress;
             Logs = new List<TransactionLog>();
             AttachLogs(logs);
-        }
-        
-        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, string newContractAddress = null)
-        {
-            Id = id;
-            Hash = txHash;
-            BlockHeight = blockHeight;
-            GasUsed = gasUsed;
-            From = from;
-            To = to;
-            NewContractAddress = newContractAddress;
-            Logs = new List<TransactionLog>();
         }
         
         public long Id { get; private set; }
@@ -82,6 +72,7 @@ namespace Opdex.Platform.Domain.Models
         public int GasUsed { get; }
         public string From { get; }
         public string To { get; }
+        public bool Success { get; }
         public string NewContractAddress { get; }
         
         public ICollection<TransactionLog> Logs { get; }
@@ -134,6 +125,7 @@ namespace Opdex.Platform.Domain.Models
             }
         }
         
+        // Todo: Missing a couple here.
         public void DeserializeLog(string address, string topic, int sortOrder, dynamic log)
         {
             try

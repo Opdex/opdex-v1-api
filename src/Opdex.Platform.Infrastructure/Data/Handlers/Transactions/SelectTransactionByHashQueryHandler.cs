@@ -16,11 +16,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
         private static readonly string SqlQuery =
             @$"SELECT 
                 {nameof(TransactionEntity.Id)},
+                `{nameof(TransactionEntity.To)}`,
+                `{nameof(TransactionEntity.From)}`,
                 {nameof(TransactionEntity.Hash)},
                 {nameof(TransactionEntity.Block)},
                 {nameof(TransactionEntity.GasUsed)},
-                `{nameof(TransactionEntity.To)}`,
-                `{nameof(TransactionEntity.From)}`
+                {nameof(TransactionEntity.NewContractAddress)},
+                {nameof(TransactionEntity.Success)}
             FROM transaction
             WHERE {nameof(TransactionEntity.Hash)} = @{nameof(SqlParams.Hash)};";
 

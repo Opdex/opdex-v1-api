@@ -22,9 +22,8 @@ namespace Opdex.Platform.Application.Handlers.Transactions
             try
             {
                 var query = new CallCirrusGetTransactionByHashQuery(request.TxHash);
-                var txReceipt = await _mediator.Send(query, cancellationToken);
-
-                return txReceipt;
+                
+                return await _mediator.Send(query, cancellationToken);
             }
             catch (Exception)
             {

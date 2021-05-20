@@ -17,14 +17,18 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
             $@"INSERT INTO transaction (
                 `{nameof(TransactionEntity.From)}`,
                 `{nameof(TransactionEntity.To)}`,
+                {nameof(TransactionEntity.NewContractAddress)},
                 {nameof(TransactionEntity.Hash)},
                 {nameof(TransactionEntity.GasUsed)},
+                {nameof(TransactionEntity.Success)},
                 {nameof(TransactionEntity.Block)}
               ) VALUES (
                 @{nameof(TransactionEntity.From)},
                 @{nameof(TransactionEntity.To)},
+                @{nameof(TransactionEntity.NewContractAddress)},
                 @{nameof(TransactionEntity.Hash)},
                 @{nameof(TransactionEntity.GasUsed)},
+                @{nameof(TransactionEntity.Success)},
                 @{nameof(TransactionEntity.Block)}
               );
               SELECT LAST_INSERT_ID();";

@@ -33,11 +33,11 @@ namespace Opdex.Platform.Infrastructure
         public PlatformInfrastructureMapperProfile()
         {
             CreateMap<TransactionReceiptDto, Transaction>()
-                .ConstructUsing(src => new Transaction(src.TransactionHash, src.BlockHeight, src.GasUsed, src.From, src.To, src.NewContractAddress))
+                .ConstructUsing(src => new Transaction(src.TransactionHash, src.BlockHeight, src.GasUsed, src.From, src.To, src.Success, src.NewContractAddress))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TransactionEntity, Transaction>()
-                .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, new TransactionLog[0], null))
+                .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, src.Success, new TransactionLog[0], src.NewContractAddress))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<TokenEntity, Token>()
@@ -185,6 +185,7 @@ namespace Opdex.Platform.Infrastructure
             CreateMap<Deployer, DeployerEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
@@ -297,6 +298,8 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
                 .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForMember(dest => dest.Success, opt => opt.MapFrom(src => src.Success))
+                .ForMember(dest => dest.NewContractAddress, opt => opt.MapFrom(src => src.NewContractAddress))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<PersistTransactionLogCommand, TransactionLogEntity>()
@@ -312,6 +315,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());

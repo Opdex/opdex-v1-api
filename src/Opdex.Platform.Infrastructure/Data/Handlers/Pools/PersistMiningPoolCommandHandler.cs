@@ -46,8 +46,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
         
-        public PersistMiningPoolCommandHandler(IDbContext context, IMapper mapper, 
-            ILogger<PersistMiningPoolCommandHandler> logger)
+        public PersistMiningPoolCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMiningPoolCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

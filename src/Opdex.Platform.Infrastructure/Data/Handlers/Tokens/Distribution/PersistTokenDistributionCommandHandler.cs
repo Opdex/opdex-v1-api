@@ -13,7 +13,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
     public class PersistTokenDistributionCommandHandler : IRequestHandler<PersistTokenDistributionCommand, bool>
     {
         private static readonly string InsertSqlCommand =
-            $@"INSERT INTO odx_token_distribution (
+            $@"INSERT INTO odx_distribution (
                 {nameof(TokenDistributionEntity.VaultDistribution)},
                 {nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
                 {nameof(TokenDistributionEntity.PeriodIndex)},
@@ -22,7 +22,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
                 {nameof(TokenDistributionEntity.CreatedBlock)},
                 {nameof(TokenDistributionEntity.ModifiedBlock)}
               ) VALUES (
-                @{nameof(TokenDistributionEntity.Id)},
                 @{nameof(TokenDistributionEntity.VaultDistribution)},
                 @{nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
                 @{nameof(TokenDistributionEntity.PeriodIndex)},

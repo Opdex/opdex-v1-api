@@ -47,6 +47,17 @@ namespace Opdex.Platform.Domain.Models.Addresses
         public long TokenId { get; }
         public long LiquidityPoolId { get; }
         public string Owner { get; }
-        public string Balance { get; }
+        public string Balance { get; private set; }
+
+        public void SetBalance(string balance, ulong blockHeight)
+        {
+            if (!balance.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException(nameof(balance));
+            }
+
+            Balance = balance;
+            SetModifiedBlock(blockHeight);
+        }
     }
 }

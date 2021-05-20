@@ -60,12 +60,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
                 }
 
                 // Todo: CRS is global but marketId is required...
-                const ulong marketId = 0;
+                const long marketId = 0;
                 
                 var snapshot = snapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
-                               new TokenSnapshot(crs.Id, 0l, price, snapshotType, start, end);
+                               new TokenSnapshot(crs.Id, marketId, price, snapshotType, start, end);
 
-                if (snapshot.Id < 1)
+                if (snapshot.Id > 1)
                 {
                     snapshot.UpdatePrice(price);
                 }

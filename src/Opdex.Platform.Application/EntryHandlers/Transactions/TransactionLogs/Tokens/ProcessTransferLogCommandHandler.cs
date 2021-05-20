@@ -8,7 +8,11 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Domain.Models.Addresses;
+using Opdex.Platform.Domain.Models.Pools;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens
 {
@@ -34,22 +38,17 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var isAllowanceTransfer = request.Sender != request.Log.From;
                 var tokenAddress = request.Log.Contract;
                 
-                long tokenId = 0;
-                long liquidityPoolId = 0;
-                
                 var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(tokenAddress, findOrThrow: false);
                 var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
-                
-                if (liquidityPool != null)
+                var liquidityPoolId = liquidityPool?.Id ?? 0;
+
+                var tokenQuery = new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false);
+                var token = await _mediator.Send(tokenQuery, CancellationToken.None);
+                var tokenId = token?.Id ?? 0;
+
+                if (token == null && liquidityPool == null)
                 {
-                    liquidityPoolId = liquidityPool.Id;
-                }
-                else
-                {
-                    var tokenQuery = new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: true);
-                    var token = await _mediator.Send(tokenQuery, CancellationToken.None);
-                    
-                    tokenId = token.Id;
+                    return false;
                 }
                 
                 if (isAllowanceTransfer)
@@ -62,17 +61,25 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 }
                 
                 // Update owner balance
-                var addressBalance = tokenId > 0 
-                    ? await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(tokenId, request.Log.From), CancellationToken.None)
-                    : await _mediator.Send(new RetrieveAddressBalanceByLiquidityPoolIdAndOwnerQuery(liquidityPoolId, request.Log.From), CancellationToken.None);
+                var addressBalance = token != null
+                    ? await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(tokenId, request.Log.From, findOrThrow: false), CancellationToken.None)
+                    : await _mediator.Send(new RetrieveAddressBalanceByLiquidityPoolIdAndOwnerQuery(liquidityPoolId, request.Log.From, findOrThrow: false), CancellationToken.None);
+                
+                addressBalance ??= new AddressBalance(tokenId, liquidityPoolId, request.Log.From, "0", request.BlockHeight);
 
-                if (addressBalance.ModifiedBlock < request.BlockHeight)
+                if (addressBalance.ModifiedBlock > request.BlockHeight)
                 {
-                    // Get/Set latest address balance
-                    // Todo: RetrieveCirrusSrcTokenBalanceQuery
-                    await _mediator.Send(new MakeAddressBalanceCommand(addressBalance), CancellationToken.None);
+                    return true;
                 }
                 
+                var tokenBalanceAddress = liquidityPool != null ? liquidityPool.Address : token.Address;
+                var balanceQuery = new CallCirrusGetSrcTokenBalanceQuery(tokenBalanceAddress, request.Log.From);
+                var balance = await _mediator.Send(balanceQuery, CancellationToken.None);
+
+                addressBalance.SetBalance(balance, request.BlockHeight);
+                    
+                await _mediator.Send(new MakeAddressBalanceCommand(addressBalance), CancellationToken.None);
+
                 return true;
             }
             catch (Exception ex)

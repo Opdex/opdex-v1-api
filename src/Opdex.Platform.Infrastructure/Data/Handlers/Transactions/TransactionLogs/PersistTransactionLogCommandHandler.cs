@@ -18,17 +18,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLo
                 {nameof(TransactionLogEntity.LogTypeId)},
                 {nameof(TransactionLogEntity.Contract)},
                 {nameof(TransactionLogEntity.SortOrder)},
-                {nameof(TransactionLogEntity.Details)},
-                {nameof(TransactionLogEntity.CreatedBlock)},
-                {nameof(TransactionLogEntity.ModifiedBlock)}
+                {nameof(TransactionLogEntity.Details)}
               ) VALUES (
                 @{nameof(TransactionLogEntity.TransactionId)},
                 @{nameof(TransactionLogEntity.LogTypeId)},
                 @{nameof(TransactionLogEntity.Contract)},
                 @{nameof(TransactionLogEntity.SortOrder)},
-                @{nameof(TransactionLogEntity.Details)},
-                @{nameof(TransactionLogEntity.CreatedBlock)},
-                @{nameof(TransactionLogEntity.ModifiedBlock)}
+                @{nameof(TransactionLogEntity.Details)}
               );";
         
         private readonly IDbContext _context;

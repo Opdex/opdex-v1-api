@@ -5,11 +5,9 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Pools;
-using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
@@ -44,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             var queryParams = new SqlParams(request.TokenId, request.MarketAddress);
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
             
-            var result = await _context.ExecuteFindAsync<TokenEntity>(query);
+            var result = await _context.ExecuteFindAsync<LiquidityPoolEntity>(query);
 
             if (request.FindOrThrow && result == null)
             {

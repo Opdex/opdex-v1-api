@@ -53,7 +53,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var nextDistributionBlock = vault.Genesis + (1_971_000ul * nextPeriodIndex);
                 
                 var latestDistributionQuery = new RetrieveLatestTokenDistributionQuery(findOrThrow: false);
-
                 var latestDistribution = await _mediator.Send(latestDistributionQuery, CancellationToken.None);
 
                 if (latestDistribution != null && latestDistribution.PeriodIndex >= periodIndex)

@@ -41,7 +41,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
             var queryParams = new SqlParams(request.MiningPoolId, request.Owner);
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
-            var result = await _context.ExecuteQueryAsync<AddressMiningEntity>(query);
+            var result = await _context.ExecuteFindAsync<AddressMiningEntity>(query);
 
             if (request.FindOrThrow && result == null)
             {

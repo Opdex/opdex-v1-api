@@ -23,7 +23,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
                 {nameof(TokenDistributionEntity.NextDistributionBlock)},
                 {nameof(TokenDistributionEntity.CreatedBlock)},
                 {nameof(TokenDistributionEntity.ModifiedBlock)}
-            FROM odx_token_distribution
+            FROM odx_distribution
             ORDER BY {nameof(TokenDistributionEntity.NextDistributionBlock)} DESC
             LIMIT 1;";
                         

@@ -6,6 +6,7 @@ using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
@@ -23,8 +24,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 {nameof(AddressBalance.CreatedBlock)},
                 {nameof(AddressBalance.ModifiedBlock)}
             FROM address_balance
-            WHERE {nameof(AddressBalance.TokenId)} = @{nameof(SqlParams.TokenId)}
-                AND {nameof(AddressBalance.Owner)} = {nameof(SqlParams.Owner)}
+            WHERE {nameof(AddressBalance.Owner)} = {nameof(SqlParams.Owner)} AND 
+                {nameof(AddressBalance.LiquidityPoolId)} = 0 AND
+                {nameof(AddressBalance.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;";
 
         private readonly IDbContext _context;
@@ -41,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
             var queryParams = new SqlParams(request.TokenId, request.Owner);
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
-            var result = await _context.ExecuteQueryAsync<AddressBalance>(query);
+            var result = await _context.ExecuteFindAsync<AddressBalanceEntity>(query);
 
             if (request.FindOrThrow && result == null)
             {

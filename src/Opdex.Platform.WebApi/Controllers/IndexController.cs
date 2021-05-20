@@ -51,10 +51,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ProcessLatestBlocks(CancellationToken cancellationToken)
         {
-            // Todo: Only if getting the active deployer is not null
-            
             // Todo: Use Get Query
-            var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), CancellationToken.None);
+            var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: true), CancellationToken.None);
             var blockDetails = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(latestSyncedBlock.Hash), CancellationToken.None);
 
             while (blockDetails?.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
@@ -64,21 +62,22 @@ namespace Opdex.Platform.WebApi.Controllers
                 blockDetails = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(blockDetails.NextBlockHash), CancellationToken.None);
 
                 // Todo: Use CreateBlockCommand
-                var blockCommand = new MakeBlockCommand(blockDetails.Height, blockDetails.Hash,
-                    blockDetails.Time.FromUnixTimeSeconds(), blockDetails.MedianTime.FromUnixTimeSeconds());
+                var blockTime = blockDetails.Time.FromUnixTimeSeconds();
+                var blockMedianTime = blockDetails.MedianTime.FromUnixTimeSeconds();
+                var blockCommand = new MakeBlockCommand(blockDetails.Height, blockDetails.Hash, blockTime, blockMedianTime);
+                var blockCreated = await _mediator.Send(blockCommand, CancellationToken.None);
                 
-                var createdBlock = await _mediator.Send(blockCommand, CancellationToken.None);
-
-                if (!createdBlock)
+                if (!blockCreated)
                 {
                     break;
                 }
 
                 // 4 = 1 minute || 60 = 15 minutes
-                var timeToRefreshCirrus = _hostingEnv.IsDevelopment() ? 4ul : 60ul;
+                var timeToRefreshCirrus = _hostingEnv.IsDevelopment() ? 60ul : 4ul;
                 if (blockDetails.Height % timeToRefreshCirrus == 0)
                 {
-                    await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockDetails.MedianTime.FromUnixTimeSeconds()), CancellationToken.None);
+                    await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockMedianTime), CancellationToken.None);
+                    
                     // Todo should also snapshot ODX Token
                 }
                 

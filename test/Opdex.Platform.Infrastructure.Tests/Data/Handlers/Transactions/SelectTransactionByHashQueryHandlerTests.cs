@@ -40,7 +40,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
                 To = "To",
                 GasUsed = 60923,
                 Hash = hash,
-                CreatedBlock = 1245
+                Success = true,
+                NewContractAddress = "NewAddress"
             };
             
             var command = new SelectTransactionByHashQuery(hash);
@@ -56,6 +57,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             result.From.Should().Be(expectedResponse.From);
             result.To.Should().Be(expectedResponse.To);
             result.GasUsed.Should().Be(expectedResponse.GasUsed);
+            result.Success.Should().Be(expectedResponse.Success);
+            result.NewContractAddress.Should().Be(expectedResponse.NewContractAddress);
             result.Logs.Should().BeEmpty();
         }
         

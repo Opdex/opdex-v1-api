@@ -30,15 +30,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
                 
-                var poolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.StakingPool, findOrThrow: true);
-                var pool = await _mediator.Send(poolQuery, CancellationToken.None);
+                var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.StakingPool, findOrThrow: true);
+                var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
 
-                var miningPoolQuery = new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id, findOrThrow: false);
+                var miningPoolQuery = new RetrieveMiningPoolByLiquidityPoolIdQuery(liquidityPool.Id, findOrThrow: false);
                 var miningPool = await _mediator.Send(miningPoolQuery, CancellationToken.None);
 
                 if (miningPool != null) return true;
                 
-                miningPool = new MiningPool(pool.Id, request.Log.Contract, request.BlockHeight);
+                miningPool = new MiningPool(liquidityPool.Id, request.Log.MiningPool, request.BlockHeight);
                 
                 var miningPoolCommand = new MakeMiningPoolCommand(miningPool);
                 var miningPoolId = await _mediator.Send(miningPoolCommand, CancellationToken.None);

@@ -32,7 +32,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         public async Task PersistsTransaction_Success()
         {
             const long id = 1234;
-            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to");
+            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to", true);
             var command = new PersistTransactionCommand(transaction);
         
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         public async Task PersistsTransaction_Fail()
         {
             const long id = 0;
-            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to");
+            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to", true);
             var command = new PersistTransactionCommand(transaction);
         
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
