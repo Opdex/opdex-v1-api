@@ -24,7 +24,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 {nameof(AddressMiningEntity.ModifiedBlock)}
             FROM address_mining
             WHERE {nameof(AddressMiningEntity.MiningPoolId)} = @{nameof(SqlParams.MiningPoolId)}
-                AND {nameof(AddressMiningEntity.Owner)} = {nameof(SqlParams.Owner)}
+                AND {nameof(AddressMiningEntity.Owner)} = @{nameof(SqlParams.Owner)}
             LIMIT 1;";
 
         private readonly IDbContext _context;

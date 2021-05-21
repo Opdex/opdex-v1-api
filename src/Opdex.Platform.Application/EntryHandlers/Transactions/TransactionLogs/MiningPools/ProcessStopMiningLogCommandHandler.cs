@@ -31,25 +31,18 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
                 
-                var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
-                var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
-
-                var miningPoolQuery = new RetrieveMiningPoolByLiquidityPoolIdQuery(liquidityPool.Id);
+                var miningPoolQuery = new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
                 var miningPool = await _mediator.Send(miningPoolQuery, CancellationToken.None);
 
-                var addressMiningQuery = new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, request.Log.Miner, findOrThrow: false);
-                var miningBalance = await _mediator.Send(addressMiningQuery, CancellationToken.None) 
-                                    ?? new AddressMining(miningPool.Id, request.Log.Miner, request.Log.Amount, request.BlockHeight);
-
-                if (miningBalance.ModifiedBlock > request.BlockHeight)
+                var addressMiningQuery = new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, request.Log.Miner, findOrThrow: true);
+                var miningBalance = await _mediator.Send(addressMiningQuery, CancellationToken.None);
+                
+                if (request.BlockHeight < miningBalance.ModifiedBlock)
                 {
                     return true;
                 }
                 
-                if (miningBalance.Id != 0)
-                {
-                    miningBalance.ResetBalance(request.Log, request.BlockHeight);
-                }
+                miningBalance.ResetBalance(request.Log, request.BlockHeight);
 
                 var miningBalanceCommand = new MakeAddressMiningCommand(miningBalance);
                 var miningBalanceId = await _mediator.Send(miningBalanceCommand, CancellationToken.None);

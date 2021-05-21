@@ -118,7 +118,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             // Consider flagging logs as snapshotProcessed or something else?
             // Maybe process these snapshots once per block after all transactions have been processed for performance.
             // Returning out the Transactions from this query that require snapshots to be processed.
-            await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(transaction.Hash), CancellationToken.None);
+            await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(transaction), CancellationToken.None);
             // Todo: Process mining pool snapshots this transaction affects
             // Todo: Process token snapshots this transaction has Transfer logs for
             

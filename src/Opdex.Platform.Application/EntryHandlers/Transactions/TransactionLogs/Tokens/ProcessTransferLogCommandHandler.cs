@@ -61,24 +61,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 }
                 
                 // Update owner balance
-                var addressBalance = token != null
-                    ? await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(tokenId, request.Log.From, findOrThrow: false), CancellationToken.None)
-                    : await _mediator.Send(new RetrieveAddressBalanceByLiquidityPoolIdAndOwnerQuery(liquidityPoolId, request.Log.From, findOrThrow: false), CancellationToken.None);
-                
-                addressBalance ??= new AddressBalance(tokenId, liquidityPoolId, request.Log.From, "0", request.BlockHeight);
-
-                if (addressBalance.ModifiedBlock > request.BlockHeight)
-                {
-                    return true;
-                }
-                
-                var tokenBalanceAddress = liquidityPool != null ? liquidityPool.Address : token.Address;
-                var balanceQuery = new CallCirrusGetSrcTokenBalanceQuery(tokenBalanceAddress, request.Log.From);
-                var balance = await _mediator.Send(balanceQuery, CancellationToken.None);
-
-                addressBalance.SetBalance(balance, request.BlockHeight);
-                    
-                await _mediator.Send(new MakeAddressBalanceCommand(addressBalance), CancellationToken.None);
+                await TryUpdateAddressBalance(token, liquidityPool, tokenId, liquidityPoolId, request.Log.From, request.BlockHeight);
+                await TryUpdateAddressBalance(token, liquidityPool, tokenId, liquidityPoolId, request.Log.To, request.BlockHeight);
 
                 return true;
             }
@@ -87,6 +71,38 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 _logger.LogError(ex, $"Failure processing {nameof(TransferLog)}");
                
                 return false;
+            }
+        }
+
+        private async Task TryUpdateAddressBalance(Token token, LiquidityPool liquidityPool, long tokenId, long liquidityPoolId, string address, ulong blockHeight)
+        {
+            try
+            {
+                var addressBalance = token != null
+                    ? await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(tokenId, address, findOrThrow: false), CancellationToken.None)
+                    : await _mediator.Send(new RetrieveAddressBalanceByLiquidityPoolIdAndOwnerQuery(liquidityPoolId, address, findOrThrow: false), CancellationToken.None);
+
+                addressBalance ??= new AddressBalance(tokenId, liquidityPoolId, address, "0", blockHeight);
+
+                var balanceIsNewer = blockHeight < addressBalance.ModifiedBlock;
+                var isNewAddressBalance = blockHeight == addressBalance.ModifiedBlock && addressBalance.Id == 0;
+                
+                if (balanceIsNewer || !isNewAddressBalance)
+                {
+                    return;
+                }
+
+                var tokenBalanceAddress = liquidityPool != null ? liquidityPool.Address : token.Address;
+                var balanceQuery = new CallCirrusGetSrcTokenBalanceQuery(tokenBalanceAddress, address);
+                var balance = await _mediator.Send(balanceQuery, CancellationToken.None);
+
+                addressBalance.SetBalance(balance, blockHeight);
+
+                await _mediator.Send(new MakeAddressBalanceCommand(addressBalance), CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to update address balance for {address}");
             }
         }
     }

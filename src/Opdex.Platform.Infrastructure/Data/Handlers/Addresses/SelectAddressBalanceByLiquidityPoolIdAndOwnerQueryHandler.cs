@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         : IRequestHandler<SelectAddressBalanceByLiquidityPoolIdAndOwnerQuery, AddressBalance>
     {
         private static readonly string SqlQuery =
-            @$"Select 
+            @$"SELECT 
                 {nameof(AddressBalanceEntity.Id)},
                 {nameof(AddressBalanceEntity.TokenId)},
                 {nameof(AddressBalanceEntity.LiquidityPoolId)},
@@ -24,7 +24,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 {nameof(AddressBalanceEntity.CreatedBlock)},
                 {nameof(AddressBalanceEntity.ModifiedBlock)}
             FROM address_balance
-            WHERE {nameof(AddressBalance.Owner)} = {nameof(SqlParams.Owner)} AND 
+            WHERE {nameof(AddressBalance.Owner)} = @{nameof(SqlParams.Owner)} AND 
                 {nameof(AddressBalance.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)} AND
                 {nameof(AddressBalance.TokenId)} = 0
             LIMIT 1;";

@@ -102,8 +102,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     var miningGovernanceSummary = await _mediator.Send(miningGovernanceSummaryQuery, CancellationToken.None);
 
                     // Create
-                    miningGovernance = new MiningGovernance(odxTokenSummary.MiningGovernance, odxId, miningGovernanceSummary.NominationPeriodEnd,
-                        miningGovernanceSummary.Balance, (int)miningGovernanceSummary.MiningPoolsFunded, miningGovernanceSummary.MiningPoolReward,
+                    miningGovernance = new MiningGovernance(odxTokenSummary.MiningGovernance, odxId, miningGovernanceSummary.NominationPeriodEnd, (int)miningGovernanceSummary.MiningPoolsFunded, miningGovernanceSummary.MiningPoolReward,
                         transaction.BlockHeight, transaction.BlockHeight);
                         
                     // Persist

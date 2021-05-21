@@ -45,14 +45,8 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Minin
             localCall.MethodName = "get_NominationPeriodEnd";
             var nominationPeriodEndResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
             var nominationPeriodEnd = ulong.Parse(nominationPeriodEndResponse.Return.ToString());
-
-            localCall.ContractAddress = minedToken;
-            localCall.MethodName = "GetBalance";
-            localCall.Parameters = new[] {localCall.ContractAddress.ToSmartContractParameter(SmartContractParameterType.Address)};
-            var balanceResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
-            var balance = balanceResponse.Return.ToString();
             
-            return new MiningGovernanceContractSummary(request.Address, minedToken, nominationPeriodEnd, balance, miningPoolsFunded, miningPoolReward, miningDuration);
+            return new MiningGovernanceContractSummary(request.Address, minedToken, nominationPeriodEnd, miningPoolsFunded, miningPoolReward, miningDuration);
         }
     }
 }

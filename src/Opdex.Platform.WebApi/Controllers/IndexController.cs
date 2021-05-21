@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
+using Opdex.Platform.Application.Abstractions.EntryCommands;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Extensions;
@@ -52,9 +54,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ProcessLatestBlocks(CancellationToken cancellationToken)
         {
-            // Todo: Use Get Query
-            var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: true), CancellationToken.None);
-            var blockDetails = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(latestSyncedBlock.Hash), CancellationToken.None);
+            // Todo: Implement with index_lock table - prevent reindexing if another instance already is
+            var blockDetails = await _mediator.Send(new GetBestBlockQuery(), cancellationToken);
 
             while (blockDetails?.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
             {
@@ -62,11 +63,8 @@ namespace Opdex.Platform.WebApi.Controllers
                 // Todo: Probably need to get all blockDetails and filter for nonstandard transactions
                 blockDetails = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(blockDetails.NextBlockHash), CancellationToken.None);
 
-                // Todo: Use CreateBlockCommand
-                var blockTime = blockDetails.Time.FromUnixTimeSeconds();
-                var blockMedianTime = blockDetails.MedianTime.FromUnixTimeSeconds();
-                var blockCommand = new MakeBlockCommand(blockDetails.Height, blockDetails.Hash, blockTime, blockMedianTime);
-                var blockCreated = await _mediator.Send(blockCommand, CancellationToken.None);
+                var createBlockCommand = new CreateBlockCommand(blockDetails.Height, blockDetails.Hash, blockDetails.Time, blockDetails.MedianTime);
+                var blockCreated = await _mediator.Send(createBlockCommand, CancellationToken.None);
                 
                 if (!blockCreated)
                 {
@@ -75,11 +73,12 @@ namespace Opdex.Platform.WebApi.Controllers
 
                 // 4 = 1 minute || 60 = 15 minutes
                 var timeToRefreshCirrus = _hostingEnv.IsDevelopment() ? 60ul : 4ul;
+                
                 if (blockDetails.Height % timeToRefreshCirrus == 0)
                 {
-                    await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockMedianTime), CancellationToken.None);
+                    await _mediator.Send(new CreateCrsTokenSnapshotsCommand(createBlockCommand.MedianTime), CancellationToken.None);
                     
-                    // Todo should also snapshot ODX Token
+                    // Todo should also snapshot ODX Token if there is a staking market available
                 }
                 
                 // Index each transaction in the block

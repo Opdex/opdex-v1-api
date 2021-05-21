@@ -18,7 +18,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
                 {nameof(MiningGovernanceEntity.Address)},
                 {nameof(MiningGovernanceEntity.TokenId)},
                 {nameof(MiningGovernanceEntity.NominationPeriodEnd)},
-                {nameof(MiningGovernanceEntity.Balance)},
                 {nameof(MiningGovernanceEntity.MiningPoolsFunded)},
                 {nameof(MiningGovernanceEntity.MiningPoolReward)},
                 {nameof(MiningGovernanceEntity.CreatedBlock)},

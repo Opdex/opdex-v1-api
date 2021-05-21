@@ -14,7 +14,10 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens
                 throw new ArgumentOutOfRangeException(nameof(tokenId));
             }
             
-            if (marketId < 1)
+            // Todo: Think and fix
+            // MarketId should be required for all tokens that are not CRS
+            // CRS uses market 0 as a global market.
+            if (marketId < 1 && tokenId > 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(marketId));
             }

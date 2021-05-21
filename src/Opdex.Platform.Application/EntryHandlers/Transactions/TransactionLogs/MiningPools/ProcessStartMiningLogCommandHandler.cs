@@ -31,25 +31,22 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
                 
-                var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
-                var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
-
-                var miningPoolQuery = new RetrieveMiningPoolByLiquidityPoolIdQuery(liquidityPool.Id);
+                var miningPoolQuery = new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
                 var miningPool = await _mediator.Send(miningPoolQuery, CancellationToken.None);
 
                 var addressMiningQuery = new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, request.Log.Miner, findOrThrow: false);
-                var miningBalance = await _mediator.Send(addressMiningQuery, CancellationToken.None) 
-                                    ?? new AddressMining(miningPool.Id, request.Log.Miner, request.Log.Amount, request.BlockHeight);
+                var miningBalance = await _mediator.Send(addressMiningQuery, CancellationToken.None) ?? 
+                                    new AddressMining(miningPool.Id, request.Log.Miner, "0", request.BlockHeight);
 
-                if (miningBalance.ModifiedBlock > request.BlockHeight)
+                var balanceIsNewer = request.BlockHeight < miningBalance.ModifiedBlock;
+                var isNewAddressBalance = request.BlockHeight == miningBalance.ModifiedBlock && miningBalance.Id == 0;
+                
+                if (balanceIsNewer || !isNewAddressBalance)
                 {
                     return true;
                 }
                 
-                if (miningBalance.Id != 0)
-                {
-                    miningBalance.SetBalance(request.Log, request.BlockHeight);
-                }
+                miningBalance.SetBalance(request.Log, request.BlockHeight);
 
                 var miningBalanceCommand = new MakeAddressMiningCommand(miningBalance);
                 var miningBalanceId = await _mediator.Send(miningBalanceCommand, CancellationToken.None);

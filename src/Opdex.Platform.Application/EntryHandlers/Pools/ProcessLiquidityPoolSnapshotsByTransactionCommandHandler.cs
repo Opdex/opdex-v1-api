@@ -12,10 +12,11 @@ using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Vault;
+using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs;
@@ -28,10 +29,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools
     public class ProcessLiquidityPoolSnapshotsByTransactionCommandHandler : IRequestHandler<ProcessLiquidityPoolSnapshotsByTransactionCommand, Unit>
     {
         private readonly IMediator _mediator;
+        private IModelAssembler<Transaction, TransactionDto> _assembler;
 
-        public ProcessLiquidityPoolSnapshotsByTransactionCommandHandler(IMediator mediator)
+        public ProcessLiquidityPoolSnapshotsByTransactionCommandHandler(IMediator mediator, IModelAssembler<Transaction, TransactionDto> assembler)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
         }
 
 
@@ -40,7 +43,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools
         // occur regularly 
         public async Task<Unit> Handle(ProcessLiquidityPoolSnapshotsByTransactionCommand request, CancellationToken cancellationToken)
         {
-            var tx = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: true), CancellationToken.None);
+            var tx = request.Transaction;
             var block = await _mediator.Send(new RetrieveBlockByHeightQuery(tx.BlockHeight, findOrThrow: true), CancellationToken.None);
             var crsToken = await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address, findOrThrow: true), CancellationToken.None);
             
@@ -80,7 +83,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools
                 } 
                 
                 // Preferably the minute snapshot
-                var odxSnapshot = odxSnapshots.OrderBy(s => s.SnapshotType).FirstOrDefault();
+                var odxSnapshot = odxSnapshots.OrderBy(s => s.SnapshotType).FirstOrDefault() ?? 
+                                  new TokenSnapshot(odx.Id, pool.Market.Id, 0m, SnapshotType.Minute, 
+                                      block.MedianTime.ToStartOf(SnapshotType.Minute), block.MedianTime.ToEndOf(SnapshotType.Minute));
                 
                 // Todo: Maybe GetOrCreate special case. Retrieve by date, or retrieve record prior to date, or brand new snapshot.
                 // This is currently not pulling the previous record to keep the snapshot rolling

@@ -24,7 +24,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 {nameof(AddressStakingEntity.ModifiedBlock)}
             FROM address_staking
             WHERE {nameof(AddressStakingEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
-                AND {nameof(AddressStakingEntity.Owner)} = {nameof(SqlParams.Owner)}
+                AND {nameof(AddressStakingEntity.Owner)} = @{nameof(SqlParams.Owner)}
             LIMIT 1;";
 
         private readonly IDbContext _context;

@@ -6,8 +6,8 @@ namespace Opdex.Platform.Common.Extensions
     {
         public static DateTime FromUnixTimeSeconds(this string seconds)
         {
-            long.TryParse(seconds, out var timeSeconds);
-            return DateTimeOffset.FromUnixTimeSeconds(timeSeconds).UtcDateTime;
+            var success = long.TryParse(seconds, out var timeSeconds);
+            return !success ? default : DateTimeOffset.FromUnixTimeSeconds(timeSeconds).UtcDateTime;
         }
         
         public static DateTime StartOfMonth(this DateTime date)

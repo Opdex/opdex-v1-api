@@ -17,7 +17,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
                 {nameof(MiningGovernanceEntity.Address)},
                 {nameof(MiningGovernanceEntity.TokenId)},
                 {nameof(MiningGovernanceEntity.NominationPeriodEnd)},
-                {nameof(MiningGovernanceEntity.Balance)},
                 {nameof(MiningGovernanceEntity.MiningPoolsFunded)},
                 {nameof(MiningGovernanceEntity.MiningPoolReward)},
                 {nameof(MiningGovernanceEntity.CreatedBlock)},
@@ -26,7 +25,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
                 @{nameof(MiningGovernanceEntity.Address)},
                 @{nameof(MiningGovernanceEntity.TokenId)},
                 @{nameof(MiningGovernanceEntity.NominationPeriodEnd)},
-                @{nameof(MiningGovernanceEntity.Balance)},
                 @{nameof(MiningGovernanceEntity.MiningPoolsFunded)},
                 @{nameof(MiningGovernanceEntity.MiningPoolReward)},
                 @{nameof(MiningGovernanceEntity.CreatedBlock)},
@@ -37,7 +35,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
             $@"UPDATE odx_mining_governance 
                 SET 
                     {nameof(MiningGovernanceEntity.NominationPeriodEnd)} = @{nameof(MiningGovernanceEntity.NominationPeriodEnd)},
-                    {nameof(MiningGovernanceEntity.Balance)} = @{nameof(MiningGovernanceEntity.Balance)},
                     {nameof(MiningGovernanceEntity.MiningPoolsFunded)} = @{nameof(MiningGovernanceEntity.MiningPoolsFunded)},
                     {nameof(MiningGovernanceEntity.MiningPoolReward)} = @{nameof(MiningGovernanceEntity.MiningPoolReward)},
                     {nameof(MiningGovernanceEntity.ModifiedBlock)} = @{nameof(MiningGovernanceEntity.ModifiedBlock)}

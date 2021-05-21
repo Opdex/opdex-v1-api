@@ -34,19 +34,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
                 var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
                 
-                var addressBalanceQuery = new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liquidityPool.Id, request.Log.Staker, findOrThrow: false);
-                var stakingBalance = await _mediator.Send(addressBalanceQuery, CancellationToken.None) 
-                                     ?? new AddressStaking(liquidityPool.Id, request.Log.Staker, request.Log.Amount, request.BlockHeight);
+                var addressBalanceQuery = new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liquidityPool.Id, request.Log.Staker, findOrThrow: true);
+                var stakingBalance = await _mediator.Send(addressBalanceQuery, CancellationToken.None);
 
-                if (stakingBalance.ModifiedBlock > request.BlockHeight)
+                if (request.BlockHeight < stakingBalance.ModifiedBlock)
                 {
                     return true;
                 }
                 
-                if (stakingBalance.Id != 0)
-                {
-                    stakingBalance.ResetWeight(request.Log, request.BlockHeight);
-                }
+                stakingBalance.ResetWeight(request.Log, request.BlockHeight);
 
                 var addressStakingCommand = new MakeAddressStakingCommand(stakingBalance);
                 var addressStakingId = await _mediator.Send(addressStakingCommand, CancellationToken.None);

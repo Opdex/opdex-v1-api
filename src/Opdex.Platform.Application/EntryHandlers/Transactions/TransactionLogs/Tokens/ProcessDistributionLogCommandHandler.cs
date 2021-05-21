@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Vault;
 using Opdex.Platform.Domain.Models.ODX;
@@ -48,9 +49,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var periodIndex = request.Log.PeriodIndex;
                 var nextPeriodIndex = periodIndex + 1;
                 
-                // Todo: Fix this comment below
-                // 1_971_000 will be prod - 1 year, but will need to ask the contract for this for local/testnet
-                var nextDistributionBlock = vault.Genesis + (1_971_000ul * nextPeriodIndex);
+                // Get the period duration (per year) from the smart contract dynamically
+                var periodDurationRequest = new RetrieveCirrusLocalCallSmartContractQuery(token.Address, "get_PeriodDuration");
+                var periodDurationSerialized = await _mediator.Send(periodDurationRequest, CancellationToken.None);
+                var periodDuration = periodDurationSerialized.DeserializeValue<ulong>();
+                
+                var nextDistributionBlock = vault.Genesis + (periodDuration * nextPeriodIndex);
                 
                 var latestDistributionQuery = new RetrieveLatestTokenDistributionQuery(findOrThrow: false);
                 var latestDistribution = await _mediator.Send(latestDistributionQuery, CancellationToken.None);

@@ -36,7 +36,6 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernance
                 Address = "Address",
                 TokenId = tokenId,
                 NominationPeriodEnd = 999,
-                Balance = "8765789",
                 MiningPoolsFunded = 10,
                 MiningPoolReward = "876543456789"
             };
@@ -52,7 +51,6 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernance
             result.TokenId.Should().Be(expectedEntity.TokenId);
             result.Address.Should().Be(expectedEntity.Address);
             result.NominationPeriodEnd.Should().Be(expectedEntity.NominationPeriodEnd);
-            result.Balance.Should().Be(expectedEntity.Balance);
             result.MiningPoolsFunded.Should().Be(expectedEntity.MiningPoolsFunded);
             result.MiningPoolReward.Should().Be(expectedEntity.MiningPoolReward);
         }
