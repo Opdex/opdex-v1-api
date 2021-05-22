@@ -37,7 +37,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernance
                 TokenId = tokenId,
                 NominationPeriodEnd = 999,
                 MiningPoolsFunded = 10,
-                MiningPoolReward = "876543456789"
+                MiningPoolReward = "876543456789",
+                CreatedBlock = 1
             };
                 
             var command = new SelectMiningGovernanceQuery();
