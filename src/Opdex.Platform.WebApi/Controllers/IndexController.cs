@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
-using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Index;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -74,20 +74,5 @@ namespace Opdex.Platform.WebApi.Controllers
             
             return NoContent();
         }
-        
-        // [HttpPost("process-transaction")]
-        // [ProducesResponseType(StatusCodes.Status200OK)]
-        // [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        // public async Task<IActionResult> ProcessTransaction(ProcessTransactionRequestModel txRequest)
-        // {
-        //     var response = await _mediator.Send(new CreateTransactionCommand(txRequest.TxHash));
-        //
-        //     if (response == false)
-        //     {
-        //         return BadRequest();
-        //     }
-        //
-        //     return Ok();
-        // }
     }
 }

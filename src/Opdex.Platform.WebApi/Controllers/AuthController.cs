@@ -21,36 +21,12 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
         }
-
-        /// <summary>
-        /// Gets an Opdex client specific token based on referrer address.
-        /// </summary>
-        /// <remarks>This is necessary for any API access but is only for internal Opdex clients without any API limits.</remarks>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns></returns>
-        [HttpGet("token")]
-        public Task<IActionResult> GetClientToken(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Requests a timestamped message to be included in a client signed messaged for authentication.
-        /// </summary>
-        /// <param name="walletAddress">The wallet address to be authenticated.</param>
-        /// <param name="cancellationToken">CancellationToken</param>
-        /// <returns>message as string to be included in signed message</returns>
-        [HttpGet("request/{walletAddress}")]
-        public Task<IActionResult> RequestAuthMessage(string walletAddress, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         /// <summary>
         /// Authorizes access to a specific market
         /// </summary>
-        /// <param name="market">The market to request access to</param>
-        /// <param name="wallet">The wallet address of the user</param>
+        /// <param name="market">The market contract address to request access to</param>
+        /// <param name="wallet">The wallet public key of the user</param>
         /// <returns>An access token</returns>
         [HttpPost("authorize")]
         public IActionResult Authorize([FromQuery] string market, [FromQuery] string wallet)
