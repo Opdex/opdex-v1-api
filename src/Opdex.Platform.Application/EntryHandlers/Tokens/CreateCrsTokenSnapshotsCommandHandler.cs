@@ -42,10 +42,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
 
             var isFiveMinutesOrOlder = DateTime.UtcNow.Subtract(request.BlockTime) > TimeSpan.FromMinutes(5);
 
-            var price = isFiveMinutesOrOlder
-                // Should be getting historical if its an old transaction when we start paying
-                ? await _mediator.Send(new RetrieveCmcStraxPriceQuery(), CancellationToken.None)
-                : await _mediator.Send(new RetrieveCmcStraxPriceQuery(), CancellationToken.None);
+            if (isFiveMinutesOrOlder)
+            {
+                // Should be getting historical if its an old transaction when we start paying for cmc
+            }
+
+            // Todo: Adjust this when we start getting historical prices
+            var price = await _mediator.Send(new RetrieveCmcStraxPriceQuery(), CancellationToken.None);
             
             foreach (var snapshotType in _snapshotTypes)
             {

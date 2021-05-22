@@ -125,7 +125,6 @@ namespace Opdex.Platform.Domain.Models
             }
         }
         
-        // Todo: Missing a couple here.
         public void DeserializeLog(string address, string topic, int sortOrder, dynamic log)
         {
             try
@@ -158,6 +157,7 @@ namespace Opdex.Platform.Domain.Models
                     nameof(CreateVaultCertificateLog) => new CreateVaultCertificateLog(log, address, sortOrder),
                     nameof(RevokeVaultCertificateLog) => new RevokeVaultCertificateLog(log, address, sortOrder),
                     nameof(RedeemVaultCertificateLog) => new RedeemVaultCertificateLog(log, address, sortOrder),
+                    nameof(ChangeDeployerOwnerLog) => new ChangeDeployerOwnerLog(log, address, sortOrder),
                     _ => null // Todo: think about keeping these around incase it is an opdex integrated tx
                 };
 

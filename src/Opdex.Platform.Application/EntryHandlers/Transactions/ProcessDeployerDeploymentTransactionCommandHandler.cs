@@ -88,7 +88,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 // No duplicate attempts to create the same market
                 var marketQuery = new RetrieveMarketByAddressQuery(log.Market, findOrThrow: false);
                 var market = await _mediator.Send(marketQuery, CancellationToken.None) ?? 
-                             new Market(log.Market, deployerId, odx.Id, log.Owner, log.AuthPoolCreators, log.AuthProviders,  log.AuthTraders, log.Fee, transaction.BlockHeight);
+                             new Market(log.Market, deployerId, odx.Id, log.Owner, log.AuthPoolCreators, log.AuthProviders,  
+                                 log.AuthTraders, log.Fee, transaction.BlockHeight);
 
                 if (market.Id == 0)
                 {

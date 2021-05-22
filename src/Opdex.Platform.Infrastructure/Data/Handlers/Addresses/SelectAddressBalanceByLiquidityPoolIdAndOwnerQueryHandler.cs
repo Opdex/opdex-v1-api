@@ -24,9 +24,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 {nameof(AddressBalanceEntity.CreatedBlock)},
                 {nameof(AddressBalanceEntity.ModifiedBlock)}
             FROM address_balance
-            WHERE {nameof(AddressBalance.Owner)} = @{nameof(SqlParams.Owner)} AND 
-                {nameof(AddressBalance.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)} AND
-                {nameof(AddressBalance.TokenId)} = 0
+            WHERE {nameof(AddressBalanceEntity.Owner)} = @{nameof(SqlParams.Owner)} AND 
+                {nameof(AddressBalanceEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)} AND
+                {nameof(AddressBalanceEntity.TokenId)} = 0
             LIMIT 1;";
 
         private readonly IDbContext _context;

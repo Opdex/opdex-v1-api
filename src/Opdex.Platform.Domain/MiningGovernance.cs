@@ -1,13 +1,14 @@
 using System;
-using MediatR;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.ODX;
 
 namespace Opdex.Platform.Domain
 {
-    public class MiningGovernance : IRequest<Unit>
+    public class MiningGovernance : BlockAudit
     {
-        public MiningGovernance(long id, string address, long tokenId, ulong nominationPeriodEnd, int miningPoolsFunded, 
-            string miningPoolReward, ulong createdBlock, ulong modifiedBlock)
+        public MiningGovernance(long id, string address, long tokenId, ulong nominationPeriodEnd, uint miningPoolsFunded, 
+            string miningPoolReward, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
@@ -15,12 +16,10 @@ namespace Opdex.Platform.Domain
             NominationPeriodEnd = nominationPeriodEnd;
             MiningPoolsFunded = miningPoolsFunded;
             MiningPoolReward = miningPoolReward;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
         }
         
-        public MiningGovernance(string address, long tokenId, ulong nominationPeriodEnd, int miningPoolsFunded, 
-            string miningPoolReward, ulong createdBlock, ulong modifiedBlock)
+        public MiningGovernance(string address, long tokenId, ulong nominationPeriodEnd, uint miningPoolsFunded, 
+            string miningPoolReward, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
             {
@@ -36,33 +35,28 @@ namespace Opdex.Platform.Domain
             {
                 throw new ArgumentOutOfRangeException(nameof(nominationPeriodEnd));
             }
-            
-            if (createdBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(createdBlock));
-            }
-            
-            if (modifiedBlock < 1)
-            {
-                throw new ArgumentNullException(nameof(modifiedBlock));
-            }
 
             Address = address;
             TokenId = tokenId;
             NominationPeriodEnd = nominationPeriodEnd;
             MiningPoolsFunded = miningPoolsFunded;
             MiningPoolReward = miningPoolReward;
-            CreatedBlock = createdBlock;
-            ModifiedBlock = modifiedBlock;
         }
         
         public long Id { get; }
         public string Address { get; }
         public long TokenId { get; }
-        public ulong NominationPeriodEnd { get; }
-        public int MiningPoolsFunded { get; }
-        public string MiningPoolReward { get; }
-        public ulong CreatedBlock { get; }
-        public ulong ModifiedBlock { get; }
+        public ulong NominationPeriodEnd { get; private set; }
+        public uint MiningPoolsFunded { get; private set; }
+        public string MiningPoolReward { get; private set; }
+
+        public void Update(MiningGovernanceContractSummary summary, ulong block)
+        {
+            NominationPeriodEnd = summary.NominationPeriodEnd;
+            MiningPoolsFunded = summary.MiningPoolsFunded;
+            MiningPoolReward = summary.MiningPoolReward;
+            
+            SetModifiedBlock(block);
+        }
     }
 }

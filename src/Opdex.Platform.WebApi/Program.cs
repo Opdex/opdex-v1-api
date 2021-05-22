@@ -2,6 +2,8 @@ using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Json;
 using Serilog.Sinks.Http.TextFormatters;
 
 namespace Opdex.Platform.WebApi
@@ -21,7 +23,7 @@ namespace Opdex.Platform.WebApi
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .WriteTo.RollingFile(
-                    new NormalTextFormatter(),
+                    new JsonFormatter(),
                     $@"{LogsDiskDirectory}/global.log",
                     retainedFileCountLimit: 30,
                     fileSizeLimitBytes: GeneralFlatFileMaxSizeBytes,
@@ -77,11 +79,12 @@ namespace Opdex.Platform.WebApi
                     {
                         loggingConfiguration
                             .WriteTo.Console()
-                            .WriteTo.File(new NormalTextFormatter(),
+                            .WriteTo.File(new JsonFormatter(),
                                 $@"{rootLogFolder}/webapi.log",
                                 rollOnFileSizeLimit: true,
                                 fileSizeLimitBytes: DevelopmentFlatFileMaxSizeBytes,
-                                retainedFileCountLimit: 5);
+                                retainedFileCountLimit: 5,
+                                restrictedToMinimumLevel: LogEventLevel.Warning);
                     }
                 });
     }

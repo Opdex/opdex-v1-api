@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningGovernance;
+using Opdex.Platform.Application.Abstractions.Queries.MiningGovernance;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernance;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernance
@@ -26,8 +27,21 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
+
+                var miningGovernanceQuery = new RetrieveMiningGovernanceQuery(findOrThrow: true);
+                var miningGovernance = await _mediator.Send(miningGovernanceQuery, CancellationToken.None);
+
+                var miningGovernanceSummaryQuery = new RetrieveMiningGovernanceContractSummaryByAddressQuery(miningGovernance.Address);
+                var miningGovernanceSummary = await _mediator.Send(miningGovernanceSummaryQuery, CancellationToken.None);
                 
-                // likely nothing to do here, we receive the stakingPool, miningPool, and amount
+                var isNewer = request.BlockHeight < miningGovernance.ModifiedBlock;
+                if (isNewer && miningGovernance.Id != 0)
+                {
+                    return false;
+                }
+                
+                miningGovernance.Update(miningGovernanceSummary, request.BlockHeight);
+                
                 return true;
             }
             catch (Exception ex)

@@ -84,10 +84,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 addressBalance ??= new AddressBalance(tokenId, liquidityPoolId, address, "0", blockHeight);
 
-                var balanceIsNewer = blockHeight < addressBalance.ModifiedBlock;
-                var isNewAddressBalance = blockHeight == addressBalance.ModifiedBlock && addressBalance.Id == 0;
-                
-                if (balanceIsNewer || !isNewAddressBalance)
+                var isNewer = blockHeight < addressBalance.ModifiedBlock;
+                if (isNewer && addressBalance.Id != 0)
                 {
                     return;
                 }

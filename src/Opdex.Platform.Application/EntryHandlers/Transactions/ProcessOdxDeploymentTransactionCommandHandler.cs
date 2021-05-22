@@ -92,7 +92,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 }
 
                 // Get and/or create mining governance
-                var miningGovernanceQuery = new RetrieveMiningGovernanceByTokenIdQuery(odxId, findOrThrow: false);
+                var miningGovernanceQuery = new RetrieveMiningGovernanceQuery(findOrThrow: false);
                 var miningGovernance = await _mediator.Send(miningGovernanceQuery, CancellationToken.None);
 
                 if (miningGovernance == null)
@@ -102,8 +102,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     var miningGovernanceSummary = await _mediator.Send(miningGovernanceSummaryQuery, CancellationToken.None);
 
                     // Create
-                    miningGovernance = new MiningGovernance(odxTokenSummary.MiningGovernance, odxId, miningGovernanceSummary.NominationPeriodEnd, (int)miningGovernanceSummary.MiningPoolsFunded, miningGovernanceSummary.MiningPoolReward,
-                        transaction.BlockHeight, transaction.BlockHeight);
+                    miningGovernance = new MiningGovernance(odxTokenSummary.MiningGovernance, odxId, miningGovernanceSummary.NominationPeriodEnd, 
+                        miningGovernanceSummary.MiningPoolsFunded, miningGovernanceSummary.MiningPoolReward, transaction.BlockHeight);
                         
                     // Persist
                     var miningGovernanceCommand = new MakeMiningGovernanceCommand(miningGovernance);

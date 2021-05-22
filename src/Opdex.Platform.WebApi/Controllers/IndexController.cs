@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -7,15 +6,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Commands.Blocks;
-using Opdex.Platform.Application.Abstractions.EntryCommands;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Requests.Index;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -54,87 +49,45 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ProcessLatestBlocks(CancellationToken cancellationToken)
         {
-            // Todo: Implement with index_lock table - prevent reindexing if another instance already is
-            var blockDetails = await _mediator.Send(new GetBestBlockQuery(), cancellationToken);
-
-            while (blockDetails?.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
-            {
-                // Todo: Move through Domain, at least a new CirrusBlock model
-                // Todo: Probably need to get all blockDetails and filter for nonstandard transactions
-                blockDetails = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(blockDetails.NextBlockHash), CancellationToken.None);
-
-                var createBlockCommand = new CreateBlockCommand(blockDetails.Height, blockDetails.Hash, blockDetails.Time, blockDetails.MedianTime);
-                var blockCreated = await _mediator.Send(createBlockCommand, CancellationToken.None);
-                
-                if (!blockCreated)
-                {
-                    break;
-                }
-
-                // 4 = 1 minute || 60 = 15 minutes
-                var timeToRefreshCirrus = _hostingEnv.IsDevelopment() ? 60ul : 4ul;
-                
-                if (blockDetails.Height % timeToRefreshCirrus == 0)
-                {
-                    await _mediator.Send(new CreateCrsTokenSnapshotsCommand(createBlockCommand.MedianTime), CancellationToken.None);
-                    
-                    // Todo should also snapshot ODX Token if there is a staking market available
-                }
-                
-                // Index each transaction in the block
-                foreach (var tx in blockDetails.Tx.Where(tx => tx != blockDetails.MerkleRoot))
-                {
-                    try
-                    {
-                        await _mediator.Send(new CreateTransactionCommand(tx), CancellationToken.None);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, $"Unable to create transaction with error: {ex.Message}");
-                    }
-                }
-                
-                // Maybe create liquidity pool snapshots after each block
-                // Maybe create mining pool snapshots after each block
-                // Index Market Snapshots based on Pool Snapshots in time tx time range
-            }
+            await _mediator.Send(new ProcessLatestBlocksCommand(_hostingEnv.IsDevelopment()), CancellationToken.None);
             
             return NoContent();
         }
         
-        [HttpPost("process-odx-deployment")]
+        /// <summary>
+        /// Processes the odx and market deployer transactions then syncs to chain tip.
+        /// </summary>
+        /// <remarks>
+        /// For a successful redeployment, copy the odx and market deployer deployment transaction hashes.
+        /// Then clear all non-lookup tables of any data in the database. Leaving only `_type` tables populated.
+        /// </remarks>
+        /// <param name="request">The odx and market deployer transaction hashes to look up.</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>No Content</returns>
+        [HttpPost("resync-from-deployment")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ProcessOdxDeploymentTransaction(ProcessTransactionRequestModel txRequest)
+        public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
         {
-            await _mediator.Send(new ProcessOdxDeploymentTransactionCommand(txRequest.TxHash));
-
+            await _mediator.Send(new ProcessOdxDeploymentTransactionCommand(request.OdxDeploymentTxHash), CancellationToken.None);
+            await _mediator.Send(new ProcessDeployerDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash), CancellationToken.None);
+            await _mediator.Send(new ProcessLatestBlocksCommand(_hostingEnv.IsDevelopment()), CancellationToken.None);
+            
             return NoContent();
         }
         
-        [HttpPost("process-deployer-deployment")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ProcessDeployerDeploymentTransaction(ProcessTransactionRequestModel txRequest)
-        {
-            await _mediator.Send(new ProcessDeployerDeploymentTransactionCommand(txRequest.TxHash));
-
-            return NoContent();
-        }
-        
-        [HttpPost("process-transaction")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ProcessTransaction(ProcessTransactionRequestModel txRequest)
-        {
-            var response = await _mediator.Send(new CreateTransactionCommand(txRequest.TxHash));
-
-            if (response == false)
-            {
-                return BadRequest();
-            }
-
-            return Ok();
-        }
+        // [HttpPost("process-transaction")]
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        // public async Task<IActionResult> ProcessTransaction(ProcessTransactionRequestModel txRequest)
+        // {
+        //     var response = await _mediator.Send(new CreateTransactionCommand(txRequest.TxHash));
+        //
+        //     if (response == false)
+        //     {
+        //         return BadRequest();
+        //     }
+        //
+        //     return Ok();
+        // }
     }
 }

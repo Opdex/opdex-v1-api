@@ -39,11 +39,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                                      ?? new AddressStaking(liquidityPool.Id, request.Log.Staker, "0", request.BlockHeight);
 
                 var balanceIsNewer = request.BlockHeight < stakingBalance.ModifiedBlock;
-                var isNewAddressBalance = request.BlockHeight == stakingBalance.ModifiedBlock && stakingBalance.Id == 0;
-                
-                if (balanceIsNewer || !isNewAddressBalance)
+                if (balanceIsNewer && stakingBalance.Id != 0)
                 {
-                    return true;
+                    return false;
                 }
                 
                 stakingBalance.SetWeight(request.Log, request.BlockHeight);

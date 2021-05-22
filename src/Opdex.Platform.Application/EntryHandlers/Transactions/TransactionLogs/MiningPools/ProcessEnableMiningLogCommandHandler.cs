@@ -32,9 +32,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var miningPoolQuery = new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
                 var miningPool = await _mediator.Send(miningPoolQuery, CancellationToken.None);
 
-                if (request.BlockHeight < miningPool.ModifiedBlock)
+                var isNewer = request.BlockHeight < miningPool.ModifiedBlock;
+                if (isNewer && miningPool.Id != 0)
                 {
-                    return true;
+                    return false;
                 }
 
                 miningPool.EnableMiningPool(request.Log, request.BlockHeight);

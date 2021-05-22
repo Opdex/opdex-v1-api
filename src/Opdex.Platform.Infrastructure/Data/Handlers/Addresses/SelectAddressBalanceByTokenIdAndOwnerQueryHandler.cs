@@ -15,18 +15,18 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         : IRequestHandler<SelectAddressBalanceByTokenIdAndOwnerQuery, AddressBalance>
     {
         private static readonly string SqlQuery =
-            @$"Select 
-                {nameof(AddressBalance.Id)},
-                {nameof(AddressBalance.TokenId)},
-                {nameof(AddressBalance.LiquidityPoolId)},
-                {nameof(AddressBalance.Owner)},
-                {nameof(AddressBalance.Balance)},
-                {nameof(AddressBalance.CreatedBlock)},
-                {nameof(AddressBalance.ModifiedBlock)}
+            @$"SELECT 
+                {nameof(AddressBalanceEntity.Id)},
+                {nameof(AddressBalanceEntity.TokenId)},
+                {nameof(AddressBalanceEntity.LiquidityPoolId)},
+                {nameof(AddressBalanceEntity.Owner)},
+                {nameof(AddressBalanceEntity.Balance)},
+                {nameof(AddressBalanceEntity.CreatedBlock)},
+                {nameof(AddressBalanceEntity.ModifiedBlock)}
             FROM address_balance
-            WHERE {nameof(AddressBalance.Owner)} = @{nameof(SqlParams.Owner)} AND 
-                {nameof(AddressBalance.LiquidityPoolId)} = 0 AND
-                {nameof(AddressBalance.TokenId)} = @{nameof(SqlParams.TokenId)}
+            WHERE {nameof(AddressBalanceEntity.Owner)} = @{nameof(SqlParams.Owner)} AND 
+                {nameof(AddressBalanceEntity.LiquidityPoolId)} = 0 AND
+                {nameof(AddressBalanceEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;";
 
         private readonly IDbContext _context;
@@ -55,9 +55,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 
         private sealed class SqlParams
         {
-            internal SqlParams(long liquidityPoolId, string owner)
+            internal SqlParams(long tokenId, string owner)
             {
-                TokenId = liquidityPoolId;
+                TokenId = tokenId;
                 Owner = owner;
             }
 

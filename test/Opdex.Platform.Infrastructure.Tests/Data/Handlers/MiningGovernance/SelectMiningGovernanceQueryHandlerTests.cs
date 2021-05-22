@@ -12,21 +12,21 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernance
 {
-    public class SelectMiningGovernanceByTokenIdQueryHandlerTests
+    public class SelectMiningGovernanceQueryHandlerTests
     {
         private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectMiningGovernanceByTokenIdQueryHandler _handler;
+        private readonly SelectMiningGovernanceQueryHandler _handler;
         
-        public SelectMiningGovernanceByTokenIdQueryHandlerTests()
+        public SelectMiningGovernanceQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
             
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectMiningGovernanceByTokenIdQueryHandler(_dbContext.Object, mapper);
+            _handler = new SelectMiningGovernanceQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
-        public async Task SelectMiningGovernanceByTokenId_Success()
+        public async Task SelectMiningGovernance_Success()
         {
             const long tokenId = 10;
             
@@ -40,7 +40,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernance
                 MiningPoolReward = "876543456789"
             };
                 
-            var command = new SelectMiningGovernanceByTokenIdQuery(tokenId);
+            var command = new SelectMiningGovernanceQuery();
         
             _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
@@ -56,11 +56,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernance
         }
         
         [Fact]
-        public void SelectMiningGovernanceByTokenId_Throws_NotFoundException()
+        public void SelectMiningGovernance_Throws_NotFoundException()
         {
-            const long tokenId = 10;
-            
-            var command = new SelectMiningGovernanceByTokenIdQuery(tokenId);
+            var command = new SelectMiningGovernanceQuery();
         
             _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<MiningGovernanceEntity>(null));

@@ -27,7 +27,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
                 @{nameof(MiningGovernanceNominationEntity.Weight)},
                 @{nameof(MiningGovernanceNominationEntity.CreatedBlock)},
                 @{nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
-              );";
+              );
+              SELECT LAST_INSERT_ID();";
         
         private static readonly string UpdateSqlCommand =
             $@"UPDATE odx_mining_governance_nomination 

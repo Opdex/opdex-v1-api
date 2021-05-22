@@ -6,7 +6,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX
         public long TokenId { get; set; }
         public string Address { get; set; }
         public ulong NominationPeriodEnd { get; set; }
-        public int MiningPoolsFunded { get; set; }
+        public uint MiningPoolsFunded { get; set; }
         public string MiningPoolReward { get; set; }
     }
 }
