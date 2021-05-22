@@ -6,13 +6,17 @@ This composition root references all projects of Opdex.Platform and Opdex.Core n
 
 ## Local Environment Setup
 
+### Auth
+
+Add a bearer token signing key to your configuration, by running `dotnet user-secrets set AuthConfiguration:Opdex:SigningKey ~y0Ur%sEcr3T*k3Y~`. The key can be any string of length 16 or more characters.
+
 ### Create DB
 
-Using [Opdex DB Scripts](https://github.com/Opdex/opdex-db-scripts), create the Maria DB database and update the connection string in `appsettings.Development.json`.
+Using [Opdex DB Scripts](https://github.com/Opdex/opdex-db-scripts), create the Maria DB database then set the connection string in your configuration using `dotnet user-secrets set OpdexConfiguration:ConnectionString "Server=; Port=; Database=; Uid=; Pwd=;"`, providing the correct credentials.
 
 ### CMC API KEY
 
-Generate your own Coin Market Cap API Key and add to `appsettings.Development.json`;
+Generate your own Coin Market Cap API Key then set this in your configuation using `dotnet user-secrets set CoinMarketCapConfiguration:ApiKey [your-API-key]`.
 
 ### Cirrus Dev
 

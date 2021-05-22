@@ -15,6 +15,19 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi;
 using Opdex.Platform.WebApi.Mappers;
 using Serilog;
 using System.Collections.Generic;
+using Hellang.Middleware.ProblemDetails;
+using System;
+using Microsoft.AspNetCore.Http;
+using Opdex.Platform.Common.Exceptions;
+using Hellang.Middleware.ProblemDetails.Mvc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Opdex.Platform.WebApi.Auth;
+using Microsoft.IdentityModel.Logging;
+using NSwag;
+using Microsoft.Net.Http.Headers;
+using NSwag.Generation.Processors.Security;
+using System.Text;
 
 namespace Opdex.Platform.WebApi
 {
@@ -30,8 +43,18 @@ namespace Opdex.Platform.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddProblemDetails(options =>
+            {
+                options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
+                options.Map<BadRequestException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
+                options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
+                options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
+                options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+            });
+
             services
                 .AddControllers()
+                .AddProblemDetailsConventions()
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
@@ -42,13 +65,39 @@ namespace Opdex.Platform.WebApi
                             new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK" }
                         };
                 });
-            
+
+            var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
+            services.Configure<AuthConfiguration>(authConfig);
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = false,
+                            ValidateAudience = false,
+                            ValidateIssuerSigningKey = true,
+                            ValidateLifetime = true,
+                            // temp solution, OAuth will prefer assymmetric key
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
+                        };
+                    });
+
             services.AddOpenApiDocument(settings =>
             {
                 settings.Title = "Opdex Platform API";
                 settings.Version = "v1";
+                settings.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Description = "Type into textbox: Bearer [your jwt]",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Name = HeaderNames.Authorization,
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
+                });
+                settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
             });
-            
+
             // Automapper Profiles
             services.AddAutoMapper(mapperConfig =>
             {
@@ -56,19 +105,18 @@ namespace Opdex.Platform.WebApi
                 mapperConfig.AddProfile<PlatformInfrastructureMapperProfile>();
                 mapperConfig.AddProfile<PlatformWebApiMapperProfile>();
             });
-            
+
             services.AddHttpClient();
-            
-            // Todo: Use Azure Key Vault / User Secrets
+
             var cirrusConfig = Configuration.GetSection(nameof(CirrusConfiguration));
             services.Configure<CirrusConfiguration>(cirrusConfig);
-            
+
             var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
             services.Configure<OpdexConfiguration>(opdexConfig);
-            
+
             var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
             services.Configure<CoinMarketCapConfiguration>(cmcConfig);
-            
+
             // Register project module services
             services.AddPlatformApplicationServices();
             services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(), cmcConfig.Get<CoinMarketCapConfiguration>());
@@ -85,29 +133,33 @@ namespace Opdex.Platform.WebApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                IdentityModelEventSource.ShowPII = true;
             }
+
+            app.UseProblemDetails();
 
             // Todo: Set correctly for ENV's outside local dev
             app.UseCors(options => options
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod());
-            
+
             app.UseSerilogRequestLogging();
 
             // app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseOpenApi();
-            
+
             app.UseSwaggerUi3();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
-        
+
         /// <summary>
         /// Hide Stratis related endpoints in Swagger shown due to using Nuget packages
         /// in WebApi project for serialization.
