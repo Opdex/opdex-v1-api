@@ -5,9 +5,11 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Common.Extensions;
@@ -30,11 +32,13 @@ namespace Opdex.Platform.WebApi.Controllers
         private readonly IMediator _mediator;
         private readonly ILogger<DeployController> _logger;
         private readonly Serializer _serializer = new Serializer(new ContractPrimitiveSerializer(new PoANetwork()));
-
-        public DeployController(IMediator mediator, ILogger<DeployController> logger)
+        private readonly IHostingEnvironment _hostingEnv;
+        
+        public DeployController(IMediator mediator, ILogger<DeployController> logger, IHostingEnvironment hostingEnv)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _hostingEnv = hostingEnv ?? throw new ArgumentNullException(nameof(hostingEnv));
         }
         
         /// <summary>
@@ -124,6 +128,8 @@ namespace Opdex.Platform.WebApi.Controllers
                 request.WalletPassword, "0.00", "CreatePool", createOdxPoolParams);
             var createOdxPoolCommand = new CallCirrusCallSmartContractMethodCommand(createOdxPoolRequest);
             var createOdxPoolTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createOdxPoolCommand, cancellationToken));
+            
+            await _mediator.Send(new ProcessLatestBlocksCommand(_hostingEnv.IsDevelopment()), CancellationToken.None);
             
             return Ok("Successful");
         }
