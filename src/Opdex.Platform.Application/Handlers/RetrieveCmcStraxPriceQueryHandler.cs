@@ -16,9 +16,16 @@ namespace Opdex.Platform.Application.Handlers
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public Task<decimal> Handle(RetrieveCmcStraxPriceQuery request, CancellationToken cancellationToken)
+        public async Task<decimal> Handle(RetrieveCmcStraxPriceQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new CallCmcGetStraxQuotePriceQuery(), cancellationToken);
+            try
+            {
+                return await _mediator.Send(new CallCmcGetStraxQuotePriceQuery(), cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                return 0m;
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
@@ -18,7 +18,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 {nameof(LiquidityPoolEntity.Id)},
                 {nameof(LiquidityPoolEntity.Address)},
                 {nameof(LiquidityPoolEntity.TokenId)},
-                {nameof(LiquidityPoolEntity.MarketId)}
+                {nameof(LiquidityPoolEntity.MarketId)},
+                {nameof(LiquidityPoolEntity.CreatedBlock)},
+                {nameof(LiquidityPoolEntity.ModifiedBlock)}
             FROM pool_liquidity
             WHERE {nameof(LiquidityPoolEntity.Address)} = @{nameof(SqlParams.Address)};";
                         
@@ -38,12 +40,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             
             var result = await _context.ExecuteFindAsync<LiquidityPoolEntity>(query);
 
-            if (result == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException($"{nameof(LiquidityPoolEntity)} with address {request.Address} was not found.");
+                throw new NotFoundException($"{nameof(LiquidityPool)} not found.");
             }
 
-            return _mapper.Map<LiquidityPool>(result);
+            return result == null ? null : _mapper.Map<LiquidityPool>(result);
         }
 
         private sealed class SqlParams

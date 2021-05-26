@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
 
 namespace Opdex.Platform.Application.Handlers.Pools
@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Handlers.Pools
         
         public Task<MiningPool> Handle(RetrieveMiningPoolByLiquidityPoolIdQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectMiningPoolByLiquidityPoolIdQuery(request.LiquidityPoolId), cancellationToken);
+            return _mediator.Send(new SelectMiningPoolByLiquidityPoolIdQuery(request.LiquidityPoolId, request.FindOrThrow), cancellationToken);
         }
     }
 }

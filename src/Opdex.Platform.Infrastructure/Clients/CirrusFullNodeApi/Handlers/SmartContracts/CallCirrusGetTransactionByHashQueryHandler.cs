@@ -39,7 +39,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
 
             transaction.SetBlockHeight(block.Height);
 
-            var transactionResponse =  _mapper.Map<Transaction>(transaction);
+            var transactionResponse = _mapper.Map<Transaction>(transaction);
 
             for (var i = 0; i < transaction.Logs.Length; i++)
             {

@@ -5,44 +5,50 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         Unknown = 0,
         
         // Market deployer logs 
-        MarketCreatedLog = 1,
+        CreateMarketLog = 1,
+        ChangeDeployerOwnerLog = 2,
         
         // Market logs
-        LiquidityPoolCreatedLog = 2,
+        CreateLiquidityPoolLog = 3,
         
         // Standard market logs
-        MarketOwnerChangeLog = 3,
-        PermissionsChangeLog = 4,
+        ChangeMarketOwnerLog = 4,
+        ChangeMarketPermissionLog = 5,
         
         // Liquidity pool logs
-        MintLog = 5,
-        BurnLog = 6,
-        SwapLog = 7,
-        ReservesLog = 8,
-        ApprovalLog = 9,
-        TransferLog = 10,
+        MintLog = 6,
+        BurnLog = 7,
+        SwapLog = 8,
+        ReservesLog = 9,
+        ApprovalLog = 10,
+        TransferLog = 11,
         
         // Standard pool logs
-        MarketChangeLog = 11,
+        ChangeMarketLog = 12,
         
         // Staking pool logs
-        StartStakingLog = 12,
-        CollectStakingRewardsLog = 13,
-        StopStakingLog = 14,
+        StartStakingLog = 13,
+        CollectStakingRewardsLog = 14,
+        StopStakingLog = 15,
 
         // Mining governance logs
-        MiningPoolCreatedLog = 15,
-        RewardMiningPoolLog = 16,
-        NominationLog = 17,
+        CreateMiningPoolLog = 16,
+        RewardMiningPoolLog = 17,
+        NominationLog = 18,
         
         // Mining pool logs
-        StartMiningLog = 18,
-        CollectMiningRewardsLog = 19,
-        StopMiningLog = 20,
-        MiningPoolRewardedLog = 21,
+        StartMiningLog = 19,
+        CollectMiningRewardsLog = 20,
+        StopMiningLog = 21,
+        EnableMiningLog = 22,
 
         // Mined token logs
-        OwnerChangeLog = 22,
-        DistributionLog = 23
+        DistributionLog = 23,
+        
+        // Vault
+        CreateVaultCertificateLog = 24,
+        RevokeVaultCertificateLog = 25,
+        RedeemVaultCertificateLog = 26,
+        ChangeVaultOwnerLog = 27
     }
 }

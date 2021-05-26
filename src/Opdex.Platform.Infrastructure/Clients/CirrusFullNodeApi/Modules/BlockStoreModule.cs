@@ -26,5 +26,11 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
         {
             return GetAsync<string>(CirrusUriHelper.Consensus.GetBestBlockHash, cancellationToken);
         }
+        
+        public Task<string> GetBlockHashAsync(ulong height, CancellationToken cancellationToken)
+        {
+            var uri = string.Format(CirrusUriHelper.Consensus.GetBlockHash, height);
+            return GetAsync<string>(uri, cancellationToken);
+        }
     }
 }

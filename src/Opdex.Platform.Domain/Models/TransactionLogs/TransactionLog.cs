@@ -44,6 +44,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
 
         protected internal void SetTransactionId(long txId)
         {
+            // Todo: Maybe throw
             if (TransactionId == 0 && txId > 0)
             {
                 TransactionId = txId;

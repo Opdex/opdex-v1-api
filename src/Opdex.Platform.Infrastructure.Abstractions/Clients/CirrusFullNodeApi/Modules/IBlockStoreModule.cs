@@ -8,5 +8,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
     {
         Task<BlockReceiptDto> GetBlockAsync(string blockHash, CancellationToken cancellationToken);
         Task<string> GetBestBlockAsync(CancellationToken cancellationToken);
+        Task<string> GetBlockHashAsync(ulong height, CancellationToken cancellationToken);
     }
 }

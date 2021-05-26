@@ -1,13 +1,14 @@
 using System;
 using MediatR;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Common.Queries;
+using Opdex.Platform.Domain.Models.Markets;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Markets
 {
-    public class RetrieveMarketByAddressQuery : IRequest<Market>
+    public class RetrieveMarketByAddressQuery : FindQuery<Market>
     {
-        public RetrieveMarketByAddressQuery(string address)
+        public RetrieveMarketByAddressQuery(string address, bool findOrThrow = true) : base(findOrThrow)
         {
             if (!address.HasValue())
             {

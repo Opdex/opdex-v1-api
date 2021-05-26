@@ -1,14 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Tokens
 {
@@ -16,6 +19,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
     {
         private readonly IMediator _mediator;
         
+        private const long CrsMarketId = 0;
+        private readonly SnapshotType[] _snapshotTypes = { SnapshotType.Minute, SnapshotType.Hourly, SnapshotType.Daily };
+
         public CreateCrsTokenSnapshotsCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -23,57 +29,53 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
         
         public async Task<Unit> Handle(CreateCrsTokenSnapshotsCommand request, CancellationToken cancellationToken)
         {
-            var crs = await _mediator.Send(new GetTokenByAddressQuery("CRS"), CancellationToken.None);
-                    
-            // Get active minute, hourly, daily snapshots if available based on DateTime.Now
-            var snapshots = await _mediator.Send(new RetrieveActiveTokenSnapshotsByTokenIdQuery(crs.Id, request.BlockTime), CancellationToken.None);
+            var crs = await _mediator.Send(new GetTokenByAddressQuery(TokenConstants.Cirrus.Address), CancellationToken.None);
             
-            // Get current cmc price for strax
+            var snapshotsQuery = new RetrieveTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery(crs.Id, CrsMarketId, request.BlockTime);
+            var snapshots = await _mediator.Send(snapshotsQuery, CancellationToken.None);
+
+            // If we've already got a minute snapshot, skip
+            if (snapshots.Any(s => s.SnapshotType == SnapshotType.Minute))
+            {
+                return Unit.Value;
+            }
+
+            var isFiveMinutesOrOlder = DateTime.UtcNow.Subtract(request.BlockTime) > TimeSpan.FromMinutes(5);
+
+            if (isFiveMinutesOrOlder)
+            {
+                // Should be getting historical if its an old transaction when we start paying for cmc
+            }
+
+            // Todo: Adjust this when we start getting historical prices
             var price = await _mediator.Send(new RetrieveCmcStraxPriceQuery(), CancellationToken.None);
             
-            // Upsert CRS snapshots, minute, hourly, daily
-            var snapshotTypes = new[] { SnapshotType.Minute, SnapshotType.Hourly, SnapshotType.Daily };
-            foreach (var snapshotType in snapshotTypes)
+            foreach (var snapshotType in _snapshotTypes)
             {
-                var start = request.BlockTime;
-                var end = start;
-
-                switch (snapshotType)
-                {
-                    case SnapshotType.Minute:
-                        start = start.StartOfMinute();
-                        end = end.EndOfMinute();
-                        break;
-                    case SnapshotType.Hourly:
-                        start = start.StartOfHour();
-                        end = end.EndOfHour();
-                        break;
-                    case SnapshotType.Daily:
-                        start = start.StartOfDay();
-                        end = end.EndOfDay();
-                        break;
-                    default:
-                        start = start.StartOfHour();
-                        end = end.EndOfHour();
-                        break;
-                }
-                
-                var snapshot = snapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
-                               new TokenSnapshot(crs.Id, price, snapshotType, start, end);
-
-                if (snapshot.Id < 1)
-                {
-                    snapshot.UpdatePrice(price);
-                }
-
-                var persisted = await _mediator.Send(new MakeTokenSnapshotCommand(snapshot), CancellationToken.None);
-                if (!persisted)
-                {
-                    throw new Exception("Unable to persist token snapshot.");
-                }
+                await ProcessTokenSnapshot(snapshotType, request.BlockTime, snapshots, crs.Id, price);
             }
             
             return Unit.Value;
+        }
+
+        private async Task ProcessTokenSnapshot(SnapshotType snapshotType, DateTime blockTime, IEnumerable<TokenSnapshot> snapshots, long tokenId, decimal price)
+        {
+            var start = blockTime.ToStartOf(snapshotType);
+            var end = start.ToEndOf(snapshotType);
+
+            var snapshot = snapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
+                           new TokenSnapshot(tokenId, CrsMarketId, price, snapshotType, start, end);
+
+            if (snapshot.Id > 1)
+            {
+                snapshot.UpdatePrice(price);
+            }
+
+            var persisted = await _mediator.Send(new MakeTokenSnapshotCommand(snapshot), CancellationToken.None);
+            if (!persisted)
+            {
+                throw new Exception("Unable to persist token snapshot.");
+            }
         }
     }
 }

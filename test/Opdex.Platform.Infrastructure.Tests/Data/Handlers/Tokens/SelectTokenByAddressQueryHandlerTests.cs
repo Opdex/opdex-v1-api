@@ -4,6 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
@@ -39,7 +40,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
                 Symbol = "SomeSymbol",
                 Sats = 987689076,
                 Decimals = 18,
-                TotalSupply = "98765434567898765"
+                TotalSupply = "98765434567898765",
+                CreatedBlock = 1,
+                ModifiedBlock = 1
             };
                 
             var command = new SelectTokenByAddressQuery(address);
@@ -59,7 +62,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         }
         
         [Fact]
-        public void SelectTransactionByHash_Throws_NotFoundException()
+        public void SelectTokenByAddress_Throws_NotFoundException()
         {
             const string address = "SomeAddress";
             
@@ -71,7 +74,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
                 .Throw<NotFoundException>()
-                .WithMessage($"{nameof(TokenEntity)} with address {address} was not found.");
+                .WithMessage($"{nameof(Token)} not found.");
         }
     }
 }

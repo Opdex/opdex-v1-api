@@ -6,28 +6,28 @@ namespace Opdex.Platform.Common.Extensions
     {
         public static DateTime FromUnixTimeSeconds(this string seconds)
         {
-            long.TryParse(seconds, out var timeSeconds);
-            return DateTimeOffset.FromUnixTimeSeconds(timeSeconds).UtcDateTime;
+            var success = long.TryParse(seconds, out var timeSeconds);
+            return !success ? default : DateTimeOffset.FromUnixTimeSeconds(timeSeconds).UtcDateTime;
         }
         
         public static DateTime StartOfMonth(this DateTime date)
         {
-            return new DateTime();
+            throw new NotImplementedException();
         }
         
         public static DateTime EndOfMonth(this DateTime date)
         {
-            return new DateTime();
+            throw new NotImplementedException();
         }
 
         public static DateTime StartOfWeek(this DateTime date)
         {
-            return new DateTime();
+            throw new NotImplementedException();
         }
         
         public static DateTime EndOfWeek(this DateTime date)
         {
-            return new DateTime();
+            throw new NotImplementedException();
         }
 
         public static DateTime EndOfDay(this DateTime date)
@@ -58,6 +58,36 @@ namespace Opdex.Platform.Common.Extensions
         public static DateTime EndOfMinute(this DateTime date)
         {
             return date.AddSeconds(59 - date.Second);
+        }
+
+        public static DateTime ToStartOf(this DateTime date, SnapshotType snapshotType)
+        {
+            switch (snapshotType)
+            {
+                case SnapshotType.Minute:
+                    return date.StartOfMinute();
+                case SnapshotType.Hourly:
+                    return date.StartOfHour();
+                case SnapshotType.Daily:
+                    return date.StartOfDay();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(snapshotType), snapshotType, "Invalid snapshot type.");
+            }
+        }
+        
+        public static DateTime ToEndOf(this DateTime date, SnapshotType snapshotType)
+        {
+            switch (snapshotType)
+            {
+                case SnapshotType.Minute:
+                    return date.EndOfMinute();
+                case SnapshotType.Hourly:
+                    return date.EndOfHour();
+                case SnapshotType.Daily:
+                    return date.EndOfDay();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(snapshotType), snapshotType, "Invalid snapshot type.");
+            }
         }
     }
 }

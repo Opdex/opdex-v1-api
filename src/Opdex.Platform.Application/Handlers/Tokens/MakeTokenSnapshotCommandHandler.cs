@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.Handlers.Tokens
         
         public Task<bool> Handle(MakeTokenSnapshotCommand request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new PersistTokenSnapshotCommand(request.Snapshot));
+            return _mediator.Send(new PersistTokenSnapshotCommand(request.Snapshot), CancellationToken.None);
         }
     }
 }

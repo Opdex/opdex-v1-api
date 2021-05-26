@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
@@ -17,7 +17,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             @$"SELECT 
                 {nameof(MiningPoolEntity.Id)},
                 {nameof(MiningPoolEntity.LiquidityPoolId)},
-                {nameof(MiningPoolEntity.Address)}
+                {nameof(MiningPoolEntity.Address)},
+                {nameof(MiningPoolEntity.RewardPerBlock)},
+                {nameof(MiningPoolEntity.RewardPerLpt)},
+                {nameof(MiningPoolEntity.MiningPeriodEndBlock)},
+                {nameof(MiningPoolEntity.ModifiedBlock)},
+                {nameof(MiningPoolEntity.CreatedBlock)}
             FROM pool_mining
             WHERE {nameof(MiningPoolEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)};";
                         
@@ -37,12 +42,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             
             var result = await _context.ExecuteFindAsync<MiningPoolEntity>(query);
 
-            if (result == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException($"{nameof(MiningPoolEntity)} with liquidity pool id {request.LiquidityPoolId} was not found.");
+                throw new NotFoundException($"{nameof(MiningPool)} not found.");
             }
 
-            return _mapper.Map<MiningPool>(result);
+            return result == null ? null : _mapper.Map<MiningPool>(result);
         }
 
         private sealed class SqlParams

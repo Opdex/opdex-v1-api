@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
@@ -22,7 +22,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
                 {nameof(TokenEntity.Decimals)},
                 {nameof(TokenEntity.Sats)},
                 {nameof(TokenEntity.TotalSupply)},
-                {nameof(TokenEntity.CreatedDate)}
+                {nameof(TokenEntity.CreatedBlock)},
+                {nameof(TokenEntity.ModifiedBlock)}
             FROM token
             WHERE {nameof(TokenEntity.Id)} = @{nameof(SqlParams.Id)};";
 
@@ -42,12 +43,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
             var result = await _context.ExecuteFindAsync<TokenEntity>(query);
 
-            if (result == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException($"{nameof(TokenEntity)} with Id {request.TokenId} was not found.");
+                throw new NotFoundException($"{nameof(Token)} not found.");
             }
 
-            return _mapper.Map<Token>(result);
+            return result == null ? null : _mapper.Map<Token>(result);
         }
 
         private sealed class SqlParams

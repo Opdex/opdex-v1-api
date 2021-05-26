@@ -1,205 +1,128 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Models;
-using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
-using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
-using Opdex.Platform.Application.Abstractions.Commands.Pools;
-using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Pools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
-using Opdex.Platform.Application.Abstractions.Queries.Blocks;
-using Opdex.Platform.Application.Abstractions.Queries.Deployers;
-using Opdex.Platform.Application.Abstractions.Queries.Markets;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningGovernance;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vault;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
     public class CreateTransactionCommandHandler : IRequestHandler<CreateTransactionCommand, bool>
     {
-        private readonly IMapper _mapper;
         private readonly IMediator _mediator;
         private readonly ILogger _logger;
-        private readonly IModelAssembler<Transaction, TransactionDto> _assembler;
         
-        public CreateTransactionCommandHandler(IMapper mapper, IMediator mediator,
-            ILogger<CreateTransactionCommandHandler> logger, IModelAssembler<Transaction, TransactionDto> assembler)
+        public CreateTransactionCommandHandler(IMediator mediator, ILogger<CreateTransactionCommandHandler> logger)
         {
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
         }
         
         public async Task<bool> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
         {
-            var transactionDto = await TryGetExistingTransaction(request.TxHash, CancellationToken.None);
+            var transactionQuery = new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false);
+            var transaction = await _mediator.Send(transactionQuery, CancellationToken.None);
 
-            if (transactionDto != null) return true;
-
-            var cirrusTx = await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
-
-            if (cirrusTx == null) return false;
-            
-            var result = await _mediator.Send(new MakeTransactionCommand(cirrusTx), CancellationToken.None);
-
-            if (!result) return false;
-
-            // Process Market Created Logs
-            var marketCreatedLogs = cirrusTx.LogsOfType<MarketCreatedLog>(TransactionLogType.MarketCreatedLog);
-            foreach (var log in marketCreatedLogs)
+            // Currently stop here, partially captured transactions cannot be synced again...for now.
+            if (transaction != null)
             {
-                // Check our market deployer address, index only our created markets.
-                // var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(log.Contract), CancellationToken.None);
-                //
-                // // Ignore if it's not one of Opdex deployers
-                // if (deployer == null) continue;
+                return true;
+            }
+
+            var transactionReceiptQuery = new RetrieveCirrusTransactionByHashQuery(request.TxHash);
+            transaction = await _mediator.Send(transactionReceiptQuery, CancellationToken.None);
+
+            if (transaction == null)
+            {
+                return false;
+            }
+            
+            // Todo: Only persist if IsOpdexTransaction
+            
+            var transactionId = await _mediator.Send(new MakeTransactionCommand(transaction), CancellationToken.None);
+            if (transactionId == 0)
+            {
+                return false;
+            }
+            
+            transaction.SetId(transactionId);
+
+            var height = transaction.BlockHeight;
+            var sender = transaction.From;
+
+            foreach (var log in transaction.Logs.OrderBy(l => l.SortOrder))
+            {
+                var success = false;
                 
-                // If this transaction has a new contract address, it was the tx that deployed the deployer contract which 
-                // creates the only available staking market.
-                var isStaking = cirrusTx.NewContractAddress.HasValue();
-                
-                // Create new market
-                var marketId = await _mediator.Send(new MakeMarketCommand(log.Market, log.AuthPoolCreators, log.AuthProviders, log.AuthTraders, log.Fee, isStaking), CancellationToken.None);
-            }
-            
-            // Process Liquidity Pool Created Logs
-            var liquidityPoolCreatedLogs = cirrusTx.LogsOfType<LiquidityPoolCreatedLog>(TransactionLogType.LiquidityPoolCreatedLog);
-            foreach (var log in liquidityPoolCreatedLogs)
-            {
-                var marketI = await _mediator.Send(new RetrieveMarketByAddressQuery(log.Contract), CancellationToken.None);
-                var tokenId = await _mediator.Send(new MakeTokenCommand(log.Token), CancellationToken.None);
-                var pairId = await _mediator.Send(new MakeLiquidityPoolCommand(log.Pool, tokenId, marketI.Id), CancellationToken.None);
-            }
-            
-            // Process Mining Pool Created Logs
-            var miningPoolCreatedLogs = cirrusTx.LogsOfType<MiningPoolCreatedLog>(TransactionLogType.MiningPoolCreatedLog);
-            foreach (var log in miningPoolCreatedLogs)
-            {
-                var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(log.StakingPool), CancellationToken.None);
-                var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(log.MiningPool, pool.Id), CancellationToken.None);
-            }
-
-            await ProcessSnapshots(cirrusTx);
-            
-            return true;
-        }
-
-        // Todo: This needs to be cleaned up and put in it's own command / handler
-        // Still considering other approaches to this
-        // This processes liquidity pool and token related snapshots for historical analytic purposes
-        // Consider a snapshot for mining pools, is historical data ever needed or only current data?
-        // Todo: Consider when pulling a SRC token snapshot that may be stale because the pool is low volume
-        // If the reserves don't change often but CRS token price still does, token snapshots still need to 
-        // occur regularly 
-        private async Task ProcessSnapshots(Transaction tx)
-        {
-            var crsToken = await _mediator.Send(new RetrieveTokenByAddressQuery("CRS"), CancellationToken.None);
-            // Todo: Should not be latest, should be by snapshot time
-            var crsSnapshot = await _mediator.Send(new RetrieveLatestTokenSnapshotByTokenIdQuery(crsToken.Id), CancellationToken.None);
-            var block = await _mediator.Send(new RetrieveBlockByHeightQuery(tx.BlockHeight), CancellationToken.None);
-            
-            var poolSnapshotLogTypes = new List<TransactionLogType>
-            {
-                TransactionLogType.ReservesLog,
-                TransactionLogType.SwapLog,
-                TransactionLogType.StartStakingLog,
-                TransactionLogType.StopStakingLog
-            };
-            
-            var snapshotTypes = new[] {SnapshotType.Hourly, SnapshotType.Daily};
-
-            var poolSnapshotGroups = tx.GroupedLogsOfTypes(poolSnapshotLogTypes);
-            
-            // Each pool in the dictionary
-            foreach (var (poolContract, value) in poolSnapshotGroups)
-            {
-                var pool = await _mediator.Send(new GetLiquidityPoolByAddressQuery(poolContract), CancellationToken.None);
-                var poolSnapshots = await _mediator.Send(new RetrieveActiveLiquidityPoolSnapshotsByPoolIdQuery(pool.Id, block.MedianTime), CancellationToken.None);
-
-                // Each snapshot type we care about for pools
-                foreach (var snapshotType in snapshotTypes)
+                try
                 {
-                    var snapshotStart = snapshotType == SnapshotType.Hourly ? block.MedianTime.StartOfHour() : block.MedianTime.StartOfDay();
-                    var snapshotEnd = snapshotType == SnapshotType.Hourly ? block.MedianTime.EndOfHour() : block.MedianTime.EndOfDay();
-                    var poolSnapshot = poolSnapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
-                                       new LiquidityPoolSnapshot(pool.Id, snapshotType, snapshotStart, snapshotEnd);
-                    
-                    // Each log to process
-                    foreach (var poolLog in value)
+                    success = log.LogType switch
                     {
-                        switch (poolLog.LogType)
-                        {
-                            // Update pool liquidity(reserves) snapshot | CRS, SRC, USD
-                            // Update src token price snapshots | USD
-                            case TransactionLogType.ReservesLog:
-                                var reservesLog = (ReservesLog)poolLog;
-                                await ProcessTokenSnapshot(pool, snapshotType, reservesLog, snapshotStart, snapshotEnd, crsSnapshot, crsToken);
-                                poolSnapshot.ProcessReservesLog(reservesLog, crsSnapshot, crsToken);
-                                break;
-                            // - update pool volume snapshot | CRS, SRC, USD
-                            // - update pool rewards snapshot | USD
-                            case TransactionLogType.SwapLog:
-                                poolSnapshot.ProcessSwapLog((SwapLog)poolLog, crsSnapshot, crsToken);
-                                break;
-                            // - update pool staking weight snapshot | SRC, USD
-                            case TransactionLogType.StartStakingLog:
-                                // Todo: Should be odx snapshot / token
-                                poolSnapshot.ProcessStakingLog((StartStakingLog)poolLog, crsSnapshot, crsToken);
-                                break;
-                            // - update pool staking weight snapshot | SRC, USD
-                            case TransactionLogType.StopStakingLog:
-                                // Todo: Should be odx snapshot / token
-                                poolSnapshot.ProcessStakingLog((StopStakingLog)poolLog, crsSnapshot, crsToken);
-                                break;
-                        }
-                    }
-                    
-                    poolSnapshot.IncrementTransactionCount();
-                    
-                    await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(poolSnapshot), CancellationToken.None);
+                        TransactionLogType.CreateMarketLog => await _mediator.Send(new ProcessCreateMarketLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.CreateLiquidityPoolLog => await _mediator.Send(new ProcessCreateLiquidityPoolLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ChangeMarketOwnerLog => await _mediator.Send(new ProcessChangeMarketOwnerLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ChangeMarketPermissionLog =>  await _mediator.Send(new ProcessChangeMarketPermissionLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.MintLog => await _mediator.Send(new ProcessMintLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.BurnLog => await _mediator.Send(new ProcessBurnLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.SwapLog => await _mediator.Send(new ProcessSwapLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ReservesLog => await _mediator.Send(new ProcessReservesLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ApprovalLog => await _mediator.Send(new ProcessApprovalLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.TransferLog => await _mediator.Send(new ProcessTransferLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ChangeMarketLog => await _mediator.Send(new ProcessChangeMarketLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.StartStakingLog => await _mediator.Send(new ProcessStartStakingLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.CollectStakingRewardsLog => await _mediator.Send(new ProcessCollectStakingRewardsLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.StopStakingLog => await _mediator.Send(new ProcessStopStakingLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.CreateMiningPoolLog => await _mediator.Send(new ProcessCreateMiningPoolLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.RewardMiningPoolLog => await _mediator.Send(new ProcessRewardMiningPoolLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.NominationLog => await _mediator.Send(new ProcessNominationLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.StartMiningLog => await _mediator.Send(new ProcessStartMiningLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.CollectMiningRewardsLog => await _mediator.Send(new ProcessCollectMiningRewardsLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.StopMiningLog => await _mediator.Send(new ProcessStopMiningLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.EnableMiningLog => await _mediator.Send(new ProcessEnableMiningLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.DistributionLog => await _mediator.Send(new ProcessDistributionLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.CreateVaultCertificateLog => await _mediator.Send(new ProcessCreateVaultCertificateLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.RevokeVaultCertificateLog => await _mediator.Send(new ProcessRevokeVaultCertificateLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.RedeemVaultCertificateLog => await _mediator.Send(new ProcessRedeemVaultCertificateLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ChangeVaultOwnerLog => await _mediator.Send(new ProcessChangeVaultOwnerLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ChangeDeployerOwnerLog => await _mediator.Send(new ProcessChangeDeployerOwnerLogCommand(log, sender, height), CancellationToken.None),
+                        _ => throw new ArgumentOutOfRangeException(nameof(TransactionLogType), "Unknown transaction log type.")
+                    };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to process transaction log.");
+                }
+
+                if (!success)
+                {
+                    _logger.LogError($"Failed to persist transaction log type {log.LogType}.");
                 }
             }
-        }
-        
-        private async Task ProcessTokenSnapshot(LiquidityPoolDto pool, SnapshotType snapshotType, ReservesLog log, DateTime snapshotStart, DateTime snapshotEnd,
-            TokenSnapshot crsSnapshot, Token crsToken)
-        {
-            var poolTokenSnapshots = await _mediator.Send(new RetrieveActiveTokenSnapshotsByTokenIdQuery(pool.Token.Id, snapshotStart), CancellationToken.None);
-
-            var poolTokenSnapshot = poolTokenSnapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
-                                    new TokenSnapshot(pool.Token.Id, 0m, snapshotType, snapshotStart, snapshotEnd);
-                    
-            poolTokenSnapshot.ProcessReservesLog(log, crsSnapshot, crsToken, pool.Token.Decimals);
-
-            await _mediator.Send(new MakeTokenSnapshotCommand(poolTokenSnapshot), CancellationToken.None);
-        }
-
-        private async Task<TransactionDto> TryGetExistingTransaction(string txHash, CancellationToken cancellationToken)
-        {
-            TransactionDto transactionDto = null;
             
-            try
-            {
-                var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(txHash), cancellationToken);
-                transactionDto = await _assembler.Assemble(transaction);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex, $"{nameof(Transaction)} with hash {txHash} is not found. Fetching from Cirrus to index.");
-            }
+            // Mark transaction confirming logs all relevant logs were processed
 
-            return transactionDto;
+
+            // Process snapshots the transaction affects should update or create records
+            // Consider flagging logs as snapshotProcessed or something else?
+            // Maybe process these snapshots once per block after all transactions have been processed for performance.
+            // Returning out the Transactions from this query that require snapshots to be processed.
+            await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(transaction), CancellationToken.None);
+            // Todo: Process mining pool snapshots this transaction affects
+            // Todo: Process token snapshots this transaction has Transfer logs for
+            
+            return true;
         }
     }
 }

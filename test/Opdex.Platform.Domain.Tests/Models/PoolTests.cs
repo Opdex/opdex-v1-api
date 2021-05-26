@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Pools;
 using Xunit;
 
 namespace Opdex.Platform.Domain.Tests.Models
@@ -12,12 +12,15 @@ namespace Opdex.Platform.Domain.Tests.Models
             const string address = "Address";
             const long tokenId = 2;
             const long marketId = 1;
+            const ulong createdBlock = 3;
 
-            var pool = new LiquidityPool(address, tokenId, marketId);
+            var pool = new LiquidityPool(address, tokenId, marketId, createdBlock);
 
             pool.Id.Should().Be(0);
             pool.Address.Should().Be(address);
             pool.TokenId.Should().Be(tokenId);
+            pool.CreatedBlock.Should().Be(createdBlock);
+            pool.ModifiedBlock.Should().Be(createdBlock);
         }
     }
 }

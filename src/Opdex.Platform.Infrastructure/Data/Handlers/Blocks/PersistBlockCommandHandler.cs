@@ -6,7 +6,6 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
@@ -18,14 +17,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
                 {nameof(BlockEntity.Height)},
                 {nameof(BlockEntity.Hash)},
                 {nameof(BlockEntity.Time)},
-                {nameof(BlockEntity.MedianTime)},
-                {nameof(BlockEntity.CreatedDate)}
+                {nameof(BlockEntity.MedianTime)}
               ) VALUES (
                 @{nameof(BlockEntity.Height)},
                 @{nameof(BlockEntity.Hash)},
                 @{nameof(BlockEntity.Time)},
-                @{nameof(BlockEntity.MedianTime)},
-                UTC_TIMESTAMP()
+                @{nameof(BlockEntity.MedianTime)}
               );";
 
         private readonly IDbContext _context;
@@ -54,7 +51,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Unable to persist {request.Block}");
+                _logger.LogError(ex, $"Failure persisting {request.Block}.");
+                
                 return false;
             }
         }

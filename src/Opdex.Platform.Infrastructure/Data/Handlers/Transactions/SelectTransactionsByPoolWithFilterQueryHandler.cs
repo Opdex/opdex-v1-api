@@ -24,7 +24,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                 t.{nameof(TransactionEntity.Block)},
                 t.{nameof(TransactionEntity.GasUsed)},
                 t.`{nameof(TransactionEntity.To)}`,
-                t.`{nameof(TransactionEntity.From)}`
+                t.`{nameof(TransactionEntity.From)}`,
+                t.{nameof(TransactionEntity.Success)},
+                t.{nameof(TransactionEntity.NewContractAddress)}
             FROM transaction t
             LEFT JOIN transaction_log tl 
                 ON tl.{nameof(TransactionLogEntity.TransactionId)} = t.{nameof(TransactionEntity.Id)} 

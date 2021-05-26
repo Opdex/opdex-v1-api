@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using Opdex.Platform.Domain.Models;
-using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Xunit;
 
 namespace Opdex.Platform.Domain.Tests.Models
@@ -16,6 +16,7 @@ namespace Opdex.Platform.Domain.Tests.Models
             const int gasUsed = 90000;
             const string from = "From";
             const string to = "To";
+            const bool success = true;
             var logs = new List<dynamic>();
             
             dynamic syncLog = new System.Dynamic.ExpandoObject();
@@ -28,7 +29,7 @@ namespace Opdex.Platform.Domain.Tests.Models
 
             logs.Add(syncLog);
 
-            var receipt = new Transaction(txHash, blockHeight, gasUsed, from, to);
+            var receipt = new Transaction(txHash, blockHeight, gasUsed, from, to, success);
             foreach (var log in logs)
             {
                 receipt.DeserializeLog(log.Address, log.Topics[0], 0, log.Log);    

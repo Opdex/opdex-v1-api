@@ -4,7 +4,7 @@ using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions
 {
-    public class MakeTransactionCommand : IRequest<bool>
+    public class MakeTransactionCommand : IRequest<long>
     {
         public MakeTransactionCommand(Transaction transaction)
         {

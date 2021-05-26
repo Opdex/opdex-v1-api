@@ -26,6 +26,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi
         public static class Consensus
         {
             public const string GetBestBlockHash = "Consensus/getbestblockhash";
+            public const string GetBlockHash = "Consensus/getblockhash?height={0}";
         }
 
         public static class Node

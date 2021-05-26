@@ -15,12 +15,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO token_snapshot (
                 {nameof(TokenSnapshotEntity.TokenId)},
+                {nameof(TokenSnapshotEntity.MarketId)},
                 {nameof(TokenSnapshotEntity.Price)},
                 {nameof(TokenSnapshotEntity.SnapshotTypeId)},
                 {nameof(TokenSnapshotEntity.StartDate)},
                 {nameof(TokenSnapshotEntity.EndDate)}
               ) VALUES (
                 @{nameof(TokenSnapshotEntity.TokenId)},
+                @{nameof(TokenSnapshotEntity.MarketId)},
                 @{nameof(TokenSnapshotEntity.Price)},
                 @{nameof(TokenSnapshotEntity.SnapshotTypeId)},
                 @{nameof(TokenSnapshotEntity.StartDate)},

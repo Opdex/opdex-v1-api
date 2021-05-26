@@ -16,11 +16,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
         private static readonly string SqlQuery =
             @$"SELECT 
                 {nameof(TransactionEntity.Id)},
+                `{nameof(TransactionEntity.To)}`,
+                `{nameof(TransactionEntity.From)}`,
                 {nameof(TransactionEntity.Hash)},
                 {nameof(TransactionEntity.Block)},
                 {nameof(TransactionEntity.GasUsed)},
-                `{nameof(TransactionEntity.To)}`,
-                `{nameof(TransactionEntity.From)}`
+                {nameof(TransactionEntity.NewContractAddress)},
+                {nameof(TransactionEntity.Success)}
             FROM transaction
             WHERE {nameof(TransactionEntity.Hash)} = @{nameof(SqlParams.Hash)};";
 
@@ -40,12 +42,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
             var result = await _context.ExecuteFindAsync<TransactionEntity>(query);
 
-            if (result == null)
+            if (request.FindOrThrow && result == null)
             {
-                throw new NotFoundException($"{nameof(TransactionEntity)} with hash {request.Hash} was not found.");
+                throw new NotFoundException($"{nameof(Transaction)} not found.");
             }
 
-            return _mapper.Map<Transaction>(result);
+            return result == null ? null : _mapper.Map<Transaction>(result);
         }
 
         private sealed class SqlParams

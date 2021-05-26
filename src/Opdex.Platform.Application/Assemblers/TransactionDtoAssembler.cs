@@ -24,7 +24,7 @@ namespace Opdex.Platform.Application.Assemblers
             var transactionLogs = await _mediator.Send(new RetrieveTransactionLogsByTransactionIdQuery(transaction.Id));
             
             return _mapper.Map<TransactionDto>(new Transaction(transaction.Id, transaction.Hash, transaction.BlockHeight,
-                transaction.GasUsed, transaction.From, transaction.To, transactionLogs));
+                transaction.GasUsed, transaction.From, transaction.To, transaction.Success, transactionLogs));
         }
     }
 }

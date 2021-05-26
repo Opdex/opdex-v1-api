@@ -4,6 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
@@ -36,7 +37,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
                 Id = 123454,
                 TokenId = 1235,
                 MarketId = 1,
-                Address = "SomeAddress"
+                Address = "SomeAddress",
+                CreatedBlock = 1,
+                ModifiedBlock = 1
             };
                 
             var command = new SelectLiquidityPoolByAddressQuery(address);
@@ -53,7 +56,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         }
         
         [Fact]
-        public void SelectTransactionByHash_Throws_NotFoundException()
+        public void SelectLiquidityPoolByAddress_Throws_NotFoundException()
         {
             const string address = "SomeAddress";
             
@@ -65,7 +68,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
                 .Throw<NotFoundException>()
-                .WithMessage($"{nameof(LiquidityPoolEntity)} with address {address} was not found.");
+                .WithMessage($"{nameof(LiquidityPool)} not found.");
         }
     }
 }

@@ -1,14 +1,14 @@
 using System;
-using System.Collections.Generic;
 using MediatR;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Common.Queries;
+using Opdex.Platform.Domain.Models.Pools;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools
 {
-    public class SelectLiquidityPoolByTokenIdAndMarketAddressQuery : IRequest<Token>
+    public class SelectLiquidityPoolByTokenIdAndMarketAddressQuery : FindQuery<LiquidityPool>
     {
-        public SelectLiquidityPoolByTokenIdAndMarketAddressQuery(long tokenId, string marketAddress)
+        public SelectLiquidityPoolByTokenIdAndMarketAddressQuery(long tokenId, string marketAddress, bool findOrThrow = true) : base(findOrThrow)
         {
             if (tokenId < 1)
             {

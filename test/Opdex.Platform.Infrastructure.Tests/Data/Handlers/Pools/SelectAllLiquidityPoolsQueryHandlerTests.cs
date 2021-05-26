@@ -24,10 +24,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         public SelectAllLiquidityPoolsQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            var logger = new NullLogger<SelectAllLiquidityPoolsQueryHandler>();
             
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectAllLiquidityPoolsQueryHandler(_dbContext.Object, mapper, logger);
+            _handler = new SelectAllLiquidityPoolsQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
@@ -38,7 +37,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
                 Id = 123454,
                 TokenId = 2,
                 MarketId = 3,
-                Address = "SomeAddress"
+                Address = "SomeAddress",
+                CreatedBlock = 1,
+                ModifiedBlock = 1
             };
 
             var responseList = new [] { expectedEntity }.AsEnumerable();

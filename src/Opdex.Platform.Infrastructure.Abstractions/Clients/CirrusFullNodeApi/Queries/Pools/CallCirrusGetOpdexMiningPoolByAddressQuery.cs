@@ -1,11 +1,11 @@
 using System;
 using MediatR;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Pools;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Pools
 {
-    public class CallCirrusGetOpdexMiningPoolByAddressQuery : IRequest<MiningPool>
+    public class CallCirrusGetOpdexMiningPoolByAddressQuery : IRequest<MiningPoolSmartContractSummary>
     {
         public CallCirrusGetOpdexMiningPoolByAddressQuery(string address)
         {

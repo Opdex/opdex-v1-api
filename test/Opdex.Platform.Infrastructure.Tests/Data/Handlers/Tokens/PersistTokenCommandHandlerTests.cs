@@ -4,7 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task PersistsToken_Success()
         {
-            var token = new Token("TokenAddress", "TokenName", "TKN", 8, 100_000_000, "500_000_000");
+            var token = new Token("TokenAddress", "TokenName", "TKN", 8, 100_000_000, "500_000_000", 1);
             var command = new PersistTokenCommand(token);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -43,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task PersistsToken_Fail()
         {
-            var token = new Token("TokenAddress", "TokenName", "TKN", 8, 100_000_000, "500_000_000");
+            var token = new Token("TokenAddress", "TokenName", "TKN", 8, 100_000_000, "500_000_000", 1);
             var command = new PersistTokenCommand(token);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

@@ -12,16 +12,26 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
 {
     public class PersistDeployerCommandHandler : IRequestHandler<PersistDeployerCommand, long>
     {
-        // Todo: Insert vs update
-        private static readonly string SqlCommand =
-            $@"INSERT INTO deployer (
+        private static readonly string InsertSqlCommand =
+            $@"INSERT INTO market_deployer (
                 {nameof(DeployerEntity.Address)},
-                {nameof(DeployerEntity.CreatedDate)}
+                {nameof(DeployerEntity.Owner)},
+                {nameof(DeployerEntity.CreatedBlock)},
+                {nameof(DeployerEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(DeployerEntity.Address)},
-                UTC_TIMESTAMP()
+                @{nameof(DeployerEntity.Owner)},
+                @{nameof(DeployerEntity.CreatedBlock)},
+                @{nameof(DeployerEntity.ModifiedBlock)}
               );
               SELECT LAST_INSERT_ID();";
+        
+        private static readonly string UpdateSqlCommand =
+            $@"UPDATE market_deployer 
+                SET 
+                    {nameof(DeployerEntity.Owner)} = @{nameof(DeployerEntity.Owner)},
+                    {nameof(DeployerEntity.ModifiedBlock)} = @{nameof(DeployerEntity.ModifiedBlock)}
+                WHERE {nameof(DeployerEntity.Id)} = @{nameof(DeployerEntity.Id)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -38,13 +48,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
         {
             try
             {
-                var command = DatabaseQuery.Create(SqlCommand, request.Address, cancellationToken);
+                var entity = _mapper.Map<DeployerEntity>(request.Deployer);
+                
+                var isUpdate = entity.Id >= 1;
+                
+                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+                
+                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
             
-                return await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<long>(command);
+                
+                return isUpdate ? entity.Id : result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Unable to persist deployer {request.Address}");
+                _logger.LogError(ex, $"Failure persisting {request.Deployer}.");
                 
                 return 0;
             }

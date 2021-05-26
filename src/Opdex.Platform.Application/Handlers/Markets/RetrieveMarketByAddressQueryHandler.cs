@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
 namespace Opdex.Platform.Application.Handlers.Markets
@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Handlers.Markets
 
         public Task<Market> Handle(RetrieveMarketByAddressQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectMarketByAddressQuery(request.Address), cancellationToken);
+            return _mediator.Send(new SelectMarketByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
         }
     }
 }

@@ -2,7 +2,7 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models
 {
-    public class BlockEntity : AuditEntity
+    public class BlockEntity
     {
         public ulong Height { get; set; }
         public string Hash { get; set; }

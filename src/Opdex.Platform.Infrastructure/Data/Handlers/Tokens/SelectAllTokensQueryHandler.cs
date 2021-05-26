@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
@@ -23,7 +23,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
                 {nameof(TokenEntity.Decimals)},
                 {nameof(TokenEntity.Sats)},
                 {nameof(TokenEntity.TotalSupply)},
-                {nameof(TokenEntity.CreatedDate)}
+                {nameof(TokenEntity.CreatedBlock)},
+                {nameof(TokenEntity.ModifiedBlock)}
             FROM token;";
 
         private readonly IDbContext _context;

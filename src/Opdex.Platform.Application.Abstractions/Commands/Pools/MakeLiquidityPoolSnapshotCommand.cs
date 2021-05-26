@@ -1,6 +1,6 @@
 using System;
 using MediatR;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Pools;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Pools
 {

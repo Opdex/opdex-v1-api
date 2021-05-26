@@ -3,9 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Pools;
@@ -13,7 +12,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools
 {
     public class CallCirrusGetOpdexMiningPoolByAddressQueryHandler 
-        : IRequestHandler<CallCirrusGetOpdexMiningPoolByAddressQuery, MiningPool>
+        : IRequestHandler<CallCirrusGetOpdexMiningPoolByAddressQuery, MiningPoolSmartContractSummary>
     {
         private readonly ISmartContractsModule _smartContractsModule;
         private readonly ILogger<CallCirrusGetOpdexMiningPoolByAddressQueryHandler> _logger;
@@ -25,7 +24,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<MiningPool> Handle(CallCirrusGetOpdexMiningPoolByAddressQuery request, CancellationToken cancellationToken)
+        public async Task<MiningPoolSmartContractSummary> Handle(CallCirrusGetOpdexMiningPoolByAddressQuery request, CancellationToken cancellationToken)
         {
             var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_StakingToken", new string[0]);
             var stakingTokenResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
@@ -41,7 +40,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools
             var miningPeriodEndResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
             ulong.TryParse(miningPeriodEndResponse.Return.ToString(), out var miningPeriodEnd);
             
-            return new MiningPool(request.Address, stakingToken, rewardRate, miningPeriodEnd);
+            return new MiningPoolSmartContractSummary(request.Address, stakingToken, rewardRate, miningPeriodEnd);
         }
     }
 }

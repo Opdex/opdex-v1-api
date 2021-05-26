@@ -21,11 +21,9 @@ namespace Opdex.Platform.Application.Handlers.Blocks
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public async Task<BlockReceiptDto> Handle(RetrieveCirrusCurrentBlockQuery request, CancellationToken cancellationToken)
+        public Task<BlockReceiptDto> Handle(RetrieveCirrusCurrentBlockQuery request, CancellationToken cancellationToken)
         {
-            var query = new CallCirrusGetCurrentBlockQuery();
-
-            return await _mediator.Send(query, cancellationToken);
+            return _mediator.Send(new CallCirrusGetCurrentBlockQuery(), cancellationToken);
         }
     }
 }

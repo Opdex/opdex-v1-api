@@ -32,7 +32,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         public async Task PersistsTransaction_Success()
         {
             const long id = 1234;
-            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to");
+            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to", true);
             var command = new PersistTransactionCommand(transaction);
         
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -40,14 +40,14 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             
             var result = await _handler.Handle(command, CancellationToken.None);
         
-            result.Id.Should().Be(id);
+            result.Should().Be(id);
         }
         
         [Fact]
         public async Task PersistsTransaction_Fail()
         {
             const long id = 0;
-            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to");
+            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "from", "to", true);
             var command = new PersistTransactionCommand(transaction);
         
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -55,7 +55,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         
             var result = await _handler.Handle(command, CancellationToken.None);
         
-            result.Should().Be(null);
+            result.Should().Be(0);
         }
     }
 }

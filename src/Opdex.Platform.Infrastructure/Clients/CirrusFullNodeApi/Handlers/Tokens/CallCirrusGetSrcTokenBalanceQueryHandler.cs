@@ -11,7 +11,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens
 {
     public class CallCirrusGetSrcTokenBalanceQueryHandler
-        : IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, decimal>
+        : IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, string>
     {
         private readonly ISmartContractsModule _smartContractsModule;
         private readonly ILogger<CallCirrusGetSrcTokenBalanceQueryHandler> _logger;
@@ -24,15 +24,14 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Token
         }
         
         // Todo: try catch requests
-        public async Task<decimal> Handle(CallCirrusGetSrcTokenBalanceQuery request, CancellationToken cancellationToken)
+        public async Task<string> Handle(CallCirrusGetSrcTokenBalanceQuery request, CancellationToken cancellationToken)
         {
             var parameters = new[] {$"9#{request.Owner}"};
             var balanceRequest = new LocalCallRequestDto(request.Token, request.Owner, "GetBalance", parameters);
 
-            var balance = await _smartContractsModule.LocalCallAsync(balanceRequest, cancellationToken);
-            ulong.TryParse(balance.Return.ToString(), out var srcBalance);
+            var response = await _smartContractsModule.LocalCallAsync(balanceRequest, cancellationToken);
 
-            return srcBalance.ToDecimal(request.Decimals);
+            return response.Return.ToString();
         }
     }
 }

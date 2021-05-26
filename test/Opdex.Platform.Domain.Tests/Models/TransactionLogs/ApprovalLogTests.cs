@@ -1,6 +1,7 @@
 using System.Dynamic;
 using FluentAssertions;
 using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Xunit;
 
 namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs

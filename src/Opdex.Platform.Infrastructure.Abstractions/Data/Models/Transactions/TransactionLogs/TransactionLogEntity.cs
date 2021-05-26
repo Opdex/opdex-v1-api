@@ -2,7 +2,7 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs
 {
-    public class TransactionLogEntity : AuditEntity
+    public class TransactionLogEntity
     {
         public long Id { get; set; }
         public long TransactionId { get; set; }
