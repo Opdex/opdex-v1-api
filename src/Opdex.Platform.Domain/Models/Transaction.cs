@@ -138,7 +138,6 @@ namespace Opdex.Platform.Domain.Models
                     nameof(ApprovalLog) => new ApprovalLog(log, address, sortOrder),
                     nameof(TransferLog) => new TransferLog(log, address, sortOrder),
                     nameof(CreateLiquidityPoolLog) => new CreateLiquidityPoolLog(log, address, sortOrder),
-                    nameof(CreateMiningPoolLog) => new CreateMiningPoolLog(log, address, sortOrder),
                     nameof(StartStakingLog) => new StartStakingLog(log, address, sortOrder),
                     nameof(StartMiningLog) => new StartMiningLog(log, address, sortOrder),
                     nameof(CollectStakingRewardsLog) => new CollectStakingRewardsLog(log, address, sortOrder),

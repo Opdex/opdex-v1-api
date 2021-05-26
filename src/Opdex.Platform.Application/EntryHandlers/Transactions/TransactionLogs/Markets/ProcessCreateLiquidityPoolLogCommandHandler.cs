@@ -6,9 +6,11 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Pools;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
+using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets
@@ -46,6 +48,19 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var liquidityPoolCommand = new MakeLiquidityPoolCommand(request.Log.Pool, tokenId, market.Id);
                 var liquidityPoolId = liquidityPool?.Id ?? await _mediator.Send(liquidityPoolCommand, CancellationToken.None);
+
+                // If it's the staking market and new liquidity pool
+                if (market.StakingTokenId > 0 && liquidityPool == null && tokenId != market.StakingTokenId)
+                {
+                    var getMiningPoolAddressQuery = new RetrieveCirrusLocalCallSmartContractQuery(request.Log.Pool, "get_MiningPool");
+                    var getMiningPoolAddressResponse = await _mediator.Send(getMiningPoolAddressQuery, CancellationToken.None);
+                    var miningPoolAddress = getMiningPoolAddressResponse.DeserializeValue<string>();
+                    
+                    var miningPool = new MiningPool(liquidityPoolId, miningPoolAddress, request.BlockHeight);
+                
+                    var miningPoolCommand = new MakeMiningPoolCommand(miningPool);
+                    var miningPoolId = await _mediator.Send(miningPoolCommand, CancellationToken.None);
+                }
                 
                 return liquidityPoolId > 0;
             }

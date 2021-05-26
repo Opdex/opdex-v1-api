@@ -136,7 +136,6 @@ namespace Opdex.Platform.Infrastructure
                         (int)TransactionLogType.ApprovalLog => new ApprovalLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.TransferLog => new TransferLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.CreateLiquidityPoolLog => new CreateLiquidityPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.CreateMiningPoolLog => new CreateMiningPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.StartStakingLog => new StartStakingLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.StartMiningLog => new StartMiningLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.CollectStakingRewardsLog => new CollectStakingRewardsLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),

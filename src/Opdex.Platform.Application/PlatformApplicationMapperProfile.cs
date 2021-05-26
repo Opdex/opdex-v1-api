@@ -122,7 +122,6 @@ namespace Opdex.Platform.Application
                                 TransactionLogType.ApprovalLog => ctx.Mapper.Map<ApprovalLogDto>(txLog),
                                 TransactionLogType.TransferLog => ctx.Mapper.Map<TransferLogDto>(txLog),
                                 TransactionLogType.CreateLiquidityPoolLog => ctx.Mapper.Map<CreateLiquidityPoolLogDto>(txLog),
-                                TransactionLogType.CreateMiningPoolLog => ctx.Mapper.Map<CreateMiningPoolLogDto>(txLog),
                                 TransactionLogType.StartMiningLog => ctx.Mapper.Map<StartMiningLogDto>(txLog),
                                 TransactionLogType.StartStakingLog => ctx.Mapper.Map<StartStakingLogDto>(txLog),
                                 TransactionLogType.StopMiningLog => ctx.Mapper.Map<StopMiningLogDto>(txLog),
@@ -237,11 +236,6 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForMember(dest => dest.TotalStaked, opt => opt.MapFrom(src => src.TotalStaked));
-            
-            CreateMap<CreateMiningPoolLog, CreateMiningPoolLogDto>()
-                .IncludeBase<TransactionLog, TransactionLogDto>()
-                .ForMember(dest => dest.StakingPool, opt => opt.MapFrom(src => src.StakingPool))
-                .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool));
 
             CreateMap<EnableMiningLog, EnableMiningLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()

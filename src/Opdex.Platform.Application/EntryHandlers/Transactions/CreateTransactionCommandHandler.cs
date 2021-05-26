@@ -84,7 +84,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                         TransactionLogType.StartStakingLog => await _mediator.Send(new ProcessStartStakingLogCommand(log, sender, height), CancellationToken.None),
                         TransactionLogType.CollectStakingRewardsLog => await _mediator.Send(new ProcessCollectStakingRewardsLogCommand(log, sender, height), CancellationToken.None),
                         TransactionLogType.StopStakingLog => await _mediator.Send(new ProcessStopStakingLogCommand(log, sender, height), CancellationToken.None),
-                        TransactionLogType.CreateMiningPoolLog => await _mediator.Send(new ProcessCreateMiningPoolLogCommand(log, sender, height), CancellationToken.None),
                         TransactionLogType.RewardMiningPoolLog => await _mediator.Send(new ProcessRewardMiningPoolLogCommand(log, sender, height), CancellationToken.None),
                         TransactionLogType.NominationLog => await _mediator.Send(new ProcessNominationLogCommand(log, sender, height), CancellationToken.None),
                         TransactionLogType.StartMiningLog => await _mediator.Send(new ProcessStartMiningLogCommand(log, sender, height), CancellationToken.None),

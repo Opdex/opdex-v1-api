@@ -153,7 +153,6 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessOdxDeploymentTransactionCommand, Unit>, ProcessOdxDeploymentTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessDeployerDeploymentTransactionCommand, Unit>, ProcessDeployerDeploymentTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessCreateLiquidityPoolLogCommand, bool>, ProcessCreateLiquidityPoolLogCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessCreateMiningPoolLogCommand, bool>, ProcessCreateMiningPoolLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessApprovalLogCommand, bool>, ProcessApprovalLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessTransferLogCommand, bool>, ProcessTransferLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessCreateMarketLogCommand, bool>, ProcessCreateMarketLogCommandHandler>();

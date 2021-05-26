@@ -30,11 +30,6 @@ namespace Opdex.Platform.Domain
             {
                 throw new ArgumentOutOfRangeException(nameof(tokenId));
             }
-            
-            if (nominationPeriodEnd < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(nominationPeriodEnd));
-            }
 
             Address = address;
             TokenId = tokenId;
