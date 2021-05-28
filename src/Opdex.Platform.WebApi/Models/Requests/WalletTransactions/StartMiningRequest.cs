@@ -1,6 +1,6 @@
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
-    public class MineRequest : LocalWalletCredentials
+    public class StartMiningRequest : LocalWalletCredentials
     {
         /// <summary>
         /// The amount of liquidity pool tokens to use for mining.

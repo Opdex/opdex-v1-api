@@ -36,18 +36,17 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         NominationLog = 17,
         
         // Mining pool logs
-        StartMiningLog = 18,
+        MineLog = 18,
         CollectMiningRewardsLog = 19,
-        StopMiningLog = 20,
-        EnableMiningLog = 21,
+        EnableMiningLog = 20,
 
         // Mined token logs
-        DistributionLog = 22,
+        DistributionLog = 21,
         
         // Vault
-        CreateVaultCertificateLog = 23,
-        RevokeVaultCertificateLog = 24,
-        RedeemVaultCertificateLog = 25,
-        ChangeVaultOwnerLog = 26
+        CreateVaultCertificateLog = 22,
+        RevokeVaultCertificateLog = 23,
+        RedeemVaultCertificateLog = 24,
+        ChangeVaultOwnerLog = 25
     }
 }

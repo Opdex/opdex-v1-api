@@ -159,8 +159,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessDistributionLogCommand, bool>, ProcessDistributionLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessChangeVaultOwnerLogCommand, bool>, ProcessChangeVaultOwnerLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessChangeMarketOwnerLogCommand, bool>, ProcessChangeMarketOwnerLogCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessStopMiningLogCommand, bool>, ProcessStopMiningLogCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessStartMiningLogCommand, bool>, ProcessStartMiningLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessMineLogCommand, bool>, ProcessMineLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessNominationLogCommand, bool>, ProcessNominationLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessChangeMarketPermissionLogCommand, bool>, ProcessChangeMarketPermissionLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessMintLogCommand, bool>, ProcessMintLogCommandHandler>();

@@ -130,8 +130,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(new { TxHash = response });
         }
 
-        [HttpPost("mine")]
-        public async Task<IActionResult> StartMining(MineRequest request, CancellationToken cancellationToken)
+        [HttpPost("start-mining")]
+        public async Task<IActionResult> StartMining(StartMiningRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletStartMiningTransactionCommand(request.WalletName, request.WalletAddress,
                 request.WalletPassword, request.Amount, request.LiquidityPool);
@@ -141,11 +141,11 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(new { TxHash = response });
         }
 
-        [HttpPost("exit-mining")]
-        public async Task<IActionResult> StopMining(ExitMiningRequest request, CancellationToken cancellationToken)
+        [HttpPost("stop-mining")]
+        public async Task<IActionResult> StopMining(StopMiningRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletStopMiningTransactionCommand(request.WalletName, request.WalletAddress,
-                request.WalletPassword, request.LiquidityPool);
+                request.WalletPassword, request.LiquidityPool, request.Amount);
 
             var response = await _mediator.Send(command, cancellationToken);
 
