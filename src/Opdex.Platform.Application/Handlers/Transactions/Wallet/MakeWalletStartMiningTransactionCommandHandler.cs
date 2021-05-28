@@ -13,7 +13,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
         : IRequestHandler<MakeWalletStartMiningTransactionCommand, string>
     {
         private readonly IMediator _mediator;
-        private const string MethodName = "Mine";
+        private const string MethodName = "StartMining";
         private const string CrsToSend = "0";
         
         public MakeWalletStartMiningTransactionCommandHandler(IMediator mediator)

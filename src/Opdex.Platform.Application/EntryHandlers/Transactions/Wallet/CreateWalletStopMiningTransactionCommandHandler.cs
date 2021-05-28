@@ -5,6 +5,8 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Common;
+using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 {
@@ -19,12 +21,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 
         public async Task<string> Handle(CreateWalletStopMiningTransactionCommand request, CancellationToken cancellationToken)
         {
-            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool), cancellationToken);
+            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool, findOrThrow: true), cancellationToken);
             
-            var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id), cancellationToken);
+            var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id, findOrThrow: true), cancellationToken);
             
+            var amount = request.Amount.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals);
+                
             return await _mediator.Send(new MakeWalletStopMiningTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                miningPool.Address), cancellationToken);
+                miningPool.Address, amount), cancellationToken);
         }
     }
 }

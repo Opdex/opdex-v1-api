@@ -42,20 +42,15 @@ namespace Opdex.Platform.Domain.Models.Addresses
         public string Owner { get; }
         public string Balance { get; private set; }
         
-        public void SetBalance(StartMiningLog log, ulong block)
+        public void SetBalance(string balance, ulong block)
         {
-            Balance = log.Amount;
-            SetModifiedBlock(block);
-        }
-        
-        public void ResetBalance(StopMiningLog log, ulong block)
-        {
-            if (!log.Amount.Equals(Balance) || Id == 0)
+            if (!balance.IsNumeric())
             {
-                throw new Exception("Unable to reset mining balance");
+                throw new ArgumentOutOfRangeException(nameof(balance));
             }
             
-            Balance = "0";
+            Balance = balance;
+            
             SetModifiedBlock(block);
         }
     }

@@ -5,23 +5,26 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
+using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningPools
 {
-    public class ProcessStartMiningLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessStartMiningLogCommand, bool>
+    public class ProcessMineLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessMineLogCommand, bool>
     {
-        private readonly ILogger<ProcessStartMiningLogCommandHandler> _logger;
+        private readonly ILogger<ProcessMineLogCommandHandler> _logger;
 
-        public ProcessStartMiningLogCommandHandler(IMediator mediator, ILogger<ProcessStartMiningLogCommandHandler> logger) : base(mediator)
+        public ProcessMineLogCommandHandler(IMediator mediator, ILogger<ProcessMineLogCommandHandler> logger) : base(mediator)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<bool> Handle(ProcessStartMiningLogCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ProcessMineLogCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -44,7 +47,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
                 
-                miningBalance.SetBalance(request.Log, request.BlockHeight);
+                var queryParameters = new[] {request.Log.Miner.ToSmartContractParameter(SmartContractParameterType.Address)};
+                var miningBalanceQuery = new RetrieveCirrusLocalCallSmartContractQuery(request.Log.Contract, "GetBalance", queryParameters);
+                var miningBalanceResponse = await _mediator.Send(miningBalanceQuery, CancellationToken.None);
+                var latestMiningBalance = miningBalanceResponse.DeserializeValue<string>();
+                
+                miningBalance.SetBalance(latestMiningBalance, request.BlockHeight);
 
                 var miningBalanceCommand = new MakeAddressMiningCommand(miningBalance);
                 var miningBalanceId = await _mediator.Send(miningBalanceCommand, CancellationToken.None);
@@ -53,7 +61,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failure processing {nameof(StartMiningLog)}");
+                _logger.LogError(ex, $"Failure processing {nameof(MineLog)}");
                
                 return false;
             }

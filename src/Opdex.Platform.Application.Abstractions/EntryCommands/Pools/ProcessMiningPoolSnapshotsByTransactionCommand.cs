@@ -9,8 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Pools
         {
             TransactionLogType.EnableMiningLog,
             TransactionLogType.CollectMiningRewardsLog,
-            TransactionLogType.StartMiningLog,
-            TransactionLogType.StopMiningLog
+            TransactionLogType.MineLog
         };
 
         public ProcessMiningPoolSnapshotsByTransactionCommand()
