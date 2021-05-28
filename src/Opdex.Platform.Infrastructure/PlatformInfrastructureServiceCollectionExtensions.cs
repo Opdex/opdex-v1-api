@@ -80,11 +80,11 @@ namespace Opdex.Platform.Infrastructure
             // Data Services
             AddDataQueries(services);
             AddDataCommands(services);
-            
+
             // Client Services
             AddCirrusServices(services, cirrusConfiguration);
             AddCmcServices(services, cmcConfiguration);
-            
+
             return services;
         }
 
@@ -96,45 +96,47 @@ namespace Opdex.Platform.Infrastructure
 
             // Blocks
             services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
-            
+            services.AddTransient<IRequestHandler<PersistIndexerLockCommand, bool>, PersistIndexerLockCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistIndexerUnlockCommand, Unit>, PersistIndexerUnlockCommandHandler>();
+
             // Pools
             services.AddTransient<IRequestHandler<PersistLiquidityPoolCommand, long>, PersistLiquidityPoolCommandHandler>();
             services.AddTransient<IRequestHandler<PersistMiningPoolCommand, long>, PersistMiningPoolCommandHandler>();
             services.AddTransient<IRequestHandler<PersistLiquidityPoolSnapshotCommand, bool>, PersistLiquidityPoolSnapshotCommandHandler>();
-            
+
             // Tokens
             services.AddTransient<IRequestHandler<PersistTokenCommand, long>, PersistTokenCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTokenSnapshotCommand, bool>, PersistTokenSnapshotCommandHandler>();
-            
+
             // Transactions
-            services.AddTransient<IRequestHandler<PersistTransactionCommand, long>, PersistTransactionCommandHandler>(); 
+            services.AddTransient<IRequestHandler<PersistTransactionCommand, long>, PersistTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionLogCommand, bool>, PersistTransactionLogCommandHandler>();
-            
+
             // Token Distribution
             services.AddTransient<IRequestHandler<PersistTokenDistributionCommand, bool>, PersistTokenDistributionCommandHandler>();
-            
+
             // Mining Governance
             services.AddTransient<IRequestHandler<PersistMiningGovernanceCommand, long>, PersistMiningGovernanceCommandHandler>();
             services.AddTransient<IRequestHandler<PersistMiningGovernanceNominationCommand, long>, PersistMiningGovernanceNominationCommandHandler>();
 
             // Deployers
             services.AddTransient<IRequestHandler<PersistDeployerCommand, long>, PersistDeployerCommandHandler>();
-            
+
             // Vault
             services.AddTransient<IRequestHandler<PersistVaultCommand, long>, PersistVaultCommandHandler>();
             services.AddTransient<IRequestHandler<PersistVaultCertificateCommand, bool>, PersistVaultCertificateCommandHandler>();
-            
+
             // Addresses
             services.AddTransient<IRequestHandler<PersistAddressBalanceCommand, long>, PersistAddressBalanceCommandHandler>();
             services.AddTransient<IRequestHandler<PersistAddressAllowanceCommand, long>, PersistAddressAllowanceCommandHandler>();
             services.AddTransient<IRequestHandler<PersistAddressMiningCommand, long>, PersistAddressMiningCommandHandler>();
             services.AddTransient<IRequestHandler<PersistAddressStakingCommand, long>, PersistAddressStakingCommandHandler>();
         }
-        
+
         private static void AddDataQueries(IServiceCollection services)
         {
             services.AddScoped<IDbContext, DbContext>();
-            
+
             // Deployer
             services.AddTransient<IRequestHandler<SelectDeployerByAddressQuery, Deployer>, SelectDeployerByAddressQueryHandler>();
 
@@ -164,7 +166,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery, IEnumerable<TokenSnapshot>>, SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLatestTokenSnapshotByTokenIdQuery, TokenSnapshot>, SelectLatestTokenSnapshotByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>, SelectLatestTokenDistributionQueryHandler>();
-            
+
             // Mining Governance
             services.AddTransient<IRequestHandler<SelectMiningGovernanceQuery, MiningGovernance>, SelectMiningGovernanceQueryHandler>();
             services.AddTransient<IRequestHandler<SelectActiveMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveMiningGovernanceNominationsQueryHandler>();
@@ -173,18 +175,18 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, SelectTransactionLogsByTransactionIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTransactionsByPoolWithFilterQuery, IEnumerable<Transaction>>, SelectTransactionsByPoolWithFilterQueryHandler>();
-            
+
             // Vault
             services.AddTransient<IRequestHandler<SelectVaultQuery, Vault>, SelectVaultQueryHandler>();
             services.AddTransient<IRequestHandler<SelectVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesByOwnerAddressQueryHandler>();
-            
+
             // Addresses
             services.AddTransient<IRequestHandler<SelectAddressBalanceByLiquidityPoolIdAndOwnerQuery, AddressBalance>, SelectAddressBalanceByLiquidityPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressBalanceByTokenIdAndOwnerQuery, AddressBalance>, SelectAddressBalanceByTokenIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>, SelectAddressMiningByMiningPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>, SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler>();
         }
-        
+
         private static void AddCirrusServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)
         {
             // Modules
@@ -195,11 +197,11 @@ namespace Opdex.Platform.Infrastructure
             services.AddHttpClient<IBlockStoreModule, BlockStoreModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
-            
+
             services.AddHttpClient<INodeModule, NodeModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
-            
+
             // Queries
             services.AddTransient<IRequestHandler<CallCirrusGetCurrentBlockQuery, BlockReceiptDto>, CallCirrusGetCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetBlockByHashQuery, BlockReceiptDto>, CallCirrusGetBlockByHashQueryHandler>();
@@ -233,7 +235,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddHttpClient<IQuotesModule, QuotesModule>(client => client.BuildHttpClient(cmcConfiguration))
                 .AddPolicyHandler(CmcHttpClientBuilder.GetRetryPolicy())
                 .AddPolicyHandler(CmcHttpClientBuilder.GetCircuitBreakerPolicy());
-            
+
             // Queries
             services.AddTransient<IRequestHandler<CallCmcGetStraxQuotePriceQuery, decimal>, CallCmcGetStraxQuotePriceQueryHandler>();
         }
