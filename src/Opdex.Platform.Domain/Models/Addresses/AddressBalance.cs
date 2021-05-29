@@ -12,7 +12,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
                 throw new Exception("Either liquidityPoolId or tokenId must be greater than 0.");
             }
 
-            if (tokenId > 1 && liquidityPoolId > 1)
+            if (tokenId >= 1 && liquidityPoolId >= 1)
             {
                 throw new Exception("Only liquidityPoolId or tokenId can be greater than 0.");
             }
@@ -26,13 +26,13 @@ namespace Opdex.Platform.Domain.Models.Addresses
             {
                 throw new ArgumentOutOfRangeException(nameof(balance));
             }
-            
+
             TokenId = tokenId;
             LiquidityPoolId = liquidityPoolId;
             Owner = owner;
             Balance = balance;
         }
-        
+
         public AddressBalance(long id, long tokenId, long liquidityPoolId, string owner, string balance, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
@@ -42,7 +42,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Owner = owner;
             Balance = balance;
         }
-        
+
         public long Id { get; }
         public long TokenId { get; }
         public long LiquidityPoolId { get; }

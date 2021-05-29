@@ -13,23 +13,23 @@ namespace Opdex.Platform.Domain.Models
 
             if (modifiedBlock != 0 && modifiedBlock < createdBlock)
             {
-                throw new ArgumentNullException(nameof(modifiedBlock));
+                throw new ArgumentOutOfRangeException(nameof(modifiedBlock));
             }
 
             CreatedBlock = createdBlock;
             ModifiedBlock = modifiedBlock != 0 ? modifiedBlock : createdBlock;
         }
-        
+
         public ulong CreatedBlock { get; }
         public ulong ModifiedBlock { get; private set; }
-        
+
         protected void SetModifiedBlock(ulong block)
         {
             if (block < ModifiedBlock)
             {
                 throw new ArgumentOutOfRangeException(nameof(block));
             }
-            
+
             ModifiedBlock = block;
         }
     }

@@ -12,7 +12,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
             {
                 throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
             }
-            
+
             if (!owner.HasValue())
             {
                 throw new ArgumentNullException(nameof(owner));
@@ -22,13 +22,13 @@ namespace Opdex.Platform.Domain.Models.Addresses
             {
                 throw new ArgumentOutOfRangeException(nameof(weight));
             }
-            
+
             LiquidityPoolId = liquidityPoolId;
             Owner = owner;
             Weight = weight;
         }
-        
-        public AddressStaking(long id, long liquidityPoolId, string owner, string weight, ulong createdBlock, ulong modifiedBlock) 
+
+        public AddressStaking(long id, long liquidityPoolId, string owner, string weight, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -36,7 +36,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Owner = owner;
             Weight = weight;
         }
-        
+
         public long Id { get; }
         public long LiquidityPoolId { get; }
         public string Owner { get; }
@@ -47,14 +47,14 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Weight = log.Amount;
             SetModifiedBlock(block);
         }
-        
+
         public void ResetWeight(StopStakingLog log, ulong block)
         {
             if (!log.Amount.Equals(Weight) || Id == 0)
             {
-                throw new Exception("Unable to reset staking weight");
+                throw new InvalidOperationException("Unable to reset staking weight");
             }
-            
+
             Weight = "0";
             SetModifiedBlock(block);
         }
