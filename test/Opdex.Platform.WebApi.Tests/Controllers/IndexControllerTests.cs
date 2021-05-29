@@ -5,9 +5,9 @@ using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
 using Opdex.Platform.WebApi.Controllers;
 using Xunit;
 
@@ -27,56 +27,72 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task ProcessLatestBlocks_Send_PersistIndexerLockCommand()
+        public async Task ProcessLatestBlocks_Send_MakeIndexerLockCommand()
         {
             // Arrange
             var token = new CancellationTokenSource().Token;
 
             // Act
-            try
-            {
-                await _controller.ProcessLatestBlocks(token);
-            }
-            catch (Exception) { }
+            await _controller.ProcessLatestBlocks(token);
 
             // Assert
-            _mediator.Verify(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), token), Times.Once);
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), token), Times.Once);
         }
 
         [Fact]
-        public async Task ProcessLatestBlocks_CannotPersistIndexerLock_ThrowIndexerAlreadyRunningException()
+        public async Task ProcessLatestBlocks_MakeIndexerLockFails_DoNotSendProcessLatestBlocksCommand()
         {
             // Arrange
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), It.IsAny<CancellationToken>()))
-                     .ReturnsAsync(false);
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>()))
+                     .ThrowsAsync(new IndexingAlreadyRunningException());
 
             // Act
-            Task Act() => _controller.ProcessLatestBlocks(default);
+            try
+            {
+                await _controller.ProcessLatestBlocks(CancellationToken.None);
+            }
+            catch (IndexingAlreadyRunningException) { }
 
             // Assert
-            await Assert.ThrowsAsync<IndexingAlreadyRunningException>(Act);
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<ProcessLatestBlocksCommand>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
-        public async Task ProcessLatestBlocks_PersistIndexerLockSuccessfully_SendIndexLatestBlocksCommand()
+        public async Task ProcessLatestBlocks_MakeIndexerLockSuccessful_SendProcessLatestBlocksCommand()
         {
             // Arrange
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), It.IsAny<CancellationToken>()))
-                     .ReturnsAsync(true);
+            var isDevelopEnv = true;
+            _hostingEnvironment.Setup(callTo => callTo.EnvironmentName).Returns("Development");
 
             // Act
             await _controller.ProcessLatestBlocks(new CancellationTokenSource().Token);
 
             // Assert
-            _mediator.Verify(callTo => callTo.Send(It.IsAny<ProcessLatestBlocksCommand>(), CancellationToken.None), Times.Once);
+            _mediator.Verify(callTo => callTo.Send(It.Is<ProcessLatestBlocksCommand>(command => command.IsDevelopEnv == isDevelopEnv), CancellationToken.None), Times.Once);
         }
 
         [Fact]
-        public async Task ProcessLatestBlocks_PersistIndexerUnlockCommand_AlwaysSend()
+        public async Task ProcessLatestBlocks_MakeIndexerLockFails_DoNotSendMakeIndexerUnlockCommand()
         {
             // Arrange
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), It.IsAny<CancellationToken>()))
-                     .ReturnsAsync(true);
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>()))
+                     .ThrowsAsync(new IndexingAlreadyRunningException());
+
+            // Act
+            try
+            {
+                await _controller.ProcessLatestBlocks(CancellationToken.None);
+            }
+            catch (IndexingAlreadyRunningException) { }
+
+            // Assert
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task ProcessLatestBlocks_MakeIndexerLockSuccessful_AlwaysSendMakeIndexerUnlockCommand()
+        {
+            // Arrange
             _mediator.Setup(callTo => callTo.Send(It.IsAny<ProcessLatestBlocksCommand>(), It.IsAny<CancellationToken>()))
                      .ThrowsAsync(new Exception("Something went wrong!"));
 
@@ -88,7 +104,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             catch (Exception) { }
 
             // Assert
-            _mediator.Verify(callTo => callTo.Send(It.IsAny<PersistIndexerUnlockCommand>(), CancellationToken.None), Times.Once);
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), CancellationToken.None), Times.Once);
         }
     }
 }

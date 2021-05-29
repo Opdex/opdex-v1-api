@@ -97,7 +97,7 @@ namespace Opdex.Platform.Infrastructure
             // Blocks
             services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
             services.AddTransient<IRequestHandler<PersistIndexerLockCommand, bool>, PersistIndexerLockCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistIndexerUnlockCommand, Unit>, PersistIndexerUnlockCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistIndexerUnlockCommand, bool>, PersistIndexerUnlockCommandHandler>();
 
             // Pools
             services.AddTransient<IRequestHandler<PersistLiquidityPoolCommand, long>, PersistLiquidityPoolCommandHandler>();

@@ -8,7 +8,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
 {
-    public class PersistIndexerUnlockCommandHandler : IRequestHandler<PersistIndexerUnlockCommand, Unit>
+    public class PersistIndexerUnlockCommandHandler : IRequestHandler<PersistIndexerUnlockCommand, bool>
     {
         private static readonly string SqlQuery =
             $@"UPDATE index_lock SET
@@ -22,11 +22,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<Unit> Handle(PersistIndexerUnlockCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(PersistIndexerUnlockCommand request, CancellationToken cancellationToken)
         {
             var command = DatabaseQuery.Create(SqlQuery, token: cancellationToken);
-            await _context.ExecuteCommandAsync(command);
-            return Unit.Value;
+            var result = await _context.ExecuteCommandAsync(command);
+            return result == 1;
         }
     }
 }

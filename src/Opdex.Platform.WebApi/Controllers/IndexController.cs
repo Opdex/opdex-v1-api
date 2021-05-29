@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
@@ -50,13 +51,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ProcessLatestBlocks(CancellationToken cancellationToken)
         {
-            var lockCreated = await _mediator.Send(new PersistIndexerLockCommand(), cancellationToken);
-            if (!lockCreated)
-            {
-                throw new IndexingAlreadyRunningException();
-            }
-
-            _logger.LogDebug("Indexer locked");
+            await _mediator.Send(new MakeIndexerLockCommand(), cancellationToken);
 
             try
             {
@@ -64,8 +59,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
             finally
             {
-                await _mediator.Send(new PersistIndexerUnlockCommand());
-                _logger.LogDebug("Indexer unlocked");
+                await _mediator.Send(new MakeIndexerUnlockCommand());
             }
 
             return NoContent();
