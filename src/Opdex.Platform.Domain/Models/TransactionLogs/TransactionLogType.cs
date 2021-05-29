@@ -27,26 +27,25 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         ChangeMarketLog = 12,
         
         // Staking pool logs
-        StartStakingLog = 13,
+        StakeLog = 13,
         CollectStakingRewardsLog = 14,
-        StopStakingLog = 15,
 
         // Mining governance logs
-        RewardMiningPoolLog = 16,
-        NominationLog = 17,
+        RewardMiningPoolLog = 15,
+        NominationLog = 16,
         
         // Mining pool logs
-        MineLog = 18,
-        CollectMiningRewardsLog = 19,
-        EnableMiningLog = 20,
+        MineLog = 17,
+        CollectMiningRewardsLog = 18,
+        EnableMiningLog = 19,
 
         // Mined token logs
-        DistributionLog = 21,
+        DistributionLog = 20,
         
         // Vault
-        CreateVaultCertificateLog = 22,
-        RevokeVaultCertificateLog = 23,
-        RedeemVaultCertificateLog = 24,
-        ChangeVaultOwnerLog = 25
+        CreateVaultCertificateLog = 21,
+        RevokeVaultCertificateLog = 22,
+        RedeemVaultCertificateLog = 23,
+        ChangeVaultOwnerLog = 24
     }
 }

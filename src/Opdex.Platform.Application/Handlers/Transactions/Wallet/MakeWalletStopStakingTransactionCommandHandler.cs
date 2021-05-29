@@ -24,7 +24,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
         {
             var parameters = new[]
             {
-                request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address), 
+                request.Amount.ToSmartContractParameter(SmartContractParameterType.UInt256),
                 request.Liquidate.ToSmartContractParameter(SmartContractParameterType.Boolean)
             };
             

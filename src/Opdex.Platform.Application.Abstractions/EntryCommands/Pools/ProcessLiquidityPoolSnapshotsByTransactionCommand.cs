@@ -21,8 +21,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Pools
         {
             TransactionLogType.ReservesLog,
             TransactionLogType.SwapLog,
-            TransactionLogType.StartStakingLog,
-            TransactionLogType.StopStakingLog,
+            TransactionLogType.StakeLog,
             TransactionLogType.CollectStakingRewardsLog,
         };
         

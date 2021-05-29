@@ -1,12 +1,7 @@
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
-    public class UnstakeRequest : LocalWalletCredentials
+    public class StopStakingRequest : LocalWalletCredentials
     {
-        /// <summary>
-        /// The recipient collecting staking rewards.
-        /// </summary>
-        public string Recipient { get; set; }
-        
         /// <summary>
         /// An option to liquidate earned liquidity pool tokens from staking back into
         /// the pool's reserves tokens.
@@ -17,5 +12,10 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// The address of the liquidity pool to stop staking in.
         /// </summary>
         public string LiquidityPool { get; set; }
+        
+        /// <summary>
+        /// The amount of tokens to stop staking.
+        /// </summary>
+        public string Amounnt { get; set; }
     }
 }

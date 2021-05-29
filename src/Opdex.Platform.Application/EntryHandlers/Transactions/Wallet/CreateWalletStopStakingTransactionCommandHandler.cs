@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
+using Opdex.Platform.Common;
+using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 {
@@ -18,8 +20,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 
         public Task<string> Handle(CreateWalletStopStakingTransactionCommand request, CancellationToken cancellationToken)
         {
+            var amount = request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals);
+            
             return _mediator.Send(new MakeWalletStopStakingTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                request.Recipient, request.LiquidityPool, request.Liquidate), cancellationToken);
+                request.LiquidityPool, amount, request.Liquidate), cancellationToken);
         }
     }
 }

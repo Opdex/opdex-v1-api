@@ -20,7 +20,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
         public Task<string> Handle(CreateWalletCollectStakingRewardsTransactionCommand request, CancellationToken cancellationToken)
         {
             return _mediator.Send(new MakeWalletCollectStakingRewardsTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                request.Recipient, request.LiquidityPool, request.Liquidate), cancellationToken);
+                request.LiquidityPool, request.Liquidate), cancellationToken);
         }
     }
 }
