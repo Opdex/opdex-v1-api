@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Platform.Application.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Platform.Infrastructure.Tests", "test\Opdex.Platform.Infrastructure.Tests\Opdex.Platform.Infrastructure.Tests.csproj", "{7E58D714-309A-4CE8-9C9F-B956C56EBFE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Platform.WebApi.IntegrationTests", "test\Opdex.Platform.WebApi.IntegrationTests\Opdex.Platform.WebApi.IntegrationTests.csproj", "{1E4763F2-FCF5-46BC-A5C9-203CB667B43B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Platform.WebApi.Tests", "test\Opdex.Platform.WebApi.Tests\Opdex.Platform.WebApi.Tests.csproj", "{1E4763F2-FCF5-46BC-A5C9-203CB667B43B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Platform.Common", "src\Opdex.Platform.Common\Opdex.Platform.Common.csproj", "{AD482426-6C3A-417D-91D4-7CF28897E171}"
 EndProject

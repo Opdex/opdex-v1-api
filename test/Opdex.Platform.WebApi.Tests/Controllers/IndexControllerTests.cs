@@ -2,40 +2,40 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
-using Opdex.Platform.Application.EntryHandlers.Blocks;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
+using Opdex.Platform.WebApi.Controllers;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
+namespace Opdex.Platform.WebApi.Tests.Controllers
 {
-    public class ProcessLatestBlocksCommandHandlerTests
+    public class IndexControllerTests
     {
         private readonly Mock<IMediator> _mediator;
-        private readonly ProcessLatestBlocksCommandHandler _processLatestBlocksCommandHandler;
+        private readonly Mock<IHostingEnvironment> _hostingEnvironment;
+        private readonly IndexController _controller;
 
-        public ProcessLatestBlocksCommandHandlerTests()
+        public IndexControllerTests()
         {
             _mediator = new Mock<IMediator>();
-            _processLatestBlocksCommandHandler = new ProcessLatestBlocksCommandHandler(_mediator.Object,
-                                                                                       new NullLogger<ProcessLatestBlocksCommandHandler>());
+            _hostingEnvironment = new Mock<IHostingEnvironment>();
+            _controller = new IndexController(_mediator.Object, new NullLogger<IndexController>(), _hostingEnvironment.Object);
         }
 
         [Fact]
-        public async Task Send_PersistIndexerLockCommand()
+        public async Task ProcessLatestBlocks_Send_PersistIndexerLockCommand()
         {
             // Arrange
-            var request = new ProcessLatestBlocksCommand(false);
             var token = new CancellationTokenSource().Token;
 
             // Act
             try
             {
-                await _processLatestBlocksCommandHandler.Handle(request, token);
+                await _controller.ProcessLatestBlocks(token);
             }
             catch (Exception) { }
 
@@ -44,54 +44,46 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         }
 
         [Fact]
-        public async Task PersistIndexerLockCommand_ReturnsFalse_ThrowIndexerAlreadyRunningException()
+        public async Task ProcessLatestBlocks_CannotPersistIndexerLock_ThrowIndexerAlreadyRunningException()
         {
             // Arrange
-            var request = new ProcessLatestBlocksCommand(false);
-
             _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), It.IsAny<CancellationToken>()))
                      .ReturnsAsync(false);
 
             // Act
-            Task Act() => _processLatestBlocksCommandHandler.Handle(request, default);
+            Task Act() => _controller.ProcessLatestBlocks(default);
 
             // Assert
             await Assert.ThrowsAsync<IndexingAlreadyRunningException>(Act);
         }
 
         [Fact]
-        public async Task PersistIndexerLockCommand_ReturnsFalse_SendIndexLatestBlocksCommand()
+        public async Task ProcessLatestBlocks_PersistIndexerLockSuccessfully_SendIndexLatestBlocksCommand()
         {
             // Arrange
-            var request = new ProcessLatestBlocksCommand(false);
-            var token = new CancellationTokenSource().Token;
-
             _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), It.IsAny<CancellationToken>()))
                      .ReturnsAsync(true);
 
             // Act
-            await _processLatestBlocksCommandHandler.Handle(request, token);
+            await _controller.ProcessLatestBlocks(new CancellationTokenSource().Token);
 
             // Assert
-            _mediator.Verify(callTo => callTo.Send(It.IsAny<IndexLatestBlocksCommand>(), token), Times.Once);
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<ProcessLatestBlocksCommand>(), CancellationToken.None), Times.Once);
         }
 
         [Fact]
-        public async Task Always_Send_PersistIndexerUnlockCommand()
+        public async Task ProcessLatestBlocks_PersistIndexerUnlockCommand_AlwaysSend()
         {
             // Arrange
-            var request = new ProcessLatestBlocksCommand(false);
-            var token = new CancellationTokenSource().Token;
-
             _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), It.IsAny<CancellationToken>()))
                      .ReturnsAsync(true);
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<IndexLatestBlocksCommand>(), It.IsAny<CancellationToken>()))
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<ProcessLatestBlocksCommand>(), It.IsAny<CancellationToken>()))
                      .ThrowsAsync(new Exception("Something went wrong!"));
 
             // Act
             try
             {
-                await _processLatestBlocksCommandHandler.Handle(request, token);
+                await _controller.ProcessLatestBlocks(new CancellationTokenSource().Token);
             }
             catch (Exception) { }
 

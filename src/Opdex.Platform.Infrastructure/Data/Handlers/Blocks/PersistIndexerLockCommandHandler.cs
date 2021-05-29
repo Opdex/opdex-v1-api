@@ -11,12 +11,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
     public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLockCommand, bool>
     {
         private static readonly string SqlQuery =
-            @$"INSERT INTO index_lock
-                (SELECT 1, SYSDATE() FROM index_lock
-                    WHERE 0 =
-                        (SELECT {nameof(IndexLockEntity.Locked)} FROM index_lock
-                            WHERE {nameof(IndexLockEntity.ModifiedDate)} =
-                                (SELECT Max({nameof(IndexLockEntity.ModifiedDate)}) FROM index_lock)) LIMIT 1);";
+            @$"UPDATE index_lock SET
+                {nameof(IndexLockEntity.Locked)} = 1,
+                {nameof(IndexLockEntity.ModifiedDate)} = UTC_TIMESTAMP()
+                    WHERE {nameof(IndexLockEntity.Locked)} = 0";
 
         private readonly IDbContext _context;
 

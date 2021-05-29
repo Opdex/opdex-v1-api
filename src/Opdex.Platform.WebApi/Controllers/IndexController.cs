@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
+using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
 using Opdex.Platform.WebApi.Models.Requests.Index;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -21,7 +22,7 @@ namespace Opdex.Platform.WebApi.Controllers
         private readonly IMediator _mediator;
         private readonly ILogger<IndexController> _logger;
         private readonly IHostingEnvironment _hostingEnv;
-        
+
         public IndexController(IMediator mediator, ILogger<IndexController> logger, IHostingEnvironment hostingEnv)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -35,7 +36,7 @@ namespace Opdex.Platform.WebApi.Controllers
             var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
             return Ok(latestSyncedBlock);
         }
-        
+
         /// /// <summary>
         /// Processes all blocks and transactions after the most recent synced block in the DB.
         /// </summary>
@@ -49,11 +50,27 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ProcessLatestBlocks(CancellationToken cancellationToken)
         {
-            await _mediator.Send(new ProcessLatestBlocksCommand(_hostingEnv.IsDevelopment()), CancellationToken.None);
-            
+            var lockCreated = await _mediator.Send(new PersistIndexerLockCommand(), cancellationToken);
+            if (!lockCreated)
+            {
+                throw new IndexingAlreadyRunningException();
+            }
+
+            _logger.LogDebug("Indexer locked");
+
+            try
+            {
+                await _mediator.Send(new ProcessLatestBlocksCommand(_hostingEnv.IsDevelopment()), CancellationToken.None);
+            }
+            finally
+            {
+                await _mediator.Send(new PersistIndexerUnlockCommand());
+                _logger.LogDebug("Indexer unlocked");
+            }
+
             return NoContent();
         }
-        
+
         /// <summary>
         /// Processes the odx and market deployer transactions then syncs to chain tip.
         /// </summary>
@@ -71,7 +88,7 @@ namespace Opdex.Platform.WebApi.Controllers
             await _mediator.Send(new ProcessOdxDeploymentTransactionCommand(request.OdxDeploymentTxHash), CancellationToken.None);
             await _mediator.Send(new ProcessDeployerDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash), CancellationToken.None);
             await _mediator.Send(new ProcessLatestBlocksCommand(_hostingEnv.IsDevelopment()), CancellationToken.None);
-            
+
             return NoContent();
         }
     }

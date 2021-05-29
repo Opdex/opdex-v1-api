@@ -4,12 +4,17 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
 {
     public class PersistIndexerUnlockCommandHandler : IRequestHandler<PersistIndexerUnlockCommand, Unit>
     {
-        private static readonly string SqlQuery = "INSERT INTO index_lock VALUES (0, SYSDATE());";
+        private static readonly string SqlQuery =
+            $@"UPDATE index_lock SET
+                {nameof(IndexLockEntity.Locked)} = 0,
+                {nameof(IndexLockEntity.ModifiedDate)} = UTC_TIMESTAMP();";
+
         private readonly IDbContext _context;
 
         public PersistIndexerUnlockCommandHandler(IDbContext context)
