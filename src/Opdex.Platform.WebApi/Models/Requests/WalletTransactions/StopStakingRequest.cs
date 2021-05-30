@@ -16,6 +16,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// <summary>
         /// The amount of tokens to stop staking.
         /// </summary>
-        public string Amounnt { get; set; }
+        public string Amount { get; set; }
     }
 }

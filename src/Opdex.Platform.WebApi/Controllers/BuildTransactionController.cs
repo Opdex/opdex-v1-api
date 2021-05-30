@@ -112,7 +112,7 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<IActionResult> StopStaking(StopStakingRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletStopStakingTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                request.LiquidityPool, request.Amounnt, request.Liquidate);
+                request.LiquidityPool, request.Amount, request.Liquidate);
 
             var response = await _mediator.Send(command, cancellationToken);
 
