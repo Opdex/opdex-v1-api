@@ -23,10 +23,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-        
+
         public async Task<Unit> Handle(ProcessLatestBlocksCommand request, CancellationToken cancellationToken)
         {
-           // Todo: Implement with index_lock table - prevent reindexing if another instance already is
             var blockDetails = await _mediator.Send(new GetBestBlockQuery(), cancellationToken);
 
             while (blockDetails?.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
@@ -37,7 +36,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
                 var createBlockCommand = new CreateBlockCommand(blockDetails.Height, blockDetails.Hash, blockDetails.Time, blockDetails.MedianTime);
                 var blockCreated = await _mediator.Send(createBlockCommand, CancellationToken.None);
-                
+
                 if (!blockCreated)
                 {
                     break;
@@ -45,14 +44,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
                 // 4 = 1 minute || 60 = 15 minutes
                 var timeToRefreshCirrus = request.IsDevelopEnv ? 60ul : 4ul;
-                
+
                 if (blockDetails.Height % timeToRefreshCirrus == 0)
                 {
                     await _mediator.Send(new CreateCrsTokenSnapshotsCommand(createBlockCommand.MedianTime), CancellationToken.None);
-                    
+
                     // Todo should also snapshot ODX Token if there is a staking market available
                 }
-                
+
                 // Index each transaction in the block
                 foreach (var tx in blockDetails.Tx.Where(tx => tx != blockDetails.MerkleRoot))
                 {
@@ -65,7 +64,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                         _logger.LogError(ex, $"Unable to create transaction with error: {ex.Message}");
                     }
                 }
-                
+
                 // Maybe create liquidity pool snapshots after each block
                 // Maybe create mining pool snapshots after each block
                 // Index Market Snapshots based on Pool Snapshots in time tx time range
