@@ -12,7 +12,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
     public class MakeWalletStartStakingTransactionCommandHandler : IRequestHandler<MakeWalletStartStakingTransactionCommand, string>
     {
         private readonly IMediator _mediator;
-        private const string MethodName = "Stake";
+        private const string MethodName = "StartStaking";
         private const string CrsToSend = "0";
         
         public MakeWalletStartStakingTransactionCommandHandler(IMediator mediator)

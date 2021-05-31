@@ -115,11 +115,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools
                             case TransactionLogType.SwapLog:
                                 poolSnapshot.ProcessSwapLog((SwapLog)poolLog, crsSnapshot);
                                 break;
-                            case TransactionLogType.StartStakingLog:
-                                poolSnapshot.ProcessStakingLog((StartStakingLog)poolLog, odxSnapshot);
-                                break;
-                            case TransactionLogType.StopStakingLog:
-                                poolSnapshot.ProcessStakingLog((StopStakingLog)poolLog, odxSnapshot);
+                            case TransactionLogType.StakeLog:
+                                poolSnapshot.ProcessStakingLog((StakeLog)poolLog, odxSnapshot);
                                 break;
                         }
                     }

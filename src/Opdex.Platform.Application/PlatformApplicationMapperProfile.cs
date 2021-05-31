@@ -123,7 +123,7 @@ namespace Opdex.Platform.Application
                                 TransactionLogType.TransferLog => ctx.Mapper.Map<TransferLogDto>(txLog),
                                 TransactionLogType.CreateLiquidityPoolLog => ctx.Mapper.Map<CreateLiquidityPoolLogDto>(txLog),
                                 TransactionLogType.MineLog => ctx.Mapper.Map<MineLogDto>(txLog),
-                                TransactionLogType.StartStakingLog => ctx.Mapper.Map<StartStakingLogDto>(txLog),
+                                TransactionLogType.StakeLog => ctx.Mapper.Map<StakeLogDto>(txLog),
                                 TransactionLogType.DistributionLog => ctx.Mapper.Map<DistributionLogDto>(txLog),
                                 TransactionLogType.ChangeVaultOwnerLog => ctx.Mapper.Map<ChangeVaultOwnerLogDto>(txLog),
                                 TransactionLogType.EnableMiningLog => ctx.Mapper.Map<EnableMiningLogDto>(txLog),
@@ -220,17 +220,12 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
                 .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => src.EventType));
             
-            CreateMap<StartStakingLog, StartStakingLogDto>()
+            CreateMap<StakeLog, StakeLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()
                 .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
                 .ForMember(dest => dest.TotalStaked, opt => opt.MapFrom(src => src.TotalStaked))
-                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
-
-            CreateMap<StopStakingLog, StopStakingLogDto>()
-                .IncludeBase<TransactionLog, TransactionLogDto>()
-                .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
-                .ForMember(dest => dest.TotalStaked, opt => opt.MapFrom(src => src.TotalStaked));
+                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => src.EventType));
 
             CreateMap<EnableMiningLog, EnableMiningLogDto>()
                 .IncludeBase<TransactionLog, TransactionLogDto>()

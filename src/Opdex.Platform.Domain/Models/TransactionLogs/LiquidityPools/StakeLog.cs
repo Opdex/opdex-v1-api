@@ -4,14 +4,15 @@ using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
 {
-    public class StartStakingLog : TransactionLog
+    public class StakeLog : TransactionLog
     {
-        public StartStakingLog(dynamic log, string address, int sortOrder)
-            : base(TransactionLogType.StartStakingLog, address, sortOrder)
+        public StakeLog(dynamic log, string address, int sortOrder)
+            : base(TransactionLogType.StakeLog, address, sortOrder)
         {
             string staker = log?.staker;
             string amount = log?.amount;
             string totalStaked = log?.totalStaked;
+            byte eventType = log?.eventType;
 
             if (!staker.HasValue())
             {
@@ -31,26 +32,30 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             Staker = staker;
             Amount = amount;
             TotalStaked = totalStaked;
+            EventType = eventType;
         }
         
-        public StartStakingLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(TransactionLogType.StartStakingLog, id, transactionId, address, sortOrder)
+        public StakeLog(long id, long transactionId, string address, int sortOrder, string details)
+            : base(TransactionLogType.StakeLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             Staker = logDetails.Staker;
             Amount = logDetails.Amount;
             TotalStaked = logDetails.TotalStaked;
+            EventType = logDetails.EventType;
         }
         
         public string Staker { get; }
         public string Amount { get; }
         public string TotalStaked { get; }
+        public byte EventType { get; }
         
         private struct LogDetails
         {
             public string Staker { get; set; }
             public string Amount { get; set; }
             public string TotalStaked { get; set; }
+            public byte EventType { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)
@@ -64,7 +69,8 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             {
                 Staker = Staker,
                 Amount = Amount,
-                TotalStaked = TotalStaked
+                TotalStaked = TotalStaked,
+                EventType = EventType
             });
         }
     }

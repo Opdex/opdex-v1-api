@@ -1,6 +1,6 @@
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
-    public class StakeRequest : LocalWalletCredentials
+    public class StartStakingRequest : LocalWalletCredentials
     {
         /// <summary>
         /// The amount of tokens to stake.

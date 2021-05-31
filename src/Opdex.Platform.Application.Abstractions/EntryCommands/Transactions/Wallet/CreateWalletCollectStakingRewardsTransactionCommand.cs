@@ -6,24 +6,17 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
     public class CreateWalletCollectStakingRewardsTransactionCommand : CreateWalletTransactionCommand
     {
         public CreateWalletCollectStakingRewardsTransactionCommand(string walletName, string walletAddress, string walletPassword, 
-            string recipient, string liquidityPool, bool liquidate) : base(walletName, walletAddress, walletPassword)
+            string liquidityPool, bool liquidate) : base(walletName, walletAddress, walletPassword)
         {
-            if (!recipient.HasValue())
-            {
-                throw new ArgumentNullException(nameof(recipient));
-            }
-            
             if (!liquidityPool.HasValue())
             {
                 throw new ArgumentNullException(nameof(liquidityPool));
             }
-
-            Recipient = recipient;
+            
             LiquidityPool = liquidityPool;
             Liquidate = liquidate;
         }
         
-        public string Recipient { get; }
         public string LiquidityPool { get; }
         public bool Liquidate { get; }
     }
