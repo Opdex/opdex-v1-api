@@ -19,7 +19,7 @@ namespace Opdex.Platform.Domain.Models
         {
             if (!txHash.HasValue())
             {
-                throw new ArgumentNullException(nameof(txHash), "Transaction has must be set.");
+                throw new ArgumentNullException(nameof(txHash), "Transaction hash must be set.");
             }
 
             if (blockHeight == 0)
