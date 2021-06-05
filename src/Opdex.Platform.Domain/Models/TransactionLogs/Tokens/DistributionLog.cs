@@ -13,21 +13,21 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             string miningAmount = log?.miningAmount;
             uint periodIndex = log?.periodIndex;
 
-            if (!vaultAmount.HasValue())
+            if (!vaultAmount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(vaultAmount));
+                throw new ArgumentOutOfRangeException(nameof(vaultAmount), "Vault amount must only contain numeric digits.");
             }
-            
-            if (!miningAmount.HasValue())
+
+            if (!miningAmount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(miningAmount));
+                throw new ArgumentOutOfRangeException(nameof(miningAmount), "Mining amount must only contain numeric digits.");
             }
-            
+
             VaultAmount = vaultAmount;
             MiningAmount = miningAmount;
             PeriodIndex = periodIndex;
         }
-        
+
         public DistributionLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.DistributionLog, id, transactionId, address, sortOrder)
         {
@@ -40,7 +40,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
         public string VaultAmount { get; }
         public string MiningAmount { get; }
         public uint PeriodIndex { get; }
-        
+
         private struct LogDetails
         {
             public string VaultAmount { get; set; }

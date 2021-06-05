@@ -10,17 +10,17 @@ namespace Opdex.Platform.Domain.Models.Addresses
         {
             if (liquidityPoolId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
+                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId), "Liquidity pool id must be greater than 0.");
             }
 
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner must be set.");
             }
 
             if (!weight.IsNumeric())
             {
-                throw new ArgumentOutOfRangeException(nameof(weight));
+                throw new ArgumentOutOfRangeException(nameof(weight), "Weight must only contain numeric digits.");
             }
 
             LiquidityPoolId = liquidityPoolId;
@@ -52,7 +52,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
         {
             if (!log.Amount.Equals(Weight) || Id == 0)
             {
-                throw new InvalidOperationException("Unable to reset staking weight");
+                throw new InvalidOperationException("Unable to reset staking weight.");
             }
 
             Weight = "0";

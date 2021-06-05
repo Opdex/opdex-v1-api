@@ -1,5 +1,3 @@
-using System;
-using MediatR;
 using Opdex.Platform.Common.Queries;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.MiningGovernance
@@ -9,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.MiningGovernance
         public RetrieveMiningGovernanceQuery(bool findOrThrow = true) : base(findOrThrow)
         {
         }
-        
+
         public long TokenId { get; }
     }
 }

@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
 {
     public class SwapLog : TransactionLog
     {
-        public SwapLog(dynamic log, string address, int sortOrder) 
+        public SwapLog(dynamic log, string address, int sortOrder)
             : base(TransactionLogType.SwapLog, address, sortOrder)
         {
             string sender = log?.sender;
@@ -18,23 +18,30 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
 
             if (!sender.HasValue())
             {
-                throw new ArgumentNullException(nameof(sender));
+                throw new ArgumentNullException(nameof(sender), "Sender address must be set.");
             }
-            
+
             if (!to.HasValue())
             {
-                throw new ArgumentNullException(nameof(to));
+                throw new ArgumentNullException(nameof(to), "To address must be set.");
             }
 
             if (amountCrsIn < 1 && amountCrsOut < 1)
             {
-                throw new Exception($"{nameof(amountCrsIn)} or {nameof(amountCrsOut)} must be greater than 0.");
+                throw new ArgumentException($"{nameof(amountCrsIn)} or {nameof(amountCrsOut)} must be greater than 0.");
             }
-            
-            if (!amountSrcIn.HasValue() && !amountSrcOut.HasValue())
+
+            if (!amountSrcIn.IsNumeric())
             {
-                throw new Exception($"{nameof(amountSrcIn)} or {nameof(amountSrcOut)} must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(amountSrcIn), "SRC amount in must only contain numeric digits.");
             }
+
+            if (!amountSrcOut.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountSrcIn), "SRC amount out must only contain numeric digits.");
+            }
+
+            // TODO: validate SRC amounts
 
             Sender = sender;
             To = to;
@@ -43,7 +50,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             AmountSrcIn = amountSrcIn;
             AmountSrcOut = amountSrcOut;
         }
-        
+
         public SwapLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.SwapLog, id, transactionId, address, sortOrder)
         {
@@ -55,14 +62,14 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             AmountCrsOut = logDetails.AmountCrsOut;
             AmountSrcOut = logDetails.AmountSrcOut;
         }
-        
+
         public string Sender { get; }
         public string To { get; }
         public ulong AmountCrsIn { get; }
         public string AmountSrcIn { get; }
         public ulong AmountCrsOut { get; }
         public string AmountSrcOut { get; }
-        
+
         private struct LogDetails
         {
             public string Sender { get; set; }

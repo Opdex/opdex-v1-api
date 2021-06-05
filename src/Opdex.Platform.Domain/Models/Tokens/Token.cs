@@ -10,32 +10,32 @@ namespace Opdex.Platform.Domain.Models.Tokens
         {
             if (!address.HasValue())
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(address), "Token address must be set.");
             }
-            
+
             if (!name.HasValue())
             {
-                throw new ArgumentNullException(nameof(name));
+                throw new ArgumentNullException(nameof(name), "Token name must be set.");
             }
-            
+
             if (!symbol.HasValue())
             {
-                throw new ArgumentNullException(nameof(symbol));
+                throw new ArgumentNullException(nameof(symbol), "Token symbol must be set.");
             }
 
             if (decimals < 0 || decimals > 18)
             {
-                throw new ArgumentOutOfRangeException(nameof(decimals));
+                throw new ArgumentOutOfRangeException(nameof(decimals), "Token must have between 0 and 18 decimal denominations.");
             }
 
             if (sats < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(sats));
+                throw new ArgumentOutOfRangeException(nameof(sats), "Sats must be greater than zero.");
             }
 
-            if (!totalSupply.HasValue())
+            if (!totalSupply.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(totalSupply));
+                throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must only contain numeric digits.");
             }
 
             Address = address;
@@ -57,7 +57,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
             Sats = sats;
             TotalSupply = totalSupply;
         }
-        
+
         public long Id { get; }
         public string Address { get; }
         public string Name { get; }

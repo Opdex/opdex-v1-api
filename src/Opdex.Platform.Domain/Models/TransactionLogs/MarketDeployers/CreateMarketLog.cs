@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
 {
     public class CreateMarketLog : TransactionLog
     {
-        public CreateMarketLog(dynamic log, string address, int sortOrder) 
+        public CreateMarketLog(dynamic log, string address, int sortOrder)
             : base(TransactionLogType.CreateMarketLog, address, sortOrder)
         {
             string market = log?.market;
@@ -19,12 +19,22 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
 
             if (!market.HasValue())
             {
-                throw new ArgumentNullException(nameof(market));
+                throw new ArgumentNullException(nameof(market), "Market address must be set.");
+            }
+
+            if (!owner.HasValue())
+            {
+                throw new ArgumentNullException(nameof(market), "Owner address must be set.");
             }
 
             if (!stakingToken.HasValue())
             {
-                throw new ArgumentNullException(nameof(stakingToken));
+                throw new ArgumentNullException(nameof(stakingToken), "Staking token address must be set.");
+            }
+
+            if (fee > 10)
+            {
+                throw new ArgumentOutOfRangeException(nameof(fee), "Fee must be between 0-10 inclusive.");
             }
 
             Market = market;
@@ -48,7 +58,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
             Fee = logDetails.Fee;
             StakingToken = logDetails.StakingToken;
         }
-        
+
         public string Market { get; }
         public string Owner { get; }
         public bool AuthPoolCreators { get; }
@@ -67,7 +77,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
             public uint Fee { get; set; }
             public string StakingToken { get; set; }
         }
-        
+
         private static LogDetails DeserializeLogDetails(string details)
         {
             return JsonConvert.DeserializeObject<LogDetails>(details);

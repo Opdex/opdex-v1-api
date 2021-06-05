@@ -9,17 +9,17 @@ namespace Opdex.Platform.Domain.Models.Addresses
         {
             if (miningPoolId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(miningPoolId));
+                throw new ArgumentOutOfRangeException(nameof(miningPoolId), "Mining pool id must be greater than 0.");
             }
 
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner must be set.");
             }
 
             if (!balance.IsNumeric())
             {
-                throw new ArgumentOutOfRangeException(nameof(balance));
+                throw new ArgumentOutOfRangeException(nameof(balance), "Balance must only contain numeric digits.");
             }
 
             MiningPoolId = miningPoolId;
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
         {
             if (!balance.IsNumeric())
             {
-                throw new ArgumentOutOfRangeException(nameof(balance));
+                throw new ArgumentOutOfRangeException(nameof(balance), "Balance must only contain numeric digits.");
             }
 
             Balance = balance;

@@ -8,25 +8,25 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
     public class AddressAllowanceTests
     {
         [Fact]
-        public void Constructor_TokenAndLiquidityPoolIdBothZero_ThrowException()
+        public void Constructor_TokenAndLiquidityPoolIdBothZero_ThrowArgumentException()
         {
             // Arrange
             // Act
             static void Act() => new AddressAllowance(0, 0, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_001);
 
             // Assert
-            Assert.Throws<Exception>(Act);
+            Assert.Throws<ArgumentException>(Act);
         }
 
         [Fact]
-        public void Constructor_NeitherTokenOrLiquidityPoolIdZero_ThrowException()
+        public void Constructor_NeitherTokenOrLiquidityPoolIdZero_ThrowArgumentException()
         {
             // Arrange
             // Act
             static void Act() => new AddressAllowance(1, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_001);
 
             // Assert
-            Assert.Throws<Exception>(Act);
+            Assert.Throws<ArgumentException>(Act);
         }
 
         [Theory]

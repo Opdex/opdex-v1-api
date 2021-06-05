@@ -14,18 +14,18 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
 
             if (!staker.HasValue())
             {
-                throw new ArgumentNullException(nameof(staker));
+                throw new ArgumentNullException(nameof(staker), "Staker address must be set.");
             }
-            
+
             if (!reward.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(reward));
+                throw new ArgumentOutOfRangeException(nameof(reward), "Reward must only contain numeric digits.");
             }
 
             Staker = staker;
             Reward = reward;
         }
-        
+
         public CollectStakingRewardsLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.CollectStakingRewardsLog, id, transactionId, address, sortOrder)
         {
@@ -33,10 +33,10 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             Staker = logDetails.Staker;
             Reward = logDetails.Reward;
         }
-        
+
         public string Staker { get; }
         public string Reward { get; }
-        
+
         private struct LogDetails
         {
             public string Staker { get; set; }

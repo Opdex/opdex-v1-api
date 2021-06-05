@@ -6,26 +6,26 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
 {
     public class CreateLiquidityPoolLog : TransactionLog
     {
-        public CreateLiquidityPoolLog(dynamic log, string address, int sortOrder) 
+        public CreateLiquidityPoolLog(dynamic log, string address, int sortOrder)
             : base(TransactionLogType.CreateLiquidityPoolLog, address, sortOrder)
         {
             string token = log?.token;
             string pool = log?.pool;
-            
+
             if (!token.HasValue())
             {
-                throw new ArgumentNullException(nameof(token));
+                throw new ArgumentNullException(nameof(token), "Token address must be set.");
             }
-            
+
             if (!pool.HasValue())
             {
-                throw new ArgumentNullException(nameof(pool));
+                throw new ArgumentNullException(nameof(pool), "Pool address must be set.");
             }
 
             Token = token;
             Pool = pool;
         }
-        
+
         public CreateLiquidityPoolLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.CreateLiquidityPoolLog, id, transactionId, address, sortOrder)
         {
@@ -33,10 +33,10 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
             Token = logDetails.Token;
             Pool = logDetails.Pool;
         }
-        
+
         public string Token { get; }
         public string Pool { get; }
-        
+
         private struct LogDetails
         {
             public string Token { get; set; }

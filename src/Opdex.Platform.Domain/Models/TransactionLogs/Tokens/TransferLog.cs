@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
 {
     public class TransferLog : TransactionLog
     {
-        public TransferLog(dynamic log, string address, int sortOrder) 
+        public TransferLog(dynamic log, string address, int sortOrder)
             : base(TransactionLogType.TransferLog, address, sortOrder)
         {
             string from = log?.from;
@@ -15,24 +15,24 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
 
             if (!from.HasValue())
             {
-                throw new ArgumentNullException(nameof(from));
-            }
-            
-            if (!to.HasValue())
-            {
-                throw new ArgumentNullException(nameof(to));
+                throw new ArgumentNullException(nameof(from), "From address must be set.");
             }
 
-            if (!amount.HasValue())
+            if (!to.HasValue())
             {
-                throw new ArgumentNullException(nameof(amount));
+                throw new ArgumentNullException(nameof(to), "To address must be set.");
+            }
+
+            if (!amount.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
             }
 
             From = from;
             To = to;
             Amount = amount;
         }
-        
+
         public TransferLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.TransferLog, id, transactionId, address, sortOrder)
         {
@@ -41,11 +41,11 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             To = logDetails.To;
             Amount = logDetails.Amount;
         }
-        
+
         public string From { get; }
         public string To { get; }
         public string Amount { get; }
-        
+
         private struct LogDetails
         {
             public string From { get; set; }

@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vault
 {
     public class RedeemVaultCertificateLog : TransactionLog
     {
-        public RedeemVaultCertificateLog(dynamic log, string address, int sortOrder) 
+        public RedeemVaultCertificateLog(dynamic log, string address, int sortOrder)
             : base(TransactionLogType.RedeemVaultCertificateLog, address, sortOrder)
         {
             string owner = log?.owner;
@@ -15,24 +15,24 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vault
 
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner must be set.");
             }
 
             if (!amount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(amount));
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
             }
-            
+
             if (vestedBlock < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(vestedBlock));
+                throw new ArgumentOutOfRangeException(nameof(vestedBlock), "Vested block must be greater than 0.");
             }
 
             Owner = owner;
             Amount = amount;
             VestedBlock = vestedBlock;
         }
-        
+
         public RedeemVaultCertificateLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.RedeemVaultCertificateLog, id, transactionId, address, sortOrder)
         {
@@ -41,11 +41,11 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vault
             Amount = logDetails.Amount;
             VestedBlock = logDetails.VestedBlock;
         }
-        
+
         public string Owner { get; }
         public string Amount { get; }
         public ulong VestedBlock { get; }
-        
+
         private struct LogDetails
         {
             public string Owner { get; set; }
