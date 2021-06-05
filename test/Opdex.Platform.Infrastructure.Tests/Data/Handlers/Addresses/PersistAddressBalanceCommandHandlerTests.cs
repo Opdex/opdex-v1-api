@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
     {
         private readonly Mock<IDbContext> _dbContext;
         private readonly PersistAddressBalanceCommandHandler _handler;
-        
+
         public PersistAddressBalanceCommandHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
@@ -31,42 +31,42 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task Insert_AddressBalance_Success()
         {
             const long expectedId = 10;
-            var balance = new AddressBalance(1, 2, "Owner", "100000000", 3);
+            var balance = new AddressBalance(0, 1, "Owner", "100000000", 3);
             var command = new PersistAddressBalanceCommand(balance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedId));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Should().Be(expectedId);
         }
-        
+
         [Fact]
         public async Task Update_AddressBalance_Success()
         {
             const long expectedId = 10;
-            var balance = new AddressBalance(expectedId, 1, 2, "Owner", "100000000", 3, 4);
+            var balance = new AddressBalance(expectedId, 0, 1, "Owner", "100000000", 3, 4);
             var command = new PersistAddressBalanceCommand(balance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedId));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Should().Be(expectedId);
         }
-        
+
         [Fact]
         public async Task PersistsAddressBalance_Fail()
         {
             const long expectedId = 0;
-            var balance = new AddressBalance(expectedId, 1, 2, "Owner", "100000000", 3, 4);
+            var balance = new AddressBalance(expectedId, 0, 1, "Owner", "100000000", 3, 4);
             var command = new PersistAddressBalanceCommand(balance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Throws(new Exception("Some SQL Exception"));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Should().Be(expectedId);

@@ -5,7 +5,7 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Markets;
 using Xunit;
 
-namespace Opdex.Platform.Domain.Tests.Models
+namespace Opdex.Platform.Domain.Tests.Models.Markets
 {
     public class MarketSnapshotTests
     {
@@ -17,7 +17,7 @@ namespace Opdex.Platform.Domain.Tests.Models
             const decimal liquidity = 234543.32m;
             const decimal volume = 345456.23m;
             const string weight = "1235";
-            const decimal weightUsd = 8765.00m; 
+            const decimal weightUsd = 8765.00m;
             const decimal providerRewards = 87654.21m;
             const decimal stakerRewards = 2334.21m;
             const SnapshotType snapshotType = SnapshotType.Daily;
@@ -39,7 +39,7 @@ namespace Opdex.Platform.Domain.Tests.Models
             marketSnapshot.StartDate.Should().Be(startDate);
             marketSnapshot.EndDate.Should().Be(endDate);
         }
-        
+
         [Fact]
         public void CreateMarketSnapshot_Success()
         {
@@ -49,7 +49,7 @@ namespace Opdex.Platform.Domain.Tests.Models
             const decimal liquidity = 234543.32m;
             const decimal volume = 345456.23m;
             const string weight = "1235";
-            const decimal weightUsd = 8765.00m; 
+            const decimal weightUsd = 8765.00m;
             const decimal providerRewards = 87654.21m;
             const decimal stakerRewards = 2334.21m;
             const SnapshotType snapshotType = SnapshotType.Daily;

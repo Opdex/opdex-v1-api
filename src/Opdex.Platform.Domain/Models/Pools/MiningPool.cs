@@ -6,17 +6,17 @@ namespace Opdex.Platform.Domain.Models.Pools
 {
     public class MiningPool : BlockAudit
     {
-        
+
         public MiningPool(long liquidityPoolId, string address, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(address), "Address must be set.");
             }
-            
+
             if (liquidityPoolId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
+                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId), "Liquidity pool id must be greater than 0.");
             }
 
             Address = address;
@@ -25,9 +25,9 @@ namespace Opdex.Platform.Domain.Models.Pools
             RewardPerLpt = "0";
             MiningPeriodEndBlock = 0;
         }
-        
-        
-        public MiningPool(long id, long liquidityPoolId, string address, string rewardPerBlock, string rewardPerLpt, ulong miningPeriodEndBlock, 
+
+
+        public MiningPool(long id, long liquidityPoolId, string address, string rewardPerBlock, string rewardPerLpt, ulong miningPeriodEndBlock,
             ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -37,7 +37,7 @@ namespace Opdex.Platform.Domain.Models.Pools
             RewardPerLpt = rewardPerLpt;
             MiningPeriodEndBlock = miningPeriodEndBlock;
         }
-        
+
         public long Id { get; }
         public long LiquidityPoolId { get; private set; }
         public string Address { get; }

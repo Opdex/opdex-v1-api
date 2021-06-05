@@ -2,7 +2,7 @@ using FluentAssertions;
 using Opdex.Platform.Domain.Models.Tokens;
 using Xunit;
 
-namespace Opdex.Platform.Domain.Tests.Models
+namespace Opdex.Platform.Domain.Tests.Models.Tokens
 {
     public class TokenTests
     {
@@ -16,7 +16,6 @@ namespace Opdex.Platform.Domain.Tests.Models
             const long sats = 10000000000000000;
             const string totalSupply = "987654321";
             const ulong createdBlock = 3;
-            const ulong modifiedBlock = 4;
 
             var token = new Token(address, name, symbol, decimals, sats, totalSupply, createdBlock);
 

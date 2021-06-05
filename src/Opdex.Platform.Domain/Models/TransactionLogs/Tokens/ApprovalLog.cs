@@ -6,32 +6,32 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
 {
     public class ApprovalLog : TransactionLog
     {
-        public ApprovalLog(dynamic log, string address, int sortOrder) 
+        public ApprovalLog(dynamic log, string address, int sortOrder)
             : base(TransactionLogType.ApprovalLog, address, sortOrder)
         {
             string owner = log?.owner;
             string spender = log?.spender;
             string amount = log?.amount;
             string oldAmount = log?.oldAmount;
-            
+
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
             }
-            
+
             if (!spender.HasValue())
             {
-                throw new ArgumentNullException(nameof(spender));
+                throw new ArgumentNullException(nameof(spender), "Spender address must be set.");
             }
-            
+
             if (!amount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(amount));
+                throw new ArgumentNullException(nameof(amount), "Amount must only contain numeric digits.");
             }
-            
+
             if (!oldAmount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(oldAmount));
+                throw new ArgumentNullException(nameof(oldAmount), "Old amount must only contain numeric digits.");
             }
 
             Owner = owner;
@@ -39,7 +39,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             Amount = amount;
             OldAmount = oldAmount;
         }
-        
+
         public ApprovalLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.ApprovalLog, id, transactionId, address, sortOrder)
         {
@@ -49,12 +49,12 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             Amount = logDetails.Amount;
             OldAmount = logDetails.OldAmount;
         }
-        
+
         public string Owner { get; }
         public string Spender { get; }
         public string Amount { get; }
         public string OldAmount { get; }
-        
+
         private struct LogDetails
         {
             public string Owner { get; set; }

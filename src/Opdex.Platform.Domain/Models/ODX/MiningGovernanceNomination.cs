@@ -9,17 +9,17 @@ namespace Opdex.Platform.Domain.Models.ODX
         {
             if (liquidityPoolId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
+                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId), "Liqudity pool id must be greater than 0.");
             }
-            
+
             if (miningPoolId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(miningPoolId));
+                throw new ArgumentOutOfRangeException(nameof(miningPoolId), "Mining pool id must be greater than 0.");
             }
 
             if (!weight.IsNumeric())
             {
-                throw new ArgumentOutOfRangeException(nameof(weight));
+                throw new ArgumentOutOfRangeException(nameof(weight), "Weight must only contain numeric digits.");
             }
 
             LiquidityPoolId = liquidityPoolId;
@@ -27,8 +27,8 @@ namespace Opdex.Platform.Domain.Models.ODX
             IsNominated = isNominated;
             Weight = weight;
         }
-        
-        public MiningGovernanceNomination(long id, long liquidityPoolId, long miningPoolId, bool isNominated, string weight, ulong createdBlock, ulong modifiedBlock) 
+
+        public MiningGovernanceNomination(long id, long liquidityPoolId, long miningPoolId, bool isNominated, string weight, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -37,7 +37,7 @@ namespace Opdex.Platform.Domain.Models.ODX
             IsNominated = isNominated;
             Weight = weight;
         }
-            
+
         public long Id { get; }
         public long LiquidityPoolId { get; }
         public long MiningPoolId { get; }

@@ -13,26 +13,26 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             string rewardRate = log?.rewardRate;
             ulong miningPeriodEndBlock = log?.miningPeriodEndBlock;
 
-            if (!amount.HasValue())
+            if (!amount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(amount));
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
             }
-            
+
             if (!rewardRate.IsNumeric())
             {
-                throw new ArgumentOutOfRangeException(nameof(rewardRate));
+                throw new ArgumentOutOfRangeException(nameof(rewardRate), "Reward rate must only contain numeric digits.");
             }
 
             if (miningPeriodEndBlock < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(miningPeriodEndBlock));
+                throw new ArgumentOutOfRangeException(nameof(miningPeriodEndBlock), "Mining period end block must be greater than 0.");
             }
 
             Amount = amount;
             RewardRate = rewardRate;
             MiningPeriodEndBlock = miningPeriodEndBlock;
         }
-        
+
         public EnableMiningLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.EnableMiningLog, id, transactionId, address, sortOrder)
         {
@@ -41,11 +41,11 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             RewardRate = logDetails.RewardRate;
             MiningPeriodEndBlock = logDetails.MiningPeriodEndBlock;
         }
-        
+
         public string Amount { get; }
         public string RewardRate { get; }
         public ulong MiningPeriodEndBlock { get; }
-        
+
         private struct LogDetails
         {
             public string Amount { get; set; }

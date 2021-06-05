@@ -6,32 +6,32 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vault
 {
     public class RevokeVaultCertificateLog : TransactionLog
     {
-        public RevokeVaultCertificateLog(dynamic log, string address, int sortOrder) 
+        public RevokeVaultCertificateLog(dynamic log, string address, int sortOrder)
             : base(TransactionLogType.RevokeVaultCertificateLog, address, sortOrder)
         {
             string owner = log?.owner;
             string oldAmount = log?.oldAmount;
-            string newAmount = log?.oldAmount;
+            string newAmount = log?.newAmount;
             ulong vestedBlock = log?.vestedBlock;
 
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner must be set.");
             }
 
             if (!oldAmount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(oldAmount));
+                throw new ArgumentOutOfRangeException(nameof(oldAmount), "Old amount must only contain numeric digits.");
             }
-            
+
             if (!newAmount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(newAmount));
+                throw new ArgumentOutOfRangeException(nameof(newAmount), "New amount must only contain numeric digits.");
             }
-            
+
             if (vestedBlock < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(vestedBlock));
+                throw new ArgumentOutOfRangeException(nameof(vestedBlock), "Vested block must be greater than 0.");
             }
 
             Owner = owner;
@@ -39,7 +39,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vault
             NewAmount = newAmount;
             VestedBlock = vestedBlock;
         }
-        
+
         public RevokeVaultCertificateLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.RevokeVaultCertificateLog, id, transactionId, address, sortOrder)
         {
@@ -49,12 +49,12 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vault
             NewAmount = logDetails.NewAmount;
             VestedBlock = logDetails.VestedBlock;
         }
-        
+
         public string Owner { get; }
         public string OldAmount { get; }
         public string NewAmount { get; }
         public ulong VestedBlock { get; }
-        
+
         private struct LogDetails
         {
             public string Owner { get; set; }

@@ -6,22 +6,22 @@ namespace Opdex.Platform.Domain.Models.Markets
 {
     public class Market : BlockAudit
     {
-        public Market(string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders, 
+        public Market(string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders,
             bool authTraders, uint fee, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(address), "Address must be set.");
             }
 
             if (deployerId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(deployerId));
+                throw new ArgumentOutOfRangeException(nameof(deployerId), "Deployer id must be greater than 0.");
             }
 
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner must be set.");
             }
 
             Address = address;
@@ -33,7 +33,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             AuthTraders = authTraders;
             Fee = fee;
         }
-        
+
         public Market(long id, string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders,
             bool authTraders, uint fee, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             AuthTraders = authTraders;
             Fee = fee;
         }
-        
+
         public long Id { get; }
         public string Address { get; }
         public long DeployerId { get; }
@@ -60,7 +60,7 @@ namespace Opdex.Platform.Domain.Models.Markets
 
         public void SetOwner(ChangeMarketOwnerLog log, ulong blockHeight)
         {
-            
+
         }
     }
 }

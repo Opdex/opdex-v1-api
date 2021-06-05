@@ -10,22 +10,22 @@ namespace Opdex.Platform.Domain.Models.ODX
         {
             if (!vaultDistribution.IsNumeric())
             {
-                throw new ArgumentException(nameof(vaultDistribution));
+                throw new ArgumentException(nameof(vaultDistribution), "Vault distribution must only contain numeric digits.");
             }
-            
+
             if (!miningGovernanceDistribution.IsNumeric())
             {
-                throw new ArgumentException(nameof(miningGovernanceDistribution));
+                throw new ArgumentException(nameof(miningGovernanceDistribution), "Mining governance distribution must only contain numeric digits.");
             }
 
             if (distributionBlock < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(distributionBlock));
+                throw new ArgumentOutOfRangeException(nameof(distributionBlock), "Distribution block must be greater than 0.");
             }
-            
+
             if (nextDistributionBlock < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(nextDistributionBlock));
+                throw new ArgumentOutOfRangeException(nameof(nextDistributionBlock), "Next distribution block must be greater than 0.");
             }
 
             VaultDistribution = vaultDistribution;
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Domain.Models.ODX
             DistributionBlock = distributionBlock;
             NextDistributionBlock = nextDistributionBlock;
         }
-        
+
         public long Id { get; }
         public string VaultDistribution { get; }
         public string MiningGovernanceDistribution { get; }

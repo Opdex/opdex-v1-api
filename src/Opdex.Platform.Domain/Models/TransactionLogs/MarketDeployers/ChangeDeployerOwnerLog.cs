@@ -14,12 +14,12 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
 
             if (!from.HasValue())
             {
-                throw new ArgumentNullException(nameof(from));
+                throw new ArgumentNullException(nameof(from), "From address must be set.");
             }
 
             if (!to.HasValue())
             {
-                throw new ArgumentNullException(nameof(to));
+                throw new ArgumentNullException(nameof(to), "To address must be set.");
             }
 
             From = from;

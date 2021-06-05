@@ -13,12 +13,12 @@ namespace Opdex.Platform.Domain.Models.Markets
         {
             if (marketId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(marketId));
+                throw new ArgumentOutOfRangeException(nameof(marketId), "Market id must be greater than 0.");
             }
-            
+
             if (transactionCount < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(transactionCount));
+                throw new ArgumentOutOfRangeException(nameof(transactionCount), "Transaction count must be greater than 0.");
             }
 
             MarketId = marketId;
@@ -33,7 +33,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             StartDate = startDate;
             EndDate = endDate;
         }
-        
+
         public MarketSnapshot(long id, long marketId, long transactionCount, decimal liquidity, decimal volume, string weight,
             decimal weightUsd, decimal providerRewards, decimal stakerRewards, SnapshotType snapshotType, DateTime startDate, DateTime endDate)
         {
@@ -50,7 +50,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             StartDate = startDate;
             EndDate = endDate;
         }
-        
+
         public long Id { get; }
         public long MarketId { get; }
         public long TransactionCount { get; }
@@ -76,7 +76,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             StakerRewards = rewards; // 1/6
             ProviderRewards = Math.Round(rewards * 5, 2); // 5/6
         }
-        
+
         // public void ProcessReservesLog(ReservesLog log, TokenSnapshot crsSnapshot, Token crs)
         // {
         //     var reserveCrsRounded = log.ReserveCrs.ToString().ToRoundedDecimal(2, crs.Decimals);
@@ -94,7 +94,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         // {
         //     
         // }
-        
+
         // public void ProcessStakingLog<T>(T log, TokenSnapshot odxSnapshot, Token odx) 
         //     where T : TransactionLog
         // {

@@ -10,19 +10,19 @@ namespace Opdex.Platform.Domain.Models
         {
             if (!address.HasValue())
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(address), "Address must be set.");
             }
 
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
             }
 
             Address = address;
             Owner = owner;
         }
 
-        public Deployer(long id, string address, string owner, ulong createdBlock, ulong modifiedBlock) 
+        public Deployer(long id, string address, string owner, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
