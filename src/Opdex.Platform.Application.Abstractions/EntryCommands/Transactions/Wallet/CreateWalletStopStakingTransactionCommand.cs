@@ -6,25 +6,25 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
     public class CreateWalletStopStakingTransactionCommand : CreateWalletTransactionCommand
     {
         public CreateWalletStopStakingTransactionCommand(string walletName, string walletAddress, string walletPassword, 
-            string recipient, string liquidityPool, bool liquidate) : base(walletName, walletAddress, walletPassword)
+            string liquidityPool, string amount, bool liquidate) : base(walletName, walletAddress, walletPassword)
         {
-            if (!recipient.HasValue())
-            {
-                throw new ArgumentNullException(nameof(recipient));
-            }
-            
             if (!liquidityPool.HasValue())
             {
                 throw new ArgumentNullException(nameof(liquidityPool));
             }
 
-            Recipient = recipient;
+            if (!amount.IsValidDecimalNumber())
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount));
+            }
+            
             LiquidityPool = liquidityPool;
             Liquidate = liquidate;
+            Amount = amount;
         }
         
-        public string Recipient { get; }
         public string LiquidityPool { get; }
         public bool Liquidate { get; }
+        public string Amount { get; }
     }
 }

@@ -100,22 +100,14 @@ namespace Opdex.Platform.Domain.Models.Pools
             ReserveUsd = Math.Round(reserveCrsRounded * crsSnapshot.Price * 2, 2, MidpointRounding.AwayFromZero);
         }
         
-        public void ProcessStakingLog<T>(T log, TokenSnapshot odxSnapshot) 
-            where T : TransactionLog
+        public void ProcessStakingLog(StakeLog log, TokenSnapshot odxSnapshot)
         {
-            var weight = log switch
-            {
-                StartStakingLog startStakingLog => startStakingLog.TotalStaked ?? "0",
-                StopStakingLog stopStakingLog => stopStakingLog.TotalStaked ?? "0",
-                _ => "0"
-            };
-            
             const int precision = 2;
-            var odxDecimal = weight.ToRoundedDecimal(precision, TokenConstants.Opdex.Decimals);
+            var odxDecimal = log.TotalStaked.ToRoundedDecimal(precision, TokenConstants.Opdex.Decimals);
             var odxWeightUsd = Math.Round(odxDecimal * odxSnapshot.Price, precision, MidpointRounding.AwayFromZero);
 
-            StakingWeight = StakingWeight.Add(weight);
-            StakingUsd += odxWeightUsd;
+            StakingWeight = log.TotalStaked;
+            StakingUsd = odxWeightUsd;
         }
 
         public void IncrementTransactionCount()

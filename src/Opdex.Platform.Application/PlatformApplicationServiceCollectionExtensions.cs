@@ -85,7 +85,7 @@ namespace Opdex.Platform.Application
         {
             services.AddScoped<ServiceFactory>(serviceProvider => serviceProvider.GetService);
             services.AddScoped(typeof(IMediator), typeof(Mediator));
-            
+
             // Entry Queries
             services.AddTransient<IRequestHandler<GetAllPoolsQuery, IEnumerable<LiquidityPoolDto>>, GetAllPoolsQueryHandler>();
             services.AddTransient<IRequestHandler<GetAllTokensQuery, IEnumerable<TokenDto>>, GetAllTokensQueryHandler>();
@@ -99,7 +99,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveAllPoolsQuery, IEnumerable<LiquidityPool>>, RetrieveAllPoolsQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAllTokensQuery, IEnumerable<Token>>, RetrieveAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLatestMarketSnapshotQuery, MarketSnapshot>, RetrieveLatestMarketSnapshotQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveTransactionsByPoolWithFilterQuery,  IEnumerable<Transaction>>, RetrieveTransactionsByPoolWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveTransactionsByPoolWithFilterQuery, IEnumerable<Transaction>>, RetrieveTransactionsByPoolWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusCurrentBlockQuery, BlockReceiptDto>, RetrieveCirrusCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusBlockByHashQuery, BlockReceiptDto>, RetrieveCirrusBlockByHashQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusTransactionByHashQuery, Transaction>, RetrieveCirrusTransactionByHashQueryHandler>();
@@ -169,8 +169,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessChangeMarketLogCommand, bool>, ProcessChangeMarketLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessCollectMiningRewardsLogCommand, bool>, ProcessCollectMiningRewardsLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessEnableMiningLogCommand, bool>, ProcessEnableMiningLogCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessStartStakingLogCommand, bool>, ProcessStartStakingLogCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessStopStakingLogCommand, bool>, ProcessStopStakingLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessStakeLogCommand, bool>, ProcessStakeLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessCollectStakingRewardsLogCommand, bool>, ProcessCollectStakingRewardsLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessRewardMiningPoolLogCommand, bool>, ProcessRewardMiningPoolLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessCreateVaultCertificateLogCommand, bool>, ProcessCreateVaultCertificateLogCommandHandler>();
@@ -180,7 +179,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessLiquidityPoolSnapshotsByTransactionCommand, Unit>, ProcessLiquidityPoolSnapshotsByTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateBlockCommand, bool>, CreateBlockCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessLatestBlocksCommand, Unit>, ProcessLatestBlocksCommandHandler>();
-            
+
             // Commands
             services.AddTransient<IRequestHandler<MakeWalletSwapTransactionCommand, string>, MakeWalletSwapTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletAddLiquidityTransactionCommand, string>, MakeWalletAddLiquidityTransactionCommandHandler>();
@@ -188,6 +187,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeWalletApproveAllowanceTransactionCommand, string>, MakeWalletApproveAllowanceTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletCreateLiquidityPoolTransactionCommand, string>, MakeWalletCreateLiquidityPoolTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeBlockCommand, bool>, MakeBlockCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeIndexerLockCommand, Unit>, MakeIndexerLockCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeIndexerUnlockCommand, Unit>, MakeIndexerUnlockCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTokenCommand, long>, MakeTokenCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTransactionCommand, long>, MakeTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeLiquidityPoolCommand, long>, MakeLiquidityPoolCommandHandler>();
@@ -220,18 +221,18 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenByAddressQuery, TokenDto>, GetTokenByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolByAddressQuery, LiquidityPoolDto>, GetLiquidityPoolByAddressQueryHandler>();
-            
+
             // Handlers
             services.AddTransient<IRequestHandler<RetrieveTokenByAddressQuery, Token>, RetrieveTokenByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolByAddressQuery, LiquidityPool>, RetrieveLiquidityPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTransactionByHashQuery, Transaction>, RetrieveTransactionByHashQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, RetrieveTransactionLogsByTransactionIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTokenByIdQuery, Token>, RetrieveTokenByIdQueryHandler>();
-            
+
             // Assemblers
             services.AddTransient<IModelAssembler<Transaction, TransactionDto>, TransactionDtoAssembler>();
             services.AddTransient<IModelAssembler<LiquidityPool, LiquidityPoolDto>, LiquidityPoolDtoAssembler>();
-            
+
             return services;
         }
     }

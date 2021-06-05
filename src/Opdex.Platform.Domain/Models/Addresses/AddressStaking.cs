@@ -1,6 +1,5 @@
 using System;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Domain.Models.Addresses
 {
@@ -42,20 +41,14 @@ namespace Opdex.Platform.Domain.Models.Addresses
         public string Owner { get; }
         public string Weight { get; private set; }
 
-        public void SetWeight(StartStakingLog log, ulong block)
+        public void SetWeight(string weight, ulong block)
         {
-            Weight = log.Amount;
-            SetModifiedBlock(block);
-        }
-
-        public void ResetWeight(StopStakingLog log, ulong block)
-        {
-            if (!log.Amount.Equals(Weight) || Id == 0)
+            if (!weight.IsNumeric())
             {
-                throw new InvalidOperationException("Unable to reset staking weight.");
+                throw new ArgumentOutOfRangeException(nameof(weight), "Weight must only contain numeric digits.");
             }
 
-            Weight = "0";
+            Weight = weight;
             SetModifiedBlock(block);
         }
     }

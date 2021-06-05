@@ -97,8 +97,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(new { TxHash = response });
         }
 
-        [HttpPost("stake")]
-        public async Task<IActionResult> StartStaking(StakeRequest request, CancellationToken cancellationToken)
+        [HttpPost("start-staking")]
+        public async Task<IActionResult> StartStaking(StartStakingRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletStartStakingTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
                 request.Amount, request.LiquidityPool);
@@ -108,11 +108,11 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(new { TxHash = response });
         }
 
-        [HttpPost("exit-staking")]
-        public async Task<IActionResult> StopStaking(UnstakeRequest request, CancellationToken cancellationToken)
+        [HttpPost("stop-staking")]
+        public async Task<IActionResult> StopStaking(StopStakingRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletStopStakingTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                request.Recipient, request.LiquidityPool, request.Liquidate);
+                request.LiquidityPool, request.Amount, request.Liquidate);
 
             var response = await _mediator.Send(command, cancellationToken);
 
@@ -123,7 +123,7 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<IActionResult> CollectStakingRewards(CollectStakingRewardsRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletCollectStakingRewardsTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                request.Recipient, request.LiquidityPool, request.Liquidate);
+                request.LiquidityPool, request.Liquidate);
 
             var response = await _mediator.Send(command, cancellationToken);
 

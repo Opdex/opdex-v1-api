@@ -1,8 +1,6 @@
 using System;
-using System.Dynamic;
 using FluentAssertions;
 using Opdex.Platform.Domain.Models.Addresses;
-using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Xunit;
 
 namespace Opdex.Platform.Domain.Tests.Models.Addresses
@@ -79,13 +77,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             // Arrange
             var addressStaking = new AddressStaking(1, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", "9999999999999", 100_000);
 
-            dynamic log = new ExpandoObject();
-            log.staker = "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST";
-            log.amount = "50000";
-            log.totalStaked = "100000";
-
             // Act
-            void Act() => addressStaking.SetWeight(new StartStakingLog(log, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", 0), 99_999);
+            void Act() => addressStaking.SetWeight("50000", 99_999);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act);
@@ -100,91 +93,11 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             var updatedWeight = "50000";
             ulong updatedBlock = 100_001;
 
-            dynamic log = new ExpandoObject();
-            log.staker = "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST";
-            log.amount = updatedWeight;
-            log.totalStaked = "100000";
-
             // Act
-            addressStaking.SetWeight(new StartStakingLog(log, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", 0), updatedBlock);
+            addressStaking.SetWeight(updatedWeight, updatedBlock);
 
             // Assert
             addressStaking.Weight.Should().Be(updatedWeight);
-            addressStaking.ModifiedBlock.Should().Be(updatedBlock);
-        }
-
-        [Fact]
-        public void ResetWeight_IdIsNotSet_ThrowInvalidOperationException()
-        {
-            // Arrange
-            var addressStaking = new AddressStaking(0, 1, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", "5000", 100_000, 100_000);
-
-            dynamic log = new ExpandoObject();
-            log.staker = "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST";
-            log.amount = "5000";
-            log.totalStaked = "100000";
-
-            // Act
-            void Act() => addressStaking.ResetWeight(new StopStakingLog(log, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", 0), 100_001);
-
-            // Assert
-            Assert.Throws<InvalidOperationException>(Act);
-        }
-
-        [Fact]
-        public void ResetWeight_WeightIsNotEqualToLogAmount_ThrowInvalidOperationException()
-        {
-            // Arrange
-            var addressStaking = new AddressStaking(1, 1, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", "5000", 100_000, 100_000);
-
-            dynamic log = new ExpandoObject();
-            log.staker = "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST";
-            log.amount = "9999";
-            log.totalStaked = "100000";
-
-            // Act
-            void Act() => addressStaking.ResetWeight(new StopStakingLog(log, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", 0), 100_001);
-
-            // Assert
-            Assert.Throws<InvalidOperationException>(Act);
-        }
-
-        [Fact]
-        public void ResetWeight_LowerModifiedBlock_ThrowArgumentOutOfRangeException()
-        {
-            // Arrange
-            var addressStaking = new AddressStaking(1, 1, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", "5000", 100_000, 100_000);
-
-            dynamic log = new ExpandoObject();
-            log.staker = "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST";
-            log.amount = "5000";
-            log.totalStaked = "100000";
-
-            // Act
-            void Act() => addressStaking.ResetWeight(new StopStakingLog(log, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", 0), 99_999);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
-        }
-
-        [Fact]
-        public void ResetWeight_ArgumentsValid_PropertiesSet()
-        {
-            // Arrange
-            var addressStaking = new AddressStaking(1, 1, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", "5000", 100_000, 100_000);
-
-            ulong updatedBlock = 100_001;
-
-            dynamic log = new ExpandoObject();
-            log.staker = "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST";
-            log.amount = "5000";
-            log.totalStaked = "100000";
-
-            // Act
-            addressStaking.ResetWeight(new StopStakingLog(log, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", 0), updatedBlock);
-
-            // Assert
-            addressStaking.Weight.Should().Be("0");
             addressStaking.ModifiedBlock.Should().Be(updatedBlock);
         }
     }
