@@ -16,12 +16,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
     {
         private readonly Mock<IDbContext> _dbContext;
         private readonly PersistTokenCommandHandler _handler;
-        
+
         public PersistTokenCommandHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
             var logger = new NullLogger<PersistTokenCommandHandler>();
-            
+
             _dbContext = new Mock<IDbContext>();
             _handler = new PersistTokenCommandHandler(_dbContext.Object, mapper, logger);
         }
@@ -29,12 +29,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task PersistsToken_Success()
         {
-            var token = new Token("TokenAddress", "TokenName", "TKN", 8, 100_000_000, "500_000_000", 1);
+            var token = new Token("TokenAddress", "TokenName", "TKN", 8, 100_000_000, "500000000", 1);
             var command = new PersistTokenCommand(token);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(1234L));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Should().Be(1234);
@@ -43,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task PersistsToken_Fail()
         {
-            var token = new Token("TokenAddress", "TokenName", "TKN", 8, 100_000_000, "500_000_000", 1);
+            var token = new Token("TokenAddress", "TokenName", "TKN", 8, 100_000_000, "500000000", 1);
             var command = new PersistTokenCommand(token);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

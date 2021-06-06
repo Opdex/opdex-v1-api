@@ -15,24 +15,24 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernance
 
             if (!stakingPool.HasValue())
             {
-                throw new ArgumentNullException(nameof(stakingPool));
+                throw new ArgumentNullException(nameof(stakingPool), "Staking pool address must be set.");
             }
-            
+
             if (!miningPool.HasValue())
             {
-                throw new ArgumentNullException(nameof(miningPool));
+                throw new ArgumentNullException(nameof(miningPool), "Mining pool address must be set.");
             }
-            
-            if (!amount.HasValue())
+
+            if (!amount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(amount));
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
             }
 
             StakingPool = stakingPool;
             MiningPool = miningPool;
             Amount = amount;
         }
-        
+
         public RewardMiningPoolLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.RewardMiningPoolLog, id, transactionId, address, sortOrder)
         {
@@ -41,11 +41,11 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernance
             MiningPool = logDetails.MiningPool;
             Amount = logDetails.Amount;
         }
-        
+
         public string StakingPool { get; }
         public string MiningPool { get; }
         public string Amount { get; }
-        
+
         private struct LogDetails
         {
             public string StakingPool { get; set; }

@@ -16,12 +16,17 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
 
             if (!miner.HasValue())
             {
-                throw new ArgumentNullException(nameof(miner));
+                throw new ArgumentNullException(nameof(miner), "Miner address must be set.");
             }
-            
-            if (!amount.HasValue())
+
+            if (!amount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(amount));
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
+            }
+
+            if (!totalSupply.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must only contain numeric digits.");
             }
 
             Miner = miner;
@@ -29,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             TotalSupply = totalSupply;
             EventType = eventType;
         }
-        
+
         public MineLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.MineLog, id, transactionId, address, sortOrder)
         {
@@ -44,7 +49,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
         public string Amount { get; }
         public string TotalSupply { get; }
         public byte EventType { get; }
-        
+
         private struct LogDetails
         {
             public string Miner { get; set; }

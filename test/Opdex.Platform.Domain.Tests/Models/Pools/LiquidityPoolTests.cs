@@ -2,9 +2,9 @@ using FluentAssertions;
 using Opdex.Platform.Domain.Models.Pools;
 using Xunit;
 
-namespace Opdex.Platform.Domain.Tests.Models
+namespace Opdex.Platform.Domain.Tests.Models.Pools
 {
-    public class PoolTests
+    public class LiquidityPoolTests
     {
         [Fact]
         public void CreatePool_Success()

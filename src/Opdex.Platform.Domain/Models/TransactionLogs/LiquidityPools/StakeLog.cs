@@ -16,17 +16,17 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
 
             if (!staker.HasValue())
             {
-                throw new ArgumentNullException(nameof(staker));
+                throw new ArgumentNullException(nameof(staker), "Staker address must be set.");
             }
-            
-            if (!amount.HasValue())
+
+            if (!amount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(amount));
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
             }
-            
-            if (!totalStaked.HasValue())
+
+            if (!totalStaked.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(totalStaked));
+                throw new ArgumentOutOfRangeException(nameof(totalStaked), "Total staked amount must only contain numeric digits.");
             }
 
             Staker = staker;
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             TotalStaked = totalStaked;
             EventType = eventType;
         }
-        
+
         public StakeLog(long id, long transactionId, string address, int sortOrder, string details)
             : base(TransactionLogType.StakeLog, id, transactionId, address, sortOrder)
         {
@@ -44,12 +44,12 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             TotalStaked = logDetails.TotalStaked;
             EventType = logDetails.EventType;
         }
-        
+
         public string Staker { get; }
         public string Amount { get; }
         public string TotalStaked { get; }
         public byte EventType { get; }
-        
+
         private struct LogDetails
         {
             public string Staker { get; set; }

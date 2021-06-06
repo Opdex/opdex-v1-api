@@ -9,25 +9,25 @@ namespace Opdex.Platform.Domain.Models.Pools
         {
             if (!address.HasValue())
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(address), "Address must be set.");
             }
-            
+
             if (!miningTokenAddress.HasValue())
             {
-                throw new ArgumentNullException(nameof(miningTokenAddress));
+                throw new ArgumentNullException(nameof(miningTokenAddress), "Mining token address must be set.");
             }
-            
+
             if (!rewardRate.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(rewardRate));
+                throw new ArgumentNullException(nameof(rewardRate), "Reward rate must only contain numeric digits.");
             }
-            
+
             Address = address;
             MiningTokenAddress = miningTokenAddress;
             RewardRate = rewardRate;
             MiningPeriodEnd = miningPeriodEnd;
         }
-        
+
         public string Address { get; }
         public string MiningTokenAddress { get; }
         public string RewardRate { get; }

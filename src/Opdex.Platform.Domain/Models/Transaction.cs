@@ -19,27 +19,27 @@ namespace Opdex.Platform.Domain.Models
         {
             if (!txHash.HasValue())
             {
-                throw new ArgumentNullException(nameof(txHash));
+                throw new ArgumentNullException(nameof(txHash), "Transaction hash must be set.");
             }
-            
+
             if (blockHeight == 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight));
+                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than 0.");
             }
-            
+
             if (gasUsed == 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(gasUsed));
+                throw new ArgumentOutOfRangeException(nameof(gasUsed), "Transaction gas must be set.");
             }
-            
+
             if (!from.HasValue())
             {
-                throw new ArgumentNullException(nameof(from));
+                throw new ArgumentNullException(nameof(from), "From address must be set.");
             }
-            
+
             if (!to.HasValue() && !newContractAddress.HasValue())
             {
-                throw new ArgumentNullException(nameof(to));
+                throw new ArgumentNullException(nameof(to), "To address must be set.");
             }
 
             Hash = txHash;
@@ -65,7 +65,7 @@ namespace Opdex.Platform.Domain.Models
             Logs = new List<TransactionLog>();
             AttachLogs(logs);
         }
-        
+
         public long Id { get; private set; }
         public string Hash { get; }
         public ulong BlockHeight { get; }
@@ -74,9 +74,9 @@ namespace Opdex.Platform.Domain.Models
         public string To { get; }
         public bool Success { get; }
         public string NewContractAddress { get; }
-        
+
         public ICollection<TransactionLog> Logs { get; }
-        
+
         // Todo: maybe enum - unknown | maybe | yeah | no
         public bool IsOpdexTx { get; private set; }
 
@@ -109,12 +109,12 @@ namespace Opdex.Platform.Domain.Models
                 Logs.Add(txLog);
             }
         }
-        
+
         public void SetId(long id)
         {
             if (Id != 0)
             {
-                throw new Exception("TransactionId already set.");
+                throw new InvalidOperationException("TransactionId already set.");
             }
 
             Id = id;
@@ -124,7 +124,7 @@ namespace Opdex.Platform.Domain.Models
                 log.SetTransactionId(Id);
             }
         }
-        
+
         public void DeserializeLog(string address, string topic, int sortOrder, dynamic log)
         {
             try

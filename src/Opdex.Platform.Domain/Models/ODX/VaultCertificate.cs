@@ -10,24 +10,24 @@ namespace Opdex.Platform.Domain.Models.ODX
         {
             if (vaultId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(vaultId));
+                throw new ArgumentOutOfRangeException(nameof(vaultId), "Vault id must be greater than 0.");
             }
 
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(owner), "Owner must be set.");
             }
 
             if (!amount.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(amount));
+                throw new ArgumentNullException(nameof(amount), "Amount must only contain numeric digits.");
             }
 
             if (vestedBlock < 1)
             {
-                throw new ArgumentNullException(nameof(vestedBlock));
+                throw new ArgumentNullException(nameof(vestedBlock), "Vested block must be greater than 0.");
             }
-            
+
             VaultId = vaultId;
             Owner = owner;
             Amount = amount;
@@ -35,7 +35,7 @@ namespace Opdex.Platform.Domain.Models.ODX
             Redeemed = false;
             Revoked = false;
         }
-        
+
         public VaultCertificate(long id, long vaultId, string owner, string amount, ulong vestedBlock, bool redeemed, bool revoked, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
@@ -62,7 +62,7 @@ namespace Opdex.Platform.Domain.Models.ODX
             Revoked = true;
             SetModifiedBlock(block);
         }
-        
+
         public void Redeem(RedeemVaultCertificateLog log, ulong block)
         {
             Redeemed = true;

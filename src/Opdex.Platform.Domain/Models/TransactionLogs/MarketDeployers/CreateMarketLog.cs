@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
 {
     public class CreateMarketLog : TransactionLog
     {
-        public CreateMarketLog(dynamic log, string address, int sortOrder) 
+        public CreateMarketLog(dynamic log, string address, int sortOrder)
             : base(TransactionLogType.CreateMarketLog, address, sortOrder)
         {
             string market = log?.market;
@@ -21,17 +21,27 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
 
             if (!market.HasValue())
             {
-                throw new ArgumentNullException(nameof(market));
+                throw new ArgumentNullException(nameof(market), "Market address must be set.");
             }
-            
+
+            if (!owner.HasValue())
+            {
+                throw new ArgumentNullException(nameof(market), "Owner address must be set.");
+            }
+
             if (!owner.HasValue())
             {
                 throw new ArgumentNullException(nameof(owner));
             }
-            
+
             if (!router.HasValue())
             {
-                throw new ArgumentNullException(nameof(router));
+                throw new ArgumentNullException(nameof(router), "Router address must be set.");
+            }
+
+            if (transactionFee > 10)
+            {
+                throw new ArgumentOutOfRangeException(nameof(transactionFee), "Transaction fee must be between 0-10 inclusive.");
             }
 
             Market = market;
@@ -59,7 +69,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
             StakingToken = logDetails.StakingToken;
             EnableMarketFee = logDetails.EnableMarketFee;
         }
-        
+
         public string Market { get; }
         public string Owner { get; }
         public string Router { get; }
@@ -82,7 +92,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
             public string StakingToken { get; set; }
             public bool EnableMarketFee { get; set; }
         }
-        
+
         private static LogDetails DeserializeLogDetails(string details)
         {
             return JsonConvert.DeserializeObject<LogDetails>(details);

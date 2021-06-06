@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
     {
         private readonly Mock<IDbContext> _dbContext;
         private readonly PersistAddressAllowanceCommandHandler _handler;
-        
+
         public PersistAddressAllowanceCommandHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
@@ -31,42 +31,42 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task Insert_AddressAllowance_Success()
         {
             const long expectedId = 10;
-            var allowance = new AddressAllowance(1, 2, "Owner", "Spender", "100000000", 3);
+            var allowance = new AddressAllowance(0, 1, "Owner", "Spender", "100000000", 3);
             var command = new PersistAddressAllowanceCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedId));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Should().Be(expectedId);
         }
-        
+
         [Fact]
         public async Task Update_AddressAllowance_Success()
         {
             const long expectedId = 10;
-            var allowance = new AddressAllowance(expectedId, 1, 2, "Owner", "Spender", "100000000", 3, 4);
+            var allowance = new AddressAllowance(expectedId, 0, 1, "Owner", "Spender", "100000000", 3, 4);
             var command = new PersistAddressAllowanceCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedId));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Should().Be(expectedId);
         }
-        
+
         [Fact]
         public async Task PersistsAddressAllowance_Fail()
         {
             const long expectedId = 0;
-            var allowance = new AddressAllowance(expectedId, 1, 2, "Owner", "Spender", "100000000", 3, 4);
+            var allowance = new AddressAllowance(expectedId, 0, 1, "Owner", "Spender", "100000000", 3, 4);
             var command = new PersistAddressAllowanceCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Throws(new Exception("Some SQL Exception"));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Should().Be(expectedId);

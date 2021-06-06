@@ -10,37 +10,37 @@ namespace Opdex.Platform.Domain.Models.Addresses
         {
             if (tokenId < 1 && liquidityPoolId < 1)
             {
-                throw new Exception("Either liquidityPoolId or tokenId must be greater than 0.");
+                throw new ArgumentException("Either liquidityPoolId or tokenId must be greater than 0.");
             }
 
-            if (tokenId > 1 && liquidityPoolId > 1)
+            if (tokenId >= 1 && liquidityPoolId >= 1)
             {
-                throw new Exception("Only liquidityPoolId or tokenId can be greater than 0.");
+                throw new ArgumentException("Only liquidityPoolId or tokenId can be greater than 0.");
             }
 
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner must be set.");
             }
-            
+
             if (!spender.HasValue())
             {
-                throw new ArgumentNullException(nameof(spender));
+                throw new ArgumentNullException(nameof(spender), "Spender must be set.");
             }
 
             if (!allowance.IsNumeric())
             {
-                throw new ArgumentOutOfRangeException(nameof(allowance));
+                throw new ArgumentOutOfRangeException(nameof(allowance), "Allowance must only contain numeric digits.");
             }
-            
+
             TokenId = tokenId;
             LiquidityPoolId = liquidityPoolId;
             Owner = owner;
             Spender = spender;
             Allowance = allowance;
         }
-        
-        public AddressAllowance(long id, long tokenId, long liquidityPoolId, string owner, string spender, string allowance, 
+
+        public AddressAllowance(long id, long tokenId, long liquidityPoolId, string owner, string spender, string allowance,
             ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -50,7 +50,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Spender = spender;
             Allowance = allowance;
         }
-        
+
         public long Id { get; }
         public long TokenId { get; }
         public long LiquidityPoolId { get; }

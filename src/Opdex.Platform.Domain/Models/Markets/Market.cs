@@ -6,22 +6,27 @@ namespace Opdex.Platform.Domain.Models.Markets
 {
     public class Market : BlockAudit
     {
-        public Market(string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders, 
+        public Market(string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders,
             bool authTraders, uint transactionFee, bool marketFeeEnabled, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(address), "Address must be set.");
             }
 
             if (deployerId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(deployerId));
+                throw new ArgumentOutOfRangeException(nameof(deployerId), "Deployer id must be greater than 0.");
             }
 
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner must be set.");
+            }
+
+            if (transactionFee > 10)
+            {
+                throw new ArgumentOutOfRangeException(nameof(transactionFee), "Transaction fee must be between 0-10 inclusive.");
             }
 
             Address = address;
@@ -34,7 +39,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             TransactionFee = transactionFee;
             MarketFeeEnabled = marketFeeEnabled;
         }
-        
+
         public Market(long id, string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders,
             bool authTraders, uint transactionFee, bool marketFeeEnabled, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
@@ -49,7 +54,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             TransactionFee = transactionFee;
             MarketFeeEnabled = marketFeeEnabled;
         }
-        
+
         public long Id { get; }
         public string Address { get; }
         public long DeployerId { get; }

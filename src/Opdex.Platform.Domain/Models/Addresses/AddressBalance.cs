@@ -9,30 +9,30 @@ namespace Opdex.Platform.Domain.Models.Addresses
         {
             if (tokenId < 1 && liquidityPoolId < 1)
             {
-                throw new Exception("Either liquidityPoolId or tokenId must be greater than 0.");
+                throw new ArgumentException("Either liquidityPoolId or tokenId must be greater than 0.");
             }
 
-            if (tokenId > 1 && liquidityPoolId > 1)
+            if (tokenId >= 1 && liquidityPoolId >= 1)
             {
-                throw new Exception("Only liquidityPoolId or tokenId can be greater than 0.");
+                throw new ArgumentException("Only liquidityPoolId or tokenId can be greater than 0.");
             }
 
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner must be set.");
             }
 
             if (!balance.IsNumeric())
             {
-                throw new ArgumentOutOfRangeException(nameof(balance));
+                throw new ArgumentOutOfRangeException(nameof(balance), "Balance must only contain numeric digits.");
             }
-            
+
             TokenId = tokenId;
             LiquidityPoolId = liquidityPoolId;
             Owner = owner;
             Balance = balance;
         }
-        
+
         public AddressBalance(long id, long tokenId, long liquidityPoolId, string owner, string balance, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
@@ -42,7 +42,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Owner = owner;
             Balance = balance;
         }
-        
+
         public long Id { get; }
         public long TokenId { get; }
         public long LiquidityPoolId { get; }
@@ -53,7 +53,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
         {
             if (!balance.IsNumeric())
             {
-                throw new ArgumentOutOfRangeException(nameof(balance));
+                throw new ArgumentOutOfRangeException(nameof(balance), "Balance must only contain numeric digits.");
             }
 
             Balance = balance;
