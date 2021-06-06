@@ -27,7 +27,7 @@ namespace Opdex.Platform.Application.Handlers.Pools
             var reserveIn = request.TokenIn == TokenConstants.Cirrus.Address ? reservesCrs : reservesSrc;
             var reserveOut = request.TokenIn == TokenConstants.Cirrus.Address ? reservesSrc : reservesCrs;
 
-            return await _mediator.Send(new CallCirrusGetAddLiquidityQuoteQuery(request.AmountIn, reserveIn, reserveOut, request.Market), cancellationToken);
+            return await _mediator.Send(new CallCirrusGetAddLiquidityQuoteQuery(request.AmountIn, reserveIn, reserveOut, request.Router), cancellationToken);
         }
     }
 }

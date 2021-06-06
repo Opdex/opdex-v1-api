@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
     public class CreateWalletRemoveLiquidityTransactionCommand : CreateWalletTransactionCommand
     {
         public CreateWalletRemoveLiquidityTransactionCommand(string walletName, string walletAddress, string walletPassword, 
-            string liquidityPool, string liquidity, string amountCrsMin, string amountSrcMin, string recipient, string market)
+            string liquidityPool, string liquidity, string amountCrsMin, string amountSrcMin, string recipient, string router)
             : base(walletName, walletAddress, walletPassword)
         {
             if (!liquidityPool.HasValue())
@@ -34,9 +34,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
                 throw new ArgumentNullException(nameof(recipient));
             }
             
-            if (!market.HasValue())
+            if (!router.HasValue())
             {
-                throw new ArgumentNullException(nameof(market));
+                throw new ArgumentNullException(nameof(router));
             }
             
             LiquidityPool = liquidityPool;
@@ -44,7 +44,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             AmountCrsMin = amountCrsMin;
             AmountSrcMin = amountSrcMin;
             Recipient = recipient;
-            Market = market;
+            Router = router;
         }
         
         public string Liquidity { get; }
@@ -52,6 +52,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
         public string AmountSrcMin { get; }
         public string LiquidityPool { get; }
         public string Recipient { get; }
-        public string Market { get; }
+        public string Router { get; }
     }
 }

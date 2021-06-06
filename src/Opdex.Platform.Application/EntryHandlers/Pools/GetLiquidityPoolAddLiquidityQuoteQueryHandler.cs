@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common;
@@ -22,10 +23,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools
         public async Task<string> Handle(GetLiquidityPoolAddLiquidityQuoteQuery request, CancellationToken cancellationToken)
         {
             var tokenIn = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenIn), cancellationToken);
+            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
+            var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(market.Id, findOrThrow: true), cancellationToken);
             
             var amountIn = request.AmountIn.ToSatoshis(tokenIn.Decimals);
             
-            var quote = await _mediator.Send(new RetrieveLiquidityPoolAddLiquidityQuoteQuery(amountIn, request.TokenIn, request.Pool, request.Market), cancellationToken);
+            var quote = await _mediator.Send(new RetrieveLiquidityPoolAddLiquidityQuoteQuery(amountIn, request.TokenIn, request.Pool, router.Address), cancellationToken);
 
             // CRS in means SRC decimal based quote out
             var quoteDecimals = request.TokenIn == TokenConstants.Cirrus.Address ? tokenIn.Decimals : TokenConstants.Cirrus.Decimals;

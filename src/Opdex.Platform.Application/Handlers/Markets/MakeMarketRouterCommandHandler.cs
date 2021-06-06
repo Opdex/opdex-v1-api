@@ -3,23 +3,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Markets;
-using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 
 namespace Opdex.Platform.Application.Handlers.Markets
 {
-    public class MakeMarketCommandHandler : IRequestHandler<MakeMarketCommand, long>
+    public class MakeMarketRouterCommandHandler : IRequestHandler<MakeMarketRouterCommand, bool>
     {
         private readonly IMediator _mediator;
         
-        public MakeMarketCommandHandler(IMediator mediator)
+        public MakeMarketRouterCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public Task<long> Handle(MakeMarketCommand request, CancellationToken cancellationToken)
+        public Task<bool> Handle(MakeMarketRouterCommand request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new PersistMarketCommand(request.Market), CancellationToken.None);
+            return _mediator.Send(new PersistMarketRouterCommand(request.Router), CancellationToken.None);
         }
     }
 }

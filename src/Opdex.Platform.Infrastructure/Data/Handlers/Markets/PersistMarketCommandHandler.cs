@@ -21,7 +21,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 {nameof(MarketEntity.AuthPoolCreators)},
                 {nameof(MarketEntity.AuthProviders)},
                 {nameof(MarketEntity.AuthTraders)},
-                {nameof(MarketEntity.Fee)},
+                {nameof(MarketEntity.TransactionFee)},
+                {nameof(MarketEntity.MarketFeeEnabled)},
                 {nameof(MarketEntity.CreatedBlock)},
                 {nameof(MarketEntity.ModifiedBlock)}
               ) VALUES (
@@ -32,7 +33,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 @{nameof(MarketEntity.AuthPoolCreators)},
                 @{nameof(MarketEntity.AuthProviders)},
                 @{nameof(MarketEntity.AuthTraders)},
-                @{nameof(MarketEntity.Fee)},
+                @{nameof(MarketEntity.TransactionFee)},
+                @{nameof(MarketEntity.MarketFeeEnabled)},
                 @{nameof(MarketEntity.CreatedBlock)},
                 @{nameof(MarketEntity.ModifiedBlock)}
               );

@@ -19,28 +19,21 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
         : IRequestHandler<CreateWalletApproveAllowanceTransactionCommand, string>
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<CreateWalletApproveAllowanceTransactionCommandHandler> _logger;
 
-        public CreateWalletApproveAllowanceTransactionCommandHandler(IMediator mediator, 
-            ILogger<CreateWalletApproveAllowanceTransactionCommandHandler> logger)
+        public CreateWalletApproveAllowanceTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<string> Handle(CreateWalletApproveAllowanceTransactionCommand request, CancellationToken cancellationToken)
         {
             int decimals;
-            var token = await RetrieveToken(request.Token, cancellationToken);
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: false), cancellationToken);
 
             if (token == null)
             {
-                var pool = await RetrievePool(request.Token, cancellationToken);
-
-                if (pool == null)
-                {
-                    throw new Exception("Invalid token to approve allowance for.");
-                }
+                // We don't need the pool but we want to verify it exists
+                var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Token, findOrThrow: true), cancellationToken);
 
                 decimals = TokenConstants.LiquidityPoolToken.Decimals;
             }
@@ -55,38 +48,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
                 request.Token, amount, request.Spender);
             
             return await _mediator.Send(command, cancellationToken);
-        }
-
-        private async Task<Token> RetrieveToken(string tokenAddress, CancellationToken cancellationToken)
-        {
-            Token token = null;
-            
-            try
-            {
-                token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress), cancellationToken);
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.LogWarning(ex, $"Token not found - {tokenAddress}");
-            }
-
-            return token;
-        }
-        
-        private async Task<LiquidityPool> RetrievePool(string poolAddress, CancellationToken cancellationToken)
-        {
-            LiquidityPool pool = null;
-            
-            try
-            {
-                pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(poolAddress), cancellationToken);
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.LogWarning(ex, $"Pool not found - {poolAddress}");
-            }
-
-            return pool;
         }
     }
 }

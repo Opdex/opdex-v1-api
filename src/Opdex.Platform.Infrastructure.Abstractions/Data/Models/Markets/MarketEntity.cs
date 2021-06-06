@@ -10,6 +10,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets
         public bool AuthPoolCreators { get; set; }
         public bool AuthProviders { get; set; }
         public bool AuthTraders { get; set; }
-        public uint Fee { get; set; }
+        public uint TransactionFee { get; set; }
+        public bool MarketFeeEnabled { get; set; }
     }
 }

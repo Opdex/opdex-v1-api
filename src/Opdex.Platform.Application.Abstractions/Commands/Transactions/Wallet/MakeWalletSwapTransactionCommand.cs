@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
     public class MakeWalletSwapTransactionCommand : MakeWalletTransactionCommand
     {
         public MakeWalletSwapTransactionCommand(string walletName, string walletAddress, string walletPassword, string tokenIn, string tokenOut, 
-            string tokenInAmount, string tokenOutAmount, bool tokenInExactAmount, decimal tolerance, string recipient, string market)
+            string tokenInAmount, string tokenOutAmount, bool tokenInExactAmount, decimal tolerance, string recipient, string router)
             : base(walletName, walletAddress, walletPassword)
         {
             if (!tokenIn.HasValue())
@@ -39,9 +39,9 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
                 throw new ArgumentNullException(nameof(recipient));
             }
             
-            if (!market.HasValue())
+            if (!router.HasValue())
             {
-                throw new ArgumentNullException(nameof(market));
+                throw new ArgumentNullException(nameof(router));
             }
             
             TokenIn = tokenIn;
@@ -51,7 +51,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             TokenInExactAmount = tokenInExactAmount;
             Tolerance = tolerance;
             Recipient = recipient;
-            Market = market;
+            Router = router;
         }
         
         public string TokenIn { get; }
@@ -61,6 +61,6 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
         public bool TokenInExactAmount { get; }
         public decimal Tolerance { get; }
         public string Recipient { get; }
-        public string Market { get; }
+        public string Router { get; }
     }
 }
