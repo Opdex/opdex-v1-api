@@ -15,7 +15,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             static void Act() => new AddressAllowance(0, 0, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_001);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act);
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Either liquidityPoolId or tokenId must be greater than 0.");
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             static void Act() => new AddressAllowance(1, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_001);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act);
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Only liquidityPoolId or tokenId can be greater than 0.");
         }
 
         [Theory]
@@ -40,7 +40,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => new AddressAllowance(0, 1, owner, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_001);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act);
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner must be set.");
         }
 
         [Theory]
@@ -54,7 +54,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => new AddressAllowance(0, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", spender, "50000000", 10_001);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act);
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Spender must be set.");
         }
 
         [Theory]
@@ -71,7 +71,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => new AddressAllowance(0, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", allowance, 10_001);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Allowance must only contain numeric digits.");
         }
 
         [Fact]

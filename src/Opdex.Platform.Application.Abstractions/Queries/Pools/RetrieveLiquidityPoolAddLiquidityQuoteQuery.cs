@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Pools
 {
     public class RetrieveLiquidityPoolAddLiquidityQuoteQuery : IRequest<string>
     {
-        public RetrieveLiquidityPoolAddLiquidityQuoteQuery(string amountIn, string tokenIn, string pool, string market)
+        public RetrieveLiquidityPoolAddLiquidityQuoteQuery(string amountIn, string tokenIn, string pool, string router)
         {
             if (!amountIn.HasValue())
             {
@@ -23,20 +23,20 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Pools
                 throw new ArgumentNullException(nameof(pool));
             }
             
-            if (!market.HasValue())
+            if (!router.HasValue())
             {
-                throw new ArgumentNullException(nameof(market));
+                throw new ArgumentNullException(nameof(router));
             }
             
             AmountIn = amountIn;
             TokenIn = tokenIn;
             Pool = pool;
-            Market = market;
+            Router = router;
         }
         
         public string AmountIn { get; }
         public string TokenIn { get; }
         public string Pool { get; }
-        public string Market { get; }
+        public string Router { get; }
     }
 }

@@ -3,10 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
@@ -52,9 +54,19 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 
                 // Create market
                 market = new Market(request.Log.Market, deployer.Id, stakingTokenId, request.Log.Owner, request.Log.AuthPoolCreators,
-                    request.Log.AuthProviders, request.Log.AuthTraders, request.Log.Fee, request.BlockHeight);
+                    request.Log.AuthProviders, request.Log.AuthTraders, request.Log.TransactionFee, request.Log.EnableMarketFee, request.BlockHeight);
                 
                 var marketId = await _mediator.Send(new MakeMarketCommand(market), CancellationToken.None);
+                
+                // Create Router
+                var routerQuery = new RetrieveMarketRouterByAddressQuery(request.Log.Router, findOrThrow: false);
+                var router = await _mediator.Send(routerQuery, CancellationToken.None);
+
+                if (router == null)
+                {
+                    router = new MarketRouter(request.Log.Router, marketId, true, request.BlockHeight);
+                    await _mediator.Send(new MakeMarketRouterCommand(router), CancellationToken.None);
+                }
 
                 return marketId > 0;
             }

@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
     public class MakeWalletAddLiquidityTransactionCommand : MakeWalletTransactionCommand
     {
         public MakeWalletAddLiquidityTransactionCommand(string walletName, string walletAddress, string walletPassword, string token, 
-            string amountCrs, string amountSrc, string amountCrsMin, string amountSrcMin, string recipient, string market) 
+            string amountCrs, string amountSrc, string amountCrsMin, string amountSrcMin, string recipient, string router) 
             : base(walletName, walletAddress, walletPassword)
         {
             if (!token.HasValue())
@@ -40,9 +40,9 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
                 throw new ArgumentNullException(nameof(recipient));
             }
             
-            if (!market.HasValue())
+            if (!router.HasValue())
             {
-                throw new ArgumentNullException(nameof(market));
+                throw new ArgumentNullException(nameof(router));
             }
             
             Token = token;
@@ -51,7 +51,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             AmountCrsMin = amountCrsMin;
             AmountSrcMin = amountSrcMin;
             Recipient = recipient;
-            Market = market;
+            Router = router;
         }
         
         public string Token { get; }
@@ -60,6 +60,6 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
         public string AmountCrsMin { get; }
         public string AmountSrcMin { get; }
         public string Recipient { get; }
-        public string Market { get; }
+        public string Router { get; }
     }
 }

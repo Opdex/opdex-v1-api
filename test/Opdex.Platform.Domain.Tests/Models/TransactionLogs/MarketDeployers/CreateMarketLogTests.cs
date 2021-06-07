@@ -18,11 +18,13 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MarketDeployers
             dynamic txLog = new ExpandoObject();
             txLog.market = market;
             txLog.owner = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj6";
+            txLog.router = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj8";
             txLog.authPoolCreators = true;
             txLog.authProviders = true;
             txLog.authTraders = true;
-            txLog.fee = 3u;
+            txLog.transactionFee = 3u;
             txLog.stakingToken = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj7";
+            txLog.marketFeeEnabled = true;
 
             // Act
             void Act() => new CreateMarketLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -40,12 +42,14 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MarketDeployers
             // Arrange
             dynamic txLog = new ExpandoObject();
             txLog.market = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj6";
+            txLog.router = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj8";
             txLog.owner = owner;
             txLog.authPoolCreators = true;
             txLog.authProviders = true;
             txLog.authTraders = true;
-            txLog.fee = 3u;
+            txLog.transactionFee = 3u;
             txLog.stakingToken = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj7";
+            txLog.marketFeeEnabled = true;
 
             // Act
             void Act() => new CreateMarketLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -58,17 +62,19 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MarketDeployers
         [InlineData(null)]
         [InlineData("")]
         [InlineData("  ")]
-        public void CreateMarketLog_StakingTokenAddressNotSet_ThrowArgumentNullException(string stakingToken)
+        public void CreateMarketLog_RouterAddressNotSet_ThrowArgumentNullException(string router)
         {
             // Arrange
             dynamic txLog = new ExpandoObject();
             txLog.market = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj6";
             txLog.owner = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj7";
+            txLog.stakingToken = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj7";
             txLog.authPoolCreators = true;
             txLog.authProviders = true;
             txLog.authTraders = true;
-            txLog.fee = 3u;
-            txLog.stakingToken = stakingToken;
+            txLog.transactionFee = 3u;
+            txLog.router = router;
+            txLog.marketFeeEnabled = true;
 
             // Act
             void Act() => new CreateMarketLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -84,11 +90,13 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MarketDeployers
             dynamic txLog = new ExpandoObject();
             txLog.market = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj6";
             txLog.owner = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj7";
+            txLog.router = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj8";
             txLog.authPoolCreators = true;
             txLog.authProviders = true;
             txLog.authTraders = true;
-            txLog.fee = 11u;
+            txLog.transactionFee = 11u;
             txLog.stakingToken = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj8";
+            txLog.marketFeeEnabled = true;
 
             // Act
             void Act() => new CreateMarketLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -104,11 +112,13 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MarketDeployers
             dynamic txLog = new ExpandoObject();
             txLog.market = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj6";
             txLog.owner = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj7";
+            txLog.router = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj8";
             txLog.authPoolCreators = true;
             txLog.authProviders = true;
             txLog.authTraders = false;
-            txLog.fee = 10u;
+            txLog.transactionFee = 10u;
             txLog.stakingToken = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj8";
+            txLog.marketFeeEnabled = true;
 
             // Act
             var log = new CreateMarketLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -116,10 +126,12 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MarketDeployers
             // Assert
             log.Market.Should().Be(txLog.market);
             log.Owner.Should().Be(txLog.owner);
+            log.Router.Should().Be(txLog.router);
             log.AuthPoolCreators.Should().Be(txLog.authPoolCreators);
             log.AuthProviders.Should().Be(txLog.authProviders);
             log.AuthTraders.Should().Be(txLog.authTraders);
-            log.Fee.Should().Be(txLog.fee);
+            log.TransactionFee.Should().Be(txLog.transactionFee);
+            log.EnableMarketFee.Should().Be(txLog.marketFeeEnabled);
             log.StakingToken.Should().Be(txLog.stakingToken);
         }
     }

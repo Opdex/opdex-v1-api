@@ -79,7 +79,11 @@ namespace Opdex.Platform.Infrastructure
 
             CreateMap<MarketEntity, Market>()
                 .ConstructUsing(src => new Market(src.Id, src.Address, src.DeployerId, src.StakingTokenId, src.Owner, src.AuthPoolCreators, 
-                    src.AuthProviders, src.AuthTraders, src.Fee, src.CreatedBlock, src.ModifiedBlock))
+                    src.AuthProviders, src.AuthTraders, src.TransactionFee, src.MarketFeeEnabled, src.CreatedBlock, src.ModifiedBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<MarketRouterEntity, MarketRouter>()
+                .ConstructUsing(src => new MarketRouter(src.Id, src.Address, src.MarketId, src.IsActive, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
             
             CreateMap<MiningGovernanceEntity, MiningGovernance>()
@@ -160,10 +164,20 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.AuthPoolCreators, opt => opt.MapFrom(src => src.AuthPoolCreators))
                 .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
                 .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
-                .ForMember(dest => dest.Fee, opt => opt.MapFrom(src => src.Fee))
+                .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
                 .ForMember(dest => dest.StakingTokenId, opt => opt.MapFrom(src => src.StakingTokenId))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.DeployerId, opt => opt.MapFrom(src => src.DeployerId))
+                .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
+                .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+                .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+            
+            CreateMap<MarketRouter, MarketRouterEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());

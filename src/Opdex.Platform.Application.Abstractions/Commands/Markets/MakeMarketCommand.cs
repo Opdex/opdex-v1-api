@@ -1,9 +1,8 @@
 using System;
 using MediatR;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Markets;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Markets
+namespace Opdex.Platform.Application.Abstractions.Commands.Markets
 {
     public class MakeMarketCommand : IRequest<long>
     {

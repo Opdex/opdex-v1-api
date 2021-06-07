@@ -15,10 +15,10 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         {
             // Arrange
             // Act
-            void Act() => new Market(address, 5, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 3, 100_000);
+            void Act() => new Market(address, 5, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 3, true, 100_000);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act);
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Address must be set.");
         }
 
         [Theory]
@@ -29,10 +29,10 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         {
             // Arrange
             // Act
-            void Act() => new Market("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 5, 10, owner, true, true, true, 3, 100_000);
+            void Act() => new Market("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 5, 10, owner, true, true, true, 3, true, 100_000);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act);
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner must be set.");
         }
 
         [Theory]
@@ -42,10 +42,23 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         {
             // Arrange
             // Act
-            void Act() => new Market("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", deployerId, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 3, 100_000);
+            void Act() => new Market("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", deployerId, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 3, true, 100_000);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Deployer id must be greater than 0.");
+        }
+
+        [Fact]
+        public void CreateMarket_InvalidTransactionFee_ThrowArgumentOutOfRangeException()
+        {
+            // Arrange
+            uint transactionFee = 11;
+
+            // Act
+            void Act() => new Market("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 1, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, transactionFee, true, 100_000);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Transaction fee must be between 0-10 inclusive.");
         }
 
         [Fact]
@@ -59,11 +72,12 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             var authPoolCreators = true;
             var authProviders = true;
             var authTraders = true;
-            uint fee = 3;
+            uint transactionFee = 3;
+            var marketFeeEnabled = true;
             ulong createdBlock = 100_000;
 
             // Act
-            var market = new Market(address, deployerId, stakingTokenId, owner, authPoolCreators, authProviders, authTraders, fee, createdBlock);
+            var market = new Market(address, deployerId, stakingTokenId, owner, authPoolCreators, authProviders, authTraders, transactionFee, marketFeeEnabled, createdBlock);
 
             // Assert
             market.Address.Should().Be(address);
@@ -73,7 +87,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             market.AuthPoolCreators.Should().Be(authPoolCreators);
             market.AuthProviders.Should().Be(authProviders);
             market.AuthTraders.Should().Be(authTraders);
-            market.Fee.Should().Be(fee);
+            market.TransactionFee.Should().Be(transactionFee);
+            market.MarketFeeEnabled.Should().Be(marketFeeEnabled);
             market.CreatedBlock.Should().Be(createdBlock);
             market.ModifiedBlock.Should().Be(createdBlock);
         }

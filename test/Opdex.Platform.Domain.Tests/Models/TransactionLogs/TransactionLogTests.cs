@@ -68,7 +68,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             var transactionLog = new FakeTransactionLog(TransactionLogType.ApprovalLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Act
-            transactionLog.SetTransactionId(-1);
+            transactionLog.SetTxId(-1);
 
             // Assert
             transactionLog.TransactionId.Should().Be(0);
@@ -81,7 +81,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             var transactionLog = new FakeTransactionLog(TransactionLogType.ApprovalLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Act
-            transactionLog.SetTransactionId(5555);
+            transactionLog.SetTxId(5555);
 
             // Assert
             transactionLog.TransactionId.Should().Be(5555);
@@ -92,10 +92,10 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
         {
             // Arrange
             var transactionLog = new FakeTransactionLog(TransactionLogType.ApprovalLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
-            transactionLog.SetTransactionId(1111);
+            transactionLog.SetTxId(1111);
 
             // Act
-            transactionLog.SetTransactionId(5555);
+            transactionLog.SetTxId(5555);
 
             // Assert
             transactionLog.TransactionId.Should().Be(1111);
@@ -113,6 +113,11 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             {
                 SerializeLogDetailsCallCount++;
                 return "";
+            }
+
+            public void SetTxId(long id)
+            {
+                SetTransactionId(id);
             }
         }
     }

@@ -31,7 +31,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                 0.ToSmartContractParameter(SmartContractParameterType.UInt64)
             };
             
-            var callDto = new SmartContractCallRequestDto(request.Market, request.WalletName, request.WalletAddress, request.WalletPassword, 
+            var callDto = new SmartContractCallRequestDto(request.Router, request.WalletName, request.WalletAddress, request.WalletPassword, 
                 request.AmountCrs, MethodName, parameters);
             
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);

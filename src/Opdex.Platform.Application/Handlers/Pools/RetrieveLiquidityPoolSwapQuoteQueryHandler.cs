@@ -35,8 +35,8 @@ namespace Opdex.Platform.Application.Handlers.Pools
                 var tokenOutReserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(tokenOutPool.Address), cancellationToken);
 
                 return request.TokenInAmount.HasValue()
-                    ? await _mediator.Send(new CallCirrusGetAmountOutMultiHopQuoteQuery(request.Market, request.TokenInAmount, tokenInReserves[0], tokenInReserves[1], tokenOutReserves[0], tokenOutReserves[1]), cancellationToken)
-                    : await _mediator.Send(new CallCirrusGetAmountInMultiHopQuoteQuery(request.Market, request.TokenOutAmount, tokenOutReserves[0], tokenOutReserves[1], tokenInReserves[0], tokenInReserves[1]), cancellationToken);
+                    ? await _mediator.Send(new CallCirrusGetAmountOutMultiHopQuoteQuery(request.Router, request.TokenInAmount, tokenInReserves[0], tokenInReserves[1], tokenOutReserves[0], tokenOutReserves[1]), cancellationToken)
+                    : await _mediator.Send(new CallCirrusGetAmountInMultiHopQuoteQuery(request.Router, request.TokenOutAmount, tokenOutReserves[0], tokenOutReserves[1], tokenInReserves[0], tokenInReserves[1]), cancellationToken);
             }
             
             // Get CrsSrc quote
@@ -48,8 +48,8 @@ namespace Opdex.Platform.Application.Handlers.Pools
             var reservesOut = isCrsIn ? reserves[1] : reserves[0];
             
             return request.TokenInAmount.HasValue()
-                ? await _mediator.Send(new CallCirrusGetAmountOutStandardQuoteQuery(request.Market, request.TokenInAmount, reservesIn, reservesOut), cancellationToken)
-                : await _mediator.Send(new CallCirrusGetAmountInStandardQuoteQuery(request.Market, request.TokenOutAmount, reservesIn, reservesOut), cancellationToken);
+                ? await _mediator.Send(new CallCirrusGetAmountOutStandardQuoteQuery(request.Router, request.TokenInAmount, reservesIn, reservesOut), cancellationToken)
+                : await _mediator.Send(new CallCirrusGetAmountInStandardQuoteQuery(request.Router, request.TokenOutAmount, reservesIn, reservesOut), cancellationToken);
         }
     }
 }
