@@ -17,7 +17,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => new AddressMining(miningPoolId, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", "9999999999999", 100_000);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Mining pool id must be greater than 0.");
         }
 
         [Theory]
@@ -31,7 +31,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => new AddressMining(1, owner, "9999999999999", 100_000);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act);
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner must be set.");
         }
 
         [Theory]
@@ -48,7 +48,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => new AddressMining(1, "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST", balance, 100_000);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Balance must only contain numeric digits.");
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => addressMining.SetBalance(balance, 100_001);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Balance must only contain numeric digits.");
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => addressMining.SetBalance("5000", 99_999);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Modified block cannot be before created block.");
         }
 
         [Fact]

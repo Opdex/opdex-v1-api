@@ -18,7 +18,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             void Act() => new Market(address, 5, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 3, true, 100_000);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act);
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Address must be set.");
         }
 
         [Theory]
@@ -32,7 +32,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             void Act() => new Market("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 5, 10, owner, true, true, true, 3, true, 100_000);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act);
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner must be set.");
         }
 
         [Theory]
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             void Act() => new Market("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", deployerId, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 3, true, 100_000);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Deployer id must be greater than 0.");
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             void Act() => new Market("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 1, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, transactionFee, true, 100_000);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Transaction fee must be between 0-10 inclusive.");
         }
 
         [Fact]

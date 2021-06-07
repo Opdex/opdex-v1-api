@@ -15,7 +15,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             static void Act() => new AddressBalance(0, 0, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000", 10_001);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act);
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Either liquidityPoolId or tokenId must be greater than 0.");
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             static void Act() => new AddressBalance(1, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000", 10_001);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act);
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Only liquidityPoolId or tokenId can be greater than 0.");
         }
 
         [Theory]
@@ -40,7 +40,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => new AddressBalance(0, 1, owner, "50000", 10_001);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act);
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner must be set.");
         }
 
         [Theory]
@@ -57,7 +57,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => new AddressBalance(0, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", balance, 10_001);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Balance must only contain numeric digits.");
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => addressBalance.SetBalance(balance, 10_001);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Balance must only contain numeric digits.");
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             void Act() => addressBalance.SetBalance("9000000000", 9_999);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Modified block cannot be before created block.");
         }
 
         [Fact]

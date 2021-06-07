@@ -26,12 +26,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
 
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(market), "Owner address must be set.");
-            }
-
-            if (!owner.HasValue())
-            {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
             }
 
             if (!router.HasValue())
