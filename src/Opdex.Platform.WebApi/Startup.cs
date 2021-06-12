@@ -56,7 +56,7 @@ namespace Opdex.Platform.WebApi
 
             services.AddProblemDetails(options =>
             {
-                options.ShouldLogUnhandledException = (context, exception, problem) => false;
+                options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
                 options.Map<BadRequestException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
                 options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
                 options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
