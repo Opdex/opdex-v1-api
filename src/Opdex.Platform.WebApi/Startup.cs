@@ -28,6 +28,11 @@ using NSwag;
 using Microsoft.Net.Http.Headers;
 using NSwag.Generation.Processors.Security;
 using System.Text;
+using CcAcca.ApplicationInsights.ProblemDetails;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
 namespace Opdex.Platform.WebApi
 {
@@ -43,9 +48,15 @@ namespace Opdex.Platform.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplicationInsightsTelemetry();
+            services.AddApplicationInsightsTelemetryProcessor<IgnoreRequestPathsTelemetryProcessor>();
+
+            // gets rid of telemetry spam in the debug console, may prevent visual studio app insights monitoring
+            TelemetryDebugWriter.IsTracingDisabled = true;
+
             services.AddProblemDetails(options =>
             {
-                options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
+                options.ShouldLogUnhandledException = (context, exception, problem) => false;
                 options.Map<BadRequestException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
                 options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
                 options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
@@ -53,19 +64,7 @@ namespace Opdex.Platform.WebApi
                 options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
             });
 
-            services
-                .AddControllers()
-                .AddProblemDetailsConventions()
-                .AddNewtonsoftJson(options =>
-                {
-                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    options.SerializerSettings.Converters =
-                        new List<JsonConverter>
-                        {
-                            new StringEnumConverter(),
-                            new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK" }
-                        };
-                });
+            services.AddProblemDetailTelemetryInitializer();
 
             var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
             services.Configure<AuthConfiguration>(authConfig);
@@ -122,10 +121,19 @@ namespace Opdex.Platform.WebApi
             services.AddPlatformApplicationServices();
             services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(), cmcConfig.Get<CoinMarketCapConfiguration>());
 
-            services.AddControllers(o =>
-            {
-                o.Conventions.Add(new ActionHidingConvention());
-            });
+            services
+                .AddControllers(o => o.Conventions.Add(new ActionHidingConvention()))
+                .AddProblemDetailsConventions()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.Converters =
+                        new List<JsonConverter>
+                        {
+                            new StringEnumConverter(),
+                            new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK" }
+                        };
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -174,6 +182,32 @@ namespace Opdex.Platform.WebApi
                 {
                     action.ApiExplorer.IsVisible = false;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Ignores telemetry from non-api paths.
+        /// </summary>
+        public class IgnoreRequestPathsTelemetryProcessor : ITelemetryProcessor
+        {
+            private readonly ITelemetryProcessor _next;
+
+            public IgnoreRequestPathsTelemetryProcessor(ITelemetryProcessor next)
+            {
+                _next = next;
+            }
+
+            public void Process(ITelemetry item)
+            {
+                if (item is RequestTelemetry request &&
+                    (request.Url.AbsolutePath == "/" ||
+                     request.Url.AbsolutePath == "/favicon.ico" ||
+                     request.Url.AbsolutePath.StartsWith("/swagger")))
+                {
+                    return;
+                }
+
+                _next.Process(item);
             }
         }
     }
