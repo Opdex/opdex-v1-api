@@ -11,13 +11,14 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         {
             const string address = "Address";
             const string name = "Opdex Token";
+            const bool isLpt = true;
             const string symbol = "OPDX";
             const int decimals = 18;
             const long sats = 10000000000000000;
             const string totalSupply = "987654321";
             const ulong createdBlock = 3;
 
-            var token = new Token(address, name, symbol, decimals, sats, totalSupply, createdBlock);
+            var token = new Token(address, isLpt, name, symbol, decimals, sats, totalSupply, createdBlock);
 
             token.Id.Should().Be(0);
             token.Address.Should().Be(address);

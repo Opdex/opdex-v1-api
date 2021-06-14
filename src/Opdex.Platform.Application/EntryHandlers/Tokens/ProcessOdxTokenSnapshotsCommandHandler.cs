@@ -9,6 +9,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Vault;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
@@ -25,7 +26,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        
+
         public async Task<Unit> Handle(ProcessOdxTokenSnapshotsCommand request, CancellationToken cancellationToken)
         {
             var vaultQuery = new RetrieveVaultQuery(findOrThrow: true);
@@ -35,9 +36,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
             var odx = await _mediator.Send(odxQuery, CancellationToken.None);
 
             // Todo: Need to get the staking market
-            // really, we need "GetStakingMarket" "GetStakingToken" 
+            // really, we need "GetStakingMarket" "GetStakingToken"
             const long marketId = 1;
-            
+
             var snapshotsQuery = new RetrieveTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery(odx.Id, marketId, request.BlockTime);
             var snapshots = await _mediator.Send(snapshotsQuery, CancellationToken.None);
 
@@ -46,29 +47,23 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
             {
                 return Unit.Value;
             }
-            
+
             foreach (var snapshotType in _snapshotTypes)
             {
                 // Todo: Need to calculate price
                 var price = 0m;
                 await ProcessTokenSnapshot(snapshotType, request.BlockTime, snapshots, odx.Id, price, marketId);
             }
-            
+
             return Unit.Value;
         }
 
         private async Task ProcessTokenSnapshot(SnapshotType snapshotType, DateTime blockTime, IEnumerable<TokenSnapshot> snapshots, long tokenId, decimal price, long marketId)
         {
-            var start = blockTime.ToStartOf(snapshotType);
-            var end = start.ToEndOf(snapshotType);
-
             var snapshot = snapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
-                           new TokenSnapshot(tokenId, marketId, price, snapshotType, start, end);
+                           new TokenSnapshot(tokenId, marketId, snapshotType, blockTime);
 
-            if (snapshot.Id > 1)
-            {
-                snapshot.UpdatePrice(price);
-            }
+            snapshot.UpdatePrice(price);
 
             var persisted = await _mediator.Send(new MakeTokenSnapshotCommand(snapshot), CancellationToken.None);
             if (!persisted)

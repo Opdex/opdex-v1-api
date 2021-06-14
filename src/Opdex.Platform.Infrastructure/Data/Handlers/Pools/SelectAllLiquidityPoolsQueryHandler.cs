@@ -18,7 +18,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             $@"SELECT
                 {nameof(LiquidityPoolEntity.Id)},
                 {nameof(LiquidityPoolEntity.Address)},
-                {nameof(LiquidityPoolEntity.TokenId)},
+                {nameof(LiquidityPoolEntity.SrcTokenId)},
+                {nameof(LiquidityPoolEntity.LpTokenId)},
                 {nameof(LiquidityPoolEntity.MarketId)},
                 {nameof(LiquidityPoolEntity.CreatedBlock)},
                 {nameof(LiquidityPoolEntity.ModifiedBlock)}
@@ -26,17 +27,17 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
-        
+
         public SelectAllLiquidityPoolsQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-        
+
         public async Task<IEnumerable<LiquidityPool>> Handle(SelectAllLiquidityPoolsQuery request, CancellationToken cancellationToken)
         {
             var command = DatabaseQuery.Create(SqlCommand, null, cancellationToken);
-            
+
             var tokenEntities =  await _context.ExecuteQueryAsync<LiquidityPoolEntity>(command);
 
             return _mapper.Map<IEnumerable<LiquidityPool>>(tokenEntities);

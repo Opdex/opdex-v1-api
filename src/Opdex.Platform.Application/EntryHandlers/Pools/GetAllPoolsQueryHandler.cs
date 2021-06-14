@@ -8,6 +8,7 @@ using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
+using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Pools

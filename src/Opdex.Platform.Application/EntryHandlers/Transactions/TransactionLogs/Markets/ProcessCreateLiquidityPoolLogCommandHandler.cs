@@ -33,43 +33,55 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
+
                 var marketQuery = new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: true);
                 var market = await _mediator.Send(marketQuery, CancellationToken.None);
 
-                var tokenQuery = new RetrieveTokenByAddressQuery(request.Log.Token, findOrThrow: false);
-                var token = await _mediator.Send(tokenQuery, CancellationToken.None);
-
-                var tokenCommand = new MakeTokenCommand(request.Log.Token);
-                var tokenId = token?.Id ?? await _mediator.Send(tokenCommand, CancellationToken.None);
+                var srcTokenId = await MakeToken(request.Log.Token);
+                var lpTokenId = await MakeToken(request.Log.Pool);
 
                 var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false);
                 var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
 
-                var liquidityPoolCommand = new MakeLiquidityPoolCommand(request.Log.Pool, tokenId, market.Id);
-                var liquidityPoolId = liquidityPool?.Id ?? await _mediator.Send(liquidityPoolCommand, CancellationToken.None);
+                long liquidityPoolId = 0;
 
-                // If it's the staking market and new liquidity pool
-                if (market.StakingTokenId > 0 && liquidityPool == null && tokenId != market.StakingTokenId)
+                if (liquidityPool == null)
+                {
+                    liquidityPool = new LiquidityPool(request.Log.Pool, srcTokenId, lpTokenId, market.Id, request.BlockHeight);
+                    var liquidityPoolCommand = new MakeLiquidityPoolCommand(liquidityPool);
+                    liquidityPoolId = await _mediator.Send(liquidityPoolCommand, CancellationToken.None);
+                }
+
+                // If it's the staking market, a new liquidity pool, and the pool src token isn't the markets staking token
+                if (market.StakingTokenId > 0 && liquidityPool.Id == 0 && srcTokenId != market.StakingTokenId)
                 {
                     var getMiningPoolAddressQuery = new RetrieveCirrusLocalCallSmartContractQuery(request.Log.Pool, "get_MiningPool");
                     var getMiningPoolAddressResponse = await _mediator.Send(getMiningPoolAddressQuery, CancellationToken.None);
                     var miningPoolAddress = getMiningPoolAddressResponse.DeserializeValue<string>();
-                    
+
                     var miningPool = new MiningPool(liquidityPoolId, miningPoolAddress, request.BlockHeight);
-                
+
                     var miningPoolCommand = new MakeMiningPoolCommand(miningPool);
                     var miningPoolId = await _mediator.Send(miningPoolCommand, CancellationToken.None);
                 }
-                
+
                 return liquidityPoolId > 0;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(CreateLiquidityPoolLog)}");
-               
+
                 return false;
             }
+        }
+
+        private async Task<long> MakeToken(string tokenAddress)
+        {
+            var srcTokenQuery = new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false);
+            var srcToken = await _mediator.Send(srcTokenQuery);
+
+            var srcTokenCommand = new MakeTokenCommand(tokenAddress);
+            return srcToken?.Id ?? await _mediator.Send(srcTokenCommand);
         }
     }
 }

@@ -16,12 +16,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
     {
         private readonly Mock<IDbContext> _dbContext;
         private readonly PersistLiquidityPoolCommandHandler _handler;
-        
+
         public PersistLiquidityPoolCommandHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
             var logger = new NullLogger<PersistLiquidityPoolCommandHandler>();
-            
+
             _dbContext = new Mock<IDbContext>();
             _handler = new PersistLiquidityPoolCommandHandler(_dbContext.Object, mapper, logger);
         }
@@ -29,12 +29,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         [Fact]
         public async Task PersistsPool_Success()
         {
-            var pool = new LiquidityPool("PoolAddress", 1, 1, 2);
+            var pool = new LiquidityPool("PoolAddress", 1, 4, 1, 2);
             var command = new PersistLiquidityPoolCommand(pool);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(1234L));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Should().Be(1234);
@@ -43,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         [Fact]
         public async Task PersistsPool_Fail()
         {
-            var pool = new LiquidityPool("PoolAddress", 1, 1, 2);
+            var pool = new LiquidityPool("PoolAddress", 1, 4, 1, 2);
             var command = new PersistLiquidityPoolCommand(pool);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

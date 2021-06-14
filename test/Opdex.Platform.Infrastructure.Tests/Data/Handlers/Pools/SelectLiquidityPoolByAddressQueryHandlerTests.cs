@@ -18,11 +18,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
     {
         private readonly Mock<IDbContext> _dbContext;
         private readonly SelectLiquidityPoolByAddressQueryHandler _handler;
-        
+
         public SelectLiquidityPoolByAddressQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            
+
             _dbContext = new Mock<IDbContext>();
             _handler = new SelectLiquidityPoolByAddressQueryHandler(_dbContext.Object, mapper);
         }
@@ -31,37 +31,39 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         public async Task SelectLiquidityPoolByAddress_Success()
         {
             const string address = "SomeAddress";
-            
+
             var expectedEntity = new LiquidityPoolEntity
             {
                 Id = 123454,
-                TokenId = 1235,
+                SrcTokenId = 1235,
+                LpTokenId = 8765,
                 MarketId = 1,
                 Address = "SomeAddress",
                 CreatedBlock = 1,
                 ModifiedBlock = 1
             };
-                
+
             var command = new SelectLiquidityPoolByAddressQuery(address);
-        
+
             _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Id.Should().Be(expectedEntity.Id);
-            result.TokenId.Should().Be(expectedEntity.TokenId);
+            result.SrcTokenId.Should().Be(expectedEntity.SrcTokenId);
+            result.LpTokenId.Should().Be(expectedEntity.LpTokenId);
             result.MarketId.Should().Be(expectedEntity.MarketId);
             result.Address.Should().Be(expectedEntity.Address);
         }
-        
+
         [Fact]
         public void SelectLiquidityPoolByAddress_Throws_NotFoundException()
         {
             const string address = "SomeAddress";
-            
+
             var command = new SelectLiquidityPoolByAddressQuery(address);
-        
+
             _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
 

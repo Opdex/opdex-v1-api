@@ -5,16 +5,11 @@ namespace Opdex.Platform.Domain.Models.Addresses
 {
     public class AddressBalance : BlockAudit
     {
-        public AddressBalance(long tokenId, long liquidityPoolId, string owner, string balance, ulong createdBlock) : base(createdBlock)
+        public AddressBalance(long tokenId, string owner, string balance, ulong createdBlock) : base(createdBlock)
         {
-            if (tokenId < 1 && liquidityPoolId < 1)
+            if (tokenId < 1)
             {
-                throw new ArgumentException("Either liquidityPoolId or tokenId must be greater than 0.");
-            }
-
-            if (tokenId >= 1 && liquidityPoolId >= 1)
-            {
-                throw new ArgumentException("Only liquidityPoolId or tokenId can be greater than 0.");
+                throw new ArgumentException(nameof(tokenId), $"{nameof(tokenId)} must be greater than 0.");
             }
 
             if (!owner.HasValue())
@@ -28,24 +23,21 @@ namespace Opdex.Platform.Domain.Models.Addresses
             }
 
             TokenId = tokenId;
-            LiquidityPoolId = liquidityPoolId;
             Owner = owner;
             Balance = balance;
         }
 
-        public AddressBalance(long id, long tokenId, long liquidityPoolId, string owner, string balance, ulong createdBlock, ulong modifiedBlock)
+        public AddressBalance(long id, long tokenId, string owner, string balance, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
             TokenId = tokenId;
-            LiquidityPoolId = liquidityPoolId;
             Owner = owner;
             Balance = balance;
         }
 
         public long Id { get; }
         public long TokenId { get; }
-        public long LiquidityPoolId { get; }
         public string Owner { get; }
         public string Balance { get; private set; }
 

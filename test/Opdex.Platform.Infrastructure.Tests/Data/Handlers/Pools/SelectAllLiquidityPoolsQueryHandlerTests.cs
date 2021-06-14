@@ -20,11 +20,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
     {
         private readonly Mock<IDbContext> _dbContext;
         private readonly SelectAllLiquidityPoolsQueryHandler _handler;
-        
+
         public SelectAllLiquidityPoolsQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            
+
             _dbContext = new Mock<IDbContext>();
             _handler = new SelectAllLiquidityPoolsQueryHandler(_dbContext.Object, mapper);
         }
@@ -35,7 +35,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
             var expectedEntity = new LiquidityPoolEntity
             {
                 Id = 123454,
-                TokenId = 2,
+                SrcTokenId = 2,
+                LpTokenId = 5,
                 MarketId = 3,
                 Address = "SomeAddress",
                 CreatedBlock = 1,
@@ -43,18 +44,19 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
             };
 
             var responseList = new [] { expectedEntity }.AsEnumerable();
-                
+
             var command = new SelectAllLiquidityPoolsQuery();
-        
+
             _dbContext.Setup(db => db.ExecuteQueryAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(responseList));
-            
+
             var results = await _handler.Handle(command, CancellationToken.None);
 
             foreach (var result in results)
             {
                 result.Id.Should().Be(expectedEntity.Id);
-                result.TokenId.Should().Be(expectedEntity.TokenId);
+                result.SrcTokenId.Should().Be(expectedEntity.SrcTokenId);
+                result.LpTokenId.Should().Be(expectedEntity.LpTokenId);
                 result.MarketId.Should().Be(expectedEntity.MarketId);
                 result.Address.Should().Be(expectedEntity.Address);
             }

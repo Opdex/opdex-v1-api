@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -51,6 +50,11 @@ namespace Opdex.Platform.WebApi
                 options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
                 options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
                 options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+                options.IncludeExceptionDetails = (context, ex) =>
+                {
+                    var environment = context.RequestServices.GetRequiredService<IHostEnvironment>();
+                    return environment.IsDevelopment();
+                };
             });
 
             services
@@ -121,11 +125,6 @@ namespace Opdex.Platform.WebApi
             // Register project module services
             services.AddPlatformApplicationServices();
             services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(), cmcConfig.Get<CoinMarketCapConfiguration>());
-
-            services.AddControllers(o =>
-            {
-                o.Conventions.Add(new ActionHidingConvention());
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -159,22 +158,6 @@ namespace Opdex.Platform.WebApi
             app.UseSwaggerUi3();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-        }
-
-        /// <summary>
-        /// Hide Stratis related endpoints in Swagger shown due to using Nuget packages
-        /// in WebApi project for serialization.
-        /// </summary>
-        public class ActionHidingConvention : IActionModelConvention
-        {
-            public void Apply(ActionModel action)
-            {
-                // Replace with any logic you want
-                if (!action.Controller.DisplayName.Contains("Opdex"))
-                {
-                    action.ApiExplorer.IsVisible = false;
-                }
-            }
         }
     }
 }

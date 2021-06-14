@@ -7,16 +7,16 @@ namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class TokenSnapshot
     {
-        public TokenSnapshot(long tokenId, long marketId, decimal price, SnapshotType type, DateTime startDate, DateTime endDate)
+        public TokenSnapshot(long tokenId, long marketId, SnapshotType snapshotType, DateTime dateTime)
         {
             TokenId = tokenId;
             MarketId = marketId;
-            Price = Math.Round(price, 2, MidpointRounding.ToEven);
-            SnapshotType = type;
-            StartDate = startDate;
-            EndDate = endDate;
+            SnapshotType = snapshotType;
+            Price = 0.00m;
+            StartDate = dateTime.ToStartOf(snapshotType);
+            EndDate = dateTime.ToEndOf(snapshotType);
         }
-        
+
         public TokenSnapshot(long id, long tokenId, long marketId, decimal price, int snapshotType, DateTime startDate, DateTime endDate)
         {
             Id = id;
@@ -27,7 +27,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
             StartDate = startDate;
             EndDate = endDate;
         }
-        
+
         public long Id { get; }
         public long TokenId { get; }
         public long MarketId { get; }
@@ -43,14 +43,15 @@ namespace Opdex.Platform.Domain.Models.Tokens
             LastUpdated = DateTime.UtcNow;
         }
 
-        public void ProcessReservesLog(ReservesLog log, TokenSnapshot crsSnapshot, int srcDecimals)
+        public void ProcessReservesLog(ReservesLog log, decimal crsUsd, ulong srcSats)
         {
-            var crsReservesRounded = log.ReserveCrs.ToString().ToRoundedDecimal(8, TokenConstants.Cirrus.Decimals);
-            var srcReservesRounded = log.ReserveSrc.ToRoundedDecimal(8, srcDecimals);
-            
-            var srcTokensPerCrsToken = Math.Round(crsReservesRounded / srcReservesRounded, 2, MidpointRounding.AwayFromZero);
-            
-            Price = Math.Round(srcTokensPerCrsToken * crsSnapshot.Price, 2, MidpointRounding.AwayFromZero);
+            const int crsDecimals = TokenConstants.Cirrus.Decimals;
+
+            var crsPerSrc = log.CrsPerSrc(srcSats).ToRoundedDecimal(crsDecimals, crsDecimals);
+
+            var price = Math.Round(crsPerSrc * crsUsd, 2, MidpointRounding.AwayFromZero);
+
+            UpdatePrice(price);
         }
     }
 }

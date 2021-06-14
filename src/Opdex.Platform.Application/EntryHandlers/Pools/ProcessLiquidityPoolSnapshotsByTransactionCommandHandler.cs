@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -7,16 +6,13 @@ using Opdex.Platform.Application.Abstractions.Commands.Pools;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Pools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
+using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Application.Abstractions.Queries.Vault;
-using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs;
@@ -24,124 +20,104 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Pools
 {
-    // Todo: Should these store USD values or should that be calculated at the time of the request?
-    // When retrieve latest pool snapshots, it should also calculate against current CRS prices
+    // Todo: Process LP Token Snapshot somewhere in here
     public class ProcessLiquidityPoolSnapshotsByTransactionCommandHandler : IRequestHandler<ProcessLiquidityPoolSnapshotsByTransactionCommand, Unit>
     {
         private readonly IMediator _mediator;
-        private IModelAssembler<Transaction, TransactionDto> _assembler;
 
-        public ProcessLiquidityPoolSnapshotsByTransactionCommandHandler(IMediator mediator, IModelAssembler<Transaction, TransactionDto> assembler)
+        public ProcessLiquidityPoolSnapshotsByTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
         }
 
-
-        // Todo: Consider when pulling an SRC token snapshot that may be stale because the pool is low volume
-        // If the reserves don't change often but CRS token price still does, token snapshots still need to 
-        // occur regularly 
         public async Task<Unit> Handle(ProcessLiquidityPoolSnapshotsByTransactionCommand request, CancellationToken cancellationToken)
         {
-            var tx = request.Transaction;
-            var block = await _mediator.Send(new RetrieveBlockByHeightQuery(tx.BlockHeight, findOrThrow: true), CancellationToken.None);
-            var crsToken = await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address, findOrThrow: true), CancellationToken.None);
-            
-            // Todo: Handle this better...Maybe using a GetOrCreateTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery
-            var crsSnapshots = await _mediator.Send(new RetrieveTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery(crsToken.Id, 0, block.MedianTime), CancellationToken.None);
-            if (!crsSnapshots.Any())
+            var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.Transaction.BlockHeight, findOrThrow: true));
+            var blockTime = block.MedianTime;
+
+            var crsToken = await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address, findOrThrow: true));
+
+            var crsSnapshotQuery = new RetrieveTokenSnapshotWithFilterQuery(crsToken.Id, 0, blockTime, SnapshotType.Minute);
+            var crsSnapshot = await _mediator.Send(crsSnapshotQuery);
+
+            if (crsSnapshot.Price <= 0 || crsSnapshot.EndDate < blockTime)
             {
-                await _mediator.Send(new CreateCrsTokenSnapshotsCommand(block.MedianTime), CancellationToken.None);
-                crsSnapshots = await _mediator.Send(new RetrieveTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery(crsToken.Id, 0, block.MedianTime), CancellationToken.None);
+                await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime));
+                crsSnapshot = await _mediator.Send(crsSnapshotQuery) ?? throw new Exception("Error finding CRS snapshot.");
             }
-            
-            var vaultQuery = new RetrieveVaultQuery(findOrThrow: true);
-            var vault = await _mediator.Send(vaultQuery, CancellationToken.None);
 
-            var odxQuery = new RetrieveTokenByIdQuery(vault.TokenId, findOrThrow: true);
-            var odx = await _mediator.Send(odxQuery, CancellationToken.None);
+            // Transaction logs grouped by liquidity pool
+            var poolSnapshotGroups = request.Transaction.GroupedLogsOfTypes(request.PoolSnapshotLogTypes);
 
-            // Preferably the minute snapshot
-            var crsSnapshot = crsSnapshots.OrderBy(s => s.SnapshotType).FirstOrDefault();
-            
-            // Logs grouped by liquidity pool to snapshot
-            var poolSnapshotGroups = tx.GroupedLogsOfTypes(request.PoolSnapshotLogTypes);
-            
             // Each pool in the dictionary
-            foreach (var (poolContract, value) in poolSnapshotGroups)
+            foreach (var (poolContract, transactionLogs) in poolSnapshotGroups)
             {
-                var poolQuery = new GetLiquidityPoolByAddressQuery(poolContract);
-                var pool = await _mediator.Send(poolQuery, CancellationToken.None);
-                
-                // Todo: Handle this better...Maybe using a GetOrCreateTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery
-                var odxSnapshots = await _mediator.Send(new RetrieveTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery(odx.Id, pool.Market.Id, block.MedianTime), CancellationToken.None);
-                if (!odxSnapshots.Any())
+                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(poolContract, findOrThrow: true));
+                var market = await _mediator.Send(new RetrieveMarketByIdQuery(liquidityPool.MarketId, findOrThrow: true));
+                var stakingTokenId = market.StakingTokenId ?? 0;
+
+                TokenSnapshot stakingTokenSnapshot = null;
+
+                if (stakingTokenId > 0)
                 {
-                    // Todo: ODX snapshot
-                    // await _mediator.Send(new CreateCrsTokenSnapshotsCommand(block.MedianTime), CancellationToken.None);
-                    odxSnapshots = await _mediator.Send(new RetrieveTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery(odx.Id, pool.Market.Id, block.MedianTime), CancellationToken.None);
-                } 
-                
-                // Preferably the minute snapshot
-                var odxSnapshot = odxSnapshots.OrderBy(s => s.SnapshotType).FirstOrDefault() ?? 
-                                  new TokenSnapshot(odx.Id, pool.Market.Id, 0m, SnapshotType.Minute, 
-                                      block.MedianTime.ToStartOf(SnapshotType.Minute), block.MedianTime.ToEndOf(SnapshotType.Minute));
-                
-                // Todo: Maybe GetOrCreate special case. Retrieve by date, or retrieve record prior to date, or brand new snapshot.
-                // This is currently not pulling the previous record to keep the snapshot rolling
-                var poolSnapshotsQuery = new RetrieveActiveLiquidityPoolSnapshotsByPoolIdQuery(pool.Id, block.MedianTime);
-                var poolSnapshots = await _mediator.Send(poolSnapshotsQuery, CancellationToken.None);
+                    var stakingTokenSnapshotQuery = new RetrieveTokenSnapshotWithFilterQuery(stakingTokenId, liquidityPool.MarketId, blockTime, SnapshotType.Hourly);
+                    stakingTokenSnapshot = await _mediator.Send(stakingTokenSnapshotQuery);
+
+                    // TODO: Check for stale snapshot
+                }
 
                 // Each snapshot type we care about for pools
                 foreach (var snapshotType in request.SnapshotTypes)
                 {
-                    var snapshotStart = block.MedianTime.ToStartOf(snapshotType);
-                    var snapshotEnd = block.MedianTime.ToEndOf(snapshotType);
-                    
-                    // Adjust query to get snapshots and use Single()
-                    var poolSnapshot = poolSnapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
-                                       new LiquidityPoolSnapshot(pool.Id, snapshotType, snapshotStart, snapshotEnd);
+                    // Retrieves the snapshot in range or the most recent one prior
+                    var snapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id, blockTime, snapshotType));
+
+                    // Update stale snapshots if they are older than what was requested
+                    if (snapshot.EndDate < blockTime)
+                    {
+                        // Reset snapshot USD amounts and roll over reserve amounts to new snapshot
+                        snapshot.ResetStaleSnapshot(crsSnapshot.Price, stakingTokenSnapshot?.Price ?? 0, blockTime);
+                    }
 
                     // Each log to process
-                    foreach (var poolLog in value)
+                    foreach (var poolLog in transactionLogs)
                     {
                         switch (poolLog.LogType)
                         {
                             case TransactionLogType.ReservesLog:
                                 var reservesLog = (ReservesLog)poolLog;
-                                await ProcessTokenSnapshot(pool, snapshotType, reservesLog, snapshotStart, snapshotEnd, crsSnapshot);
-                                poolSnapshot.ProcessReservesLog(reservesLog, crsSnapshot);
+                                var token = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.SrcTokenId, findOrThrow: true));
+                                await ProcessTokenSnapshot(liquidityPool, token, snapshotType, reservesLog, blockTime, crsSnapshot.Price);
+                                snapshot.ProcessReservesLog(reservesLog, crsSnapshot.Price, token.Sats);
                                 break;
                             case TransactionLogType.SwapLog:
-                                poolSnapshot.ProcessSwapLog((SwapLog)poolLog, crsSnapshot);
+                                snapshot.ProcessSwapLog((SwapLog)poolLog, crsSnapshot.Price, stakingTokenId > 0, market.TransactionFee, market.MarketFeeEnabled);
                                 break;
                             case TransactionLogType.StakeLog:
-                                poolSnapshot.ProcessStakingLog((StakeLog)poolLog, odxSnapshot);
+                                snapshot.ProcessStakingLog((StakeLog)poolLog, stakingTokenSnapshot?.Price ?? 0);
                                 break;
                         }
                     }
-                    
-                    poolSnapshot.IncrementTransactionCount();
-                    
-                    await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(poolSnapshot), CancellationToken.None);
+
+                    snapshot.IncrementTransactionCount();
+
+                    await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(snapshot));
                 }
             }
-            
+
             return Unit.Value;
         }
 
-        private async Task ProcessTokenSnapshot(LiquidityPoolDto pool, SnapshotType snapshotType, ReservesLog log, DateTime snapshotStart, DateTime snapshotEnd,
-            TokenSnapshot crsSnapshot)
+        private async Task ProcessTokenSnapshot(LiquidityPool pool, Token token, SnapshotType snapshotType, ReservesLog log, DateTime blockTime, decimal crsUsd)
         {
-            var tokenSnapshotQuery = new RetrieveTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery(pool.Token.Id, pool.Market.Id, snapshotStart);
-            var poolTokenSnapshots = await _mediator.Send(tokenSnapshotQuery, CancellationToken.None);
-            
-            var poolTokenSnapshot = poolTokenSnapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
-                                    new TokenSnapshot(pool.Token.Id, pool.Market.Id, 0m, snapshotType, snapshotStart, snapshotEnd);
-                    
-            poolTokenSnapshot.ProcessReservesLog(log, crsSnapshot, pool.Token.Decimals);
+            var tokenSnapshotQuery = new RetrieveTokenSnapshotWithFilterQuery(pool.SrcTokenId, pool.MarketId, blockTime, snapshotType);
+            var tokenSnapshot = await _mediator.Send(tokenSnapshotQuery);
 
-            await _mediator.Send(new MakeTokenSnapshotCommand(poolTokenSnapshot), CancellationToken.None);
+            // TODO: Check for stale snapshot
+
+            tokenSnapshot.ProcessReservesLog(log, crsUsd, token.Sats);
+
+            await _mediator.Send(new MakeTokenSnapshotCommand(tokenSnapshot));
         }
     }
 }

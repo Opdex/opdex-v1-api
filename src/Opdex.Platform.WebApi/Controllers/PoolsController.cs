@@ -12,6 +12,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Opdex.Platform.WebApi.Models.Responses.Pools;
 
 namespace Opdex.Platform.WebApi.Controllers
 {

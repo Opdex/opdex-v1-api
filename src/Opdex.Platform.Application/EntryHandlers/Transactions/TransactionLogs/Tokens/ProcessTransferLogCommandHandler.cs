@@ -34,23 +34,19 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
+
                 var isAllowanceTransfer = request.Sender != request.Log.From;
                 var tokenAddress = request.Log.Contract;
-                
-                var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(tokenAddress, findOrThrow: false);
-                var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
-                var liquidityPoolId = liquidityPool?.Id ?? 0;
 
                 var tokenQuery = new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false);
                 var token = await _mediator.Send(tokenQuery, CancellationToken.None);
                 var tokenId = token?.Id ?? 0;
 
-                if (token == null && liquidityPool == null)
+                if (token == null)
                 {
                     return false;
                 }
-                
+
                 if (isAllowanceTransfer)
                 {
                     // Update allowance
@@ -59,30 +55,30 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     // Todo: RetrieveAddressBalanceByLiquidityPoolIdAndOwnerAndSpenderQuery
                     // await _mediator.Send(new MakeAddressAllowanceCommand(), CancellationToken.None);
                 }
-                
-                // Update owner balance
-                await TryUpdateAddressBalance(token, liquidityPool, tokenId, liquidityPoolId, request.Log.From, request.BlockHeight);
-                await TryUpdateAddressBalance(token, liquidityPool, tokenId, liquidityPoolId, request.Log.To, request.BlockHeight);
+
+                // Update sender balance
+                await TryUpdateAddressBalance(token, tokenId, request.Log.From, request.BlockHeight);
+
+                // Update receiver balance
+                await TryUpdateAddressBalance(token, tokenId, request.Log.To, request.BlockHeight);
 
                 return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(TransferLog)}");
-               
+
                 return false;
             }
         }
 
-        private async Task TryUpdateAddressBalance(Token token, LiquidityPool liquidityPool, long tokenId, long liquidityPoolId, string address, ulong blockHeight)
+        private async Task TryUpdateAddressBalance(Token token,long tokenId, string wallet, ulong blockHeight)
         {
             try
             {
-                var addressBalance = token != null
-                    ? await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(tokenId, address, findOrThrow: false), CancellationToken.None)
-                    : await _mediator.Send(new RetrieveAddressBalanceByLiquidityPoolIdAndOwnerQuery(liquidityPoolId, address, findOrThrow: false), CancellationToken.None);
+                var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(tokenId, wallet, findOrThrow: false));
 
-                addressBalance ??= new AddressBalance(tokenId, liquidityPoolId, address, "0", blockHeight);
+                addressBalance ??= new AddressBalance(tokenId, wallet, "0", blockHeight);
 
                 var isNewer = blockHeight < addressBalance.ModifiedBlock;
                 if (isNewer && addressBalance.Id != 0)
@@ -90,9 +86,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return;
                 }
 
-                var tokenBalanceAddress = liquidityPool != null ? liquidityPool.Address : token.Address;
-                var balanceQuery = new CallCirrusGetSrcTokenBalanceQuery(tokenBalanceAddress, address);
-                var balance = await _mediator.Send(balanceQuery, CancellationToken.None);
+                var balance = await _mediator.Send(new CallCirrusGetSrcTokenBalanceQuery(token.Address, wallet));
 
                 addressBalance.SetBalance(balance, blockHeight);
 
@@ -100,7 +94,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to update address balance for {address}");
+                _logger.LogError(ex, $"Failed to update address balance for {wallet}");
             }
         }
     }

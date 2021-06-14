@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
@@ -55,6 +56,16 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
                 ReserveCrs = ReserveCrs,
                 ReserveSrc = ReserveSrc
             });
+        }
+
+        public string CrsPerSrc(ulong srcSats)
+        {
+            return (ReserveCrs.ToBigInteger() * srcSats / ReserveSrc.ToBigInteger()).ToString();
+        }
+
+        public string SrcPerCrs()
+        {
+            return (ReserveSrc.ToBigInteger() * TokenConstants.Cirrus.Sats / ReserveCrs.ToBigInteger()).ToString();
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 using MediatR;
-using Opdex.Platform.Domain.Models.Pools;
+using Opdex.Platform.Domain.Models.Pools.Snapshot;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools
 {
@@ -10,7 +10,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools
         {
             Snapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         }
-        
+
         public LiquidityPoolSnapshot Snapshot { get; }
     }
 }

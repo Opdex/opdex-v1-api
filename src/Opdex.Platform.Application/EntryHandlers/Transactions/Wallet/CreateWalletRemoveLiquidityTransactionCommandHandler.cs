@@ -6,12 +6,14 @@ using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 {
-    public class CreateWalletRemoveLiquidityTransactionCommandHandler 
+    public class CreateWalletRemoveLiquidityTransactionCommandHandler
         : IRequestHandler<CreateWalletRemoveLiquidityTransactionCommand, string>
     {
         private readonly IMediator _mediator;
@@ -26,14 +28,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             var liquidity = request.Liquidity.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals);
             var amountCrsMin = request.AmountCrsMin.ToSatoshis(TokenConstants.Cirrus.Decimals);
 
-            var pool = await _mediator.Send(new GetLiquidityPoolByAddressQuery(request.LiquidityPool), cancellationToken);
-            var amountSrcMin = request.AmountSrcMin.ToSatoshis(pool.Token.Decimals);
+            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool), cancellationToken);
+            var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId), cancellationToken);
+            var amountSrcMin = request.AmountSrcMin.ToSatoshis(srcToken.Decimals);
 
-            var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(pool.Market.Id, findOrThrow: true), cancellationToken);
-            
+            var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(pool.MarketId, findOrThrow: true), cancellationToken);
+
             var command = new MakeWalletRemoveLiquidityTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                pool.Token.Address, liquidity, amountCrsMin, amountSrcMin, request.Recipient, router.Address);
-            
+                srcToken.Address, liquidity, amountCrsMin, amountSrcMin, request.Recipient, router.Address);
+
             return await _mediator.Send(command, cancellationToken);
         }
     }

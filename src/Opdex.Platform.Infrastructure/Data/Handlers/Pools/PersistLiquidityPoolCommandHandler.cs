@@ -16,13 +16,15 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
         private static readonly string SqlCommand =
             $@"INSERT INTO pool_liquidity (
                 {nameof(LiquidityPoolEntity.Address)},
-                {nameof(LiquidityPoolEntity.TokenId)},
+                {nameof(LiquidityPoolEntity.SrcTokenId)},
+                {nameof(LiquidityPoolEntity.LpTokenId)},
                 {nameof(LiquidityPoolEntity.MarketId)},
                 {nameof(LiquidityPoolEntity.CreatedBlock)},
                 {nameof(LiquidityPoolEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(LiquidityPoolEntity.Address)},
-                @{nameof(LiquidityPoolEntity.TokenId)},
+                @{nameof(LiquidityPoolEntity.SrcTokenId)},
+                @{nameof(LiquidityPoolEntity.LpTokenId)},
                 @{nameof(LiquidityPoolEntity.MarketId)},
                 @{nameof(LiquidityPoolEntity.CreatedBlock)},
                 @{nameof(LiquidityPoolEntity.ModifiedBlock)}
@@ -32,8 +34,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        
-        public PersistLiquidityPoolCommandHandler(IDbContext context, IMapper mapper, 
+
+        public PersistLiquidityPoolCommandHandler(IDbContext context, IMapper mapper,
             ILogger<PersistLiquidityPoolCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -46,9 +48,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             try
             {
                 var poolEntity = _mapper.Map<LiquidityPoolEntity>(request.Pool);
-            
+
                 var command = DatabaseQuery.Create(SqlCommand, poolEntity, cancellationToken);
-            
+
                 return await _context.ExecuteScalarAsync<long>(command);
             }
             catch (Exception ex)

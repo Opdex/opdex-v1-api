@@ -10,15 +10,17 @@ namespace Opdex.Platform.Domain.Tests.Models.Pools
         public void CreatePool_Success()
         {
             const string address = "Address";
-            const long tokenId = 2;
+            const long srcId = 2;
+            const long lptId = 4;
             const long marketId = 1;
             const ulong createdBlock = 3;
 
-            var pool = new LiquidityPool(address, tokenId, marketId, createdBlock);
+            var pool = new LiquidityPool(address, srcId, lptId, marketId, createdBlock);
 
             pool.Id.Should().Be(0);
             pool.Address.Should().Be(address);
-            pool.TokenId.Should().Be(tokenId);
+            pool.SrcTokenId.Should().Be(srcId);
+            pool.LpTokenId.Should().Be(lptId);
             pool.CreatedBlock.Should().Be(createdBlock);
             pool.ModifiedBlock.Should().Be(createdBlock);
         }

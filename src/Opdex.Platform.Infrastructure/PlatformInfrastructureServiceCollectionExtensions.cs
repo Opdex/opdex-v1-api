@@ -8,6 +8,7 @@ using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Domain.Models.Pools.Snapshot;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
@@ -42,7 +43,9 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernance;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distribution;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vault;
@@ -65,7 +68,9 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Deployers;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets;
 using Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools;
+using Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution;
+using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vault;
@@ -141,7 +146,7 @@ namespace Opdex.Platform.Infrastructure
             // Deployer
             services.AddTransient<IRequestHandler<SelectDeployerByAddressQuery, Deployer>, SelectDeployerByAddressQueryHandler>();
 
-            // Market 
+            // Market
             services.AddTransient<IRequestHandler<SelectLatestMarketSnapshotQuery, MarketSnapshot>, SelectLatestMarketSnapshotQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMarketByAddressQuery, Market>, SelectMarketByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectActiveMarketSnapshotsByMarketIdQuery, IEnumerable<MarketSnapshot>>, SelectActiveMarketSnapshotsByMarketIdQueryHandler>();
@@ -156,18 +161,19 @@ namespace Opdex.Platform.Infrastructure
             // Pools
             services.AddTransient<IRequestHandler<SelectLiquidityPoolByAddressQuery, LiquidityPool>, SelectLiquidityPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAllLiquidityPoolsQuery, IEnumerable<LiquidityPool>>, SelectAllLiquidityPoolsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectActiveLiquidityPoolSnapshotsByPoolIdQuery, IEnumerable<LiquidityPoolSnapshot>>, SelectActiveLiquidityPoolSnapshotsByPoolIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshot>>, SelectLiquidityPoolSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLiquidityPoolByTokenIdAndMarketAddressQuery, LiquidityPool>, SelectLiquidityPoolByTokenIdAndMarketAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningPoolByLiquidityPoolIdQuery, MiningPool>, SelectMiningPoolByLiquidityPoolIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningPoolByAddressQuery, MiningPool>, SelectMiningPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLiquidityPoolByIdQuery, LiquidityPool>, SelectLiquidityPoolByIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectLiquidityPoolSnapshotWithFilterQuery, LiquidityPoolSnapshot>, SelectLiquidityPoolSnapshotWithFilterQueryHandler>();
 
             // Tokens
             services.AddTransient<IRequestHandler<SelectTokenByIdQuery, Token>, SelectTokenByIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTokenByAddressQuery, Token>, SelectTokenByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAllTokensQuery, IEnumerable<Token>>, SelectAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery, IEnumerable<TokenSnapshot>>, SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectLatestTokenSnapshotByTokenIdQuery, TokenSnapshot>, SelectLatestTokenSnapshotByTokenIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>, SelectTokenSnapshotWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>, SelectLatestTokenDistributionQueryHandler>();
 
             // Mining Governance
@@ -184,7 +190,6 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesByOwnerAddressQueryHandler>();
 
             // Addresses
-            services.AddTransient<IRequestHandler<SelectAddressBalanceByLiquidityPoolIdAndOwnerQuery, AddressBalance>, SelectAddressBalanceByLiquidityPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressBalanceByTokenIdAndOwnerQuery, AddressBalance>, SelectAddressBalanceByTokenIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>, SelectAddressMiningByMiningPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>, SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler>();
