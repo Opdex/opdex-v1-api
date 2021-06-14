@@ -162,9 +162,11 @@ namespace Opdex.Platform.WebApi
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseOpenApi();
-
-            app.UseSwaggerUi3();
+            if (!env.IsProduction())
+            {
+                app.UseOpenApi();
+                app.UseSwaggerUi3();
+            }
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
