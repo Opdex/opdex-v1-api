@@ -26,7 +26,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.LiquidityPoolSnapshots;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.Snapshots;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -70,7 +70,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotReservesEntity, ReservesSnapshot>()
-                .ConstructUsing(src => new ReservesSnapshot(src.ReserveCrs, src.ReserveSrc, src.ReserveUsd))
+                .ConstructUsing(src => new ReservesSnapshot(src.Crs, src.Src, src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotRewardsEntity, RewardsSnapshot>()
@@ -78,11 +78,11 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotStakingEntity, StakingSnapshot>()
-                .ConstructUsing(src => new StakingSnapshot(src.StakingWeight, src.StakingUsd))
+                .ConstructUsing(src => new StakingSnapshot(src.Weight, src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotVolumeEntity, VolumeSnapshot>()
-                .ConstructUsing(src => new VolumeSnapshot(src.VolumeCrs, src.VolumeSrc, src.VolumeUsd))
+                .ConstructUsing(src => new VolumeSnapshot(src.Crs, src.Src, src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotCostEntity, CostSnapshot>()
@@ -307,20 +307,20 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<ReservesSnapshot, SnapshotReservesEntity>()
-                .ForMember(dest => dest.ReserveCrs, opt => opt.MapFrom(src => src.ReserveCrs))
-                .ForMember(dest => dest.ReserveSrc, opt => opt.MapFrom(src => src.ReserveSrc))
-                .ForMember(dest => dest.ReserveUsd, opt => opt.MapFrom(src => src.ReserveUsd))
+                .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
+                .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src))
+                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<StakingSnapshot, SnapshotStakingEntity>()
-                .ForMember(dest => dest.StakingWeight, opt => opt.MapFrom(src => src.StakingWeight))
-                .ForMember(dest => dest.StakingUsd, opt => opt.MapFrom(src => src.StakingUsd))
+                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
+                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<VolumeSnapshot, SnapshotVolumeEntity>()
-                .ForMember(dest => dest.VolumeCrs, opt => opt.MapFrom(src => src.VolumeCrs))
-                .ForMember(dest => dest.VolumeSrc, opt => opt.MapFrom(src => src.VolumeSrc))
-                .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
+                .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
+                .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src))
+                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<RewardsSnapshot, SnapshotRewardsEntity>()

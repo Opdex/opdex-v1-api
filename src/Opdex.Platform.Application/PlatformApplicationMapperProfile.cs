@@ -102,20 +102,20 @@ namespace Opdex.Platform.Application
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<ReservesSnapshot, ReservesDto>()
-                .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.ReserveCrs))
-                .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.ReserveSrc))
-                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.ReserveUsd))
+                .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
+                .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src))
+                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<VolumeSnapshot, VolumeDto>()
-                .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.VolumeCrs))
-                .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.VolumeSrc))
-                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.VolumeUsd))
+                .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
+                .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src))
+                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<StakingSnapshot, StakingDto>()
-                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.StakingWeight))
-                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.StakingUsd))
+                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
+                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<CostSnapshot, CostDto>()

@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.LiquidityPoolSnapshots;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.Snapshots;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots
 {

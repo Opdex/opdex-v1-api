@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.LiquidityPoolSnapshots
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.Snapshots
 {
     public class LiquidityPoolSnapshotEntity : SnapshotEntity
     {

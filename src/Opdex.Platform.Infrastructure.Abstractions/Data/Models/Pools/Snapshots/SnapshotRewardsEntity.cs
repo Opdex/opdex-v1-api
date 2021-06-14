@@ -1,4 +1,4 @@
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.LiquidityPoolSnapshots
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.Snapshots
 {
     public class SnapshotRewardsEntity
     {

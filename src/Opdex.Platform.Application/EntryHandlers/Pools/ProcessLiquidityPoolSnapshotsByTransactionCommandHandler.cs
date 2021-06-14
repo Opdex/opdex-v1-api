@@ -113,7 +113,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools
             var tokenSnapshotQuery = new RetrieveTokenSnapshotWithFilterQuery(pool.SrcTokenId, pool.MarketId, blockTime, snapshotType);
             var tokenSnapshot = await _mediator.Send(tokenSnapshotQuery);
 
-            // TODO: Check for stale snapshot
+            if (tokenSnapshot.EndDate < blockTime)
+            {
+                // Todo: Update stale snapshot
+            }
 
             tokenSnapshot.ProcessReservesLog(log, crsUsd, token.Sats);
 

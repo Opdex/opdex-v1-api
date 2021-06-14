@@ -9,9 +9,9 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
     {
         public ReservesSnapshot()
         {
-            ReserveCrs = "0";
-            ReserveSrc = "0";
-            ReserveUsd = 0.00m;
+            Crs = "0";
+            Src = "0";
+            Usd = 0.00m;
         }
 
         public ReservesSnapshot(string reserveCrs, string reserveSrc, decimal reserveUsd)
@@ -26,30 +26,30 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
                 throw new ArgumentNullException(nameof(reserveSrc), $"{nameof(reserveSrc)} must be a numeric value.");
             }
 
-            ReserveCrs = reserveCrs;
-            ReserveSrc = reserveSrc;
-            ReserveUsd = reserveUsd;
+            Crs = reserveCrs;
+            Src = reserveSrc;
+            Usd = reserveUsd;
         }
 
-        public string ReserveCrs { get; private set; }
-        public string ReserveSrc { get; private set; }
-        public decimal ReserveUsd { get; private set; }
+        public string Crs { get; private set; }
+        public string Src { get; private set; }
+        public decimal Usd { get; private set; }
 
         internal void SetReserves(ReservesLog log, decimal crsUsd)
         {
-            ReserveCrs = log.ReserveCrs.ToString();
-            ReserveSrc = log.ReserveSrc;
-            ReserveUsd = CalculateReservesUsd(crsUsd);
+            Crs = log.ReserveCrs.ToString();
+            Src = log.ReserveSrc;
+            Usd = CalculateReservesUsd(crsUsd);
         }
 
         internal void RefreshReserves(decimal crsUsd)
         {
-            ReserveUsd = CalculateReservesUsd(crsUsd);
+            Usd = CalculateReservesUsd(crsUsd);
         }
 
         private decimal CalculateReservesUsd(decimal crsUsd)
         {
-            var reserveCrsRounded = ReserveCrs.ToRoundedDecimal(2, TokenConstants.Cirrus.Decimals);
+            var reserveCrsRounded = Crs.ToRoundedDecimal(2, TokenConstants.Cirrus.Decimals);
 
             // * 2, for reserve Crs USD amount and reserve Src, they are equal
             return Math.Round(reserveCrsRounded * crsUsd * 2, 2, MidpointRounding.AwayFromZero);

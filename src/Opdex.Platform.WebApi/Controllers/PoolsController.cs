@@ -40,7 +40,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>List of pools</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(uint skip, uint take, CancellationToken cancellationToken)
         {
             var query = new GetAllPoolsQuery();
 
@@ -69,6 +69,13 @@ namespace Opdex.Platform.WebApi.Controllers
             var response = _mapper.Map<LiquidityPoolResponseModel>(result);
 
             return Ok(response);
+        }
+
+        [HttpGet("{address}/history")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<LiquidityPoolResponseModel>> GetPoolHistory(string address, CancellationToken cancellationToken)
+        {
+            return Ok();
         }
 
         [HttpGet("{address}/transactions")]

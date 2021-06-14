@@ -9,8 +9,8 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
     {
         public StakingSnapshot()
         {
-            StakingWeight = "0";
-            StakingUsd = 0.00m;
+            Weight = "0";
+            Usd = 0.00m;
         }
 
         public StakingSnapshot(string stakingWeight, decimal stakingUsd)
@@ -20,31 +20,31 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
                 throw new ArgumentNullException(nameof(stakingWeight), $"{nameof(stakingWeight)} must be a numeric value.");
             }
 
-            StakingWeight = stakingWeight;
-            StakingUsd = stakingUsd;
+            Weight = stakingWeight;
+            Usd = stakingUsd;
         }
 
-        public string StakingWeight { get; private set; }
-        public decimal StakingUsd { get; private set; }
+        public string Weight { get; private set; }
+        public decimal Usd { get; private set; }
 
         internal void SetStaking(StakeLog log, decimal stakingTokenUsd)
         {
             if (stakingTokenUsd > 0)
             {
-                StakingUsd = CalculateStakingUsd(log.TotalStaked, stakingTokenUsd);
+                Usd = CalculateStakingUsd(log.TotalStaked, stakingTokenUsd);
             }
 
-            StakingWeight = log.TotalStaked;
+            Weight = log.TotalStaked;
         }
 
         internal void RefreshStaking(decimal stakingTokenUsd)
         {
-            StakingUsd = stakingTokenUsd > 0
-                ? CalculateStakingUsd(StakingWeight, stakingTokenUsd)
+            Usd = stakingTokenUsd > 0
+                ? CalculateStakingUsd(Weight, stakingTokenUsd)
                 : 0m;
         }
 
-        private decimal CalculateStakingUsd(string totalStaked, decimal stakingTokenUsd)
+        private static decimal CalculateStakingUsd(string totalStaked, decimal stakingTokenUsd)
         {
             const int precision = 2;
             var odxDecimal = totalStaked.ToRoundedDecimal(precision, TokenConstants.Opdex.Decimals);

@@ -89,7 +89,7 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
         public void ProcessSwapLog(SwapLog log, decimal crsUsd, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
         {
             Volume.SetVolume(log, crsUsd);
-            Rewards.SetRewards(Volume.VolumeUsd, Staking.StakingWeight, isStakingPool, transactionFee, marketFeeEnabled);
+            Rewards.SetRewards(Volume.Usd, Staking.Weight, isStakingPool, transactionFee, marketFeeEnabled);
         }
 
         public void ProcessReservesLog(ReservesLog log, decimal crsUsd, ulong srcSats)

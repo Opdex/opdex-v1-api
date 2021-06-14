@@ -9,9 +9,9 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
     {
         public VolumeSnapshot()
         {
-            VolumeCrs = "0";
-            VolumeSrc = "0";
-            VolumeUsd = 0.00m;
+            Crs = "0";
+            Src = "0";
+            Usd = 0.00m;
         }
 
         public VolumeSnapshot(string volumeCrs, string volumeSrc, decimal volumeUsd)
@@ -26,25 +26,25 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
                 throw new ArgumentNullException(nameof(volumeSrc), $"{nameof(volumeSrc)} must be a numeric value.");
             }
 
-            VolumeCrs = volumeCrs;
-            VolumeSrc = volumeSrc;
-            VolumeUsd = volumeUsd;
+            Crs = volumeCrs;
+            Src = volumeSrc;
+            Usd = volumeUsd;
         }
 
-        public string VolumeCrs { get; private set; }
-        public string VolumeSrc { get; private set; }
-        public decimal VolumeUsd { get; private set; }
+        public string Crs { get; private set; }
+        public string Src { get; private set; }
+        public decimal Usd { get; private set; }
 
         internal void SetVolume(SwapLog log, decimal crsUsd)
         {
             var volumeCrs = log.AmountCrsIn + log.AmountCrsOut;
-            VolumeCrs = VolumeCrs.Add(volumeCrs.ToString());
+            Crs = Crs.Add(volumeCrs.ToString());
 
             var volumeSrc = log.AmountSrcIn.Add(log.AmountSrcOut);
-            VolumeSrc = VolumeSrc.Add(volumeSrc);
+            Src = Src.Add(volumeSrc);
 
-            var crsVolumeDecimal = VolumeCrs.ToRoundedDecimal(8, TokenConstants.Cirrus.Decimals);
-            VolumeUsd = Math.Round(crsVolumeDecimal * crsUsd, 2, MidpointRounding.AwayFromZero);
+            var crsVolumeDecimal = Crs.ToRoundedDecimal(8, TokenConstants.Cirrus.Decimals);
+            Usd = Math.Round(crsVolumeDecimal * crsUsd, 2, MidpointRounding.AwayFromZero);
         }
     }
 }
