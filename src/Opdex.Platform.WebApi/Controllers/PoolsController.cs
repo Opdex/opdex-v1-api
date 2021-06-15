@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -12,6 +13,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Pools.Snapshots;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -73,9 +75,14 @@ namespace Opdex.Platform.WebApi.Controllers
 
         [HttpGet("{address}/history")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<LiquidityPoolResponseModel>> GetPoolHistory(string address, CancellationToken cancellationToken)
+        public async Task<ActionResult<LiquidityPoolResponseModel>> GetPoolHistory(string address, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
         {
-            return Ok();
+            var poolSnapshotDtos = await _mediator.Send(new GetLiquidityPoolSnapshotsWithFilterQuery(address, startDate, endDate), cancellationToken);
+
+            // poolSnapshotDtos.ToArray()[0].EndDate = DateTime.Now;
+            // var response = _mapper.Map<IEnumerable<LiquidityPoolSummaryResponseModel>>(poolSnapshotDtos);
+
+            return Ok(poolSnapshotDtos);
         }
 
         [HttpGet("{address}/transactions")]

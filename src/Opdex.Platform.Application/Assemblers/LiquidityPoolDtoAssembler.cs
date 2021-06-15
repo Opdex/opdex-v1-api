@@ -5,6 +5,7 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
@@ -57,6 +58,16 @@ namespace Opdex.Platform.Application.Assemblers
 
             poolDto.Token = tokenDto;
             poolDto.Summary = summaryDto;
+
+            if (market.StakingTokenId > 0)
+            {
+                poolDto.StakingEnabled = true;
+
+                var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id, findOrThrow: false));
+
+                // Todo: Add Mining Pool Dto and Response models
+                poolDto.MiningEnabled = miningPool != null;
+            }
 
             return poolDto;
         }

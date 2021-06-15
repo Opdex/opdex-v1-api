@@ -67,7 +67,7 @@ namespace Opdex.Platform.WebApi
                         new List<JsonConverter>
                         {
                             new StringEnumConverter(),
-                            new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK" }
+                            new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
                         };
                 });
 

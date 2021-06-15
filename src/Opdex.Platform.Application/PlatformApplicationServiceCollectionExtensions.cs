@@ -36,6 +36,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Pools.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
@@ -55,6 +56,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Vault;
 using Opdex.Platform.Application.EntryHandlers.Blocks;
 using Opdex.Platform.Application.EntryHandlers.Markets;
 using Opdex.Platform.Application.EntryHandlers.Pools;
+using Opdex.Platform.Application.EntryHandlers.Pools.Snapshots;
 using Opdex.Platform.Application.EntryHandlers.Tokens;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools;
@@ -101,6 +103,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetLiquidityPoolSwapQuoteQuery, string>, GetLiquidityPoolSwapQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolAddLiquidityQuoteQuery, string>, GetLiquidityPoolAddLiquidityQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<GetBestBlockQuery, BlockReceiptDto>, GetBestBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<GetLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshotDto>>, GetLiquidityPoolSnapshotsWithFilterQueryHandler>();
 
             // Queries
             services.AddTransient<IRequestHandler<RetrieveAllPoolsQuery, IEnumerable<LiquidityPool>>, RetrieveAllPoolsQueryHandler>();

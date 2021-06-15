@@ -25,8 +25,14 @@ namespace Opdex.Platform.WebApi.Mappers
             CreateMap<LiquidityPoolDto, LiquidityPoolResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
+                .ForMember(dest => dest.StakingEnabled, opt => opt.MapFrom(src => src.StakingEnabled))
+                .ForMember(dest => dest.MiningEnabled, opt => opt.MapFrom(src => src.MiningEnabled))
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => MapLiquidityPoolSummary(src)))
                 .ForAllOtherMembers(opt => opt.Ignore());
+
+            // CreateMap<LiquidityPoolSnapshotDto, LiquidityPoolSummaryResponseModel>()
+            //     .ConstructUsing(src => MapLiquidityPoolSummary(src))
+            //     .ForAllOtherMembers(opt => opt.Ignore);
 
             CreateMap<MarketSnapshotDto, MarketSnapshotResponseModel>()
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
@@ -48,6 +54,7 @@ namespace Opdex.Platform.WebApi.Mappers
 
             return new LiquidityPoolSummaryResponseModel
             {
+                TransactionCount = liquidityPoolDto.Summary.TransactionCount,
                 Reserves = MapReserves(liquidityPoolDto),
                 Rewards = MapRewards(liquidityPoolDto),
                 Cost = MapCost(liquidityPoolDto),
