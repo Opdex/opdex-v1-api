@@ -19,7 +19,9 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
 using System.Linq;
+using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
+using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.Pools.Snapshot;
 
 namespace Opdex.Platform.Application
@@ -123,7 +125,14 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.SrcPerCrs, opt => opt.MapFrom(src => src.SrcPerCrs))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<OhlcSnapshot, OhlcDto>()
+            CreateMap<OhlcBigIntSnapshot, OhlcBigIntDto>()
+                .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
+                .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
+                .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))
+                .ForMember(dest => dest.Close, opt => opt.MapFrom(src => src.Close))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<OhlcDecimalSnapshot, OhlcDecimalDto>()
                 .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
                 .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
                 .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))

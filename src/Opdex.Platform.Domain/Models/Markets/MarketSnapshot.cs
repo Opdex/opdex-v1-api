@@ -64,12 +64,12 @@ namespace Opdex.Platform.Domain.Models.Markets
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }
 
-        public void ProcessSwapLog(SwapLog log, TokenSnapshot crsSnapshot, Token crs)
+        public void ProcessSwapLog(SwapLog log, decimal crsUsd, Token crs)
         {
             var volumeCrs = (log.AmountCrsIn + log.AmountCrsOut).ToString();
 
             var crsVolumeDecimal = volumeCrs.ToRoundedDecimal(2, crs.Decimals);
-            Volume += Math.Round(crsVolumeDecimal * crsSnapshot.Price, 2);
+            Volume += Math.Round(crsVolumeDecimal * crsUsd, 2);
 
             var rewards = Math.Round(Volume * .003m / 6, 2);
 
@@ -80,22 +80,22 @@ namespace Opdex.Platform.Domain.Models.Markets
         // public void ProcessReservesLog(ReservesLog log, TokenSnapshot crsSnapshot, Token crs)
         // {
         //     var reserveCrsRounded = log.ReserveCrs.ToString().ToRoundedDecimal(2, crs.Decimals);
-        //     
+        //
         //     // * 2, for reserve Crs USD amount and reserve Src, they are equal
         //     ReserveUsd = Math.Round(reserveCrsRounded * crsSnapshot.Price * 2, 2);
         // }
 
         // public void ProcessMintLog()
         // {
-        //     
+        //
         // }
         //
         // public void ProcessBurnLog()
         // {
-        //     
+        //
         // }
 
-        // public void ProcessStakingLog<T>(T log, TokenSnapshot odxSnapshot, Token odx) 
+        // public void ProcessStakingLog<T>(T log, TokenSnapshot odxSnapshot, Token odx)
         //     where T : TransactionLog
         // {
         //     var weight = log switch
@@ -104,7 +104,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         //         StopStakingLog stopStakingLog => stopStakingLog.TotalStaked ?? "0",
         //         _ => "0"
         //     };
-        //     
+        //
         //     const int precision = 2;
         //     var odxDecimal = weight.ToRoundedDecimal(precision, odx.Decimals);
         //     var odxWeightUsd = Math.Round(odxDecimal * odxSnapshot.Price, precision);

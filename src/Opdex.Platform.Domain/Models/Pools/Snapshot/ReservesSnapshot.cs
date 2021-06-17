@@ -35,24 +35,27 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
         public string Src { get; private set; }
         public decimal Usd { get; private set; }
 
-        internal void SetReserves(ReservesLog log, decimal crsUsd)
+        internal void SetReserves(ReservesLog log, decimal crsUsd, decimal srcUsd, int srcDecimals)
         {
             Crs = log.ReserveCrs.ToString();
             Src = log.ReserveSrc;
-            Usd = CalculateReservesUsd(crsUsd);
+            Usd = CalculateReservesUsd(crsUsd, srcUsd, srcDecimals);
         }
 
-        internal void RefreshReserves(decimal crsUsd)
+        internal void RefreshReserves(decimal crsUsd,  decimal srcUsd, int srcDecimals)
         {
-            Usd = CalculateReservesUsd(crsUsd);
+            Usd = CalculateReservesUsd(crsUsd, srcUsd, srcDecimals);
         }
 
-        private decimal CalculateReservesUsd(decimal crsUsd)
+        private decimal CalculateReservesUsd(decimal crsUsd, decimal srcUsd, int srcDecimals)
         {
             var reserveCrsRounded = Crs.ToRoundedDecimal(2, TokenConstants.Cirrus.Decimals);
+            var reserveSrcRounded = Src.ToRoundedDecimal(2, srcDecimals);
 
-            // * 2, for reserve Crs USD amount and reserve Src, they are equal
-            return Math.Round(reserveCrsRounded * crsUsd * 2, 2, MidpointRounding.AwayFromZero);
+            var reserveCrsUsd = Math.Round(reserveCrsRounded * crsUsd, 2, MidpointRounding.AwayFromZero);
+            var reserveSrcUsd = Math.Round(reserveSrcRounded * srcUsd, 2, MidpointRounding.AwayFromZero);
+
+            return reserveCrsUsd + reserveSrcUsd;
         }
     }
 }

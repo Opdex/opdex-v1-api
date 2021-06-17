@@ -65,6 +65,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         public bool AuthTraders { get; }
         public uint TransactionFee { get; }
         public bool MarketFeeEnabled { get; }
+        public bool IsStakingMarket => StakingTokenId > 0;
 
         public void SetOwner(ChangeMarketOwnerLog log, ulong blockHeight)
         {

@@ -1,19 +1,21 @@
 using System;
 using Opdex.Platform.Common.Extensions;
 
-namespace Opdex.Platform.Domain.Models
+namespace Opdex.Platform.Domain.Models.OHLC
 {
-    public class OhlcSnapshot
+    public class OhlcBigIntSnapshot
     {
-        public OhlcSnapshot()
+        private const string DefaultValue = "0";
+
+        public OhlcBigIntSnapshot()
         {
-            Open = "0";
-            High = "0";
-            Low = "0";
-            Close = "0";
+            Open = DefaultValue;
+            High = DefaultValue;
+            Low = DefaultValue;
+            Close = DefaultValue;
         }
 
-        public OhlcSnapshot(string open, string high, string low, string close)
+        public OhlcBigIntSnapshot(string open, string high, string low, string close)
         {
             if (!open.IsNumeric())
             {
@@ -46,9 +48,9 @@ namespace Opdex.Platform.Domain.Models
         public string Low { get; private set; }
         public string Close { get; private set; }
 
-        internal void Update(string value)
+        internal void Update(string value, bool reset)
         {
-            if (Open.ToBigInteger() == "0".ToBigInteger())
+            if (Open == DefaultValue)
             {
                 Open = value;
                 High = value;
@@ -56,6 +58,14 @@ namespace Opdex.Platform.Domain.Models
                 Close = value;
 
                 return;
+            }
+
+            if (reset)
+            {
+                Open = Close;
+                High = Open;
+                Low = Open;
+                Close = Open;
             }
 
             var valueBigInt = value.ToBigInteger();

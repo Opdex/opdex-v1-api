@@ -162,7 +162,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectLiquidityPoolByAddressQuery, LiquidityPool>, SelectLiquidityPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAllLiquidityPoolsQuery, IEnumerable<LiquidityPool>>, SelectAllLiquidityPoolsQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshot>>, SelectLiquidityPoolSnapshotsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectLiquidityPoolByTokenIdAndMarketAddressQuery, LiquidityPool>, SelectLiquidityPoolByTokenIdAndMarketAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectLiquidityPoolBySrcTokenIdAndMarketIdQuery, LiquidityPool>, SelectLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningPoolByLiquidityPoolIdQuery, MiningPool>, SelectMiningPoolByLiquidityPoolIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningPoolByAddressQuery, MiningPool>, SelectMiningPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLiquidityPoolByIdQuery, LiquidityPool>, SelectLiquidityPoolByIdQueryHandler>();

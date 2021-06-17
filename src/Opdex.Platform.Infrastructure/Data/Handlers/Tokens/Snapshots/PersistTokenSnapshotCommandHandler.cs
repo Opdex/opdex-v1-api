@@ -16,22 +16,26 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
             $@"INSERT INTO token_snapshot (
                 {nameof(TokenSnapshotEntity.TokenId)},
                 {nameof(TokenSnapshotEntity.MarketId)},
-                {nameof(TokenSnapshotEntity.Price)},
+                {nameof(TokenSnapshotEntity.Details)},
                 {nameof(TokenSnapshotEntity.SnapshotTypeId)},
                 {nameof(TokenSnapshotEntity.StartDate)},
-                {nameof(TokenSnapshotEntity.EndDate)}
+                {nameof(TokenSnapshotEntity.EndDate)},
+                {nameof(TokenSnapshotEntity.ModifiedDate)}
               ) VALUES (
                 @{nameof(TokenSnapshotEntity.TokenId)},
                 @{nameof(TokenSnapshotEntity.MarketId)},
-                @{nameof(TokenSnapshotEntity.Price)},
+                @{nameof(TokenSnapshotEntity.Details)},
                 @{nameof(TokenSnapshotEntity.SnapshotTypeId)},
                 @{nameof(TokenSnapshotEntity.StartDate)},
-                @{nameof(TokenSnapshotEntity.EndDate)}
+                @{nameof(TokenSnapshotEntity.EndDate)},
+                UTC_TIMESTAMP()
               );";
 
         private static readonly string UpdateSqlCommand =
             $@"UPDATE token_snapshot 
-                SET {nameof(TokenSnapshotEntity.Price)} = @{nameof(TokenSnapshotEntity.Price)}
+                SET 
+                    {nameof(TokenSnapshotEntity.Details)} = @{nameof(TokenSnapshotEntity.Details)},
+                    {nameof(TokenSnapshotEntity.ModifiedDate)} = UTC_TIMESTAMP()
                 WHERE {nameof(TokenSnapshotEntity.Id)} = @{nameof(TokenSnapshotEntity.Id)};";
 
         private readonly IDbContext _context;

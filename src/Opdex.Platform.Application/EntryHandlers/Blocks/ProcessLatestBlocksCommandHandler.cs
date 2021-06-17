@@ -49,6 +49,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                 {
                     await _mediator.Send(new CreateCrsTokenSnapshotsCommand(createBlockCommand.MedianTime), CancellationToken.None);
 
+                    // Todo: Retrieve staking markets
+                    // Todo: Process staking token snapshots
                     // Todo should also snapshot ODX Token if there is a staking market available
                 }
 

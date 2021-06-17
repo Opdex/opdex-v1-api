@@ -1,4 +1,7 @@
 using System;
+using Opdex.Platform.Common;
+using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Domain.Models.Pools.Snapshot
@@ -7,23 +10,23 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
     {
         public CostSnapshot()
         {
-            CrsPerSrc = new OhlcSnapshot();
-            SrcPerCrs = new OhlcSnapshot();
+            CrsPerSrc = new OhlcBigIntSnapshot();
+            SrcPerCrs = new OhlcBigIntSnapshot();
         }
 
-        public CostSnapshot(OhlcSnapshot crsPerSrc, OhlcSnapshot srcPerCrs)
+        public CostSnapshot(OhlcBigIntSnapshot crsPerSrc, OhlcBigIntSnapshot srcPerCrs)
         {
             CrsPerSrc = crsPerSrc ?? throw new ArgumentNullException(nameof(crsPerSrc));
             SrcPerCrs = srcPerCrs ?? throw new ArgumentNullException(nameof(srcPerCrs));
         }
 
-        public OhlcSnapshot CrsPerSrc { get; }
-        public OhlcSnapshot SrcPerCrs { get; }
+        public OhlcBigIntSnapshot CrsPerSrc { get; }
+        public OhlcBigIntSnapshot SrcPerCrs { get; }
 
-        internal void SetCost(ReservesLog log, ulong srcSats)
+        internal void SetCost(ulong reserveCrs, string reserveSrc, ulong srcSats, bool reset)
         {
-            CrsPerSrc.Update(log.CrsPerSrc(srcSats));
-            SrcPerCrs.Update(log.SrcPerCrs());
+            CrsPerSrc.Update(reserveCrs.Token0PerToken1(reserveSrc, srcSats), reset);
+            SrcPerCrs.Update(reserveSrc.Token0PerToken1(reserveCrs, TokenConstants.Cirrus.Sats), reset);
         }
     }
 }

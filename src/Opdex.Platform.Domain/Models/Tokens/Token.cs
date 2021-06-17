@@ -67,6 +67,17 @@ namespace Opdex.Platform.Domain.Models.Tokens
         public string Symbol { get; }
         public int Decimals { get; }
         public ulong Sats { get; }
-        public string TotalSupply { get; }
+        public string TotalSupply { get; private set; }
+
+        public void UpdateTotalSupply(string value, ulong blockHeight)
+        {
+            if (!value.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException("Total supply must be a numeric value");
+            }
+
+            TotalSupply = value;
+            SetModifiedBlock(blockHeight);
+        }
     }
 }

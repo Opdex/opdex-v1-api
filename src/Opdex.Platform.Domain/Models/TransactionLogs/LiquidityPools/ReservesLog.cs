@@ -57,15 +57,5 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
                 ReserveSrc = ReserveSrc
             });
         }
-
-        public string CrsPerSrc(ulong srcSats)
-        {
-            return (ReserveCrs.ToBigInteger() * srcSats / ReserveSrc.ToBigInteger()).ToString();
-        }
-
-        public string SrcPerCrs()
-        {
-            return (ReserveSrc.ToBigInteger() * TokenConstants.Cirrus.Sats / ReserveCrs.ToBigInteger()).ToString();
-        }
     }
 }

@@ -143,6 +143,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveCirrusLocalCallSmartContractQuery, LocalCallResponseDto>, RetrieveCirrusLocalCallSmartContractQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveActiveMarketRouterByMarketIdQuery, MarketRouter>, RetrieveActiveMarketRouterByMarketIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketRouterByAddressQuery, MarketRouter>, RetrieveMarketRouterByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery, LiquidityPool>, RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler>();
 
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();

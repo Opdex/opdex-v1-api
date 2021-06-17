@@ -1,6 +1,6 @@
-namespace Opdex.Platform.WebApi.Models.Responses
+namespace Opdex.Platform.WebApi.Models.Responses.OHLC
 {
-    public class OhlcResponseModel
+    public class OhlcBigIntResponseModel
     {
         public string Open { get; set; }
         public string High { get; set; }

@@ -51,8 +51,9 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Token
             var isLpt = symbol == TokenConstants.LiquidityPoolToken.Symbol &&
                         name == TokenConstants.LiquidityPoolToken.Name;
 
-            // Todo: Return TokenContractSummary model
-            return new Token(request.Address, isLpt, name, symbol, decimals, decimals.DecimalsToSatoshis(), totalSupply, 1);
+            // Todo: Handle 1 - createdBlock param.
+            // Shouldn't need it in this query, maybe domain model should not require it but then again...it kinda should
+            return new Token(request.Address, isLpt, name, symbol, decimals, ((int)decimals).DecimalsToSatoshis(), totalSupply, 1);
         }
     }
 }

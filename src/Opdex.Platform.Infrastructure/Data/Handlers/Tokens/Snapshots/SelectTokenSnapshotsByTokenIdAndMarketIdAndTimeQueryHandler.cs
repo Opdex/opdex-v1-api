@@ -18,10 +18,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
                 {nameof(TokenSnapshotEntity.Id)},
                 {nameof(TokenSnapshotEntity.TokenId)},
                 {nameof(TokenSnapshotEntity.MarketId)},
-                {nameof(TokenSnapshotEntity.Price)},
+                {nameof(TokenSnapshotEntity.Details)},
                 {nameof(TokenSnapshotEntity.StartDate)},
                 {nameof(TokenSnapshotEntity.EndDate)},
-                {nameof(TokenSnapshotEntity.SnapshotTypeId)}
+                {nameof(TokenSnapshotEntity.SnapshotTypeId)},
+                {nameof(TokenSnapshotEntity.ModifiedDate)}
             FROM token_snapshot
             WHERE 
                 {nameof(TokenSnapshotEntity.TokenId)} = @{nameof(SqlParams.TokenId)} AND 

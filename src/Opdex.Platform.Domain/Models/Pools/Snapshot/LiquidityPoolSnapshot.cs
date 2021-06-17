@@ -60,10 +60,8 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
         public DateTime EndDate { get; private set; }
         public DateTime ModifiedDate { get; }
 
-        public void ResetStaleSnapshot(decimal crsUsd, decimal stakingTokenUsd, DateTime blockTime)
+        public void ResetStaleSnapshot(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, int srcDecimals, DateTime blockTime)
         {
-            if (Id == 0) return;
-
             // Reset Id for new Insert
             Id = 0;
 
@@ -76,9 +74,11 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
             // Refresh Staking
             Staking.RefreshStaking(stakingTokenUsd);
 
-            // Cost should remain unchanged, token reserves unchanged
+            // Refresh costs (mainly reset OHLC)
+            Cost.SetCost(ulong.Parse(Reserves.Crs), Reserves.Src, srcDecimals.DecimalsToSatoshis(), true);
+
             // Refresh reserves (USD amounts)
-            Reserves.RefreshReserves(crsUsd);
+            Reserves.RefreshReserves(crsUsd, srcUsd, srcDecimals);
 
             TransactionCount = 0;
 
@@ -92,10 +92,10 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
             Rewards.SetRewards(Volume.Usd, Staking.Weight, isStakingPool, transactionFee, marketFeeEnabled);
         }
 
-        public void ProcessReservesLog(ReservesLog log, decimal crsUsd, ulong srcSats)
+        public void ProcessReservesLog(ReservesLog log, decimal crsUsd, decimal srcUsd, int srcDecimals)
         {
-            Reserves.SetReserves(log, crsUsd);
-            Cost.SetCost(log, srcSats);
+            Reserves.SetReserves(log, crsUsd, srcUsd, srcDecimals);
+            Cost.SetCost(log.ReserveCrs, log.ReserveSrc, srcDecimals.DecimalsToSatoshis(), false);
         }
 
         public void ProcessStakingLog(StakeLog log, decimal stakingTokenUsd)

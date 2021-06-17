@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Pools;
 
 namespace Opdex.Platform.Application.Assemblers
@@ -37,9 +38,13 @@ namespace Opdex.Platform.Application.Assemblers
             if (market.StakingTokenId > 0)
             {
                 var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(pool.SrcTokenId, pool.MarketId, DateTime.UtcNow, SnapshotType.Hourly));
-                // Todo: Check stale
 
-                stakingTokenUsd = stakingTokenSnapshot.Price;
+                if (stakingTokenSnapshot.EndDate < DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(5)))
+                {
+                    // stakingTokenSnapshot.ResetStaleSnapshot();
+                }
+
+                stakingTokenUsd = stakingTokenSnapshot.Price.Close;
             }
 
             var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId));
@@ -49,7 +54,8 @@ namespace Opdex.Platform.Application.Assemblers
             // Update stale snapshots if necessary
             if (poolSnapshot.EndDate < DateTime.UtcNow)
             {
-                poolSnapshot.ResetStaleSnapshot(crsSnapshot.Price, stakingTokenUsd, DateTime.UtcNow);
+                // Todo: Fix, need to untangle and get SrcSnapshot first
+                // poolSnapshot.ResetStaleSnapshot(crsSnapshot.Price.Close, stakingTokenUsd, DateTime.UtcNow);
             }
 
             var poolDto = _mapper.Map<LiquidityPoolDto>(pool);
@@ -59,13 +65,14 @@ namespace Opdex.Platform.Application.Assemblers
             poolDto.Token = tokenDto;
             poolDto.Summary = summaryDto;
 
-            if (market.StakingTokenId > 0)
+            if (market.StakingTokenId > 0 && pool.SrcTokenId != market.StakingTokenId)
             {
                 poolDto.StakingEnabled = true;
 
                 var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id, findOrThrow: false));
 
                 // Todo: Add Mining Pool Dto and Response models
+                // Todo: Needs to have a not null mining pool and be active.
                 poolDto.MiningEnabled = miningPool != null;
             }
 

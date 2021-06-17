@@ -1,8 +1,10 @@
+using Opdex.Platform.Application.Abstractions.Models.OHLC;
+
 namespace Opdex.Platform.Application.Abstractions.Models.PoolDtos
 {
     public class CostDto
     {
-        public OhlcDto CrsPerSrc { get; set; }
-        public OhlcDto SrcPerCrs { get; set; }
+        public OhlcBigIntDto CrsPerSrc { get; set; }
+        public OhlcBigIntDto SrcPerCrs { get; set; }
     }
 }

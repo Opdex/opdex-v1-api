@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
@@ -17,7 +16,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
             @$"Select 
                 {nameof(TokenSnapshotEntity.Id)},
                 {nameof(TokenSnapshotEntity.TokenId)},
-                {nameof(TokenSnapshotEntity.Price)},
+                {nameof(TokenSnapshotEntity.MarketId)},
+                {nameof(TokenSnapshotEntity.Details)},
                 {nameof(TokenSnapshotEntity.StartDate)},
                 {nameof(TokenSnapshotEntity.EndDate)},
                 {nameof(TokenSnapshotEntity.SnapshotTypeId)}

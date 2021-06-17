@@ -38,6 +38,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var market = await _mediator.Send(marketQuery, CancellationToken.None);
 
                 var srcTokenId = await MakeToken(request.Log.Token);
+
+                // Todo: Adjust token names like "xBTC-CRS LPT" or "xBTC CRS Liquidity Pool Token", maybe add part of token address to be unique
                 var lpTokenId = await MakeToken(request.Log.Pool);
 
                 var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false);

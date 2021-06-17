@@ -1,10 +1,12 @@
 using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses;
+using Opdex.Platform.WebApi.Models.Responses.OHLC;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 
 namespace Opdex.Platform.WebApi.Mappers
@@ -124,11 +126,11 @@ namespace Opdex.Platform.WebApi.Mappers
             };
         }
 
-        private static OhlcResponseModel MapOhlc(OhlcDto ohlcDto, int decimals)
+        private static OhlcBigIntResponseModel MapOhlc(OhlcBigIntDto ohlcDto, int decimals)
         {
             if (ohlcDto == null) return null;
 
-            return new OhlcResponseModel
+            return new OhlcBigIntResponseModel
             {
                 Open = ohlcDto.Open.InsertDecimal(decimals),
                 High = ohlcDto.High.InsertDecimal(decimals),

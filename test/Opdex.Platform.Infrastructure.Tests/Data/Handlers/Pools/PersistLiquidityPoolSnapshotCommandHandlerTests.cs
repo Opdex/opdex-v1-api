@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Common;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.Pools.Snapshot;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools;
@@ -41,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
                 new RewardsSnapshot(1234.23m, 987.21m),
                 new StakingSnapshot("8765434", 37.21m),
                 new VolumeSnapshot("333", "142", 1.28m),
-                new CostSnapshot(new OhlcSnapshot("123", "321", "99", "321"), new OhlcSnapshot("321", "9876", "100", "602")),
+                new CostSnapshot(new OhlcBigIntSnapshot("123", "321", "99", "321"), new OhlcBigIntSnapshot("321", "9876", "100", "602")),
                 SnapshotType.Daily,
                 DateTime.UtcNow,
                 DateTime.UtcNow.Add(TimeSpan.FromDays(1)),
@@ -70,7 +71,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
                 new RewardsSnapshot(1234.23m, 987.21m),
                 new StakingSnapshot("8765434", 37.21m),
                 new VolumeSnapshot("333", "142", 1.28m),
-                new CostSnapshot(new OhlcSnapshot("123", "321", "99", "321"), new OhlcSnapshot("321", "9876", "100", "602")),
+                new CostSnapshot(new OhlcBigIntSnapshot("123", "321", "99", "321"), new OhlcBigIntSnapshot("321", "9876", "100", "602")),
                 SnapshotType.Daily,
                 DateTime.UtcNow,
                 DateTime.UtcNow.Add(TimeSpan.FromDays(1)),

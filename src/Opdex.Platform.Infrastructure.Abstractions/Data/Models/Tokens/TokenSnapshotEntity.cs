@@ -1,4 +1,5 @@
-using System;
+using Newtonsoft.Json;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens
 {
@@ -7,6 +8,23 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens
         public long Id { get; set; }
         public long MarketId { get; set; }
         public long TokenId { get; set; }
-        public decimal Price { get; set; }
+        public OhlcDecimalEntity Price { get; set; }
+        public string Details
+        {
+            get => SerializeSnapshotDetails();
+            set => DeserializeSnapshotDetails(value);
+        }
+
+        private string SerializeSnapshotDetails()
+        {
+            return JsonConvert.SerializeObject(Price);
+        }
+
+        private void DeserializeSnapshotDetails(string details)
+        {
+            var data = JsonConvert.DeserializeObject<OhlcDecimalEntity>(details);
+
+            Price = data;
+        }
     }
 }

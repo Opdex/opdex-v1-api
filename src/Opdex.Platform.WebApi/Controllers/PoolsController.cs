@@ -79,9 +79,6 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             var poolSnapshotDtos = await _mediator.Send(new GetLiquidityPoolSnapshotsWithFilterQuery(address, startDate, endDate), cancellationToken);
 
-            // poolSnapshotDtos.ToArray()[0].EndDate = DateTime.Now;
-            // var response = _mapper.Map<IEnumerable<LiquidityPoolSummaryResponseModel>>(poolSnapshotDtos);
-
             return Ok(poolSnapshotDtos);
         }
 

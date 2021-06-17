@@ -43,6 +43,7 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
             var volumeSrc = log.AmountSrcIn.Add(log.AmountSrcOut);
             Src = Src.Add(volumeSrc);
 
+            // Todo: Incorrect, accurate volume would track USD price vs tokenInAmount which includes fees and slippage.
             var crsVolumeDecimal = Crs.ToRoundedDecimal(8, TokenConstants.Cirrus.Decimals);
             Usd = Math.Round(crsVolumeDecimal * crsUsd, 2, MidpointRounding.AwayFromZero);
         }
