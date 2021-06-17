@@ -33,7 +33,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
               SELECT LAST_INSERT_ID();";
 
         private static readonly string UpdateSqlCommand =
-            $@"UPDATE market 
+            $@"UPDATE market_permission 
                 SET 
                     {nameof(MarketPermissionEntity.IsAuthorized)} = @{nameof(MarketPermissionEntity.IsAuthorized)},
                     {nameof(MarketPermissionEntity.Blame)} = @{nameof(MarketPermissionEntity.Blame)},

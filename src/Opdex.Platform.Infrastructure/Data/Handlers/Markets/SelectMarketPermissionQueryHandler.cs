@@ -21,10 +21,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 {nameof(MarketPermissionEntity.Permission)},
                 {nameof(MarketPermissionEntity.IsAuthorized)},
                 {nameof(MarketPermissionEntity.Blame)},
-                {nameof(MarketEntity.CreatedBlock)},
-                {nameof(MarketEntity.ModifiedBlock)}
+                {nameof(MarketPermissionEntity.CreatedBlock)},
+                {nameof(MarketPermissionEntity.ModifiedBlock)}
             FROM market_permission
             WHERE {nameof(MarketPermissionEntity.MarketId)} = @{nameof(SqlParams.MarketId)}
+                AND {nameof(MarketPermissionEntity.User)} = @{nameof(SqlParams.User)} 
+                AND {nameof(MarketPermissionEntity.Permission)} = @{nameof(SqlParams.Permission)} 
             LIMIT 1;";
 
         private readonly IDbContext _context;
