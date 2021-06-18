@@ -5,7 +5,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets
 {
     public class RetrieveMarketPermissionQuery : FindQuery<MarketPermission>
     {
-        public RetrieveMarketPermissionQuery(long marketId, string address, Permissions permission, bool findOrThrow) : base(findOrThrow)
+        public RetrieveMarketPermissionQuery(long marketId, string address, Permissions permission, bool findOrThrow = true) : base(findOrThrow)
         {
             MarketId = marketId;
             Address = address;
