@@ -112,6 +112,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLatestTokenSnapshotByTokenIdQuery, TokenSnapshot>, RetrieveLatestTokenSnapshotByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveBlockByHeightQuery, Block>, RetrieveBlockByHeightQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketByAddressQuery, Market>, RetrieveMarketByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMarketPermissionQuery, MarketPermission>, RetrieveMarketPermissionQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMarketPermissionsByUserQuery, IEnumerable<Permissions>>, RetrieveMarketPermissionsByUserQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolSwapQuoteQuery, string>, RetrieveLiquidityPoolSwapQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolAddLiquidityQuoteQuery, string>, RetrieveLiquidityPoolAddLiquidityQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningPoolByLiquidityPoolIdQuery, MiningPool>, RetrieveMiningPoolByLiquidityPoolIdQueryHandler>();
@@ -198,6 +200,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeMiningPoolCommand, long>, MakeMiningPoolCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTokenSnapshotCommand, bool>, MakeTokenSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMarketCommand, long>, MakeMarketCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeMarketPermissionCommand, long>, MakeMarketPermissionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeLiquidityPoolSnapshotCommand, bool>, MakeLiquidityPoolSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletSkimTransactionCommand, string>, MakeWalletSkimTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletSyncTransactionCommand, string>, MakeWalletSyncTransactionCommandHandler>();

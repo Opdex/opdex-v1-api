@@ -1,6 +1,7 @@
 using System;
 using Newtonsoft.Json;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models.Markets;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
 {
@@ -10,7 +11,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
             : base(TransactionLogType.ChangeMarketPermissionLog, address, sortOrder)
         {
             string fromAddress = log?.address;
-            byte permission = log?.permission;
+            Permissions permission = (Permissions)log?.permission;
             bool isAuthorized = log?.isAuthorized;
 
             if (!fromAddress.HasValue())
@@ -33,13 +34,13 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
         }
 
         public string Address { get; }
-        public byte Permission { get; }
+        public Permissions Permission { get; }
         public bool IsAuthorized { get; }
 
         public struct LogDetails
         {
             public string Address { get; set; }
-            public byte Permission { get; set; }
+            public Permissions Permission { get; set; }
             public bool IsAuthorized { get; set; }
         }
 

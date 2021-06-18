@@ -23,13 +23,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
     {
         private readonly IMediator _mediator;
         private readonly ILogger _logger;
-        
+
         public CreateTransactionCommandHandler(IMediator mediator, ILogger<CreateTransactionCommandHandler> logger)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-        
+
         public async Task<bool> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
         {
             var transactionQuery = new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false);
@@ -48,24 +48,24 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             {
                 return false;
             }
-            
+
             // Todo: Only persist if IsOpdexTransaction
-            
+
             var transactionId = await _mediator.Send(new MakeTransactionCommand(transaction), CancellationToken.None);
             if (transactionId == 0)
             {
                 return false;
             }
-            
+
             transaction.SetId(transactionId);
 
             var height = transaction.BlockHeight;
             var sender = transaction.From;
 
-            foreach (var log in transaction.Logs.OrderBy(l => l.SortOrder))
+            foreach (var log in transaction.Logs.OrderByDescending(l => l.SortOrder))
             {
                 var success = false;
-                
+
                 try
                 {
                     success = log.LogType switch
@@ -73,7 +73,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                         TransactionLogType.CreateMarketLog => await _mediator.Send(new ProcessCreateMarketLogCommand(log, sender, height), CancellationToken.None),
                         TransactionLogType.CreateLiquidityPoolLog => await _mediator.Send(new ProcessCreateLiquidityPoolLogCommand(log, sender, height), CancellationToken.None),
                         TransactionLogType.ChangeMarketOwnerLog => await _mediator.Send(new ProcessChangeMarketOwnerLogCommand(log, sender, height), CancellationToken.None),
-                        TransactionLogType.ChangeMarketPermissionLog =>  await _mediator.Send(new ProcessChangeMarketPermissionLogCommand(log, sender, height), CancellationToken.None),
+                        TransactionLogType.ChangeMarketPermissionLog => await _mediator.Send(new ProcessChangeMarketPermissionLogCommand(log, sender, height), CancellationToken.None),
                         TransactionLogType.MintLog => await _mediator.Send(new ProcessMintLogCommand(log, sender, height), CancellationToken.None),
                         TransactionLogType.BurnLog => await _mediator.Send(new ProcessBurnLogCommand(log, sender, height), CancellationToken.None),
                         TransactionLogType.SwapLog => await _mediator.Send(new ProcessSwapLogCommand(log, sender, height), CancellationToken.None),
@@ -107,7 +107,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     _logger.LogError($"Failed to persist transaction log type {log.LogType}.");
                 }
             }
-            
+
             // Mark transaction confirming logs all relevant logs were processed
 
 
@@ -118,7 +118,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(transaction), CancellationToken.None);
             // Todo: Process mining pool snapshots this transaction affects
             // Todo: Process token snapshots this transaction has Transfer logs for
-            
+
             return true;
         }
     }
