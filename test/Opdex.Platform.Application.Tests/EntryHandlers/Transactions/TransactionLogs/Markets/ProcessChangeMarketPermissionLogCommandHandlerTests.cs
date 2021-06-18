@@ -113,7 +113,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
 
         private void SetupRetrieveMarketCall() =>
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new Market("PR71udY85pAcNcitdDfzQevp6Zar9DizHM",
+                         .ReturnsAsync(new Market(5,
+                                                  "PR71udY85pAcNcitdDfzQevp6Zar9DizHM",
                                                   5,
                                                   5,
                                                   "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
@@ -122,7 +123,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
                                                   true,
                                                   3,
                                                   false,
-                                                  500));
+                                                  500,
+                                                  505));
 
         private ExpandoObject SetupChangeMarketPermissionData(string address, Permissions permission, bool isAuthorized)
         {
