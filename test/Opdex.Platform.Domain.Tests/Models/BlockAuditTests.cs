@@ -1,6 +1,7 @@
 using System;
 using FluentAssertions;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Blocks;
 using Xunit;
 
 namespace Opdex.Platform.Domain.Tests.Models

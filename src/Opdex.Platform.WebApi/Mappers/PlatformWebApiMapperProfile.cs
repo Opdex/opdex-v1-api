@@ -2,12 +2,14 @@ using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
+using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.OHLC;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
+using Opdex.Platform.WebApi.Models.Responses.Tokens;
 
 namespace Opdex.Platform.WebApi.Mappers
 {
@@ -22,6 +24,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
                 .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
                 .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolDto, LiquidityPoolResponseModel>()
@@ -32,9 +35,18 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => MapLiquidityPoolSummary(src)))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            // CreateMap<LiquidityPoolSnapshotDto, LiquidityPoolSummaryResponseModel>()
-            //     .ConstructUsing(src => MapLiquidityPoolSummary(src))
-            //     .ForAllOtherMembers(opt => opt.Ignore);
+            CreateMap<TokenSnapshotDto, TokenSummaryResponseModel>()
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<OhlcDecimalDto, OhlcDecimalResponseModel>()
+                .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
+                .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
+                .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))
+                .ForMember(dest => dest.Close, opt => opt.MapFrom(src => src.Close))
+                .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketSnapshotDto, MarketSnapshotResponseModel>()
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))

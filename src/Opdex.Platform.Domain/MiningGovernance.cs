@@ -1,6 +1,7 @@
 using System;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.ODX;
 
 namespace Opdex.Platform.Domain

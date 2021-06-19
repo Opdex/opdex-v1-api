@@ -1,6 +1,6 @@
 using System;
 
-namespace Opdex.Platform.Domain.Models
+namespace Opdex.Platform.Domain.Models.Blocks
 {
     public abstract class BlockAudit
     {

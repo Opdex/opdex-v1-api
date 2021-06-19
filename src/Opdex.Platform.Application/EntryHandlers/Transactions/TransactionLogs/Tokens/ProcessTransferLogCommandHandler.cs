@@ -49,11 +49,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 if (isAllowanceTransfer)
                 {
-                    // Update allowance
-                    // Todo: RetrieveCirrusSrcTokenAllowanceQuery
-                    // Todo: RetrieveAddressBalanceByTokenIdAndOwnerAndSpenderQuery
-                    // Todo: RetrieveAddressBalanceByLiquidityPoolIdAndOwnerAndSpenderQuery
-                    // await _mediator.Send(new MakeAddressAllowanceCommand(), CancellationToken.None);
+                    // Update spender allowance (request.Sender)
                 }
 
                 // Update sender balance

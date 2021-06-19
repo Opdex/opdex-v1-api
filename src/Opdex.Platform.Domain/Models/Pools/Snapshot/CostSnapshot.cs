@@ -2,7 +2,6 @@ using System;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.OHLC;
-using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Domain.Models.Pools.Snapshot
 {
@@ -23,7 +22,7 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
         public OhlcBigIntSnapshot CrsPerSrc { get; }
         public OhlcBigIntSnapshot SrcPerCrs { get; }
 
-        internal void SetCost(ulong reserveCrs, string reserveSrc, ulong srcSats, bool reset)
+        internal void SetCost(ulong reserveCrs, string reserveSrc, ulong srcSats, bool reset = false)
         {
             CrsPerSrc.Update(reserveCrs.Token0PerToken1(reserveSrc, srcSats), reset);
             SrcPerCrs.Update(reserveSrc.Token0PerToken1(reserveCrs, TokenConstants.Cirrus.Sats), reset);

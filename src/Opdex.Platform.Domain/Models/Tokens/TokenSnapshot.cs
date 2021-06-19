@@ -35,19 +35,21 @@ namespace Opdex.Platform.Domain.Models.Tokens
         public SnapshotType SnapshotType { get; }
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
-        public DateTime LastUpdated { get; private set; }
+        public DateTime ModifiedDate { get; private set; }
 
         public void UpdatePrice(decimal price, bool reset = false)
         {
             Price.Update(Math.Round(price, 8, MidpointRounding.AwayFromZero), reset);
-            LastUpdated = DateTime.UtcNow;
+            ModifiedDate = DateTime.UtcNow;
         }
 
         public void UpdatePrice(ulong reserveCrs, string reserveSrc, decimal crsUsd, ulong srcSats)
         {
             const int crsDecimals = TokenConstants.Cirrus.Decimals;
 
-            var crsPerSrc = reserveCrs.Token0PerToken1(reserveSrc, srcSats).ToRoundedDecimal(crsDecimals, crsDecimals);
+            var crsPerSrc = reserveCrs
+                .Token0PerToken1(reserveSrc, srcSats)
+                .ToRoundedDecimal(crsDecimals, crsDecimals);
 
             UpdatePrice(crsPerSrc * crsUsd);
         }

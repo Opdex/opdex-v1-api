@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
 
@@ -22,9 +23,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens
 
         private void DeserializeSnapshotDetails(string details)
         {
-            var data = JsonConvert.DeserializeObject<OhlcDecimalEntity>(details);
-
-            Price = data;
+            Price = JsonConvert.DeserializeObject<OhlcDecimalEntity>(details) ??
+                    throw new Exception("Invalid token snapshot details.");
         }
     }
 }

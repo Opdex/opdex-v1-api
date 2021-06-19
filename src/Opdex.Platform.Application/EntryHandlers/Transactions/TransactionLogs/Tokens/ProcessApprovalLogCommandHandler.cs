@@ -27,16 +27,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                // Get/Set user balances and allowances
-                // Could be liquidity pool token or src token
-                // Could be allowance update and/or balance update
-                
+                // Update spender allowance
+
                 return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(ApprovalLog)}");
-               
+
                 return false;
             }
         }

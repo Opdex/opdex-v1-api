@@ -25,9 +25,9 @@ namespace Opdex.Platform.Domain.Models.OHLC
         public decimal Low { get; private set; }
         public decimal Close { get; private set; }
 
-        internal void Update(decimal value, bool reset)
+        internal void Update(decimal value, bool reset = false)
         {
-            if (Open == DefaultValue)
+            if (Open == DefaultValue || reset)
             {
                 Open = value;
                 High = value;
@@ -35,14 +35,6 @@ namespace Opdex.Platform.Domain.Models.OHLC
                 Close = value;
 
                 return;
-            }
-
-            if (reset)
-            {
-                Open = Close;
-                High = Open;
-                Low = Open;
-                Close = Open;
             }
 
             if (value > High)

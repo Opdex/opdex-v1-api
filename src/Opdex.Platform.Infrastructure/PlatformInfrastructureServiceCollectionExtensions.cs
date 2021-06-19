@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
+using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Pools;
@@ -211,8 +212,8 @@ namespace Opdex.Platform.Infrastructure
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
             // Queries
-            services.AddTransient<IRequestHandler<CallCirrusGetCurrentBlockQuery, BlockReceiptDto>, CallCirrusGetCurrentBlockQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetBlockByHashQuery, BlockReceiptDto>, CallCirrusGetBlockByHashQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetCurrentBlockQuery, BlockReceipt>, CallCirrusGetCurrentBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetBlockByHashQuery, BlockReceipt>, CallCirrusGetBlockByHashQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetTransactionByHashQuery, Transaction>, CallCirrusGetTransactionByHashQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusSearchContractTransactionsQuery, List<Transaction>>, CallCirrusSearchContractTransactionsQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenDetailsByAddressQuery, Token>, CallCirrusGetSrcTokenDetailsByAddressQueryHandler>();

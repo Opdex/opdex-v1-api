@@ -48,9 +48,9 @@ namespace Opdex.Platform.Domain.Models.OHLC
         public string Low { get; private set; }
         public string Close { get; private set; }
 
-        internal void Update(string value, bool reset)
+        internal void Update(string value, bool reset = false)
         {
-            if (Open == DefaultValue)
+            if (Open == DefaultValue || reset)
             {
                 Open = value;
                 High = value;
@@ -58,14 +58,6 @@ namespace Opdex.Platform.Domain.Models.OHLC
                 Close = value;
 
                 return;
-            }
-
-            if (reset)
-            {
-                Open = Close;
-                High = Open;
-                Low = Open;
-                Close = Open;
             }
 
             var valueBigInt = value.ToBigInteger();

@@ -95,7 +95,7 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
         public void ProcessReservesLog(ReservesLog log, decimal crsUsd, decimal srcUsd, int srcDecimals)
         {
             Reserves.SetReserves(log, crsUsd, srcUsd, srcDecimals);
-            Cost.SetCost(log.ReserveCrs, log.ReserveSrc, srcDecimals.DecimalsToSatoshis(), false);
+            Cost.SetCost(log.ReserveCrs, log.ReserveSrc, srcDecimals.DecimalsToSatoshis());
         }
 
         public void ProcessStakingLog(StakeLog log, decimal stakingTokenUsd)

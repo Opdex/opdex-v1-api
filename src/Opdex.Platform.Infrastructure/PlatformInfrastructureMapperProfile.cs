@@ -3,6 +3,7 @@ using Opdex.Platform.Common;
 using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
+using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Pools;

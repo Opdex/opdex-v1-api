@@ -21,6 +21,8 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
 using System.Linq;
 using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
+using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
+using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.Pools.Snapshot;
 
@@ -147,6 +149,15 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
                 .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
                 .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<TokenSnapshot, TokenSnapshotDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                .ForMember(dest => dest.SnapshotType, opt => opt.MapFrom(src => src.SnapshotType))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => src.ModifiedDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketSnapshot, MarketSnapshotDto>()

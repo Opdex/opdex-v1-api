@@ -59,8 +59,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     var blockReceiptDto = await _mediator.Send(blockQuery, CancellationToken.None);
 
                     // Make block
-                    var blockTime = blockReceiptDto.Time.FromUnixTimeSeconds();
-                    var blockMedianTime = blockReceiptDto.MedianTime.FromUnixTimeSeconds();
+                    var blockTime = blockReceiptDto.Time;
+                    var blockMedianTime = blockReceiptDto.MedianTime;
                     var blockCommand = new MakeBlockCommand(blockReceiptDto.Height, blockReceiptDto.Hash, blockTime, blockMedianTime);
                     var blockCreated = await _mediator.Send(blockCommand, CancellationToken.None);
                 }

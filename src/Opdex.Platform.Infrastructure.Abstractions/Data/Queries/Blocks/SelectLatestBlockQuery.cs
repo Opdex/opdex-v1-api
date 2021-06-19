@@ -1,6 +1,7 @@
 using MediatR;
 using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Blocks;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks
 {

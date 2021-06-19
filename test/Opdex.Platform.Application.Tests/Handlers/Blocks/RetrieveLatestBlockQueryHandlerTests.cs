@@ -9,6 +9,7 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Handlers.Blocks;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
 using Xunit;
 

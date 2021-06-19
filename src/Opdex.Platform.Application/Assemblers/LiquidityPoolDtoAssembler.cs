@@ -4,6 +4,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
+using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots;
@@ -15,7 +16,7 @@ using Opdex.Platform.Domain.Models.Pools;
 
 namespace Opdex.Platform.Application.Assemblers
 {
-    public class LiquidityPoolDtoAssembler: IModelAssembler<LiquidityPool, LiquidityPoolDto>
+    public class LiquidityPoolDtoAssembler : IModelAssembler<LiquidityPool, LiquidityPoolDto>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -31,13 +32,12 @@ namespace Opdex.Platform.Application.Assemblers
             var market = await _mediator.Send(new RetrieveMarketByIdQuery(pool.MarketId, findOrThrow: true));
 
             var crsToken = await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address));
-            // Todo: Check stale (shouldn't be)
-            var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crsToken.Id, 0, DateTime.UtcNow, SnapshotType.Minute));
+            var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crsToken.Id, 0, DateTime.UtcNow, SnapshotType.Daily));
 
             var stakingTokenUsd = 0m;
             if (market.StakingTokenId > 0)
             {
-                var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(pool.SrcTokenId, pool.MarketId, DateTime.UtcNow, SnapshotType.Hourly));
+                var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(pool.SrcTokenId, pool.MarketId, DateTime.UtcNow, SnapshotType.Daily));
 
                 if (stakingTokenSnapshot.EndDate < DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(5)))
                 {
@@ -48,6 +48,7 @@ namespace Opdex.Platform.Application.Assemblers
             }
 
             var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId));
+            var srcTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(srcToken.Id, market.Id, DateTime.UtcNow, SnapshotType.Daily));
             var poolSnapshotQuery = new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, DateTime.UtcNow, SnapshotType.Daily);
             var poolSnapshot = await _mediator.Send(poolSnapshotQuery);
 
@@ -58,11 +59,13 @@ namespace Opdex.Platform.Application.Assemblers
                 // poolSnapshot.ResetStaleSnapshot(crsSnapshot.Price.Close, stakingTokenUsd, DateTime.UtcNow);
             }
 
+            var srcTokenSnapshotDto = _mapper.Map<TokenSnapshotDto>(srcTokenSnapshot);
             var poolDto = _mapper.Map<LiquidityPoolDto>(pool);
             var tokenDto = _mapper.Map<TokenDto>(srcToken);
             var summaryDto = _mapper.Map<LiquidityPoolSnapshotDto>(poolSnapshot);
 
             poolDto.Token = tokenDto;
+            poolDto.Token.Summary = srcTokenSnapshotDto;
             poolDto.Summary = summaryDto;
 
             if (market.StakingTokenId > 0 && pool.SrcTokenId != market.StakingTokenId)

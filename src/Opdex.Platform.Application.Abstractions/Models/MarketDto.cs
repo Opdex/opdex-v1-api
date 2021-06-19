@@ -1,3 +1,5 @@
+using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
+
 namespace Opdex.Platform.Application.Abstractions.Models
 {
     public class MarketDto

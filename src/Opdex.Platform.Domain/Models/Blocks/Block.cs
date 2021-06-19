@@ -1,7 +1,7 @@
 using System;
 using Opdex.Platform.Common.Extensions;
 
-namespace Opdex.Platform.Domain.Models
+namespace Opdex.Platform.Domain.Models.Blocks
 {
     public class Block
     {
