@@ -21,7 +21,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
         public async Task<decimal> Handle(ProcessLpTokenSnapshotCommand request, CancellationToken cancellationToken)
         {
             // Prepare LP Token Snapshot
-            var lptUsd = request.ReservesUsd / request.LpToken.TotalSupply.ToRoundedDecimal(request.LpToken.Decimals, request.LpToken.Decimals);
+            var lptTotalSupply = request.LpToken.TotalSupply;
+            var lptUsd = 0m;
+
+            if (!lptTotalSupply.Equals("0"))
+            {
+                lptUsd = request.ReservesUsd / lptTotalSupply.ToRoundedDecimal(request.LpToken.Decimals, request.LpToken.Decimals);
+            }
 
             var tokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(request.LpToken.Id,
                                                                                               request.MarketId,

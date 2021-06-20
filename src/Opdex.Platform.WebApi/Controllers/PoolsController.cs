@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -10,8 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
-using Opdex.Platform.WebApi.Models;
-using Opdex.Platform.WebApi.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools.Snapshots;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
@@ -41,10 +38,11 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>List of pools</returns>
         [HttpGet]
+        [HttpGet("market/{marketAddress}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(uint skip, uint take, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(string marketAddress, uint skip, uint take, CancellationToken cancellationToken)
         {
-            var query = new GetAllPoolsQuery();
+            var query = new GetAllPoolsByMarketIdQuery(marketAddress);
 
             var result = await _mediator.Send(query, cancellationToken);
 

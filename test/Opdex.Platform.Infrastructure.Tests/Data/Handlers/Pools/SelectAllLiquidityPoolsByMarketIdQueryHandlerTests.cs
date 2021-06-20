@@ -16,28 +16,30 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
 {
-    public class SelectAllLiquidityPoolsQueryHandlerTests
+    public class SelectAllLiquidityPoolsByMarketIdQueryHandlerTests
     {
         private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectAllLiquidityPoolsQueryHandler _handler;
+        private readonly SelectAllLiquidityPoolsByMarketIdQueryHandler _handler;
 
-        public SelectAllLiquidityPoolsQueryHandlerTests()
+        public SelectAllLiquidityPoolsByMarketIdQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectAllLiquidityPoolsQueryHandler(_dbContext.Object, mapper);
+            _handler = new SelectAllLiquidityPoolsByMarketIdQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
         public async Task SelectAllPools_Success()
         {
+            const long marketId = 3;
+
             var expectedEntity = new LiquidityPoolEntity
             {
                 Id = 123454,
                 SrcTokenId = 2,
                 LpTokenId = 5,
-                MarketId = 3,
+                MarketId = marketId,
                 Address = "SomeAddress",
                 CreatedBlock = 1,
                 ModifiedBlock = 1
@@ -45,7 +47,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
 
             var responseList = new [] { expectedEntity }.AsEnumerable();
 
-            var command = new SelectAllLiquidityPoolsQuery();
+            var command = new SelectAllLiquidityPoolsByMarketIdQuery(marketId);
 
             _dbContext.Setup(db => db.ExecuteQueryAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(responseList));

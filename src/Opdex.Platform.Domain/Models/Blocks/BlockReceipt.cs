@@ -29,16 +29,6 @@ namespace Opdex.Platform.Domain.Models.Blocks
                 throw new ArgumentOutOfRangeException(nameof(medianTime), $"{nameof(medianTime)} must have a valid value.");
             }
 
-            if (!previousBlockHash.HasValue())
-            {
-                throw new ArgumentNullException(nameof(previousBlockHash), $"{nameof(previousBlockHash)} must have a value.");
-            }
-
-            if (!nextBlockHash.HasValue())
-            {
-                throw new ArgumentNullException(nameof(nextBlockHash), $"{nameof(nextBlockHash)} must have a value.");
-            }
-
             if (!merkleRoot.HasValue())
             {
                 throw new ArgumentNullException(nameof(merkleRoot), $"{nameof(merkleRoot)} must have a value.");
@@ -62,5 +52,34 @@ namespace Opdex.Platform.Domain.Models.Blocks
         public string NextBlockHash { get; }
         public string MerkleRoot { get; }
         public IEnumerable<string> TxHashes { get; }
+
+        public bool IsNewYearFromPrevious(DateTime previousBlockMedianTime)
+        {
+            return previousBlockMedianTime.Year < MedianTime.Year;
+        }
+
+        public bool IsNewMonthFromPrevious(DateTime previousBlockMedianTime)
+        {
+            return IsNewYearFromPrevious(previousBlockMedianTime) ||
+                   previousBlockMedianTime.Month < MedianTime.Month;
+        }
+
+        public bool IsNewDayFromPrevious(DateTime previousBlockMedianTime)
+        {
+            return IsNewMonthFromPrevious(previousBlockMedianTime) ||
+                   previousBlockMedianTime.Day < MedianTime.Day;
+        }
+
+        public bool IsNewHourFromPrevious(DateTime previousBlockMedianTime)
+        {
+            return IsNewDayFromPrevious(previousBlockMedianTime) ||
+                   previousBlockMedianTime.Hour < MedianTime.Hour;
+        }
+
+        public bool IsNewMinuteFromPrevious(DateTime previousBlockMedianTime)
+        {
+            return IsNewHourFromPrevious(previousBlockMedianTime) ||
+                   previousBlockMedianTime.Minute < MedianTime.Minute;
+        }
     }
 }

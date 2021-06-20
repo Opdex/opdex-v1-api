@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Handlers.Pools
 
         public Task<LiquidityPool> Handle(RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectLiquidityPoolBySrcTokenIdAndMarketIdQuery(request.SrcTokenId, request.MarketId, findOrThrow: request.FindOrThrow), cancellationToken);
+            return _mediator.Send(new SelectLiquidityPoolBySrcTokenIdAndMarketIdQuery(request.SrcTokenId, request.MarketId, request.FindOrThrow), cancellationToken);
         }
     }
 }

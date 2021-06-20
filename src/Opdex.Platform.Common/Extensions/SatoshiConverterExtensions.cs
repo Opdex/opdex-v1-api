@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 
 namespace Opdex.Platform.Common.Extensions
 {
@@ -105,7 +104,9 @@ namespace Opdex.Platform.Common.Extensions
                 throw new ArgumentOutOfRangeException(nameof(token1), $"{nameof(token1)} must be a numeric value.");
             }
 
-            return (token0.ToBigInteger() * token1Sats / token1.ToBigInteger()).ToString();
+            return token1.Equals("0")
+                ? "0"
+                : (token0.ToBigInteger() * token1Sats / token1.ToBigInteger()).ToString();
         }
     }
 }

@@ -17,6 +17,9 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Pools
             {
                 throw new ArgumentOutOfRangeException(nameof(marketId), $"{nameof(marketId)} must be greater than 0.");
             }
+
+            SrcTokenId = srcTokenId;
+            MarketId = marketId;
         }
 
         public long SrcTokenId { get; }

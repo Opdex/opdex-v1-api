@@ -51,11 +51,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
             foreach (var (poolContract, transactionLogs) in poolSnapshotGroups)
             {
                 var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(poolContract));
-
                 var market = await _mediator.Send(new RetrieveMarketByIdQuery(liquidityPool.MarketId));
-
                 var lpToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.LpTokenId));
-
                 var stakingTokenUsd = 0m;
 
                 if (market.IsStakingMarket)
@@ -91,7 +88,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
                 foreach (var snapshotType in request.SnapshotTypes)
                 {
                     // Retrieves the snapshot in range, the most recent one prior, or a newly instantiated snapshot
-                    var liquidityPoolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id, blockTime, snapshotType));
+                    var liquidityPoolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id,
+                                                                                                                      blockTime,
+                                                                                                                      snapshotType));
 
                     // Update a stale snapshot if it is older than what was requested
                     if (liquidityPoolSnapshot.EndDate < blockTime)
