@@ -91,7 +91,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
                     var liquidityPoolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id,
                                                                                                                       blockTime,
                                                                                                                       snapshotType));
-
                     // Update a stale snapshot if it is older than what was requested
                     if (liquidityPoolSnapshot.EndDate < blockTime)
                     {
@@ -136,8 +135,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
                         }
                         else if (poolLog.LogType == TransactionLogType.SwapLog)
                         {
+                            var srcSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(srcToken.Id,
+                                                                                                            market.Id,
+                                                                                                            blockTime,
+                                                                                                            SnapshotType.Hourly));
+
                             // Process Volume of a Swap
-                            liquidityPoolSnapshot.ProcessSwapLog((SwapLog)poolLog, crsUsd, market.IsStakingMarket, market.TransactionFee, market.MarketFeeEnabled);
+                            liquidityPoolSnapshot.ProcessSwapLog((SwapLog)poolLog, crsUsd, srcSnapshot.Price.Close, srcToken.Decimals,
+                                                                 market.IsStakingMarket, market.TransactionFee, market.MarketFeeEnabled);
                         }
                         else if (poolLog.LogType == TransactionLogType.StakeLog)
                         {

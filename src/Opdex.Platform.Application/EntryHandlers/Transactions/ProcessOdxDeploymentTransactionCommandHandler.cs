@@ -16,6 +16,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Vault;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.ODX;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions

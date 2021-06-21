@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.Pools
             MarketId = marketId;
         }
 
-        // Todo: this probably shouldn't exist
+        // Todo: This shouldn't exist
         public LiquidityPool(string address, string tokenAddress, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
@@ -63,33 +63,11 @@ namespace Opdex.Platform.Domain.Models.Pools
 
         public long Id { get; }
         public string Address { get; }
-        public long SrcTokenId { get; private set; }
-        public long LpTokenId { get; private set; }
-        public long MarketId { get; private set; }
+        public long SrcTokenId { get; }
+        public long LpTokenId { get; }
+        public long MarketId { get; }
+
+        // Todo: Rip this out
         public string TokenAddress { get; }
-
-        public void SetSrcTokenId(long tokenId)
-        {
-            if (SrcTokenId == 0 && tokenId > 0)
-            {
-                SrcTokenId = tokenId;
-            }
-        }
-
-        public void SetLpTokenId(long tokenId)
-        {
-            if (LpTokenId == 0 && tokenId > 0)
-            {
-                LpTokenId = tokenId;
-            }
-        }
-
-        public void SetMarketId(long marketId)
-        {
-            if (MarketId == 0 && marketId > 0)
-            {
-                MarketId = marketId;
-            }
-        }
     }
 }

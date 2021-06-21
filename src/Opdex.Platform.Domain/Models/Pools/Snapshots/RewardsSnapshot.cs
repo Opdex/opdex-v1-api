@@ -1,6 +1,6 @@
 using System;
 
-namespace Opdex.Platform.Domain.Models.Pools.Snapshot
+namespace Opdex.Platform.Domain.Models.Pools.Snapshots
 {
     public class RewardsSnapshot
     {
@@ -12,6 +12,16 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
 
         public RewardsSnapshot(decimal providerUsd, decimal marketUsd)
         {
+            if (providerUsd < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(providerUsd), $"{nameof(providerUsd)} must be greater or equal to 0.");
+            }
+
+            if (marketUsd < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(marketUsd), $"{nameof(marketUsd)} must be greater or equal to 0.");
+            }
+
             ProviderUsd = providerUsd;
             MarketUsd = marketUsd;
         }
@@ -19,7 +29,7 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
         public decimal ProviderUsd { get; private set; }
         public decimal MarketUsd { get; private set; }
 
-        public void SetRewards(decimal volumeUsd, string stakingWeight, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
+        internal void SetRewards(decimal volumeUsd, string stakingWeight, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
         {
             var fee = transactionFee / (decimal)1000;
             var totalRewards = Math.Round(volumeUsd * fee, 2, MidpointRounding.AwayFromZero);

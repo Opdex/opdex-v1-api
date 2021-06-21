@@ -3,7 +3,7 @@ using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.OHLC;
 
-namespace Opdex.Platform.Domain.Models.Pools.Snapshot
+namespace Opdex.Platform.Domain.Models.Pools.Snapshots
 {
     public class CostSnapshot
     {
@@ -15,8 +15,8 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
 
         public CostSnapshot(OhlcBigIntSnapshot crsPerSrc, OhlcBigIntSnapshot srcPerCrs)
         {
-            CrsPerSrc = crsPerSrc ?? throw new ArgumentNullException(nameof(crsPerSrc));
-            SrcPerCrs = srcPerCrs ?? throw new ArgumentNullException(nameof(srcPerCrs));
+            CrsPerSrc = crsPerSrc ?? throw new ArgumentNullException(nameof(crsPerSrc), $"{nameof(crsPerSrc)} cannot be null.");
+            SrcPerCrs = srcPerCrs ?? throw new ArgumentNullException(nameof(srcPerCrs), $"{nameof(srcPerCrs)} cannot be null.");
         }
 
         public OhlcBigIntSnapshot CrsPerSrc { get; }

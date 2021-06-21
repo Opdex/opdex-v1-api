@@ -3,7 +3,7 @@ using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
-namespace Opdex.Platform.Domain.Models.Pools.Snapshot
+namespace Opdex.Platform.Domain.Models.Pools.Snapshots
 {
     public class StakingSnapshot
     {
@@ -17,7 +17,12 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
         {
             if (!stakingWeight.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(stakingWeight), $"{nameof(stakingWeight)} must be a numeric value.");
+                throw new ArgumentOutOfRangeException(nameof(stakingWeight), $"{nameof(stakingWeight)} must be a numeric value.");
+            }
+
+            if (stakingUsd < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(stakingUsd), $"{nameof(stakingUsd)} must be greater or equal to 0.");
             }
 
             Weight = stakingWeight;

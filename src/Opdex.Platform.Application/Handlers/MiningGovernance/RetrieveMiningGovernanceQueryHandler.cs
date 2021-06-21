@@ -7,7 +7,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernance;
 
 namespace Opdex.Platform.Application.Handlers.MiningGovernance
 {
-    public class RetrieveMiningGovernanceQueryHandler : IRequestHandler<RetrieveMiningGovernanceQuery, Domain.MiningGovernance>
+    public class RetrieveMiningGovernanceQueryHandler : IRequestHandler<RetrieveMiningGovernanceQuery, Domain.Models.MiningGovernance>
     {
         private readonly IMediator _mediator;
 
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Handlers.MiningGovernance
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public Task<Domain.MiningGovernance> Handle(RetrieveMiningGovernanceQuery request, CancellationToken cancellationToken)
+        public Task<Domain.Models.MiningGovernance> Handle(RetrieveMiningGovernanceQuery request, CancellationToken cancellationToken)
         {
             return _mediator.Send(new SelectMiningGovernanceQuery(request.FindOrThrow), cancellationToken);
         }

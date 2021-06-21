@@ -87,7 +87,7 @@ using Opdex.Platform.Application.Handlers.Transactions.Wallet;
 using Opdex.Platform.Application.Handlers.vault;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
-using Opdex.Platform.Domain.Models.Pools.Snapshot;
+using Opdex.Platform.Domain.Models.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDtos.TokenDto;
 

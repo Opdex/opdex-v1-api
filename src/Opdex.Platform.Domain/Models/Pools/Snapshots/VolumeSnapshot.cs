@@ -3,7 +3,7 @@ using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
-namespace Opdex.Platform.Domain.Models.Pools.Snapshot
+namespace Opdex.Platform.Domain.Models.Pools.Snapshots
 {
     public class VolumeSnapshot
     {
@@ -18,12 +18,17 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
         {
             if (!volumeCrs.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(volumeCrs), $"{nameof(volumeCrs)} must be a numeric value.");
+                throw new ArgumentOutOfRangeException(nameof(volumeCrs), $"{nameof(volumeCrs)} must be a numeric value.");
             }
 
             if (!volumeSrc.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(volumeSrc), $"{nameof(volumeSrc)} must be a numeric value.");
+                throw new ArgumentOutOfRangeException(nameof(volumeSrc), $"{nameof(volumeSrc)} must be a numeric value.");
+            }
+
+            if (volumeUsd < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(volumeUsd), $"{nameof(volumeUsd)} must be greater or equal to 0.");
             }
 
             Crs = volumeCrs;
@@ -35,7 +40,7 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
         public string Src { get; private set; }
         public decimal Usd { get; private set; }
 
-        internal void SetVolume(SwapLog log, decimal crsUsd)
+        internal void SetVolume(SwapLog log, decimal crsUsd, decimal srcUsd, int srcDecimals)
         {
             var volumeCrs = log.AmountCrsIn + log.AmountCrsOut;
             Crs = Crs.Add(volumeCrs.ToString());
@@ -43,9 +48,12 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
             var volumeSrc = log.AmountSrcIn.Add(log.AmountSrcOut);
             Src = Src.Add(volumeSrc);
 
-            // Todo: Incorrect, accurate volume would track USD price vs tokenInAmount which includes fees and slippage.
-            var crsVolumeDecimal = Crs.ToRoundedDecimal(8, TokenConstants.Cirrus.Decimals);
-            Usd = Math.Round(crsVolumeDecimal * crsUsd, 2, MidpointRounding.AwayFromZero);
+            var crsVolumeDecimal = log.AmountCrsIn.ToString().ToRoundedDecimal(8, TokenConstants.Cirrus.Decimals);
+            var srcVolumeDecimal = log.AmountSrcIn.ToRoundedDecimal(8, srcDecimals);
+            var crsUsdVolume = crsVolumeDecimal * crsUsd;
+            var srcUsdVolume = srcVolumeDecimal * srcUsd;
+
+            Usd += Math.Round(crsUsdVolume + srcUsdVolume, 2, MidpointRounding.AwayFromZero);
         }
     }
 }

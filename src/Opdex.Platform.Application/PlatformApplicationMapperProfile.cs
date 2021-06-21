@@ -24,7 +24,7 @@ using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.OHLC;
-using Opdex.Platform.Domain.Models.Pools.Snapshot;
+using Opdex.Platform.Domain.Models.Pools.Snapshots;
 
 namespace Opdex.Platform.Application
 {

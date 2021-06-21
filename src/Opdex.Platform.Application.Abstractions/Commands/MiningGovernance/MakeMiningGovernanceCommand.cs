@@ -5,11 +5,11 @@ namespace Opdex.Platform.Application.Abstractions.Commands.MiningGovernance
 {
     public class MakeMiningGovernanceCommand : IRequest<long>
     {
-        public MakeMiningGovernanceCommand(Domain.MiningGovernance miningGovernance)
+        public MakeMiningGovernanceCommand(Domain.Models.MiningGovernance miningGovernance)
         {
             MiningGovernance = miningGovernance ?? throw new ArgumentNullException(nameof(miningGovernance));
         }
         
-        public Domain.MiningGovernance MiningGovernance { get; }
+        public Domain.Models.MiningGovernance MiningGovernance { get; }
     }
 }

@@ -8,7 +8,7 @@ using Moq;
 using Opdex.Platform.Common;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.OHLC;
-using Opdex.Platform.Domain.Models.Pools.Snapshot;
+using Opdex.Platform.Domain.Models.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots;

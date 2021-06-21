@@ -3,7 +3,7 @@ using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
-namespace Opdex.Platform.Domain.Models.Pools.Snapshot
+namespace Opdex.Platform.Domain.Models.Pools.Snapshots
 {
     public class ReservesSnapshot
     {
@@ -18,12 +18,17 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
         {
             if (!reserveCrs.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(reserveCrs), $"{nameof(reserveCrs)} must be a numeric value.");
+                throw new ArgumentOutOfRangeException(nameof(reserveCrs), $"{nameof(reserveCrs)} must be a numeric value.");
             }
 
             if (!reserveSrc.IsNumeric())
             {
-                throw new ArgumentNullException(nameof(reserveSrc), $"{nameof(reserveSrc)} must be a numeric value.");
+                throw new ArgumentOutOfRangeException(nameof(reserveSrc), $"{nameof(reserveSrc)} must be a numeric value.");
+            }
+
+            if (reserveUsd < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(reserveUsd), $"{nameof(reserveUsd)} must be greater or equal to 0.");
             }
 
             Crs = reserveCrs;

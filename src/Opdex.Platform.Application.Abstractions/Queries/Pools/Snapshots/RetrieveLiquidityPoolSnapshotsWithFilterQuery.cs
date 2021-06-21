@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using MediatR;
 using Opdex.Platform.Common;
-using Opdex.Platform.Domain.Models.Pools.Snapshot;
+using Opdex.Platform.Domain.Models.Pools.Snapshots;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots
 {

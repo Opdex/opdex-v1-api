@@ -1,14 +1,13 @@
 using System;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.ODX;
 
-namespace Opdex.Platform.Domain
+namespace Opdex.Platform.Domain.Models
 {
     public class MiningGovernance : BlockAudit
     {
-        public MiningGovernance(long id, string address, long tokenId, ulong nominationPeriodEnd, uint miningPoolsFunded, 
+        public MiningGovernance(long id, string address, long tokenId, ulong nominationPeriodEnd, uint miningPoolsFunded,
             string miningPoolReward, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -18,8 +17,8 @@ namespace Opdex.Platform.Domain
             MiningPoolsFunded = miningPoolsFunded;
             MiningPoolReward = miningPoolReward;
         }
-        
-        public MiningGovernance(string address, long tokenId, ulong nominationPeriodEnd, uint miningPoolsFunded, 
+
+        public MiningGovernance(string address, long tokenId, ulong nominationPeriodEnd, uint miningPoolsFunded,
             string miningPoolReward, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
@@ -38,7 +37,7 @@ namespace Opdex.Platform.Domain
             MiningPoolsFunded = miningPoolsFunded;
             MiningPoolReward = miningPoolReward;
         }
-        
+
         public long Id { get; }
         public string Address { get; }
         public long TokenId { get; }
@@ -51,7 +50,7 @@ namespace Opdex.Platform.Domain
             NominationPeriodEnd = summary.NominationPeriodEnd;
             MiningPoolsFunded = summary.MiningPoolsFunded;
             MiningPoolReward = summary.MiningPoolReward;
-            
+
             SetModifiedBlock(block);
         }
     }

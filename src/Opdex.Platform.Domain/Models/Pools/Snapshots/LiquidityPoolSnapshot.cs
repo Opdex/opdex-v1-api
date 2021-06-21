@@ -3,7 +3,7 @@ using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
-namespace Opdex.Platform.Domain.Models.Pools.Snapshot
+namespace Opdex.Platform.Domain.Models.Pools.Snapshots
 {
     public class LiquidityPoolSnapshot
     {
@@ -11,12 +11,12 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
         {
             if (liquidityPoolId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
+                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId), $"{nameof(liquidityPoolId)} must be greater than 0.");
             }
 
             if (snapshotType == SnapshotType.Unknown)
             {
-                throw new ArgumentNullException(nameof(snapshotType));
+                throw new ArgumentOutOfRangeException(nameof(snapshotType), $"{nameof(snapshotType)} must be a valid type.");
             }
 
             LiquidityPoolId = liquidityPoolId;
@@ -86,9 +86,9 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshot
             EndDate = blockTime.ToEndOf(SnapshotType);
         }
 
-        public void ProcessSwapLog(SwapLog log, decimal crsUsd, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
+        public void ProcessSwapLog(SwapLog log, decimal crsUsd, decimal srcUsd, int srcDecimals, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
         {
-            Volume.SetVolume(log, crsUsd);
+            Volume.SetVolume(log, crsUsd, srcUsd, srcDecimals);
             Rewards.SetRewards(Volume.Usd, Staking.Weight, isStakingPool, transactionFee, marketFeeEnabled);
         }
 

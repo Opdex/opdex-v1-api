@@ -18,6 +18,10 @@ using Opdex.Platform.Common;
 
 namespace Opdex.Platform.Application.EntryHandlers.Blocks
 {
+    // Todo: Forks and Chain Reorgs :(
+    // Will requiring deleting back to the correct latest block, then sync back to chain tip.
+    // Maybe consider always staying 2-3 block behind chain tip to mitigate the amount of times this happens
+    // Tracked in [PAPI-31]
     public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBlocksCommand, Unit>
     {
         private readonly IMediator _mediator;
@@ -29,7 +33,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        // Todo: Forks and Chain Reorgs :(
         public async Task<Unit> Handle(ProcessLatestBlocksCommand request, CancellationToken cancellationToken)
         {
             // The latest synced block we have, if none, the tip of cirrus chain
@@ -39,8 +42,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
             while (previousBlock?.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
             {
                 // Retrieve and create the block
-                var currentBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(previousBlock.NextBlockHash), CancellationToken.None);
-                var blockCreated = await _mediator.Send(new CreateBlockCommand(currentBlock), CancellationToken.None);
+                var currentBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(previousBlock.NextBlockHash));
+                var blockCreated = await _mediator.Send(new CreateBlockCommand(currentBlock));
 
                 // Stop if the block wasn't created
                 if (!blockCreated) break;
@@ -51,7 +54,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                     // Dev Environment = 15 minutes, otherwise 1 minute
                     if (!request.IsDevelopEnv || currentBlock.MedianTime.Minute == 15)
                     {
-                        await _mediator.Send(new CreateCrsTokenSnapshotsCommand(currentBlock.MedianTime), CancellationToken.None);
+                        await _mediator.Send(new CreateCrsTokenSnapshotsCommand(currentBlock.MedianTime));
                     }
                 }
 
@@ -68,7 +71,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                 // Process all transactions in the block
                 foreach (var tx in currentBlock.TxHashes.Where(tx => tx != currentBlock.MerkleRoot))
                 {
-                    await _mediator.Send(new CreateTransactionCommand(tx), CancellationToken.None);
+                    await _mediator.Send(new CreateTransactionCommand(tx));
                 }
 
                 // Todo: Implement or remove blow Consideration comment
