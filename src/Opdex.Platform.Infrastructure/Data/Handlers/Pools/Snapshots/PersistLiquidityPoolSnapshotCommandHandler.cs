@@ -19,21 +19,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots
                 {nameof(LiquidityPoolSnapshotEntity.TransactionCount)},
                 {nameof(LiquidityPoolSnapshotEntity.StartDate)},
                 {nameof(LiquidityPoolSnapshotEntity.EndDate)},
-                {nameof(LiquidityPoolSnapshotEntity.ModifiedDate)},
-                {nameof(LiquidityPoolSnapshotEntity.Details)}
+                {nameof(LiquidityPoolSnapshotEntity.Details)},
+                {nameof(LiquidityPoolSnapshotEntity.ModifiedDate)}
               ) VALUES (
                 @{nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)},
                 @{nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)},
                 @{nameof(LiquidityPoolSnapshotEntity.TransactionCount)},
                 @{nameof(LiquidityPoolSnapshotEntity.StartDate)},
                 @{nameof(LiquidityPoolSnapshotEntity.EndDate)},
-                @{nameof(LiquidityPoolSnapshotEntity.ModifiedDate)},
-                @{nameof(LiquidityPoolSnapshotEntity.Details)}
+                @{nameof(LiquidityPoolSnapshotEntity.Details)},
+                UTC_TIMESTAMP()
               );";
 
         private static readonly string UpdateSqlCommand =
             $@"UPDATE pool_liquidity_snapshot
-                SET 
+                SET
                     {nameof(LiquidityPoolSnapshotEntity.TransactionCount)} = @{nameof(LiquidityPoolSnapshotEntity.TransactionCount)},
                     {nameof(LiquidityPoolSnapshotEntity.Details)} = @{nameof(LiquidityPoolSnapshotEntity.Details)},
                     {nameof(LiquidityPoolSnapshotEntity.ModifiedDate)} = UTC_TIMESTAMP()

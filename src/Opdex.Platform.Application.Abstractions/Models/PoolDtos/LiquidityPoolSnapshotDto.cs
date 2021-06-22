@@ -16,5 +16,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.PoolDtos
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime ModifiedDate { get; set; }
+        public int SrcTokenDecimals { get; set; }
     }
 }

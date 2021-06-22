@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
 {
@@ -26,21 +27,19 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
 
         public async Task<IEnumerable<LiquidityPoolSnapshotDto>> Handle(GetLiquidityPoolSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var poolQuery = new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPoolAddress, findOrThrow: true);
-            var pool = await _mediator.Send(poolQuery, cancellationToken);
+            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPoolAddress), cancellationToken);
 
             var from = request.From ?? new DateTime(2021, 01, 01);
-            var to = request.To ?? DateTime.UtcNow.Add(TimeSpan.FromDays(1));
+            var to = request.To ?? DateTime.UtcNow;
             var difference = to.Subtract(from);
-            var snapshotType = difference.Days > 365 ? SnapshotType.Daily : SnapshotType.Hourly;
+            var snapshotType = difference.Days > 30 ? SnapshotType.Daily : SnapshotType.Hourly;
 
-            var query = new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id, from, to, snapshotType);
+            var poolSnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id,
+                                                                                                       from,
+                                                                                                       to.ToEndOf(snapshotType),
+                                                                                                       snapshotType), cancellationToken);
 
-            var poolSnapshots = await _mediator.Send(query, cancellationToken);
-
-            var poolDtos = _mapper.Map<IEnumerable<LiquidityPoolSnapshotDto>>(poolSnapshots.OrderBy(p => p.StartDate));
-
-            return poolDtos;
+            return _mapper.Map<IEnumerable<LiquidityPoolSnapshotDto>>(poolSnapshots.OrderBy(p => p.StartDate));
         }
     }
 }

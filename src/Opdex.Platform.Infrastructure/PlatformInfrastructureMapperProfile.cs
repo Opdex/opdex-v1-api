@@ -133,8 +133,10 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketSnapshotEntity, MarketSnapshot>()
-                .ConstructUsing(src => new MarketSnapshot(src.Id, src.MarketId, src.TransactionCount, src.Liquidity, src.Volume, src.StakingWeight, src.StakingUsd,
-                    src.ProviderRewards, src.StakerRewards, (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate))
+                .ConstructUsing((src, ctx) => new MarketSnapshot(src.Id, src.MarketId, src.Liquidity, src.Volume,
+                                                                 ctx.Mapper.Map<StakingSnapshot>(src.Staking),
+                                                                 ctx.Mapper.Map<RewardsSnapshot>(src.Rewards),
+                                                                (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<VaultEntity, Vault>()
@@ -229,14 +231,11 @@ namespace Opdex.Platform.Infrastructure
             CreateMap<MarketSnapshot, MarketSnapshotEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
-                .ForMember(dest => dest.TransactionCount, opt => opt.MapFrom(src => src.TransactionCount))
                 .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
                 .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
-                .ForMember(dest => dest.StakingWeight, opt => opt.MapFrom(src => src.Weight))
-                .ForMember(dest => dest.StakingUsd, opt => opt.MapFrom(src => src.WeightUsd))
-                .ForMember(dest => dest.ProviderRewards, opt => opt.MapFrom(src => src.ProviderRewards))
-                .ForMember(dest => dest.StakerRewards, opt => opt.MapFrom(src => src.StakerRewards))
-                .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => src.SnapshotType))
+                .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
+                .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
+                .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => (int)src.SnapshotType))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());

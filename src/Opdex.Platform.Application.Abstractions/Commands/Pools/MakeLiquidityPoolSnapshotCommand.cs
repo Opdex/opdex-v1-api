@@ -1,6 +1,5 @@
 using System;
 using MediatR;
-using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.Pools.Snapshots;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Pools

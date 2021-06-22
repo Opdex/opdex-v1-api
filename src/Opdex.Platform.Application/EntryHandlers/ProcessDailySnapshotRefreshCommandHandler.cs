@@ -83,7 +83,7 @@ namespace Opdex.Platform.Application.EntryHandlers
                 }
 
                 // Process market snapshot
-                await _mediator.Send(new ProcessMarketSnapshotsCommand(market.Id));
+                await _mediator.Send(new ProcessMarketSnapshotsCommand(market.Id, blockTime));
             }
 
             return Unit.Value;

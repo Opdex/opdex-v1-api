@@ -56,6 +56,8 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.AuthPoolCreators, opt => opt.MapFrom(src => src.AuthPoolCreators))
                 .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
                 .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
+                .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
+                .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<Token, TokenDto>()
@@ -162,12 +164,10 @@ namespace Opdex.Platform.Application
 
             CreateMap<MarketSnapshot, MarketSnapshotDto>()
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
-                .ForMember(dest => dest.TransactionCount, opt => opt.MapFrom(src => src.TransactionCount))
                 .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
                 .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
-                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
-                .ForMember(dest => dest.ProviderRewards, opt => opt.MapFrom(src => src.ProviderRewards))
-                .ForMember(dest => dest.StakerRewards, opt => opt.MapFrom(src => src.StakerRewards))
+                .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
+                .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
                 .ForMember(dest => dest.SnapshotType, opt => opt.MapFrom(src => src.SnapshotType))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))

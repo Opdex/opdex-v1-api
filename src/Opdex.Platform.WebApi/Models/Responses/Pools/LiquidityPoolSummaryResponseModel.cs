@@ -1,3 +1,5 @@
+using System;
+
 namespace Opdex.Platform.WebApi.Models.Responses.Pools
 {
     public class LiquidityPoolSummaryResponseModel
@@ -8,5 +10,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Pools
         public StakingResponseModel Staking { get; set; }
         public VolumeResponseModel Volume { get; set; }
         public CostResponseModel Cost { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 }

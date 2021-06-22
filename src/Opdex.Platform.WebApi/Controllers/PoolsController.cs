@@ -11,6 +11,8 @@ using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Microsoft.AspNetCore.Authorization;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools.Snapshots;
+using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -73,11 +75,21 @@ namespace Opdex.Platform.WebApi.Controllers
 
         [HttpGet("{address}/history")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<LiquidityPoolResponseModel>> GetPoolHistory(string address, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
+        public async Task<ActionResult<LiquidityPoolSummaryResponseModel>> GetPoolHistory(string address, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
         {
+            var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(address));
+            var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.SrcTokenId));
+
             var poolSnapshotDtos = await _mediator.Send(new GetLiquidityPoolSnapshotsWithFilterQuery(address, startDate, endDate), cancellationToken);
 
-            return Ok(poolSnapshotDtos);
+            foreach (var snapshotDto in poolSnapshotDtos)
+            {
+                snapshotDto.SrcTokenDecimals = srcToken.Decimals;
+            }
+
+            var response = _mapper.Map<IEnumerable<LiquidityPoolSummaryResponseModel>>(poolSnapshotDtos);
+
+            return Ok(response);
         }
 
         [HttpGet("{address}/transactions")]

@@ -78,6 +78,9 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Vault;
 
 namespace Opdex.Platform.Infrastructure
 {
+    using Abstractions.Data.Queries.Markets.Snapshots;
+    using Data.Handlers.Markets.Snapshots;
+
     public static class PlatformInfrastructureServiceCollectionExtensions
     {
         public static IServiceCollection AddPlatformInfrastructureServices(this IServiceCollection services, CirrusConfiguration cirrusConfiguration,
@@ -149,9 +152,9 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectDeployerByAddressQuery, Deployer>, SelectDeployerByAddressQueryHandler>();
 
             // Market
-            services.AddTransient<IRequestHandler<SelectLatestMarketSnapshotQuery, MarketSnapshot>, SelectLatestMarketSnapshotQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMarketSnapshotWithFilterQuery, MarketSnapshot>, SelectMarketSnapshotWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMarketByAddressQuery, Market>, SelectMarketByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectActiveMarketSnapshotsByMarketIdQuery, IEnumerable<MarketSnapshot>>, SelectActiveMarketSnapshotsByMarketIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshot>>, SelectMarketSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMarketByIdQuery, Market>, SelectMarketByIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMarketPermissionQuery, MarketPermission>, SelectMarketPermissionQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMarketPermissionsByUserQuery, IEnumerable<Permissions>>, SelectMarketPermissionsByUserQueryHandler>();
