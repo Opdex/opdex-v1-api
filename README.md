@@ -46,3 +46,7 @@ The indexing process is trigger based so it must be manually called in a local e
 
 Using Opdex swagger, hit `index/process-latest-blocks` to begin syncing from the most recently synced block to the tip of the Cirrus chain.
 
+
+### Logging
+
+Structured logging is managed and configured using Serilog. You can view structured logs locally, without any configuration changes, by using [Seq](https://datalust.co/download). 

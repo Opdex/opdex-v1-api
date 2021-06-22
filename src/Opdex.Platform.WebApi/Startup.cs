@@ -27,6 +27,11 @@ using NSwag;
 using Microsoft.Net.Http.Headers;
 using NSwag.Generation.Processors.Security;
 using System.Text;
+using CcAcca.ApplicationInsights.ProblemDetails;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
 namespace Opdex.Platform.WebApi
 {
@@ -42,6 +47,12 @@ namespace Opdex.Platform.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplicationInsightsTelemetry();
+            services.AddApplicationInsightsTelemetryProcessor<IgnoreRequestPathsTelemetryProcessor>();
+
+            // gets rid of telemetry spam in the debug console, may prevent visual studio app insights monitoring
+            TelemetryDebugWriter.IsTracingDisabled = true;
+
             services.AddProblemDetails(options =>
             {
                 options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
@@ -70,6 +81,8 @@ namespace Opdex.Platform.WebApi
                             new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
                         };
                 });
+
+            services.AddProblemDetailTelemetryInitializer();
 
             var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
             services.Configure<AuthConfiguration>(authConfig);
@@ -153,11 +166,39 @@ namespace Opdex.Platform.WebApi
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseOpenApi();
-
-            app.UseSwaggerUi3();
+            if (!env.IsProduction())
+            {
+                app.UseOpenApi();
+                app.UseSwaggerUi3();
+            }
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+
+        /// <summary>
+        /// Ignores telemetry from non-api paths.
+        /// </summary>
+        public class IgnoreRequestPathsTelemetryProcessor : ITelemetryProcessor
+        {
+            private readonly ITelemetryProcessor _next;
+
+            public IgnoreRequestPathsTelemetryProcessor(ITelemetryProcessor next)
+            {
+                _next = next;
+            }
+
+            public void Process(ITelemetry item)
+            {
+                if (item is RequestTelemetry request &&
+                    (request.Url.AbsolutePath == "/" ||
+                     request.Url.AbsolutePath == "/favicon.ico" ||
+                     request.Url.AbsolutePath.StartsWith("/swagger")))
+                {
+                    return;
+                }
+
+                _next.Process(item);
+            }
         }
     }
 }

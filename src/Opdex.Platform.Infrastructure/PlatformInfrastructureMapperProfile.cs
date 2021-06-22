@@ -110,6 +110,11 @@ namespace Opdex.Platform.Infrastructure
                     src.AuthProviders, src.AuthTraders, src.TransactionFee, src.MarketFeeEnabled, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<MarketPermissionEntity, MarketPermission>()
+                .ConstructUsing(src => new MarketPermission(src.Id, src.MarketId, src.User, (Permissions)src.Permission, src.IsAuthorized, src.Blame,
+                    src.CreatedBlock, src.ModifiedBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<MarketRouterEntity, MarketRouter>()
                 .ConstructUsing(src => new MarketRouter(src.Id, src.Address, src.MarketId, src.IsActive, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
@@ -197,6 +202,17 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.DeployerId, opt => opt.MapFrom(src => src.DeployerId))
                 .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
+                .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+                .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<MarketPermission, MarketPermissionEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+                .ForMember(dest => dest.Permission, opt => opt.MapFrom(src => (int)src.Permission))
+                .ForMember(dest => dest.IsAuthorized, opt => opt.MapFrom(src => src.IsAuthorized))
+                .ForMember(dest => dest.Blame, opt => opt.MapFrom(src => src.Blame))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());

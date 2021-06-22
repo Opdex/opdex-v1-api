@@ -98,6 +98,7 @@ namespace Opdex.Platform.Infrastructure
         {
             // Markets
             services.AddTransient<IRequestHandler<PersistMarketCommand, long>, PersistMarketCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistMarketPermissionCommand, long>, PersistMarketPermissionCommandHandler>();
             services.AddTransient<IRequestHandler<PersistMarketSnapshotCommand, bool>, PersistMarketSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<PersistMarketRouterCommand, bool>, PersistMarketRouterCommandHandler>();
 
@@ -152,6 +153,8 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectMarketByAddressQuery, Market>, SelectMarketByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectActiveMarketSnapshotsByMarketIdQuery, IEnumerable<MarketSnapshot>>, SelectActiveMarketSnapshotsByMarketIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMarketByIdQuery, Market>, SelectMarketByIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMarketPermissionQuery, MarketPermission>, SelectMarketPermissionQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMarketPermissionsByUserQuery, IEnumerable<Permissions>>, SelectMarketPermissionsByUserQueryHandler>();
             services.AddTransient<IRequestHandler<SelectActiveMarketRouterByMarketIdQuery, MarketRouter>, SelectActiveMarketRouterByMarketIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMarketRouterByAddressQuery, MarketRouter>, SelectMarketRouterByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAllMarketsQuery, IEnumerable<Market>>, SelectAllMarketsQueryHandler>();
