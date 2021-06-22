@@ -12,7 +12,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 {
     public class PersistLiquidityPoolCommandHandler : IRequestHandler<PersistLiquidityPoolCommand, long>
     {
-        // Todo: Consider schema changes around MarketId and the ability to update markets
         private static readonly string SqlCommand =
             $@"INSERT INTO pool_liquidity (
                 {nameof(LiquidityPoolEntity.Address)},

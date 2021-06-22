@@ -45,10 +45,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                 var currentBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(previousBlock.NextBlockHash));
                 var blockCreated = await _mediator.Send(new CreateBlockCommand(currentBlock));
 
-                // Stop if the block wasn't created
                 if (!blockCreated) break;
 
-                // Every minute outside of DEV, refresh CRS USD prices
                 if (currentBlock.IsNewMinuteFromPrevious(previousBlock.MedianTime))
                 {
                     // Dev Environment = 15 minutes, otherwise 1 minute
@@ -58,8 +56,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                     }
                 }
 
-                // Get CRS Token and it's snapshot at or prior to this block
                 var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address));
+
                 var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, 0, currentBlock.MedianTime, SnapshotType.Minute));
 
                 // If it's a new day from the previous block, refresh all daily snapshots. (Tokens, Liquidity Pools, Markets)
@@ -71,14 +69,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                 // Process all transactions in the block
                 foreach (var tx in currentBlock.TxHashes.Where(tx => tx != currentBlock.MerkleRoot))
                 {
+                    // Todo: Consider processing liquidity pool snapshots after each block rather than during each transaction.
                     await _mediator.Send(new CreateTransactionCommand(tx));
                 }
 
-                // Todo: Implement or remove blow Consideration comment
-                // Consideration: process liquidity pool snapshots after each block rather than during each transaction.
-
                 // Get and process all available Opdex markets
-                // Todo: Don't fetch and process all markets, only those that had transactions in the block being processed.
+                // Todo: Consider only updating those that had transactions in the block being processed.
                 var markets = await _mediator.Send(new RetrieveAllMarketsQuery());
 
                 foreach (var market in markets)

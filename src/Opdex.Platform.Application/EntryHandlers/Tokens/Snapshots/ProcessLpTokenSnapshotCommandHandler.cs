@@ -26,7 +26,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
 
             if (!lptTotalSupply.Equals("0"))
             {
-                lptUsd = request.ReservesUsd / lptTotalSupply.ToRoundedDecimal(request.LpToken.Decimals, request.LpToken.Decimals);
+                var supplyAsDecimal = lptTotalSupply.ToRoundedDecimal(request.LpToken.Decimals, request.LpToken.Decimals);
+
+                lptUsd = request.ReservesUsd / supplyAsDecimal;
             }
 
             var tokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(request.LpToken.Id,

@@ -15,13 +15,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<Unit> Handle(ProcessMarketSnapshotsCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ProcessMarketSnapshotsCommand request, CancellationToken cancellationToken)
         {
             // Get all daily market snapshots
             // Get all daily liquidity pool snapshots in market
             // Process market snapshot from lp snapshots
 
-            throw new System.NotImplementedException();
+            return Unit.Value;
         }
     }
 }

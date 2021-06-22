@@ -86,6 +86,15 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
             EndDate = blockTime.ToEndOf(SnapshotType);
         }
 
+        public void RefreshSnapshot(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, int srcDecimals)
+        {
+            // Refresh staking USD amounts
+            Staking.RefreshStaking(stakingTokenUsd);
+
+            // Refresh reserve USD amounts
+            Reserves.RefreshReserves(crsUsd, srcUsd, srcDecimals);
+        }
+
         public void ProcessSwapLog(SwapLog log, decimal crsUsd, decimal srcUsd, int srcDecimals, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
         {
             Volume.SetVolume(log, crsUsd, srcUsd, srcDecimals);
