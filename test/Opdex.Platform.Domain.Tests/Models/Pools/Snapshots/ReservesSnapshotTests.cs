@@ -12,26 +12,11 @@ namespace Opdex.Platform.Domain.Tests.Models.Pools.Snapshots
         [InlineData(" ")]
         [InlineData(null)]
         [InlineData("1.23")]
-        public void CreateReservesSnapshot_InvalidReserveCrs_ThrowsArgumentOutOfRangeException(string reserveCrs)
-        {
-            // Arrange
-            // Act
-            void Act() => new ReservesSnapshot(reserveCrs, "12345", 25.00m);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(reserveCrs)} must be a numeric value.");
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData(null)]
-        [InlineData("1.23")]
         public void CreateReservesSnapshot_InvalidReserveSrc_ThrowsArgumentOutOfRangeException(string reserveSrc)
         {
             // Arrange
             // Act
-            void Act() => new ReservesSnapshot("12345", reserveSrc, 25.00m);
+            void Act() => new ReservesSnapshot(12345, reserveSrc, 25.00m);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(reserveSrc)} must be a numeric value.");
@@ -44,7 +29,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Pools.Snapshots
             const decimal reserveUsd = -1.00m;
 
             // Act
-            void Act() => new ReservesSnapshot("12345", "9876", reserveUsd);
+            void Act() => new ReservesSnapshot(12345, "9876", reserveUsd);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(reserveUsd)} must be greater or equal to 0.");
@@ -54,7 +39,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Pools.Snapshots
         public void CreateReservesSnapshot_Success()
         {
             // Arrange
-            const string reserveCrs = "123";
+            const ulong reserveCrs = 123;
             const string reserveSrc = "321";
             const decimal reserveUsd = 1.23m;
 
@@ -75,7 +60,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Pools.Snapshots
             var snapshot = new ReservesSnapshot();
 
             // Assert
-            snapshot.Crs.Should().Be("0");
+            snapshot.Crs.Should().Be(0ul);
             snapshot.Src.Should().Be("0");
             snapshot.Usd.Should().Be(0.00m);
         }

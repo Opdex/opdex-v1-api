@@ -9,18 +9,13 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
     {
         public ReservesSnapshot()
         {
-            Crs = "0";
+            Crs = 0;
             Src = "0";
             Usd = 0.00m;
         }
 
-        public ReservesSnapshot(string reserveCrs, string reserveSrc, decimal reserveUsd)
+        public ReservesSnapshot(ulong reserveCrs, string reserveSrc, decimal reserveUsd)
         {
-            if (!reserveCrs.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(reserveCrs), $"{nameof(reserveCrs)} must be a numeric value.");
-            }
-
             if (!reserveSrc.IsNumeric())
             {
                 throw new ArgumentOutOfRangeException(nameof(reserveSrc), $"{nameof(reserveSrc)} must be a numeric value.");
@@ -36,13 +31,13 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
             Usd = reserveUsd;
         }
 
-        public string Crs { get; private set; }
+        public ulong Crs { get; private set; }
         public string Src { get; private set; }
         public decimal Usd { get; private set; }
 
         internal void SetReserves(ReservesLog log, decimal crsUsd, decimal srcUsd, int srcDecimals)
         {
-            Crs = log.ReserveCrs.ToString();
+            Crs = log.ReserveCrs;
             Src = log.ReserveSrc;
             Usd = CalculateReservesUsd(crsUsd, srcUsd, srcDecimals);
         }
@@ -54,7 +49,7 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
 
         private decimal CalculateReservesUsd(decimal crsUsd, decimal srcUsd, int srcDecimals)
         {
-            var reserveCrsRounded = Crs.ToRoundedDecimal(2, TokenConstants.Cirrus.Decimals);
+            var reserveCrsRounded = Crs.ToString().ToRoundedDecimal(2, TokenConstants.Cirrus.Decimals);
             var reserveSrcRounded = Src.ToRoundedDecimal(2, srcDecimals);
 
             var reserveCrsUsd = Math.Round(reserveCrsRounded * crsUsd, 2, MidpointRounding.AwayFromZero);

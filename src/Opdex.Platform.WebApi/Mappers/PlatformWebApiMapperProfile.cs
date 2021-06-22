@@ -134,7 +134,7 @@ namespace Opdex.Platform.WebApi.Mappers
 
             return new ReservesResponseModel
             {
-                Crs = reservesDto.Crs.InsertDecimal(TokenConstants.Cirrus.Decimals),
+                Crs = reservesDto.Crs.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals),
                 Src = reservesDto.Src.InsertDecimal(srcTokenDecimals),
                 Usd = reservesDto.Usd
             };
@@ -161,7 +161,7 @@ namespace Opdex.Platform.WebApi.Mappers
 
             return new VolumeResponseModel
             {
-                Crs = volumeDto.Crs.InsertDecimal(TokenConstants.Cirrus.Decimals),
+                Crs = volumeDto.Crs.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals),
                 Src = volumeDto.Src.InsertDecimal(srcTokenDecimals),
                 Usd = volumeDto.Usd
             };

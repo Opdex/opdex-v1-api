@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
             }
             else
             {
-                tokenSnapshot.UpdatePrice(ulong.Parse(request.ReserveCrs), request.ReserveSrc, request.CrsUsd, request.SrcToken.Sats);
+                tokenSnapshot.UpdatePrice(request.ReserveCrs, request.ReserveSrc, request.CrsUsd, request.SrcToken.Sats);
             }
 
             await _mediator.Send(new MakeTokenSnapshotCommand(tokenSnapshot));

@@ -9,18 +9,13 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
     {
         public VolumeSnapshot()
         {
-            Crs = "0";
+            Crs = 0;
             Src = "0";
             Usd = 0.00m;
         }
 
-        public VolumeSnapshot(string volumeCrs, string volumeSrc, decimal volumeUsd)
+        public VolumeSnapshot(ulong volumeCrs, string volumeSrc, decimal volumeUsd)
         {
-            if (!volumeCrs.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(volumeCrs), $"{nameof(volumeCrs)} must be a numeric value.");
-            }
-
             if (!volumeSrc.IsNumeric())
             {
                 throw new ArgumentOutOfRangeException(nameof(volumeSrc), $"{nameof(volumeSrc)} must be a numeric value.");
@@ -36,14 +31,13 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
             Usd = volumeUsd;
         }
 
-        public string Crs { get; private set; }
+        public ulong Crs { get; private set; }
         public string Src { get; private set; }
         public decimal Usd { get; private set; }
 
         internal void SetVolume(SwapLog log, decimal crsUsd, decimal srcUsd, int srcDecimals)
         {
-            var volumeCrs = log.AmountCrsIn + log.AmountCrsOut;
-            Crs = Crs.Add(volumeCrs.ToString());
+            Crs += log.AmountCrsIn + log.AmountCrsOut;
 
             var volumeSrc = log.AmountSrcIn.Add(log.AmountSrcOut);
             Src = Src.Add(volumeSrc);

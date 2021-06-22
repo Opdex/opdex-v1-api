@@ -75,7 +75,7 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
             Staking.RefreshStaking(stakingTokenUsd);
 
             // Refresh costs (mainly reset OHLC)
-            Cost.SetCost(ulong.Parse(Reserves.Crs), Reserves.Src, srcDecimals.DecimalsToSatoshis(), true);
+            Cost.SetCost(Reserves.Crs, Reserves.Src, srcDecimals.DecimalsToSatoshis(), true);
 
             // Refresh reserves (USD amounts)
             Reserves.RefreshReserves(crsUsd, srcUsd, srcDecimals);

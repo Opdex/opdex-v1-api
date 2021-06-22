@@ -120,7 +120,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
                                                                                                  snapshotType,
                                                                                                  blockTime,
                                                                                                  crsUsd,
-                                                                                                 reservesLog.ReserveCrs.ToString(),
+                                                                                                 reservesLog.ReserveCrs,
                                                                                                  reservesLog.ReserveSrc));
 
                             // Process Reserves and Token Pricing Snapshot

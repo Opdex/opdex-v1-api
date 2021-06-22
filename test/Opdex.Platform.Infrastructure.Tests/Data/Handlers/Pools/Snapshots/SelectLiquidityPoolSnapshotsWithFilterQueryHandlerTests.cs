@@ -49,8 +49,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools.Snapshots
                 EndDate = new DateTime(2021, 6, 21, 23, 59, 59),
                 ModifiedDate = DateTime.UtcNow,
                 Rewards = new SnapshotRewardsEntity { MarketUsd = 1.23m, ProviderUsd = 9.87m },
-                Reserves = new SnapshotReservesEntity { Crs = "123", Src = "987", Usd = 7.65m },
-                Volume = new SnapshotVolumeEntity { Crs = "876", Src = "654", Usd = 2.34m },
+                Reserves = new SnapshotReservesEntity { Crs = 123, Src = "987", Usd = 7.65m },
+                Volume = new SnapshotVolumeEntity { Crs = 876, Src = "654", Usd = 2.34m },
                 Staking = new SnapshotStakingEntity { Usd = 9.12m, Weight = "648" },
                 Cost = new SnapshotCostEntity
                 {
