@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.WebApi.Auth;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -32,6 +33,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="wallet">The wallet public key of the user</param>
         /// <returns>An access token</returns>
         [HttpPost("authorize")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> Authorize([FromQuery] string market, [FromQuery] string wallet)
         {
             // Throws NotFoundException if not found

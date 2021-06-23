@@ -43,7 +43,6 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>List of pools</returns>
         [HttpGet]
-        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(uint skip, uint take, CancellationToken cancellationToken)
         {
