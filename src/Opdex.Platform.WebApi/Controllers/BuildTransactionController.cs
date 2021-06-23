@@ -38,7 +38,7 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<IActionResult> AddLiquidity(AddLiquidityRequest request, CancellationToken cancellationToken)
         {
             var command = new CreateWalletAddLiquidityTransactionCommand(_context.Wallet, request.LiquidityPool, request.AmountCrs, request.AmountSrc,
-                                                                         request.Tolerance, request.Recipient, request.Market);
+                                                                         request.Tolerance, request.Recipient, _context.Market);
 
             var response = await _mediator.Send(command, cancellationToken);
 
@@ -50,7 +50,7 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             var command = new CreateWalletRemoveLiquidityTransactionCommand(_context.Wallet, request.LiquidityPool, request.Liquidity,
                                                                             request.AmountCrsMin, request.AmountSrcMin, request.Recipient,
-                                                                            request.Market);
+                                                                            _context.Market);
 
             var response = await _mediator.Send(command, cancellationToken);
 
@@ -62,7 +62,7 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             var command = new CreateWalletSwapTransactionCommand(_context.Wallet, request.TokenIn, request.TokenOut, request.TokenInAmount,
                                                                  request.TokenOutAmount, request.TokenInExactAmount, request.Tolerance,
-                                                                 request.Recipient, request.Market);
+                                                                 request.Recipient, _context.Market);
 
             var response = await _mediator.Send(command, cancellationToken);
 
@@ -92,7 +92,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("create-pool")]
         public async Task<IActionResult> CreatePool(CreatePoolRequest request, CancellationToken cancellationToken)
         {
-            var command = new CreateWalletCreateLiquidityPoolTransactionCommand(_context.Wallet, request.Token, request.Market);
+            var command = new CreateWalletCreateLiquidityPoolTransactionCommand(_context.Wallet, request.Token, _context.Market);
 
             var response = await _mediator.Send(command, cancellationToken);
 
