@@ -4,11 +4,9 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Vault
 {
     public class MakeSetVaultOwnerCommand : MakeWalletTransactionCommand
     {
-        public MakeSetVaultOwnerCommand(string walletName,
-                                        string walletAddress,
-                                        string walletPassword,
+        public MakeSetVaultOwnerCommand(string walletAddress,
                                         string vault,
-                                        string owner) : base(walletName, walletAddress, walletPassword)
+                                        string owner) : base(walletAddress)
         {
             Vault = vault;
             Owner = owner;

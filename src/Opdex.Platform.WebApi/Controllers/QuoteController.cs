@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
+using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Quotes;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -21,11 +22,13 @@ namespace Opdex.Platform.WebApi.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly IApplicationContext _context;
 
-        public QuoteController(IMediator mediator, IMapper mapper)
+        public QuoteController(IMediator mediator, IMapper mapper, IApplicationContext context)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <summary>
@@ -42,7 +45,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetSwapQuote(SwapQuoteRequestModel request, CancellationToken cancellationToken)
         {
-            var query = new GetLiquidityPoolSwapQuoteQuery(request.TokenIn, request.TokenOut, request.TokenInAmount, request.TokenOutAmount, request.Market);
+            var query = new GetLiquidityPoolSwapQuoteQuery(request.TokenIn, request.TokenOut, request.TokenInAmount, request.TokenOutAmount, _context.Market);
 
             var result = await _mediator.Send(query, cancellationToken);
 
@@ -60,7 +63,7 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<IActionResult> CreateAddLiquidityQuote(AddLiquidityQuoteRequestModel request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetLiquidityPoolAddLiquidityQuoteQuery(request.AmountIn, request.TokenIn,
-                request.Pool, request.Market), cancellationToken);
+                request.Pool, _context.Market), cancellationToken);
 
             return Ok(result);
         }

@@ -1,45 +1,16 @@
 using System;
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models.Blocks;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands
 {
     public class CreateBlockCommand : IRequest<bool>
     {
-        public CreateBlockCommand(ulong height, string hash, string time, string medianTime)
+        public CreateBlockCommand(BlockReceipt blockReceipt)
         {
-            var dateTime = time.FromUnixTimeSeconds();
-            var dateMedianTime = medianTime.FromUnixTimeSeconds();
-            
-            if (height < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(height));
-            }
-
-            if (!hash.HasValue())
-            {
-                throw new ArgumentNullException(nameof(hash));
-            }
-
-            if (dateTime.Equals(default))
-            {
-                throw new ArgumentOutOfRangeException(nameof(dateTime));
-            }
-            
-            if (dateMedianTime.Equals(default))
-            {
-                throw new ArgumentOutOfRangeException(nameof(dateMedianTime));
-            }
-
-            Height = height;
-            Hash = hash;
-            Time = dateTime;
-            MedianTime = dateMedianTime;
+            BlockReceipt = blockReceipt ?? throw new ArgumentNullException(nameof(blockReceipt), $"{nameof(blockReceipt)} cannot be null.");
         }
 
-        public ulong Height { get; }
-        public string Hash { get; }
-        public DateTime Time { get; }
-        public DateTime MedianTime { get; }
+        public BlockReceipt BlockReceipt { get; }
     }
 }

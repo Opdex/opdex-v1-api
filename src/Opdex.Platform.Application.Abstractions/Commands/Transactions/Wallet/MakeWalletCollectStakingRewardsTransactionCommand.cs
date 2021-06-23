@@ -5,8 +5,8 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletCollectStakingRewardsTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletCollectStakingRewardsTransactionCommand(string walletName, string walletAddress, string walletPassword, 
-            string liquidityPool, bool liquidate) : base(walletName, walletAddress, walletPassword)
+        public MakeWalletCollectStakingRewardsTransactionCommand(string walletAddress,
+            string liquidityPool, bool liquidate) : base(walletAddress)
         {
             if (!liquidityPool.HasValue())
             {
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             LiquidityPool = liquidityPool;
             Liquidate = liquidate;
         }
-        
+
         public string LiquidityPool { get; }
         public bool Liquidate { get; }
     }

@@ -1,116 +1,83 @@
 using System;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
+using Opdex.Platform.Domain.Models.Pools.Snapshots;
 
 namespace Opdex.Platform.Domain.Models.Markets
 {
     public class MarketSnapshot
     {
-        public MarketSnapshot(long marketId, long transactionCount, decimal liquidity, decimal volume, string weight,
-            decimal weightUsd, decimal providerRewards, decimal stakerRewards, SnapshotType snapshotType, DateTime startDate, DateTime endDate)
+        public MarketSnapshot(long marketId, SnapshotType snapshotType, DateTime dateTime)
         {
             if (marketId < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(marketId), "Market id must be greater than 0.");
             }
 
-            if (transactionCount < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(transactionCount), "Transaction count must be greater than 0.");
-            }
-
             MarketId = marketId;
-            TransactionCount = transactionCount;
-            Liquidity = liquidity;
-            Volume = volume;
-            Weight = weight;
-            WeightUsd = weightUsd;
-            ProviderRewards = providerRewards;
-            StakerRewards = stakerRewards;
+            Liquidity = 0.00m;
+            Volume = 0.00m;
+            Staking = new StakingSnapshot();
+            Rewards = new RewardsSnapshot();
             SnapshotType = snapshotType;
-            StartDate = startDate;
-            EndDate = endDate;
+            StartDate = dateTime.ToStartOf(snapshotType);
+            EndDate = dateTime.ToEndOf(snapshotType);
         }
 
-        public MarketSnapshot(long id, long marketId, long transactionCount, decimal liquidity, decimal volume, string weight,
-            decimal weightUsd, decimal providerRewards, decimal stakerRewards, SnapshotType snapshotType, DateTime startDate, DateTime endDate)
+        public MarketSnapshot(long id, long marketId, decimal liquidity, decimal volume, StakingSnapshot staking, RewardsSnapshot rewards,
+                              SnapshotType snapshotType, DateTime startDate, DateTime endDate)
         {
             Id = id;
             MarketId = marketId;
-            TransactionCount = transactionCount;
             Liquidity = liquidity;
             Volume = volume;
-            Weight = weight;
-            WeightUsd = weightUsd;
-            ProviderRewards = providerRewards;
-            StakerRewards = stakerRewards;
+            Staking = staking;
+            Rewards = rewards;
             SnapshotType = snapshotType;
             StartDate = startDate;
             EndDate = endDate;
         }
 
-        public long Id { get; }
+        public long Id { get; private set; }
         public long MarketId { get; }
-        public long TransactionCount { get; }
         public decimal Liquidity { get; private set; }
         public decimal Volume { get; private set; }
-        public string Weight { get; private set; }
-        public decimal WeightUsd { get; private set; }
-        public decimal ProviderRewards { get; private set; }
-        public decimal StakerRewards { get; private set; }
+        public StakingSnapshot Staking { get; private set; }
+        public RewardsSnapshot Rewards { get; private set; }
         public SnapshotType SnapshotType { get; }
-        public DateTime StartDate { get; }
-        public DateTime EndDate { get; }
+        public DateTime StartDate { get; private set; }
+        public DateTime EndDate { get; private set; }
 
-        public void ProcessSwapLog(SwapLog log, TokenSnapshot crsSnapshot, Token crs)
+        public void ResetStaleSnapshot(DateTime blockTime)
         {
-            var volumeCrs = (log.AmountCrsIn + log.AmountCrsOut).ToString();
-
-            var crsVolumeDecimal = volumeCrs.ToRoundedDecimal(2, crs.Decimals);
-            Volume += Math.Round(crsVolumeDecimal * crsSnapshot.Price, 2);
-
-            var rewards = Math.Round(Volume * .003m / 6, 2);
-
-            StakerRewards = rewards; // 1/6
-            ProviderRewards = Math.Round(rewards * 5, 2); // 5/6
+            Id = 0;
+            StartDate = blockTime.ToStartOf(SnapshotType);
+            EndDate = blockTime.ToEndOf(SnapshotType);
+            ResetCurrentSnapshot();
         }
 
-        // public void ProcessReservesLog(ReservesLog log, TokenSnapshot crsSnapshot, Token crs)
-        // {
-        //     var reserveCrsRounded = log.ReserveCrs.ToString().ToRoundedDecimal(2, crs.Decimals);
-        //     
-        //     // * 2, for reserve Crs USD amount and reserve Src, they are equal
-        //     ReserveUsd = Math.Round(reserveCrsRounded * crsSnapshot.Price * 2, 2);
-        // }
+        public void ResetCurrentSnapshot()
+        {
+            Liquidity = 0;
+            Volume = 0;
+            Staking = new StakingSnapshot();
+            Rewards = new RewardsSnapshot();
+        }
 
-        // public void ProcessMintLog()
-        // {
-        //     
-        // }
-        //
-        // public void ProcessBurnLog()
-        // {
-        //     
-        // }
+        public void Update(LiquidityPoolSnapshot lpSnapshot)
+        {
+            Liquidity += lpSnapshot.Reserves.Usd;
+            Volume += lpSnapshot.Volume.Usd;
 
-        // public void ProcessStakingLog<T>(T log, TokenSnapshot odxSnapshot, Token odx) 
-        //     where T : TransactionLog
-        // {
-        //     var weight = log switch
-        //     {
-        //         StartStakingLog startStakingLog => startStakingLog.TotalStaked ?? "0",
-        //         StopStakingLog stopStakingLog => stopStakingLog.TotalStaked ?? "0",
-        //         _ => "0"
-        //     };
-        //     
-        //     const int precision = 2;
-        //     var odxDecimal = weight.ToRoundedDecimal(precision, odx.Decimals);
-        //     var odxWeightUsd = Math.Round(odxDecimal * odxSnapshot.Price, precision);
-        //
-        //     Weight = Weight.Add(weight);
-        //     WeightUsd += odxWeightUsd;
-        // }
+            var stakingUsd = Staking.Usd + lpSnapshot.Staking.Usd;
+            var stakingWeight = Staking.Weight.ToBigInteger() + lpSnapshot.Staking.Weight.ToBigInteger();
+
+            Staking = new StakingSnapshot(stakingWeight.ToString(), stakingUsd);
+
+            var rewardsMarketUsd = Rewards.MarketUsd + lpSnapshot.Rewards.MarketUsd;
+            var rewardsProviderUsd = Rewards.ProviderUsd + lpSnapshot.Rewards.ProviderUsd;
+
+            Rewards = new RewardsSnapshot(rewardsProviderUsd, rewardsMarketUsd);
+        }
     }
 }

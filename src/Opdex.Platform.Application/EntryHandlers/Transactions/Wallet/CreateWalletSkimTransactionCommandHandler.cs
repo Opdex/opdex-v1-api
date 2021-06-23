@@ -10,7 +10,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
     public class CreateWalletSkimTransactionCommandHandler : IRequestHandler<CreateWalletSkimTransactionCommand, string>
     {
         private readonly IMediator _mediator;
-        
+
         public CreateWalletSkimTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -18,8 +18,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 
         public Task<string> Handle(CreateWalletSkimTransactionCommand request, CancellationToken cancellationToken)
         {
-            var command = new MakeWalletSkimTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                request.LiquidityPool, request.Recipient);
+            var command = new MakeWalletSkimTransactionCommand(request.WalletAddress, request.LiquidityPool, request.Recipient);
 
             return _mediator.Send(command, cancellationToken);
         }

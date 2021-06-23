@@ -15,7 +15,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
         private readonly IMediator _mediator;
         private const string MethodName = "Distribute";
         private const string CrsToSend = "0";
-        
+
         public MakeWalletDistributeTokensTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -23,15 +23,9 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 
         public Task<string> Handle(MakeWalletDistributeTokensTransactionCommand request, CancellationToken cancellationToken)
         {
-            var parameters = new[]
-            {
-                // Doesn't matter, after year 1
-               "000000".ToSmartContractParameter(SmartContractParameterType.ByteArray)
-            };
-                
-            var callDto = new SmartContractCallRequestDto(request.Token, request.WalletName, request.WalletAddress, 
-                request.WalletPassword, CrsToSend, MethodName, parameters);
-            
+            var callDto = new SmartContractCallRequestDto(request.Token, request.WalletName, request.WalletAddress,
+                                                          request.WalletPassword, CrsToSend, MethodName);
+
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
         }
     }

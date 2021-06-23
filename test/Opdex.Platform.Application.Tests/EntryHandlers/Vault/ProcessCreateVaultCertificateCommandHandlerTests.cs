@@ -25,23 +25,18 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vault
         public async Task Handle_MediatorMakeCreateVaultCertificateCommand_Send()
         {
             // Arrange
-            var walletName = "opdex";
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var walletPassword = "5up3rS3cREt";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
             var amount = "10000000000";
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _handler.Handle(new ProcessCreateVaultCertificateCommand(walletName, walletAddress, walletPassword,
-                                                                           vault, holder, amount), cancellationToken);
+            await _handler.Handle(new ProcessCreateVaultCertificateCommand(walletAddress, vault, holder, amount), cancellationToken);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
-                It.Is<MakeCreateVaultCertificateCommand>(command => command.WalletName == walletName
-                                                                 && command.WalletAddress == walletAddress
-                                                                 && command.WalletPassword == walletPassword
+                It.Is<MakeCreateVaultCertificateCommand>(command => command.WalletAddress == walletAddress
                                                                  && command.Vault == vault
                                                                  && command.Holder == holder
                                                                  && command.Amount == amount),
@@ -55,9 +50,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vault
             // Arrange
             var transactionHash = "047aacf5e43cc8f5ae50f95d986db3c9e41969075d1ccc241184f83fe5962faa";
 
-            var walletName = "opdex";
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var walletPassword = "5up3rS3cREt";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
             var amount = "10000000000";
@@ -66,9 +59,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vault
                          .ReturnsAsync(transactionHash);
 
             // Act
-            var response = await _handler.Handle(new ProcessCreateVaultCertificateCommand(walletName, walletAddress,
-                                                                                          walletPassword, vault, holder,
-                                                                                          amount), default);
+            var response = await _handler.Handle(new ProcessCreateVaultCertificateCommand(walletAddress, vault, holder, amount), default);
 
             // Assert
             response.Should().Be(transactionHash);

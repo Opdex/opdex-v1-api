@@ -6,12 +6,10 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Vault
 {
     public class MakeCreateVaultCertificateCommand : MakeWalletTransactionCommand
     {
-        public MakeCreateVaultCertificateCommand(string walletName,
-                                                 string walletAddress,
-                                                 string walletPassword,
+        public MakeCreateVaultCertificateCommand(string walletAddress,
                                                  string vault,
                                                  string holder,
-                                                 string amount) : base(walletName, walletAddress, walletPassword)
+                                                 string amount) : base(walletAddress)
         {
             if (!vault.HasValue()) throw new ArgumentNullException(nameof(vault), "Vault address must be set.");
             if (!holder.HasValue()) throw new ArgumentNullException(nameof(holder), "Holder address must be set.");

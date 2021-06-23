@@ -1,12 +1,9 @@
 using MediatR;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Platform.Domain.Models.Blocks;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore
 {
-    public class CallCirrusGetCurrentBlockQuery : IRequest<BlockReceiptDto>
+    public class CallCirrusGetCurrentBlockQuery : IRequest<BlockReceipt>
     {
-        public CallCirrusGetCurrentBlockQuery()
-        {
-        }
     }
 }

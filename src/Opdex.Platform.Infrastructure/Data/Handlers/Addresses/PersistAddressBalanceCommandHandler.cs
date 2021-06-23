@@ -16,7 +16,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
             $@"INSERT INTO address_balance (
                 {nameof(AddressBalanceEntity.Id)},
                 {nameof(AddressBalanceEntity.TokenId)},
-                {nameof(AddressBalanceEntity.LiquidityPoolId)},
                 {nameof(AddressBalanceEntity.Owner)},
                 {nameof(AddressBalanceEntity.Balance)},
                 {nameof(AddressBalanceEntity.CreatedBlock)},
@@ -24,14 +23,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
               ) VALUES (
                 @{nameof(AddressBalanceEntity.Id)},
                 @{nameof(AddressBalanceEntity.TokenId)},
-                @{nameof(AddressBalanceEntity.LiquidityPoolId)},
                 @{nameof(AddressBalanceEntity.Owner)},
                 @{nameof(AddressBalanceEntity.Balance)},
                 @{nameof(AddressBalanceEntity.CreatedBlock)},
                 @{nameof(AddressBalanceEntity.ModifiedBlock)}
               );
               SELECT LAST_INSERT_ID()";
-        
+
         private static readonly string UpdateSqlCommand =
             $@"UPDATE address_balance 
                 SET 
@@ -42,7 +40,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        
+
         public PersistAddressBalanceCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistAddressBalanceCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -59,17 +57,17 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 var isUpdate = entity.Id >= 1;
 
                 var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-                
+
                 var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-                
+
                 var result = await _context.ExecuteScalarAsync<long>(command);
-                
+
                 return isUpdate ? entity.Id : result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure persisting address balance for owner: {request.AddressBalance.Owner}");
-                
+
                 return 0;
             }
         }

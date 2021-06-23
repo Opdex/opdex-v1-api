@@ -18,14 +18,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
             @$"SELECT 
                 {nameof(AddressBalanceEntity.Id)},
                 {nameof(AddressBalanceEntity.TokenId)},
-                {nameof(AddressBalanceEntity.LiquidityPoolId)},
                 {nameof(AddressBalanceEntity.Owner)},
                 {nameof(AddressBalanceEntity.Balance)},
                 {nameof(AddressBalanceEntity.CreatedBlock)},
                 {nameof(AddressBalanceEntity.ModifiedBlock)}
             FROM address_balance
-            WHERE {nameof(AddressBalanceEntity.Owner)} = @{nameof(SqlParams.Owner)} AND 
-                {nameof(AddressBalanceEntity.LiquidityPoolId)} = 0 AND
+            WHERE {nameof(AddressBalanceEntity.Owner)} = @{nameof(SqlParams.Owner)} AND
                 {nameof(AddressBalanceEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;";
 

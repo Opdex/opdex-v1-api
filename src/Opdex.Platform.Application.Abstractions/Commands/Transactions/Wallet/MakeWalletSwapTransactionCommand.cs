@@ -5,25 +5,25 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletSwapTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletSwapTransactionCommand(string walletName, string walletAddress, string walletPassword, string tokenIn, string tokenOut, 
+        public MakeWalletSwapTransactionCommand(string walletAddress, string tokenIn, string tokenOut,
             string tokenInAmount, string tokenOutAmount, bool tokenInExactAmount, decimal tolerance, string recipient, string router)
-            : base(walletName, walletAddress, walletPassword)
+            : base(walletAddress)
         {
             if (!tokenIn.HasValue())
             {
                 throw new ArgumentNullException(nameof(tokenIn));
             }
-            
+
             if (!tokenOut.HasValue())
             {
                 throw new ArgumentNullException(nameof(tokenOut));
             }
-            
+
             if (!tokenInAmount.IsNumeric())
             {
                 throw new ArgumentException(nameof(tokenInAmount));
             }
-            
+
             if (!tokenOutAmount.IsNumeric())
             {
                 throw new ArgumentException(nameof(tokenInAmount));
@@ -33,17 +33,17 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             {
                 throw new ArgumentOutOfRangeException(nameof(tolerance));
             }
-            
+
             if (!recipient.HasValue())
             {
                 throw new ArgumentNullException(nameof(recipient));
             }
-            
+
             if (!router.HasValue())
             {
                 throw new ArgumentNullException(nameof(router));
             }
-            
+
             TokenIn = tokenIn;
             TokenOut = tokenOut;
             TokenInAmount = tokenInAmount;
@@ -53,7 +53,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             Recipient = recipient;
             Router = router;
         }
-        
+
         public string TokenIn { get; }
         public string TokenOut { get; }
         public string TokenInAmount { get; }

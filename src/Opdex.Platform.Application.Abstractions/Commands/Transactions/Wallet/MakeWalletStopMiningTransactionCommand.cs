@@ -5,8 +5,8 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletStopMiningTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletStopMiningTransactionCommand(string walletName, string walletAddress, string walletPassword, 
-            string miningPool, string amount) : base(walletName, walletAddress, walletPassword)
+        public MakeWalletStopMiningTransactionCommand(string walletAddress,
+            string miningPool, string amount) : base(walletAddress)
         {
             if (!miningPool.HasValue())
             {
@@ -17,11 +17,11 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             {
                 throw new ArgumentOutOfRangeException(nameof(amount));
             }
-            
+
             MiningPool = miningPool;
             Amount = amount;
         }
-        
+
         public string MiningPool { get; }
         public string Amount { get; }
     }

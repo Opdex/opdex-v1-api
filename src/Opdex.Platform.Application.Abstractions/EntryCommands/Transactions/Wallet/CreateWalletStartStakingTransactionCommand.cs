@@ -5,14 +5,13 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 {
     public class CreateWalletStartStakingTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletStartStakingTransactionCommand(string walletName, string walletAddress, string walletPassword, 
-            string amount, string liquidityPool) : base(walletName, walletAddress, walletPassword)
+        public CreateWalletStartStakingTransactionCommand(string walletAddress, string amount, string liquidityPool) : base(walletAddress)
         {
             if (!amount.IsValidDecimalNumber())
             {
                 throw new ArgumentNullException(nameof(amount));
             }
-            
+
             if (!liquidityPool.HasValue())
             {
                 throw new ArgumentNullException(nameof(liquidityPool));
@@ -21,7 +20,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             Amount = amount;
             LiquidityPool = liquidityPool;
         }
-        
+
         public string Amount { get; }
         public string LiquidityPool { get; }
     }

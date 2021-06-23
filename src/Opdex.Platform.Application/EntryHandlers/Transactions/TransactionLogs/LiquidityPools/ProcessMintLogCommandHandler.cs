@@ -3,7 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Queries;
+using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools
@@ -26,31 +30,22 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
-                // Update user liquidity pool token balances
-                
-                // Todo: Create IsLpt flag on the token table
-                // All liquidity pools are inserted as tokens with the flag set to true
-                // Symbol = LPT
-                // Name = xBTC-CRS LPT
 
-                // Todo: This is the amount they added to the pool += 
-                // var balance = currentBalance + request.Log.AmountLpt;
-                
-                // Todo: how to handle their "position" 
-                // Each log, logs how much SRC/CRS was put in the pool, after - is untracked
-                // Consider not tracking their position at all and only tracking their LPT balance
-                // Users would only see positions by reviewing transaction history
-                // UI would show "current balance - 50 LPT" - "estimated value - $xx.xx
-                
-                // Update AddressBalance record
-                
-                return true;
+                var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var lpToken = await _mediator.Send(new RetrieveTokenByIdQuery(pool.LpTokenId, findOrThrow: true));
+                var summary = await _mediator.Send(new RetrieveCirrusLocalCallSmartContractQuery(pool.Address, "get_TotalSupply"));
+                var totalSupply = summary.DeserializeValue<string>();
+
+                lpToken.UpdateTotalSupply(totalSupply, request.BlockHeight);
+
+                var response = await _mediator.Send(new MakeTokenCommand(lpToken.Address, lpToken));
+
+                return response > 1;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(MintLog)}");
-               
+
                 return false;
             }
         }

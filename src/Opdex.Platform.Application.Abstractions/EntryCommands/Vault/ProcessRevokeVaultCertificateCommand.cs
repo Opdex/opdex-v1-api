@@ -6,11 +6,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vault
 {
     public class ProcessRevokeVaultCertificateCommand : CreateWalletTransactionCommand
     {
-        public ProcessRevokeVaultCertificateCommand(string walletName,
-                                                    string walletAddress,
-                                                    string walletPassword,
+        public ProcessRevokeVaultCertificateCommand(string walletAddress,
                                                     string vault,
-                                                    string holder) : base(walletName, walletAddress, walletPassword)
+                                                    string holder) : base(walletAddress)
         {
             if (!vault.HasValue()) throw new ArgumentNullException(nameof(vault), "Vault address must be set.");
             if (!holder.HasValue()) throw new ArgumentNullException(nameof(holder), "Holder address must be set.");

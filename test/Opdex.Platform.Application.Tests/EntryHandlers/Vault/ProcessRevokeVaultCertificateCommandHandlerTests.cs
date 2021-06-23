@@ -25,22 +25,17 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vault
         public async Task Handle_MediatorMakeRevokeVaultCertificateCommand_Send()
         {
             // Arrange
-            var walletName = "opdex";
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var walletPassword = "5up3rS3cREt";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _handler.Handle(new ProcessRevokeVaultCertificateCommand(walletName, walletAddress, walletPassword,
-                                                                           vault, holder), cancellationToken);
+            await _handler.Handle(new ProcessRevokeVaultCertificateCommand(walletAddress, vault, holder), cancellationToken);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
-                It.Is<MakeRevokeVaultCertificateCommand>(command => command.WalletName == walletName
-                                                                 && command.WalletAddress == walletAddress
-                                                                 && command.WalletPassword == walletPassword
+                It.Is<MakeRevokeVaultCertificateCommand>(command => command.WalletAddress == walletAddress
                                                                  && command.Vault == vault
                                                                  && command.Holder == holder),
                 cancellationToken
@@ -53,9 +48,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vault
             // Arrange
             var transactionHash = "047aacf5e43cc8f5ae50f95d986db3c9e41969075d1ccc241184f83fe5962faa";
 
-            var walletName = "opdex";
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var walletPassword = "5up3rS3cREt";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
 
@@ -63,8 +56,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vault
                          .ReturnsAsync(transactionHash);
 
             // Act
-            var response = await _handler.Handle(new ProcessRevokeVaultCertificateCommand(walletName, walletAddress,
-                                                                                          walletPassword, vault, holder), default);
+            var response = await _handler.Handle(new ProcessRevokeVaultCertificateCommand(walletAddress, vault, holder), default);
 
             // Assert
             response.Should().Be(transactionHash);

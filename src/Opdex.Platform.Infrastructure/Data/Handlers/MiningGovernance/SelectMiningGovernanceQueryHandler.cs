@@ -10,7 +10,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernance;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
 {
-    public class SelectMiningGovernanceQueryHandler : IRequestHandler<SelectMiningGovernanceQuery, Domain.MiningGovernance>
+    public class SelectMiningGovernanceQueryHandler : IRequestHandler<SelectMiningGovernanceQuery, Domain.Models.MiningGovernance>
     {
         private static readonly string SqlQuery = 
             @$"SELECT 
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
-        public async Task<Domain.MiningGovernance> Handle(SelectMiningGovernanceQuery request, CancellationToken cancellationToken)
+        public async Task<Domain.Models.MiningGovernance> Handle(SelectMiningGovernanceQuery request, CancellationToken cancellationToken)
         {
             var query = DatabaseQuery.Create(SqlQuery, cancellationToken);
             
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
                 throw new NotFoundException($"{nameof(MiningGovernance)} not found.");
             }
 
-            return result == null ? null : _mapper.Map<Domain.MiningGovernance>(result);
+            return result == null ? null : _mapper.Map<Domain.Models.MiningGovernance>(result);
         }
 
         private sealed class SqlParams

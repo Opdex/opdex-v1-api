@@ -16,6 +16,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Vault;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.ODX;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
@@ -59,8 +60,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     var blockReceiptDto = await _mediator.Send(blockQuery, CancellationToken.None);
 
                     // Make block
-                    var blockTime = blockReceiptDto.Time.FromUnixTimeSeconds();
-                    var blockMedianTime = blockReceiptDto.MedianTime.FromUnixTimeSeconds();
+                    var blockTime = blockReceiptDto.Time;
+                    var blockMedianTime = blockReceiptDto.MedianTime;
                     var blockCommand = new MakeBlockCommand(blockReceiptDto.Height, blockReceiptDto.Hash, blockTime, blockMedianTime);
                     var blockCreated = await _mediator.Send(blockCommand, CancellationToken.None);
                 }
@@ -118,7 +119,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failure processing ODX deployment.");
+                _logger.LogError(ex, "Failure processing ODX deployment.");
             }
 
             return Unit.Value;

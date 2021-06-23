@@ -6,11 +6,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vault
 {
     public class ProcessSetVaultOwnerCommand : CreateWalletTransactionCommand
     {
-        public ProcessSetVaultOwnerCommand(string walletName,
-                                           string walletAddress,
-                                           string walletPassword,
+        public ProcessSetVaultOwnerCommand(string walletAddress,
                                            string vault,
-                                           string owner) : base(walletName, walletAddress, walletPassword)
+                                           string owner) : base(walletAddress)
         {
             if (!vault.HasValue()) throw new ArgumentNullException(nameof(vault), "Vault address must be set.");
             if (!owner.HasValue()) throw new ArgumentNullException(nameof(owner), "Owner address must be set.");

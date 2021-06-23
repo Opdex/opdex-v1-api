@@ -1,11 +1,12 @@
 using System;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models.Blocks;
 
 namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class Token : BlockAudit
     {
-        public Token(string address, string name, string symbol, int decimals, ulong sats, string totalSupply, ulong createdBlock)
+        public Token(string address, bool isLpt, string name, string symbol, int decimals, ulong sats, string totalSupply, ulong createdBlock)
             : base(createdBlock)
         {
             if (!address.HasValue())
@@ -39,6 +40,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
             }
 
             Address = address;
+            IsLpt = isLpt;
             Name = name;
             Symbol = symbol;
             Decimals = decimals;
@@ -46,11 +48,12 @@ namespace Opdex.Platform.Domain.Models.Tokens
             TotalSupply = totalSupply;
         }
 
-        public Token(long id, string address, string name, string symbol, int decimals, ulong sats, string totalSupply, ulong createdBlock, ulong modifiedBlock)
+        public Token(long id, string address, bool isLpt, string name, string symbol, int decimals, ulong sats, string totalSupply, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
+            IsLpt = isLpt;
             Name = name;
             Symbol = symbol;
             Decimals = decimals;
@@ -60,10 +63,22 @@ namespace Opdex.Platform.Domain.Models.Tokens
 
         public long Id { get; }
         public string Address { get; }
+        public bool IsLpt { get; }
         public string Name { get; }
         public string Symbol { get; }
         public int Decimals { get; }
         public ulong Sats { get; }
-        public string TotalSupply { get; }
+        public string TotalSupply { get; private set; }
+
+        public void UpdateTotalSupply(string value, ulong blockHeight)
+        {
+            if (!value.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException("Total supply must be a numeric value");
+            }
+
+            TotalSupply = value;
+            SetModifiedBlock(blockHeight);
+        }
     }
 }

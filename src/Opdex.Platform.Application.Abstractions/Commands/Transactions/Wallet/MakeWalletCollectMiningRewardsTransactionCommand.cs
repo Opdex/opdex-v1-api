@@ -5,17 +5,17 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletCollectMiningRewardsTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletCollectMiningRewardsTransactionCommand(string walletName, string walletAddress, string walletPassword, 
-            string miningPool) : base(walletName, walletAddress, walletPassword)
+        public MakeWalletCollectMiningRewardsTransactionCommand(string walletAddress,
+            string miningPool) : base(walletAddress)
         {
             if (!miningPool.HasValue())
             {
                 throw new ArgumentNullException(nameof(miningPool));
             }
-            
+
             MiningPool = miningPool;
         }
-        
+
         public string MiningPool { get; }
     }
 }

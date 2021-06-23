@@ -7,7 +7,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 {
-    public class CreateWalletCreateLiquidityPoolTransactionCommandHandler 
+    public class CreateWalletCreateLiquidityPoolTransactionCommandHandler
         : IRequestHandler<CreateWalletCreateLiquidityPoolTransactionCommand, string>
     {
         private readonly IMediator _mediator;
@@ -17,12 +17,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<string> Handle(CreateWalletCreateLiquidityPoolTransactionCommand request,
-            CancellationToken cancellationToken)
+        public Task<string> Handle(CreateWalletCreateLiquidityPoolTransactionCommand request, CancellationToken cancellationToken)
         {
-            var command = new MakeWalletCreateLiquidityPoolTransactionCommand(request.WalletName, request.WalletAddress, 
-                request.WalletPassword, request.Token, request.Market);
-            
+            var command = new MakeWalletCreateLiquidityPoolTransactionCommand(request.WalletAddress, request.Token, request.Market);
+
             return _mediator.Send(command, cancellationToken);
         }
     }

@@ -1,10 +1,10 @@
 using MediatR;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Platform.Domain.Models.Blocks;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Blocks
 {
-    public class GetBestBlockQuery : IRequest<BlockReceiptDto>
+    public class GetBestBlockQuery : IRequest<BlockReceipt>
     {
-        
+
     }
 }

@@ -63,12 +63,13 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             // Arrange
             var isDevelopEnv = true;
             _hostingEnvironment.Setup(callTo => callTo.EnvironmentName).Returns("Development");
+            var token = new CancellationTokenSource().Token;
 
             // Act
-            await _controller.ProcessLatestBlocks(new CancellationTokenSource().Token);
+            await _controller.ProcessLatestBlocks(token);
 
             // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<ProcessLatestBlocksCommand>(command => command.IsDevelopEnv == isDevelopEnv), CancellationToken.None), Times.Once);
+            _mediator.Verify(callTo => callTo.Send(It.Is<ProcessLatestBlocksCommand>(command => command.IsDevelopEnv == isDevelopEnv), token), Times.Once);
         }
 
         [Fact]

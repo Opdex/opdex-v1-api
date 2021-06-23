@@ -7,5 +7,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models
         public short SnapshotTypeId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,6 +32,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
+using Opdex.Platform.WebApi.Models;
 
 namespace Opdex.Platform.WebApi
 {
@@ -62,7 +62,26 @@ namespace Opdex.Platform.WebApi
                 options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
                 options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
                 options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+                options.IncludeExceptionDetails = (context, ex) =>
+                {
+                    var environment = context.RequestServices.GetRequiredService<IHostEnvironment>();
+                    return environment.IsDevelopment();
+                };
             });
+
+            services
+                .AddControllers()
+                .AddProblemDetailsConventions()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.Converters =
+                        new List<JsonConverter>
+                        {
+                            new StringEnumConverter(),
+                            new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
+                        };
+                });
 
             services.AddProblemDetailTelemetryInitializer();
 
@@ -124,19 +143,7 @@ namespace Opdex.Platform.WebApi
             services.AddPlatformApplicationServices();
             services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(), cmcConfig.Get<CoinMarketCapConfiguration>());
 
-            services
-                .AddControllers(o => o.Conventions.Add(new ActionHidingConvention()))
-                .AddProblemDetailsConventions()
-                .AddNewtonsoftJson(options =>
-                {
-                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    options.SerializerSettings.Converters =
-                        new List<JsonConverter>
-                        {
-                            new StringEnumConverter(),
-                            new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK" }
-                        };
-                });
+            services.AddScoped<IApplicationContext, ApplicationContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -150,7 +157,6 @@ namespace Opdex.Platform.WebApi
 
             app.UseProblemDetails();
 
-            // Todo: Set correctly for ENV's outside local dev
             app.UseCors(options => options
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
@@ -158,7 +164,10 @@ namespace Opdex.Platform.WebApi
 
             app.UseSerilogRequestLogging();
 
-            // app.UseHttpsRedirection();
+            if (env.IsProduction())
+            {
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
 
@@ -172,22 +181,6 @@ namespace Opdex.Platform.WebApi
             }
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-        }
-
-        /// <summary>
-        /// Hide Stratis related endpoints in Swagger shown due to using Nuget packages
-        /// in WebApi project for serialization.
-        /// </summary>
-        public class ActionHidingConvention : IActionModelConvention
-        {
-            public void Apply(ActionModel action)
-            {
-                // Replace with any logic you want
-                if (!action.Controller.DisplayName.Contains("Opdex"))
-                {
-                    action.ApiExplorer.IsVisible = false;
-                }
-            }
         }
 
         /// <summary>

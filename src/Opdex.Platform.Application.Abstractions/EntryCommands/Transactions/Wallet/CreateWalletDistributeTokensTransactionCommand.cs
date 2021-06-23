@@ -5,8 +5,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 {
     public class CreateWalletDistributeTokensTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletDistributeTokensTransactionCommand(string walletName, string walletAddress, string walletPassword, string token)
-            : base(walletName, walletAddress, walletPassword)
+        public CreateWalletDistributeTokensTransactionCommand(string walletAddress, string token) : base(walletAddress)
         {
             if (!token.HasValue())
             {
@@ -15,7 +14,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 
             Token = token;
         }
-        
+
         public string Token { get; }
     }
 }

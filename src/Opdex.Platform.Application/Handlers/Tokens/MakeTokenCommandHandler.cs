@@ -16,11 +16,13 @@ namespace Opdex.Platform.Application.Handlers.Tokens
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        
+
         public async Task<long> Handle(MakeTokenCommand request, CancellationToken cancellationToken)
         {
-            var token = await _mediator.Send(new CallCirrusGetSrcTokenDetailsByAddressQuery(request.Address), cancellationToken);
-            
+            var tokenSummaryQuery = new CallCirrusGetSrcTokenDetailsByAddressQuery(request.Address);
+
+            var token = request.Token ?? await _mediator.Send(tokenSummaryQuery, cancellationToken);
+
             return await _mediator.Send(new PersistTokenCommand(token), cancellationToken);
         }
     }

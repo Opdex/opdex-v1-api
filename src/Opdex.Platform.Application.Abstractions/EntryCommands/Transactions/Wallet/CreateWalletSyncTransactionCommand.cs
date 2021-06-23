@@ -5,8 +5,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 {
     public class CreateWalletSyncTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletSyncTransactionCommand(string walletName, string walletAddress, string walletPassword, string liquidityPool)
-            : base(walletName, walletAddress, walletPassword)
+        public CreateWalletSyncTransactionCommand(string walletAddress, string liquidityPool) : base(walletAddress)
         {
             if (!liquidityPool.HasValue())
             {
@@ -15,7 +14,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 
             LiquidityPool = liquidityPool;
         }
-        
+
         public string LiquidityPool { get; }
     }
 }
