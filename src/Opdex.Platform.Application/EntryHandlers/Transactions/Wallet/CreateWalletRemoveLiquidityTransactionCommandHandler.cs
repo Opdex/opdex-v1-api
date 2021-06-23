@@ -34,8 +34,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 
             var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(pool.MarketId, findOrThrow: true), cancellationToken);
 
-            var command = new MakeWalletRemoveLiquidityTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                srcToken.Address, liquidity, amountCrsMin, amountSrcMin, request.Recipient, router.Address);
+            var command = new MakeWalletRemoveLiquidityTransactionCommand(request.WalletAddress, srcToken.Address, liquidity, amountCrsMin,
+                                                                          amountSrcMin, request.Recipient, router.Address);
 
             return await _mediator.Send(command, cancellationToken);
         }

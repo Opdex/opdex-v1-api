@@ -1,13 +1,14 @@
+using MediatR;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.WebApi.Auth;
+using System.Threading.Tasks;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -16,12 +17,14 @@ namespace Opdex.Platform.WebApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IOptions<AuthConfiguration> _authConfiguration;
+        private readonly IMediator _mediator;
 
-        public AuthController(IOptions<AuthConfiguration> authConfiguration)
+        public AuthController(IOptions<AuthConfiguration> authConfiguration, IMediator mediator)
         {
             _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        
+
         /// <summary>
         /// Authorizes access to a specific market
         /// </summary>
@@ -29,8 +32,13 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="wallet">The wallet public key of the user</param>
         /// <returns>An access token</returns>
         [HttpPost("authorize")]
-        public IActionResult Authorize([FromQuery] string market, [FromQuery] string wallet)
+        public async Task<IActionResult> Authorize([FromQuery] string market, [FromQuery] string wallet)
         {
+            // Throws NotFoundException if not found
+            var marketDto = await _mediator.Send(new GetMarketByAddressQuery(market));
+
+            // Todo: If private market; roles && enforce wallet != null && wallet has permission
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.Value.Opdex.SigningKey));
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor

@@ -5,9 +5,8 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletAddLiquidityTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletAddLiquidityTransactionCommand(string walletName, string walletAddress, string walletPassword, string token, 
-            string amountCrs, string amountSrc, string amountCrsMin, string amountSrcMin, string recipient, string router) 
-            : base(walletName, walletAddress, walletPassword)
+        public MakeWalletAddLiquidityTransactionCommand(string walletAddress, string token, string amountCrs, string amountSrc, string amountCrsMin,
+                                                        string amountSrcMin, string recipient, string router) : base(walletAddress)
         {
             if (!token.HasValue())
             {
@@ -19,17 +18,17 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             {
                 throw new ArgumentException(nameof(amountCrs));
             }
-            
+
             if (!amountSrc.IsNumeric())
             {
                 throw new ArgumentException(nameof(amountSrc));
             }
-            
+
             if (!amountCrsMin.IsNumeric())
             {
                 throw new ArgumentException(nameof(amountCrsMin));
             }
-            
+
             if (!amountSrcMin.IsNumeric())
             {
                 throw new ArgumentException(nameof(amountSrcMin));
@@ -39,12 +38,12 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             {
                 throw new ArgumentNullException(nameof(recipient));
             }
-            
+
             if (!router.HasValue())
             {
                 throw new ArgumentNullException(nameof(router));
             }
-            
+
             Token = token;
             AmountCrs = amountCrs;
             AmountSrc = amountSrc;
@@ -53,7 +52,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             Recipient = recipient;
             Router = router;
         }
-        
+
         public string Token { get; }
         public string AmountCrs { get; }
         public string AmountSrc { get; }

@@ -111,8 +111,8 @@ namespace Opdex.Platform.WebApi.Controllers
                 var addValues = _tokenAddLiquidityValues[i];
                 var crs = addValues[0];
                 var src = addValues[1].ToSatoshis(int.Parse(tokenParams[3].Replace("2#", string.Empty)));
-                var addLiquidityCommand = new MakeWalletAddLiquidityTransactionCommand(request.WalletName, request.WalletAddress,
-                    request.WalletPassword, createTokenTransaction.NewContractAddress, crs, src, "0", "0", request.WalletAddress, stakingMarket.Router);
+                var addLiquidityCommand = new MakeWalletAddLiquidityTransactionCommand(request.WalletAddress, createTokenTransaction.NewContractAddress,
+                                                                                       crs, src, "0", "0", request.WalletAddress, stakingMarket.Router);
                 var addLiquidityTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(addLiquidityCommand, cancellationToken));
             }
 

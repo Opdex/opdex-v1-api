@@ -6,9 +6,9 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletRemoveLiquidityTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletRemoveLiquidityTransactionCommand(string walletName, string walletAddress, string walletPassword, 
+        public MakeWalletRemoveLiquidityTransactionCommand(string walletAddress,
             string token, string liquidity, string amountCrsMin, string amountSrcMin, string recipient, string market)
-            : base(walletName, walletAddress, walletPassword)
+            : base(walletAddress)
         {
             if (!token.HasValue())
             {
@@ -19,27 +19,27 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             {
                 throw new ArgumentException(nameof(liquidity));
             }
-            
+
             if (!amountCrsMin.IsNumeric())
             {
                 throw new ArgumentException(nameof(amountCrsMin));
             }
-            
+
             if (!amountSrcMin.IsNumeric())
             {
                 throw new ArgumentException(nameof(amountSrcMin));
             }
-            
+
             if (!recipient.HasValue())
             {
                 throw new ArgumentNullException(nameof(recipient));
             }
-            
+
             if (!market.HasValue())
             {
                 throw new ArgumentNullException(nameof(market));
             }
-            
+
             Token = token;
             Liquidity = liquidity;
             AmountCrsMin = amountCrsMin;
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             Recipient = recipient;
             Market = market;
         }
-        
+
         public string Token { get; }
         public string Liquidity { get; }
         public string AmountCrsMin { get; }

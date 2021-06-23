@@ -12,7 +12,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
     public class CreateWalletStopStakingTransactionCommandHandler : IRequestHandler<CreateWalletStopStakingTransactionCommand, string>
     {
         private readonly IMediator _mediator;
-        
+
         public CreateWalletStopStakingTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -21,9 +21,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
         public Task<string> Handle(CreateWalletStopStakingTransactionCommand request, CancellationToken cancellationToken)
         {
             var amount = request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals);
-            
-            return _mediator.Send(new MakeWalletStopStakingTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                request.LiquidityPool, amount, request.Liquidate), cancellationToken);
+
+            return _mediator.Send(new MakeWalletStopStakingTransactionCommand(request.WalletAddress,
+                                                                              request.LiquidityPool,
+                                                                              amount,
+                                                                              request.Liquidate), cancellationToken);
         }
     }
 }

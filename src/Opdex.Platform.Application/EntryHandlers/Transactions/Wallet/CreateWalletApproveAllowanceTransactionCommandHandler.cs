@@ -15,7 +15,7 @@ using Opdex.Platform.Domain.Models.Pools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 {
-    public class CreateWalletApproveAllowanceTransactionCommandHandler 
+    public class CreateWalletApproveAllowanceTransactionCommandHandler
         : IRequestHandler<CreateWalletApproveAllowanceTransactionCommand, string>
     {
         private readonly IMediator _mediator;
@@ -41,12 +41,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             {
                 decimals = token.Decimals;
             }
-            
+
             var amount = request.Amount.ToSatoshis(decimals);
-            
-            var command = new MakeWalletApproveAllowanceTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                request.Token, amount, request.Spender);
-            
+
+            var command = new MakeWalletApproveAllowanceTransactionCommand(request.WalletAddress, request.Token, amount, request.Spender);
+
             return await _mediator.Send(command, cancellationToken);
         }
     }

@@ -5,9 +5,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 {
     public class CreateWalletRemoveLiquidityTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletRemoveLiquidityTransactionCommand(string walletName, string walletAddress, string walletPassword, 
-            string liquidityPool, string liquidity, string amountCrsMin, string amountSrcMin, string recipient, string router)
-            : base(walletName, walletAddress, walletPassword)
+        public CreateWalletRemoveLiquidityTransactionCommand(string walletAddress, string liquidityPool, string liquidity, string amountCrsMin,
+                                                             string amountSrcMin, string recipient, string router) : base(walletAddress)
         {
             if (!liquidityPool.HasValue())
             {
@@ -18,27 +17,27 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             {
                 throw new ArgumentException(nameof(liquidity));
             }
-            
+
             if (!amountCrsMin.IsValidDecimalNumber())
             {
                 throw new ArgumentException(nameof(amountCrsMin));
             }
-            
+
             if (!amountSrcMin.IsValidDecimalNumber())
             {
                 throw new ArgumentException(nameof(amountSrcMin));
             }
-            
+
             if (!recipient.HasValue())
             {
                 throw new ArgumentNullException(nameof(recipient));
             }
-            
+
             if (!router.HasValue())
             {
                 throw new ArgumentNullException(nameof(router));
             }
-            
+
             LiquidityPool = liquidityPool;
             Liquidity = liquidity;
             AmountCrsMin = amountCrsMin;
@@ -46,7 +45,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             Recipient = recipient;
             Router = router;
         }
-        
+
         public string Liquidity { get; }
         public string AmountCrsMin { get; }
         public string AmountSrcMin { get; }

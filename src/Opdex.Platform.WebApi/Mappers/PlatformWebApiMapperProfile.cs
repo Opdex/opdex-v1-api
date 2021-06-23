@@ -41,7 +41,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.CrsToken, opt => opt.MapFrom(src => src.CrsToken))
                 .ForMember(dest => dest.StakingEnabled, opt => opt.MapFrom(src => src.StakingEnabled))
                 .ForMember(dest => dest.MiningEnabled, opt => opt.MapFrom(src => src.MiningEnabled))
-                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => MapLiquidityPoolSummary(src)))
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => MapLiquidityPoolSummary(src.Summary)))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolSnapshotDto, LiquidityPoolSummaryResponseModel>()
@@ -109,22 +109,22 @@ namespace Opdex.Platform.WebApi.Mappers
             };
         }
 
-        private static LiquidityPoolSummaryResponseModel MapLiquidityPoolSummary(LiquidityPoolDto liquidityPoolDto)
+        private static LiquidityPoolSummaryResponseModel MapLiquidityPoolSummary(LiquidityPoolSnapshotDto snapshot)
         {
-            if (liquidityPoolDto.Summary == null) return null;
+            if (snapshot == null) return null;
 
-            var srcDecimals = liquidityPoolDto.SrcToken.Decimals;
+            var srcDecimals = snapshot.SrcTokenDecimals;
 
             return new LiquidityPoolSummaryResponseModel
             {
-                TransactionCount = liquidityPoolDto.Summary.TransactionCount,
-                Reserves = MapReserves(liquidityPoolDto.Summary.Reserves, srcDecimals),
-                Rewards = MapRewards(liquidityPoolDto.Summary.Rewards),
-                Cost = MapCost(liquidityPoolDto.Summary.Cost, srcDecimals),
-                Volume = MapVolume(liquidityPoolDto.Summary.Volume, srcDecimals),
-                Staking =  MapStaking(liquidityPoolDto.Summary.Staking),
-                StartDate = liquidityPoolDto.Summary.StartDate,
-                EndDate = liquidityPoolDto.Summary.EndDate
+                TransactionCount = snapshot.TransactionCount,
+                Reserves = MapReserves(snapshot.Reserves, srcDecimals),
+                Rewards = MapRewards(snapshot.Rewards),
+                Cost = MapCost(snapshot.Cost, srcDecimals),
+                Volume = MapVolume(snapshot.Volume, srcDecimals),
+                Staking =  MapStaking(snapshot.Staking),
+                StartDate = snapshot.StartDate,
+                EndDate = snapshot.EndDate
             };
         }
 

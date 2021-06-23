@@ -11,7 +11,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
         : IRequestHandler<CreateWalletDistributeTokensTransactionCommand, string>
     {
         private readonly IMediator _mediator;
-        
+
         public CreateWalletDistributeTokensTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -19,8 +19,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 
         public Task<string> Handle(CreateWalletDistributeTokensTransactionCommand request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new MakeWalletDistributeTokensTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                request.Token), cancellationToken);
+            return _mediator.Send(new MakeWalletDistributeTokensTransactionCommand(request.WalletAddress, request.Token), cancellationToken);
         }
     }
 }
