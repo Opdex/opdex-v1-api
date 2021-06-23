@@ -76,6 +76,8 @@ using Opdex.Platform.Application.Handlers.Transactions.Wallet;
 using Opdex.Platform.Application.Handlers.vault;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Platform.Application.EntryHandlers.Vault;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Vault;
 using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDto;
 
 namespace Opdex.Platform.Application
@@ -184,6 +186,10 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessLiquidityPoolSnapshotsByTransactionCommand, Unit>, ProcessLiquidityPoolSnapshotsByTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateBlockCommand, bool>, CreateBlockCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessLatestBlocksCommand, Unit>, ProcessLatestBlocksCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessCreateVaultCertificateCommand, string>, ProcessCreateVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessRedeemVaultCertificateCommand, string>, ProcessRedeemVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessRevokeVaultCertificateCommand, string>, ProcessRevokeVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessSetVaultOwnerCommand, string>, ProcessSetVaultOwnerCommandHandler>();
 
             // Commands
             services.AddTransient<IRequestHandler<MakeWalletSwapTransactionCommand, string>, MakeWalletSwapTransactionCommandHandler>();
@@ -223,6 +229,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeAddressMiningCommand, long>, MakeAddressMiningCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMiningGovernanceNominationCommand, long>, MakeMiningGovernanceNominationCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMarketRouterCommand, bool>, MakeMarketRouterCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeSetVaultOwnerCommand, string>, MakeSetVaultOwnerCommandHandler>();
 
             // Entry Handlers
             services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();
