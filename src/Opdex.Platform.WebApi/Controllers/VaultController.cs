@@ -35,7 +35,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="address">Vault contract address</param>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <returns>Cirrus transaction hash</returns>
         [HttpPost("{address}/owner")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<string>> SetOwner(string address,
@@ -49,11 +49,12 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>
-        /// Issues a new certificate from the vault
+        /// Issues a new certificate from a vault with the default vesting period
         /// </summary>
         /// <param name="address">Vault contract address</param>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
+        /// <returns>Cirrus transaction hash</returns>
         [HttpPost("{address}/certificates")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<string>> CreateCertificate(string address,
@@ -68,38 +69,37 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>
-        /// Redeems all certificates issued to a specific holder
+        /// Redeems all vested certificates in a vault, owned by the authorized wallet
         /// </summary>
         /// <param name="address">Vault contract address</param>
-        /// <param name="holder">Certificate holder address</param>
         /// <param name="cancellationToken"></param>
-        [HttpPost("{address}/certificates/{holder}/redeem")]
+        /// <returns>Cirrus transaction hash</returns>
+        [HttpPost("{address}/certificates/redeem")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<string>> RedeemCertificate(string address,
-                                                                  string holder,
-                                                                  CancellationToken cancellationToken)
+        public async Task<ActionResult<string>> RedeemCertificates(string address,
+                                                                   CancellationToken cancellationToken)
         {
             var transactionHash = await _mediator.Send(new ProcessRedeemVaultCertificateCommand(_context.Wallet,
-                                                                                                address,
-                                                                                                holder), cancellationToken);
+                                                                                                address), cancellationToken);
             return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
         }
 
         /// <summary>
-        /// Revokes all certificates issued to a specific holder
+        /// Revokes all non-vested certificates in a vault, held by a specified address
         /// </summary>
         /// <param name="address">Vault contract address</param>
-        /// <param name="holder">Certificate holder address</param>
+        /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
-        [HttpPost("{address}/certificates/{holder}/revoke")]
+        /// <returns>Cirrus transaction hash</returns>
+        [HttpPost("{address}/certificates/revoke")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<string>> RevokeCertificate(string address,
-                                                                  string holder,
-                                                                  CancellationToken cancellationToken)
+        public async Task<ActionResult<string>> RevokeCertificates(string address,
+                                                                   RevokeVaultCertificatesRequest request,
+                                                                   CancellationToken cancellationToken)
         {
             var transactionHash = await _mediator.Send(new ProcessRevokeVaultCertificateCommand(_context.Wallet,
                                                                                                 address,
-                                                                                                holder), cancellationToken);
+                                                                                                request.Holder), cancellationToken);
             return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
         }
     }

@@ -252,8 +252,11 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeAddressMiningCommand, long>, MakeAddressMiningCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMiningGovernanceNominationCommand, long>, MakeMiningGovernanceNominationCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMarketRouterCommand, bool>, MakeMarketRouterCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeSetVaultOwnerCommand, string>, MakeSetVaultOwnerCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMarketSnapshotCommand, bool>, MakeMarketSnapshotCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeSetVaultOwnerCommand, string>, MakeSetVaultOwnerCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeCreateVaultCertificateCommand, string>, MakeCreateVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeRedeemVaultCertificateCommand, string>, MakeRedeemVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeRevokeVaultCertificateCommand, string>, MakeRevokeVaultCertificateCommandHandler>();
 
             // Entry Handlers
             services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();

@@ -27,17 +27,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vault
             // Arrange
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _handler.Handle(new ProcessRedeemVaultCertificateCommand(walletAddress, vault, holder), cancellationToken);
+            await _handler.Handle(new ProcessRedeemVaultCertificateCommand(walletAddress, vault), cancellationToken);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
                 It.Is<MakeRedeemVaultCertificateCommand>(command => command.WalletAddress == walletAddress
-                                                                 && command.Vault == vault
-                                                                 && command.Holder == holder),
+                                                                 && command.Vault == vault),
                 cancellationToken
             ), Times.Once);
         }
@@ -50,13 +48,12 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vault
 
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeRedeemVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(transactionHash);
 
             // Act
-            var response = await _handler.Handle(new ProcessRedeemVaultCertificateCommand(walletAddress, vault, holder), default);
+            var response = await _handler.Handle(new ProcessRedeemVaultCertificateCommand(walletAddress, vault), default);
 
             // Assert
             response.Should().Be(transactionHash);

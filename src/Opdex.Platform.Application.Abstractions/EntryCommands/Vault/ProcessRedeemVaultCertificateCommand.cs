@@ -7,16 +7,12 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vault
     public class ProcessRedeemVaultCertificateCommand : CreateWalletTransactionCommand
     {
         public ProcessRedeemVaultCertificateCommand(string walletAddress,
-                                                    string vault,
-                                                    string holder) : base(walletAddress)
+                                                    string vault) : base(walletAddress)
         {
             if (!vault.HasValue()) throw new ArgumentNullException(nameof(vault), "Vault address must be set.");
-            if (!holder.HasValue()) throw new ArgumentNullException(nameof(holder), "Holder address must be set.");
             Vault = vault;
-            Holder = holder;
         }
 
         public string Vault { get; }
-        public string Holder { get; }
     }
 }

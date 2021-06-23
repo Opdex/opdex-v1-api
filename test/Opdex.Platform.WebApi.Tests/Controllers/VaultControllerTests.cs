@@ -135,29 +135,27 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task RedeemCertificate_ProcessRedeemVaultCertificateCommand_Send()
+        public async Task RedeemCertificates_ProcessRedeemVaultCertificateCommand_Send()
         {
             // Arrange
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var vaultAddress = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
-            var holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _controller.RedeemCertificate(vaultAddress, holder, cancellationToken);
+            await _controller.RedeemCertificates(vaultAddress, cancellationToken);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<ProcessRedeemVaultCertificateCommand>(command
                 => command.Vault == vaultAddress
-                && command.Holder == holder
                 && command.WalletAddress == walletAddress
             ), cancellationToken), Times.Once);
         }
 
         [Fact]
-        public async Task RedeemCertificate_Success_ReturnCreated()
+        public async Task RedeemCertificates_Success_ReturnCreated()
         {
             // Arrange
             _applicationContextMock.Setup(callTo => callTo.Wallet).Returns("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
@@ -167,8 +165,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
                          .ReturnsAsync(txId);
 
             // Act
-            var response = await _controller.RedeemCertificate("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                               "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXm",
+            var response = await _controller.RedeemCertificates("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                                default);
 
             // Act
@@ -178,7 +175,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task RevokeCertificate_ProcessRevokeVaultCertificateCommand_Send()
+        public async Task RevokeCertificates_ProcessRevokeVaultCertificateCommand_Send()
         {
             // Arrange
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
@@ -189,7 +186,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _controller.RevokeCertificate(vaultAddress, holder, cancellationToken);
+            await _controller.RevokeCertificates(vaultAddress, new RevokeVaultCertificatesRequest { Holder = holder }, cancellationToken);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<ProcessRevokeVaultCertificateCommand>(command
@@ -200,7 +197,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task RevokeCertificate_Success_ReturnCreated()
+        public async Task RevokeCertificates_Success_ReturnCreated()
         {
             // Arrange
             _applicationContextMock.Setup(callTo => callTo.Wallet).Returns("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
@@ -209,10 +206,12 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<ProcessRevokeVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(txId);
 
+            var request = new RevokeVaultCertificatesRequest { Holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
+
             // Act
-            var response = await _controller.RevokeCertificate("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                               "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
-                                                               default);
+            var response = await _controller.RevokeCertificates("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+                                                                request,
+                                                                default);
 
             // Act
             response.Result.Should().BeOfType<CreatedResult>();
