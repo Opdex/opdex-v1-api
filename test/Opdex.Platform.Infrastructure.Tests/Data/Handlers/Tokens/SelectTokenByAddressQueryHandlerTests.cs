@@ -18,11 +18,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
     {
         private readonly Mock<IDbContext> _dbContext;
         private readonly SelectTokenByAddressQueryHandler _handler;
-        
+
         public SelectTokenByAddressQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            
+
             _dbContext = new Mock<IDbContext>();
             _handler = new SelectTokenByAddressQueryHandler(_dbContext.Object, mapper);
         }
@@ -31,11 +31,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         public async Task SelectTokenByAddress_Success()
         {
             const string address = "SomeAddress";
-            
+
             var expectedEntity = new TokenEntity
             {
                 Id = 123454,
                 Address = "SomeAddress",
+                IsLpt = true,
                 Name = "SomeName",
                 Symbol = "SomeSymbol",
                 Sats = 987689076,
@@ -44,30 +45,31 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
                 CreatedBlock = 1,
                 ModifiedBlock = 1
             };
-                
+
             var command = new SelectTokenByAddressQuery(address);
-        
+
             _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Id.Should().Be(expectedEntity.Id);
             result.Address.Should().Be(expectedEntity.Address);
+            result.IsLpt.Should().Be(expectedEntity.IsLpt);
             result.Name.Should().Be(expectedEntity.Name);
             result.Symbol.Should().Be(expectedEntity.Symbol);
             result.Sats.Should().Be(expectedEntity.Sats);
             result.Decimals.Should().Be(expectedEntity.Decimals);
             result.TotalSupply.Should().Be(expectedEntity.TotalSupply);
         }
-        
+
         [Fact]
         public void SelectTokenByAddress_Throws_NotFoundException()
         {
             const string address = "SomeAddress";
-            
+
             var command = new SelectTokenByAddressQuery(address);
-        
+
             _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<TokenEntity>(null));
 

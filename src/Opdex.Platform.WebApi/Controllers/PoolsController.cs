@@ -9,9 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
-using Opdex.Platform.WebApi.Models;
-using Opdex.Platform.WebApi.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Pools.Snapshots;
+using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.WebApi.Models.Responses.Pools;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -38,10 +40,11 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>List of pools</returns>
         [HttpGet]
+        [HttpGet("market/{marketAddress}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(string marketAddress, uint skip, uint take, CancellationToken cancellationToken)
         {
-            var query = new GetAllPoolsQuery();
+            var query = new GetAllPoolsByMarketIdQuery(marketAddress);
 
             var result = await _mediator.Send(query, cancellationToken);
 
@@ -66,6 +69,25 @@ namespace Opdex.Platform.WebApi.Controllers
             var result = await _mediator.Send(query, cancellationToken);
 
             var response = _mapper.Map<LiquidityPoolResponseModel>(result);
+
+            return Ok(response);
+        }
+
+        [HttpGet("{address}/history")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<LiquidityPoolSummaryResponseModel>> GetPoolHistory(string address, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
+        {
+            var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(address));
+            var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.SrcTokenId));
+
+            var poolSnapshotDtos = await _mediator.Send(new GetLiquidityPoolSnapshotsWithFilterQuery(address, startDate, endDate), cancellationToken);
+
+            foreach (var snapshotDto in poolSnapshotDtos)
+            {
+                snapshotDto.SrcTokenDecimals = srcToken.Decimals;
+            }
+
+            var response = _mapper.Map<IEnumerable<LiquidityPoolSummaryResponseModel>>(poolSnapshotDtos);
 
             return Ok(response);
         }

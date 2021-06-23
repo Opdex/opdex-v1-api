@@ -15,10 +15,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        
+
         public Task<bool> Handle(CreateBlockCommand request, CancellationToken cancellationToken)
         {
-            var blockCommand = new MakeBlockCommand(request.Height, request.Hash, request.Time, request.MedianTime);
+            var blockCommand = new MakeBlockCommand(request.BlockReceipt.Height, request.BlockReceipt.Hash,
+                request.BlockReceipt.Time, request.BlockReceipt.MedianTime);
+
             return _mediator.Send(blockCommand, CancellationToken.None);
         }
     }

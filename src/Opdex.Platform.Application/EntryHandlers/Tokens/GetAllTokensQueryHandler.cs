@@ -6,6 +6,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
+using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Tokens

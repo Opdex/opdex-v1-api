@@ -1,6 +1,7 @@
 using System;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Tokens

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
+using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
 

@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;

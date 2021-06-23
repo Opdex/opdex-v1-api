@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools

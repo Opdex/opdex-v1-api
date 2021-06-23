@@ -16,6 +16,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Vault;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.ODX;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
@@ -53,18 +54,18 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     // Get transaction block hash
                     var blockHashQuery = new RetrieveCirrusBlockHashByHeightQuery(transaction.BlockHeight);
                     var blockHash = await _mediator.Send(blockHashQuery, CancellationToken.None);
-                    
+
                     // Get block by hash
                     var blockQuery = new RetrieveCirrusBlockByHashQuery(blockHash);
                     var blockReceiptDto = await _mediator.Send(blockQuery, CancellationToken.None);
-                        
+
                     // Make block
-                    var blockTime = blockReceiptDto.Time.FromUnixTimeSeconds();
-                    var blockMedianTime = blockReceiptDto.MedianTime.FromUnixTimeSeconds();
+                    var blockTime = blockReceiptDto.Time;
+                    var blockMedianTime = blockReceiptDto.MedianTime;
                     var blockCommand = new MakeBlockCommand(blockReceiptDto.Height, blockReceiptDto.Hash, blockTime, blockMedianTime);
                     var blockCreated = await _mediator.Send(blockCommand, CancellationToken.None);
                 }
-                
+
                 // Insert ODX
                 var odxAddress = transaction.NewContractAddress;
                 var odxQuery = new RetrieveTokenByAddressQuery(odxAddress, findOrThrow: false);
@@ -76,7 +77,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     var odxCommand = new MakeTokenCommand(odxAddress);
                     odxId = await _mediator.Send(odxCommand, CancellationToken.None);
                 }
-                
+
                 // Get ODX token summary
                 var odxTokenSummaryQuery = new RetrieveStakingTokenContractSummaryByAddressQuery(odxAddress);
                 var odxTokenSummary = await _mediator.Send(odxTokenSummaryQuery, CancellationToken.None);
@@ -102,14 +103,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     var miningGovernanceSummary = await _mediator.Send(miningGovernanceSummaryQuery, CancellationToken.None);
 
                     // Create
-                    miningGovernance = new MiningGovernance(odxTokenSummary.MiningGovernance, odxId, miningGovernanceSummary.NominationPeriodEnd, 
+                    miningGovernance = new MiningGovernance(odxTokenSummary.MiningGovernance, odxId, miningGovernanceSummary.NominationPeriodEnd,
                         miningGovernanceSummary.MiningPoolsFunded, miningGovernanceSummary.MiningPoolReward, transaction.BlockHeight);
-                        
+
                     // Persist
                     var miningGovernanceCommand = new MakeMiningGovernanceCommand(miningGovernance);
                     var miningGovernanceId = await _mediator.Send(miningGovernanceCommand, CancellationToken.None);
                 }
-                
+
                 // In hosted environments, transaction would've already been inserted. Local environments need to persist
                 if (transaction.Id == 0)
                 {
@@ -118,7 +119,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failure processing ODX deployment.");
+                _logger.LogError(ex, "Failure processing ODX deployment.");
             }
 
             return Unit.Value;

@@ -5,11 +5,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MiningGoverna
 {
     public class PersistMiningGovernanceCommand : IRequest<long>
     {
-        public PersistMiningGovernanceCommand(Domain.MiningGovernance miningGovernance)
+        public PersistMiningGovernanceCommand(Domain.Models.MiningGovernance miningGovernance)
         {
             MiningGovernance = miningGovernance ?? throw new ArgumentNullException(nameof(miningGovernance));
         }
         
-        public Domain.MiningGovernance MiningGovernance { get; set; }
+        public Domain.Models.MiningGovernance MiningGovernance { get; set; }
     }
 }

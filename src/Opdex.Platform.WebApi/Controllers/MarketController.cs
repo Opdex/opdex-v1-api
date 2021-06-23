@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
-using Opdex.Platform.WebApi.Models.Responses;
+using Opdex.Platform.WebApi.Models.Responses.Markets;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -25,13 +26,24 @@ namespace Opdex.Platform.WebApi.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpGet]
+        [HttpGet("{market}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<MarketSnapshotResponseModel>> GetMarketDetails(CancellationToken cancellationToken)
+        public async Task<ActionResult<MarketSnapshotResponseModel>> GetMarketDetails(string market, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetLatestMarketSnapshotQuery(), cancellationToken);
+            var result = await _mediator.Send(new GetMarketByAddressQuery(market), cancellationToken);
 
-            var response = _mapper.Map<MarketSnapshotResponseModel>(result);
+            var response = _mapper.Map<MarketResponseModel>(result);
+
+            return Ok(response);
+        }
+
+        [HttpGet("{market}/history")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<MarketSnapshotResponseModel>> GetMarketHistory(string market, DateTime? from, DateTime? to, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetMarketSnapshotsWithFilterQuery(market, from, to), cancellationToken);
+
+            var response = _mapper.Map<IEnumerable<MarketSnapshotResponseModel>>(result);
 
             return Ok(response);
         }

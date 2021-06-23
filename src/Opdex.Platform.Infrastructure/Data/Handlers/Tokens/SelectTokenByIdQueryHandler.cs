@@ -17,6 +17,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
             @$"Select 
                 {nameof(TokenEntity.Id)},
                 {nameof(TokenEntity.Address)},
+                {nameof(TokenEntity.IsLpt)},
                 {nameof(TokenEntity.Name)},
                 {nameof(TokenEntity.Symbol)},
                 {nameof(TokenEntity.Decimals)},

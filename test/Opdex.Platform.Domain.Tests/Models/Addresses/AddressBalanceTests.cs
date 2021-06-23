@@ -12,21 +12,10 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         {
             // Arrange
             // Act
-            static void Act() => new AddressBalance(0, 0, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000", 10_001);
+            static void Act() => new AddressBalance(0, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000", 10_001);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Either liquidityPoolId or tokenId must be greater than 0.");
-        }
-
-        [Fact]
-        public void Constructor_NeitherTokenOrLiquidityPoolIdZero_ThrowArgumentException()
-        {
-            // Arrange
-            // Act
-            static void Act() => new AddressBalance(1, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000", 10_001);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Only liquidityPoolId or tokenId can be greater than 0.");
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("tokenId must be greater than 0.");
         }
 
         [Theory]
@@ -37,7 +26,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         {
             // Arrange
             // Act
-            void Act() => new AddressBalance(0, 1, owner, "50000", 10_001);
+            void Act() => new AddressBalance(1, owner, "50000", 10_001);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner must be set.");
@@ -54,7 +43,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         {
             // Arrange
             // Act
-            void Act() => new AddressBalance(0, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", balance, 10_001);
+            void Act() => new AddressBalance(1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", balance, 10_001);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Balance must only contain numeric digits.");
@@ -64,18 +53,16 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         public void Constructor_ValidArguments_PropertiesSet()
         {
             // Arrange
-            var tokenId = 0;
-            var liquidityPoolId = 102;
+            var tokenId = 123;
             var owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var balance = "50000000";
             ulong createdBlock = 10_001;
 
             // Act
-            var addressBalance = new AddressBalance(tokenId, liquidityPoolId, owner, balance, createdBlock);
+            var addressBalance = new AddressBalance(tokenId, owner, balance, createdBlock);
 
             // Assert
             addressBalance.TokenId.Should().Be(tokenId);
-            addressBalance.LiquidityPoolId.Should().Be(liquidityPoolId);
             addressBalance.Owner.Should().Be(owner);
             addressBalance.Balance.Should().Be(balance);
             addressBalance.CreatedBlock.Should().Be(createdBlock);
@@ -92,7 +79,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         public void SetBalance_InvalidBalance_ThrowArgumentOutOfRangeException(string balance)
         {
             // Arrange
-            var addressBalance = new AddressBalance(0, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_000);
+            var addressBalance = new AddressBalance(1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_000);
 
             // Act
             void Act() => addressBalance.SetBalance(balance, 10_001);
@@ -105,7 +92,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         public void SetBalance_PreviousBlock_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            var addressBalance = new AddressBalance(0, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_000);
+            var addressBalance = new AddressBalance(1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_000);
 
             // Act
             void Act() => addressBalance.SetBalance("9000000000", 9_999);
@@ -118,7 +105,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         public void SetBalance_ValidArguments_PropertiesSet()
         {
             // Arrange
-            var addressBalance = new AddressBalance(0, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_000);
+            var addressBalance = new AddressBalance(1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_000);
 
             var updatedBalance = "9000000000";
             ulong updatedBlock = 10_001;

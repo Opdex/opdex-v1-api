@@ -6,13 +6,22 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryCommands;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
+using Opdex.Platform.Application.Abstractions.Queries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
+using Opdex.Platform.Common;
 
 namespace Opdex.Platform.Application.EntryHandlers.Blocks
 {
+    // Todo: Forks and Chain Reorgs :(
+    // Will requiring deleting back to the correct latest block, then sync back to chain tip.
+    // Maybe consider always staying 2-3 block behind chain tip to mitigate the amount of times this happens
+    // Tracked in [PAPI-31]
     public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBlocksCommand, Unit>
     {
         private readonly IMediator _mediator;
@@ -26,48 +35,54 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
         public async Task<Unit> Handle(ProcessLatestBlocksCommand request, CancellationToken cancellationToken)
         {
-            var blockDetails = await _mediator.Send(new GetBestBlockQuery(), cancellationToken);
+            // The latest synced block we have, if none, the tip of cirrus chain
+            var previousBlock = await _mediator.Send(new GetBestBlockQuery(), cancellationToken);
 
-            while (blockDetails?.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
+            // Process each block until we reach the chain tip
+            while (previousBlock?.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
             {
-                // Todo: Move through Domain, at least a new CirrusBlock model
-                // Todo: Get block details from cirrus node and filter for nonstandard transactions
-                blockDetails = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(blockDetails.NextBlockHash), CancellationToken.None);
+                // Retrieve and create the block
+                var currentBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(previousBlock.NextBlockHash));
+                var blockCreated = await _mediator.Send(new CreateBlockCommand(currentBlock));
 
-                var createBlockCommand = new CreateBlockCommand(blockDetails.Height, blockDetails.Hash, blockDetails.Time, blockDetails.MedianTime);
-                var blockCreated = await _mediator.Send(createBlockCommand, CancellationToken.None);
+                if (!blockCreated) break;
 
-                if (!blockCreated)
+                if (currentBlock.IsNewMinuteFromPrevious(previousBlock.MedianTime))
                 {
-                    break;
-                }
-
-                // 4 = 1 minute || 60 = 15 minutes
-                var timeToRefreshCirrus = request.IsDevelopEnv ? 60ul : 4ul;
-
-                if (blockDetails.Height % timeToRefreshCirrus == 0)
-                {
-                    await _mediator.Send(new CreateCrsTokenSnapshotsCommand(createBlockCommand.MedianTime), CancellationToken.None);
-
-                    // Todo should also snapshot ODX Token if there is a staking market available
-                }
-
-                // Index each transaction in the block
-                foreach (var tx in blockDetails.Tx.Where(tx => tx != blockDetails.MerkleRoot))
-                {
-                    try
+                    // Dev Environment = 15 minutes, otherwise 1 minute
+                    if (!request.IsDevelopEnv || currentBlock.MedianTime.Minute == 15)
                     {
-                        await _mediator.Send(new CreateTransactionCommand(tx), CancellationToken.None);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, $"Unable to create transaction with error: {ex.Message}");
+                        await _mediator.Send(new CreateCrsTokenSnapshotsCommand(currentBlock.MedianTime));
                     }
                 }
 
-                // Maybe create liquidity pool snapshots after each block
-                // Maybe create mining pool snapshots after each block
-                // Index Market Snapshots based on Pool Snapshots in time tx time range
+                var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address));
+
+                var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, 0, currentBlock.MedianTime, SnapshotType.Minute));
+
+                // If it's a new day from the previous block, refresh all daily snapshots. (Tokens, Liquidity Pools, Markets)
+                if (currentBlock.IsNewDayFromPrevious(previousBlock.MedianTime))
+                {
+                    await _mediator.Send(new ProcessDailySnapshotRefreshCommand(currentBlock.MedianTime, crsSnapshot.Price.Close));
+                }
+
+                // Process all transactions in the block
+                foreach (var tx in currentBlock.TxHashes.Where(tx => tx != currentBlock.MerkleRoot))
+                {
+                    // Todo: Consider processing liquidity pool snapshots after each block rather than during each transaction.
+                    await _mediator.Send(new CreateTransactionCommand(tx));
+                }
+
+                // Get and process all available Opdex markets
+                // Todo: Consider only updating those that had transactions in the block being processed.
+                var markets = await _mediator.Send(new RetrieveAllMarketsQuery());
+
+                foreach (var market in markets)
+                {
+                    await _mediator.Send(new ProcessMarketSnapshotsCommand(market.Id, currentBlock.MedianTime));
+                }
+
+                previousBlock = currentBlock;
             }
 
             return Unit.Value;
