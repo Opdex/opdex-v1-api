@@ -19,11 +19,13 @@ namespace Opdex.Platform.WebApi.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly IApplicationContext _context;
 
-        public TokensController(IMediator mediator, IMapper mapper)
+        public TokensController(IMediator mediator, IMapper mapper, IApplicationContext applicationContext)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _context = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
         }
 
         /// <summary>
@@ -38,7 +40,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<TokenResponseModel>>> GetTokens(CancellationToken cancellationToken)
         {
-            var query = new GetAllTokensQuery();
+            var query = new GetAllTokensByMarketAddressQuery(_context.Market);
 
             var result = await _mediator.Send(query, cancellationToken);
 

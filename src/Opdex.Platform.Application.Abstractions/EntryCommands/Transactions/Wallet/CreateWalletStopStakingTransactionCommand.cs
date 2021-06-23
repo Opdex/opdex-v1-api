@@ -5,8 +5,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 {
     public class CreateWalletStopStakingTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletStopStakingTransactionCommand(string walletName, string walletAddress, string walletPassword, 
-            string liquidityPool, string amount, bool liquidate) : base(walletName, walletAddress, walletPassword)
+        public CreateWalletStopStakingTransactionCommand(string walletAddress, string liquidityPool, string amount, bool liquidate) : base(walletAddress)
         {
             if (!liquidityPool.HasValue())
             {
@@ -17,12 +16,12 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             {
                 throw new ArgumentOutOfRangeException(nameof(amount));
             }
-            
+
             LiquidityPool = liquidityPool;
             Liquidate = liquidate;
             Amount = amount;
         }
-        
+
         public string LiquidityPool { get; }
         public bool Liquidate { get; }
         public string Amount { get; }

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -24,11 +25,13 @@ namespace Opdex.Platform.WebApi.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly IApplicationContext _context;
 
-        public PoolsController(IMediator mediator, IMapper mapper)
+        public PoolsController(IMediator mediator, IMapper mapper, IApplicationContext applicationContext)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _context = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
         }
 
         /// <summary>
@@ -40,11 +43,10 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>List of pools</returns>
         [HttpGet]
-        [HttpGet("market/{marketAddress}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(string marketAddress, uint skip, uint take, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(uint skip, uint take, CancellationToken cancellationToken)
         {
-            var query = new GetAllPoolsByMarketIdQuery(marketAddress);
+            var query = new GetAllPoolsByMarketAddressQuery(_context.Market);
 
             var result = await _mediator.Send(query, cancellationToken);
 

@@ -32,6 +32,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
+using Opdex.Platform.WebApi.Models;
 
 namespace Opdex.Platform.WebApi
 {
@@ -138,6 +139,8 @@ namespace Opdex.Platform.WebApi
             // Register project module services
             services.AddPlatformApplicationServices();
             services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(), cmcConfig.Get<CoinMarketCapConfiguration>());
+
+            services.AddScoped<IApplicationContext, ApplicationContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -151,7 +154,6 @@ namespace Opdex.Platform.WebApi
 
             app.UseProblemDetails();
 
-            // Todo: Set correctly for ENV's outside local dev
             app.UseCors(options => options
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
@@ -159,7 +161,10 @@ namespace Opdex.Platform.WebApi
 
             app.UseSerilogRequestLogging();
 
-            // app.UseHttpsRedirection();
+            if (env.IsProduction())
+            {
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
 

@@ -5,8 +5,8 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletRewardMiningPoolsTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletRewardMiningPoolsTransactionCommand(string walletName, string walletAddress, string walletPassword, string governance)
-            : base(walletName, walletAddress, walletPassword)
+        public MakeWalletRewardMiningPoolsTransactionCommand(string walletAddress, string governance)
+            : base(walletAddress)
         {
             if (!governance.HasValue())
             {
@@ -15,7 +15,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 
             Governance = governance;
         }
-        
+
         public string Governance { get; }
     }
 }

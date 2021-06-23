@@ -55,7 +55,7 @@ namespace Opdex.Platform.WebApi.Controllers
 
             try
             {
-                await _mediator.Send(new ProcessLatestBlocksCommand(_hostingEnv.IsDevelopment()), CancellationToken.None);
+                await _mediator.Send(new ProcessLatestBlocksCommand(_hostingEnv.IsDevelopment()), cancellationToken);
             }
             finally
             {

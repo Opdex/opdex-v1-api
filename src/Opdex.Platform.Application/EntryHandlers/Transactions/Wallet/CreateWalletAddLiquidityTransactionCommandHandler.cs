@@ -39,8 +39,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             var amountSrc = request.AmountSrc.ToSatoshis(srcToken.Decimals);
             var amountSrcMin = amountSrc.ToleranceAsSatoshis(request.Tolerance);
 
-            var command = new MakeWalletAddLiquidityTransactionCommand(request.WalletName, request.WalletAddress, request.WalletPassword,
-                srcToken.Address, request.AmountCrs, amountSrc, amountCrsMin.ToString(), amountSrcMin, request.Recipient, router.Address);
+            var command = new MakeWalletAddLiquidityTransactionCommand(request.WalletAddress, srcToken.Address, request.AmountCrs, amountSrc,
+                                                                       amountCrsMin.ToString(), amountSrcMin, request.Recipient, router.Address);
 
             return await _mediator.Send(command, cancellationToken);
         }

@@ -104,8 +104,8 @@ namespace Opdex.Platform.Application
             services.AddScoped(typeof(IMediator), typeof(Mediator));
 
             // Entry Queries
-            services.AddTransient<IRequestHandler<GetAllPoolsByMarketIdQuery, IEnumerable<LiquidityPoolDto>>, GetAllPoolsByMarketIdQueryHandler>();
-            services.AddTransient<IRequestHandler<GetAllTokensQuery, IEnumerable<TokenDto>>, GetAllTokensQueryHandler>();
+            services.AddTransient<IRequestHandler<GetAllPoolsByMarketAddressQuery, IEnumerable<LiquidityPoolDto>>, GetAllPoolsByMarketAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<GetAllTokensByMarketAddressQuery, IEnumerable<TokenDto>>, GetAllTokensByMarketAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetTransactionsByPoolWithFilterQuery, IEnumerable<TransactionDto>>, GetTransactionsByPoolWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolSwapQuoteQuery, string>, GetLiquidityPoolSwapQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolAddLiquidityQuoteQuery, string>, GetLiquidityPoolAddLiquidityQuoteQueryHandler>();

@@ -5,23 +5,22 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 {
     public class CreateWalletStartMiningTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletStartMiningTransactionCommand(string walletName, string walletAddress, string walletPassword, 
-            string amount, string liquidityPool) : base(walletName, walletAddress, walletPassword)
+        public CreateWalletStartMiningTransactionCommand(string walletAddress, string amount, string liquidityPool) : base(walletAddress)
         {
             if (!amount.IsValidDecimalNumber())
             {
                 throw new ArgumentException(nameof(amount));
             }
-            
+
             if (!liquidityPool.HasValue())
             {
                 throw new ArgumentNullException(nameof(liquidityPool));
             }
-            
+
             Amount = amount;
             LiquidityPool = liquidityPool;
         }
-        
+
         public string Amount { get; }
         public string LiquidityPool { get; }
     }
