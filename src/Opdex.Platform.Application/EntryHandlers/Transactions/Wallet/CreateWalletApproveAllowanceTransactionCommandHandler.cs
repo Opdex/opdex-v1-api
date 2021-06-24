@@ -27,22 +27,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 
         public async Task<string> Handle(CreateWalletApproveAllowanceTransactionCommand request, CancellationToken cancellationToken)
         {
-            int decimals;
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: false), cancellationToken);
 
-            if (token == null)
-            {
-                // We don't need the pool but we want to verify it exists
-                var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Token, findOrThrow: true), cancellationToken);
-
-                decimals = TokenConstants.LiquidityPoolToken.Decimals;
-            }
-            else
-            {
-                decimals = token.Decimals;
-            }
-
-            var amount = request.Amount.ToSatoshis(decimals);
+            var amount = request.Amount.ToSatoshis(token.Decimals);
 
             var command = new MakeWalletApproveAllowanceTransactionCommand(request.WalletAddress, request.Token, amount, request.Spender);
 

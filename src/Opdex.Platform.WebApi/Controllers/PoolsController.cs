@@ -15,6 +15,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
+using System.Linq;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -77,19 +78,29 @@ namespace Opdex.Platform.WebApi.Controllers
 
         [HttpGet("{address}/history")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<LiquidityPoolSummaryResponseModel>> GetPoolHistory(string address, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
+        public async Task<ActionResult<LiquidityPoolSnapshotHistoryResponseModel>> GetPoolHistory(string address, DateTime? startDate,
+                                                                                                  DateTime? endDate, CancellationToken cancellationToken)
         {
             var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(address));
             var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.SrcTokenId));
 
             var poolSnapshotDtos = await _mediator.Send(new GetLiquidityPoolSnapshotsWithFilterQuery(address, startDate, endDate), cancellationToken);
 
+            var snapshots = new List<LiquidityPoolSnapshotResponseModel>();
+
+            var response = new LiquidityPoolSnapshotHistoryResponseModel
+            {
+                Address = liquidityPool.Address,
+                SnapshotHistory = snapshots
+            };
+
             foreach (var snapshotDto in poolSnapshotDtos)
             {
                 snapshotDto.SrcTokenDecimals = srcToken.Decimals;
+                snapshots.Add(_mapper.Map<LiquidityPoolSnapshotResponseModel>(snapshotDto));
             }
 
-            var response = _mapper.Map<IEnumerable<LiquidityPoolSummaryResponseModel>>(poolSnapshotDtos);
+            response.SnapshotHistory = snapshots;
 
             return Ok(response);
         }

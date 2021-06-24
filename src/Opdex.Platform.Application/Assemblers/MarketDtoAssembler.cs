@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Markets;
 using System;
 using System.Threading.Tasks;
@@ -30,14 +31,30 @@ namespace Opdex.Platform.Application.Assemblers
                 ? await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId.GetValueOrDefault()))
                 : null;
 
-            var marketSnapshot = await _mediator.Send(new RetrieveMarketSnapshotWithFilterQuery(market.Id, DateTime.UtcNow, SnapshotType));
+            // Todo: Get multiple snapshots instead
+            var currentMarketSnapshot = await _mediator.Send(new RetrieveMarketSnapshotWithFilterQuery(market.Id, DateTime.UtcNow, SnapshotType));
+            var previousMarketSnapshot = await _mediator.Send(new RetrieveMarketSnapshotWithFilterQuery(market.Id, DateTime.UtcNow.Subtract(TimeSpan.FromDays(1)), SnapshotType));
 
             var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address));
 
             var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, 0, DateTime.UtcNow, SnapshotType));
 
             var marketDto = _mapper.Map<MarketDto>(market);
-            marketDto.Summary = _mapper.Map<MarketSnapshotDto>(marketSnapshot);
+            marketDto.Summary = _mapper.Map<MarketSnapshotDto>(currentMarketSnapshot);
+
+            if (previousMarketSnapshot.Liquidity > 0)
+            {
+                var usdDailyChange = (currentMarketSnapshot.Liquidity - previousMarketSnapshot.Liquidity) / previousMarketSnapshot.Liquidity * 100;
+                marketDto.Summary.LiquidityDailyChange = Math.Round(usdDailyChange, 2, MidpointRounding.AwayFromZero);
+            }
+
+            const int decimals = TokenConstants.Opdex.Decimals;
+            if (previousMarketSnapshot.Staking.Weight != "0")
+            {
+                var weightDailyChange = (currentMarketSnapshot.Staking.Weight.ToRoundedDecimal(decimals, decimals) - previousMarketSnapshot.Staking.Weight.ToRoundedDecimal(decimals, decimals)) / previousMarketSnapshot.Staking.Weight.ToRoundedDecimal(decimals, decimals) * 100;
+                marketDto.Summary.Staking.WeightDailyChange = Math.Round(weightDailyChange, 2, MidpointRounding.AwayFromZero);
+            }
+
             marketDto.CrsToken = _mapper.Map<TokenDto>(crs);
             marketDto.CrsToken.Summary = _mapper.Map<TokenSnapshotDto>(crsSnapshot);
 

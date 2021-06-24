@@ -4,5 +4,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.PoolDtos
     {
         public string Weight { get; set; }
         public decimal Usd { get; set; }
+        public decimal? WeightDailyChange { get; set; }
     }
 }

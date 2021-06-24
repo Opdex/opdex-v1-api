@@ -14,7 +14,8 @@ using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
 {
-    public class GetLiquidityPoolSnapshotsWithFilterQueryHandler : IRequestHandler<GetLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshotDto>>
+    public class GetLiquidityPoolSnapshotsWithFilterQueryHandler
+        : IRequestHandler<GetLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshotDto>>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -29,10 +30,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
         {
             var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPoolAddress), cancellationToken);
 
-            var from = request.From ?? new DateTime(2021, 01, 01);
+            var from = request.From ?? new DateTime(2021, 06, 11);
             var to = request.To ?? DateTime.UtcNow;
             var difference = to.Subtract(from);
-            var snapshotType = difference.Days > 30 ? SnapshotType.Daily : SnapshotType.Hourly;
+            var snapshotType = difference.Days > 100 ? SnapshotType.Daily : SnapshotType.Hourly;
 
             var poolSnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id,
                                                                                                        from,

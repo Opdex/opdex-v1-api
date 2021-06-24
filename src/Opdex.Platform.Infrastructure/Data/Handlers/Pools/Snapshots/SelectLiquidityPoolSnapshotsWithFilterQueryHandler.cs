@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots
         : IRequestHandler<SelectLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshot>>
     {
         private static readonly string SqlQuery =
-            @$"SELECT 
+            @$"SELECT
                 {nameof(LiquidityPoolSnapshotEntity.Id)},
                 {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)},
                 {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)},
@@ -26,7 +26,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots
                 {nameof(LiquidityPoolSnapshotEntity.ModifiedDate)}
             FROM pool_liquidity_snapshot
             WHERE {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
-                AND @{nameof(SqlParams.Start)} <= {nameof(LiquidityPoolSnapshotEntity.StartDate)} 
+                AND @{nameof(SqlParams.Start)} <= {nameof(LiquidityPoolSnapshotEntity.StartDate)}
                 AND @{nameof(SqlParams.End)} >= {nameof(LiquidityPoolSnapshotEntity.EndDate)}
                 AND {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}
             ORDER BY {nameof(LiquidityPoolSnapshotEntity.EndDate)} DESC
@@ -57,14 +57,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots
             internal SqlParams(long poolId, DateTime start, DateTime end, int snapshotTypeId)
             {
                 LiquidityPoolId = poolId;
-                Start = start;
-                End = end;
+                Start = start.ToString("u");
+                End = end.ToString("u");
                 SnapshotTypeId = snapshotTypeId;
             }
 
             public long LiquidityPoolId { get; }
-            public DateTime Start { get; }
-            public DateTime End { get; }
+            public string Start { get; }
+            public string End { get; }
             public int SnapshotTypeId { get; }
         }
     }

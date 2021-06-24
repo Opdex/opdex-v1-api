@@ -5,5 +5,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.PoolDtos
         public ulong Crs { get; set; }
         public string Src { get; set; }
         public decimal Usd { get; set; }
+        public decimal? UsdDailyChange { get; set; }
     }
 }

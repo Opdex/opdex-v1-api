@@ -8,6 +8,7 @@ namespace Opdex.Platform.Application.Abstractions.Models
         public long Id { get; set; }
         public long MarketId { get; set; }
         public decimal Liquidity { get; set; }
+        public decimal LiquidityDailyChange { get; set; }
         public decimal Volume { get; set; }
         public StakingDto Staking { get; set; }
         public RewardsDto Rewards { get; set; }
