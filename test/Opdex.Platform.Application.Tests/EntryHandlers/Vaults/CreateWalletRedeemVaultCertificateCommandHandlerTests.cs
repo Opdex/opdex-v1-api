@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
-                It.Is<MakeRedeemVaultCertificateCommand>(command => command.WalletAddress == walletAddress
+                It.Is<MakeWalletRedeemVaultCertificateCommand>(command => command.WalletAddress == walletAddress
                                                                  && command.Vault == vault),
                 CancellationToken.None
             ), Times.Once);
@@ -48,7 +48,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeRedeemVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeWalletRedeemVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(transactionHash);
 
             // Act

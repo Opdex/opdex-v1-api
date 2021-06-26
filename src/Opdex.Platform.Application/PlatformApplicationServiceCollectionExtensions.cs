@@ -253,10 +253,10 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeMiningGovernanceNominationCommand, long>, MakeMiningGovernanceNominationCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMarketRouterCommand, bool>, MakeMarketRouterCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMarketSnapshotCommand, bool>, MakeMarketSnapshotCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeSetVaultOwnerCommand, string>, MakeSetVaultOwnerCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeCreateVaultCertificateCommand, string>, MakeCreateVaultCertificateCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeRedeemVaultCertificateCommand, string>, MakeRedeemVaultCertificateCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeRevokeVaultCertificateCommand, string>, MakeRevokeVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletSetVaultOwnerCommand, string>, MakeWalletSetVaultOwnerCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletCreateVaultCertificateCommand, string>, MakeWalletCreateVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletRedeemVaultCertificateCommand, string>, MakeWalletRedeemVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletRevokeVaultCertificateCommand, string>, MakeWalletRevokeVaultCertificateCommandHandler>();
 
             // Entry Handlers
             services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();

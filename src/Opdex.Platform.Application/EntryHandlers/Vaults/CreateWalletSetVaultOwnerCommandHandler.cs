@@ -17,7 +17,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
 
         public Task<string> Handle(CreateWalletSetVaultOwnerCommand request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new MakeSetVaultOwnerCommand(request.WalletAddress, request.Vault, request.Owner));
+            return _mediator.Send(new MakeWalletSetVaultOwnerCommand(request.WalletAddress, request.Vault, request.Owner));
         }
     }
 }

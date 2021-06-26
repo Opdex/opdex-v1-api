@@ -10,22 +10,22 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.Handlers.Vaults
 {
-    public class MakeSetVaultOwnerCommandHandlerTests
+    public class MakeWalletSetVaultOwnerCommandHandlerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly MakeSetVaultOwnerCommandHandler _handler;
+        private readonly MakeWalletSetVaultOwnerCommandHandler _handler;
 
-        public MakeSetVaultOwnerCommandHandlerTests()
+        public MakeWalletSetVaultOwnerCommandHandlerTests()
         {
             _mediatorMock = new Mock<IMediator>();
-            _handler = new MakeSetVaultOwnerCommandHandler(_mediatorMock.Object);
+            _handler = new MakeWalletSetVaultOwnerCommandHandler(_mediatorMock.Object);
         }
 
         [Fact]
         public async Task Handle_CallCirrusCallSmartContractMethodCommand_Send()
         {
             // Arrange
-            var request = new MakeSetVaultOwnerCommand(walletAddress: "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+            var request = new MakeWalletSetVaultOwnerCommand(walletAddress: "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                        vault: "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                        owner: "PFJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl");
 
@@ -54,7 +54,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
                          .ReturnsAsync(txId);
 
             // Act
-            var response = await _handler.Handle(new MakeSetVaultOwnerCommand("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+            var response = await _handler.Handle(new MakeWalletSetVaultOwnerCommand("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                                               "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                                               "PFJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl"), default);
 

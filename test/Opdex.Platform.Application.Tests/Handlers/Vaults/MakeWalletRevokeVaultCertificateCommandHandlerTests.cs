@@ -10,22 +10,22 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.Handlers.Vaults
 {
-    public class MakeRevokeVaultCertificateCommandHandlerTests
+    public class MakeWalletRevokeVaultCertificateCommandHandlerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly MakeRevokeVaultCertificateCommandHandler _handler;
+        private readonly MakeWalletRevokeVaultCertificateCommandHandler _handler;
 
-        public MakeRevokeVaultCertificateCommandHandlerTests()
+        public MakeWalletRevokeVaultCertificateCommandHandlerTests()
         {
             _mediatorMock = new Mock<IMediator>();
-            _handler = new MakeRevokeVaultCertificateCommandHandler(_mediatorMock.Object);
+            _handler = new MakeWalletRevokeVaultCertificateCommandHandler(_mediatorMock.Object);
         }
 
         [Fact]
         public async Task Handle_CallCirrusCallSmartContractMethodCommand_Send()
         {
             // Arrange
-            var request = new MakeRevokeVaultCertificateCommand(walletAddress: "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+            var request = new MakeWalletRevokeVaultCertificateCommand(walletAddress: "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                                 vault: "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                                 holder: "PFJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl");
 
@@ -55,7 +55,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
                          .ReturnsAsync(txId);
 
             // Act
-            var response = await _handler.Handle(new MakeRevokeVaultCertificateCommand("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+            var response = await _handler.Handle(new MakeWalletRevokeVaultCertificateCommand("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                                                        "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                                                        "PFJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl"), default);
 

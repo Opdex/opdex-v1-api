@@ -1,6 +1,5 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using System.Threading;
@@ -8,26 +7,22 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults
 {
-    public class MakeSetVaultOwnerCommandHandler : IRequestHandler<MakeSetVaultOwnerCommand, string>
+    public class MakeWalletRedeemVaultCertificateCommandHandler : IRequestHandler<MakeWalletRedeemVaultCertificateCommand, string>
     {
-        private const string MethodName = "SetOwner";
+        private const string MethodName = "RedeemCertificates";
         private const string CrsToSend = "0";
+
         private readonly IMediator _mediator;
 
-        public MakeSetVaultOwnerCommandHandler(IMediator mediator)
+        public MakeWalletRedeemVaultCertificateCommandHandler(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        public Task<string> Handle(MakeSetVaultOwnerCommand request, CancellationToken cancellationToken)
+        public Task<string> Handle(MakeWalletRedeemVaultCertificateCommand request, CancellationToken cancellationToken)
         {
-            var parameters = new[]
-            {
-                request.Owner.ToSmartContractParameter(SmartContractParameterType.Address)
-            };
-
             var call = new SmartContractCallRequestDto(request.Vault, request.WalletName, request.WalletAddress,
-                                                       request.WalletPassword, CrsToSend, MethodName, parameters);
+                                                       request.WalletPassword, CrsToSend, MethodName);
 
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(call));
         }

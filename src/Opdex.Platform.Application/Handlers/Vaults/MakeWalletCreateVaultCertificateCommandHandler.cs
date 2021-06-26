@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults
 {
-    public class MakeCreateVaultCertificateCommandHandler : IRequestHandler<MakeCreateVaultCertificateCommand, string>
+    public class MakeWalletCreateVaultCertificateCommandHandler : IRequestHandler<MakeWalletCreateVaultCertificateCommand, string>
     {
         private const string MethodName = "CreateCertificate";
         private const string CrsToSend = "0";
 
         private readonly IMediator _mediator;
 
-        public MakeCreateVaultCertificateCommandHandler(IMediator mediator)
+        public MakeWalletCreateVaultCertificateCommandHandler(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        public Task<string> Handle(MakeCreateVaultCertificateCommand request, CancellationToken cancellationToken)
+        public Task<string> Handle(MakeWalletCreateVaultCertificateCommand request, CancellationToken cancellationToken)
         {
             var parameters = new[]
             {

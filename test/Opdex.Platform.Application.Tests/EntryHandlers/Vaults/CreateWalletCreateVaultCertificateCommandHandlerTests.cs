@@ -36,7 +36,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
-                It.Is<MakeCreateVaultCertificateCommand>(command => command.WalletAddress == walletAddress
+                It.Is<MakeWalletCreateVaultCertificateCommand>(command => command.WalletAddress == walletAddress
                                                                  && command.Vault == vault
                                                                  && command.Holder == holder
                                                                  && command.Amount == amount),
@@ -55,7 +55,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
             var amount = "10000000000";
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeCreateVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeWalletCreateVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(transactionHash);
 
             // Act

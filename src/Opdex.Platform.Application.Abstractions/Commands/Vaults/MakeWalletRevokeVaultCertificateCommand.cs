@@ -4,18 +4,18 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Vaults
 {
-    public class MakeSetVaultOwnerCommand : MakeWalletTransactionCommand
+    public class MakeWalletRevokeVaultCertificateCommand : MakeWalletTransactionCommand
     {
-        public MakeSetVaultOwnerCommand(string walletAddress, string vault, string owner) : base(walletAddress)
+        public MakeWalletRevokeVaultCertificateCommand(string walletAddress, string vault, string holder) : base(walletAddress)
         {
             if (!vault.HasValue()) throw new ArgumentNullException(nameof(vault), "Vault address must be set.");
-            if (!owner.HasValue()) throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
+            if (!holder.HasValue()) throw new ArgumentNullException(nameof(holder), "Holder address must be set.");
 
             Vault = vault;
-            Owner = owner;
+            Holder = holder;
         }
 
         public string Vault { get; }
-        public string Owner { get; }
+        public string Holder { get; }
     }
 }

@@ -10,25 +10,23 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.Handlers.Vaults
 {
-    public class MakeCreateVaultCertificateCommandHandlerTests
+    public class MakeWalletRedeemVaultCertificateCommandHandlerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly MakeCreateVaultCertificateCommandHandler _handler;
+        private readonly MakeWalletRedeemVaultCertificateCommandHandler _handler;
 
-        public MakeCreateVaultCertificateCommandHandlerTests()
+        public MakeWalletRedeemVaultCertificateCommandHandlerTests()
         {
             _mediatorMock = new Mock<IMediator>();
-            _handler = new MakeCreateVaultCertificateCommandHandler(_mediatorMock.Object);
+            _handler = new MakeWalletRedeemVaultCertificateCommandHandler(_mediatorMock.Object);
         }
 
         [Fact]
         public async Task Handle_CallCirrusCallSmartContractMethodCommand_Send()
         {
             // Arrange
-            var request = new MakeCreateVaultCertificateCommand(walletAddress: "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                                vault: "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
-                                                                holder: "PFJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
-                                                                amount: "10000000");
+            var request = new MakeWalletRedeemVaultCertificateCommand(walletAddress: "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+                                                                vault: "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
 
             // Act
             await _handler.Handle(request, new CancellationTokenSource().Token);
@@ -40,9 +38,8 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
                         && command.CallDto.Sender == request.WalletAddress
                         && command.CallDto.Password == request.WalletPassword
                         && command.CallDto.Amount == "0"
-                        && command.CallDto.MethodName == "CreateCertificate"
-                        && command.CallDto.Parameters[0] == $"9#{request.Holder}"
-                        && command.CallDto.Parameters[1] == $"12#{request.Amount}"
+                        && command.CallDto.MethodName == "RedeemCertificates"
+                        && command.CallDto.Parameters == null
             ), CancellationToken.None), Times.Once);
         }
 
@@ -57,10 +54,8 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
                          .ReturnsAsync(txId);
 
             // Act
-            var response = await _handler.Handle(new MakeCreateVaultCertificateCommand("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                                                       "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
-                                                                                       "PFJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
-                                                                                       "1000000"), default);
+            var response = await _handler.Handle(new MakeWalletRedeemVaultCertificateCommand("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+                                                                                       "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk"), default);
 
             // Assert
             response.Should().Be(txId);

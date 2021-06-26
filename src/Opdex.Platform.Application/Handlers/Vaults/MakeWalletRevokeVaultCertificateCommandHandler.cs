@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults
 {
-    public class MakeRevokeVaultCertificateCommandHandler : IRequestHandler<MakeRevokeVaultCertificateCommand, string>
+    public class MakeWalletRevokeVaultCertificateCommandHandler : IRequestHandler<MakeWalletRevokeVaultCertificateCommand, string>
     {
         private const string MethodName = "RevokeCertificates";
         private const string CrsToSend = "0";
 
         private readonly IMediator _mediator;
 
-        public MakeRevokeVaultCertificateCommandHandler(IMediator mediator)
+        public MakeWalletRevokeVaultCertificateCommandHandler(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        public Task<string> Handle(MakeRevokeVaultCertificateCommand request, CancellationToken cancellationToken)
+        public Task<string> Handle(MakeWalletRevokeVaultCertificateCommand request, CancellationToken cancellationToken)
         {
             var parameters = new[]
             {
