@@ -18,7 +18,7 @@ using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
-using Opdex.Platform.Application.Abstractions.Commands.Vault;
+using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
@@ -31,7 +31,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vault;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
@@ -53,7 +53,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions.TransactionLogs;
-using Opdex.Platform.Application.Abstractions.Queries.Vault;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.EntryHandlers;
 using Opdex.Platform.Application.EntryHandlers.Blocks;
 using Opdex.Platform.Application.EntryHandlers.Markets;
@@ -69,7 +69,7 @@ using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Mark
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernance;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens;
-using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vault;
+using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.EntryHandlers.Transactions.Wallet;
 using Opdex.Platform.Application.Handlers;
 using Opdex.Platform.Application.Handlers.Addresses;
@@ -85,14 +85,14 @@ using Opdex.Platform.Application.Handlers.Tokens.Snapshots;
 using Opdex.Platform.Application.Handlers.Transactions;
 using Opdex.Platform.Application.Handlers.Transactions.TransactionLogs;
 using Opdex.Platform.Application.Handlers.Transactions.Wallet;
-using Opdex.Platform.Application.Handlers.vault;
+using Opdex.Platform.Application.Handlers.Vaults;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDtos.TokenDto;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Vault;
-using Opdex.Platform.Application.EntryHandlers.Vault;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
+using Opdex.Platform.Application.EntryHandlers.Vaults;
 
 namespace Opdex.Platform.Application
 {

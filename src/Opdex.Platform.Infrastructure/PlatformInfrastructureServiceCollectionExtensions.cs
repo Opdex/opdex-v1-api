@@ -35,7 +35,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vault;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Deployers;
@@ -49,7 +49,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distributio
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vault;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.BlockStore;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.MiningGovernance;
@@ -74,7 +74,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
-using Opdex.Platform.Infrastructure.Data.Handlers.Vault;
+using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
 
 namespace Opdex.Platform.Infrastructure
 {

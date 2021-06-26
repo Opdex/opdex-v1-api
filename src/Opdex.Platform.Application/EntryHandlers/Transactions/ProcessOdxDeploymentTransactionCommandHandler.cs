@@ -7,15 +7,13 @@ using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.Commands.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
-using Opdex.Platform.Application.Abstractions.Commands.Vault;
+using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
-using Opdex.Platform.Application.Abstractions.Queries.Vault;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.ODX;
 
@@ -88,7 +86,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                 if (vault == null)
                 {
-                    vault = new Domain.Models.ODX.Vault(odxTokenSummary.Vault, odxId, transaction.From, transaction.BlockHeight, transaction.BlockHeight);
+                    vault = new Vault(odxTokenSummary.Vault, odxId, transaction.From, transaction.BlockHeight, transaction.BlockHeight);
                     var vaultId = await _mediator.Send(new MakeVaultCommand(vault), CancellationToken.None);
                 }
 
