@@ -51,7 +51,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             await _controller.SetOwner(vaultAddress, request, cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<ProcessSetVaultOwnerCommand>(command
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateWalletSetVaultOwnerCommand>(command
                 => command.Vault == vaultAddress
                 && command.Owner == request.Owner
                 && command.WalletAddress == walletAddress
@@ -65,7 +65,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             _applicationContextMock.Setup(callTo => callTo.Wallet).Returns("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
 
             var txId = "j2oD0ma11BkSyx";
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<ProcessSetVaultOwnerCommand>(), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateWalletSetVaultOwnerCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(txId);
 
             var request = new SetVaultOwnerRequest
@@ -101,7 +101,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             await _controller.CreateCertificate(vaultAddress, request, cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<ProcessCreateVaultCertificateCommand>(command
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateWalletCreateVaultCertificateCommand>(command
                 => command.Vault == vaultAddress
                 && command.Holder == request.Holder
                 && command.Amount == request.Amount
@@ -116,7 +116,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             _applicationContextMock.Setup(callTo => callTo.Wallet).Returns("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
 
             var txId = "j2oD0ma11BkSyx";
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<ProcessCreateVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateWalletCreateVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(txId);
 
             var request = new CreateVaultCertificateRequest
@@ -148,7 +148,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             await _controller.RedeemCertificates(vaultAddress, cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<ProcessRedeemVaultCertificateCommand>(command
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateWalletRedeemVaultCertificateCommand>(command
                 => command.Vault == vaultAddress
                 && command.WalletAddress == walletAddress
             ), cancellationToken), Times.Once);
@@ -161,7 +161,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             _applicationContextMock.Setup(callTo => callTo.Wallet).Returns("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
 
             var txId = "j2oD0ma11BkSyx";
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<ProcessRedeemVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateWalletRedeemVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(txId);
 
             // Act
@@ -189,7 +189,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             await _controller.RevokeCertificates(vaultAddress, new RevokeVaultCertificatesRequest { Holder = holder }, cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<ProcessRevokeVaultCertificateCommand>(command
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateWalletRevokeVaultCertificateCommand>(command
                 => command.Vault == vaultAddress
                 && command.Holder == holder
                 && command.WalletAddress == walletAddress
@@ -203,7 +203,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             _applicationContextMock.Setup(callTo => callTo.Wallet).Returns("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
 
             var txId = "j2oD0ma11BkSyx";
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<ProcessRevokeVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateWalletRevokeVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(txId);
 
             var request = new RevokeVaultCertificatesRequest { Holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };

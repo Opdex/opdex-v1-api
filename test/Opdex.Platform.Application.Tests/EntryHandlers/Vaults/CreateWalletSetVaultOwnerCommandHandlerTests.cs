@@ -10,15 +10,15 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 {
-    public class ProcessSetVaultOwnerCommandHandlerTests
+    public class CreateWalletSetVaultOwnerCommandHandlerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly ProcessSetVaultOwnerCommandHandler _handler;
+        private readonly CreateWalletSetVaultOwnerCommandHandler _handler;
 
-        public ProcessSetVaultOwnerCommandHandlerTests()
+        public CreateWalletSetVaultOwnerCommandHandlerTests()
         {
             _mediatorMock = new Mock<IMediator>();
-            _handler = new ProcessSetVaultOwnerCommandHandler(_mediatorMock.Object);
+            _handler = new CreateWalletSetVaultOwnerCommandHandler(_mediatorMock.Object);
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             var owner = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
 
             // Act
-            await _handler.Handle(new ProcessSetVaultOwnerCommand(walletAddress, vault, owner), new CancellationTokenSource().Token);
+            await _handler.Handle(new CreateWalletSetVaultOwnerCommand(walletAddress, vault, owner), new CancellationTokenSource().Token);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
@@ -55,7 +55,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
                          .ReturnsAsync(transactionHash);
 
             // Act
-            var response = await _handler.Handle(new ProcessSetVaultOwnerCommand(walletAddress, vault, owner), default);
+            var response = await _handler.Handle(new CreateWalletSetVaultOwnerCommand(walletAddress, vault, owner), default);
 
             // Assert
             response.Should().Be(transactionHash);

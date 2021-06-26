@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Vaults
 {
-    public class ProcessRevokeVaultCertificateCommandHandler : IRequestHandler<ProcessRevokeVaultCertificateCommand, string>
+    public class CreateWalletRevokeVaultCertificateCommandHandler : IRequestHandler<CreateWalletRevokeVaultCertificateCommand, string>
     {
         private readonly IMediator _mediator;
 
-        public ProcessRevokeVaultCertificateCommandHandler(IMediator mediator)
+        public CreateWalletRevokeVaultCertificateCommandHandler(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        public Task<string> Handle(ProcessRevokeVaultCertificateCommand request, CancellationToken cancellationToken)
+        public Task<string> Handle(CreateWalletRevokeVaultCertificateCommand request, CancellationToken cancellationToken)
         {
             return _mediator.Send(new MakeRevokeVaultCertificateCommand(request.WalletAddress, request.Vault, request.Holder));
         }

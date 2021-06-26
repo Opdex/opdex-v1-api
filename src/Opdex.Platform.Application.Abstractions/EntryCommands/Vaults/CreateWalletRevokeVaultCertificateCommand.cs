@@ -4,15 +4,18 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
 {
-    public class ProcessRedeemVaultCertificateCommand : CreateWalletTransactionCommand
+    public class CreateWalletRevokeVaultCertificateCommand : CreateWalletTransactionCommand
     {
-        public ProcessRedeemVaultCertificateCommand(string walletAddress, string vault) : base(walletAddress)
+        public CreateWalletRevokeVaultCertificateCommand(string walletAddress, string vault, string holder) : base(walletAddress)
         {
             if (!vault.HasValue()) throw new ArgumentNullException(nameof(vault), "Vault address must be set.");
+            if (!holder.HasValue()) throw new ArgumentNullException(nameof(holder), "Holder address must be set.");
 
             Vault = vault;
+            Holder = holder;
         }
 
         public string Vault { get; }
+        public string Holder { get; }
     }
 }

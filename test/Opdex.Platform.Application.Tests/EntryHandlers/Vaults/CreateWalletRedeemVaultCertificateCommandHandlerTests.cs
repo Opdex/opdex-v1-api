@@ -10,15 +10,15 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 {
-    public class ProcessRedeemVaultCertificateCommandHandlerTests
+    public class CreateWalletRedeemVaultCertificateCommandHandlerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly ProcessRedeemVaultCertificateCommandHandler _handler;
+        private readonly CreateWalletRedeemVaultCertificateCommandHandler _handler;
 
-        public ProcessRedeemVaultCertificateCommandHandlerTests()
+        public CreateWalletRedeemVaultCertificateCommandHandlerTests()
         {
             _mediatorMock = new Mock<IMediator>();
-            _handler = new ProcessRedeemVaultCertificateCommandHandler(_mediatorMock.Object);
+            _handler = new CreateWalletRedeemVaultCertificateCommandHandler(_mediatorMock.Object);
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
 
             // Act
-            await _handler.Handle(new ProcessRedeemVaultCertificateCommand(walletAddress, vault), new CancellationTokenSource().Token);
+            await _handler.Handle(new CreateWalletRedeemVaultCertificateCommand(walletAddress, vault), new CancellationTokenSource().Token);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
@@ -52,7 +52,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
                          .ReturnsAsync(transactionHash);
 
             // Act
-            var response = await _handler.Handle(new ProcessRedeemVaultCertificateCommand(walletAddress, vault), default);
+            var response = await _handler.Handle(new CreateWalletRedeemVaultCertificateCommand(walletAddress, vault), default);
 
             // Assert
             response.Should().Be(transactionHash);

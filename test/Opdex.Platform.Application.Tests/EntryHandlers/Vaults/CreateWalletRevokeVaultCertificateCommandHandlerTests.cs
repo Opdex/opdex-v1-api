@@ -10,36 +10,34 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 {
-    public class ProcessCreateVaultCertificateCommandHandlerTests
+    public class CreateWalletRevokeVaultCertificateCommandHandlerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly ProcessCreateVaultCertificateCommandHandler _handler;
+        private readonly CreateWalletRevokeVaultCertificateCommandHandler _handler;
 
-        public ProcessCreateVaultCertificateCommandHandlerTests()
+        public CreateWalletRevokeVaultCertificateCommandHandlerTests()
         {
             _mediatorMock = new Mock<IMediator>();
-            _handler = new ProcessCreateVaultCertificateCommandHandler(_mediatorMock.Object);
+            _handler = new CreateWalletRevokeVaultCertificateCommandHandler(_mediatorMock.Object);
         }
 
         [Fact]
-        public async Task Handle_MediatorMakeCreateVaultCertificateCommand_Send()
+        public async Task Handle_MediatorMakeRevokeVaultCertificateCommand_Send()
         {
             // Arrange
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
-            var amount = "10000000000";
 
             // Act
-            await _handler.Handle(new ProcessCreateVaultCertificateCommand(walletAddress, vault, holder, amount),
+            await _handler.Handle(new CreateWalletRevokeVaultCertificateCommand(walletAddress, vault, holder),
                                   new CancellationTokenSource().Token);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
-                It.Is<MakeCreateVaultCertificateCommand>(command => command.WalletAddress == walletAddress
+                It.Is<MakeRevokeVaultCertificateCommand>(command => command.WalletAddress == walletAddress
                                                                  && command.Vault == vault
-                                                                 && command.Holder == holder
-                                                                 && command.Amount == amount),
+                                                                 && command.Holder == holder),
                 CancellationToken.None
             ), Times.Once);
         }
@@ -53,13 +51,12 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
-            var amount = "10000000000";
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeCreateVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeRevokeVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(transactionHash);
 
             // Act
-            var response = await _handler.Handle(new ProcessCreateVaultCertificateCommand(walletAddress, vault, holder, amount), default);
+            var response = await _handler.Handle(new CreateWalletRevokeVaultCertificateCommand(walletAddress, vault, holder), default);
 
             // Assert
             response.Should().Be(transactionHash);

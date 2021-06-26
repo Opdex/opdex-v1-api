@@ -204,10 +204,10 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessLiquidityPoolSnapshotsByTransactionCommand, Unit>, ProcessLiquidityPoolSnapshotsByTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateBlockCommand, bool>, CreateBlockCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessLatestBlocksCommand, Unit>, ProcessLatestBlocksCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessCreateVaultCertificateCommand, string>, ProcessCreateVaultCertificateCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessRedeemVaultCertificateCommand, string>, ProcessRedeemVaultCertificateCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessRevokeVaultCertificateCommand, string>, ProcessRevokeVaultCertificateCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessSetVaultOwnerCommand, string>, ProcessSetVaultOwnerCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletCreateVaultCertificateCommand, string>, CreateWalletCreateVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletRedeemVaultCertificateCommand, string>, CreateWalletRedeemVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletRevokeVaultCertificateCommand, string>, CreateWalletRevokeVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletSetVaultOwnerCommand, string>, CreateWalletSetVaultOwnerCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessSrcTokenSnapshotCommand, decimal>, ProcessSrcTokenSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessLpTokenSnapshotCommand, decimal>, ProcessLpTokenSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessDailySnapshotRefreshCommand, Unit>, ProcessDailySnapshotRefreshCommandHandler>();

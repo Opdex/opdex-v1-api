@@ -42,9 +42,9 @@ namespace Opdex.Platform.WebApi.Controllers
                                                          SetVaultOwnerRequest request,
                                                          CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new ProcessSetVaultOwnerCommand(_context.Wallet,
-                                                                                       address,
-                                                                                       request.Owner), cancellationToken);
+            var transactionHash = await _mediator.Send(new CreateWalletSetVaultOwnerCommand(_context.Wallet,
+                                                                                            address,
+                                                                                            request.Owner), cancellationToken);
             return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
         }
 
@@ -61,10 +61,10 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                   CreateVaultCertificateRequest request,
                                                                   CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new ProcessCreateVaultCertificateCommand(_context.Wallet,
-                                                                                                address,
-                                                                                                request.Holder,
-                                                                                                request.Amount), cancellationToken);
+            var transactionHash = await _mediator.Send(new CreateWalletCreateVaultCertificateCommand(_context.Wallet,
+                                                                                                     address,
+                                                                                                     request.Holder,
+                                                                                                     request.Amount), cancellationToken);
             return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
         }
 
@@ -79,8 +79,8 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<ActionResult<string>> RedeemCertificates(string address,
                                                                    CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new ProcessRedeemVaultCertificateCommand(_context.Wallet,
-                                                                                                address), cancellationToken);
+            var transactionHash = await _mediator.Send(new CreateWalletRedeemVaultCertificateCommand(_context.Wallet, address),
+                                                       cancellationToken);
             return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
         }
 
@@ -97,9 +97,9 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                    RevokeVaultCertificatesRequest request,
                                                                    CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new ProcessRevokeVaultCertificateCommand(_context.Wallet,
-                                                                                                address,
-                                                                                                request.Holder), cancellationToken);
+            var transactionHash = await _mediator.Send(new CreateWalletRevokeVaultCertificateCommand(_context.Wallet,
+                                                                                                     address,
+                                                                                                     request.Holder), cancellationToken);
             return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
         }
     }
