@@ -6,10 +6,8 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
-using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Domain.Models.Addresses;
-using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
@@ -68,7 +66,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
         }
 
-        private async Task TryUpdateAddressBalance(Token token,long tokenId, string wallet, ulong blockHeight)
+        private async Task TryUpdateAddressBalance(Token token, long tokenId, string wallet, ulong blockHeight)
         {
             try
             {
