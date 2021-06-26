@@ -27,10 +27,9 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
             // Arrange
             var request = new MakeRedeemVaultCertificateCommand(walletAddress: "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                                 vault: "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
-            var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _handler.Handle(request, cancellationToken);
+            await _handler.Handle(request, new CancellationTokenSource().Token);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusCallSmartContractMethodCommand>(
@@ -41,7 +40,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
                         && command.CallDto.Amount == "0"
                         && command.CallDto.MethodName == "RedeemCertificates"
                         && command.CallDto.Parameters == null
-            ), cancellationToken), Times.Once);
+            ), CancellationToken.None), Times.Once);
         }
 
         [Fact]

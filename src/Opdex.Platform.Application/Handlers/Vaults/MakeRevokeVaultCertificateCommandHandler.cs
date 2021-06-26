@@ -30,7 +30,7 @@ namespace Opdex.Platform.Application.Handlers.Vaults
             var call = new SmartContractCallRequestDto(request.Vault, request.WalletName, request.WalletAddress,
                                                        request.WalletPassword, CrsToSend, MethodName, parameters);
 
-            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(call), cancellationToken);
+            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(call));
         }
     }
 }

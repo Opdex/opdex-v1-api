@@ -20,7 +20,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
             return _mediator.Send(new MakeCreateVaultCertificateCommand(request.WalletAddress,
                                                                         request.Vault,
                                                                         request.Holder,
-                                                                        request.Amount), cancellationToken);
+                                                                        request.Amount));
         }
     }
 }

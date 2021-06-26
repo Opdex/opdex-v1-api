@@ -29,10 +29,9 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
                                                                 vault: "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                                 holder: "PFJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
                                                                 amount: "10000000");
-            var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _handler.Handle(request, cancellationToken);
+            await _handler.Handle(request, new CancellationTokenSource().Token);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusCallSmartContractMethodCommand>(
@@ -44,7 +43,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
                         && command.CallDto.MethodName == "CreateCertificate"
                         && command.CallDto.Parameters[0] == $"9#{request.Holder}"
                         && command.CallDto.Parameters[1] == $"12#{request.Amount}"
-            ), cancellationToken), Times.Once);
+            ), CancellationToken.None), Times.Once);
         }
 
         [Fact]

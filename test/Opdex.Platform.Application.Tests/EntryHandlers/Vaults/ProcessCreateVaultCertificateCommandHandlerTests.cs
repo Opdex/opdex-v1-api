@@ -29,10 +29,10 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
             var amount = "10000000000";
-            var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _handler.Handle(new ProcessCreateVaultCertificateCommand(walletAddress, vault, holder, amount), cancellationToken);
+            await _handler.Handle(new ProcessCreateVaultCertificateCommand(walletAddress, vault, holder, amount),
+                                  new CancellationTokenSource().Token);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
@@ -40,7 +40,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
                                                                  && command.Vault == vault
                                                                  && command.Holder == holder
                                                                  && command.Amount == amount),
-                cancellationToken
+                CancellationToken.None
             ), Times.Once);
         }
 

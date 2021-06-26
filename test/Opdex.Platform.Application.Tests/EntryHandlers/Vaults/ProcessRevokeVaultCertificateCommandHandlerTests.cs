@@ -28,17 +28,17 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
-            var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _handler.Handle(new ProcessRevokeVaultCertificateCommand(walletAddress, vault, holder), cancellationToken);
+            await _handler.Handle(new ProcessRevokeVaultCertificateCommand(walletAddress, vault, holder),
+                                  new CancellationTokenSource().Token);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
                 It.Is<MakeRevokeVaultCertificateCommand>(command => command.WalletAddress == walletAddress
                                                                  && command.Vault == vault
                                                                  && command.Holder == holder),
-                cancellationToken
+                CancellationToken.None
             ), Times.Once);
         }
 

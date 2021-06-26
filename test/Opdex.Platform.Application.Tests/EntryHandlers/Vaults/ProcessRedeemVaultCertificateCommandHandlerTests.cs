@@ -27,16 +27,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             // Arrange
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _handler.Handle(new ProcessRedeemVaultCertificateCommand(walletAddress, vault), cancellationToken);
+            await _handler.Handle(new ProcessRedeemVaultCertificateCommand(walletAddress, vault), new CancellationTokenSource().Token);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
                 It.Is<MakeRedeemVaultCertificateCommand>(command => command.WalletAddress == walletAddress
                                                                  && command.Vault == vault),
-                cancellationToken
+                CancellationToken.None
             ), Times.Once);
         }
 

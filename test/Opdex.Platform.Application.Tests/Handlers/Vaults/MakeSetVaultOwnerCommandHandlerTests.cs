@@ -28,10 +28,9 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
             var request = new MakeSetVaultOwnerCommand(walletAddress: "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                        vault: "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                        owner: "PFJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl");
-            var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _handler.Handle(request, cancellationToken);
+            await _handler.Handle(request, new CancellationTokenSource().Token);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusCallSmartContractMethodCommand>(
@@ -41,7 +40,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
                         && command.CallDto.Password == request.WalletPassword
                         && command.CallDto.Amount == "0"
                         && command.CallDto.MethodName == "SetOwner"
-                        && command.CallDto.Parameters[0] == $"9#{request.Owner}"), cancellationToken), Times.Once);
+                        && command.CallDto.Parameters[0] == $"9#{request.Owner}"), CancellationToken.None), Times.Once);
         }
 
         [Fact]

@@ -28,10 +28,9 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
             var request = new MakeRevokeVaultCertificateCommand(walletAddress: "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                                 vault: "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                                 holder: "PFJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl");
-            var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _handler.Handle(request, cancellationToken);
+            await _handler.Handle(request, new CancellationTokenSource().Token);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusCallSmartContractMethodCommand>(
@@ -42,7 +41,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
                         && command.CallDto.Amount == "0"
                         && command.CallDto.MethodName == "RevokeCertificates"
                         && command.CallDto.Parameters[0] == $"9#{request.Holder}"
-            ), cancellationToken), Times.Once);
+            ), CancellationToken.None), Times.Once);
         }
 
         [Fact]

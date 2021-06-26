@@ -28,17 +28,16 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var owner = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
-            var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _handler.Handle(new ProcessSetVaultOwnerCommand(walletAddress, vault, owner), cancellationToken);
+            await _handler.Handle(new ProcessSetVaultOwnerCommand(walletAddress, vault, owner), new CancellationTokenSource().Token);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
                 It.Is<MakeSetVaultOwnerCommand>(command => command.WalletAddress == walletAddress
                                                         && command.Vault == vault
                                                         && command.Owner == owner),
-                cancellationToken
+                CancellationToken.None
             ), Times.Once);
         }
 

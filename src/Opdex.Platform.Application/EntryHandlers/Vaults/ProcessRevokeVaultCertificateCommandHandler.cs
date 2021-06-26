@@ -17,9 +17,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
 
         public Task<string> Handle(ProcessRevokeVaultCertificateCommand request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new MakeRevokeVaultCertificateCommand(request.WalletAddress,
-                                                                        request.Vault,
-                                                                        request.Holder), cancellationToken);
+            return _mediator.Send(new MakeRevokeVaultCertificateCommand(request.WalletAddress, request.Vault, request.Holder));
         }
     }
 }
