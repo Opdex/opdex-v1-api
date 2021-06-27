@@ -1,6 +1,6 @@
-namespace Opdex.Platform.WebApi.Models.Responses.Pools
+namespace Opdex.Platform.Application.Abstractions.Models
 {
-    public class MiningPoolResponseModel
+    public class MiningPoolDto
     {
         public string Address { get; set; }
         public ulong MiningPeriodEndBlock { get; set; }

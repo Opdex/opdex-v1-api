@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.Queries.MiningGovernance;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernance;
@@ -33,21 +34,21 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var miningGovernanceSummaryQuery = new RetrieveMiningGovernanceContractSummaryByAddressQuery(miningGovernance.Address);
                 var miningGovernanceSummary = await _mediator.Send(miningGovernanceSummaryQuery, CancellationToken.None);
-                
+
                 var isNewer = request.BlockHeight < miningGovernance.ModifiedBlock;
                 if (isNewer && miningGovernance.Id != 0)
                 {
                     return false;
                 }
-                
+
                 miningGovernance.Update(miningGovernanceSummary, request.BlockHeight);
-                
-                return true;
+
+                return await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance)) > 0;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(RewardMiningPoolLog)}");
-               
+
                 return false;
             }
         }

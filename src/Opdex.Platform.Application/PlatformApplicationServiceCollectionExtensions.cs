@@ -266,6 +266,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IModelAssembler<Transaction, TransactionDto>, TransactionDtoAssembler>();
             services.AddTransient<IModelAssembler<LiquidityPool, LiquidityPoolDto>, LiquidityPoolDtoAssembler>();
             services.AddTransient<IModelAssembler<Market, MarketDto>, MarketDtoAssembler>();
+            services.AddTransient<IModelAssembler<MiningPool, MiningPoolDto>, MiningPoolDtoAssembler>();
 
             return services;
         }

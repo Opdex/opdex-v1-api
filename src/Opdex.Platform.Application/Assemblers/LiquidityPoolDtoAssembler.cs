@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
@@ -22,12 +23,15 @@ namespace Opdex.Platform.Application.Assemblers
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly IModelAssembler<MiningPool, MiningPoolDto> _miningPoolAssembler;
+
         private const SnapshotType SnapshotType = Common.SnapshotType.Daily;
 
-        public LiquidityPoolDtoAssembler(IMediator mediator, IMapper mapper)
+        public LiquidityPoolDtoAssembler(IMediator mediator, IMapper mapper, IModelAssembler<MiningPool, MiningPoolDto> miningPoolAssembler)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _miningPoolAssembler = miningPoolAssembler ?? throw new ArgumentNullException(nameof(miningPoolAssembler));
         }
 
         public async Task<LiquidityPoolDto> Assemble(LiquidityPool pool)
@@ -71,39 +75,22 @@ namespace Opdex.Platform.Application.Assemblers
 
             poolDto.Summary = _mapper.Map<LiquidityPoolSnapshotDto>(currentPoolSnapshot);
 
-            // Todo: Standardize this entire process
-            if (previousPoolSnapshot != null && previousPoolSnapshot.Reserves.Usd != 0)
-            {
-                var currentReserves = currentPoolSnapshot.Reserves.Usd;
-                var previousReserves = previousPoolSnapshot.Reserves.Usd;
-                var usdDailyChange = (currentReserves - previousReserves) / previousReserves * 100;
+            // adjust daily change values
+            poolDto.Summary.Reserves.SetUsdDailyChange(previousPoolSnapshot?.Reserves?.Usd ?? 0.00m);
+            poolDto.Summary.Staking.SetDailyChange(previousPoolSnapshot?.Staking?.Weight);
 
-                poolDto.Summary.Reserves.UsdDailyChange = Math.Round(usdDailyChange, 2, MidpointRounding.AwayFromZero);
-            }
-            else
-            {
-                poolDto.Summary.Reserves.UsdDailyChange = 0.00m;
-            }
-
-            if (previousPoolSnapshot != null && previousPoolSnapshot.Staking.Weight != "0")
-            {
-                const int decimals = TokenConstants.Opdex.Decimals;
-                var currentWeight = currentPoolSnapshot.Staking.Weight.ToRoundedDecimal(decimals, decimals);
-                var previousWeight = previousPoolSnapshot.Staking.Weight.ToRoundedDecimal(decimals, decimals);
-                var weightDailyChange = (currentWeight - previousWeight) / previousWeight * 100;
-
-                poolDto.Summary.Staking.WeightDailyChange = Math.Round(weightDailyChange, 2, MidpointRounding.AwayFromZero);
-            }
-            else
-            {
-                poolDto.Summary.Staking.WeightDailyChange = 0.00m;
-            }
-
+            // Todo: Revisit - sets decimals value, dirty hack to mapping in the web api layer
             poolDto.Summary.SrcTokenDecimals = srcToken.Decimals;
+
+            // src
             poolDto.SrcToken = _mapper.Map<TokenDto>(srcToken);
             poolDto.SrcToken.Summary = _mapper.Map<TokenSnapshotDto>(srcTokenSnapshot);
+
+            // lp
             poolDto.LpToken = _mapper.Map<TokenDto>(lpToken);
             poolDto.LpToken.Summary = _mapper.Map<TokenSnapshotDto>(lpTokenSnapshot);
+
+            // crs
             poolDto.CrsToken = _mapper.Map<TokenDto>(crsToken);
             poolDto.CrsToken.Summary = _mapper.Map<TokenSnapshotDto>(crsSnapshot);
 
@@ -114,11 +101,8 @@ namespace Opdex.Platform.Application.Assemblers
                 poolDto.StakingToken = _mapper.Map<TokenDto>(stakingToken);
                 poolDto.StakingToken.Summary = _mapper.Map<TokenSnapshotDto>(stakingTokenSnapshot);
 
-                var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id, false));
-
-                // Todo: Add Mining Pool Dto and Response models
-                // Todo: Needs to have a not null mining pool and be active.
-                poolDto.MiningEnabled = miningPool != null;
+                var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id));
+                poolDto.MiningPool = await _miningPoolAssembler.Assemble(miningPool);
             }
             else
             {

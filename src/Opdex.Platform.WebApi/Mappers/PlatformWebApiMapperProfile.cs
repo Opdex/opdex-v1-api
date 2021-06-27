@@ -42,6 +42,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => MapStaking(src.Summary.Staking, src.StakingEnabled)))
                 .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => MapVolume(src.Summary.Volume, src.SrcToken.Decimals)))
                 .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => MapCost(src.Summary.Cost, src.SrcToken.Decimals)))
+                .ForMember(dest => dest.Mining, opt => opt.MapFrom(src => src.MiningPool))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolDto, LiquidityPoolTokenGroupResponseModel>()
@@ -69,6 +70,15 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => MapCost(src.Cost, src.SrcTokenDecimals)))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<MiningPoolDto, MiningPoolResponseModel>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.MiningPeriodEndBlock, opt => opt.MapFrom(src => src.MiningPeriodEndBlock))
+                .ForMember(dest => dest.RewardPerBlock, opt => opt.MapFrom(src => src.RewardPerBlock.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.RewardPerLpt, opt => opt.MapFrom(src => src.RewardPerLpt.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.TokensMining, opt => opt.MapFrom(src => src.TokensMining.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals)))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<OhlcDecimalDto, OhlcDecimalResponseModel>()
