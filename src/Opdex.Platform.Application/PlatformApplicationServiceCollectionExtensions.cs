@@ -11,7 +11,6 @@ using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
@@ -19,12 +18,11 @@ using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
-using Opdex.Platform.Application.Abstractions.Commands.Vault;
+using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Pools;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools;
@@ -33,7 +31,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vault;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
@@ -55,7 +53,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions.TransactionLogs;
-using Opdex.Platform.Application.Abstractions.Queries.Vault;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.EntryHandlers;
 using Opdex.Platform.Application.EntryHandlers.Blocks;
 using Opdex.Platform.Application.EntryHandlers.Markets;
@@ -71,7 +69,7 @@ using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Mark
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernance;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens;
-using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vault;
+using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.EntryHandlers.Transactions.Wallet;
 using Opdex.Platform.Application.Handlers;
 using Opdex.Platform.Application.Handlers.Addresses;
@@ -87,12 +85,14 @@ using Opdex.Platform.Application.Handlers.Tokens.Snapshots;
 using Opdex.Platform.Application.Handlers.Transactions;
 using Opdex.Platform.Application.Handlers.Transactions.TransactionLogs;
 using Opdex.Platform.Application.Handlers.Transactions.Wallet;
-using Opdex.Platform.Application.Handlers.vault;
+using Opdex.Platform.Application.Handlers.Vaults;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDtos.TokenDto;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
+using Opdex.Platform.Application.EntryHandlers.Vaults;
 
 namespace Opdex.Platform.Application
 {
@@ -204,6 +204,10 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessLiquidityPoolSnapshotsByTransactionCommand, Unit>, ProcessLiquidityPoolSnapshotsByTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateBlockCommand, bool>, CreateBlockCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessLatestBlocksCommand, Unit>, ProcessLatestBlocksCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletCreateVaultCertificateCommand, string>, CreateWalletCreateVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletRedeemVaultCertificateCommand, string>, CreateWalletRedeemVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletRevokeVaultCertificateCommand, string>, CreateWalletRevokeVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateWalletSetVaultOwnerCommand, string>, CreateWalletSetVaultOwnerCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessSrcTokenSnapshotCommand, decimal>, ProcessSrcTokenSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessLpTokenSnapshotCommand, decimal>, ProcessLpTokenSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessDailySnapshotRefreshCommand, Unit>, ProcessDailySnapshotRefreshCommandHandler>();
@@ -249,6 +253,10 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeMiningGovernanceNominationCommand, long>, MakeMiningGovernanceNominationCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMarketRouterCommand, bool>, MakeMarketRouterCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMarketSnapshotCommand, bool>, MakeMarketSnapshotCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletSetVaultOwnerCommand, string>, MakeWalletSetVaultOwnerCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletCreateVaultCertificateCommand, string>, MakeWalletCreateVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletRedeemVaultCertificateCommand, string>, MakeWalletRedeemVaultCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeWalletRevokeVaultCertificateCommand, string>, MakeWalletRevokeVaultCertificateCommandHandler>();
 
             // Entry Handlers
             services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();
