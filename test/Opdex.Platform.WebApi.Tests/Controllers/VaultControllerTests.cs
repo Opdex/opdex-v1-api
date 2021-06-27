@@ -93,7 +93,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             var request = new CreateVaultCertificateRequest
             {
                 Holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                Amount = "1000000000"
+                Amount = "1000.00000000"
             };
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -122,7 +122,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             var request = new CreateVaultCertificateRequest
             {
                 Holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                Amount = "1000000000"
+                Amount = "1000.00000000"
             };
 
             // Act

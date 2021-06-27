@@ -10,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
         {
             if (!vault.HasValue()) throw new ArgumentNullException(nameof(vault), "Vault address must be set.");
             if (!holder.HasValue()) throw new ArgumentNullException(nameof(holder), "Holder address must be set.");
-            if (!amount.IsNumeric()) throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
+            if (!amount.IsValidDecimalNumber()) throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be a valid number with a decimal point.");
 
             Vault = vault;
             Holder = holder;

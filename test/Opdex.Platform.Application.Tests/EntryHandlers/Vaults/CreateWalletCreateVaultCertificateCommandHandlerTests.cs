@@ -4,6 +4,8 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.EntryHandlers.Vaults;
+using Opdex.Platform.Common;
+using Opdex.Platform.Common.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -28,7 +30,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
-            var amount = "10000000000";
+            var amount = "1000.00000000";
 
             // Act
             await _handler.Handle(new CreateWalletCreateVaultCertificateCommand(walletAddress, vault, holder, amount),
@@ -37,9 +39,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
                 It.Is<MakeWalletCreateVaultCertificateCommand>(command => command.WalletAddress == walletAddress
-                                                                 && command.Vault == vault
-                                                                 && command.Holder == holder
-                                                                 && command.Amount == amount),
+                                                                       && command.Vault == vault
+                                                                       && command.Holder == holder
+                                                                       && command.Amount == amount.ToSatoshis(TokenConstants.Opdex.Decimals)),
                 CancellationToken.None
             ), Times.Once);
         }
@@ -53,7 +55,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var vault = "PCJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var holder = "PDJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
-            var amount = "10000000000";
+            var amount = "1000.00000000";
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeWalletCreateVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(transactionHash);
