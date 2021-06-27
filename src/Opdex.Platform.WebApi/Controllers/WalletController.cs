@@ -1,16 +1,19 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -19,11 +22,23 @@ namespace Opdex.Platform.WebApi.Controllers
     [Route("wallet")]
     public class WalletController : ControllerBase
     {
+        private readonly IApplicationContext _context;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public WalletController(IMediator mediator)
+        public WalletController(IApplicationContext context, IMapper mapper, IMediator mediator)
         {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+
+        [HttpGet("{address}/allowance/approved/{token}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<ApprovedAllowanceResponseModel>> GetApprovedAllowanceForToken(string address, string token, CancellationToken cancellationToken)
+        {
+            var allowance = await _mediator.Send(new GetAddressAllowanceForTokenQuery(token, _context.Wallet, address), cancellationToken);
+            return _mapper.Map<ApprovedAllowanceResponseModel>(allowance);
         }
 
         [HttpGet("summary/pool/{poolAddress}")]

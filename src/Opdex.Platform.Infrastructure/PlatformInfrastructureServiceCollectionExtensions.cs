@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
@@ -75,12 +74,11 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vault;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Snapshots;
+using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots;
 
 namespace Opdex.Platform.Infrastructure
 {
-    using Abstractions.Data.Queries.Markets.Snapshots;
-    using Data.Handlers.Markets.Snapshots;
-
     public static class PlatformInfrastructureServiceCollectionExtensions
     {
         public static IServiceCollection AddPlatformInfrastructureServices(this IServiceCollection services, CirrusConfiguration cirrusConfiguration,
@@ -198,6 +196,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesByOwnerAddressQueryHandler>();
 
             // Addresses
+            services.AddTransient<IRequestHandler<SelectAddressAllowanceByTokenIdAndOwnerAndSpenderQuery, AddressAllowance>, SelectAddressAllowanceByTokenIdAndOwnerAndSpenderQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressBalanceByTokenIdAndOwnerQuery, AddressBalance>, SelectAddressBalanceByTokenIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>, SelectAddressMiningByMiningPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>, SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler>();

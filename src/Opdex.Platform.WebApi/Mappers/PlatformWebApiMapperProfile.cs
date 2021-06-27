@@ -1,5 +1,6 @@
 using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
@@ -10,6 +11,7 @@ using Opdex.Platform.WebApi.Models.Responses.Markets;
 using Opdex.Platform.WebApi.Models.Responses.OHLC;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
+using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
 namespace Opdex.Platform.WebApi.Mappers
 {
@@ -83,6 +85,9 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => MapMarketSummary(src)))
                 .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<AddressAllowanceDto, ApprovedAllowanceResponseModel>()
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
         }
 
         private static MarketSnapshotResponseModel MapMarketSummary(MarketDto snapshot)
@@ -122,7 +127,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 Rewards = MapRewards(snapshot.Rewards),
                 Cost = MapCost(snapshot.Cost, srcDecimals),
                 Volume = MapVolume(snapshot.Volume, srcDecimals),
-                Staking =  MapStaking(snapshot.Staking),
+                Staking = MapStaking(snapshot.Staking),
                 StartDate = snapshot.StartDate,
                 EndDate = snapshot.EndDate
             };

@@ -11,7 +11,6 @@ using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
@@ -24,7 +23,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Pools;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools;
@@ -93,6 +91,9 @@ using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDtos.TokenDto;
+using Opdex.Platform.Application.EntryHandlers.Addresses;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
+using Opdex.Platform.Application.Abstractions.Models.Addresses;
 
 namespace Opdex.Platform.Application
 {
@@ -104,6 +105,7 @@ namespace Opdex.Platform.Application
             services.AddScoped(typeof(IMediator), typeof(Mediator));
 
             // Entry Queries
+            services.AddTransient<IRequestHandler<GetAddressAllowanceForTokenQuery, AddressAllowanceDto>, GetAddressAllowanceForTokenQueryHandler>();
             services.AddTransient<IRequestHandler<GetAllPoolsByMarketAddressQuery, IEnumerable<LiquidityPoolDto>>, GetAllPoolsByMarketAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetAllTokensByMarketAddressQuery, IEnumerable<TokenDto>>, GetAllTokensByMarketAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetTransactionsByPoolWithFilterQuery, IEnumerable<TransactionDto>>, GetTransactionsByPoolWithFilterQueryHandler>();
@@ -115,6 +117,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshotDto>>, GetMarketSnapshotsWithFilterQueryHandler>();
 
             // Queries
+            services.AddTransient<IRequestHandler<RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery, AddressAllowance>, RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAllPoolsByMarketIdQuery, IEnumerable<LiquidityPool>>, RetrieveAllPoolsByMarketIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAllTokensQuery, IEnumerable<Token>>, RetrieveAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketSnapshotWithFilterQuery, MarketSnapshot>, RetrieveMarketSnapshotWithFilterQueryHandler>();

@@ -25,6 +25,8 @@ using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.Pools.Snapshots;
+using Opdex.Platform.Domain.Models.Addresses;
+using Opdex.Platform.Application.Abstractions.Models.Addresses;
 
 namespace Opdex.Platform.Application
 {
@@ -32,15 +34,15 @@ namespace Opdex.Platform.Application
     {
         public PlatformApplicationMapperProfile()
         {
-             CreateMap<Transaction, TransactionDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
-                .ForMember(dest => dest.BlockHeight, opt => opt.MapFrom(src => src.BlockHeight))
-                .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
-                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
-                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
-                .ForMember(dest => dest.Logs, opt => opt.MapFrom(src => src.Logs))
-                .ForAllOtherMembers(opt => opt.Ignore());
+            CreateMap<Transaction, TransactionDto>()
+               .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+               .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
+               .ForMember(dest => dest.BlockHeight, opt => opt.MapFrom(src => src.BlockHeight))
+               .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
+               .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
+               .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+               .ForMember(dest => dest.Logs, opt => opt.MapFrom(src => src.Logs))
+               .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<Block, BlockDto>()
                 .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
@@ -173,6 +175,10 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<AddressAllowance, AddressAllowanceDto>()
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Allowance))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<Transaction, TransactionDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
@@ -184,7 +190,7 @@ namespace Opdex.Platform.Application
                 {
                     var logs = src.Logs.Select(txLog =>
                         {
-                            return (TransactionLogDto) (txLog.LogType switch
+                            return (TransactionLogDto)(txLog.LogType switch
                             {
                                 TransactionLogType.ReservesLog => ctx.Mapper.Map<ReservesLogDto>(txLog),
                                 TransactionLogType.BurnLog => ctx.Mapper.Map<BurnLogDto>(txLog),
