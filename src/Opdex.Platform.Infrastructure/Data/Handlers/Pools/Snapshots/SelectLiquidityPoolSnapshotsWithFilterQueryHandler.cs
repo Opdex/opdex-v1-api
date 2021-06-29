@@ -26,8 +26,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots
                 {nameof(LiquidityPoolSnapshotEntity.ModifiedDate)}
             FROM pool_liquidity_snapshot
             WHERE {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
-                AND @{nameof(SqlParams.Start)} <= {nameof(LiquidityPoolSnapshotEntity.StartDate)}
-                AND @{nameof(SqlParams.End)} >= {nameof(LiquidityPoolSnapshotEntity.EndDate)}
+                AND {nameof(LiquidityPoolSnapshotEntity.EndDate)} BETWEEN @{nameof(SqlParams.Start)} AND @{nameof(SqlParams.End)}
                 AND {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}
             ORDER BY {nameof(LiquidityPoolSnapshotEntity.EndDate)} DESC
             LIMIT 750;"; // Limit 750, there's about 730 hours in a month (hourly snapshots)
@@ -57,14 +56,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots
             internal SqlParams(long poolId, DateTime start, DateTime end, int snapshotTypeId)
             {
                 LiquidityPoolId = poolId;
-                Start = start.ToString("u");
-                End = end.ToString("u");
+                Start = start;
+                End = end;
                 SnapshotTypeId = snapshotTypeId;
             }
 
             public long LiquidityPoolId { get; }
-            public string Start { get; }
-            public string End { get; }
+            public DateTime Start { get; }
+            public DateTime End { get; }
             public int SnapshotTypeId { get; }
         }
     }

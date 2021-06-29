@@ -7,7 +7,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools
 {
     public class SelectAllLiquidityPoolsByMarketIdQuery : IRequest<IEnumerable<LiquidityPool>>
     {
-        public SelectAllLiquidityPoolsByMarketIdQuery(long marketId)
+        public SelectAllLiquidityPoolsByMarketIdQuery(long marketId, bool? stakingEnabled = null, bool? miningEnabled = null, bool? nominated = null,
+                                                      uint skip = 0, uint take = 0, string sortBy = null, string orderBy = null, IEnumerable<string> pools = null)
         {
             if (marketId < 1)
             {
@@ -15,8 +16,24 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools
             }
 
             MarketId = marketId;
+            Staking = stakingEnabled;
+            Mining = miningEnabled;
+            Nominated = nominated;
+            Skip = skip;
+            Take = take;
+            SortBy = sortBy;
+            OrderBy = orderBy;
+            Pools = pools;
         }
 
         public long MarketId { get; }
+        public bool? Staking { get; }
+        public bool? Mining { get; }
+        public bool? Nominated { get; }
+        public uint Skip { get; }
+        public uint Take { get; }
+        public string SortBy { get; }
+        public string OrderBy { get; }
+        public IEnumerable<string> Pools { get; }
     }
 }

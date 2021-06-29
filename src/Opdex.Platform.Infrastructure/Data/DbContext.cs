@@ -20,10 +20,11 @@ namespace Opdex.Platform.Infrastructure.Data
         {
             var configuration = opdexConfiguration.Value ?? throw new ArgumentNullException(nameof(opdexConfiguration));
             var connectionString = new MySqlConnectionStringBuilder(configuration.ConnectionString);
+
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _databaseSettings = new DatabaseSettings(connectionString.ConnectionString);
         }
-        
+
         public async Task<IEnumerable<TEntity>> ExecuteQueryAsync<TEntity>(DatabaseQuery query)
         {
             try
@@ -90,8 +91,7 @@ namespace Opdex.Platform.Infrastructure.Data
 
         private static CommandDefinition BuildCommandDefinition(DatabaseQuery query)
         {
-            return new CommandDefinition(query.Sql, query.Parameters, commandType: query.Type,
-                cancellationToken: query.Token);
+            return new CommandDefinition(query.Sql, query.Parameters, commandType: query.Type, cancellationToken: query.Token);
         }
     }
 }

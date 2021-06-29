@@ -23,7 +23,8 @@ namespace Opdex.Platform.Application.Handlers.Pools
 
         public async Task<IEnumerable<LiquidityPool>> Handle(RetrieveAllPoolsByMarketIdQuery request, CancellationToken cancellationToken)
         {
-            var query = new SelectAllLiquidityPoolsByMarketIdQuery(request.MarketId);
+            var query = new SelectAllLiquidityPoolsByMarketIdQuery(request.MarketId, request.Staking, request.Mining, request.Nominated,
+                                                                   request.Skip, request.Take, request.SortBy, request.OrderBy, request.Pools);
 
             return await _mediator.Send(query, cancellationToken);
         }

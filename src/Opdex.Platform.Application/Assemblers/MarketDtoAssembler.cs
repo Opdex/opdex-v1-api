@@ -42,17 +42,13 @@ namespace Opdex.Platform.Application.Assemblers
             var marketDto = _mapper.Map<MarketDto>(market);
             marketDto.Summary = _mapper.Map<MarketSnapshotDto>(currentMarketSnapshot);
 
-            if (previousMarketSnapshot.Liquidity > 0)
+            // Adjust daily change values
+            marketDto.Summary.Staking.SetDailyChange(previousMarketSnapshot?.Staking?.Weight);
+
+            if (previousMarketSnapshot?.Liquidity > 0)
             {
                 var usdDailyChange = (currentMarketSnapshot.Liquidity - previousMarketSnapshot.Liquidity) / previousMarketSnapshot.Liquidity * 100;
                 marketDto.Summary.LiquidityDailyChange = Math.Round(usdDailyChange, 2, MidpointRounding.AwayFromZero);
-            }
-
-            const int decimals = TokenConstants.Opdex.Decimals;
-            if (previousMarketSnapshot.Staking.Weight != "0")
-            {
-                var weightDailyChange = (currentMarketSnapshot.Staking.Weight.ToRoundedDecimal(decimals, decimals) - previousMarketSnapshot.Staking.Weight.ToRoundedDecimal(decimals, decimals)) / previousMarketSnapshot.Staking.Weight.ToRoundedDecimal(decimals, decimals) * 100;
-                marketDto.Summary.Staking.WeightDailyChange = Math.Round(weightDailyChange, 2, MidpointRounding.AwayFromZero);
             }
 
             marketDto.CrsToken = _mapper.Map<TokenDto>(crs);

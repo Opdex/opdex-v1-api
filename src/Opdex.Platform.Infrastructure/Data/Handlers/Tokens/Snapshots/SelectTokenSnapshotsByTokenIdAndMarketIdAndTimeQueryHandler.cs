@@ -14,7 +14,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
     public class SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQueryHandler : IRequestHandler<SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery, IEnumerable<TokenSnapshot>>
     {
         private static readonly string SqlQuery =
-            @$"Select 
+            @$"SELECT
                 {nameof(TokenSnapshotEntity.Id)},
                 {nameof(TokenSnapshotEntity.TokenId)},
                 {nameof(TokenSnapshotEntity.MarketId)},
@@ -24,9 +24,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
                 {nameof(TokenSnapshotEntity.SnapshotTypeId)},
                 {nameof(TokenSnapshotEntity.ModifiedDate)}
             FROM token_snapshot
-            WHERE 
-                {nameof(TokenSnapshotEntity.TokenId)} = @{nameof(SqlParams.TokenId)} AND 
-                {nameof(TokenSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)} AND 
+            WHERE
+                {nameof(TokenSnapshotEntity.TokenId)} = @{nameof(SqlParams.TokenId)} AND
+                {nameof(TokenSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)} AND
                 @{nameof(SqlParams.Time)} BETWEEN {nameof(TokenSnapshotEntity.StartDate)} AND {nameof(TokenSnapshotEntity.EndDate)};";
 
         private readonly IDbContext _context;

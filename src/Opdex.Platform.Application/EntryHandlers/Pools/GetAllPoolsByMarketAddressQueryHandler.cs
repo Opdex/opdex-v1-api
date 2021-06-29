@@ -30,7 +30,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools
         {
             var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.MarketAddress));
 
-            var query = new RetrieveAllPoolsByMarketIdQuery(market.Id);
+            var query = new RetrieveAllPoolsByMarketIdQuery(market.Id, request.Staking, request.Mining, request.Nominated, request.Skip, request.Take,
+                                                            request.SortBy, request.OrderBy, request.Pools);
 
             var pools = await _mediator.Send(query, cancellationToken);
 

@@ -57,17 +57,40 @@ namespace Opdex.Platform.Application.Assemblers
             var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId));
             var srcTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(srcToken.Id, market.Id, now, SnapshotType));
 
+            // Todo: If Stale
+            // if (srcTokenSnapshot.EndDate < now)
+            // {
+            //     srcTokenSnapshot.ResetStaleSnapshot();
+            // }
+
             // LP token and snapshot details
             var lpToken = await _mediator.Send(new RetrieveTokenByIdQuery(pool.LpTokenId));
             var lpTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(lpToken.Id, market.Id, now, SnapshotType));
+
+            // Todo: If Stale
+            // if (lpTokenSnapshot.EndDate < now)
+            // {
+            //     lpTokenSnapshot.ResetStaleSnapshot();
+            // }
 
             // LP pool snapshot details
             var liquidityPoolSnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id, yesterday, now, SnapshotType));
             var poolSnapshots = liquidityPoolSnapshots.ToList();
 
-            // Todo: Should we throw here?? What happens if right now doesn't have a snapshot for some reason but historically
-            // there are available snapshots. Returning new LiquidityPoolSnapshot wouldn't be the correct answer
-            var currentPoolSnapshot = poolSnapshots.FirstOrDefault() ?? new LiquidityPoolSnapshot(pool.Id, SnapshotType, now);
+            // Get the current snapshot from the list, when null, retrieve the last possible snapshot or a new one entirely
+            var currentPoolSnapshot = poolSnapshots.FirstOrDefault();
+
+            // If we keep this block, its essentially a fallback for forks/reorgs if today's snapshot (which should exist at all times), doesnt
+            if (currentPoolSnapshot == null)
+            {
+                var latest = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, now, SnapshotType));
+                if (latest.EndDate < now)
+                {
+                    var stakingTokenPrice = stakingTokenSnapshot?.Price?.Close ?? 0.00m;
+                    latest.ResetStaleSnapshot(crsSnapshot.Price.Close, srcTokenSnapshot.Price.Close, stakingTokenPrice, srcToken.Decimals, now);
+                }
+            }
+
             var previousPoolSnapshot = poolSnapshots.LastOrDefault();
 
             // Map to Dtos

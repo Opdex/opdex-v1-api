@@ -45,9 +45,18 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>List of pools</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(uint skip, uint take, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(
+                                                                                             [FromQuery] bool? staking,
+                                                                                             [FromQuery] bool? mining,
+                                                                                             [FromQuery] bool? nominated,
+                                                                                             [FromQuery] uint? skip,
+                                                                                             [FromQuery] uint? take,
+                                                                                             [FromQuery] string sortBy,
+                                                                                             [FromQuery] string orderBy,
+                                                                                             [FromQuery] IEnumerable<string> pools,
+                                                                                             CancellationToken cancellationToken)
         {
-            var query = new GetAllPoolsByMarketAddressQuery(_context.Market);
+            var query = new GetAllPoolsByMarketAddressQuery(_context.Market, staking, mining, nominated, skip ?? 0, take ?? 10, sortBy, orderBy, pools);
 
             var result = await _mediator.Send(query, cancellationToken);
 

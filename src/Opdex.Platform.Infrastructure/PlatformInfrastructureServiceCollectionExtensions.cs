@@ -1,3 +1,4 @@
+using Dapper;
 using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +51,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vault;
+using Opdex.Platform.Infrastructure.Abstractions.Data.SqlMapper;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.BlockStore;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.MiningGovernance;
@@ -86,6 +88,8 @@ namespace Opdex.Platform.Infrastructure
         public static IServiceCollection AddPlatformInfrastructureServices(this IServiceCollection services, CirrusConfiguration cirrusConfiguration,
             CoinMarketCapConfiguration cmcConfiguration)
         {
+            SqlMapper.AddTypeHandler(new DateTimeHandler());
+
             // Data Services
             AddDataQueries(services);
             AddDataCommands(services);
