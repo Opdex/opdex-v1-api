@@ -20,6 +20,11 @@ namespace Opdex.Platform.Common.Extensions
             return value.HasValue() && Regex.IsMatch(value, @"^\d+$");
         }
 
+        public static bool EqualsIgnoreCase(this string value, string comparison)
+        {
+            return value.Equals(comparison, StringComparison.InvariantCultureIgnoreCase);
+        }
+
         public static string ToleranceAsSatoshis(this string value, decimal tolerance)
         {
             tolerance = Math.Round(tolerance, 4);

@@ -1,14 +1,10 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
-using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Infrastructure;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools;
@@ -16,17 +12,17 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
 {
-    public class SelectAllLiquidityPoolsByMarketIdQueryHandlerTests
+    public class SelectLiquidityPoolsWithFilterQueryHandlerTests
     {
         private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectAllLiquidityPoolsByMarketIdQueryHandler _handler;
+        private readonly SelectLiquidityPoolsWithFilterQueryHandler _handler;
 
-        public SelectAllLiquidityPoolsByMarketIdQueryHandlerTests()
+        public SelectLiquidityPoolsWithFilterQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectAllLiquidityPoolsByMarketIdQueryHandler(_dbContext.Object, mapper);
+            _handler = new SelectLiquidityPoolsWithFilterQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
@@ -47,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
 
             var responseList = new [] { expectedEntity }.AsEnumerable();
 
-            var command = new SelectAllLiquidityPoolsByMarketIdQuery(marketId);
+            var command = new SelectLiquidityPoolsWithFilterQuery(marketId);
 
             _dbContext.Setup(db => db.ExecuteQueryAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(responseList));

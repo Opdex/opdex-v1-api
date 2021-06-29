@@ -37,7 +37,7 @@ namespace Opdex.Platform.Application.EntryHandlers
 
             foreach (var market in markets)
             {
-                var marketPools = await _mediator.Send(new RetrieveAllPoolsByMarketIdQuery(market.Id));
+                var marketPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(market.Id));
                 var stakingTokenUsd = 0m;
 
                 // Process staking tokens and their liquidity pools first

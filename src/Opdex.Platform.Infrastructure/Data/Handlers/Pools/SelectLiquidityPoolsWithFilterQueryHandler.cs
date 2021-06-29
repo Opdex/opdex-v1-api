@@ -20,12 +20,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 {
     public class SelectLiquidityPoolsWithFilterQueryHandler : IRequestHandler<SelectLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>
     {
-        private const string SortBy = "{SortBy}";
-        private const string OrderBy = "{OrderBy}";
-        private const string Skip = "{Skip}";
-        private const string Take = "{Take}";
-        private const string WhereFilter = "{WhereFilter}";
         private const string TableJoins = "{TableJoins}";
+        private const string WhereFilter = "{WhereFilter}";
+        private const string OrderBy = "{OrderBy}";
+        private const string Limit = "{Limit}";
 
         private static readonly string SqlCommand =
             $@"SELECT DISTINCT
@@ -39,8 +37,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             FROM pool_liquidity pl
             {TableJoins}
             {WhereFilter}
-            ORDER BY {SortBy} {OrderBy}
-            LIMIT {Skip}, {Take};";
+            {OrderBy}
+            {Limit};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -110,8 +108,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             }
 
             // Sort Found Pools
-            var sort = SortBuilder(request.SortBy);
-            if (sort.HasValue())
+            var orderBy = OrderByBuilder(request.SortBy, request.OrderBy);
+            if (orderBy.HasValue())
             {
                 tableJoins += $@" JOIN pool_liquidity_snapshot pls ON
                                 pls.{nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}
@@ -119,30 +117,38 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                                 AND pls.{nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)} = {(int)SnapshotType.Daily}";
             }
 
+            // Build Limit string for pagination
+            var limit = LimitBuilder(request.Skip, request.Take);
+
             return SqlCommand
-                .Replace(SortBy, sort)
-                .Replace(OrderBy, request.OrderBy)
-                .Replace(Skip, request.Skip.ToString())
-                .Replace(Take, request.Take.ToString())
+                .Replace(TableJoins, tableJoins)
                 .Replace(WhereFilter, whereFilter)
-                .Replace(TableJoins, tableJoins);
+                .Replace(OrderBy, orderBy)
+                .Replace(Limit, limit);
         }
 
-        private static string SortBuilder(string sortRequest)
+        private static string OrderByBuilder(string sortRequest, string orderRequest)
         {
-            var baseSort = "CAST(JSON_EXTRACT(pls.Details, '$.{0}') as Decimal)";
+            var baseSort = " ORDER BY CAST(JSON_EXTRACT(pls.Details, '$.{0}') as Decimal) {1}";
+
+            orderRequest = orderRequest.EqualsIgnoreCase("ASC") || orderRequest.EqualsIgnoreCase("DESC") ? orderRequest.ToUpper() : "DESC";
 
             return sortRequest switch
             {
-                "Liquidity" => string.Format(baseSort, "Reserves.Usd"),
-                "Volume" => string.Format(baseSort, "Volume.Usd"),
-                "StakingWeight" => string.Format(baseSort, "Staking.Weight"),
-                "StakingUsd" => string.Format(baseSort, "Staking.Usd"),
+                "Liquidity" => string.Format(baseSort, "Reserves.Usd", orderRequest),
+                "Volume" => string.Format(baseSort, "Volume.Usd", orderRequest),
+                "StakingWeight" => string.Format(baseSort, "Staking.Weight", orderRequest),
+                "StakingUsd" => string.Format(baseSort, "Staking.Usd", orderRequest),
                 // Todo: Consider persisting the TotalRewards for this sort
-                "ProviderRewards" => string.Format(baseSort, "Rewards.ProviderUsd"),
-                "MarketRewards" => string.Format(baseSort, "Rewards.MarketUsd"),
-                _ => "pl.Id"
+                "ProviderRewards" => string.Format(baseSort, "Rewards.ProviderUsd", orderRequest),
+                "MarketRewards" => string.Format(baseSort, "Rewards.MarketUsd", orderRequest),
+                _ => string.Empty
             };
+        }
+
+        private static string LimitBuilder(uint skip, uint take)
+        {
+            return skip == 0 && take == 0 ? string.Empty : $" LIMIT {skip}, {take}";
         }
 
         private sealed class SqlParams

@@ -104,7 +104,7 @@ namespace Opdex.Platform.Application
             services.AddScoped(typeof(IMediator), typeof(Mediator));
 
             // Entry Queries
-            services.AddTransient<IRequestHandler<GetAllPoolsByMarketAddressQuery, IEnumerable<LiquidityPoolDto>>, GetAllPoolsByMarketAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<GetLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPoolDto>>, GetLiquidityPoolsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetAllTokensByMarketAddressQuery, IEnumerable<TokenDto>>, GetAllTokensByMarketAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetTransactionsByPoolWithFilterQuery, IEnumerable<TransactionDto>>, GetTransactionsByPoolWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolSwapQuoteQuery, string>, GetLiquidityPoolSwapQuoteQueryHandler>();
@@ -115,7 +115,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshotDto>>, GetMarketSnapshotsWithFilterQueryHandler>();
 
             // Queries
-            services.AddTransient<IRequestHandler<RetrieveAllPoolsByMarketIdQuery, IEnumerable<LiquidityPool>>, RetrieveAllPoolsByMarketIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>, RetrieveLiquidityPoolsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAllTokensQuery, IEnumerable<Token>>, RetrieveAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketSnapshotWithFilterQuery, MarketSnapshot>, RetrieveMarketSnapshotWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshot>>, RetrieveMarketSnapshotsWithFilterQueryHandler>();

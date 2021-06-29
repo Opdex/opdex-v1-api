@@ -13,7 +13,6 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Pools;
-using Opdex.Platform.Domain.Models.Pools.Snapshots;
 using Opdex.Platform.Domain.Models.Tokens;
 using System.Linq;
 

@@ -25,7 +25,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets
         public async Task<Unit> Handle(ProcessMarketSnapshotsCommand request, CancellationToken cancellationToken)
         {
             var market = await _mediator.Send(new RetrieveMarketByIdQuery(request.MarketId));
-            var marketPools = await _mediator.Send(new RetrieveAllPoolsByMarketIdQuery(market.Id));
+            var marketPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(market.Id));
             var marketSnapshot = await _mediator.Send(new RetrieveMarketSnapshotWithFilterQuery(request.MarketId,
                                                                                                 request.BlockTime,
                                                                                                 SnapshotType));
