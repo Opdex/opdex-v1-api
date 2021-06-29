@@ -9,7 +9,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernance;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
-using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
+using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 
 namespace Opdex.Platform.Domain.Models
 {

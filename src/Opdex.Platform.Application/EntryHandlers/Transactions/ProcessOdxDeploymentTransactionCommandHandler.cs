@@ -7,15 +7,13 @@ using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.Commands.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
-using Opdex.Platform.Application.Abstractions.Commands.Vault;
+using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
-using Opdex.Platform.Application.Abstractions.Queries.Vault;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.ODX;
 
