@@ -69,6 +69,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
         public int Decimals { get; }
         public ulong Sats { get; }
         public string TotalSupply { get; private set; }
+        public long? MarketId { get; private set; }
 
         public void UpdateTotalSupply(string value, ulong blockHeight)
         {
@@ -79,6 +80,11 @@ namespace Opdex.Platform.Domain.Models.Tokens
 
             TotalSupply = value;
             SetModifiedBlock(blockHeight);
+        }
+
+        public void SetMarket(long marketId)
+        {
+            MarketId = marketId;
         }
     }
 }

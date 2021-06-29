@@ -15,7 +15,6 @@ using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
-using System.Linq;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
