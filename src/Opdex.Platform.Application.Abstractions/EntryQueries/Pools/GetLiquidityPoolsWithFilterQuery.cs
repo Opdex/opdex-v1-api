@@ -6,9 +6,9 @@ using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Pools
 {
-    public class GetAllPoolsByMarketAddressQuery : IRequest<IEnumerable<LiquidityPoolDto>>
+    public class GetLiquidityPoolsWithFilterQuery : IRequest<IEnumerable<LiquidityPoolDto>>
     {
-        public GetAllPoolsByMarketAddressQuery(string marketAddress, bool? stakingEnabled, bool? miningEnabled, bool? nominated,
+        public GetLiquidityPoolsWithFilterQuery(string marketAddress, bool? stakingEnabled, bool? miningEnabled, bool? nominated,
                                                uint skip, uint take, string sortBy, string orderBy, IEnumerable<string> pools)
         {
             if (!marketAddress.HasValue())

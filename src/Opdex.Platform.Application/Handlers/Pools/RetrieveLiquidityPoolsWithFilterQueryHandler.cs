@@ -10,21 +10,21 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
 
 namespace Opdex.Platform.Application.Handlers.Pools
 {
-    public class RetrieveAllPoolsByMarketIdQueryHandler : IRequestHandler<RetrieveAllPoolsByMarketIdQuery, IEnumerable<LiquidityPool>>
+    public class RetrieveLiquidityPoolsWithFilterQueryHandler : IRequestHandler<RetrieveLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public RetrieveAllPoolsByMarketIdQueryHandler(IMediator mediator, IMapper mapper)
+        public RetrieveLiquidityPoolsWithFilterQueryHandler(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<LiquidityPool>> Handle(RetrieveAllPoolsByMarketIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<LiquidityPool>> Handle(RetrieveLiquidityPoolsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var query = new SelectAllLiquidityPoolsByMarketIdQuery(request.MarketId, request.Staking, request.Mining, request.Nominated,
-                                                                   request.Skip, request.Take, request.SortBy, request.OrderBy, request.Pools);
+            var query = new SelectLiquidityPoolsWithFilterQuery(request.MarketId, request.Staking, request.Mining, request.Nominated,
+                                                                request.Skip, request.Take, request.SortBy, request.OrderBy, request.Pools);
 
             return await _mediator.Send(query, cancellationToken);
         }

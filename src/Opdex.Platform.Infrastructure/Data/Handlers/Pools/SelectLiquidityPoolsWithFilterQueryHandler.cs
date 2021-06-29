@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 {
-    public class SelectAllLiquidityPoolsByMarketIdQueryHandler : IRequestHandler<SelectAllLiquidityPoolsByMarketIdQuery, IEnumerable<LiquidityPool>>
+    public class SelectLiquidityPoolsWithFilterQueryHandler : IRequestHandler<SelectLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>
     {
         private const string SortBy = "{SortBy}";
         private const string OrderBy = "{OrderBy}";
@@ -45,13 +45,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
-        public SelectAllLiquidityPoolsByMarketIdQueryHandler(IDbContext context, IMapper mapper)
+        public SelectLiquidityPoolsWithFilterQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<LiquidityPool>> Handle(SelectAllLiquidityPoolsByMarketIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<LiquidityPool>> Handle(SelectLiquidityPoolsWithFilterQuery request, CancellationToken cancellationToken)
         {
             var command = DatabaseQuery.Create(QueryBuilder(request), new SqlParams(request.MarketId, request.Pools), cancellationToken);
 
@@ -60,7 +60,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             return _mapper.Map<IEnumerable<LiquidityPool>>(tokenEntities);
         }
 
-        private static string QueryBuilder(SelectAllLiquidityPoolsByMarketIdQuery request)
+        private static string QueryBuilder(SelectLiquidityPoolsWithFilterQuery request)
         {
             var whereFilter = $"WHERE pl.{nameof(LiquidityPoolEntity.MarketId)} = @{nameof(SqlParams.MarketId)}";
             var tableJoins = string.Empty;

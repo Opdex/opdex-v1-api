@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using MediatR;
 using Opdex.Platform.Domain.Models.Pools;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Pools
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools
 {
-    public class RetrieveAllPoolsByMarketIdQuery : IRequest<IEnumerable<LiquidityPool>>
+    public class SelectLiquidityPoolsWithFilterQuery : IRequest<IEnumerable<LiquidityPool>>
     {
-        public RetrieveAllPoolsByMarketIdQuery(long marketId, bool? stakingEnabled = null, bool? miningEnabled = null, bool? nominated = null,
-                                               uint skip = 0, uint take = 0, string sortBy = null, string orderBy = null, IEnumerable<string> pools = null)
+        public SelectLiquidityPoolsWithFilterQuery(long marketId, bool? stakingEnabled = null, bool? miningEnabled = null, bool? nominated = null,
+                                                      uint skip = 0, uint take = 0, string sortBy = null, string orderBy = null, IEnumerable<string> pools = null)
         {
             if (marketId < 1)
             {
