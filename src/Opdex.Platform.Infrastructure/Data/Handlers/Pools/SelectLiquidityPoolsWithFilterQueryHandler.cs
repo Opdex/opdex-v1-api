@@ -131,7 +131,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
         {
             var baseSort = " ORDER BY CAST(JSON_EXTRACT(pls.Details, '$.{0}') as Decimal) {1}";
 
-            orderRequest = orderRequest.EqualsIgnoreCase("ASC") || orderRequest.EqualsIgnoreCase("DESC") ? orderRequest.ToUpper() : "DESC";
+            orderRequest = orderRequest.HasValue() && (orderRequest.EqualsIgnoreCase("ASC") || orderRequest.EqualsIgnoreCase("DESC"))
+                ? orderRequest.ToUpper()
+                : "DESC";
 
             return sortRequest switch
             {
