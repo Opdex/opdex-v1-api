@@ -1,49 +1,48 @@
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
 {
-    public class SelectLiquidityPoolByAddressQueryHandlerTests
+    public class SelectLiquidityPoolByLpTokenIdQueryHandlerTests
     {
         private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectLiquidityPoolByAddressQueryHandler _handler;
+        private readonly SelectLiquidityPoolByLpTokenIdQueryHandler _handler;
 
-        public SelectLiquidityPoolByAddressQueryHandlerTests()
+        public SelectLiquidityPoolByLpTokenIdQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectLiquidityPoolByAddressQueryHandler(_dbContext.Object, mapper);
+            _handler = new SelectLiquidityPoolByLpTokenIdQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
-        public async Task SelectLiquidityPoolByAddress_Success()
+        public async Task SelectLiquidityByLpTokenId_Success()
         {
-            const string address = "SomeAddress";
+            const long lpTokenId = 99;
 
             var expectedEntity = new LiquidityPoolEntity
             {
                 Id = 123454,
                 SrcTokenId = 1235,
-                LpTokenId = 8765,
+                LpTokenId = lpTokenId,
                 MarketId = 1,
                 Address = "SomeAddress",
                 CreatedBlock = 1,
                 ModifiedBlock = 1
             };
 
-            var command = new SelectLiquidityPoolByAddressQuery(address);
+            var command = new SelectLiquidityPoolByLpTokenIdQuery(lpTokenId);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
@@ -60,11 +59,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         }
 
         [Fact]
-        public void SelectLiquidityPoolByAddress_Throws_NotFoundException()
+        public void SelectLiquidityByLpTokenId_Throws_NotFoundException()
         {
-            const string address = "SomeAddress";
+            const long lpTokenId = 99;
 
-            var command = new SelectLiquidityPoolByAddressQuery(address);
+            var command = new SelectLiquidityPoolByLpTokenIdQuery(lpTokenId);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
@@ -76,12 +75,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         }
 
         [Fact]
-        public async Task SelectLiquidityPoolByAddress_ReturnsNull()
+        public async Task SelectLiquidityByLpTokenId_ReturnsNull()
         {
-            const string address = "SomeAddress";
+            const long lpTokenId = 99;
             const bool findOrThrow = false;
 
-            var command = new SelectLiquidityPoolByAddressQuery(address, findOrThrow);
+            var command = new SelectLiquidityPoolByLpTokenIdQuery(lpTokenId, findOrThrow);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));

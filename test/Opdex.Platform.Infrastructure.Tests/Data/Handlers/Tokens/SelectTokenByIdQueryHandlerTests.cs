@@ -1,5 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
 using Moq;
@@ -9,31 +7,33 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
 {
-    public class SelectTokenByAddressQueryHandlerTests
+    public class SelectTokenByIdQueryHandlerTests
     {
         private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectTokenByAddressQueryHandler _handler;
+        private readonly SelectTokenByIdQueryHandler _handler;
 
-        public SelectTokenByAddressQueryHandlerTests()
+        public SelectTokenByIdQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectTokenByAddressQueryHandler(_dbContext.Object, mapper);
+            _handler = new SelectTokenByIdQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
-        public async Task SelectTokenByAddress_Success()
+        public async Task SelectTokenById_Success()
         {
-            const string address = "SomeAddress";
+            const long id = 99;
 
             var expectedEntity = new TokenEntity
             {
-                Id = 123454,
+                Id = id,
                 Address = "SomeAddress",
                 IsLpt = true,
                 Name = "SomeName",
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
                 ModifiedBlock = 2
             };
 
-            var command = new SelectTokenByAddressQuery(address);
+            var command = new SelectTokenByIdQuery(id);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
@@ -63,11 +63,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         }
 
         [Fact]
-        public void SelectTokenByAddress_Throws_NotFoundException()
+        public void SelectTokenById_Throws_NotFoundException()
         {
-            const string address = "SomeAddress";
+            const long id = 99;
 
-            var command = new SelectTokenByAddressQuery(address);
+            var command = new SelectTokenByIdQuery(id);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<TokenEntity>(null));
@@ -79,12 +79,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         }
 
         [Fact]
-        public async Task SelectTokenByAddress_ReturnsNull()
+        public async Task SelectTokenById_ReturnsNull()
         {
-            const string address = "SomeAddress";
+            const long id = 99;
             const bool findOrThrow = false;
 
-            var command = new SelectTokenByAddressQuery(address, findOrThrow);
+            var command = new SelectTokenByIdQuery(id, findOrThrow);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<TokenEntity>(null));
