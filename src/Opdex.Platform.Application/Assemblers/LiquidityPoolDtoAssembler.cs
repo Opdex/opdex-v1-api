@@ -45,16 +45,16 @@ namespace Opdex.Platform.Application.Assemblers
             var market = await _mediator.Send(new RetrieveMarketByIdQuery(pool.MarketId));
 
             // Assemble CRS Token
-            poolDto.CrsToken = await AssembleTokenHelper(TokenConstants.Cirrus.Address, 0);
+            poolDto.CrsToken = await AssembleToken(TokenConstants.Cirrus.Address, 0);
 
             // Assemble staking token details when required
-            var stakingTokenDto = market.StakingTokenId > 0 ? await AssembleTokenHelper(market.StakingTokenId.Value, market.Id) : null;
+            var stakingTokenDto = market.StakingTokenId > 0 ? await AssembleToken(market.StakingTokenId.Value, market.Id) : null;
 
             // Assemble SRC Token
-            poolDto.SrcToken = await AssembleTokenHelper(pool.SrcTokenId, market.Id);
+            poolDto.SrcToken = await AssembleToken(pool.SrcTokenId, market.Id);
 
             // Assemble LP Token
-            poolDto.LpToken = await AssembleTokenHelper(pool.LpTokenId, market.Id);
+            poolDto.LpToken = await AssembleToken(pool.LpTokenId, market.Id);
 
             // LP pool snapshot details
             var liquidityPoolSnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id, yesterday, now, SnapshotType));
@@ -66,14 +66,14 @@ namespace Opdex.Platform.Application.Assemblers
             // If we keep this block, its essentially a fallback for forks/reorgs if today's snapshot (which should exist at all times), doesnt
             if (currentPoolSnapshot == null)
             {
-                var latest = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, now, SnapshotType));
-                if (latest.EndDate < now)
+                currentPoolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, now, SnapshotType));
+                if (currentPoolSnapshot.EndDate < now)
                 {
                     var stakingTokenPrice = stakingTokenDto?.Summary?.Price?.Close ?? 0.00m;
                     var crsPrice = poolDto.CrsToken.Summary.Price.Close;
                     var srcPrice = poolDto.SrcToken.Summary.Price.Close;
 
-                    latest.ResetStaleSnapshot(crsPrice, srcPrice, stakingTokenPrice, poolDto.SrcToken.Decimals, now);
+                    currentPoolSnapshot.ResetStaleSnapshot(crsPrice, srcPrice, stakingTokenPrice, poolDto.SrcToken.Decimals, now);
                 }
             }
 
@@ -113,21 +113,21 @@ namespace Opdex.Platform.Application.Assemblers
             return poolDto;
         }
 
-        private async Task<TokenDto> AssembleTokenHelper(long tokenId, long marketId)
+        private async Task<TokenDto> AssembleToken(long tokenId, long marketId)
         {
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(tokenId));
 
-            return await AssembleTokenHelperExecute(token, marketId);;
+            return await AssembleTokenExecute(token, marketId);
         }
 
-        private async Task<TokenDto> AssembleTokenHelper(string tokenAddress, long marketId)
+        private async Task<TokenDto> AssembleToken(string tokenAddress, long marketId)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress));
 
-            return await AssembleTokenHelperExecute(token, marketId);
+            return await AssembleTokenExecute(token, marketId);
         }
 
-        private async Task<TokenDto> AssembleTokenHelperExecute(Token token, long marketId)
+        private async Task<TokenDto> AssembleTokenExecute(Token token, long marketId)
         {
             token.SetMarket(marketId);
 

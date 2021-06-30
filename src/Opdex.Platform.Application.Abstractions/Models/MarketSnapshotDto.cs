@@ -15,5 +15,18 @@ namespace Opdex.Platform.Application.Abstractions.Models
         public int SnapshotType { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+
+        public void SetLiquidityDailyChange(decimal previousLiquidity)
+        {
+            if (previousLiquidity <= 0)
+            {
+                LiquidityDailyChange = 0.00m;
+                return;
+            }
+
+            var usdDailyChange = (Liquidity - previousLiquidity) / previousLiquidity * 100;
+
+            LiquidityDailyChange = Math.Round(usdDailyChange, 2, MidpointRounding.AwayFromZero);
+        }
     }
 }
