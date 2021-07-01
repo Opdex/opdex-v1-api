@@ -1,4 +1,5 @@
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
+using Opdex.Platform.Common.Extensions;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.Models
@@ -8,7 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.Models
         public long Id { get; set; }
         public long MarketId { get; set; }
         public decimal Liquidity { get; set; }
-        public decimal LiquidityDailyChange { get; set; }
+        public decimal? LiquidityDailyChange { get; set; }
         public decimal Volume { get; set; }
         public StakingDto Staking { get; set; }
         public RewardsDto Rewards { get; set; }
@@ -18,15 +19,7 @@ namespace Opdex.Platform.Application.Abstractions.Models
 
         public void SetLiquidityDailyChange(decimal previousLiquidity)
         {
-            if (previousLiquidity <= 0)
-            {
-                LiquidityDailyChange = 0.00m;
-                return;
-            }
-
-            var usdDailyChange = (Liquidity - previousLiquidity) / previousLiquidity * 100;
-
-            LiquidityDailyChange = Math.Round(usdDailyChange, 2, MidpointRounding.AwayFromZero);
+            LiquidityDailyChange = Liquidity.PercentChange(previousLiquidity);
         }
     }
 }

@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
@@ -18,7 +19,7 @@ namespace Opdex.Platform.Application.Assemblers
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        private const SnapshotType SnapshotType = Common.SnapshotType.Hourly;
+        private const SnapshotType SnapshotType = Common.Enums.SnapshotType.Hourly;
 
         public TokenDtoAssembler(IMediator mediator, IMapper mapper)
         {

@@ -151,14 +151,24 @@ namespace Opdex.Platform.Common.Tests
 
         [Theory]
         [InlineData("100000000", "50000000", 100_000_000, 100)]
+        [InlineData("4", "3", 100_000_000, 33.33)]
         [InlineData("150000000", "50000000", 100_000_000, 200)]
         [InlineData("75000000", "50000000", 100_000_000, 50)]
         [InlineData("50000000", "100000000", 100_000_000, -50)]
         [InlineData("10000000", "100000000", 100_000_000, -90)]
-        [InlineData("1000000000000000000", "500000000000000000", 100_000_000, 100)]
-        public void PercentChange_Success(string current, string previous, ulong tokenSats, decimal expected)
+        [InlineData("1000000000000000000", "500000000000000000", 1_000_000_000_000_000_000, 100)]
+        public void PercentChangeSats_Success(string current, string previous, ulong tokenSats, decimal expected)
         {
             current.PercentChange(previous, tokenSats).Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData(1.00, 2.00, -50)]
+        [InlineData(2.00, 1.00, 100)]
+        [InlineData(4.00, 3.00, 33.33)]
+        public void PercentChangeDecimals_Success(decimal current, decimal previous, decimal expected)
+        {
+            current.PercentChange(previous).Should().Be(expected);
         }
     }
 }

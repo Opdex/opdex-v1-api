@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
@@ -129,6 +130,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 
         private static string OrderByBuilder(string sortRequest, string orderRequest)
         {
+            if (!sortRequest.HasValue())
+            {
+                return string.Empty;
+            }
+
             var baseSort = " ORDER BY CAST(JSON_EXTRACT(pls.Details, '$.{0}') as Decimal) {1}";
 
             orderRequest = orderRequest.HasValue() && (orderRequest.EqualsIgnoreCase("ASC") || orderRequest.EqualsIgnoreCase("DESC"))
@@ -144,7 +150,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 // Todo: Consider persisting the TotalRewards for this sort
                 "ProviderRewards" => string.Format(baseSort, "Rewards.ProviderUsd", orderRequest),
                 "MarketRewards" => string.Format(baseSort, "Rewards.MarketUsd", orderRequest),
-                _ => string.Empty
+                _ => throw new ArgumentOutOfRangeException(nameof(sortRequest), "Invalid liquidity pool sort type.")
             };
         }
 

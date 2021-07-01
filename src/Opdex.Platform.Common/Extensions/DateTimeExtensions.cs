@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Enums;
 using System;
 
 namespace Opdex.Platform.Common.Extensions

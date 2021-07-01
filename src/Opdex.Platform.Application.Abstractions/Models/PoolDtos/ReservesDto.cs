@@ -1,4 +1,4 @@
-using System;
+using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.Abstractions.Models.PoolDtos
 {
@@ -11,14 +11,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.PoolDtos
 
         public void SetUsdDailyChange(decimal previousUsd)
         {
-            if (previousUsd <= 0)
-            {
-                UsdDailyChange = 0.00m;
-                return;
-            }
-
-            var usdDailyChange = (Usd - previousUsd) / previousUsd * 100;
-            UsdDailyChange = Math.Round(usdDailyChange, 2, MidpointRounding.AwayFromZero);
+            UsdDailyChange = Usd.PercentChange(previousUsd);
         }
     }
 }

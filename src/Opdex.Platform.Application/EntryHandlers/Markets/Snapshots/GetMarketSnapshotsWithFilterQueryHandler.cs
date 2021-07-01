@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private const SnapshotType SnapshotType = Common.SnapshotType.Daily;
+        private const SnapshotType SnapshotType = Common.Enums.SnapshotType.Daily;
 
         public GetMarketSnapshotsWithFilterQueryHandler(IMediator mediator, IMapper mapper)
         {

@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.Tokens;
@@ -24,7 +25,7 @@ namespace Opdex.Platform.Application.Assemblers
         private readonly IModelAssembler<MiningPool, MiningPoolDto> _miningPoolAssembler;
         private readonly IModelAssembler<Token, TokenDto> _tokenAssembler;
 
-        private const SnapshotType SnapshotType = Common.SnapshotType.Daily;
+        private const SnapshotType SnapshotType = Common.Enums.SnapshotType.Daily;
 
         public LiquidityPoolDtoAssembler(IMediator mediator, IMapper mapper, IModelAssembler<MiningPool, MiningPoolDto> miningPoolAssembler,
                                          IModelAssembler<Token, TokenDto> tokenAssembler)

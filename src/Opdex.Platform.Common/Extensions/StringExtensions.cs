@@ -127,7 +127,7 @@ namespace Opdex.Platform.Common.Extensions
         }
 
         /// <summary>
-        /// Get the percentage change different of a two string values as satoshis.
+        /// Get the percentage change difference of two string values as satoshis.
         /// </summary>
         /// <param name="current">The current amount.</param>
         /// <param name="previous">The previous amount.</param>
@@ -169,6 +169,24 @@ namespace Opdex.Platform.Common.Extensions
 
             // Return percentage change without offset, rounded 2 places
             return Math.Round(changeDecimalWithOffset / tokenSats, 2, MidpointRounding.AwayFromZero);
+        }
+
+        /// <summary>
+        /// Get the percentage change difference of two decimal values.
+        /// </summary>
+        /// <param name="current">The current amount.</param>
+        /// <param name="previous">The previous amount to compare to.</param>
+        /// <returns>Percentage changed as decimal</returns>
+        public static decimal PercentChange(this decimal current, decimal previous)
+        {
+            if (previous <= 0)
+            {
+                return 0.00m;
+            }
+
+            var usdDailyChange = (current - previous) / previous * 100;
+
+            return Math.Round(usdDailyChange, 2, MidpointRounding.AwayFromZero);
         }
     }
 }
