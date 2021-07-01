@@ -89,5 +89,17 @@ namespace Opdex.Platform.Common.Extensions
                     throw new ArgumentOutOfRangeException(nameof(snapshotType), snapshotType, "Invalid snapshot type.");
             }
         }
+
+        public static DateTime StartDateOfDuration(this DateTime endDate, string duration)
+        {
+            return duration switch
+            {
+                "1D" => endDate.AddDays(-1),
+                "1W" => endDate.AddDays(-7),
+                "1M" => endDate.AddDays(-31),
+                "1Y" => endDate.AddDays(-365),
+                _ => throw new ArgumentOutOfRangeException(nameof(duration), "Invalid time span duration.")
+            };
+        }
     }
 }

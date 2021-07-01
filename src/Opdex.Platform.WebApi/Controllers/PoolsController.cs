@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 
@@ -86,13 +87,15 @@ namespace Opdex.Platform.WebApi.Controllers
 
         [HttpGet("{address}/history")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<LiquidityPoolSnapshotHistoryResponseModel>> GetPoolHistory(string address, DateTime? startDate,
-                                                                                                  DateTime? endDate, CancellationToken cancellationToken)
+        public async Task<ActionResult<LiquidityPoolSnapshotHistoryResponseModel>> GetPoolHistory(string address,
+                                                                                                  string candleSpan,
+                                                                                                  string timespan,
+                                                                                                  CancellationToken cancellationToken)
         {
             var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(address));
             var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.SrcTokenId));
 
-            var poolSnapshotDtos = await _mediator.Send(new GetLiquidityPoolSnapshotsWithFilterQuery(address, startDate, endDate), cancellationToken);
+            var poolSnapshotDtos = await _mediator.Send(new GetLiquidityPoolSnapshotsWithFilterQuery(address, candleSpan, timespan), cancellationToken);
 
             var snapshots = new List<LiquidityPoolSnapshotResponseModel>();
 
