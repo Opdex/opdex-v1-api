@@ -65,19 +65,6 @@ namespace Opdex.Platform.Common.Extensions
             return $"{integer}.{sliced}";
         }
 
-        // Todo: Doesn't actually round
-        public static decimal ToRoundedDecimal(this string value, int precision, int decimals)
-        {
-            if (!value.Contains('.'))
-            {
-                value = value.InsertDecimal(decimals);
-            }
-
-            var parsed = decimal.TryParse(value.CutPrecisely(precision), out var roundedDecimal);
-
-            return !parsed ? 0m : roundedDecimal;
-        }
-
         public static string Token0PerToken1(this ulong token0, string token1, ulong token1Sats)
         {
             return token0.ToString().Token0PerToken1(token1, token1Sats);

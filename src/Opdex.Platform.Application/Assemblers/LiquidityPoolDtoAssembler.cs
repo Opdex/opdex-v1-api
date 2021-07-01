@@ -73,7 +73,7 @@ namespace Opdex.Platform.Application.Assemblers
                     var crsPrice = poolDto.CrsToken.Summary.Price.Close;
                     var srcPrice = poolDto.SrcToken.Summary.Price.Close;
 
-                    currentPoolSnapshot.ResetStaleSnapshot(crsPrice, srcPrice, stakingTokenPrice, poolDto.SrcToken.Decimals, now);
+                    currentPoolSnapshot.ResetStaleSnapshot(crsPrice, srcPrice, stakingTokenPrice, poolDto.SrcToken.Sats, now);
                 }
             }
 

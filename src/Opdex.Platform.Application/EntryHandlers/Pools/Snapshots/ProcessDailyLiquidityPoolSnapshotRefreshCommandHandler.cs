@@ -43,11 +43,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
             if (lpSnapshot.EndDate < request.BlockTime)
             {
                 // Process latest lp snapshot
-                lpSnapshot.ResetStaleSnapshot(request.CrsUsd, srcUsd, stakingUsd, request.SrcToken.Decimals, request.BlockTime);
+                lpSnapshot.ResetStaleSnapshot(request.CrsUsd, srcUsd, stakingUsd, request.SrcToken.Sats, request.BlockTime);
             }
             else // refresh existing snapshot USD amounts
             {
-                lpSnapshot.RefreshSnapshot(request.CrsUsd, srcUsd, stakingUsd, request.SrcToken.Decimals);
+                lpSnapshot.RefreshSnapshot(request.CrsUsd, srcUsd, stakingUsd, request.SrcToken.Sats);
             }
 
             await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(lpSnapshot));

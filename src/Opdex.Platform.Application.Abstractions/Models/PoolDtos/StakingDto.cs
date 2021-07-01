@@ -1,6 +1,5 @@
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
-using System;
 
 namespace Opdex.Platform.Application.Abstractions.Models.PoolDtos
 {
@@ -12,18 +11,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.PoolDtos
 
         public void SetDailyChange(string previousWeight)
         {
-            if (!previousWeight.HasValue() || previousWeight.Equals("0") || !previousWeight.IsNumeric())
-            {
-                WeightDailyChange = 0.00m;
-                return;
-            }
-
-            const int decimals = TokenConstants.Opdex.Decimals;
-            var previousWeightDecimal = previousWeight.ToRoundedDecimal(decimals, decimals);
-            var currentWeight = Weight.ToRoundedDecimal(decimals, decimals);
-            var weightDailyChange = (currentWeight - previousWeightDecimal) / previousWeightDecimal * 100;
-
-            WeightDailyChange = Math.Round(weightDailyChange, 2, MidpointRounding.AwayFromZero);
+            WeightDailyChange = Weight.PercentChange(previousWeight, TokenConstants.Opdex.Decimals);
         }
     }
 }

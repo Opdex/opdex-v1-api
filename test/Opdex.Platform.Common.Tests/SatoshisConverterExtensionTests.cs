@@ -37,15 +37,5 @@ namespace Opdex.Platform.Common.Tests
         {
             value.ToSatoshis(decimals).Should().Be(expected);
         }
-
-        [Theory]
-        [InlineData("123456789", 1.2345, 4, 8)] // Todo: doesn't actually round
-        [InlineData("1", 0.0000, 4, 8)]
-        [InlineData("50251", 0.0005, 4, 8)]
-        [InlineData("50251", 0.00050251, 8, 8)]
-        public void ToRoundedDecimal_Success(string value, decimal expected, int precision, int decimals)
-        {
-            value.ToRoundedDecimal(precision, decimals).Should().Be(expected);
-        }
     }
 }

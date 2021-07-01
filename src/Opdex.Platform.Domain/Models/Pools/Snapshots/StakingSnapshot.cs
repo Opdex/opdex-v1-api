@@ -36,7 +36,7 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
         {
             if (stakingTokenUsd > 0)
             {
-                Usd = CalculateStakingUsd(log.TotalStaked, stakingTokenUsd);
+                Usd = log.TotalStaked.TotalFiat(stakingTokenUsd, TokenConstants.Opdex.Sats);
             }
 
             Weight = log.TotalStaked;
@@ -45,17 +45,8 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
         internal void RefreshStaking(decimal stakingTokenUsd)
         {
             Usd = stakingTokenUsd > 0
-                ? CalculateStakingUsd(Weight, stakingTokenUsd)
+                ? Weight.TotalFiat(stakingTokenUsd, TokenConstants.Opdex.Sats)
                 : 0m;
-        }
-
-        private static decimal CalculateStakingUsd(string totalStaked, decimal stakingTokenUsd)
-        {
-            const int precision = 2;
-            var odxDecimal = totalStaked.ToRoundedDecimal(precision, TokenConstants.Opdex.Decimals);
-            var odxWeightUsd = Math.Round(odxDecimal * stakingTokenUsd, precision, MidpointRounding.AwayFromZero);
-
-            return odxWeightUsd;
         }
     }
 }

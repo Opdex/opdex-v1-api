@@ -35,27 +35,24 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
         public string Src { get; private set; }
         public decimal Usd { get; private set; }
 
-        internal void SetReserves(ReservesLog log, decimal crsUsd, decimal srcUsd, int srcDecimals)
+        internal void SetReserves(ReservesLog log, decimal crsUsd, decimal srcUsd, ulong srcSats)
         {
             Crs = log.ReserveCrs;
             Src = log.ReserveSrc;
-            Usd = CalculateReservesUsd(crsUsd, srcUsd, srcDecimals);
+            Usd = CalculateReservesUsd(crsUsd, srcUsd, srcSats);
         }
 
-        internal void RefreshReserves(decimal crsUsd,  decimal srcUsd, int srcDecimals)
+        internal void RefreshReserves(decimal crsUsd,  decimal srcUsd, ulong srcSats)
         {
-            Usd = CalculateReservesUsd(crsUsd, srcUsd, srcDecimals);
+            Usd = CalculateReservesUsd(crsUsd, srcUsd, srcSats);
         }
 
-        private decimal CalculateReservesUsd(decimal crsUsd, decimal srcUsd, int srcDecimals)
+        private decimal CalculateReservesUsd(decimal crsUsd, decimal srcUsd, ulong srcSats)
         {
-            var reserveCrsRounded = Crs.ToString().ToRoundedDecimal(2, TokenConstants.Cirrus.Decimals);
-            var reserveSrcRounded = Src.ToRoundedDecimal(2, srcDecimals);
+            var totalCrsUsd = Crs.TotalFiat(crsUsd, TokenConstants.Cirrus.Sats);
+            var totalSrcUsd = Src.TotalFiat(srcUsd, srcSats);
 
-            var reserveCrsUsd = Math.Round(reserveCrsRounded * crsUsd, 2, MidpointRounding.AwayFromZero);
-            var reserveSrcUsd = Math.Round(reserveSrcRounded * srcUsd, 2, MidpointRounding.AwayFromZero);
-
-            return reserveCrsUsd + reserveSrcUsd;
+            return totalCrsUsd + totalSrcUsd;
         }
     }
 }

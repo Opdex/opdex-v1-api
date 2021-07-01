@@ -56,17 +56,7 @@ namespace Opdex.Platform.Application.Assemblers
                     // get pool and snapshot
                     var pool = await _mediator.Send(new RetrieveLiquidityPoolByLpTokenIdQuery(token.Id));
                     var poolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, now, SnapshotType));
-
-                    var lptUsd = 0m;
-
-                    // Calculate LPT Usd Amount
-                    if (!token.TotalSupply.Equals("0"))
-                    {
-                        const int decimals = TokenConstants.LiquidityPoolToken.Decimals;
-                        var supplyAsDecimal = token.TotalSupply.ToRoundedDecimal(decimals, decimals);
-
-                        lptUsd = poolSnapshot.Reserves.Usd / supplyAsDecimal;
-                    }
+                    var lptUsd = token.TotalSupply.FiatPerToken(poolSnapshot.Reserves.Usd, TokenConstants.LiquidityPoolToken.Sats);
 
                     tokenSnapshot.ResetStaleSnapshot(lptUsd, now);
                 }

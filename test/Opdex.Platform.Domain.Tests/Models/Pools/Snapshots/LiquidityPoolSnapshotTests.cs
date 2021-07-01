@@ -101,7 +101,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Pools.Snapshots
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount, reserves, rewards, staking, volume, cost,
                                                            snapshotType, startDate, endDate, startDate);
 
-            snapshot.ResetStaleSnapshot(10.00m, 1.25m, .50m, 8, startDate.AddDays(1));
+            snapshot.ResetStaleSnapshot(10.00m, 1.25m, .50m, TokenConstants.Cirrus.Sats, startDate.AddDays(1));
 
             snapshot.Id.Should().Be(0L);
             snapshot.Volume.Should().BeEquivalentTo(new VolumeSnapshot());
@@ -169,7 +169,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Pools.Snapshots
                                                      snapshotType, startDate, endDate, startDate);
 
             // Act
-            snapshot.RefreshSnapshot(10.00m, 1.25m, .50m, 8);
+            snapshot.RefreshSnapshot(10.00m, 1.25m, .50m, TokenConstants.Cirrus.Sats);
 
             // Assert
             snapshot.Id.Should().Be(id);
@@ -226,7 +226,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Pools.Snapshots
                                                      snapshotType, startDate, endDate, startDate);
 
             // Act
-            snapshot.ProcessSwapLog(swapLog, 10.00m, 1.25m, 8, true, 3, true);
+            snapshot.ProcessSwapLog(swapLog, 10.00m, 1.25m, TokenConstants.Cirrus.Sats, true, 3, true);
 
             // Assert
             snapshot.Id.Should().Be(id);
@@ -301,7 +301,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Pools.Snapshots
                                                      snapshotType, startDate, endDate, startDate);
 
             // Act
-            snapshot.ProcessReservesLog(reservesLog, 10.00m, 1.25m, 8);
+            snapshot.ProcessReservesLog(reservesLog, 10.00m, 1.25m, TokenConstants.Cirrus.Sats);
 
             // Assert
             snapshot.Id.Should().Be(id);
