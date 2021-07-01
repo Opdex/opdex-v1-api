@@ -1,4 +1,5 @@
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.Abstractions.Models.PoolDtos

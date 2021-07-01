@@ -1,4 +1,4 @@
-namespace Opdex.Platform.Common
+namespace Opdex.Platform.Common.Constants
 {
     public static class FiatConstants
     {
