@@ -11,7 +11,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
 {
-    public class SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQueryHandler : IRequestHandler<SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery, IEnumerable<TokenSnapshot>>
+    public class SelectTokenSnapshotsWithFilterQueryHandler : IRequestHandler<SelectTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshot>>
     {
         private static readonly string SqlQuery =
             @$"SELECT
@@ -27,20 +27,23 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
             WHERE
                 {nameof(TokenSnapshotEntity.TokenId)} = @{nameof(SqlParams.TokenId)} AND
                 {nameof(TokenSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)} AND
-                @{nameof(SqlParams.Time)} BETWEEN {nameof(TokenSnapshotEntity.StartDate)} AND {nameof(TokenSnapshotEntity.EndDate)};";
+                {nameof(TokenSnapshotEntity.EndDate)} BETWEEN @{nameof(SqlParams.StartDate)} AND @{nameof(TokenSnapshotEntity.EndDate)}
+                AND {nameof(TokenSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}
+            ORDER BY {nameof(TokenSnapshotEntity.EndDate)} DESC
+            LIMIT 750;"; // Limit 750, there's about 730 hours in a month (hourly snapshots)
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
-        public SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQueryHandler(IDbContext context, IMapper mapper)
+        public SelectTokenSnapshotsWithFilterQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<TokenSnapshot>> Handle(SelectTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TokenSnapshot>> Handle(SelectTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var queryParams = new SqlParams(request.TokenId, request.MarketId, request.Time);
+            var queryParams = new SqlParams(request.TokenId, request.MarketId, request.StartDate, request.EndDate, (int)request.SnapshotType);
 
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
@@ -51,16 +54,20 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
 
         private sealed class SqlParams
         {
-            internal SqlParams(long tokenId, long marketId, DateTime time)
+            internal SqlParams(long tokenId, long marketId, DateTime startDate, DateTime endDate, int snapshotTypeId)
             {
                 TokenId = tokenId;
                 MarketId = marketId;
-                Time = time;
+                StartDate = startDate;
+                EndDate = endDate;
+                SnapshotTypeId = snapshotTypeId;
             }
 
             public long TokenId { get; }
             public long MarketId { get; }
-            public DateTime Time { get; }
+            public DateTime StartDate { get; }
+            public DateTime EndDate { get; }
+            public int SnapshotTypeId { get; }
         }
     }
 }

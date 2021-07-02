@@ -53,16 +53,15 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>List of <see cref="LiquidityPoolResponseModel"/>'s that match the filter criteria.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<LiquidityPoolResponseModel>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> LiquidityPools(
-                                                                                             [FromQuery] bool? staking,
-                                                                                             [FromQuery] bool? mining,
-                                                                                             [FromQuery] bool? nominated,
-                                                                                             [FromQuery] uint? skip,
-                                                                                             [FromQuery] uint? take,
-                                                                                             [FromQuery] string sortBy,
-                                                                                             [FromQuery] string orderBy,
-                                                                                             [FromQuery] IEnumerable<string> pools,
-                                                                                             CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> LiquidityPools([FromQuery] bool? staking,
+                                                                                                [FromQuery] bool? mining,
+                                                                                                [FromQuery] bool? nominated,
+                                                                                                [FromQuery] uint? skip,
+                                                                                                [FromQuery] uint? take,
+                                                                                                [FromQuery] string sortBy,
+                                                                                                [FromQuery] string orderBy,
+                                                                                                [FromQuery] IEnumerable<string> pools,
+                                                                                                CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetLiquidityPoolsWithFilterQuery(_context.Market,
                                                                                    staking,

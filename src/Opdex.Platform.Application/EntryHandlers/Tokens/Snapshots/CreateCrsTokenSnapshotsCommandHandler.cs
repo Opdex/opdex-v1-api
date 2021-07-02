@@ -1,23 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models.Tokens;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Tokens
+namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
 {
     public class CreateCrsTokenSnapshotsCommandHandler : IRequestHandler<CreateCrsTokenSnapshotsCommand, Unit>
     {
@@ -35,11 +28,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
         {
             var crs = await _mediator.Send(new GetTokenByAddressQuery(TokenConstants.Cirrus.Address), CancellationToken.None);
 
-            var snapshotsQuery = new RetrieveTokenSnapshotsByTokenIdAndMarketIdAndTimeQuery(crs.Id, CrsMarketId, request.BlockTime);
-            var snapshots = await _mediator.Send(snapshotsQuery, CancellationToken.None);
+            var snapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id,
+                                                                                         CrsMarketId,
+                                                                                         request.BlockTime,
+                                                                                         SnapshotType.Minute), CancellationToken.None);
 
             // If we've already got a minute snapshot, skip
-            if (snapshots.Any(s => s.SnapshotType == SnapshotType.Minute))
+            if (snapshot.EndDate > request.BlockTime)
             {
                 return Unit.Value;
             }
@@ -56,24 +51,29 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
 
             foreach (var snapshotType in _snapshotTypes)
             {
-                await ProcessTokenSnapshot(snapshotType, request.BlockTime, snapshots, crs.Id, price);
+                var snapshotOfType = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id,
+                                                                                                   CrsMarketId,
+                                                                                                   request.BlockTime,
+                                                                                                   snapshotType), CancellationToken.None);
+
+                // Reset stale snapshot or update a current one
+                if (snapshotOfType.EndDate < request.BlockTime)
+                {
+                    snapshotOfType.ResetStaleSnapshot(price, request.BlockTime);
+                }
+                else
+                {
+                    snapshotOfType.UpdatePrice(price);
+                }
+
+                var persisted = await _mediator.Send(new MakeTokenSnapshotCommand(snapshot), CancellationToken.None);
+                if (!persisted)
+                {
+                    throw new Exception("Unable to persist token snapshot.");
+                }
             }
 
             return Unit.Value;
-        }
-
-        private async Task ProcessTokenSnapshot(SnapshotType snapshotType, DateTime blockTime, IEnumerable<TokenSnapshot> snapshots, long tokenId, decimal price)
-        {
-            var snapshot = snapshots.SingleOrDefault(s => s.SnapshotType == snapshotType) ??
-                           new TokenSnapshot(tokenId, CrsMarketId, snapshotType, blockTime);
-
-            snapshot.UpdatePrice(price);
-
-            var persisted = await _mediator.Send(new MakeTokenSnapshotCommand(snapshot), CancellationToken.None);
-            if (!persisted)
-            {
-                throw new Exception("Unable to persist token snapshot.");
-            }
         }
     }
 }

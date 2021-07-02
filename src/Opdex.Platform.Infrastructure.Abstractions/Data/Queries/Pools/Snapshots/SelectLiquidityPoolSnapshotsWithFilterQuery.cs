@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using MediatR;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Pools.Snapshots;
 
@@ -14,6 +13,16 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools.Snapshot
             if (poolId < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(poolId));
+            }
+
+            if (startDate.Equals(default))
+            {
+                throw new ArgumentOutOfRangeException(nameof(startDate));
+            }
+
+            if (endDate.Equals(default) || endDate < startDate)
+            {
+                throw new ArgumentOutOfRangeException(nameof(endDate));
             }
 
             if (snapshotType == SnapshotType.Unknown)
