@@ -74,6 +74,7 @@ namespace Opdex.Platform.WebApi
                 .AddProblemDetailsConventions()
                 .AddNewtonsoftJson(options =>
                 {
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.Converters =
                         new List<JsonConverter>

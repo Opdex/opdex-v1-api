@@ -8,6 +8,7 @@ using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Pools;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools;
+using System;
 using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
@@ -27,7 +28,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         }
 
         [Fact]
-        public async Task PersistsPool_Success()
+        public async Task InsertLiquidityPool_Success()
         {
             var pool = new LiquidityPool("PoolAddress", 1, 4, 1, 2);
             var command = new PersistLiquidityPoolCommand(pool);
@@ -41,13 +42,42 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
         }
 
         [Fact]
-        public async Task PersistsPool_Fail()
+        public async Task UpdateLiquidityPool_Success()
+        {
+            const long id = 99;
+
+            var pool = new LiquidityPool(id, "address", 2, 3, 4, 5, 6);
+            var command = new PersistLiquidityPoolCommand(pool);
+
+            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult(id));
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            result.Should().Be(id);
+        }
+
+        [Fact]
+        public async Task InsertLiquidityPool_Fail()
         {
             var pool = new LiquidityPool("PoolAddress", 1, 4, 1, 2);
             var command = new PersistLiquidityPoolCommand(pool);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(0L));
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            result.Should().Be(0);
+        }
+
+        [Fact]
+        public async Task InsertMiningPool_Throws()
+        {
+            var pool = new LiquidityPool("PoolAddress", 1, 4, 1, 2);
+            var command = new PersistLiquidityPoolCommand(pool);
+
+            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).Throws<Exception>();
 
             var result = await _handler.Handle(command, CancellationToken.None);
 

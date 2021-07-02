@@ -1,5 +1,6 @@
 using System;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
@@ -60,7 +61,7 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
         public DateTime EndDate { get; private set; }
         public DateTime ModifiedDate { get; }
 
-        public void ResetStaleSnapshot(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, int srcDecimals, DateTime blockTime)
+        public void ResetStaleSnapshot(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, ulong srcSats, DateTime blockTime)
         {
             // Reset Id for new Insert
             Id = 0;
@@ -75,10 +76,10 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
             Staking.RefreshStaking(stakingTokenUsd);
 
             // Refresh costs (mainly reset OHLC)
-            Cost.SetCost(Reserves.Crs, Reserves.Src, srcDecimals.DecimalsToSatoshis(), true);
+            Cost.SetCost(Reserves.Crs, Reserves.Src, srcSats, true);
 
             // Refresh reserves (USD amounts)
-            Reserves.RefreshReserves(crsUsd, srcUsd, srcDecimals);
+            Reserves.RefreshReserves(crsUsd, srcUsd, srcSats);
 
             TransactionCount = 0;
 
@@ -86,25 +87,25 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
             EndDate = blockTime.ToEndOf(SnapshotType);
         }
 
-        public void RefreshSnapshot(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, int srcDecimals)
+        public void RefreshSnapshot(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, ulong srcSats)
         {
             // Refresh staking USD amounts
             Staking.RefreshStaking(stakingTokenUsd);
 
             // Refresh reserve USD amounts
-            Reserves.RefreshReserves(crsUsd, srcUsd, srcDecimals);
+            Reserves.RefreshReserves(crsUsd, srcUsd, srcSats);
         }
 
-        public void ProcessSwapLog(SwapLog log, decimal crsUsd, decimal srcUsd, int srcDecimals, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
+        public void ProcessSwapLog(SwapLog log, decimal crsUsd, decimal srcUsd, ulong srcSats, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
         {
-            Volume.SetVolume(log, crsUsd, srcUsd, srcDecimals);
+            Volume.SetVolume(log, crsUsd, srcUsd, srcSats);
             Rewards.SetRewards(Volume.Usd, Staking.Weight, isStakingPool, transactionFee, marketFeeEnabled);
         }
 
-        public void ProcessReservesLog(ReservesLog log, decimal crsUsd, decimal srcUsd, int srcDecimals)
+        public void ProcessReservesLog(ReservesLog log, decimal crsUsd, decimal srcUsd, ulong srcSats)
         {
-            Reserves.SetReserves(log, crsUsd, srcUsd, srcDecimals);
-            Cost.SetCost(log.ReserveCrs, log.ReserveSrc, srcDecimals.DecimalsToSatoshis());
+            Reserves.SetReserves(log, crsUsd, srcUsd, srcSats);
+            Cost.SetCost(log.ReserveCrs, log.ReserveSrc, srcSats);
         }
 
         public void ProcessStakingLog(StakeLog log, decimal stakingTokenUsd)

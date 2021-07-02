@@ -14,7 +14,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
     public class SelectLiquidityPoolByIdQueryHandler : IRequestHandler<SelectLiquidityPoolByIdQuery, LiquidityPool>
     {
         private static readonly string SqlQuery =
-            @$"SELECT 
+            @$"SELECT
                 {nameof(LiquidityPoolEntity.Id)},
                 {nameof(LiquidityPoolEntity.Address)},
                 {nameof(LiquidityPoolEntity.SrcTokenId)},
@@ -23,7 +23,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 {nameof(LiquidityPoolEntity.CreatedBlock)},
                 {nameof(LiquidityPoolEntity.ModifiedBlock)}
             FROM pool_liquidity
-            WHERE {nameof(LiquidityPoolEntity.Address)} = @{nameof(SqlParams.LiquidityPoolId)};";
+            WHERE {nameof(LiquidityPoolEntity.Id)} = @{nameof(SqlParams.LiquidityPoolId)}
+            LIMIT 1;";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -53,7 +54,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
         {
             internal SqlParams(long liquidityPoolId)
             {
-                liquidityPoolId = liquidityPoolId;
+                LiquidityPoolId = liquidityPoolId;
             }
 
             public long LiquidityPoolId { get; }

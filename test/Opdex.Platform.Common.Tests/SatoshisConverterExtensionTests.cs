@@ -16,7 +16,7 @@ namespace Opdex.Platform.Common.Tests
 
             value.Should().Be(expected);
         }
-        
+
         [Theory]
         [InlineData(123456789, 8, 1.23456789)]
         [InlineData(987, 0, 987)]

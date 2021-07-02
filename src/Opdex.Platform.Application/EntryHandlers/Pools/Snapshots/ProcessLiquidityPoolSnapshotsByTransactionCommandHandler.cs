@@ -12,6 +12,8 @@ using Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
@@ -102,7 +104,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
                                                                                              liquidityPoolSnapshot.Reserves.Crs,
                                                                                              liquidityPoolSnapshot.Reserves.Src));
 
-                        liquidityPoolSnapshot.ResetStaleSnapshot(crsUsd, srcUsd, stakingTokenUsd, srcToken.Decimals, blockTime);
+                        liquidityPoolSnapshot.ResetStaleSnapshot(crsUsd, srcUsd, stakingTokenUsd, srcToken.Sats, blockTime);
                     }
 
                     // Todo: Consider prioritizing the order to Swap, Stake, Reserves
@@ -124,7 +126,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
                                                                                                  reservesLog.ReserveSrc));
 
                             // Process Reserves and Token Pricing Snapshot
-                            liquidityPoolSnapshot.ProcessReservesLog(reservesLog, crsUsd, srcUsd, srcToken.Decimals);
+                            liquidityPoolSnapshot.ProcessReservesLog(reservesLog, crsUsd, srcUsd, srcToken.Sats);
 
                             // Process LP Token Snapshot
                             await _mediator.Send(new ProcessLpTokenSnapshotCommand(liquidityPool.MarketId,
@@ -141,7 +143,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
                                                                                                             SnapshotType.Hourly));
 
                             // Process Volume of a Swap
-                            liquidityPoolSnapshot.ProcessSwapLog((SwapLog)poolLog, crsUsd, srcSnapshot.Price.Close, srcToken.Decimals,
+                            liquidityPoolSnapshot.ProcessSwapLog((SwapLog)poolLog, crsUsd, srcSnapshot.Price.Close, srcToken.Sats,
                                                                  market.IsStakingMarket, market.TransactionFee, market.MarketFeeEnabled);
                         }
                         else if (poolLog.LogType == TransactionLogType.StakeLog)

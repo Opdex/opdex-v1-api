@@ -6,7 +6,6 @@ using Moq;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
@@ -43,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
                 Decimals = 18,
                 TotalSupply = "98765434567898765",
                 CreatedBlock = 1,
-                ModifiedBlock = 1
+                ModifiedBlock = 2
             };
 
             var command = new SelectTokenByAddressQuery(address);
@@ -77,6 +76,22 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
                 .Should()
                 .Throw<NotFoundException>()
                 .WithMessage($"{nameof(Token)} not found.");
+        }
+
+        [Fact]
+        public async Task SelectTokenByAddress_ReturnsNull()
+        {
+            const string address = "SomeAddress";
+            const bool findOrThrow = false;
+
+            var command = new SelectTokenByAddressQuery(address, findOrThrow);
+
+            _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult<TokenEntity>(null));
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            result.Should().BeNull();
         }
     }
 }

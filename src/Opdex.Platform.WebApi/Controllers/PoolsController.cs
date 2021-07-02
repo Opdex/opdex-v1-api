@@ -15,6 +15,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
+using System.Linq;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -35,20 +36,43 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get a list of all available pools
+        /// Retrieve a list of pools that match the filters provided.
         /// </summary>
-        /// <remarks>
-        /// To be updated to include pagination and filtering
-        /// </remarks>
+        /// <param name="staking">Filter liquidity pools by staking status. Default null is ignored.</param>
+        /// <param name="mining">Filter liquidity pools by mining status. Default null is ignored.</param>
+        /// <param name="nominated">Filter liquidity pools by nomination status. Default null is ignored.</param>
+        /// <param name="skip">For pagination, the amount of records to skip. Default is 0.</param>
+        /// <param name="take">For pagination, the amount of records to take. Default is 10.</param>
+        /// <param name="sortBy">
+        /// "Liquidity", "Volume", "StakingWeight", "StakingUsd", "ProviderRewards", "MarketRewards" filters.
+        /// Single filter use at a time. Default is none.
+        /// </param>
+        /// <param name="orderBy">"ASC" or "DESC". Default is descending, is ignored if sortBy is null.</param>
+        /// <param name="pools">A list of liquidity pool addresses to filter for specific pools.</param>
         /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>List of pools</returns>
+        /// <returns>List of <see cref="LiquidityPoolResponseModel"/>'s that match the filter criteria.</returns>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> GetAllPools(uint skip, uint take, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(IEnumerable<LiquidityPoolResponseModel>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> LiquidityPools(
+                                                                                             [FromQuery] bool? staking,
+                                                                                             [FromQuery] bool? mining,
+                                                                                             [FromQuery] bool? nominated,
+                                                                                             [FromQuery] uint? skip,
+                                                                                             [FromQuery] uint? take,
+                                                                                             [FromQuery] string sortBy,
+                                                                                             [FromQuery] string orderBy,
+                                                                                             [FromQuery] IEnumerable<string> pools,
+                                                                                             CancellationToken cancellationToken)
         {
-            var query = new GetAllPoolsByMarketAddressQuery(_context.Market);
-
-            var result = await _mediator.Send(query, cancellationToken);
+            var result = await _mediator.Send(new GetLiquidityPoolsWithFilterQuery(_context.Market,
+                                                                                   staking,
+                                                                                   mining,
+                                                                                   nominated,
+                                                                                   skip ?? 0,
+                                                                                   take ?? 10,
+                                                                                   sortBy,
+                                                                                   orderBy,
+                                                                                   pools), cancellationToken);
 
             var response = _mapper.Map<IEnumerable<LiquidityPoolResponseModel>>(result);
 
@@ -56,40 +80,55 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>
-        /// Returns the pools that matches the provided address.
+        /// Returns the liquidity pool that matches the provided address.
         /// </summary>
         /// <param name="address">Contract address to get pools of</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>The requested pools</returns>
         [HttpGet("{address}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(LiquidityPoolResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<LiquidityPoolResponseModel>> GetPool(string address, CancellationToken cancellationToken)
+        public async Task<ActionResult<LiquidityPoolResponseModel>> LiquidityPool(string address, CancellationToken cancellationToken)
         {
-            var query = new GetLiquidityPoolByAddressQuery(address);
-
-            var result = await _mediator.Send(query, cancellationToken);
+            var result = await _mediator.Send(new GetLiquidityPoolByAddressQuery(address), cancellationToken);
 
             var response = _mapper.Map<LiquidityPoolResponseModel>(result);
 
             return Ok(response);
         }
 
+        /// <summary>
+        /// Retrieve historical data points for a liquidity pool such as reserves, volume, staking and associated token costs.
+        /// </summary>
+        /// <param name="address">The address of the liquidity pool.</param>
+        /// <param name="candleSpan">"Hourly" or "Daily" determining the time span of each data point. Default is daily.</param>
+        /// <param name="timespan">"1D", "1W", "1M", "1Y" determining how much history to fetch. Default is 1 week.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="LiquidityPoolSnapshotHistoryResponseModel"/> with a list of historical data points.</returns>
         [HttpGet("{address}/history")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<LiquidityPoolSummaryResponseModel>> GetPoolHistory(string address, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(LiquidityPoolSnapshotHistoryResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LiquidityPoolSnapshotHistoryResponseModel>> LiquidityPoolHistory(string address,
+                                                                                                        [FromQuery] string candleSpan,
+                                                                                                        [FromQuery] string timespan,
+                                                                                                        CancellationToken cancellationToken)
         {
-            var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(address));
-            var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.SrcTokenId));
+            var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(address), cancellationToken);
 
-            var poolSnapshotDtos = await _mediator.Send(new GetLiquidityPoolSnapshotsWithFilterQuery(address, startDate, endDate), cancellationToken);
+            var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.SrcTokenId), cancellationToken);
 
-            foreach (var snapshotDto in poolSnapshotDtos)
+            var poolSnapshotDtos = await _mediator.Send(new GetLiquidityPoolSnapshotsWithFilterQuery(address,
+                                                                                                     candleSpan,
+                                                                                                     timespan), cancellationToken);
+
+            var response = new LiquidityPoolSnapshotHistoryResponseModel
             {
-                snapshotDto.SrcTokenDecimals = srcToken.Decimals;
-            }
-
-            var response = _mapper.Map<IEnumerable<LiquidityPoolSummaryResponseModel>>(poolSnapshotDtos);
+                Address = liquidityPool.Address,
+                SnapshotHistory = poolSnapshotDtos.Select(snapshot =>
+                {
+                    snapshot.SrcTokenDecimals = srcToken.Decimals;
+                    return _mapper.Map<LiquidityPoolSnapshotResponseModel>(snapshot);
+                })
+            };
 
             return Ok(response);
         }

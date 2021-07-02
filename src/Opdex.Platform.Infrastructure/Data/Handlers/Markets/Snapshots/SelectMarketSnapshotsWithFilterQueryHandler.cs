@@ -23,8 +23,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots
                 {nameof(MarketSnapshotEntity.EndDate)}
             FROM market_snapshot
            WHERE {nameof(MarketSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)}
-                AND @{nameof(SqlParams.Start)} <= {nameof(MarketSnapshotEntity.StartDate)}
-                AND @{nameof(SqlParams.End)} >= {nameof(MarketSnapshotEntity.EndDate)}
+                AND {nameof(MarketSnapshotEntity.EndDate)} BETWEEN @{nameof(SqlParams.Start)} AND @{nameof(SqlParams.End)}
                 AND {nameof(MarketSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}
             ORDER BY {nameof(MarketSnapshotEntity.EndDate)} DESC
             LIMIT 750;"; // Limit 750, there's about 730 hours in a month (hourly snapshots)

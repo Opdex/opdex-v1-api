@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.TokenDtos
         public string Name { get; set; }
         public string Symbol { get; set; }
         public int Decimals { get; set; }
-        public long Sats { get; set; }
+        public ulong Sats { get; set; }
         public string TotalSupply { get; set; }
         public TokenSnapshotDto Summary { get; set; }
     }

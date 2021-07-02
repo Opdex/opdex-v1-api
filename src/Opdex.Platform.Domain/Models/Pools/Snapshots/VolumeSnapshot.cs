@@ -1,5 +1,6 @@
 using System;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
@@ -35,19 +36,17 @@ namespace Opdex.Platform.Domain.Models.Pools.Snapshots
         public string Src { get; private set; }
         public decimal Usd { get; private set; }
 
-        internal void SetVolume(SwapLog log, decimal crsUsd, decimal srcUsd, int srcDecimals)
+        internal void SetVolume(SwapLog log, decimal crsUsd, decimal srcUsd, ulong srcSats)
         {
             Crs += log.AmountCrsIn + log.AmountCrsOut;
 
             var volumeSrc = log.AmountSrcIn.Add(log.AmountSrcOut);
             Src = Src.Add(volumeSrc);
 
-            var crsVolumeDecimal = log.AmountCrsIn.ToString().ToRoundedDecimal(8, TokenConstants.Cirrus.Decimals);
-            var srcVolumeDecimal = log.AmountSrcIn.ToRoundedDecimal(8, srcDecimals);
-            var crsUsdVolume = crsVolumeDecimal * crsUsd;
-            var srcUsdVolume = srcVolumeDecimal * srcUsd;
+            var crsVolume = log.AmountCrsIn.TotalFiat(crsUsd, TokenConstants.Cirrus.Sats);
+            var srcVolume = log.AmountSrcIn.TotalFiat(srcUsd, srcSats);
 
-            Usd += Math.Round(crsUsdVolume + srcUsdVolume, 2, MidpointRounding.AwayFromZero);
+            Usd += Math.Round(crsVolume + srcVolume, 2, MidpointRounding.AwayFromZero);
         }
     }
 }
