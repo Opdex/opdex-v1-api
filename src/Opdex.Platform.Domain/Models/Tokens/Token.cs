@@ -75,7 +75,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
         {
             if (!value.IsNumeric())
             {
-                throw new ArgumentOutOfRangeException("Total supply must be a numeric value");
+                throw new ArgumentOutOfRangeException("Total supply must be a numeric value.");
             }
 
             TotalSupply = value;

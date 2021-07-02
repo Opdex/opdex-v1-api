@@ -51,7 +51,8 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TokenSnapshotEntity, TokenSnapshot>()
-                .ConstructUsing((src, ctx) => new TokenSnapshot(src.Id, src.TokenId, src.MarketId, ctx.Mapper.Map<OhlcDecimalSnapshot>(src.Price), src.SnapshotTypeId, src.StartDate, src.EndDate))
+                .ConstructUsing((src, ctx) => new TokenSnapshot(src.Id, src.TokenId, src.MarketId, ctx.Mapper.Map<OhlcDecimalSnapshot>(src.Price),
+                                                                (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate, src.ModifiedDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TokenDistributionEntity, TokenDistribution>()
