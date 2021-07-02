@@ -4,7 +4,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.WebApi.Auth;
@@ -17,10 +16,10 @@ namespace Opdex.Platform.WebApi.Controllers
     [Route("auth")]
     public class AuthController : ControllerBase
     {
-        private readonly IOptions<AuthConfiguration> _authConfiguration;
+        private readonly AuthConfiguration _authConfiguration;
         private readonly IMediator _mediator;
 
-        public AuthController(IOptions<AuthConfiguration> authConfiguration, IMediator mediator)
+        public AuthController(AuthConfiguration authConfiguration, IMediator mediator)
         {
             _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -43,7 +42,7 @@ namespace Opdex.Platform.WebApi.Controllers
 
             // Todo: If private market; roles && enforce wallet != null && wallet has permission
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.Value.Opdex.SigningKey));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.Opdex.SigningKey));
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {

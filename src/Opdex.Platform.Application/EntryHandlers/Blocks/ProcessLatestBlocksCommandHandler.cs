@@ -14,7 +14,6 @@ using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 
@@ -52,7 +51,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                 if (currentBlock.IsNewMinuteFromPrevious(previousBlock.MedianTime))
                 {
                     // Dev Environment = 15 minutes, otherwise 1 minute
-                    if (!request.IsDevelopEnv || currentBlock.MedianTime.Minute == 15)
+                    if (!request.IsDevelopEnv || currentBlock.MedianTime.Minute % 15 == 0)
                     {
                         await _mediator.Send(new CreateCrsTokenSnapshotsCommand(currentBlock.MedianTime));
                     }

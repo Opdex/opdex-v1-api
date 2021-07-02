@@ -1,10 +1,9 @@
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
-using Opdex.Platform.Common;
+using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
@@ -25,12 +24,10 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             _applicationContextMock = new Mock<IApplicationContext>();
             _mediatorMock = new Mock<IMediator>();
-            var blockExplorerOptionsMock = new Mock<IOptions<BlockExplorerConfiguration>>();
-            blockExplorerOptionsMock.Setup(callTo => callTo.Value).Returns(new BlockExplorerConfiguration
-            {
-                TransactionEndpoint = FakeTransactionEndpoint
-            });
-            _controller = new VaultController(_applicationContextMock.Object, _mediatorMock.Object, blockExplorerOptionsMock.Object);
+
+            var blockExplorerOptionsMock = new BlockExplorerConfiguration {TransactionEndpoint = FakeTransactionEndpoint};
+
+            _controller = new VaultController(_applicationContextMock.Object, _mediatorMock.Object, blockExplorerOptionsMock);
         }
 
         [Fact]
