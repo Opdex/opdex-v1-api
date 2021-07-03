@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Microsoft.Extensions.Logging;
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Tokens;
@@ -42,14 +42,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
 
-        public SelectTokensWithFilterQueryHandler(IDbContext context, IMapper mapper,
-            ILogger<SelectTokensWithFilterQueryHandler> logger)
+        public SelectTokensWithFilterQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<IEnumerable<Token>> Handle(SelectTokensWithFilterQuery request, CancellationToken cancellationToken)
@@ -85,9 +82,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
             {
                 tableJoins += $@" JOIN token_snapshot ts ON
                                 ts.{nameof(TokenSnapshotEntity.TokenId)} = t.{nameof(TokenEntity.Id)}
-                                AND ts.{nameof(TokenSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)}
                                 AND ts.{nameof(TokenSnapshotEntity.EndDate)} > UTC_TIMESTAMP()
-                                AND ts.{nameof(TokenSnapshotEntity.SnapshotTypeId)} = {(int)SnapshotType.Daily}";
+                                AND ts.{nameof(TokenSnapshotEntity.SnapshotTypeId)} = {(int)SnapshotType.Daily}
+                                AND (
+                                    (t.{nameof(TokenEntity.Address)} != '{TokenConstants.Cirrus.Address}' AND ts.{nameof(TokenSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)})
+                                    OR
+                                    (t.{nameof(TokenEntity.Address)} = '{TokenConstants.Cirrus.Address}' AND ts.{nameof(TokenSnapshotEntity.MarketId)} = 0)
+                                )";
             }
 
             // Build Limit string for pagination
