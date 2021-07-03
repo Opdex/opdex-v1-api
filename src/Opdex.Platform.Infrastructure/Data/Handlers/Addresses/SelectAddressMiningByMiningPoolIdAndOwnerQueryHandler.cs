@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         : IRequestHandler<SelectAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>
     {
         private static readonly string SqlQuery =
-            @$"Select 
+            @$"Select
                 {nameof(AddressMiningEntity.Id)},
                 {nameof(AddressMiningEntity.MiningPoolId)},
                 {nameof(AddressMiningEntity.Owner)},
@@ -23,8 +23,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 {nameof(AddressMiningEntity.CreatedBlock)},
                 {nameof(AddressMiningEntity.ModifiedBlock)}
             FROM address_mining
-            WHERE {nameof(AddressMiningEntity.MiningPoolId)} = @{nameof(SqlParams.MiningPoolId)}
-                AND {nameof(AddressMiningEntity.Owner)} = @{nameof(SqlParams.Owner)}
+            WHERE {nameof(AddressMiningEntity.Owner)} = @{nameof(SqlParams.Owner)}
+                AND {nameof(AddressMiningEntity.MiningPoolId)} = @{nameof(SqlParams.MiningPoolId)}
             LIMIT 1;";
 
         private readonly IDbContext _context;

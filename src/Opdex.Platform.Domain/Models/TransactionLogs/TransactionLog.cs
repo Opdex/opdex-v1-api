@@ -11,17 +11,17 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             {
                 throw new ArgumentOutOfRangeException(nameof(logType));
             }
-            
+
             if (!contract.HasValue())
             {
                 throw new ArgumentNullException(nameof(contract));
             }
-            
+
             if (sortOrder < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(sortOrder));
             }
-            
+
             LogType = logType;
             Contract = contract;
             SortOrder = sortOrder;
@@ -35,7 +35,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             Contract = contract;
             SortOrder = sortOrder;
         }
-        
+
         public long Id { get; }
         public TransactionLogType LogType { get; }
         public long TransactionId { get; private set; }

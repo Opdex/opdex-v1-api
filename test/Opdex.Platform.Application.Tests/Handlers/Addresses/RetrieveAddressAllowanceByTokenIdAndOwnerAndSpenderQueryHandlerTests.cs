@@ -49,7 +49,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         public async Task Handler_SelectAddressAllowanceByTokenIdAndOwnerAndSpenderQuery_Return()
         {
             // Arrange
-            var selectResponse = new AddressAllowance(5, 5, 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+            var selectResponse = new AddressAllowance(5, 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                 "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk", "500000000", 500, 505);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<SelectAddressAllowanceByTokenIdAndOwnerAndSpenderQuery>(),

@@ -76,7 +76,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         {
             // Arrange
             var request = new GetAddressAllowanceForTokenQuery("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl");
-            var addressAllowance = new AddressAllowance(5, 5, 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl", "50000000", 5, 5);
+            var addressAllowance = new AddressAllowance(5, 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl", "50000000", 5, 5);
             var addressAllowanceDto = new AddressAllowanceDto { Amount = "5000000000" };
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>()))

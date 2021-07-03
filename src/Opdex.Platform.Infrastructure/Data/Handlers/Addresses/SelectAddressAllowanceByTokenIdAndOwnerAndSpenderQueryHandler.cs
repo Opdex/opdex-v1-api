@@ -18,16 +18,15 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
             @$"SELECT
                 {nameof(AddressAllowanceEntity.Id)},
                 {nameof(AddressAllowanceEntity.TokenId)},
-                {nameof(AddressAllowanceEntity.LiquidityPoolId)},
                 {nameof(AddressAllowanceEntity.Owner)},
                 {nameof(AddressAllowanceEntity.Spender)},
                 {nameof(AddressAllowanceEntity.Allowance)},
                 {nameof(AddressAllowanceEntity.CreatedBlock)},
                 {nameof(AddressAllowanceEntity.ModifiedBlock)}
             FROM address_allowance
-            WHERE {nameof(AddressAllowanceEntity.TokenId)} = @{nameof(SqlParams.TokenId)} AND
-                {nameof(AddressAllowanceEntity.Owner)} = @{nameof(SqlParams.Owner)} AND
-                {nameof(AddressAllowanceEntity.Spender)} = @{nameof(SqlParams.Spender)}
+            WHERE {nameof(AddressAllowanceEntity.Owner)} = @{nameof(SqlParams.Owner)} AND
+                {nameof(AddressAllowanceEntity.Spender)} = @{nameof(SqlParams.Spender)} AND
+                {nameof(AddressAllowanceEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;";
 
         private readonly IDbContext _context;

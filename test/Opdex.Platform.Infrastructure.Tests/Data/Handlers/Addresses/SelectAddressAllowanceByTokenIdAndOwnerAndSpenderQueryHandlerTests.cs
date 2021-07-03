@@ -64,7 +64,6 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             {
                 Id = 5,
                 TokenId = 10,
-                LiquidityPoolId = 15,
                 Owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                 Spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                 Allowance = "5000000000",
@@ -83,7 +82,6 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             // Assert
             result.Id.Should().Be(entity.Id);
             result.TokenId.Should().Be(entity.TokenId);
-            result.LiquidityPoolId.Should().Be(entity.LiquidityPoolId);
             result.Owner.Should().Be(entity.Owner);
             result.Spender.Should().Be(entity.Spender);
             result.Allowance.Should().Be(entity.Allowance);

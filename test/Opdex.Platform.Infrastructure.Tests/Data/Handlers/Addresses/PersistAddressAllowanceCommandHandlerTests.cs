@@ -31,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task Insert_AddressAllowance_Success()
         {
             const long expectedId = 10;
-            var allowance = new AddressAllowance(0, 1, "Owner", "Spender", "100000000", 3);
+            var allowance = new AddressAllowance(1, "Owner", "Spender", "100000000", 3);
             var command = new PersistAddressAllowanceCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -46,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task Update_AddressAllowance_Success()
         {
             const long expectedId = 10;
-            var allowance = new AddressAllowance(expectedId, 0, 1, "Owner", "Spender", "100000000", 3, 4);
+            var allowance = new AddressAllowance(expectedId, 1, "Owner", "Spender", "100000000", 3, 4);
             var command = new PersistAddressAllowanceCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -61,7 +61,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task PersistsAddressAllowance_Fail()
         {
             const long expectedId = 0;
-            var allowance = new AddressAllowance(expectedId, 0, 1, "Owner", "Spender", "100000000", 3, 4);
+            var allowance = new AddressAllowance(expectedId, 1, "Owner", "Spender", "100000000", 3, 4);
             var command = new PersistAddressAllowanceCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

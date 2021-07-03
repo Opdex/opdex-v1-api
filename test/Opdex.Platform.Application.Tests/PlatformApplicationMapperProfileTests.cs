@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Tests
         public void From_AddressAllowance_To_AddressAllowanceDto()
         {
             // Arrange
-            var model = new AddressAllowance(5L, 10L, 15L, "", "", "5000060000", 500, 1000);
+            var model = new AddressAllowance(5L, 15L, "", "", "5000060000", 500, 1000);
 
             // Act
             var dto = _mapper.Map<AddressAllowanceDto>(model);
