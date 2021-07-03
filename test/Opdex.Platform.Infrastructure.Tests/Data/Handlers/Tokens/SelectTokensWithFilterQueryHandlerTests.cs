@@ -24,10 +24,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         public SelectTokensWithFilterQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            var logger = new NullLogger<SelectTokensWithFilterQueryHandler>();
 
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectTokensWithFilterQueryHandler(_dbContext.Object, mapper, logger);
+            _handler = new SelectTokensWithFilterQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
