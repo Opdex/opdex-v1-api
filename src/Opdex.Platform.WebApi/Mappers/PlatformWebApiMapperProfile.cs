@@ -115,7 +115,10 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<AddressAllowanceDto, ApprovedAllowanceResponseModel>()
-                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
+                .ForMember(dest => dest.Allowance, opt => opt.MapFrom(src => src.Allowance))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
+                .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token));
         }
 
         private static ReservesResponseModel MapReserves(ReservesDto reservesDto, int srcTokenDecimals)

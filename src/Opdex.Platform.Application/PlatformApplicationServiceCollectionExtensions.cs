@@ -107,7 +107,7 @@ namespace Opdex.Platform.Application
             services.AddScoped(typeof(IMediator), typeof(Mediator));
 
             // Entry Queries
-            services.AddTransient<IRequestHandler<GetAddressAllowanceForTokenQuery, AddressAllowanceDto>, GetAddressAllowanceForTokenQueryHandler>();
+            services.AddTransient<IRequestHandler<GetAddressAllowancesApprovedByOwnerQuery, IEnumerable<AddressAllowanceDto>>, GetAddressAllowancesApprovedByOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPoolDto>>, GetLiquidityPoolsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetAllTokensByMarketAddressQuery, IEnumerable<TokenDto>>, GetAllTokensByMarketAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetTransactionsByPoolWithFilterQuery, IEnumerable<TransactionDto>>, GetTransactionsByPoolWithFilterQueryHandler>();
@@ -120,6 +120,7 @@ namespace Opdex.Platform.Application
 
             // Queries
             services.AddTransient<IRequestHandler<RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery, AddressAllowance>, RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveAddressAllowancesByOwnerWithFilterQuery, IEnumerable<AddressAllowance>>, RetrieveAddressAllowancesByOwnerWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>, RetrieveLiquidityPoolsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAllTokensQuery, IEnumerable<Token>>, RetrieveAllTokensQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketSnapshotWithFilterQuery, MarketSnapshot>, RetrieveMarketSnapshotWithFilterQueryHandler>();
@@ -277,6 +278,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveTokenByIdQuery, Token>, RetrieveTokenByIdQueryHandler>();
 
             // Assemblers
+            services.AddTransient<IModelAssembler<AddressAllowance, AddressAllowanceDto>, AddressAllowanceDtoAssembler>();
             services.AddTransient<IModelAssembler<Transaction, TransactionDto>, TransactionDtoAssembler>();
             services.AddTransient<IModelAssembler<LiquidityPool, LiquidityPoolDto>, LiquidityPoolDtoAssembler>();
             services.AddTransient<IModelAssembler<Market, MarketDto>, MarketDtoAssembler>();

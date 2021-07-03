@@ -20,13 +20,22 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
         public void From_AddressAllowanceDto_To_ApprovedAllowanceResponseModel()
         {
             // Arrange
-            var dto = new AddressAllowanceDto { Amount = "500000" };
+            var dto = new AddressAllowanceDto
+            {
+                Allowance = "500000",
+                Owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
+                Spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
+                Token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXM",
+            };
 
             // Act
             var response = _mapper.Map<ApprovedAllowanceResponseModel>(dto);
 
             // Assert
-            response.Amount.Should().Be(dto.Amount);
+            response.Allowance.Should().Be(dto.Allowance);
+            response.Owner.Should().Be(dto.Owner);
+            response.Spender.Should().Be(dto.Spender);
+            response.Token.Should().Be(dto.Token);
         }
     }
 }

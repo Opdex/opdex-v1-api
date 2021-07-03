@@ -176,7 +176,8 @@ namespace Opdex.Platform.Application
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<AddressAllowance, AddressAllowanceDto>()
-                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Allowance))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<Transaction, TransactionDto>()

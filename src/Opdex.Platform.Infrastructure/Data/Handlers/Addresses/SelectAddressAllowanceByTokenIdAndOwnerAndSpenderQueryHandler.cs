@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         : IRequestHandler<SelectAddressAllowanceByTokenIdAndOwnerAndSpenderQuery, AddressAllowance>
     {
         private static readonly string SqlQuery =
-            @$"SELECT
+            $@"SELECT
                 {nameof(AddressAllowanceEntity.Id)},
                 {nameof(AddressAllowanceEntity.TokenId)},
                 {nameof(AddressAllowanceEntity.Owner)},

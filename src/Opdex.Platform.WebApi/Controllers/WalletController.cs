@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -23,23 +24,30 @@ namespace Opdex.Platform.WebApi.Controllers
     [Route("wallet")]
     public class WalletController : ControllerBase
     {
-        private readonly IApplicationContext _context;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public WalletController(IApplicationContext context, IMapper mapper, IMediator mediator)
+        public WalletController(IMapper mapper, IMediator mediator)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        [HttpGet("{address}/allowance/approved/{token}")]
+        /// <summary>
+        /// Retrieves a collection of approved allowances
+        /// </summary>
+        /// <param name="address">Wallet owner address</param>
+        /// <param name="spender">Spender address to filter by</param>
+        /// <param name="token">Token address to filter by</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Collection of approved allowances</returns>
+        [HttpGet("{address}/allowance/approved")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApprovedAllowanceResponseModel>> GetApprovedAllowanceForToken(string address, string token, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetApprovedAllowances(string address, [FromQuery] string spender, [FromQuery] string token, CancellationToken cancellationToken)
         {
-            var allowance = await _mediator.Send(new GetAddressAllowanceForTokenQuery(token, _context.Wallet, address), cancellationToken);
-            return _mapper.Map<ApprovedAllowanceResponseModel>(allowance);
+            var allowances = await _mediator.Send(new GetAddressAllowancesApprovedByOwnerQuery(address, spender, token), cancellationToken);
+            var response = _mapper.Map<IEnumerable<ApprovedAllowanceResponseModel>>(allowances);
+            return Ok(response);
         }
 
         [HttpGet("summary/pool/{poolAddress}")]

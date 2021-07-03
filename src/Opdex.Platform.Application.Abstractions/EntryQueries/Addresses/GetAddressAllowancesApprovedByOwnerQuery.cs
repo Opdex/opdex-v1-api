@@ -2,24 +2,23 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Common.Extensions;
 using System;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Addresses
 {
-    public class GetAddressAllowanceForTokenQuery : IRequest<AddressAllowanceDto>
+    public class GetAddressAllowancesApprovedByOwnerQuery : IRequest<IEnumerable<AddressAllowanceDto>>
     {
-        public GetAddressAllowanceForTokenQuery(string token, string owner, string spender)
+        public GetAddressAllowancesApprovedByOwnerQuery(string owner, string spender = "", string token = "")
         {
-            if (!token.HasValue()) throw new ArgumentNullException("Token address must be set.");
             if (!owner.HasValue()) throw new ArgumentNullException("Owner address must be set.");
-            if (!spender.HasValue()) throw new ArgumentNullException("Spender address must be set.");
 
-            Token = token;
             Owner = owner;
             Spender = spender;
+            Token = token;
         }
 
-        public string Token { get; }
         public string Owner { get; }
         public string Spender { get; }
+        public string Token { get; }
     }
 }
