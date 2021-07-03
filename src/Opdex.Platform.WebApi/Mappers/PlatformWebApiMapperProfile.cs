@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Markets;
@@ -37,24 +38,50 @@ namespace Opdex.Platform.WebApi.Mappers
 
             CreateMap<LiquidityPoolDto, LiquidityPoolResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-                .ForMember(dest => dest.SrcToken, opt => opt.MapFrom(src => src.SrcToken))
-                .ForMember(dest => dest.LpToken, opt => opt.MapFrom(src => src.LpToken))
-                .ForMember(dest => dest.StakingToken, opt => opt.MapFrom(src => src.StakingToken))
-                .ForMember(dest => dest.CrsToken, opt => opt.MapFrom(src => src.CrsToken))
-                .ForMember(dest => dest.StakingEnabled, opt => opt.MapFrom(src => src.StakingEnabled))
-                .ForMember(dest => dest.MiningEnabled, opt => opt.MapFrom(src => src.MiningEnabled))
-                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => MapLiquidityPoolSummary(src.Summary)))
+                .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src))
+                .ForMember(dest => dest.TransactionCount, opt => opt.MapFrom(src => src.Summary.TransactionCount))
+                .ForMember(dest => dest.Reserves, opt => opt.MapFrom(src => MapReserves(src.Summary.Reserves, src.SrcToken.Decimals)))
+                .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => MapRewards(src.Summary.Rewards)))
+                .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => MapStaking(src.Summary.Staking, src.StakingEnabled)))
+                .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => MapVolume(src.Summary.Volume, src.SrcToken.Decimals)))
+                .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => MapCost(src.Summary.Cost, src.SrcToken.Decimals)))
+                .ForMember(dest => dest.Mining, opt => opt.MapFrom(src => src.MiningPool))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<LiquidityPoolDto, LiquidityPoolTokenGroupResponseModel>()
+                .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.CrsToken))
+                .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.SrcToken))
+                .ForMember(dest => dest.Lp, opt => opt.MapFrom(src => src.LpToken))
+                .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.StakingToken))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolSnapshotDto, LiquidityPoolSummaryResponseModel>()
                 .ForMember(dest => dest.TransactionCount, opt => opt.MapFrom(src => src.TransactionCount))
                 .ForMember(dest => dest.Reserves, opt => opt.MapFrom(src => MapReserves(src.Reserves, src.SrcTokenDecimals)))
                 .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => MapRewards(src.Rewards)))
-                .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => MapStaking(src.Staking)))
+                .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => MapStaking(src.Staking, src.Staking != null)))
+                .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => MapVolume(src.Volume, src.SrcTokenDecimals)))
+                .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => MapCost(src.Cost, src.SrcTokenDecimals)))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<LiquidityPoolSnapshotDto, LiquidityPoolSnapshotResponseModel>()
+                .ForMember(dest => dest.TransactionCount, opt => opt.MapFrom(src => src.TransactionCount))
+                .ForMember(dest => dest.Reserves, opt => opt.MapFrom(src => MapReserves(src.Reserves, src.SrcTokenDecimals)))
+                .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => MapRewards(src.Rewards)))
+                .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => MapStaking(src.Staking, src.Staking != null)))
                 .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => MapVolume(src.Volume, src.SrcTokenDecimals)))
                 .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => MapCost(src.Cost, src.SrcTokenDecimals)))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<MiningPoolDto, MiningPoolResponseModel>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.MiningPeriodEndBlock, opt => opt.MapFrom(src => src.MiningPeriodEndBlock))
+                .ForMember(dest => dest.RewardPerBlock, opt => opt.MapFrom(src => src.RewardPerBlock.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.RewardPerLpt, opt => opt.MapFrom(src => src.RewardPerLpt.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.TokensMining, opt => opt.MapFrom(src => src.TokensMining.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals)))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<OhlcDecimalDto, OhlcDecimalResponseModel>()
@@ -66,8 +93,9 @@ namespace Opdex.Platform.WebApi.Mappers
 
             CreateMap<MarketSnapshotDto, MarketSnapshotResponseModel>()
                 .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
+                .ForMember(dest => dest.LiquidityDailyChange, opt => opt.MapFrom(src => src.LiquidityDailyChange))
                 .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
-                .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => MapStaking(src.Staking)))
+                .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => MapStaking(src.Staking, src.Staking != null)))
                 .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => MapRewards(src.Rewards)))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
@@ -83,54 +111,11 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
                 .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
                 .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
-                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => MapMarketSummary(src)))
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<AddressAllowanceDto, ApprovedAllowanceResponseModel>()
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
-        }
-
-        private static MarketSnapshotResponseModel MapMarketSummary(MarketDto snapshot)
-        {
-            if (snapshot.Summary == null) return null;
-
-            return new MarketSnapshotResponseModel
-            {
-                StartDate = snapshot.Summary.StartDate,
-                EndDate = snapshot.Summary.EndDate,
-                Liquidity = snapshot.Summary.Liquidity,
-                Volume = snapshot.Summary.Volume,
-                Rewards = new RewardsResponseModel
-                {
-                    MarketUsd = snapshot.Summary.Rewards.MarketUsd,
-                    ProviderUsd = snapshot.Summary.Rewards.ProviderUsd,
-                    TotalUsd = snapshot.Summary.Rewards.MarketUsd + snapshot.Summary.Rewards.ProviderUsd
-                },
-                Staking = new StakingResponseModel
-                {
-                    Usd = snapshot.Summary.Staking.Usd,
-                    Weight = snapshot.Summary.Staking.Weight
-                }
-            };
-        }
-
-        private static LiquidityPoolSummaryResponseModel MapLiquidityPoolSummary(LiquidityPoolSnapshotDto snapshot)
-        {
-            if (snapshot == null) return null;
-
-            var srcDecimals = snapshot.SrcTokenDecimals;
-
-            return new LiquidityPoolSummaryResponseModel
-            {
-                TransactionCount = snapshot.TransactionCount,
-                Reserves = MapReserves(snapshot.Reserves, srcDecimals),
-                Rewards = MapRewards(snapshot.Rewards),
-                Cost = MapCost(snapshot.Cost, srcDecimals),
-                Volume = MapVolume(snapshot.Volume, srcDecimals),
-                Staking = MapStaking(snapshot.Staking),
-                StartDate = snapshot.StartDate,
-                EndDate = snapshot.EndDate
-            };
         }
 
         private static ReservesResponseModel MapReserves(ReservesDto reservesDto, int srcTokenDecimals)
@@ -141,7 +126,8 @@ namespace Opdex.Platform.WebApi.Mappers
             {
                 Crs = reservesDto.Crs.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals),
                 Src = reservesDto.Src.InsertDecimal(srcTokenDecimals),
-                Usd = reservesDto.Usd
+                Usd = reservesDto.Usd,
+                UsdDailyChange = reservesDto.UsdDailyChange,
             };
         }
 
@@ -172,14 +158,16 @@ namespace Opdex.Platform.WebApi.Mappers
             };
         }
 
-        private static StakingResponseModel MapStaking(StakingDto stakingDto)
+        private static StakingResponseModel MapStaking(StakingDto stakingDto, bool stakingEnabled)
         {
             if (stakingDto == null) return null;
 
             return new StakingResponseModel
             {
                 Weight = stakingDto.Weight.InsertDecimal(TokenConstants.Opdex.Decimals),
-                Usd = stakingDto.Usd
+                Usd = stakingDto.Usd,
+                WeightDailyChange = stakingDto.WeightDailyChange,
+                IsActive = stakingEnabled
             };
         }
 

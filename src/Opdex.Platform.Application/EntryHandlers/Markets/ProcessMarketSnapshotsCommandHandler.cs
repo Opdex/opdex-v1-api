@@ -9,13 +9,14 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Enums;
 
 namespace Opdex.Platform.Application.EntryHandlers.Markets
 {
     public class ProcessMarketSnapshotsCommandHandler : IRequestHandler<ProcessMarketSnapshotsCommand, Unit>
     {
         private readonly IMediator _mediator;
-        private const SnapshotType SnapshotType = Common.SnapshotType.Daily;
+        private const SnapshotType SnapshotType = Common.Enums.SnapshotType.Daily;
 
         public ProcessMarketSnapshotsCommandHandler(IMediator mediator)
         {
@@ -25,7 +26,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets
         public async Task<Unit> Handle(ProcessMarketSnapshotsCommand request, CancellationToken cancellationToken)
         {
             var market = await _mediator.Send(new RetrieveMarketByIdQuery(request.MarketId));
-            var marketPools = await _mediator.Send(new RetrieveAllPoolsByMarketIdQuery(market.Id));
+            var marketPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(market.Id));
             var marketSnapshot = await _mediator.Send(new RetrieveMarketSnapshotWithFilterQuery(request.MarketId,
                                                                                                 request.BlockTime,
                                                                                                 SnapshotType));

@@ -74,6 +74,7 @@ namespace Opdex.Platform.WebApi
                 .AddProblemDetailsConventions()
                 .AddNewtonsoftJson(options =>
                 {
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.Converters =
                         new List<JsonConverter>
@@ -132,6 +133,9 @@ namespace Opdex.Platform.WebApi
 
             var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
             services.Configure<OpdexConfiguration>(opdexConfig);
+
+            var blockExplorerConfig = Configuration.GetSection(nameof(BlockExplorerConfiguration));
+            services.Configure<BlockExplorerConfiguration>(blockExplorerConfig);
 
             var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
             services.Configure<CoinMarketCapConfiguration>(cmcConfig);

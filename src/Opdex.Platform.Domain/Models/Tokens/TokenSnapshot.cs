@@ -1,5 +1,7 @@
 using System;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.OHLC;
 
@@ -45,24 +47,18 @@ namespace Opdex.Platform.Domain.Models.Tokens
 
         public void UpdatePrice(ulong reserveCrs, string reserveSrc, decimal crsUsd, ulong srcSats)
         {
-            const int crsDecimals = TokenConstants.Cirrus.Decimals;
-
-            var crsPerSrc = reserveCrs
+            var price = reserveCrs
                 .Token0PerToken1(reserveSrc, srcSats)
-                .ToRoundedDecimal(crsDecimals, crsDecimals);
+                .TotalFiat(crsUsd, TokenConstants.Cirrus.Sats);
 
-            UpdatePrice(crsPerSrc * crsUsd);
+            UpdatePrice(price);
         }
 
         public void ResetStaleSnapshot(string crsPerSrc, decimal crsUsd, DateTime blockTime)
         {
             Id = 0;
 
-            const int crsDecimals = TokenConstants.Cirrus.Decimals;
-
-            var perSrc = crsPerSrc.ToRoundedDecimal(crsDecimals, crsDecimals);
-
-            UpdatePrice(perSrc * crsUsd, true);
+            UpdatePrice(crsPerSrc.TotalFiat(crsUsd, TokenConstants.Cirrus.Sats), true);
 
             StartDate = blockTime.ToStartOf(SnapshotType);
             EndDate = blockTime.ToEndOf(SnapshotType);

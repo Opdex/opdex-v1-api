@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -20,19 +19,13 @@ namespace Opdex.Platform.Application.Handlers.Pools.Snapshots
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<LiquidityPoolSnapshot>> Handle(RetrieveLiquidityPoolSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<LiquidityPoolSnapshot>> Handle(RetrieveLiquidityPoolSnapshotsWithFilterQuery request,
+                                                               CancellationToken cancellationToken)
         {
-            var snapshotQuery = new SelectLiquidityPoolSnapshotsWithFilterQuery(request.LiquidityPoolId, request.StartDate, request.EndDate, request.SnapshotType);
-            var snapshots = await _mediator.Send(snapshotQuery, cancellationToken);
-
-            if (snapshots.Any())
-            {
-                return snapshots;
-            }
-
-            return snapshots;
-            // Get previous
-            // SelectLiquidityPoolSnapshotsWithFilter
+            return _mediator.Send(new SelectLiquidityPoolSnapshotsWithFilterQuery(request.LiquidityPoolId,
+                                                                                  request.StartDate,
+                                                                                  request.EndDate,
+                                                                                  request.SnapshotType), cancellationToken);
         }
     }
 }

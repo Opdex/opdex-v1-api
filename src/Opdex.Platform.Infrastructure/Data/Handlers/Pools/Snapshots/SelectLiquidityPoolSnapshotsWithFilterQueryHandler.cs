@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots
         : IRequestHandler<SelectLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshot>>
     {
         private static readonly string SqlQuery =
-            @$"SELECT 
+            @$"SELECT
                 {nameof(LiquidityPoolSnapshotEntity.Id)},
                 {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)},
                 {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)},
@@ -26,8 +26,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots
                 {nameof(LiquidityPoolSnapshotEntity.ModifiedDate)}
             FROM pool_liquidity_snapshot
             WHERE {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
-                AND @{nameof(SqlParams.Start)} <= {nameof(LiquidityPoolSnapshotEntity.StartDate)} 
-                AND @{nameof(SqlParams.End)} >= {nameof(LiquidityPoolSnapshotEntity.EndDate)}
+                AND {nameof(LiquidityPoolSnapshotEntity.EndDate)} BETWEEN @{nameof(SqlParams.Start)} AND @{nameof(SqlParams.End)}
                 AND {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}
             ORDER BY {nameof(LiquidityPoolSnapshotEntity.EndDate)} DESC
             LIMIT 750;"; // Limit 750, there's about 730 hours in a month (hourly snapshots)

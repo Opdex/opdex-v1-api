@@ -53,11 +53,6 @@ namespace Opdex.Platform.Common.Extensions
             return padded.Insert(padded.Length - decimals, ".");
         }
 
-        public static string RemoveTrailingZeros(this string value)
-        {
-            return value.TrimEnd('0');
-        }
-
         // Todo: Implement rounding
         public static string CutPrecisely(this string value, int precision)
         {
@@ -68,18 +63,6 @@ namespace Opdex.Platform.Common.Extensions
             var sliced = fraction.Substring(0, precision);
 
             return $"{integer}.{sliced}";
-        }
-
-        public static decimal ToRoundedDecimal(this string value, int precision, int decimals)
-        {
-            if (!value.Contains('.'))
-            {
-                value = value.InsertDecimal(decimals);
-            }
-
-            var parsed = decimal.TryParse(value.CutPrecisely(precision), out var roundedDecimal);
-
-            return !parsed ? 0m : roundedDecimal;
         }
 
         public static string Token0PerToken1(this ulong token0, string token1, ulong token1Sats)

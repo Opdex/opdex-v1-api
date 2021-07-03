@@ -13,7 +13,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
     public class SelectTokenSnapshotWithFilterQueryHandler : IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>
     {
         private static readonly string SqlQuery =
-            @$"Select 
+            @$"SELECT
                 {nameof(TokenSnapshotEntity.Id)},
                 {nameof(TokenSnapshotEntity.TokenId)},
                 {nameof(TokenSnapshotEntity.MarketId)},
@@ -22,14 +22,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
                 {nameof(TokenSnapshotEntity.EndDate)},
                 {nameof(TokenSnapshotEntity.SnapshotTypeId)}
             FROM token_snapshot
-            WHERE {nameof(TokenSnapshotEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
-                AND 
-                    (
-                        @{nameof(SqlParams.Date)} BETWEEN 
-                            {nameof(TokenSnapshotEntity.StartDate)} AND {nameof(TokenSnapshotEntity.EndDate)}
-                        OR 
-                        @{nameof(SqlParams.Date)} > {nameof(TokenSnapshotEntity.EndDate)}
-                    )
+            WHERE
+                {nameof(TokenSnapshotEntity.TokenId)} = @{nameof(SqlParams.TokenId)} AND
+                {nameof(TokenSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)} AND
+                (
+                    @{nameof(SqlParams.Date)} BETWEEN {nameof(TokenSnapshotEntity.StartDate)} AND {nameof(TokenSnapshotEntity.EndDate)}
+                    OR
+                    @{nameof(SqlParams.Date)} > {nameof(TokenSnapshotEntity.EndDate)}
+                )
                 AND {nameof(TokenSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}
             ORDER BY {nameof(TokenSnapshotEntity.EndDate)} DESC
             LIMIT 1;";

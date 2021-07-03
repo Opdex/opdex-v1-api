@@ -55,6 +55,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
             result.LpTokenId.Should().Be(expectedEntity.LpTokenId);
             result.MarketId.Should().Be(expectedEntity.MarketId);
             result.Address.Should().Be(expectedEntity.Address);
+            result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);
+            result.ModifiedBlock.Should().Be(expectedEntity.ModifiedBlock);
         }
 
         [Fact]
@@ -71,6 +73,22 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools
                 .Should()
                 .Throw<NotFoundException>()
                 .WithMessage($"{nameof(LiquidityPool)} not found.");
+        }
+
+        [Fact]
+        public async Task SelectLiquidityPoolByAddress_ReturnsNull()
+        {
+            const string address = "SomeAddress";
+            const bool findOrThrow = false;
+
+            var command = new SelectLiquidityPoolByAddressQuery(address, findOrThrow);
+
+            _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            result.Should().BeNull();
         }
     }
 }

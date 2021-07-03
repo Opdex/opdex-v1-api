@@ -14,7 +14,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots
         : IRequestHandler<SelectLiquidityPoolSnapshotWithFilterQuery, LiquidityPoolSnapshot>
     {
         private static readonly string SqlQuery =
-            @$"SELECT 
+            @$"SELECT
                 {nameof(LiquidityPoolSnapshotEntity.Id)},
                 {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)},
                 {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)},
@@ -25,11 +25,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots
                 {nameof(LiquidityPoolSnapshotEntity.ModifiedDate)}
             FROM pool_liquidity_snapshot
             WHERE {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
-                AND 
+                AND
                     (
-                        @{nameof(SqlParams.Date)} BETWEEN 
+                        @{nameof(SqlParams.Date)} BETWEEN
                             {nameof(LiquidityPoolSnapshotEntity.StartDate)} AND {nameof(LiquidityPoolSnapshotEntity.EndDate)}
-                        OR 
+                        OR
                         @{nameof(SqlParams.Date)} > {nameof(LiquidityPoolSnapshotEntity.EndDate)}
                     )
                 AND {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}

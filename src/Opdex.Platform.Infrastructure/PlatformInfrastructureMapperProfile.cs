@@ -1,5 +1,6 @@
 using AutoMapper;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
@@ -17,7 +18,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernance;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
-using Opdex.Platform.Domain.Models.TransactionLogs.Vault;
+using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;

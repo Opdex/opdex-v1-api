@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Markets;
 using System;
 
