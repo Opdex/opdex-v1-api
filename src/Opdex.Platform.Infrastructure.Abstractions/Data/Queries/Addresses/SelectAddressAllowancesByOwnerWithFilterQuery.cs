@@ -10,7 +10,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
     {
         public SelectAddressAllowancesByOwnerWithFilterQuery(string owner, string spender = "", long tokenId = 0)
         {
-            if (!owner.HasValue()) throw new ArgumentNullException("Owner address must be set.");
+            if (!owner.HasValue()) throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
 
             Owner = owner;
             Spender = spender;

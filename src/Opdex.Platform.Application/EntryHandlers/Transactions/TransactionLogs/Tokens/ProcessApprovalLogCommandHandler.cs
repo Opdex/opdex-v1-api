@@ -43,28 +43,16 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                                                                                                                   request.Log.Owner,
                                                                                                                   request.Log.Spender,
                                                                                                                   findOrThrow: false), CancellationToken.None);
-                if (allowance is null && request.Log.OldAmount != "0")
+
+                if (allowance is null || request.BlockHeight >= allowance.ModifiedBlock)
                 {
-                    // something went wrong or has not been indexed correctly
-                    using (_logger.BeginScope(new Dictionary<string, object>()
-                    {
-                        ["LiqidityPool"] = liquidityPool.Address,
-                        ["Owner"] = request.Log.Owner,
-                        ["Spender"] = request.Log.Spender,
-                        ["PreviousAllowance"] = request.Log.OldAmount
-                    }))
-                    {
-                        _logger.LogError("Unable to find AddressAllowance");
-                    }
-                    return false;
+                    allowance ??= new AddressAllowance(liquidityPool.LpTokenId, request.Log.Owner, request.Log.Spender,
+                                                       request.Log.Amount, request.BlockHeight);
+
+                    allowance.SetAllowance(request.Log.Amount, request.BlockHeight);
+
+                    await _mediator.Send(new MakeAddressAllowanceCommand(allowance), CancellationToken.None);
                 }
-
-                allowance ??= new AddressAllowance(liquidityPool.LpTokenId, request.Log.Owner, request.Log.Spender,
-                                                   request.Log.Amount, request.BlockHeight);
-
-                allowance.SetAllowance(request.Log.Amount, request.BlockHeight);
-
-                await _mediator.Send(new MakeAddressAllowanceCommand(allowance), CancellationToken.None);
 
                 return true;
             }

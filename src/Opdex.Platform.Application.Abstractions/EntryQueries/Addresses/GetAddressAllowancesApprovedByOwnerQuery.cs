@@ -10,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Addresses
     {
         public GetAddressAllowancesApprovedByOwnerQuery(string owner, string spender = "", string token = "")
         {
-            if (!owner.HasValue()) throw new ArgumentNullException("Owner address must be set.");
+            if (!owner.HasValue()) throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
 
             Owner = owner;
             Spender = spender;

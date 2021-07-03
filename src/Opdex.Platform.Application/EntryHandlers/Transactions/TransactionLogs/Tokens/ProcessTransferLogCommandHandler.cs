@@ -67,7 +67,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var allowance = await _mediator.Send(new RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery(token.Id, owner, spender, findOrThrow: true),
                                                      CancellationToken.None);
 
-                var isMoreRecentTransfer = blockHeight > allowance.ModifiedBlock;
+                var isMoreRecentTransfer = blockHeight >= allowance.ModifiedBlock;
                 if (!isMoreRecentTransfer)
                 {
                     return;
@@ -99,13 +99,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             {
                 var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(token.Id, address, findOrThrow: false));
 
-                addressBalance ??= new AddressBalance(token.Id, address, "0", blockHeight);
-
-                var isNewer = blockHeight < addressBalance.ModifiedBlock;
-                if (isNewer && addressBalance.Id != 0)
+                if (addressBalance != null && addressBalance.ModifiedBlock > blockHeight)
                 {
                     return;
                 }
+
+                addressBalance ??= new AddressBalance(token.Id, address, "0", blockHeight);
 
                 var balance = await _mediator.Send(new CallCirrusGetSrcTokenBalanceQuery(token.Address, address));
 
