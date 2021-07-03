@@ -8,14 +8,14 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
     public class AddressAllowanceTests
     {
         [Fact]
-        public void Constructor_TokenIdZero_ThrowArgumentException()
+        public void Constructor_TokenIdZero_ThrowArgumentOutOfRangeException()
         {
             // Arrange
             // Act
             static void Act() => new AddressAllowance(0, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_001);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Token id must be greater than 0.");
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Token id must be greater than 0.");
         }
 
         [Theory]
