@@ -168,7 +168,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
         }
 
         [Fact]
-        public async Task Handle_RetrievedAddressAllowanceButReprocessingOldBlock_DoNotUpdateAddressAllowancee()
+        public async Task Handle_RetrievedAddressAllowanceButReprocessingSameOrOldBlock_DoNotUpdateAddressAllowancee()
         {
             // Arrange
             var newAmount = "9000000000";
@@ -176,7 +176,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
 
             dynamic log = SetupApprovalLog("PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", newAmount, "5000000");
             var request = new ProcessApprovalLogCommand(new ApprovalLog(log, "PR71udY85pAcNcitdDfzQevp6Zar9DizHM", 5),
-                                                        "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 499);
+                                                        "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 500);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistTransactionLogCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>()))
@@ -200,7 +200,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
 
             dynamic log = SetupApprovalLog("PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", newAmount, "5000000");
             var request = new ProcessApprovalLogCommand(new ApprovalLog(log, "PR71udY85pAcNcitdDfzQevp6Zar9DizHM", 5),
-                                                        "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 500);
+                                                        "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 501);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistTransactionLogCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>()))
