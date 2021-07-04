@@ -44,7 +44,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                                                                                                                   request.Log.Spender,
                                                                                                                   findOrThrow: false), CancellationToken.None);
 
-                if (allowance is null || request.BlockHeight >= allowance.ModifiedBlock)
+                if (allowance is null || request.BlockHeight > allowance.ModifiedBlock)
                 {
                     allowance ??= new AddressAllowance(liquidityPool.LpTokenId, request.Log.Owner, request.Log.Spender,
                                                        request.Log.Amount, request.BlockHeight);
