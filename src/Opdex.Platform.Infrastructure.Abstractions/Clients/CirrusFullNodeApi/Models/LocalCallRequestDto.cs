@@ -1,3 +1,5 @@
+using System;
+
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     /// <summary>
@@ -5,7 +7,16 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
     /// </summary>
     public class LocalCallRequestDto
     {
-        public LocalCallRequestDto(string address, string sender, string methodName, string[] parameters)
+        public LocalCallRequestDto(string address, string methodName, ulong? blockHeight = null)
+            : this(address, methodName, Array.Empty<string>(), blockHeight) { }
+
+        public LocalCallRequestDto(string address, string methodName, string[] parameters, ulong? blockHeight = null)
+            : this(address, address, methodName, parameters, blockHeight) { }
+
+        public LocalCallRequestDto(string address, string sender, string methodName, ulong? blockHeight = null)
+            : this(address, sender, methodName, Array.Empty<string>(), blockHeight) { }
+
+        public LocalCallRequestDto(string address, string sender, string methodName, string[] parameters, ulong? blockHeight = null)
         {
             Amount = "0.00";
             GasPrice = 100;
@@ -14,6 +25,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
             Sender = sender;
             MethodName = methodName;
             Parameters = parameters;
+            BlockHeight = blockHeight;
         }
 
         /// <summary>
@@ -27,7 +39,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public string MethodName { get; set; }
 
         /// <summary>
-        /// The amount of STRAT (or sidechain coin) to send to the smart contract address. 
+        /// The amount of STRAT (or sidechain coin) to send to the smart contract address.
         /// No funds are actually sent, but the Amount field allows
         /// certain scenarios, where the funds sent dictates the result, to be checked.
         /// </summary>
@@ -36,7 +48,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         /// <summary>
         /// The gas price to use. This is used to calculate the expected expenditure
         /// if the method is run by a miner mining a call transaction rather than
-        /// locally.  
+        /// locally.
         /// </summary>
         public ulong GasPrice { get; set; }
 
@@ -62,7 +74,12 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         /// method when it is called. More information on the
         /// format of a parameter string is available
         /// <a target="_blank" href="https://academy.stratisplatform.com/SmartContracts/working-with-contracts.html#parameter-serialization">here</a>.
-        /// </summary> 
+        /// </summary>
         public string[] Parameters { get; set; }
+
+        /// <summary>
+        /// Block height at which to make the call. Setting this makes a point-in-time local call.
+        /// </summary>
+        public ulong? BlockHeight { get; }
     }
 }

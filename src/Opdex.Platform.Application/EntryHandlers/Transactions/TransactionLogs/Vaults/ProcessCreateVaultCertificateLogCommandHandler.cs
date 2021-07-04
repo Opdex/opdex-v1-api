@@ -8,6 +8,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
 {
@@ -30,19 +31,27 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
-                var vaultQuery = new RetrieveVaultQuery(findOrThrow: true);
-                var vault = await _mediator.Send(vaultQuery, CancellationToken.None);
 
-                var vaultCertificate = new VaultCertificate(vault.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
+                var vault = await _mediator.Send(new RetrieveVaultQuery(findOrThrow: true));
 
-                var vaultCommand = new MakeVaultCertificateCommand(vaultCertificate);
-                return await _mediator.Send(vaultCommand, CancellationToken.None);
+                if (request.BlockHeight > vault.ModifiedBlock)
+                {
+                    var totalSupply = await _mediator.Send(new CallCirrusGetVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
+                    vault.SetUnassignedSupply(totalSupply, request.BlockHeight);
+                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault));
+                    if (vaultUpdates == 0) return false;
+
+                    var vaultCertificate = new VaultCertificate(vault.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
+                    var certificateCreated = await _mediator.Send(new MakeVaultCertificateCommand(vaultCertificate));
+                    return certificateCreated;
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(CreateVaultCertificateLog)}.");
-               
+
                 return false;
             }
         }

@@ -18,6 +18,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
                 {nameof(VaultEntity.TokenId)},
                 {nameof(VaultEntity.Owner)},
                 {nameof(VaultEntity.Genesis)},
+                {nameof(VaultEntity.UnassignedSupply)},
                 {nameof(VaultEntity.CreatedBlock)},
                 {nameof(VaultEntity.ModifiedBlock)}
               ) VALUES (
@@ -25,13 +26,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
                 @{nameof(VaultEntity.TokenId)},
                 @{nameof(VaultEntity.Owner)},
                 @{nameof(VaultEntity.Genesis)},
+                @{nameof(VaultEntity.UnassignedSupply)},
                 @{nameof(VaultEntity.CreatedBlock)},
                 @{nameof(VaultEntity.ModifiedBlock)}
               );
               SELECT LAST_INSERT_ID()";
 
         private static readonly string UpdateSqlCommand =
-            $@"UPDATE address_allowance
+            $@"UPDATE vault
                 SET
                     {nameof(VaultEntity.Owner)} = @{nameof(VaultEntity.Owner)},
                     {nameof(VaultEntity.ModifiedBlock)} = @{nameof(VaultEntity.ModifiedBlock)}

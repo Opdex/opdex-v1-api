@@ -86,8 +86,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                 if (vault == null)
                 {
-                    vault = new Vault(odxTokenSummary.Vault, odxId, transaction.From, transaction.BlockHeight, transaction.BlockHeight);
-                    var vaultId = await _mediator.Send(new MakeVaultCommand(vault), CancellationToken.None);
+                    vault = new Vault(odxTokenSummary.Vault, odxId, transaction.From, transaction.BlockHeight, "0", transaction.BlockHeight);
+                    await _mediator.Send(new MakeVaultCommand(vault), CancellationToken.None);
                 }
 
                 // Get and/or create mining governance
