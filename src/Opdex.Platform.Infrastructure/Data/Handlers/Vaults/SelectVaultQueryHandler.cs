@@ -22,7 +22,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
                 {nameof(VaultEntity.Genesis)},
                 {nameof(VaultEntity.CreatedBlock)},
                 {nameof(VaultEntity.ModifiedBlock)}
-            FROM odx_vault
+            FROM vault
             LIMIT 1;";
 
         private readonly IDbContext _context;
