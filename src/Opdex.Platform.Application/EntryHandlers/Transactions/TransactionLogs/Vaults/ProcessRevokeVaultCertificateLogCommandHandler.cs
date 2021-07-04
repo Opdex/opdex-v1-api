@@ -36,12 +36,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 if (request.BlockHeight > vault.ModifiedBlock)
                 {
-                    var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
-
                     var totalSupply = await _mediator.Send(new CallCirrusGetVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
+
                     vault.SetUnassignedSupply(totalSupply, request.BlockHeight);
+
                     var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault));
                     if (vaultUpdates == 0) return false;
+
+                    var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
 
                     // Todo: Maybe create a specific query for this and a unique index on (owner, vestedBlock)
                     var certificateToUpdate = certificates.Single(c => c.VestedBlock == request.Log.VestedBlock);

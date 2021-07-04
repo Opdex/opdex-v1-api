@@ -37,11 +37,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 if (request.BlockHeight > vault.ModifiedBlock)
                 {
                     var totalSupply = await _mediator.Send(new CallCirrusGetVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
+
                     vault.SetUnassignedSupply(totalSupply, request.BlockHeight);
+
                     var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault));
                     if (vaultUpdates == 0) return false;
 
                     var vaultCertificate = new VaultCertificate(vault.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
+
                     var certificateCreated = await _mediator.Send(new MakeVaultCertificateCommand(vaultCertificate));
                     return certificateCreated;
                 }
