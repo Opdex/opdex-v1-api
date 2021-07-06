@@ -104,7 +104,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 tableJoins += $@" JOIN odx_mining_governance_nomination omgn
                                 ON omgn.{nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}";
 
-                whereFilter += $"(omgn.{nameof(MiningGovernanceNominationEntity.IsNominated)} = {request.Nominated.Value})";
+                whereFilter += $" AND omgn.{nameof(MiningGovernanceNominationEntity.IsNominated)} = {request.Nominated.Value}";
             }
 
             // Sort Found Pools
