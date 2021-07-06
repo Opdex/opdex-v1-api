@@ -5,7 +5,6 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data;

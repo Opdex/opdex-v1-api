@@ -1,5 +1,4 @@
 using System;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
@@ -19,15 +18,17 @@ namespace Opdex.Platform.Domain.Models.Tokens
             EndDate = dateTime.ToEndOf(snapshotType);
         }
 
-        public TokenSnapshot(long id, long tokenId, long marketId, OhlcDecimalSnapshot price, int snapshotType, DateTime startDate, DateTime endDate)
+        public TokenSnapshot(long id, long tokenId, long marketId, OhlcDecimalSnapshot price, SnapshotType snapshotType, DateTime startDate,
+                             DateTime endDate, DateTime modifiedDate)
         {
             Id = id;
             TokenId = tokenId;
             MarketId = marketId;
             Price = price;
-            SnapshotType = (SnapshotType)snapshotType;
+            SnapshotType = snapshotType;
             StartDate = startDate;
             EndDate = endDate;
+            ModifiedDate = modifiedDate;
         }
 
         public long Id { get; private set; }

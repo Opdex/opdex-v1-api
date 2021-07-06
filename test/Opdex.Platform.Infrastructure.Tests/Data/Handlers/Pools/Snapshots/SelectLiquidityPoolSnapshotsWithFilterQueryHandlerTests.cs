@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
 using Moq;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Pools.Snapshots;
-using Polly;
 using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Pools.Snapshots

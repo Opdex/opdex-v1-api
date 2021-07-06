@@ -16,23 +16,24 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
 {
-    public class SelectAllTokensQueryHandlerTests
+    public class SelectTokensWithFilterQueryHandlerTests
     {
         private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectAllTokensQueryHandler _handler;
+        private readonly SelectTokensWithFilterQueryHandler _handler;
 
-        public SelectAllTokensQueryHandlerTests()
+        public SelectTokensWithFilterQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            var logger = new NullLogger<SelectAllTokensQueryHandler>();
 
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectAllTokensQueryHandler(_dbContext.Object, mapper, logger);
+            _handler = new SelectTokensWithFilterQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
         public async Task SelectAllTokens_Success()
         {
+            const long marketId = 1;
+
             var expectedEntity = new TokenEntity
             {
                 Id = 123454,
@@ -49,7 +50,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
 
             var responseList = new List<TokenEntity> {expectedEntity}.AsEnumerable();
 
-            var command = new SelectAllTokensQuery();
+            var command = new SelectTokensWithFilterQuery(marketId);
 
             _dbContext.Setup(db => db.ExecuteQueryAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(responseList));

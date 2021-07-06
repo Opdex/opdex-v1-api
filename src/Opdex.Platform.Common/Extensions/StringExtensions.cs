@@ -6,21 +6,42 @@ namespace Opdex.Platform.Common.Extensions
 {
     public static class StringExtensions
     {
+        /// <summary>
+        /// Validates that a string has a value.
+        /// </summary>
+        /// <param name="value">The string value to check.</param>
+        /// <returns>Boolean value of validity.</returns>
         public static bool HasValue(this string value)
         {
             return !string.IsNullOrWhiteSpace(value);
         }
 
+        /// <summary>
+        /// Validates that a string is a properly formatted decimal number.
+        /// </summary>
+        /// <param name="value">The value of the string to check.</param>
+        /// <returns>Boolean value of validity.</returns>
         public static bool IsValidDecimalNumber(this string value)
         {
             return value.HasValue() && value.Contains('.') && value.Replace(".", "").IsNumeric();
         }
 
+        /// <summary>
+        /// Validates that a string contains numeric digits only.
+        /// </summary>
+        /// <param name="value">The string to evaluate.</param>
+        /// <returns>Boolean value of validity..</returns>
         public static bool IsNumeric(this string value)
         {
             return value.HasValue() && Regex.IsMatch(value, @"^\d+$");
         }
 
+        /// <summary>
+        /// Compares the value of two strings while ignoring casing.
+        /// </summary>
+        /// <param name="value">The string value to extend from</param>
+        /// <param name="comparison">The string value to compare.</param>
+        /// <returns>Boolean value as success result.</returns>
         public static bool EqualsIgnoreCase(this string value, string comparison)
         {
             return value.Equals(comparison, StringComparison.InvariantCultureIgnoreCase);

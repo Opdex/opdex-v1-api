@@ -9,6 +9,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using System.Linq;
 
 namespace Opdex.Platform.Application.EntryHandlers.Pools
 {
@@ -32,15 +33,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools
 
             var pools = await _mediator.Send(query, cancellationToken);
 
-            var poolDtos = new List<LiquidityPoolDto>();
-
-            foreach (var pool in pools)
-            {
-                var poolDto = await _assembler.Assemble(pool);
-                poolDtos.Add(poolDto);
-            }
-
-            return poolDtos;
+            return await Task.WhenAll(pools.Select(pool => _assembler.Assemble(pool)));
         }
     }
 }

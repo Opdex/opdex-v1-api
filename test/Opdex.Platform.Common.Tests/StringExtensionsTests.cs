@@ -65,6 +65,19 @@ namespace Opdex.Platform.Common.Tests
         }
 
         [Theory]
+        [InlineData(" ", "", false)]
+        [InlineData("  ", " ", false)]
+        [InlineData("  ", null, false)]
+        [InlineData("", "", true)]
+        [InlineData(" ", " ", true)]
+        [InlineData("test", "Test", true)]
+        [InlineData("test", "monkey", false)]
+        public void EqualsIgnoreCase(string current, string other, bool expected)
+        {
+            current.EqualsIgnoreCase(other).Should().Be(expected);
+        }
+
+        [Theory]
         [InlineData(null, 100_000_000, 1.00, 0)]
         [InlineData(" ", 100_000_000, 1.00, 0)]
         [InlineData("", 100_000_000, 1.00, 0)]
@@ -151,6 +164,8 @@ namespace Opdex.Platform.Common.Tests
         }
 
         [Theory]
+        [InlineData("0", "50000000", 100_000_000, -100)]
+        [InlineData("50000000", "0", 100_000_000, 0)]
         [InlineData("100000000", "50000000", 100_000_000, 100)]
         [InlineData("4", "3", 100_000_000, 33.33)]
         [InlineData("150000000", "50000000", 100_000_000, 200)]
@@ -163,8 +178,32 @@ namespace Opdex.Platform.Common.Tests
             current.PercentChange(previous, tokenSats).Should().Be(expected);
         }
 
+        [Fact]
+        public void PercentChangeSats_ThrowsArgumentOutOfRangeException_InvalidPreviousAmount()
+        {
+            const string tokenAmount = "1234567";
+
+            tokenAmount.Invoking(t => t.PercentChange("1.25", 100_000_000))
+                .Should()
+                .Throw<ArgumentOutOfRangeException>()
+                .WithMessage("Invalid previous amount. *");
+        }
+
+        [Fact]
+        public void PercentChangeSats_ThrowsArgumentOutOfRangeException_InvalidCurrentAmount()
+        {
+            const string tokenAmount = "123.4567";
+
+            tokenAmount.Invoking(t => t.PercentChange("18765425", 100_000_000))
+                .Should()
+                .Throw<ArgumentOutOfRangeException>()
+                .WithMessage("Invalid current amount. *");
+        }
+
         [Theory]
         [InlineData(1.00, 2.00, -50)]
+        [InlineData(0.00, 2.00, -100)]
+        [InlineData(2.00, 0.00, 0)]
         [InlineData(2.00, 1.00, 100)]
         [InlineData(4.00, 3.00, 33.33)]
         public void PercentChangeDecimals_Success(decimal current, decimal previous, decimal expected)
