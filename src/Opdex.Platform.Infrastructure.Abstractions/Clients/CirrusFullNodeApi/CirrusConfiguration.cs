@@ -18,7 +18,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi
 
             if (ApiPort < 1)
             {
-                throw new Exception($"{nameof(CirrusConfiguration)}.{nameof(ApiPort)} must be greater than 1.");
+                throw new Exception($"{nameof(CirrusConfiguration)}.{nameof(ApiPort)} must be greater than 0.");
             }
         }
     }
