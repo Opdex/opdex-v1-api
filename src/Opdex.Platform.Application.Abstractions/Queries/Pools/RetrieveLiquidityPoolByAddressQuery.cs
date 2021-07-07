@@ -17,7 +17,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Pools
 
             Address = address;
         }
-        
+
         public string Address { get; }
     }
 }

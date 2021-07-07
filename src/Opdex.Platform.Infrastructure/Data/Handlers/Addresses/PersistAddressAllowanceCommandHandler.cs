@@ -16,7 +16,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
             $@"INSERT INTO address_allowance (
                 {nameof(AddressAllowanceEntity.Id)},
                 {nameof(AddressAllowanceEntity.TokenId)},
-                {nameof(AddressAllowanceEntity.LiquidityPoolId)},
                 {nameof(AddressAllowanceEntity.Owner)},
                 {nameof(AddressAllowanceEntity.Spender)},
                 {nameof(AddressAllowanceEntity.Allowance)},
@@ -25,7 +24,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
               ) VALUES (
                 @{nameof(AddressAllowanceEntity.Id)},
                 @{nameof(AddressAllowanceEntity.TokenId)},
-                @{nameof(AddressAllowanceEntity.LiquidityPoolId)},
                 @{nameof(AddressAllowanceEntity.Owner)},
                 @{nameof(AddressAllowanceEntity.Spender)},
                 @{nameof(AddressAllowanceEntity.Allowance)},
@@ -33,10 +31,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 @{nameof(AddressAllowanceEntity.ModifiedBlock)}
               );
               SELECT LAST_INSERT_ID()";
-        
+
         private static readonly string UpdateSqlCommand =
-            $@"UPDATE address_allowance 
-                SET 
+            $@"UPDATE address_allowance
+                SET
                     {nameof(AddressAllowanceEntity.Allowance)} = @{nameof(AddressAllowanceEntity.Allowance)},
                     {nameof(AddressAllowanceEntity.ModifiedBlock)} = @{nameof(AddressAllowanceEntity.ModifiedBlock)}
                 WHERE {nameof(AddressAllowanceEntity.Id)} = @{nameof(AddressAllowanceEntity.Id)};";
@@ -44,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        
+
         public PersistAddressAllowanceCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistAddressAllowanceCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -61,17 +59,17 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 var isUpdate = entity.Id >= 1;
 
                 var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-                
+
                 var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-                
+
                 var result = await _context.ExecuteScalarAsync<long>(command);
-                
+
                 return isUpdate ? entity.Id : result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure persisting address allowance for owner: {request.AddressAllowance.Owner} and spender: {request.AddressAllowance.Spender}");
-                
+
                 return 0;
             }
         }
