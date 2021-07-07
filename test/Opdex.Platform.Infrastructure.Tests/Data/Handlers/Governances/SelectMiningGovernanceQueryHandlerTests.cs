@@ -5,7 +5,6 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
 using Opdex.Platform.Infrastructure.Data.Handlers.Governances;
 using System.Threading;
@@ -38,6 +37,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
                 Address = "Address",
                 TokenId = tokenId,
                 NominationPeriodEnd = 999,
+                MiningDuration = 1444,
                 MiningPoolsFunded = 10,
                 MiningPoolReward = "876543456789",
                 CreatedBlock = 1
@@ -54,6 +54,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
             result.TokenId.Should().Be(expectedEntity.TokenId);
             result.Address.Should().Be(expectedEntity.Address);
             result.NominationPeriodEnd.Should().Be(expectedEntity.NominationPeriodEnd);
+            result.MiningDuration.Should().Be(expectedEntity.MiningDuration);
             result.MiningPoolsFunded.Should().Be(expectedEntity.MiningPoolsFunded);
             result.MiningPoolReward.Should().Be(expectedEntity.MiningPoolReward);
         }

@@ -31,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
         {
             const long expectedId = 1234567;
 
-            var miningGovernance = new MiningGovernance("Address", 1, 2, 4, "12312323", 1);
+            var miningGovernance = new MiningGovernance("Address", 1, 2, 4, 5, "12312323", 1);
             var command = new PersistMiningGovernanceCommand(miningGovernance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
         [Fact]
         public async Task PersistsMiningGovernance_Fail()
         {
-            var token = new MiningGovernance("Address", 1, 2, 4, "12312323", 1);
+            var token = new MiningGovernance("Address", 1, 2, 4, 5, "12312323", 1);
             var command = new PersistMiningGovernanceCommand(token);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

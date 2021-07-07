@@ -102,7 +102,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                     // Create
                     miningGovernance = new MiningGovernance(odxTokenSummary.MiningGovernance, odxId, miningGovernanceSummary.NominationPeriodEnd,
-                        miningGovernanceSummary.MiningPoolsFunded, miningGovernanceSummary.MiningPoolReward, transaction.BlockHeight);
+                                                            miningGovernanceSummary.MiningDuration, miningGovernanceSummary.MiningPoolsFunded,
+                                                            miningGovernanceSummary.MiningPoolReward, transaction.BlockHeight);
 
                     // Persist
                     var miningGovernanceCommand = new MakeMiningGovernanceCommand(miningGovernance);

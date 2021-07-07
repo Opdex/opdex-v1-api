@@ -4,7 +4,6 @@ using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
 using System;
 using System.Threading;
@@ -20,6 +19,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
                 {nameof(MiningGovernanceEntity.Address)},
                 {nameof(MiningGovernanceEntity.TokenId)},
                 {nameof(MiningGovernanceEntity.NominationPeriodEnd)},
+                {nameof(MiningGovernanceEntity.MiningDuration)},
                 {nameof(MiningGovernanceEntity.MiningPoolsFunded)},
                 {nameof(MiningGovernanceEntity.MiningPoolReward)},
                 {nameof(MiningGovernanceEntity.CreatedBlock)},
