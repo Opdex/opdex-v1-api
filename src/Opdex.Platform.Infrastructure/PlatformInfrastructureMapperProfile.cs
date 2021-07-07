@@ -71,7 +71,7 @@ namespace Opdex.Platform.Infrastructure
             CreateMap<LiquidityPoolSnapshotEntity, LiquidityPoolSnapshot>()
                 .ConstructUsing((src, ctx) => new LiquidityPoolSnapshot(src.Id, src.LiquidityPoolId, src.TransactionCount, ctx.Mapper.Map<ReservesSnapshot>(src.Reserves),
                     ctx.Mapper.Map<RewardsSnapshot>(src.Rewards), ctx.Mapper.Map<StakingSnapshot>(src.Staking), ctx.Mapper.Map<VolumeSnapshot>(src.Volume),
-                    ctx.Mapper.Map<CostSnapshot>(src.Cost),(SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate, src.ModifiedDate))
+                    ctx.Mapper.Map<CostSnapshot>(src.Cost), (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate, src.ModifiedDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotReservesEntity, ReservesSnapshot>()
@@ -154,7 +154,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<AddressAllowanceEntity, AddressAllowance>()
-                .ConstructUsing(src => new AddressAllowance(src.Id, src.TokenId, src.LiquidityPoolId, src.Owner, src.Spender, src.Allowance, src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new AddressAllowance(src.Id, src.TokenId, src.Owner, src.Spender, src.Allowance, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<AddressMiningEntity, AddressMining>()
@@ -440,7 +440,6 @@ namespace Opdex.Platform.Infrastructure
             CreateMap<AddressAllowance, AddressAllowanceEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
-                .ForMember(dest => dest.LiquidityPoolId, opt => opt.MapFrom(src => src.LiquidityPoolId))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
                 .ForMember(dest => dest.Allowance, opt => opt.MapFrom(src => src.Allowance))

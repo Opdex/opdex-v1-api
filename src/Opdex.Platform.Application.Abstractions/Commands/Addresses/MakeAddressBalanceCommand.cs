@@ -6,11 +6,11 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Addresses
 {
     public class MakeAddressBalanceCommand : IRequest<long>
     {
-        public MakeAddressBalanceCommand(AddressBalance addressAllowance)
+        public MakeAddressBalanceCommand(AddressBalance addressBalance)
         {
-            AddressBalance = addressAllowance ?? throw new ArgumentNullException(nameof(addressAllowance));
+            AddressBalance = addressBalance ?? throw new ArgumentNullException(nameof(addressBalance));
         }
-        
+
         public AddressBalance AddressBalance { get; }
     }
 }

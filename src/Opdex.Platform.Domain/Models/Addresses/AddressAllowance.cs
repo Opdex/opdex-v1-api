@@ -6,17 +6,12 @@ namespace Opdex.Platform.Domain.Models.Addresses
 {
     public class AddressAllowance : BlockAudit
     {
-        public AddressAllowance(long tokenId, long liquidityPoolId, string owner, string spender, string allowance, ulong createdBlock)
+        public AddressAllowance(long tokenId, string owner, string spender, string allowance, ulong createdBlock)
             : base(createdBlock)
         {
-            if (tokenId < 1 && liquidityPoolId < 1)
+            if (tokenId < 1)
             {
-                throw new ArgumentException("Either liquidityPoolId or tokenId must be greater than 0.");
-            }
-
-            if (tokenId >= 1 && liquidityPoolId >= 1)
-            {
-                throw new ArgumentException("Only liquidityPoolId or tokenId can be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(tokenId), "Token id must be greater than 0.");
             }
 
             if (!owner.HasValue())
@@ -35,18 +30,16 @@ namespace Opdex.Platform.Domain.Models.Addresses
             }
 
             TokenId = tokenId;
-            LiquidityPoolId = liquidityPoolId;
             Owner = owner;
             Spender = spender;
             Allowance = allowance;
         }
 
-        public AddressAllowance(long id, long tokenId, long liquidityPoolId, string owner, string spender, string allowance,
+        public AddressAllowance(long id, long tokenId, string owner, string spender, string allowance,
             ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
             TokenId = tokenId;
-            LiquidityPoolId = liquidityPoolId;
             Owner = owner;
             Spender = spender;
             Allowance = allowance;
@@ -54,9 +47,17 @@ namespace Opdex.Platform.Domain.Models.Addresses
 
         public long Id { get; }
         public long TokenId { get; }
-        public long LiquidityPoolId { get; }
+
         public string Owner { get; }
         public string Spender { get; }
-        public string Allowance { get; }
+        public string Allowance { get; private set; }
+
+        public void SetAllowance(string amount, ulong blockHeight)
+        {
+            if (!amount.IsNumeric()) throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
+
+            Allowance = amount;
+            SetModifiedBlock(blockHeight);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
@@ -10,6 +11,7 @@ using Opdex.Platform.WebApi.Models.Responses.Markets;
 using Opdex.Platform.WebApi.Models.Responses.OHLC;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
+using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
 namespace Opdex.Platform.WebApi.Mappers
 {
@@ -117,6 +119,12 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
                 .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<AddressAllowanceDto, ApprovedAllowanceResponseModel>()
+                .ForMember(dest => dest.Allowance, opt => opt.MapFrom(src => src.Allowance))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
+                .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token));
         }
 
         private static ReservesResponseModel MapReserves(ReservesDto reservesDto, int srcTokenDecimals)
