@@ -29,10 +29,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
                 @{nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
               );
               SELECT LAST_INSERT_ID();";
-        
+
         private static readonly string UpdateSqlCommand =
-            $@"UPDATE odx_mining_governance_nomination 
-                SET 
+            $@"UPDATE odx_mining_governance_nomination
+                SET
                     {nameof(MiningGovernanceNominationEntity.Weight)} = @{nameof(MiningGovernanceNominationEntity.Weight)},
                     {nameof(MiningGovernanceNominationEntity.IsNominated)} = @{nameof(MiningGovernanceNominationEntity.IsNominated)},
                     {nameof(MiningGovernanceNominationEntity.ModifiedBlock)} = @{nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
@@ -41,7 +41,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        
+
         public PersistMiningGovernanceNominationCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMiningGovernanceNominationCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -55,12 +55,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
             {
                 var entity = _mapper.Map<MiningGovernanceNominationEntity>(request.Nomination);
 
-                var isUpdate = entity.Id > 1;
-                
+                var isUpdate = entity.Id >= 1;
+
                 var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
 
                 var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-            
+
                 var result = await _context.ExecuteScalarAsync<long>(command);
 
                 return isUpdate ? entity.Id : result;
@@ -68,7 +68,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure persisting {request.Nomination}.");
-                
+
                 return 0;
             }
         }

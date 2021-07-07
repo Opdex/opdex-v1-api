@@ -50,7 +50,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 foreach (var nomination in latestNominationDtos)
                 {
-                    var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(nomination.StakingToken, findOrThrow: true);
+                    var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(nomination.StakingPool, findOrThrow: true);
                     var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
 
                     var miningPoolQuery = new RetrieveMiningPoolByLiquidityPoolIdQuery(liquidityPool.Id, findOrThrow: true);
@@ -66,7 +66,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     {
                         continue;
                     }
-                    
+
                     // Disable the nomination
                     currentNomination.SetNominationStatus(false, request.BlockHeight);
                     var nominationCommand = new MakeMiningGovernanceNominationCommand(currentNomination);
@@ -80,18 +80,18 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     {
                         continue;
                     }
-                    
+
                     // enable the nomination
                     var nominationCommand = new MakeMiningGovernanceNominationCommand(nomination);
                     var nominationId = await _mediator.Send(nominationCommand, CancellationToken.None);
                 }
-                
+
                 return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(NominationLog)}");
-               
+
                 return false;
             }
         }
