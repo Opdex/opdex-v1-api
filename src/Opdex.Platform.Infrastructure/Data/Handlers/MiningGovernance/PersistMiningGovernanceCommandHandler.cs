@@ -31,10 +31,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
                 @{nameof(MiningGovernanceEntity.ModifiedBlock)}
               );
               SELECT LAST_INSERT_ID();";
-        
+
         private static readonly string UpdateSqlCommand =
-            $@"UPDATE odx_mining_governance 
-                SET 
+            $@"UPDATE odx_mining_governance
+                SET
                     {nameof(MiningGovernanceEntity.NominationPeriodEnd)} = @{nameof(MiningGovernanceEntity.NominationPeriodEnd)},
                     {nameof(MiningGovernanceEntity.MiningPoolsFunded)} = @{nameof(MiningGovernanceEntity.MiningPoolsFunded)},
                     {nameof(MiningGovernanceEntity.MiningPoolReward)} = @{nameof(MiningGovernanceEntity.MiningPoolReward)},
@@ -44,7 +44,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        
+
         public PersistMiningGovernanceCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMiningGovernanceCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -58,12 +58,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
             {
                 var poolEntity = _mapper.Map<MiningGovernanceEntity>(request.MiningGovernance);
 
-                var isUpdate = poolEntity.Id > 1;
-                
+                var isUpdate = poolEntity.Id >= 1;
+
                 var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
 
                 var command = DatabaseQuery.Create(sql, poolEntity, cancellationToken);
-            
+
                 var result = await _context.ExecuteScalarAsync<long>(command);
 
                 return isUpdate ? poolEntity.Id : result;
@@ -71,7 +71,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernance
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure persisting {request.MiningGovernance}.");
-                
+
                 return 0;
             }
         }

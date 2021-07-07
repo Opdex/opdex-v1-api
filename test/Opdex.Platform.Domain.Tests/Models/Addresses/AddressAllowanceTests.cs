@@ -8,25 +8,14 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
     public class AddressAllowanceTests
     {
         [Fact]
-        public void Constructor_TokenAndLiquidityPoolIdBothZero_ThrowArgumentException()
+        public void Constructor_TokenIdZero_ThrowArgumentOutOfRangeException()
         {
             // Arrange
             // Act
-            static void Act() => new AddressAllowance(0, 0, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_001);
+            static void Act() => new AddressAllowance(0, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_001);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Either liquidityPoolId or tokenId must be greater than 0.");
-        }
-
-        [Fact]
-        public void Constructor_NeitherTokenOrLiquidityPoolIdZero_ThrowArgumentException()
-        {
-            // Arrange
-            // Act
-            static void Act() => new AddressAllowance(1, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_001);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Only liquidityPoolId or tokenId can be greater than 0.");
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Token id must be greater than 0.");
         }
 
         [Theory]
@@ -37,7 +26,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         {
             // Arrange
             // Act
-            void Act() => new AddressAllowance(0, 1, owner, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_001);
+            void Act() => new AddressAllowance(1, owner, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000000", 10_001);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner must be set.");
@@ -51,7 +40,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         {
             // Arrange
             // Act
-            void Act() => new AddressAllowance(0, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", spender, "50000000", 10_001);
+            void Act() => new AddressAllowance(1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", spender, "50000000", 10_001);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Spender must be set.");
@@ -68,7 +57,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         {
             // Arrange
             // Act
-            void Act() => new AddressAllowance(0, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", allowance, 10_001);
+            void Act() => new AddressAllowance(1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", allowance, 10_001);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Allowance must only contain numeric digits.");
@@ -78,24 +67,76 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         public void Constructor_ValidArguments_PropertiesSet()
         {
             // Arrange
-            var tokenId = 0;
-            var liquidityPoolId = 102;
+            var tokenId = 102;
             var owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var spender = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
             var allowance = "50000000";
             ulong createdBlock = 10_001;
 
             // Act
-            var addressAllowance = new AddressAllowance(tokenId, liquidityPoolId, owner, spender, allowance, createdBlock);
+            var addressAllowance = new AddressAllowance(tokenId, owner, spender, allowance, createdBlock);
 
             // Assert
             addressAllowance.TokenId.Should().Be(tokenId);
-            addressAllowance.LiquidityPoolId.Should().Be(liquidityPoolId);
             addressAllowance.Owner.Should().Be(owner);
             addressAllowance.Spender.Should().Be(spender);
             addressAllowance.Allowance.Should().Be(allowance);
             addressAllowance.CreatedBlock.Should().Be(createdBlock);
             addressAllowance.ModifiedBlock.Should().Be(createdBlock);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData("ABC")]
+        [InlineData("100.005")]
+        [InlineData("100_000")]
+        public void SetAllowance_AmountNotValid_ThrowArgumentOutOfRangeException(string amount)
+        {
+            // Arrange
+            var addressAllowance = new AddressAllowance(1, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+                                                        "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "5000000000", 10_000,
+                                                        10_500);
+
+            // Act
+            void Act() => addressAllowance.SetAllowance(amount, 10_505);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Amount must only contain numeric digits.");
+        }
+
+        [Fact]
+        public void SetAllowance_ValidAmount_UpdateAllowance()
+        {
+            // Arrange
+            var originalAmount = "8888888888";
+            var updatedAmount = "50000000";
+            var addressAllowance = new AddressAllowance(1, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+                                                        "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", originalAmount, 10_000,
+                                                        10_500);
+
+            // Act
+            addressAllowance.SetAllowance(updatedAmount, 10_505);
+
+            // Assert
+            addressAllowance.Allowance.Should().Be(updatedAmount);
+        }
+
+        [Fact]
+        public void SetAllowance_ValidAmount_UpdateModifiedBlock()
+        {
+            // Arrange
+            var modifiedBlock = 10_505UL;
+            var addressAllowance = new AddressAllowance(1, 1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+                                                        "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "5555555", 10_000,
+                                                        10_500);
+
+            // Act
+            addressAllowance.SetAllowance("5555", modifiedBlock);
+
+            // Assert
+            addressAllowance.ModifiedBlock.Should().Be(modifiedBlock);
         }
     }
 }

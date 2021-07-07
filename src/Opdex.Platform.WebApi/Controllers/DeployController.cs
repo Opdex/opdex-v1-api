@@ -8,12 +8,17 @@ using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
+using Opdex.Platform.Application.Abstractions.Queries.Blocks;
+using Opdex.Platform.Application.Abstractions.Queries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
@@ -117,14 +122,13 @@ namespace Opdex.Platform.WebApi.Controllers
             }
 
             // Serialize Liquidity Pool Addresses and Distribute ODX
-            var pools = createLiquidityPoolTransactions
+            var poolAddresses = createLiquidityPoolTransactions
                 .Select(t =>
                     ((CreateLiquidityPoolLog)t.Logs
-                        .FirstOrDefault(log => log.LogType == TransactionLogType.CreateLiquidityPoolLog))?.Pool
-                            .ToSmartContractParameter(SmartContractParameterType.Address))
-                .ToArray();
+                        .FirstOrDefault(log => log.LogType == TransactionLogType.CreateLiquidityPoolLog))?.Pool);
+            var poolsParams = poolAddresses.Select(address => address.ToSmartContractParameter(SmartContractParameterType.Address)).ToArray();
             var distributeOdxRequest = new SmartContractCallRequestDto(odxTransaction.NewContractAddress, request.WalletName, request.WalletAddress,
-                request.WalletPassword, "0.00", "DistributeGenesis", pools);
+                request.WalletPassword, "0.00", "DistributeGenesis", poolsParams);
             var distributeOdxCommand = new CallCirrusCallSmartContractMethodCommand(distributeOdxRequest);
             var distributeOdxTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(distributeOdxCommand, cancellationToken));
 
@@ -137,6 +141,21 @@ namespace Opdex.Platform.WebApi.Controllers
             var createOdxPoolTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createOdxPoolCommand, cancellationToken));
 
             await _mediator.Send(new ProcessLatestBlocksCommand(_hostingEnv.IsDevelopment()), CancellationToken.None);
+
+            // Add Nominations
+            var block = await _mediator.Send(new RetrieveLatestBlockQuery());
+            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(stakingMarket.Market));
+            var nominatedPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(market.Id, pools: poolAddresses));
+
+            var nominatedMiningPools = await Task.WhenAll(nominatedPools.Select(pool => _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id))));
+
+            var nominations = nominatedPools.Select(n =>
+            {
+                var miningPoolId = nominatedMiningPools.First(mp => mp.LiquidityPoolId == n.Id).Id;
+                return new MiningGovernanceNomination(n.Id, miningPoolId, true, "1", block.Height);
+            });
+
+            await Task.WhenAll(nominations.Select(nomination => _mediator.Send(new MakeMiningGovernanceNominationCommand(nomination))));
 
             return Ok("Successful");
         }

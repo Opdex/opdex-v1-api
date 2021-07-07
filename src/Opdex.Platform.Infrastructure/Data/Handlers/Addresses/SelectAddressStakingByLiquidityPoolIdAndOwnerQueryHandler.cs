@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         : IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>
     {
         private static readonly string SqlQuery =
-            @$"Select 
+            @$"Select
                 {nameof(AddressStakingEntity.Id)},
                 {nameof(AddressStakingEntity.LiquidityPoolId)},
                 {nameof(AddressStakingEntity.Owner)},
@@ -23,8 +23,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 {nameof(AddressStakingEntity.CreatedBlock)},
                 {nameof(AddressStakingEntity.ModifiedBlock)}
             FROM address_staking
-            WHERE {nameof(AddressStakingEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
-                AND {nameof(AddressStakingEntity.Owner)} = @{nameof(SqlParams.Owner)}
+            WHERE {nameof(AddressStakingEntity.Owner)} = @{nameof(SqlParams.Owner)}
+                AND {nameof(AddressStakingEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
             LIMIT 1;";
 
         private readonly IDbContext _context;
@@ -39,7 +39,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         public async Task<AddressStaking> Handle(SelectAddressStakingByLiquidityPoolIdAndOwnerQuery request, CancellationToken cancellationToken)
         {
             var queryParams = new SqlParams(request.LiquidityPoolId, request.Owner);
-            
+
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
             var result = await _context.ExecuteFindAsync<AddressStakingEntity>(query);
