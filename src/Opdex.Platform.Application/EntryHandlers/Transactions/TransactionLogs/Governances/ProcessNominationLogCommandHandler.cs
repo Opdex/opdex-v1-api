@@ -51,7 +51,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 foreach (var nomination in latestNominationDtos)
                 {
-                    var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(nomination.StakingToken, findOrThrow: true);
+                    var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(nomination.StakingPool, findOrThrow: true);
                     var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
 
                     var miningPoolQuery = new RetrieveMiningPoolByLiquidityPoolIdQuery(liquidityPool.Id, findOrThrow: true);

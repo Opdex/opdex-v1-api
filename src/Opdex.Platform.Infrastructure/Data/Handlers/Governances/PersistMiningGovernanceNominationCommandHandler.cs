@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,7 +55,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
             {
                 var entity = _mapper.Map<MiningGovernanceNominationEntity>(request.Nomination);
 
-                var isUpdate = entity.Id > 1;
+                var isUpdate = entity.Id >= 1;
 
                 var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
 
