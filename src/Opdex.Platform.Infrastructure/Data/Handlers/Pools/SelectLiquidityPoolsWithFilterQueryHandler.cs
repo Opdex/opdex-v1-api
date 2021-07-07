@@ -9,6 +9,7 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
@@ -101,10 +102,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
             // Nominated filter
             if (request.Nominated.HasValue)
             {
-                tableJoins += $@" JOIN odx_mining_governance_nomination omgn
-                                ON omgn.{nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}";
+                tableJoins += $@" JOIN governance_nomination gn
+                                ON gn.{nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}";
 
-                whereFilter += $" AND omgn.{nameof(MiningGovernanceNominationEntity.IsNominated)} = {request.Nominated.Value}";
+                whereFilter += $" AND gn.{nameof(MiningGovernanceNominationEntity.IsNominated)} = {request.Nominated.Value}";
             }
 
             // Sort Found Pools

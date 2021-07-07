@@ -2,7 +2,6 @@ using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.TransactionLogs;
 using Opdex.Platform.Application.Abstractions.Models.TransactionLogs.Markets;
-using Opdex.Platform.Application.Abstractions.Models.TransactionLogs.MiningGovernance;
 using Opdex.Platform.Application.Abstractions.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionLogs.Tokens;
@@ -13,7 +12,6 @@ using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
-using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernance;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
@@ -22,9 +20,11 @@ using System.Linq;
 using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
+using Opdex.Platform.Application.Abstractions.Models.TransactionLogs.Governances;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.Pools.Snapshots;
+using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
 
 namespace Opdex.Platform.Application
 {
