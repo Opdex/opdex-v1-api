@@ -64,14 +64,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var allowance = await _mediator.Send(new RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery(token.Id, owner, spender, findOrThrow: true),
-                                                     CancellationToken.None);
+                var allowance = await _mediator.Send(new RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery(token.Id, owner, spender, findOrThrow: false));
 
-                var isMoreRecentTransfer = blockHeight >= allowance.ModifiedBlock;
-                if (!isMoreRecentTransfer)
+                if (allowance != null && allowance.ModifiedBlock >= blockHeight)
                 {
                     return;
                 }
+
+                allowance ??= new AddressAllowance(token.Id, owner, spender, "0", blockHeight);
 
                 var allowanceAmount = await _mediator.Send(new CallCirrusGetSrcTokenAllowanceQuery(token.Address, owner, spender));
 
