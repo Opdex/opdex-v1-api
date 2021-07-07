@@ -2,7 +2,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
 {
     public class MiningGovernanceNominationCirrusDto
     {
-        public string StakingToken { get; set; }
+        public string StakingPool { get; set; }
         public string Weight { get; set; }
     }
 }
