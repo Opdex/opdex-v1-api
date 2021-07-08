@@ -419,6 +419,7 @@ namespace Opdex.Platform.Infrastructure
 
             CreateMap<VaultCertificate, VaultCertificateEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.VaultId, opt => opt.MapFrom(src => src.VaultId))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock))

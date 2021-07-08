@@ -36,6 +36,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
             $@"UPDATE vault
                 SET
                     {nameof(VaultEntity.Owner)} = @{nameof(VaultEntity.Owner)},
+                    {nameof(VaultEntity.UnassignedSupply)} = @{nameof(VaultEntity.UnassignedSupply)},
                     {nameof(VaultEntity.ModifiedBlock)} = @{nameof(VaultEntity.ModifiedBlock)}
                 WHERE {nameof(VaultEntity.Id)} = @{nameof(VaultEntity.Id)};";
 
