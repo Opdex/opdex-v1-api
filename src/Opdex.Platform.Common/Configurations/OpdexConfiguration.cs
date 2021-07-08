@@ -20,7 +20,7 @@ namespace Opdex.Platform.Common.Configurations
                 Network != NetworkType.TESTNET &&
                 Network != NetworkType.MAINNET)
             {
-                throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(Network)} must not be a valid network type.");
+                throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(Network)} must be a valid network type.");
             }
         }
     }

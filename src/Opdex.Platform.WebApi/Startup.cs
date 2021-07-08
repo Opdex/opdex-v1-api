@@ -31,8 +31,8 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
-using Microsoft.Extensions.Options;
 using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.WebApi.Extensions;
 using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models;
 
@@ -103,30 +103,22 @@ namespace Opdex.Platform.WebApi
 
             // Cirrus Configurations
             var cirrusConfig = Configuration.GetSection(nameof(CirrusConfiguration));
-            services.Configure<CirrusConfiguration>(cirrusConfig);
-            services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<CirrusConfiguration>>().Value);
-            services.AddSingleton<IValidatable>(resolver => resolver.GetRequiredService<IOptions<CirrusConfiguration>>().Value);
+            services.SetupConfiguration<CirrusConfiguration>(cirrusConfig);
 
             // Opdex Configurations
-            services.Configure<OpdexConfiguration>(Configuration.GetSection(nameof(OpdexConfiguration)));
-            services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<OpdexConfiguration>>().Value);
-            services.AddSingleton<IValidatable>(resolver => resolver.GetRequiredService<IOptions<OpdexConfiguration>>().Value);
+            var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
+            services.SetupConfiguration<OpdexConfiguration>(opdexConfig);
 
             // Block Explorer Configurations
-            services.Configure<BlockExplorerConfiguration>(Configuration.GetSection(nameof(BlockExplorerConfiguration)));
-            services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<BlockExplorerConfiguration>>().Value);
-            services.AddSingleton<IValidatable>(resolver => resolver.GetRequiredService<IOptions<BlockExplorerConfiguration>>().Value);
+            var blockExplorerConfig = Configuration.GetSection(nameof(BlockExplorerConfiguration));
+            services.SetupConfiguration<BlockExplorerConfiguration>(blockExplorerConfig);
 
             // Coin Market Cap Configurations
             var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
-            services.Configure<CoinMarketCapConfiguration>(cmcConfig);
-            services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<CoinMarketCapConfiguration>>().Value);
-            services.AddSingleton<IValidatable>(resolver => resolver.GetRequiredService<IOptions<CoinMarketCapConfiguration>>().Value);
+            services.SetupConfiguration<CoinMarketCapConfiguration>(cmcConfig);
 
             var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
-            services.Configure<AuthConfiguration>(authConfig);
-            services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<AuthConfiguration>>().Value);
-            services.AddSingleton<IValidatable>(resolver => resolver.GetRequiredService<IOptions<AuthConfiguration>>().Value);
+            services.SetupConfiguration<AuthConfiguration>(authConfig);
 
             // Register project module services
             services.AddPlatformApplicationServices();
