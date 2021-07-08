@@ -34,7 +34,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var vault = await _mediator.Send(new RetrieveVaultQuery(findOrThrow: true));
 
-                if (request.BlockHeight > vault.ModifiedBlock)
+                if (request.BlockHeight >= vault.ModifiedBlock)
                 {
                     var totalSupply = await _mediator.Send(new CallCirrusGetVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
 
