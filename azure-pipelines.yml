@@ -18,7 +18,7 @@ stages:
 
   jobs:
   - job: Build
-    displayName: Create Artifact
+    displayName: Build and Publish
 
     variables:
       SOLUTION: 'Opdex.sln'
