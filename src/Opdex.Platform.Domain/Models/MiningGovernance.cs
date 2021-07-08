@@ -1,29 +1,35 @@
 using System;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Blocks;
-using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Governances;
 
 namespace Opdex.Platform.Domain.Models
 {
     public class MiningGovernance : BlockAudit
     {
-        public MiningGovernance(long id, string address, long tokenId, ulong nominationPeriodEnd, uint miningPoolsFunded,
+        public MiningGovernance(long id, string address, long tokenId, ulong nominationPeriodEnd, ulong miningDuration, uint miningPoolsFunded,
             string miningPoolReward, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
             TokenId = tokenId;
             NominationPeriodEnd = nominationPeriodEnd;
+            MiningDuration = miningDuration;
             MiningPoolsFunded = miningPoolsFunded;
             MiningPoolReward = miningPoolReward;
         }
 
-        public MiningGovernance(string address, long tokenId, ulong nominationPeriodEnd, uint miningPoolsFunded,
+        public MiningGovernance(string address, long tokenId, ulong nominationPeriodEnd, ulong miningDuration, uint miningPoolsFunded,
             string miningPoolReward, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
             {
                 throw new ArgumentNullException(nameof(address));
+            }
+
+            if (miningDuration < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(miningDuration));
             }
 
             if (tokenId < 1)
@@ -34,6 +40,7 @@ namespace Opdex.Platform.Domain.Models
             Address = address;
             TokenId = tokenId;
             NominationPeriodEnd = nominationPeriodEnd;
+            MiningDuration = miningDuration;
             MiningPoolsFunded = miningPoolsFunded;
             MiningPoolReward = miningPoolReward;
         }
@@ -42,6 +49,7 @@ namespace Opdex.Platform.Domain.Models
         public string Address { get; }
         public long TokenId { get; }
         public ulong NominationPeriodEnd { get; private set; }
+        public ulong MiningDuration { get; private set; }
         public uint MiningPoolsFunded { get; private set; }
         public string MiningPoolReward { get; private set; }
 
@@ -50,6 +58,7 @@ namespace Opdex.Platform.Domain.Models
             NominationPeriodEnd = summary.NominationPeriodEnd;
             MiningPoolsFunded = summary.MiningPoolsFunded;
             MiningPoolReward = summary.MiningPoolReward;
+            MiningDuration = summary.MiningDuration;
 
             SetModifiedBlock(block);
         }
