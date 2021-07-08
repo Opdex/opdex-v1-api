@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
