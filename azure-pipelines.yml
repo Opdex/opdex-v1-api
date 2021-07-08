@@ -1,15 +1,20 @@
+name: Opdex-API
 trigger:
-  - develop
+- develop
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
 
 variables:
+  location: 'Central US'
+  azureSubscription: 'sub-opdex-dev'
   ARTIFACT_NAME: platform-api
+  artifactName: ReleaseArtifact
+  releaseTemplate: 'azure-pipelines.release.yml'
 
 stages:
-- stage: Package
-  displayName: Package
+- stage: CI
+  displayName: 'Continuous Integration'
 
   jobs:
   - job: Build
@@ -55,26 +60,35 @@ stages:
           artifactName: '$(ARTIFACT_NAME)'
         displayName: Share
 
-- stage: Deploy
-  displayName: Deploy
-  dependsOn: Package
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
-
+- stage: TEMP
+  displayName: 'Release to tempnet (Azure)'
+  dependsOn: CI
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop')) # Do we need this when the trigger is defined?
   jobs:
-    - deployment: Testnet
-      displayName: Configure Testnet
-      environment: Testnet
+  - template: ${{ variables.releaseTemplate }}
+    parameters:
+      environment: 'temp'
 
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-              - task: AzureWebApp@1
-                inputs:
-                  azureSubscription: 'Opdex(11e39196-fac6-4d5e-80c9-1365db389b2d)'
-                  appType: 'webApp'
-                  appName: 'opdex-api-platform-testnet'
-                  package: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/*.zip'
-                  deploymentMethod: 'auto'
-                displayName: Deploy to App Service
-        
+- stage: DEV
+  displayName: 'Release to devnet (Azure)'
+  dependsOn: TEMP
+  jobs:
+  - template: ${{ variables.releaseTemplate }}
+    parameters:
+      environment: 'dev'
+
+- stage: TEST
+  displayName: 'Release to testnet (Azure)'
+  dependsOn: DEV
+  jobs:
+  - template: ${{ variables.releaseTemplate }}
+    parameters:
+      environment: 'test'
+
+- stage: MAIN
+  displayName: 'Release to mainnet (Azure)'
+  dependsOn: TEST
+  jobs:
+  - template: ${{ variables.releaseTemplate }}
+    parameters:
+      environment: 'main'
