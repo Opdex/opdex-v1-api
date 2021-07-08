@@ -28,13 +28,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
         {
             var crs = await _mediator.Send(new GetTokenByAddressQuery(TokenConstants.Cirrus.Address), CancellationToken.None);
 
-            var snapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id,
+            var latestSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id,
                                                                                          CrsMarketId,
                                                                                          request.BlockTime,
                                                                                          SnapshotType.Minute), CancellationToken.None);
 
             // If we've already got a minute snapshot, skip
-            if (snapshot.EndDate > request.BlockTime)
+            if (latestSnapshot.EndDate > request.BlockTime)
             {
                 return Unit.Value;
             }
@@ -66,7 +66,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
                     snapshotOfType.UpdatePrice(price);
                 }
 
-                var persisted = await _mediator.Send(new MakeTokenSnapshotCommand(snapshot), CancellationToken.None);
+                var persisted = await _mediator.Send(new MakeTokenSnapshotCommand(snapshotOfType), CancellationToken.None);
                 if (!persisted)
                 {
                     throw new Exception("Unable to persist token snapshot.");

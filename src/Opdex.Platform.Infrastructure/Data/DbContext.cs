@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MySqlConnector;
-using Opdex.Platform.Common;
+using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 
 namespace Opdex.Platform.Infrastructure.Data
@@ -16,9 +15,10 @@ namespace Opdex.Platform.Infrastructure.Data
     {
         private readonly ILogger<DbContext> _logger;
         private readonly IDatabaseSettings<MySqlConnection> _databaseSettings;
-        public DbContext(IOptions<OpdexConfiguration> opdexConfiguration, ILogger<DbContext> logger)
+
+        public DbContext(OpdexConfiguration opdexConfiguration, ILogger<DbContext> logger)
         {
-            var configuration = opdexConfiguration.Value ?? throw new ArgumentNullException(nameof(opdexConfiguration));
+            var configuration = opdexConfiguration ?? throw new ArgumentNullException(nameof(opdexConfiguration));
             var connectionString = new MySqlConnectionStringBuilder(configuration.ConnectionString);
 
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

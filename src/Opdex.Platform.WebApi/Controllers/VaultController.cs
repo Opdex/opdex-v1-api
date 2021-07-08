@@ -2,9 +2,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
-using Opdex.Platform.Common;
+using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using System;
@@ -22,11 +21,11 @@ namespace Opdex.Platform.WebApi.Controllers
         private readonly IMediator _mediator;
         private readonly BlockExplorerConfiguration _blockExplorerConfig;
 
-        public VaultController(IApplicationContext context, IMediator mediator, IOptions<BlockExplorerConfiguration> blockExplorerConfig)
+        public VaultController(IApplicationContext context, IMediator mediator, BlockExplorerConfiguration blockExplorerConfig)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _blockExplorerConfig = blockExplorerConfig?.Value ?? throw new ArgumentNullException(nameof(blockExplorerConfig));
+            _blockExplorerConfig = blockExplorerConfig ?? throw new ArgumentNullException(nameof(blockExplorerConfig));
         }
 
         /// <summary>

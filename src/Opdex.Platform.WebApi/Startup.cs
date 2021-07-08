@@ -8,7 +8,6 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Opdex.Platform.Application;
 using Opdex.Platform.Infrastructure;
-using Opdex.Platform.Common;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi;
 using Opdex.Platform.WebApi.Mappers;
@@ -32,6 +31,9 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
+using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.WebApi.Extensions;
+using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models;
 
 namespace Opdex.Platform.WebApi
@@ -86,22 +88,60 @@ namespace Opdex.Platform.WebApi
 
             services.AddProblemDetailTelemetryInitializer();
 
+            services.AddHttpClient();
+
+            // Automapper Profiles
+            services.AddAutoMapper(mapperConfig =>
+            {
+                mapperConfig.AddProfile<PlatformApplicationMapperProfile>();
+                mapperConfig.AddProfile<PlatformInfrastructureMapperProfile>();
+                mapperConfig.AddProfile<PlatformWebApiMapperProfile>();
+            });
+
+            // Startup Configuration Validation Filters
+            services.AddTransient<IStartupFilter, ConfigurationValidationStartupFilter>();
+
+            // Cirrus Configurations
+            var cirrusConfig = Configuration.GetSection(nameof(CirrusConfiguration));
+            services.SetupConfiguration<CirrusConfiguration>(cirrusConfig);
+
+            // Opdex Configurations
+            var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
+            services.SetupConfiguration<OpdexConfiguration>(opdexConfig);
+
+            // Block Explorer Configurations
+            var blockExplorerConfig = Configuration.GetSection(nameof(BlockExplorerConfiguration));
+            services.SetupConfiguration<BlockExplorerConfiguration>(blockExplorerConfig);
+
+            // Coin Market Cap Configurations
+            var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
+            services.SetupConfiguration<CoinMarketCapConfiguration>(cmcConfig);
+
             var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
-            services.Configure<AuthConfiguration>(authConfig);
+            services.SetupConfiguration<AuthConfiguration>(authConfig);
+
+            // Register project module services
+            services.AddPlatformApplicationServices();
+            services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(),
+                                                       cmcConfig.Get<CoinMarketCapConfiguration>());
+
+            services.AddScoped<IApplicationContext, ApplicationContext>();
+
+
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuer = false,
-                            ValidateAudience = false,
-                            ValidateIssuerSigningKey = true,
-                            ValidateLifetime = true,
-                            // temp solution, OAuth will prefer assymmetric key
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
-                        };
-                    });
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        // temp solution, OAuth will prefer assymmetric key
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
+                    };
+                });
 
             services.AddOpenApiDocument(settings =>
             {
@@ -117,34 +157,6 @@ namespace Opdex.Platform.WebApi
                 });
                 settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
             });
-
-            // Automapper Profiles
-            services.AddAutoMapper(mapperConfig =>
-            {
-                mapperConfig.AddProfile<PlatformApplicationMapperProfile>();
-                mapperConfig.AddProfile<PlatformInfrastructureMapperProfile>();
-                mapperConfig.AddProfile<PlatformWebApiMapperProfile>();
-            });
-
-            services.AddHttpClient();
-
-            var cirrusConfig = Configuration.GetSection(nameof(CirrusConfiguration));
-            services.Configure<CirrusConfiguration>(cirrusConfig);
-
-            var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
-            services.Configure<OpdexConfiguration>(opdexConfig);
-
-            var blockExplorerConfig = Configuration.GetSection(nameof(BlockExplorerConfiguration));
-            services.Configure<BlockExplorerConfiguration>(blockExplorerConfig);
-
-            var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
-            services.Configure<CoinMarketCapConfiguration>(cmcConfig);
-
-            // Register project module services
-            services.AddPlatformApplicationServices();
-            services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(), cmcConfig.Get<CoinMarketCapConfiguration>());
-
-            services.AddScoped<IApplicationContext, ApplicationContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
