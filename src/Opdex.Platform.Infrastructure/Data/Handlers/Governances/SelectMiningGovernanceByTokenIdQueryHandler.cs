@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
 {
-    public class SelectMiningGovernanceQueryHandler : IRequestHandler<SelectMiningGovernanceQuery, MiningGovernance>
+    public class SelectMiningGovernanceByTokenIdQueryHandler : IRequestHandler<SelectMiningGovernanceByTokenIdQuery, MiningGovernance>
     {
         private static readonly string SqlQuery =
             @$"SELECT
@@ -25,20 +25,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
                 {nameof(MiningGovernanceEntity.CreatedBlock)},
                 {nameof(MiningGovernanceEntity.ModifiedBlock)}
             FROM governance
+            WHERE {nameof(MiningGovernanceEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
-        public SelectMiningGovernanceQueryHandler(IDbContext context, IMapper mapper)
+        public SelectMiningGovernanceByTokenIdQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<MiningGovernance> Handle(SelectMiningGovernanceQuery request, CancellationToken cancellationToken)
+        public async Task<MiningGovernance> Handle(SelectMiningGovernanceByTokenIdQuery request, CancellationToken cancellationToken)
         {
-            var query = DatabaseQuery.Create(SqlQuery, cancellationToken);
+            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.TokenId), cancellationToken);
 
             var result = await _context.ExecuteFindAsync<MiningGovernanceEntity>(query);
 

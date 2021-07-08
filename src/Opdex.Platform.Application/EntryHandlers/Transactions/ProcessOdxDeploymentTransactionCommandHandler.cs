@@ -91,7 +91,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 }
 
                 // Get and/or create mining governance
-                var miningGovernanceQuery = new RetrieveMiningGovernanceQuery(findOrThrow: false);
+                var miningGovernanceQuery = new RetrieveMiningGovernanceByTokenIdQuery(odxId, findOrThrow: false);
                 var miningGovernance = await _mediator.Send(miningGovernanceQuery, CancellationToken.None);
 
                 if (miningGovernance == null)

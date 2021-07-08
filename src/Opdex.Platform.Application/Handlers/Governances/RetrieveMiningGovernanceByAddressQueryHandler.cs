@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Governances
 {
-    public class RetrieveMiningGovernanceQueryHandler : IRequestHandler<RetrieveMiningGovernanceQuery, MiningGovernance>
+    public class RetrieveMiningGovernanceByAddressQueryHandler  : IRequestHandler<RetrieveMiningGovernanceByAddressQuery, MiningGovernance>
     {
         private readonly IMediator _mediator;
 
-        public RetrieveMiningGovernanceQueryHandler(IMediator mediator)
+        public RetrieveMiningGovernanceByAddressQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<MiningGovernance> Handle(RetrieveMiningGovernanceQuery request, CancellationToken cancellationToken)
+        public Task<MiningGovernance> Handle(RetrieveMiningGovernanceByAddressQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectMiningGovernanceQuery(request.FindOrThrow), cancellationToken);
+            return _mediator.Send(new SelectMiningGovernanceByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
         }
     }
 }

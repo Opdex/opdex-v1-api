@@ -29,8 +29,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var miningGovernanceQuery = new RetrieveMiningGovernanceQuery(findOrThrow: true);
-                var miningGovernance = await _mediator.Send(miningGovernanceQuery, CancellationToken.None);
+                var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.Log.Contract));
 
                 var isNewer = request.BlockHeight < miningGovernance.ModifiedBlock;
                 if (isNewer && miningGovernance.Id != 0)
