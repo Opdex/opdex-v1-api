@@ -25,7 +25,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
                 {nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
             FROM governance_nomination
             WHERE {nameof(MiningGovernanceNominationEntity.IsNominated)} = true
-            LIMIT 4;";
+            LIMIT {GovernanceConstants.MaxNominations};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
