@@ -14,7 +14,6 @@ using Opdex.Platform.WebApi.Models.Responses.OHLC;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
-using System;
 
 namespace Opdex.Platform.WebApi.Mappers
 {
@@ -133,11 +132,11 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.MinedToken, opt => opt.MapFrom(src => src.MinedToken))
                 .ForMember(dest => dest.NominationPeriodEndBlock, opt => opt.MapFrom(src => src.NominationPeriodEnd))
+                .ForMember(dest => dest.RemainingNominationPeriodBlocks, opt => opt.MapFrom(src => src.RemainingNominationPeriodBlocks))
                 .ForMember(dest => dest.NominationDuration, opt => opt.MapFrom(src => src.MiningDuration))
                 .ForMember(dest => dest.MiningPoolReward, opt => opt.MapFrom(src => src.MiningPoolReward.InsertDecimal(TokenConstants.Opdex.Decimals)))
-                .ForMember(dest => dest.NominationPeriodReset, opt => opt.MapFrom(src => (48 - src.MiningPoolsFunded) / 4))
-                .ForMember(dest => dest.TotalRewardPerPeriod, opt => opt.MapFrom(src => (src.MiningPoolReward.ToBigInteger() * 4)
-                                                                                     .ToString().InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.NominationPeriodsUntilReset, opt => opt.MapFrom(src => src.NominationPeriodsUntilReset))
+                .ForMember(dest => dest.TotalRewardPerPeriod, opt => opt.MapFrom(src => src.TotalRewardPerPeriod.InsertDecimal(TokenConstants.Opdex.Decimals)))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
 
