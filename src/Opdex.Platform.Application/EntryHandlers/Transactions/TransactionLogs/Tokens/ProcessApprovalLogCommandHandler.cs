@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -7,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
-using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 
@@ -32,21 +31,21 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var liquidityPoolAddress = request.Log.Contract;
-                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(liquidityPoolAddress, findOrThrow: false), CancellationToken.None);
-                if (liquidityPool is null)
+                var tokenAddress = request.Log.Contract;
+                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false), CancellationToken.None);
+                if (token is null)
                 {
                     return false;
                 }
 
-                var allowance = await _mediator.Send(new RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery(liquidityPool.LpTokenId,
+                var allowance = await _mediator.Send(new RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery(token.Id,
                                                                                                                   request.Log.Owner,
                                                                                                                   request.Log.Spender,
                                                                                                                   findOrThrow: false), CancellationToken.None);
 
                 if (allowance is null || request.BlockHeight > allowance.ModifiedBlock)
                 {
-                    allowance ??= new AddressAllowance(liquidityPool.LpTokenId, request.Log.Owner, request.Log.Spender,
+                    allowance ??= new AddressAllowance(token.Id, request.Log.Owner, request.Log.Spender,
                                                        request.Log.Amount, request.BlockHeight);
 
                     allowance.SetAllowance(request.Log.Amount, request.BlockHeight);

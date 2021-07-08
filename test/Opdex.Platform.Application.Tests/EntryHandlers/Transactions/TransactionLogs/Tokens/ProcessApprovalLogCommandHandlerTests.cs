@@ -6,9 +6,11 @@ using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Pools;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using System.Dynamic;
@@ -81,8 +83,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
             await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveLiquidityPoolByAddressQuery>(query => query.Address == contractAddress
-                                                                                                                         && !query.FindOrThrow),
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(query => query.Address == contractAddress
+                                                                                                   && !query.FindOrThrow),
                                                        CancellationToken.None), Times.Once);
         }
 
@@ -112,22 +114,22 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
             // Arrange
             var owner = "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi";
             var spender = "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7";
-            var lpTokenId = 5L;
+            var tokenId = 5L;
 
             dynamic log = SetupApprovalLog(owner, spender, "9000000000", "50000000");
             var request = new ProcessApprovalLogCommand(new ApprovalLog(log, "PR71udY85pAcNcitdDfzQevp6Zar9DizHM", 5),
                                                         "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 50000);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistTransactionLogCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new LiquidityPool(5, "PRQ9AZ5ah3tdMqsRMtZKKLp6tQzJjFwPP9", 10, lpTokenId, 20, 5000, 5005));
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Token(tokenId, "tokenAddress", false, "Opdex", "ODX", 8, 100_000_000, "1000000000", 99, 99));
 
             // Act
             await _handler.Handle(request, CancellationToken.None);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery>(
-                query => query.TokenId == lpTokenId
+                query => query.TokenId == tokenId
                       && query.Owner == owner
                       && query.Spender == spender
                       && !query.FindOrThrow
@@ -141,7 +143,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
             var newAmount = "9000000000";
             var owner = "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi";
             var spender = "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7";
-            var lpTokenId = 15L;
+            var tokenId = 15L;
             var block = 50000UL;
 
             dynamic log = SetupApprovalLog(owner, spender, newAmount, oldAmount: "0");
@@ -149,8 +151,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
                                                         "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", block);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistTransactionLogCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new LiquidityPool(3L, "PRQ9AZ5ah3tdMqsRMtZKKLp6tQzJjFwPP9", 10, lpTokenId, 20, 5000, 5005));
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new Token(tokenId, "tokenAddress", false, "Opdex", "ODX", 8, 100_000_000, "1000000000", 99, 99));
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync((AddressAllowance)null);
 
@@ -159,7 +161,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<MakeAddressAllowanceCommand>(
-                command => command.AddressAllowance.TokenId == lpTokenId
+                command => command.AddressAllowance.TokenId == tokenId
                         && command.AddressAllowance.Owner == owner
                         && command.AddressAllowance.Spender == spender
                         && command.AddressAllowance.Allowance == newAmount
@@ -203,8 +205,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
                                                         "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 501);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistTransactionLogCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new LiquidityPool(5, "PRQ9AZ5ah3tdMqsRMtZKKLp6tQzJjFwPP9", 10, 15, 20, 5000, 5005));
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new Token(5, "tokenAddress", false, "Opdex", "ODX", 8, 100_000_000, "1000000000", 99, 99));
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(addressAllowance);
 
@@ -229,8 +231,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
                                                         "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 500000);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistTransactionLogCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new LiquidityPool(5, "PRQ9AZ5ah3tdMqsRMtZKKLp6tQzJjFwPP9", 10, 15, 20, 5000, 5005));
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Token(5, "tokenAddress", false, "Opdex", "ODX", 8, 100_000_000, "1000000000", 99, 99));
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(addressAllowance);
 

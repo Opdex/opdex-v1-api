@@ -39,10 +39,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var tokenQuery = new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: true);
                 var token = await _mediator.Send(tokenQuery, CancellationToken.None);
 
-                var isAllowanceTransfer = request.Sender != request.Log.From;
-                if (isAllowanceTransfer)
+                // Note: This is technically not a very efficient way of checking if a TransferLog is an allowance transaction, however, there is no
+                // clean way of doing so. There are no logs or indicators to accurately know. If the sender is not equal to the token transfer's
+                // From address, check allowances both ways.
+                var isPotentialAllowanceTransfer = request.Sender != request.Log.From;
+                if (isPotentialAllowanceTransfer)
                 {
                     await TryUpdateAddressAllowance(token, request.Log.From, request.Sender, request.BlockHeight);
+                    await TryUpdateAddressAllowance(token, request.Sender, request.Log.From, request.BlockHeight);
                 }
 
                 // Update sender balance
