@@ -1,14 +1,21 @@
 using MediatR;
+using Opdex.Platform.Common.Enums;
+using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Blocks
 {
     public class ProcessLatestBlocksCommand : IRequest<Unit>
     {
-        public ProcessLatestBlocksCommand(bool isDevelopEnv)
+        public ProcessLatestBlocksCommand(NetworkType networkType)
         {
-            IsDevelopEnv = isDevelopEnv;
+            if (networkType != NetworkType.DEVNET && networkType != NetworkType.TESTNET && networkType != NetworkType.MAINNET)
+            {
+                throw new ArgumentOutOfRangeException(nameof(networkType), "Invalid network type.");
+            }
+
+            NetworkType = networkType;
         }
-        
-        public bool IsDevelopEnv { get; }
+
+        public NetworkType NetworkType { get; }
     }
 }
