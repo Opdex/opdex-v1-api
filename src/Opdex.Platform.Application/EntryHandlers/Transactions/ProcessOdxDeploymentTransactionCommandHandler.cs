@@ -14,7 +14,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.ODX;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
@@ -91,7 +91,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 }
 
                 // Get and/or create mining governance
-                var miningGovernanceQuery = new RetrieveMiningGovernanceQuery(findOrThrow: false);
+                var miningGovernanceQuery = new RetrieveMiningGovernanceByTokenIdQuery(odxId, findOrThrow: false);
                 var miningGovernance = await _mediator.Send(miningGovernanceQuery, CancellationToken.None);
 
                 if (miningGovernance == null)

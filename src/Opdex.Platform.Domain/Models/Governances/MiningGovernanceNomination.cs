@@ -10,7 +10,7 @@ namespace Opdex.Platform.Domain.Models.Governances
         {
             if (liquidityPoolId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId), "Liqudity pool id must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId), "Liquidity pool id must be greater than 0.");
             }
 
             if (miningPoolId < 1)

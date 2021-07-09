@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Governances;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Governances
@@ -11,6 +11,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Governances
             MiningGovernance = miningGovernance ?? throw new ArgumentNullException(nameof(miningGovernance));
         }
 
-        public MiningGovernance MiningGovernance { get; set; }
+        public MiningGovernance MiningGovernance { get; }
     }
 }

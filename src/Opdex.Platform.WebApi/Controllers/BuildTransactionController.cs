@@ -270,22 +270,5 @@ namespace Opdex.Platform.WebApi.Controllers
                 throw new NotImplementedException();
             }
         }
-
-        [HttpPost("reward-mining-pools")]
-        public async Task<IActionResult> RewardMiningPools(RewardMiningPoolsRequest request, CancellationToken cancellationToken)
-        {
-            if (_network == NetworkType.DEVNET)
-            {
-                var command = new CreateWalletRewardMiningPoolsTransactionCommand(_context.Wallet, request.Governance);
-
-                var response = await _mediator.Send(command, cancellationToken);
-
-                return Ok(new { TxHash = response });
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
     }
 }

@@ -1,7 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
 {
-    public class SelectMiningGovernanceQueryHandler : IRequestHandler<SelectMiningGovernanceQuery, MiningGovernance>
+    public class SelectMiningGovernanceByAddressQueryHandler : IRequestHandler<SelectMiningGovernanceByAddressQuery, MiningGovernance>
     {
         private static readonly string SqlQuery =
             @$"SELECT
@@ -25,20 +25,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
                 {nameof(MiningGovernanceEntity.CreatedBlock)},
                 {nameof(MiningGovernanceEntity.ModifiedBlock)}
             FROM governance
+            WHERE {nameof(MiningGovernanceEntity.Address)} = @{nameof(SqlParams.Address)}
             LIMIT 1;";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
-        public SelectMiningGovernanceQueryHandler(IDbContext context, IMapper mapper)
+        public SelectMiningGovernanceByAddressQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<MiningGovernance> Handle(SelectMiningGovernanceQuery request, CancellationToken cancellationToken)
+        public async Task<MiningGovernance> Handle(SelectMiningGovernanceByAddressQuery request, CancellationToken cancellationToken)
         {
-            var query = DatabaseQuery.Create(SqlQuery, cancellationToken);
+            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.Address), cancellationToken);
 
             var result = await _context.ExecuteFindAsync<MiningGovernanceEntity>(query);
 
@@ -52,12 +53,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
 
         private sealed class SqlParams
         {
-            internal SqlParams(long tokenId)
+            internal SqlParams(string address)
             {
-                TokenId = tokenId;
+                Address = address;
             }
 
-            public long TokenId { get; }
+            public string Address { get; }
         }
     }
 }

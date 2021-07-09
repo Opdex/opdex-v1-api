@@ -2,7 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
@@ -13,21 +13,21 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
 {
-    public class SelectMiningGovernanceQueryHandlerTests
+    public class SelectMiningGovernanceByTokenIdQueryHandlerTests
     {
         private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectMiningGovernanceQueryHandler _handler;
+        private readonly SelectMiningGovernanceByTokenIdQueryHandler _handler;
 
-        public SelectMiningGovernanceQueryHandlerTests()
+        public SelectMiningGovernanceByTokenIdQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectMiningGovernanceQueryHandler(_dbContext.Object, mapper);
+            _handler = new SelectMiningGovernanceByTokenIdQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
-        public async Task SelectMiningGovernance_Success()
+        public async Task SelectMiningGovernanceByTokenId_Success()
         {
             const long tokenId = 10;
 
@@ -43,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
                 CreatedBlock = 1
             };
 
-            var command = new SelectMiningGovernanceQuery();
+            var command = new SelectMiningGovernanceByTokenIdQuery(tokenId);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
@@ -60,9 +60,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
         }
 
         [Fact]
-        public void SelectMiningGovernance_Throws_NotFoundException()
+        public void SelectMiningGovernanceByTokenId_Throws_NotFoundException()
         {
-            var command = new SelectMiningGovernanceQuery();
+            var command = new SelectMiningGovernanceByTokenIdQuery(10);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<MiningGovernanceEntity>(null));
@@ -71,6 +71,22 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
                 .Should()
                 .Throw<NotFoundException>()
                 .WithMessage($"{nameof(MiningGovernance)} not found.");
+        }
+
+        [Fact]
+        public async Task SelectMiningGovernanceByTokenId_ReturnsNull()
+        {
+            const long tokenId = 10;
+            const bool findOrThrow = false;
+
+            var command = new SelectMiningGovernanceByTokenIdQuery(tokenId, findOrThrow);
+
+            _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult<MiningGovernanceEntity>(null));
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            result.Should().BeNull();
         }
     }
 }

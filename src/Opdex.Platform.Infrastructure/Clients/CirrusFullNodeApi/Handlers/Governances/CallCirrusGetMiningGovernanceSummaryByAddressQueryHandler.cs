@@ -25,11 +25,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Gover
 
         public async Task<MiningGovernanceContractSummary> Handle(CallCirrusGetMiningGovernanceSummaryByAddressQuery request, CancellationToken cancellationToken)
         {
-            var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_MinedToken", new string[0]);
-            var minedTokenResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-            var minedToken = minedTokenResponse.DeserializeValue<string>();
-
-            localCall.MethodName = "get_MiningPoolReward";
+            var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_MiningPoolReward", new string[0]);
             var miningPoolRewardResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
             var miningPoolReward = miningPoolRewardResponse.DeserializeValue<string>();
 
@@ -45,7 +41,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Gover
             var nominationPeriodEndResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
             var nominationPeriodEnd = nominationPeriodEndResponse.DeserializeValue<ulong>();
 
-            return new MiningGovernanceContractSummary(request.Address, minedToken, nominationPeriodEnd, miningPoolsFunded, miningPoolReward, miningDuration);
+            return new MiningGovernanceContractSummary(request.Address, nominationPeriodEnd, miningPoolsFunded, miningPoolReward, miningDuration);
         }
     }
 }

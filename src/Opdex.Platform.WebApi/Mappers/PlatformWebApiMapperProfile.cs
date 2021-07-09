@@ -1,12 +1,14 @@
 using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
+using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Responses.Governances;
 using Opdex.Platform.WebApi.Models.Responses.Markets;
 using Opdex.Platform.WebApi.Models.Responses.OHLC;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
@@ -125,6 +127,17 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token));
+
+            CreateMap<MiningGovernanceDto, MiningGovernanceResponseModel>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.MinedToken, opt => opt.MapFrom(src => src.MinedToken))
+                .ForMember(dest => dest.PeriodEndBlock, opt => opt.MapFrom(src => src.PeriodEndBlock))
+                .ForMember(dest => dest.PeriodRemainingBlocks, opt => opt.MapFrom(src => src.PeriodRemainingBlocks))
+                .ForMember(dest => dest.PeriodBlockDuration, opt => opt.MapFrom(src => src.PeriodBlockDuration))
+                .ForMember(dest => dest.MiningPoolRewardPerPeriod, opt => opt.MapFrom(src => src.MiningPoolRewardPerPeriod.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.PeriodsUntilRewardReset, opt => opt.MapFrom(src => src.PeriodsUntilRewardReset))
+                .ForMember(dest => dest.TotalRewardsPerPeriod, opt => opt.MapFrom(src => src.TotalRewardsPerPeriod.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForAllOtherMembers(opt => opt.Ignore());
         }
 
         private static ReservesResponseModel MapReserves(ReservesDto reservesDto, int srcTokenDecimals)

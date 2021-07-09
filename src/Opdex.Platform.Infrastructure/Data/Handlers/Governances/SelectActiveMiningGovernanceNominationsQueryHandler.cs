@@ -1,10 +1,9 @@
 using AutoMapper;
 using MediatR;
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Domain.Models.Governances;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
 using System;
 using System.Collections.Generic;
@@ -26,8 +25,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
                 {nameof(MiningGovernanceNominationEntity.CreatedBlock)},
                 {nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
             FROM governance_nomination
-            WHERE
-                {nameof(MiningGovernanceNominationEntity.IsNominated)} = true;";
+            WHERE {nameof(MiningGovernanceNominationEntity.IsNominated)} = true
+            LIMIT {GovernanceConstants.MaxNominations};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;

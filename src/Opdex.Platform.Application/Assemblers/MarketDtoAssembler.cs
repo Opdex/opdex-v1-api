@@ -35,7 +35,7 @@ namespace Opdex.Platform.Application.Assemblers
         {
             var marketDto = _mapper.Map<MarketDto>(market);
 
-            var now = DateTime.UtcNow;
+            var now = DateTime.UtcNow.ToEndOf(SnapshotType);;
             var yesterday = now.Subtract(TimeSpan.FromDays(1)).ToStartOf(SnapshotType);
 
             // get staking token if necessary
@@ -44,7 +44,7 @@ namespace Opdex.Platform.Application.Assemblers
                 : null;
 
             // Get yesterday and today's snapshots
-            var marketSnapshots = await _mediator.Send(new RetrieveMarketSnapshotsWithFilterQuery(market.Id, now, yesterday, SnapshotType));
+            var marketSnapshots = await _mediator.Send(new RetrieveMarketSnapshotsWithFilterQuery(market.Id, yesterday, now, SnapshotType));
             var marketSnapshotList = marketSnapshots.ToList();
             var currentMarketSnapshot = marketSnapshotList.FirstOrDefault();
             var previousMarketSnapshot = marketSnapshotList.LastOrDefault();
