@@ -40,13 +40,12 @@ namespace Opdex.Platform.Application.Assemblers
             {
                 Address = governance.Address,
                 MinedToken = tokenDto,
-                NominationPeriodEnd = governance.NominationPeriodEnd,
-                RemainingNominationPeriodBlocks = remainingNominationPeriodBlocks,
-                MiningDuration = governance.MiningDuration,
-                MiningPoolsFunded = governance.MiningPoolsFunded,
-                MiningPoolReward = governance.MiningPoolReward,
-                NominationPeriodsUntilReset = (miningPoolsPerYear - governance.MiningPoolsFunded) / maxNominations,
-                TotalRewardPerPeriod = (governance.MiningPoolReward.ToBigInteger() * maxNominations).ToString()
+                PeriodEndBlock = governance.NominationPeriodEnd,
+                PeriodRemainingBlocks = remainingNominationPeriodBlocks,
+                PeriodBlockDuration = governance.MiningDuration,
+                MiningPoolRewardPerPeriod = governance.MiningPoolReward,
+                PeriodsUntilRewardReset = (miningPoolsPerYear - governance.MiningPoolsFunded) / maxNominations,
+                TotalRewardsPerPeriod = (governance.MiningPoolReward.ToBigInteger() * maxNominations).ToString()
             };
         }
     }

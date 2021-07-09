@@ -2,7 +2,6 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
@@ -16,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
 {
     public class SelectMiningGovernanceByAddressQueryHandlerTests
     {
- private readonly Mock<IDbContext> _dbContext;
+        private readonly Mock<IDbContext> _dbContext;
         private readonly SelectMiningGovernanceByAddressQueryHandler _handler;
 
         public SelectMiningGovernanceByAddressQueryHandlerTests()

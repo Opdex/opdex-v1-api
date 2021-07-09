@@ -131,12 +131,12 @@ namespace Opdex.Platform.WebApi.Mappers
             CreateMap<MiningGovernanceDto, MiningGovernanceResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.MinedToken, opt => opt.MapFrom(src => src.MinedToken))
-                .ForMember(dest => dest.NominationPeriodEndBlock, opt => opt.MapFrom(src => src.NominationPeriodEnd))
-                .ForMember(dest => dest.RemainingNominationPeriodBlocks, opt => opt.MapFrom(src => src.RemainingNominationPeriodBlocks))
-                .ForMember(dest => dest.NominationDuration, opt => opt.MapFrom(src => src.MiningDuration))
-                .ForMember(dest => dest.MiningPoolReward, opt => opt.MapFrom(src => src.MiningPoolReward.InsertDecimal(TokenConstants.Opdex.Decimals)))
-                .ForMember(dest => dest.NominationPeriodsUntilReset, opt => opt.MapFrom(src => src.NominationPeriodsUntilReset))
-                .ForMember(dest => dest.TotalRewardPerPeriod, opt => opt.MapFrom(src => src.TotalRewardPerPeriod.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.PeriodEndBlock, opt => opt.MapFrom(src => src.PeriodEndBlock))
+                .ForMember(dest => dest.PeriodRemainingBlocks, opt => opt.MapFrom(src => src.PeriodRemainingBlocks))
+                .ForMember(dest => dest.PeriodBlockDuration, opt => opt.MapFrom(src => src.PeriodBlockDuration))
+                .ForMember(dest => dest.MiningPoolRewardPerPeriod, opt => opt.MapFrom(src => src.MiningPoolRewardPerPeriod.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.PeriodsUntilRewardReset, opt => opt.MapFrom(src => src.PeriodsUntilRewardReset))
+                .ForMember(dest => dest.TotalRewardsPerPeriod, opt => opt.MapFrom(src => src.TotalRewardsPerPeriod.InsertDecimal(TokenConstants.Opdex.Decimals)))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
 
