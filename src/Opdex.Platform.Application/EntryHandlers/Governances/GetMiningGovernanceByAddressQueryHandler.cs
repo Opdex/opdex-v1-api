@@ -3,7 +3,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Governances;
 using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Governances;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

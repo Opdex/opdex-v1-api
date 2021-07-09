@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
@@ -13,29 +14,29 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
 {
-    public class SelectMiningGovernanceByTokenIdQueryHandlerTests
+    public class SelectMiningGovernanceByAddressQueryHandlerTests
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectMiningGovernanceByTokenIdQueryHandler _handler;
+ private readonly Mock<IDbContext> _dbContext;
+        private readonly SelectMiningGovernanceByAddressQueryHandler _handler;
 
-        public SelectMiningGovernanceByTokenIdQueryHandlerTests()
+        public SelectMiningGovernanceByAddressQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectMiningGovernanceByTokenIdQueryHandler(_dbContext.Object, mapper);
+            _handler = new SelectMiningGovernanceByAddressQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
-        public async Task SelectMiningGovernanceByTokenId_Success()
+        public async Task SelectMiningGovernanceByAddress_Success()
         {
-            const long tokenId = 10;
+            const string address = "someAddress";
 
             var expectedEntity = new MiningGovernanceEntity
             {
                 Id = 123454,
-                Address = "Address",
-                TokenId = tokenId,
+                Address = address,
+                TokenId = 10,
                 NominationPeriodEnd = 999,
                 MiningDuration = 1444,
                 MiningPoolsFunded = 10,
@@ -43,7 +44,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
                 CreatedBlock = 1
             };
 
-            var command = new SelectMiningGovernanceByTokenIdQuery(tokenId);
+            var command = new SelectMiningGovernanceByAddressQuery(address);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
@@ -60,9 +61,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
         }
 
         [Fact]
-        public void SelectMiningGovernanceByTokenId_Throws_NotFoundException()
+        public void SelectMiningGovernanceByAddress_Throws_NotFoundException()
         {
-            var command = new SelectMiningGovernanceByTokenIdQuery(10);
+            var command = new SelectMiningGovernanceByAddressQuery("SomeAddress");
 
             _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<MiningGovernanceEntity>(null));
@@ -74,12 +75,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
         }
 
         [Fact]
-        public async Task SelectMiningGovernanceByTokenId_ReturnsNull()
+        public async Task SelectMiningGovernanceByAddress_ReturnsNull()
         {
-            const long tokenId = 10;
+            const string address = "someAddress";
             const bool findOrThrow = false;
 
-            var command = new SelectMiningGovernanceByTokenIdQuery(tokenId, findOrThrow);
+            var command = new SelectMiningGovernanceByAddressQuery(address, findOrThrow);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<MiningGovernanceEntity>(null));

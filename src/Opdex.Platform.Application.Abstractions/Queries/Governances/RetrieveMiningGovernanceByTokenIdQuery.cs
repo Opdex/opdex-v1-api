@@ -1,5 +1,5 @@
 using Opdex.Platform.Common.Queries;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Governances;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Governances

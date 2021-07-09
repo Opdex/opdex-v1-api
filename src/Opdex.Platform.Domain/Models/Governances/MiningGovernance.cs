@@ -1,9 +1,8 @@
-using System;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Blocks;
-using Opdex.Platform.Domain.Models.Governances;
+using System;
 
-namespace Opdex.Platform.Domain.Models
+namespace Opdex.Platform.Domain.Models.Governances
 {
     public class MiningGovernance : BlockAudit
     {
@@ -24,17 +23,17 @@ namespace Opdex.Platform.Domain.Models
         {
             if (!address.HasValue())
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(address), $"{nameof(address)} must not be null or empty.");
             }
 
             if (miningDuration < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(miningDuration));
+                throw new ArgumentOutOfRangeException(nameof(miningDuration), $"{nameof(miningDuration)} must be greater than 0.");
             }
 
             if (tokenId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(tokenId));
+                throw new ArgumentOutOfRangeException(nameof(tokenId), $"{nameof(tokenId)} must be greater than 0.");
             }
 
             Address = address;
