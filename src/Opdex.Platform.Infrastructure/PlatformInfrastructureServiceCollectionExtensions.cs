@@ -79,6 +79,10 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Snapshots;
+using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -246,6 +250,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetBlockHashByHeightQuery, string>, CallCirrusGetBlockHashByHeightQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, string>, CallCirrusGetSrcTokenBalanceQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetMiningGovernanceSummaryNominationsQuery, IEnumerable<MiningGovernanceNominationCirrusDto>>, CallCirrusGetMiningGovernanceSummaryNominationsQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetVaultTotalSupplyQuery, string>, CallCirrusGetVaultTotalSupplyQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodQuery, LocalCallResponseDto>, CallCirrusLocalCallSmartContractMethodQueryHandler>();
 
             // Commands

@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.ODX
 {
     public class Vault : BlockAudit
     {
-        public Vault(string address, long tokenId, string owner, ulong genesis, ulong createdBlock) : base(createdBlock)
+        public Vault(string address, long tokenId, string owner, ulong genesis, string unassignedSupply, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
             {
@@ -29,13 +29,19 @@ namespace Opdex.Platform.Domain.Models.ODX
                 throw new ArgumentNullException(nameof(genesis), "Genesis must be greater than 0.");
             }
 
+            if (!unassignedSupply.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException(nameof(unassignedSupply), "Unassigned supply must only contain numeric digits.");
+            }
+
             Address = address;
             TokenId = tokenId;
             Owner = owner;
             Genesis = genesis;
+            UnassignedSupply = unassignedSupply;
         }
 
-        public Vault(long id, string address, long tokenId, string owner, ulong genesis, ulong createdBlock, ulong modifiedBlock)
+        public Vault(long id, string address, long tokenId, string owner, ulong genesis, string unassignedSupply, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -43,6 +49,7 @@ namespace Opdex.Platform.Domain.Models.ODX
             TokenId = tokenId;
             Owner = owner;
             Genesis = genesis;
+            UnassignedSupply = unassignedSupply;
         }
 
         public long Id { get; }
@@ -50,10 +57,22 @@ namespace Opdex.Platform.Domain.Models.ODX
         public long TokenId { get; }
         public string Owner { get; private set; }
         public ulong Genesis { get; }
+        public string UnassignedSupply { get; private set; }
 
         public void SetOwner(ChangeVaultOwnerLog log, ulong block)
         {
             Owner = log.To;
+            SetModifiedBlock(block);
+        }
+
+        public void SetUnassignedSupply(string unassignedSupply, ulong block)
+        {
+            if (!unassignedSupply.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException(nameof(unassignedSupply), "Unassigned supply must only contain numeric digits.");
+            }
+
+            UnassignedSupply = unassignedSupply;
             SetModifiedBlock(block);
         }
     }

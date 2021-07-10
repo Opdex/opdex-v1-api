@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
+using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
@@ -31,31 +32,27 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
-                var vaultQuery = new RetrieveVaultQuery(findOrThrow: true);
-                var vault = await _mediator.Send(vaultQuery, CancellationToken.None);
 
-                var tokenQuery = new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true);
-                var token = await _mediator.Send(tokenQuery, CancellationToken.None);
+                var vault = await _mediator.Send(new RetrieveVaultQuery(findOrThrow: true));
+                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 if (vault.TokenId != token.Id)
                 {
                     return true;
                 }
 
-                var blockHeight = request.BlockHeight;
-                var vaultAmount = request.Log.VaultAmount;
-                var miningAmount = request.Log.MiningAmount;
+                if (request.BlockHeight >= vault.ModifiedBlock)
+                {
+                    var totalSupply = await _mediator.Send(new RetrieveCirrusVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
+
+                    vault.SetUnassignedSupply(totalSupply, request.BlockHeight);
+
+                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault));
+                    if (vaultUpdates == 0) return false;
+                }
+
                 var periodIndex = request.Log.PeriodIndex;
-                var nextPeriodIndex = periodIndex + 1;
-                
-                // Get the period duration (per year) from the smart contract dynamically
-                var periodDurationRequest = new RetrieveCirrusLocalCallSmartContractQuery(token.Address, "get_PeriodDuration");
-                var periodDurationSerialized = await _mediator.Send(periodDurationRequest, CancellationToken.None);
-                var periodDuration = periodDurationSerialized.DeserializeValue<ulong>();
-                
-                var nextDistributionBlock = vault.Genesis + (periodDuration * nextPeriodIndex);
-                
+
                 var latestDistributionQuery = new RetrieveLatestTokenDistributionQuery(findOrThrow: false);
                 var latestDistribution = await _mediator.Send(latestDistributionQuery, CancellationToken.None);
 
@@ -64,6 +61,17 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return true;
                 }
 
+                var blockHeight = request.BlockHeight;
+                var vaultAmount = request.Log.VaultAmount;
+                var miningAmount = request.Log.MiningAmount;
+                var nextPeriodIndex = periodIndex + 1;
+
+                // Get the period duration (per year) from the smart contract dynamically
+                var periodDurationRequest = new RetrieveCirrusLocalCallSmartContractQuery(token.Address, "get_PeriodDuration");
+                var periodDurationSerialized = await _mediator.Send(periodDurationRequest, CancellationToken.None);
+                var periodDuration = periodDurationSerialized.DeserializeValue<ulong>();
+
+                var nextDistributionBlock = vault.Genesis + (periodDuration * nextPeriodIndex);
                 var distribution = new TokenDistribution(vaultAmount, miningAmount, (int)periodIndex, blockHeight, nextDistributionBlock, blockHeight);
 
                 return await _mediator.Send(new MakeTokenDistributionCommand(distribution), CancellationToken.None);
@@ -71,7 +79,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(DistributionLog)}");
-               
+
                 return false;
             }
         }
