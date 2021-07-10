@@ -8,7 +8,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
 {
@@ -36,7 +35,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 if (request.BlockHeight >= vault.ModifiedBlock)
                 {
-                    var totalSupply = await _mediator.Send(new CallCirrusGetVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
+                    var totalSupply = await _mediator.Send(new RetrieveCirrusVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
 
                     vault.SetUnassignedSupply(totalSupply, request.BlockHeight);
 

@@ -31,7 +31,7 @@ namespace Opdex.Platform.Domain.Models.ODX
 
             if (!unassignedSupply.IsNumeric())
             {
-                throw new ArgumentOutOfRangeException(nameof(unassignedSupply), "Value must only contain numeric digits.");
+                throw new ArgumentOutOfRangeException(nameof(unassignedSupply), "Unassigned supply must only contain numeric digits.");
             }
 
             Address = address;
@@ -67,6 +67,11 @@ namespace Opdex.Platform.Domain.Models.ODX
 
         public void SetUnassignedSupply(string unassignedSupply, ulong block)
         {
+            if (!unassignedSupply.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException(nameof(unassignedSupply), "Unassigned supply must only contain numeric digits.");
+            }
+
             UnassignedSupply = unassignedSupply;
             SetModifiedBlock(block);
         }
