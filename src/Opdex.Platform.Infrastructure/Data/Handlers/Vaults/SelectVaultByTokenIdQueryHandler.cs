@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 {
-    public class SelectVaultByAddressQueryHandler : IRequestHandler<SelectVaultByAddressQuery, Vault>
+    public class SelectVaultByTokenIdQueryHandler : IRequestHandler<SelectVaultByTokenIdQuery, Vault>
     {
         private static readonly string SqlQuery =
             @$"SELECT
@@ -24,21 +24,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
                 {nameof(VaultEntity.CreatedBlock)},
                 {nameof(VaultEntity.ModifiedBlock)}
             FROM vault
-            WHERE {nameof(VaultEntity.Address)} = @{nameof(VaultEntity.Address)}
+            WHERE {nameof(VaultEntity.TokenId)} = @{nameof(VaultEntity.TokenId)}
             LIMIT 1;";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
-        public SelectVaultByAddressQueryHandler(IDbContext context, IMapper mapper)
+        public SelectVaultByTokenIdQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<Vault> Handle(SelectVaultByAddressQuery request, CancellationToken cancellationToken)
+        public async Task<Vault> Handle(SelectVaultByTokenIdQuery request, CancellationToken cancellationToken)
         {
-            var queryParams = new SqlParams(request.Address);
+            var queryParams = new SqlParams(request.TokenId);
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
             var result = await _context.ExecuteFindAsync<VaultEntity>(query);
@@ -53,12 +53,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
         private sealed class SqlParams
         {
-            internal SqlParams(string address)
+            internal SqlParams(long tokenId)
             {
-                Address = address;
+                TokenId = tokenId;
             }
 
-            public string Address { get; }
+            public long TokenId { get; }
         }
     }
 }

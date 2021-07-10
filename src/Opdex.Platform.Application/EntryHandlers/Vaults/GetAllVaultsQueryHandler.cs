@@ -24,14 +24,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
 
         public async Task<IEnumerable<VaultDto>> Handle(GetAllVaultsQuery request, CancellationToken cancellationToken)
         {
-            var vaultDto = await _mediator.Send(new RetrieveVaultQuery(findOrThrow: false), cancellationToken);
-            if (vaultDto is null)
+            var dtos = await _mediator.Send(new RetrieveAllVaultsQuery(), cancellationToken);
+            if (!dtos.Any())
             {
                 return Enumerable.Empty<VaultDto>();
             }
 
-            var vault = await _vaultAssembler.Assemble(vaultDto);
-            return new VaultDto[] { vault };
+            return await Task.WhenAll(dtos.Select(dto => _vaultAssembler.Assemble(dto)));
         }
     }
 }

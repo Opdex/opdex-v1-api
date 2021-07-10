@@ -186,7 +186,7 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
-                .ForAllOtherMembers(opt => opt.Ignore()); // TODO: UnassignedSupply
+                .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<Transaction, TransactionDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

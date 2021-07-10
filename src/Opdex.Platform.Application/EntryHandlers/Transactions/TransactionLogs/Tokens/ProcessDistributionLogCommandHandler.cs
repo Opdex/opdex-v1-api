@@ -33,13 +33,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var vault = await _mediator.Send(new RetrieveVaultQuery(findOrThrow: true));
                 var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true));
-
-                if (vault.TokenId != token.Id)
-                {
-                    return true;
-                }
+                var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(token.Id, findOrThrow: true));
 
                 if (request.BlockHeight >= vault.ModifiedBlock)
                 {

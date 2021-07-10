@@ -13,7 +13,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
     public class ProcessChangeVaultOwnerLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessChangeVaultOwnerLogCommand, bool>
     {
         private readonly ILogger<ProcessChangeVaultOwnerLogCommandHandler> _logger;
-        
+
         public ProcessChangeVaultOwnerLogCommandHandler(IMediator mediator, ILogger<ProcessChangeVaultOwnerLogCommandHandler> logger)
             : base(mediator)
         {
@@ -29,21 +29,20 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
-                var vaultQuery = new RetrieveVaultQuery(findOrThrow: true);
-                var vault = await _mediator.Send(vaultQuery, CancellationToken.None);
-                
+
+                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: true));
+
                 vault.SetOwner(request.Log, request.BlockHeight);
 
                 var vaultCommand = new MakeVaultCommand(vault);
-                var vaultId = await _mediator.Send(vaultCommand, CancellationToken.None);
+                var vaultId = await _mediator.Send(vaultCommand);
 
                 return vaultId > 1;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(ChangeVaultOwnerLog)}");
-               
+
                 return false;
             }
         }

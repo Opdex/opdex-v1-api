@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public async Task Assemble_VaultDto_Map()
         {
             // Arrange
-            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, 505, 510);
+            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, "100000000", 505, 510);
 
             // Act
             try
@@ -50,7 +50,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public async Task Assemble_RetrieveTokenByIdQuery_Send()
         {
             // Arrange
-            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, 505, 510);
+            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, "100000000", 505, 510);
 
             // Act
             try
@@ -68,7 +68,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public async Task Assemble_RetrieveAddressBalanceByTokenIdAndOwnerQuery_Send()
         {
             // Arrange
-            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, 505, 510);
+            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, "100000000", 505, 510);
             var token = new Token(15, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, "21000000", 5, 15);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);

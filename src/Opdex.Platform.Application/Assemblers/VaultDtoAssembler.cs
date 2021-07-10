@@ -28,11 +28,8 @@ namespace Opdex.Platform.Application.Assemblers
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(source.TokenId));
             var vaultBalance = await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(token.Id, source.Address));
 
-            // TODO: UnassignedSupply
-            string unassignedSupply = "5000000000";
-
             vaultDto.TokensLocked = vaultBalance.Balance.InsertDecimal(TokenConstants.Cirrus.Decimals);
-            vaultDto.TokensUnassigned = unassignedSupply.InsertDecimal(token.Decimals);
+            vaultDto.TokensUnassigned = source.UnassignedSupply.InsertDecimal(token.Decimals);
             vaultDto.LockedToken = token.Address;
             return vaultDto;
         }
