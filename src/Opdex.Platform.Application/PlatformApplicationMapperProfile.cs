@@ -27,6 +27,8 @@ using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.Pools.Snapshots;
 using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
+using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Application.Abstractions.Models.Vaults;
 
 namespace Opdex.Platform.Application
 {
@@ -179,6 +181,12 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
                 .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<Vault, VaultDto>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
+                .ForAllOtherMembers(opt => opt.Ignore()); // TODO: UnassignedSupply
 
             CreateMap<Transaction, TransactionDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

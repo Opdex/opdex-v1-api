@@ -200,6 +200,7 @@ namespace Opdex.Platform.Infrastructure
 
             // Vault
             services.AddTransient<IRequestHandler<SelectVaultQuery, Vault>, SelectVaultQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectVaultByAddressQuery, Vault>, SelectVaultByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesByOwnerAddressQueryHandler>();
 
             // Addresses

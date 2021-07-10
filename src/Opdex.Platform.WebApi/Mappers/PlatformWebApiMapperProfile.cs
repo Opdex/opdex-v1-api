@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
+using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Models;
@@ -13,6 +14,7 @@ using Opdex.Platform.WebApi.Models.Responses.Markets;
 using Opdex.Platform.WebApi.Models.Responses.OHLC;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
+using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
 namespace Opdex.Platform.WebApi.Mappers
@@ -137,6 +139,15 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.MiningPoolRewardPerPeriod, opt => opt.MapFrom(src => src.MiningPoolRewardPerPeriod.InsertDecimal(TokenConstants.Opdex.Decimals)))
                 .ForMember(dest => dest.PeriodsUntilRewardReset, opt => opt.MapFrom(src => src.PeriodsUntilRewardReset))
                 .ForMember(dest => dest.TotalRewardsPerPeriod, opt => opt.MapFrom(src => src.TotalRewardsPerPeriod.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<VaultDto, VaultResponseModel>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
+                .ForMember(dest => dest.TokensLocked, opt => opt.MapFrom(src => src.TokensLocked))
+                .ForMember(dest => dest.TokensUnassigned, opt => opt.MapFrom(src => src.TokensUnassigned))
+                .ForMember(dest => dest.LockedToken, opt => opt.MapFrom(src => src.LockedToken))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
 
