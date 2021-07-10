@@ -24,18 +24,18 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
                 {nameof(VaultCertificateEntity.Revoked)},
                 {nameof(VaultCertificateEntity.CreatedBlock)},
                 {nameof(VaultCertificateEntity.ModifiedBlock)}
-            FROM odx_vault_certificate
+            FROM vault_certificate
             WHERE {nameof(VaultCertificateEntity.Owner)} = @{nameof(SqlParams.Owner)};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
-        
+
         public SelectVaultCertificatesByOwnerAddressQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-        
+
         public async Task<IEnumerable<VaultCertificate>> Handle(SelectVaultCertificatesByOwnerAddressQuery request, CancellationToken cancellationToken)
         {
             var queryParams = new SqlParams(request.OwnerAddress);

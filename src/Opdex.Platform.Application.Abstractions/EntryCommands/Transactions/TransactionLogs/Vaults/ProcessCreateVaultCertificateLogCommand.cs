@@ -1,5 +1,4 @@
 using System;
-using MediatR;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 
@@ -11,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Tra
         {
             Log = log as CreateVaultCertificateLog ?? throw new ArgumentNullException(nameof(log));
         }
-        
+
         public CreateVaultCertificateLog Log { get; }
     }
 }

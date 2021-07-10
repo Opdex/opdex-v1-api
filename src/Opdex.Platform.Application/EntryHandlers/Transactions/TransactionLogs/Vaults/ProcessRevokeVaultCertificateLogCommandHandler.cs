@@ -8,6 +8,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
 {
@@ -15,7 +16,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
     {
         private readonly ILogger<ProcessRevokeVaultCertificateLogCommandHandler> _logger;
 
-        public ProcessRevokeVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessRevokeVaultCertificateLogCommandHandler> logger) 
+        public ProcessRevokeVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessRevokeVaultCertificateLogCommandHandler> logger)
             : base(mediator)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -30,23 +31,38 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
-                var certificatesQuery = new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner);
-                var certificates = await _mediator.Send(certificatesQuery, CancellationToken.None);
-                
-                // Todo: Maybe create a specific query for this and a unique index on (owner, vestedBlock) 
-                var certificateToUpdate = certificates.Single(c => c.VestedBlock == request.Log.VestedBlock);
-                
-                certificateToUpdate.Revoke(request.Log, request.BlockHeight);
 
-                var certificateCommand = new MakeVaultCertificateCommand(certificateToUpdate);
-                
-                return await _mediator.Send(certificateCommand, CancellationToken.None);
+                var vault = await _mediator.Send(new RetrieveVaultQuery(findOrThrow: true));
+
+                if (request.BlockHeight >= vault.ModifiedBlock)
+                {
+                    var totalSupply = await _mediator.Send(new RetrieveCirrusVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
+
+                    vault.SetUnassignedSupply(totalSupply, request.BlockHeight);
+
+                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault));
+                    if (vaultUpdates == 0) return false;
+                }
+
+                var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
+
+                // Todo: Maybe create a specific query for this and a unique index on (owner, vestedBlock)
+                var certificateToUpdate = certificates.Single(c => c.VestedBlock == request.Log.VestedBlock);
+
+                if (request.BlockHeight >= certificateToUpdate.ModifiedBlock)
+                {
+                    certificateToUpdate.Revoke(request.Log, request.BlockHeight);
+
+                    var certificateUpdated = await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate));
+                    return certificateUpdated;
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(RevokeVaultCertificateLog)}");
-               
+
                 return false;
             }
         }

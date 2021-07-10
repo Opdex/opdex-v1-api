@@ -20,9 +20,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
                 {nameof(VaultEntity.TokenId)},
                 {nameof(VaultEntity.Owner)},
                 {nameof(VaultEntity.Genesis)},
+                {nameof(VaultEntity.UnassignedSupply)},
                 {nameof(VaultEntity.CreatedBlock)},
                 {nameof(VaultEntity.ModifiedBlock)}
-            FROM odx_vault
+            FROM vault
             LIMIT 1;";
 
         private readonly IDbContext _context;

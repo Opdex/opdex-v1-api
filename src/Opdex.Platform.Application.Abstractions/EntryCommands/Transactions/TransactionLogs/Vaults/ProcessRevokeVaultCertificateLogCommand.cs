@@ -11,7 +11,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Tra
         {
             Log = log as RevokeVaultCertificateLog ?? throw new ArgumentNullException(nameof(log));
         }
-        
+
         public RevokeVaultCertificateLog Log { get; }
     }
 }
