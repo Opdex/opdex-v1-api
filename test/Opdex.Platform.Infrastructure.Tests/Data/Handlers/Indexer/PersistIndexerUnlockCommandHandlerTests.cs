@@ -1,13 +1,13 @@
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
-using Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
+using Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
 {
     public class PersistIndexerUnlockCommandHandlerTests
     {
@@ -27,10 +27,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
             var token = new CancellationTokenSource().Token;
 
             // Act
-            var result = await _handler.Handle(new PersistIndexerUnlockCommand(), token);
+            var result = await _handler.Handle(new PersistIndexerUnlockCommand(), default);
 
             // Assert
-            _dbContext.Verify(callTo => callTo.ExecuteCommandAsync(It.Is<DatabaseQuery>(q => q.Token == token)), Times.Once);
+            _dbContext.Verify(callTo => callTo.ExecuteCommandAsync(It.Is<DatabaseQuery>(q => q.Token == default)), Times.Once);
         }
 
         [Fact]

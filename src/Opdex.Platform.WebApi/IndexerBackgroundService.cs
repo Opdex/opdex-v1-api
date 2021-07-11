@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Commands.Blocks;
+using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
+using Opdex.Platform.Application.Abstractions.Queries.Indexer;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Exceptions;
@@ -29,31 +30,48 @@ namespace Opdex.Platform.WebApi
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var started = false;
+            var unavailable = false;
+
+            using var scope = _services.CreateScope();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
             while (!cancellationToken.IsCancellationRequested)
             {
                 if (started)
                 {
-                    var seconds  = new Random().Next(8, 13); // 8 to 12 seconds
+                    // delay 30 seconds when indexing services are unavailable (db flag off)
+                    // delay 8 to 12 seconds when indexing is available
+                    var seconds = unavailable ? 30 : new Random().Next(8, 13);
 
                     await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken);
                 }
 
                 try
                 {
-                    using var scope = _services.CreateScope();
-                    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                    var indexLock = await mediator.Send(new RetrieveIndexerLockQuery(), cancellationToken);
+                    if (!indexLock.Available)
+                    {
+                        _logger.LogWarning("Indexing services unavailable");
+                        unavailable = true;
+                        continue;
+                    }
+
+                    if (indexLock.Locked)
+                    {
+                        throw new IndexingAlreadyRunningException();
+                    }
 
                     await mediator.Send(new MakeIndexerLockCommand());
 
                     await mediator.Send(new ProcessLatestBlocksCommand(_network), cancellationToken);
 
-                    // Todo: This is going to lock on failure, maybe that's a good thing
                     await mediator.Send(new MakeIndexerUnlockCommand());
+
+                    unavailable = false;
                 }
                 catch (IndexingAlreadyRunningException ex)
                 {
-                    _logger.LogInformation(ex, "Indexer already running");
+                    _logger.LogError(ex, "Indexing already running");
                 }
                 catch (Exception ex)
                 {

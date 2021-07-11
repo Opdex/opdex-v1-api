@@ -1,17 +1,17 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Application.Abstractions.Commands.Blocks;
-using Opdex.Platform.Application.Handlers.Blocks;
+using Opdex.Platform.Application.Abstractions.Commands.Indexer;
+using Opdex.Platform.Application.Handlers.Indexer;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Blocks
+namespace Opdex.Platform.Application.Tests.Handlers.Indexer
 {
     public class MakeIndexerLockCommandHandlerTests
     {
@@ -33,12 +33,12 @@ namespace Opdex.Platform.Application.Tests.Handlers.Blocks
             // Act
             try
             {
-                await _handler.Handle(new MakeIndexerLockCommand(), token);
+                await _handler.Handle(new MakeIndexerLockCommand(), default);
             }
             catch (Exception) { }
 
             // Assert
-            _mediator.Verify(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), token), Times.Once);
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), default), Times.Once);
         }
 
         [Fact]

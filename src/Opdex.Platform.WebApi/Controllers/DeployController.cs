@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Commands.Blocks;
+using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;

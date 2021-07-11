@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Opdex.Platform.Application.Abstractions.Commands.Blocks;
+using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;

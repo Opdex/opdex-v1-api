@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.Commands.Deployers;
 using Opdex.Platform.Application.Abstractions.Commands.Governances;
+using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.Commands.Pools;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
@@ -97,10 +98,12 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
+using Opdex.Platform.Application.Abstractions.Queries.Indexer;
 using Opdex.Platform.Application.EntryHandlers.Governances;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Governances;
 using Opdex.Platform.Application.EntryHandlers.Vaults;
 using Opdex.Platform.Application.Handlers.Governances;
+using Opdex.Platform.Application.Handlers.Indexer;
 using Opdex.Platform.Domain.Models.Governances;
 
 namespace Opdex.Platform.Application
@@ -172,6 +175,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolByLpTokenIdQuery, LiquidityPool>, RetrieveLiquidityPoolByLpTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceByAddressQuery, MiningGovernance>, RetrieveMiningGovernanceByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceByTokenIdQuery, MiningGovernance>, RetrieveMiningGovernanceByTokenIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveIndexerLockQuery, IndexLock>, RetrieveIndexerLockQueryHandler>();
 
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();

@@ -1,12 +1,12 @@
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Commands.Blocks;
+using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Blocks
+namespace Opdex.Platform.Application.Handlers.Indexer
 {
     public class MakeIndexerLockCommandHandler : IRequestHandler<MakeIndexerLockCommand, Unit>
     {
@@ -26,7 +26,8 @@ namespace Opdex.Platform.Application.Handlers.Blocks
                 throw new IndexingAlreadyRunningException();
             }
 
-            _logger.LogDebug("Indexer locked.");
+            _logger.LogDebug("Indexer locked");
+
             return Unit.Value;
         }
     }
