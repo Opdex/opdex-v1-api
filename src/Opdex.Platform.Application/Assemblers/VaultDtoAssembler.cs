@@ -28,7 +28,7 @@ namespace Opdex.Platform.Application.Assemblers
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(source.TokenId));
             var vaultBalance = await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(token.Id, source.Address));
 
-            vaultDto.TokensLocked = vaultBalance.Balance.InsertDecimal(TokenConstants.Cirrus.Decimals);
+            vaultDto.TokensLocked = vaultBalance.Balance.InsertDecimal(token.Decimals);
             vaultDto.TokensUnassigned = source.UnassignedSupply.InsertDecimal(token.Decimals);
             vaultDto.LockedToken = token.Address;
             return vaultDto;

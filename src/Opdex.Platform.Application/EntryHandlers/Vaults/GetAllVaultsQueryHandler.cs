@@ -25,11 +25,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
         public async Task<IEnumerable<VaultDto>> Handle(GetAllVaultsQuery request, CancellationToken cancellationToken)
         {
             var dtos = await _mediator.Send(new RetrieveAllVaultsQuery(), cancellationToken);
-            if (!dtos.Any())
-            {
-                return Enumerable.Empty<VaultDto>();
-            }
-
             return await Task.WhenAll(dtos.Select(dto => _vaultAssembler.Assemble(dto)));
         }
     }
