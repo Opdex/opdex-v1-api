@@ -28,12 +28,12 @@ namespace Opdex.Platform.Application.Tests.Handlers.Indexer
         public async Task Send_PersistIndexerLockCommand()
         {
             // Arrange
-            var token = new CancellationTokenSource().Token;
+            var token = CancellationToken.None;
 
             // Act
             try
             {
-                await _handler.Handle(new MakeIndexerLockCommand(), default);
+                await _handler.Handle(new MakeIndexerLockCommand(), token);
             }
             catch (Exception) { }
 
@@ -45,11 +45,12 @@ namespace Opdex.Platform.Application.Tests.Handlers.Indexer
         public async Task CannotPersistIndexerLock_ThrowIndexerAlreadyRunningException()
         {
             // Arrange
+            var token = CancellationToken.None;
             _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), It.IsAny<CancellationToken>()))
                      .ReturnsAsync(false);
 
             // Act
-            Task Act() => _handler.Handle(new MakeIndexerLockCommand(), default);
+            Task Act() => _handler.Handle(new MakeIndexerLockCommand(), token);
 
             // Assert
             await Assert.ThrowsAsync<IndexingAlreadyRunningException>(Act);
@@ -59,11 +60,12 @@ namespace Opdex.Platform.Application.Tests.Handlers.Indexer
         public async Task CanPersistIndexerLock_DoNotThrow()
         {
             // Arrange
+            var token = CancellationToken.None;
             _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), It.IsAny<CancellationToken>()))
                      .ReturnsAsync(true);
 
             // Act
-            Task Act() => _handler.Handle(new MakeIndexerLockCommand(), default);
+            Task Act() => _handler.Handle(new MakeIndexerLockCommand(), token);
             var exception = await Record.ExceptionAsync(Act);
 
             // Assert

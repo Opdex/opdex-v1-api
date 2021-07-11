@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Blocks
@@ -8,7 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Blocks
     {
         public ProcessLatestBlocksCommand(NetworkType networkType)
         {
-            if (networkType != NetworkType.DEVNET && networkType != NetworkType.TESTNET && networkType != NetworkType.MAINNET)
+            if (!networkType.IsValid())
             {
                 throw new ArgumentOutOfRangeException(nameof(networkType), "Invalid network type.");
             }

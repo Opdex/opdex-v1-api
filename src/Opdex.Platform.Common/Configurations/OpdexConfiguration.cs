@@ -16,9 +16,7 @@ namespace Opdex.Platform.Common.Configurations
                 throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(ConnectionString)} must not be null or empty.");
             }
 
-            if (Network != NetworkType.DEVNET &&
-                Network != NetworkType.TESTNET &&
-                Network != NetworkType.MAINNET)
+            if (!Network.IsValid())
             {
                 throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(Network)} must be a valid network type.");
             }

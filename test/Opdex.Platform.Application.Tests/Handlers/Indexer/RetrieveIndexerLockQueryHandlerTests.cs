@@ -25,7 +25,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Indexer
         public async Task Send_SelectIndexerUnlockCommand()
         {
             // Arrange
-            var token = new CancellationTokenSource().Token;
+            var token = CancellationToken.None;
 
             // Act
             try

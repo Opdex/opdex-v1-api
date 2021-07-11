@@ -64,7 +64,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 if (periodIndex == 0)
                 {
                     var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id));
-                    await InitializeNominations(miningGovernance.Address);
+                    await InitializeNominations(miningGovernance.Address, request.BlockHeight);
                 }
 
                 // Get the period duration (per year) from the smart contract
@@ -97,10 +97,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
         }
 
-        private async Task InitializeNominations(string miningGovernance)
+        private async Task InitializeNominations(string miningGovernance, ulong blockHeight)
         {
-            var block = await _mediator.Send(new RetrieveLatestBlockQuery());
-
             var nominatedPools = await _mediator.Send(new RetrieveCirrusMiningGovernanceNominationsQuery(miningGovernance));
 
             var nominatedLiquidityPools = await Task.WhenAll(
@@ -113,7 +111,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                                                                                                        miningPool.Id,
                                                                                                        true,
                                                                                                        "1",
-                                                                                                       block.Height));
+                                                                                                       blockHeight));
 
             await Task.WhenAll(
                 nominations.Select(nomination => _mediator.Send(new MakeMiningGovernanceNominationCommand(nomination))));

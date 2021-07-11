@@ -26,24 +26,24 @@ namespace Opdex.Platform.Application.Tests.Handlers.Indexer
         public async Task Send_PersistIndexerUnlockCommand()
         {
             // Arrange
-            var token = new CancellationTokenSource().Token;
+            var token = CancellationToken.None;
 
             // Act
             try
             {
-                await _handler.Handle(new MakeIndexerUnlockCommand(), default);
+                await _handler.Handle(new MakeIndexerUnlockCommand(), token);
             }
             catch (Exception) { }
 
             // Assert
-            _mediator.Verify(callTo => callTo.Send(It.IsAny<PersistIndexerUnlockCommand>(), default), Times.Once);
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<PersistIndexerUnlockCommand>(), token), Times.Once);
         }
 
         [Fact]
         public async Task UnableToUnlockIndexer_ThrowException()
         {
             // Arrange
-            var token = new CancellationTokenSource().Token;
+            var token = CancellationToken.None;
 
             // Act
             Task Act() => _handler.Handle(new MakeIndexerUnlockCommand(), token);

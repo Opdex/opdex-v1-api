@@ -20,6 +20,8 @@ namespace Opdex.Platform.WebApi
         private readonly IServiceProvider _services;
         private readonly NetworkType _network;
 
+        private const string IndexingAlreadyRunningLog = "Index already running.";
+
         public IndexerBackgroundService(IServiceProvider services, OpdexConfiguration opdexConfiguration, ILogger<IndexerBackgroundService> logger)
         {
             _services = services ?? throw new ArgumentNullException(nameof(services));
@@ -58,7 +60,8 @@ namespace Opdex.Platform.WebApi
 
                     if (indexLock.Locked)
                     {
-                        throw new IndexingAlreadyRunningException();
+                        _logger.LogWarning(IndexingAlreadyRunningLog);
+                        continue;
                     }
 
                     await mediator.Send(new MakeIndexerLockCommand());
@@ -71,7 +74,7 @@ namespace Opdex.Platform.WebApi
                 }
                 catch (IndexingAlreadyRunningException ex)
                 {
-                    _logger.LogError(ex, "Indexing already running");
+                    _logger.LogError(ex, IndexingAlreadyRunningLog);
                 }
                 catch (Exception ex)
                 {

@@ -24,24 +24,25 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
         public async Task PersistIndexerLock_ExecuteCommand()
         {
             // Arrange
-            var token = new CancellationTokenSource().Token;
+            var token = CancellationToken.None;
 
             // Act
-            var result = await _handler.Handle(new PersistIndexerLockCommand(), default);
+            var result = await _handler.Handle(new PersistIndexerLockCommand(), token);
 
             // Assert
-            _dbContext.Verify(callTo => callTo.ExecuteCommandAsync(It.Is<DatabaseQuery>(q => q.Token == default)), Times.Once);
+            _dbContext.Verify(callTo => callTo.ExecuteCommandAsync(It.Is<DatabaseQuery>(q => q.Token == token)), Times.Once);
         }
 
         [Fact]
         public async Task PersistIndexerLock_Failure_ReturnFalse()
         {
             // Arrange
+            var token = CancellationToken.None;
             _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
                       .ReturnsAsync(0);
 
             // Act
-            var result = await _handler.Handle(new PersistIndexerLockCommand(), default);
+            var result = await _handler.Handle(new PersistIndexerLockCommand(), token);
 
             // Assert
             result.Should().BeFalse();
@@ -51,11 +52,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
         public async Task PersistIndexerLock_Success_ReturnTrue()
         {
             // Arrange
+            var token = CancellationToken.None;
             _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
                       .ReturnsAsync(1);
 
             // Act
-            var result = await _handler.Handle(new PersistIndexerLockCommand(), default);
+            var result = await _handler.Handle(new PersistIndexerLockCommand(), token);
 
             // Assert
             result.Should().BeTrue();

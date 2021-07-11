@@ -5,11 +5,12 @@ namespace Opdex.Platform.Common.Exceptions
     public class IndexingAlreadyRunningException : Exception
     {
         private const string MessageBase = "Indexing is already running, try again later.";
-        public IndexingAlreadyRunningException(string message) : base(message)
+
+        public IndexingAlreadyRunningException() : this(MessageBase)
         {
         }
 
-        public IndexingAlreadyRunningException() : base(MessageBase)
+        public IndexingAlreadyRunningException(string message) : base(message)
         {
         }
     }
