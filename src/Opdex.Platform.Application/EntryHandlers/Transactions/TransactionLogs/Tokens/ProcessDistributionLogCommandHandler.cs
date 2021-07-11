@@ -58,8 +58,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 // First period, index mining governance nominations
                 if (periodIndex == 0)
                 {
-                    var miningGovernance = await _mediator.Send(new RetrieveCirrusLocalCallSmartContractQuery(token.Address, "get_MiningGovernance"));
-                    await InitializeNominations(miningGovernance.Return.ToString());
+                    var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id));
+                    await InitializeNominations(miningGovernance.Address);
                 }
 
                 // Get the period duration (per year) from the smart contract
