@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
+using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
@@ -38,20 +39,24 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var vaultQuery = new RetrieveVaultQuery(findOrThrow: true);
-                var vault = await _mediator.Send(vaultQuery, CancellationToken.None);
-
-                var tokenQuery = new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true);
-                var token = await _mediator.Send(tokenQuery, CancellationToken.None);
+                var vault = await _mediator.Send(new RetrieveVaultQuery(findOrThrow: true));
+                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 if (vault.TokenId != token.Id)
                 {
                     return true;
                 }
 
-                var blockHeight = request.BlockHeight;
-                var vaultAmount = request.Log.VaultAmount;
-                var miningAmount = request.Log.MiningAmount;
+                if (request.BlockHeight >= vault.ModifiedBlock)
+                {
+                    var totalSupply = await _mediator.Send(new RetrieveCirrusVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
+
+                    vault.SetUnassignedSupply(totalSupply, request.BlockHeight);
+
+                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault));
+                    if (vaultUpdates == 0) return false;
+                }
+
                 var periodIndex = request.Log.PeriodIndex;
                 var nextPeriodIndex = periodIndex + 1;
 
@@ -77,7 +82,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return true;
                 }
 
+                var blockHeight = request.BlockHeight;
+                var vaultAmount = request.Log.VaultAmount;
+                var miningAmount = request.Log.MiningAmount;
                 var distribution = new TokenDistribution(vaultAmount, miningAmount, (int)periodIndex, blockHeight, nextDistributionBlock, blockHeight);
+
                 return await _mediator.Send(new MakeTokenDistributionCommand(distribution), CancellationToken.None);
             }
             catch (Exception ex)
