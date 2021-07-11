@@ -29,9 +29,16 @@ namespace Opdex.Platform.WebApi.Controllers
             _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
+
+        /// <summary>
+        /// Retrieve the latest synced block.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Block details</returns>
         [HttpGet("latest-block")]
         public async Task<IActionResult> GetLastSyncedBlock(CancellationToken cancellationToken)
         {
+            // Todo: Get Query with ResponseModel
             var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
             return Ok(latestSyncedBlock);
         }
