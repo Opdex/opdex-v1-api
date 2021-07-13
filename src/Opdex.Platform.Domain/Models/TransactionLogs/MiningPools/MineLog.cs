@@ -68,7 +68,9 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             return JsonConvert.SerializeObject(new LogDetails
             {
                 Miner = Miner,
-                Amount = Amount
+                Amount = Amount,
+                TotalSupply = TotalSupply,
+                EventType = EventType
             });
         }
     }
