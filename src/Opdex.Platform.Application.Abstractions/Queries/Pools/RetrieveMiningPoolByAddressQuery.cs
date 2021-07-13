@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Pools
 {
     public class RetrieveMiningPoolByAddressQuery : FindQuery<MiningPool>
     {
-        public RetrieveMiningPoolByAddressQuery(string address, bool findOrThrow) : base(findOrThrow)
+        public RetrieveMiningPoolByAddressQuery(string address, bool findOrThrow = true) : base(findOrThrow)
         {
             if (!address.HasValue())
             {
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Pools
 
             Address = address;
         }
-        
+
         public string Address { get; }
     }
 }

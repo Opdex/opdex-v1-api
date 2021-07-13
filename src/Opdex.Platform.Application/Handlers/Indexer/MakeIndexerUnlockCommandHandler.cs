@@ -1,12 +1,12 @@
+using MediatR;
+using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Indexer;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Commands.Blocks;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
 
-namespace Opdex.Platform.Application.Handlers.Blocks
+namespace Opdex.Platform.Application.Handlers.Indexer
 {
     public class MakeIndexerUnlockCommandHandler : IRequestHandler<MakeIndexerUnlockCommand, Unit>
     {
@@ -21,7 +21,9 @@ namespace Opdex.Platform.Application.Handlers.Blocks
 
         public async Task<Unit> Handle(MakeIndexerUnlockCommand request, CancellationToken cancellationToken)
         {
-            var unlocked = await _mediator.Send(new PersistIndexerUnlockCommand(), cancellationToken);
+            // Todo: Calling this command can overwrite another instance that locked indexing.
+            // Considering using an identifier per instance to authorize who can persist the unlock flag
+            var unlocked = await _mediator.Send(new PersistIndexerUnlockCommand());
             if (!unlocked)
             {
                 _logger.LogCritical("Unable to unlock indexer.");
