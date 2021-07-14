@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Opdex.Platform.Application.Abstractions.Commands.Blocks
+namespace Opdex.Platform.Application.Abstractions.Commands.Indexer
 {
     public class MakeIndexerLockCommand : IRequest
     {

@@ -14,6 +14,8 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Governances
             {
                 throw new ArgumentNullException(nameof(address));
             }
+
+            Address = address;
         }
 
         public string Address { get; }

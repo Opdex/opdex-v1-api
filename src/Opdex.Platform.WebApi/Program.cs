@@ -38,6 +38,10 @@ namespace Opdex.Platform.WebApi
                     loggingConfiguration
                         .ReadFrom.Configuration(context.Configuration)
                         .WriteTo.ApplicationInsights(services.GetRequiredService<TelemetryConfiguration>(), TelemetryConverter.Traces);
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddHostedService<IndexerBackgroundService>();
                 });
     }
 }

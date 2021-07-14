@@ -1,13 +1,13 @@
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
-using Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
+using Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
 {
     public class PersistIndexerLockCommandHandlerTests
     {
@@ -24,7 +24,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
         public async Task PersistIndexerLock_ExecuteCommand()
         {
             // Arrange
-            var token = new CancellationTokenSource().Token;
+            var token = CancellationToken.None;
 
             // Act
             var result = await _handler.Handle(new PersistIndexerLockCommand(), token);
@@ -37,11 +37,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
         public async Task PersistIndexerLock_Failure_ReturnFalse()
         {
             // Arrange
+            var token = CancellationToken.None;
             _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
                       .ReturnsAsync(0);
 
             // Act
-            var result = await _handler.Handle(new PersistIndexerLockCommand(), default);
+            var result = await _handler.Handle(new PersistIndexerLockCommand(), token);
 
             // Assert
             result.Should().BeFalse();
@@ -51,11 +52,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
         public async Task PersistIndexerLock_Success_ReturnTrue()
         {
             // Arrange
+            var token = CancellationToken.None;
             _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
                       .ReturnsAsync(1);
 
             // Act
-            var result = await _handler.Handle(new PersistIndexerLockCommand(), default);
+            var result = await _handler.Handle(new PersistIndexerLockCommand(), token);
 
             // Assert
             result.Should().BeTrue();

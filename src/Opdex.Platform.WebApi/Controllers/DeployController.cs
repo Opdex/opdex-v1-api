@@ -5,20 +5,18 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Commands.Governances;
+using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
-using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
+using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
-using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
@@ -35,13 +33,13 @@ namespace Opdex.Platform.WebApi.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<DeployController> _logger;
-        private readonly IHostingEnvironment _hostingEnv;
+        private readonly NetworkType _network;
 
-        public DeployController(IMediator mediator, ILogger<DeployController> logger, IHostingEnvironment hostingEnv)
+        public DeployController(IMediator mediator, ILogger<DeployController> logger, OpdexConfiguration opdexConfiguration)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _hostingEnv = hostingEnv ?? throw new ArgumentNullException(nameof(hostingEnv));
+            _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
         /// <summary>
@@ -60,25 +58,39 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeployDevModeEnvironment(LocalWalletCredentials request, CancellationToken cancellationToken)
         {
+            var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
+            if (markets.Any())
+            {
+                throw new Exception("Markets already exist");
+            }
+
+            await _mediator.Send(new MakeIndexerLockCommand());
+
             // Deploy ODX
             var createOdxParams = new[] {_vaultDistributionSchedule, _minerDistributionSchedule, _distributionSchedulePeriodDuration};
-            var createOdxRequest = new SmartContractCreateRequestDto(odxByteCode, request.WalletAddress, createOdxParams, request.WalletName, request.WalletPassword);
-            var createOdxCommand = new CallCirrusCreateSmartContractCommand(createOdxRequest);
-            var odxTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createOdxCommand, cancellationToken));
+            var createOdxRequest = new SmartContractCreateRequestDto(odxByteCode, request.WalletAddress, createOdxParams,
+                                                                     request.WalletName, request.WalletPassword);
+
+            var odxTransaction = await CallAndWait(
+                async () => await _mediator.Send(new CallCirrusCreateSmartContractCommand(createOdxRequest), cancellationToken));
 
             // Process ODX deployment
             await _mediator.Send(new ProcessOdxDeploymentTransactionCommand(odxTransaction.Hash), CancellationToken.None);
 
             // Deploy Market Deployer
-            var createDeployerRequest = new SmartContractCreateRequestDto(marketDeployerByteCode, request.WalletAddress, new string[0], request.WalletName, request.WalletPassword);
-            var createDeployerCommand = new CallCirrusCreateSmartContractCommand(createDeployerRequest);
-            var deployerTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createDeployerCommand, cancellationToken));
+            var createDeployerRequest = new SmartContractCreateRequestDto(marketDeployerByteCode, request.WalletAddress, new string[0],
+                                                                          request.WalletName, request.WalletPassword);
+
+            var deployerTransaction = await CallAndWait(
+                async () => await _mediator.Send(new CallCirrusCreateSmartContractCommand(createDeployerRequest), cancellationToken));
 
             var createStakingMarketParams = new[] {odxTransaction.NewContractAddress.ToSmartContractParameter(SmartContractParameterType.Address)};
-            var createStakingMarketRequest = new SmartContractCallRequestDto(deployerTransaction.NewContractAddress, request.WalletName, request.WalletAddress,
-                request.WalletPassword, "0.00", "CreateStakingMarket", createStakingMarketParams);
-            var createStakingMarketCommand = new CallCirrusCallSmartContractMethodCommand(createStakingMarketRequest);
-            var createStakingMarketTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createStakingMarketCommand, cancellationToken));
+            var createStakingMarketRequest = new SmartContractCallRequestDto(deployerTransaction.NewContractAddress, request.WalletName,
+                                                                             request.WalletAddress, request.WalletPassword, "0.00",
+                                                                             "CreateStakingMarket", createStakingMarketParams);
+
+            var createStakingMarketTransaction = await CallAndWait(
+                async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(createStakingMarketRequest), cancellationToken));
 
             // Process Deployer deployment
             await _mediator.Send(new ProcessDeployerDeploymentTransactionCommand(deployerTransaction.Hash), CancellationToken.None);
@@ -87,80 +99,65 @@ namespace Opdex.Platform.WebApi.Controllers
             var createLiquidityPoolTransactions = new List<Transaction>();
 
             // Create 4 Tokens
-            for (var i = 0; i < _createSrcTokensParams.Length; i++)
+            foreach (var tokenParams in _createSrcTokensParams)
             {
-                var tokenParams = _createSrcTokensParams[i];
-
                 // Create Tokens
-                var createTokenRequest = new SmartContractCreateRequestDto(srcByteCode, request.WalletAddress, tokenParams, request.WalletName, request.WalletPassword);
-                var createTokenCommand = new CallCirrusCreateSmartContractCommand(createTokenRequest);
-                var createTokenTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createTokenCommand, cancellationToken));
+                var createTokenRequest = new SmartContractCreateRequestDto(srcByteCode, request.WalletAddress, tokenParams.CreateParams,
+                                                                           request.WalletName, request.WalletPassword);
+                var createTokenTransaction = await CallAndWait(
+                    async () => await _mediator.Send(new CallCirrusCreateSmartContractCommand(createTokenRequest), cancellationToken));
 
                 // Approve router allowance for the full owner amount
-                var approveParams = new[] { $"9#{stakingMarket.Router}", "12#0", tokenParams[0]};
-                var approveAllowanceRequest = new SmartContractCallRequestDto(createTokenTransaction.NewContractAddress, request.WalletName, request.WalletAddress,
-                    request.WalletPassword, "0.00", "Approve", approveParams);
-                var approveAllowanceCommand = new CallCirrusCallSmartContractMethodCommand(approveAllowanceRequest);
-                var approveAllowanceTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(approveAllowanceCommand, cancellationToken));
+                var approveAllowanceRequest = new SmartContractCallRequestDto(createTokenTransaction.NewContractAddress, request.WalletName,
+                                                                              request.WalletAddress, request.WalletPassword, "0.00", "Approve",
+                                                                              new[] { $"9#{stakingMarket.Router}", "12#0", tokenParams.CreateParams[0]});
+
+                await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(approveAllowanceRequest), cancellationToken));
 
                 // Create SRC liquidity pools
-                var createLiquidityPoolParams = new[] {$"9#{createTokenTransaction.NewContractAddress}"};
                 var createLiquidityPoolRequest = new SmartContractCallRequestDto(stakingMarket.Market, request.WalletName, request.WalletAddress,
-                    request.WalletPassword, "0.00", "CreatePool", createLiquidityPoolParams);
-                var createLiquidityPoolCommand = new CallCirrusCallSmartContractMethodCommand(createLiquidityPoolRequest);
-                var createLiquidityPoolTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createLiquidityPoolCommand, cancellationToken));
+                                                                                 request.WalletPassword, "0.00", "CreatePool",
+                                                                                 new[] {$"9#{createTokenTransaction.NewContractAddress}"});
+                var createLiquidityPoolTransaction = await CallAndWait(
+                    async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(createLiquidityPoolRequest), cancellationToken));
 
                 createLiquidityPoolTransactions.Add(createLiquidityPoolTransaction);
 
                 // Add Liquidity to pools
-                var addValues = _tokenAddLiquidityValues[i];
-                var crs = addValues[0];
-                var src = addValues[1].ToSatoshis(int.Parse(tokenParams[3].Replace("2#", string.Empty)));
-                var addLiquidityCommand = new MakeWalletAddLiquidityTransactionCommand(request.WalletAddress, createTokenTransaction.NewContractAddress,
-                                                                                       crs, src, "0", "0", request.WalletAddress, stakingMarket.Router);
-                var addLiquidityTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(addLiquidityCommand, cancellationToken));
+                var crs = tokenParams.ProvideParams[0];
+                var src = tokenParams.ProvideParams[1].ToSatoshis(int.Parse(tokenParams.CreateParams[3].Replace("2#", string.Empty)));
+                await CallAndWait(async () => await _mediator.Send(new MakeWalletAddLiquidityTransactionCommand(request.WalletAddress,
+                                                                                                                createTokenTransaction.NewContractAddress,
+                                                                                                                crs, src, "0", "0", request.WalletAddress,
+                                                                                                                stakingMarket.Router), cancellationToken));
             }
 
-            // Serialize Liquidity Pool Addresses and Distribute ODX
+            // Get liquidity pools to use for initial ODX distribution and mining governance nominations
             var poolAddresses = createLiquidityPoolTransactions
-                .Select(t =>
-                    ((CreateLiquidityPoolLog)t.Logs
-                        .FirstOrDefault(log => log.LogType == TransactionLogType.CreateLiquidityPoolLog))?.Pool);
+                .Select(t => ((CreateLiquidityPoolLog)t.Logs.First(log => log.LogType == TransactionLogType.CreateLiquidityPoolLog)).Pool);
+
             var poolsParams = poolAddresses.Select(address => address.ToSmartContractParameter(SmartContractParameterType.Address)).ToArray();
             var distributeOdxRequest = new SmartContractCallRequestDto(odxTransaction.NewContractAddress, request.WalletName, request.WalletAddress,
-                request.WalletPassword, "0.00", "DistributeGenesis", poolsParams);
-            var distributeOdxCommand = new CallCirrusCallSmartContractMethodCommand(distributeOdxRequest);
-            var distributeOdxTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(distributeOdxCommand, cancellationToken));
+                                                                       request.WalletPassword, "0.00", "DistributeGenesis", poolsParams);
+
+            await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(distributeOdxRequest), cancellationToken));
 
             // Create ODX Liquidity Pool
             // Note: we can create the pool but to obtain tokens, the vault vesting period must clear or ODX must be mined
             var createOdxPoolParams = new[] {odxTransaction.NewContractAddress.ToSmartContractParameter(SmartContractParameterType.Address)};
             var createOdxPoolRequest = new SmartContractCallRequestDto(stakingMarket.Market, request.WalletName, request.WalletAddress,
-                request.WalletPassword, "0.00", "CreatePool", createOdxPoolParams);
-            var createOdxPoolCommand = new CallCirrusCallSmartContractMethodCommand(createOdxPoolRequest);
-            var createOdxPoolTransaction = await CallContractWaitForMinedBlock(async () => await _mediator.Send(createOdxPoolCommand, cancellationToken));
+                                                                       request.WalletPassword, "0.00", "CreatePool", createOdxPoolParams);
 
-            await _mediator.Send(new ProcessLatestBlocksCommand(_hostingEnv.IsDevelopment()), CancellationToken.None);
+            await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(createOdxPoolRequest), cancellationToken));
 
-            // Add Nominations
-            var block = await _mediator.Send(new RetrieveLatestBlockQuery());
-            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(stakingMarket.Market));
-            var nominatedPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(market.Id, pools: poolAddresses));
+            await _mediator.Send(new ProcessLatestBlocksCommand(_network), CancellationToken.None);
 
-            var nominatedMiningPools = await Task.WhenAll(nominatedPools.Select(pool => _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id))));
-
-            var nominations = nominatedPools.Select(n =>
-            {
-                var miningPoolId = nominatedMiningPools.First(mp => mp.LiquidityPoolId == n.Id).Id;
-                return new MiningGovernanceNomination(n.Id, miningPoolId, true, "1", block.Height);
-            });
-
-            await Task.WhenAll(nominations.Select(nomination => _mediator.Send(new MakeMiningGovernanceNominationCommand(nomination))));
+            await _mediator.Send(new MakeIndexerUnlockCommand());
 
             return Ok("Successful");
         }
 
-        private async Task<Transaction> CallContractWaitForMinedBlock(Func<Task<string>> call)
+        private async Task<Transaction> CallAndWait(Func<Task<string>> call)
         {
             const int maxRetries = 5;
             const int backoff = 5;
@@ -200,7 +197,7 @@ namespace Opdex.Platform.WebApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, $"Failed to find transaction {txHash}.");
+                    _logger.LogInformation(ex, $"Failed to find transaction {txHash}.");
                 }
             }
 
@@ -212,61 +209,80 @@ namespace Opdex.Platform.WebApi.Controllers
         private const string srcByteCode = "4D5A90000300000004000000FFFF0000B800000000000000400000000000000000000000000000000000000000000000000000000000000000000000800000000E1FBA0E00B409CD21B8014CCD21546869732070726F6772616D2063616E6E6F742062652072756E20696E20444F53206D6F64652E0D0D0A2400000000000000504500004C010200DD68D5E70000000000000000E00022200B013000001000000002000000000000322E0000002000000040000000000010002000000002000004000000000000000400000000000000006000000002000000000000030040850000100000100000000010000010000000000000100000000000000000000000E02D00004F000000000000000000000000000000000000000000000000000000004000000C000000C42D00001C0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000080000000000000000000000082000004800000000000000000000002E74657874000000380E0000002000000010000000020000000000000000000000000000200000602E72656C6F6300000C000000004000000002000000120000000000000000000000000000400000420000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000142E0000000000004800000002000500D0230000F40900000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000E20203280500000A0204280900000602052805000006020E042803000006020E0528070000060202280600000A6F0700000A04280B0000062A4602280800000A72010000706F0900000A2A4A02280800000A7201000070036F0A00000A2A4602280800000A720F0000706F0900000A2A4A02280800000A720F000070036F0A00000A2A4E02280800000A72190000706F0B00000A16912A6E02280800000A7219000070178D0E0000012516039C6F0C00000A2A4602280800000A722B0000706F0D00000A2A4A02280800000A722B000070036F0E00000A2A7202280800000A7243000070038C09000001280F00000A6F0D00000A2A7602280800000A7243000070038C09000001280F00000A046F0E00000A2A0013300400C2000000010000110416281000000A281100000A2C38021201FE1503000002120102280600000A6F0700000A7D010000041201037D02000004120116281000000A7D0300000407280100002B172A0202280600000A6F0700000A280A0000060A0604281300000A2C02162A0202280600000A6F0700000A0604281400000A280B00000602030203280A00000604281500000A280B000006021201FE1503000002120102280600000A6F0700000A7D010000041201037D020000041201047D0300000407280100002B172A000013300500CF000000020000110516281000000A281100000A2C2E021202FE15030000021202037D010000041202047D02000004120216281000000A7D0300000408280100002B172A020302280600000A6F0700000A28100000060A0203280A0000060B0605281300000A2D090705281300000A2C02162A020302280600000A6F0700000A0605281400000A280F00000602030705281400000A280B00000602040204280A00000605281500000A280B000006021202FE15030000021202037D010000041202047D020000041202057D0300000408280100002B172A00133004006A000000030000110202280600000A6F0700000A03281000000604281600000A2C02162A0202280600000A6F0700000A0305280F000006021200FE1504000002120002280600000A6F0700000A7D040000041200037D050000041200057D070000041200047D0600000406280200002B172A8E02280800000A725B000070038C09000001048C09000001281700000A056F0E00000A2A8A02280800000A725B000070038C09000001048C09000001281700000A6F0D00000A2A00000042534A4201000100000000000C00000076342E302E33303331390000000005006C0000000C040000237E0000780400009C03000023537472696E67730000000014080000800000002355530094080000100000002347554944000000A40800005001000023426C6F6200000000000000020000015717A201090A000000FA0133001600000100000010000000040000000700000010000000190000000100000017000000070000000300000001000000040000000800000001000000030000000200000002000000000097010100000000000600FF00830206002E0183020600EB004F020F00A30200000A001503F7020E00010062020A009F00F7020A002100F7020A00E702F70206009500C6010A001F01F7020A006900F7020A00C600F70206004C01C60106006C01C60106002303C601000000002900000000000100010001001000EB0100001500010001000A0110007F0100002900010011000A011000730100002900040011000600D5019D0006001C029D0006004703A10006003D029D0006002D029D0006003603A10006004703A10050200000000086184902A50001008920000000008608A901B00006009B20000000008108B401B4000600AE200000000086087E00B0000700C0200000000081088700B4000700D32000000000E609C402B9000800E720000000008108D102BD000800032100000000E6095503C200090015210000000081086503C7000900282100000000E6014900CD000A0045210000000081005400D4000B00642100000000E6011402DC000D00342200000000E601CD01E4000F00102300000000E6015701EE00120086230000000081008B01F8001500AA2300000000E6015F000201180000000100B30000000200750300000300900000000400BF0100000500DE0200000100510100000100510100000100510100000100510100000100EF0200000100EF02000002005101000001001F02000002004E0300000100DA01000002001F02000003004E03000001003502000002004003000003004E0300000100430200000200350200000300510100000100430200000200350202001900090049020100110049020600190049020A00590049020600290049021000290072001600610022021B002900D700200069005F012500690069012A006900B20230006900BB023600690013003D0069001E00430079000E034A0041002A035700410081035D002900870165004100DF015D004100F901710041000802710041008D035D0079000E038D002100230049012E000B0018012E00130021012E001B004001410023004901810023004901A1002300490150007A008300020001000000B8010B0100008B000B010000D5020F010000690313010200020003000100030003000200040005000100050005000200060007000100070007000200080009000100090009000480000000000000000000000000000000001503000004000000000000000000000094003200000000000200000000000000000000000000F702000000000200000000000000000000000000620200000000030002000400020025006C0025008800000000495374616E64617264546F6B656E3235360047657455496E743235360053657455496E74323536003C4D6F64756C653E0053797374656D2E507269766174652E436F72654C69620047657442616C616E63650053657442616C616E636500416C6C6F77616E636500494D657373616765006765745F4D657373616765006765745F4E616D65007365745F4E616D65006E616D650056616C7565547970650049536D617274436F6E7472616374537461746500736D617274436F6E74726163745374617465004950657273697374656E745374617465006765745F50657273697374656E7453746174650044656275676761626C6541747472696275746500436F6D70696C6174696F6E52656C61786174696F6E7341747472696275746500496E6465784174747269627574650052756E74696D65436F6D7061746962696C69747941747472696275746500427974650076616C756500417070726F766500476574537472696E6700536574537472696E6700417070726F76616C4C6F67005472616E736665724C6F6700536574417070726F76616C00536D617274436F6E74726163742E646C6C006765745F53796D626F6C007365745F53796D626F6C0073796D626F6C0053797374656D005472616E7366657246726F6D0066726F6D006F705F4C6573735468616E005374616E64617264546F6B656E006F705F5375627472616374696F6E006F705F4164646974696F6E005472616E73666572546F00746F006765745F53656E646572005370656E646572007370656E646572004F776E6572006F776E6572002E63746F720053797374656D2E446961676E6F737469637300537472617469732E536D617274436F6E7472616374732E5374616E64617264730053797374656D2E52756E74696D652E436F6D70696C6572536572766963657300446562756767696E674D6F646573004765744279746573005365744279746573006765745F446563696D616C73007365745F446563696D616C7300646563696D616C730041646472657373006164647265737300537472617469732E536D617274436F6E74726163747300466F726D617400536D617274436F6E7472616374004F626A656374006F705F496D706C69636974004F6C64416D6F756E740063757272656E74416D6F756E7400616D6F756E74006765745F546F74616C537570706C79007365745F546F74616C537570706C7900746F74616C537570706C79006F705F457175616C697479006F705F496E657175616C6974790000000D530079006D0062006F006C0000094E0061006D006500001144006500630069006D0061006C007300001754006F00740061006C0053007500700070006C0079000017420061006C0061006E00630065003A007B0030007D00002341006C006C006F00770061006E00630065003A007B0030007D003A007B0031007D0000001B72B2437962024E9CCDA28C9F869D060004200101080320000105200101111105200101121D0420001231042000112504200012350420010E0E052002010E0E0520011D050E062002010E1D0505200111210E062002010E11210500020E0E1C0607021121110C050001112108070002021121112106300101011E00040A01110C08000211211121112108070311211121110C0407011110040A0111100600030E0E1C1C087CEC85D7BEA7798E03061125030611210A200501121D11210E0E050320000E042001010E032000050420010105042000112105200101112106200111211125072002011125112107200202112511210920030211251125112109200302112511211121092003011125112511210820021121112511250328000E0328000504280011210801000800000000001E01000100540216577261704E6F6E457863657074696F6E5468726F7773010801000200000000000401000000000000000000000000000000000010000000000000000000000000000000082E00000000000000000000222E0000002000000000000000000000000000000000000000000000142E0000000000000000000000005F436F72446C6C4D61696E006D73636F7265652E646C6C0000000000FF2500200010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000C000000343E00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
         private const string _vaultDistributionSchedule = "10#F8A5A00000C16FF2862300000000000000000000000000000000000000000000000000A000C0D0D335A51A00000000000000000000000000000000000000000000000000A00080E03779C31100000000000000000000000000000000000000000000000000A00040F09BBCE10800000000000000000000000000000000000000000000000000A00000000000000000000000000000000000000000000000000000000000000000";
         private const string _minerDistributionSchedule = "10#F8A5A00000434FD7946A00000000000000000000000000000000000000000000000000A00040727BA1EF4F00000000000000000000000000000000000000000000000000A00080A1A76B4A3500000000000000000000000000000000000000000000000000A000C0D0D335A51A00000000000000000000000000000000000000000000000000A00040F09BBCE10800000000000000000000000000000000000000000000000000";
-        private const string _distributionSchedulePeriodDuration = "7#500"; // 24 hours per year = 5400 blocks
-        private readonly string[][] _createSrcTokensParams =
+        // "Yearly" amount of blocks before odx distribution. A "year" of 5400 16 second blocks is 24 realtime hours.
+        private const string _distributionSchedulePeriodDuration = "7#32400"; // 6 realtime days in blocks per "year"
+        private readonly TokenDetails[] _createSrcTokensParams =
         {
-            new[]
+            new TokenDetails
             {
-                "12#2100000000000000", // 21 Million
-                "4#BTC (Wrapped)",
-                "4#wBTC",
-                "2#8"
+                CreateParams = new[]
+                {
+                    "12#2100000000000000", // 21 Million
+                    "4#BTC (Wrapped)",
+                    "4#xBTC",
+                    "2#8"
+                },
+                ProvideParams = new[]
+                {
+                    // 22,000 to 1
+                    "66000.00000000", // crs
+                    "3.00000000" // xBTC
+                }
             },
-            new[]
+            new TokenDetails
             {
-                "12#100000000000000000000000000", // 100 Million
-                "4#ETH (Wrapped)",
-                "4#wETH",
-                "2#18"
+                CreateParams = new[]
+                {
+                    "12#100000000000000000000000000", // 100 Million
+                    "4#ETH (Wrapped)",
+                    "4#xETH",
+                    "2#18"
+                },
+                ProvideParams = new[]
+                {
+                    // 1424 to 1
+                    "66000.00000000", // crs
+                    "47.000000000000000000", // xETH
+                }
             },
-            new[]
+            new TokenDetails
             {
-                "12#1000000000000000000000000000", // 1 Billion
-                "4#BNB (Wrapped)",
-                "4#wBNB",
-                "2#18"
+                CreateParams = new[]
+                {
+                    "12#1000000000000000000000000000", // 1 Billion
+                    "4#BNB (Wrapped)",
+                    "4#xBNB",
+                    "2#18"
+                },
+                ProvideParams = new[]
+                {
+                    // 207 to 1
+                    "66000.00000000", // crs
+                    "319.000000000000000000", // xBNB
+                }
             },
-            new[]
+            new TokenDetails
             {
-                "12#500000000000000000", // 5 Billion
-                "4#GLUON",
-                "4#GLU",
-                "2#8"
-            },
+                CreateParams = new[]
+                {
+                    "12#500000000000000000", // 5 Billion
+                    "4#Gluon",
+                    "4#GLU",
+                    "2#8"
+                },
+                ProvideParams = new[]
+                {
+                    // .5 to 1
+                    "66000.00000000", // crs
+                    "132000.00000000", // GLU
+                }
+            }
         };
 
-        private readonly string[][] _tokenAddLiquidityValues =
+        private struct TokenDetails
         {
-            new[]
-            {
-                "230400.00000000", // 230,400 crs
-                "600000.00000000", // 300,000 btc
-            },
-            new[]
-            {
-                "210000.00000000", // 210,000 crs
-                "200000.000000000000000000", // 200,000 wEth
-            },
-            new[]
-            {
-                "130000.00000000", // 130,000 crs
-                "200000.000000000000000000", // 200,000 bnb
-            },
-            new[]
-            {
-                "190000.00000000", // 190,000 crs
-                "100000.00000000", // 100,000 GLU
-            },
-        };
+            public string[] CreateParams;
+            public string[] ProvideParams;
+        }
     }
 }

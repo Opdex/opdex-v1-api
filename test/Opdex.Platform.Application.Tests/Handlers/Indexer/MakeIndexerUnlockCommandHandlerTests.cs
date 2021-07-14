@@ -1,15 +1,15 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Application.Abstractions.Commands.Blocks;
-using Opdex.Platform.Application.Handlers.Blocks;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
+using Opdex.Platform.Application.Abstractions.Commands.Indexer;
+using Opdex.Platform.Application.Handlers.Indexer;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Blocks
+namespace Opdex.Platform.Application.Tests.Handlers.Indexer
 {
     public class MakeIndexerUnlockCommandHandlerTests
     {
@@ -26,7 +26,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Blocks
         public async Task Send_PersistIndexerUnlockCommand()
         {
             // Arrange
-            var token = new CancellationTokenSource().Token;
+            var token = CancellationToken.None;
 
             // Act
             try
@@ -43,7 +43,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Blocks
         public async Task UnableToUnlockIndexer_ThrowException()
         {
             // Arrange
-            var token = new CancellationTokenSource().Token;
+            var token = CancellationToken.None;
 
             // Act
             Task Act() => _handler.Handle(new MakeIndexerUnlockCommand(), token);
