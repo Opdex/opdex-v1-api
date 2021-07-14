@@ -1,0 +1,24 @@
+using MediatR;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults;
+using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Opdex.Platform.Application.Handlers.Vaults
+{
+    public class RetrieveVaultByAddressQueryHandler : IRequestHandler<RetrieveVaultByAddressQuery, Vault>
+    {
+        private readonly IMediator _mediator;
+
+        public RetrieveVaultByAddressQueryHandler(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        public Task<Vault> Handle(RetrieveVaultByAddressQuery request, CancellationToken cancellationToken)
+        {
+            return _mediator.Send(new SelectVaultByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
+        }
+    }
+}

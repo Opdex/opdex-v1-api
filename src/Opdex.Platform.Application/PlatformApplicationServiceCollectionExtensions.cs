@@ -105,6 +105,8 @@ using Opdex.Platform.Application.EntryHandlers.Vaults;
 using Opdex.Platform.Application.Handlers.Governances;
 using Opdex.Platform.Application.Handlers.Indexer;
 using Opdex.Platform.Domain.Models.Governances;
+using Opdex.Platform.Application.Abstractions.Models.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 
 namespace Opdex.Platform.Application
 {
@@ -128,6 +130,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshotDto>>, GetMarketSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshotDto>>, GetTokenSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetMiningGovernanceByAddressQuery, MiningGovernanceDto>, GetMiningGovernanceByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<GetAllVaultsQuery, IEnumerable<VaultDto>>, GetAllVaultsQueryHandler>();
+            services.AddTransient<IRequestHandler<GetVaultByAddressQuery, VaultDto>, GetVaultByAddressQueryHandler>();
 
             // Queries
             services.AddTransient<IRequestHandler<RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery, AddressAllowance>, RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQueryHandler>();
@@ -156,7 +160,9 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLatestTokenDistributionQuery, TokenDistribution>, RetrieveLatestTokenDistributionQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceContractSummaryByAddressQuery, MiningGovernanceContractSummary>, RetrieveMiningGovernanceContractSummaryByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveStakingTokenContractSummaryByAddressQuery, StakingTokenContractSummary>, RetrieveStakingTokenContractSummaryByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveVaultQuery, Vault>, RetrieveVaultQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveAllVaultsQuery, IEnumerable<Vault>>, RetrieveAllVaultsQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveVaultByAddressQuery, Vault>, RetrieveVaultByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveVaultByTokenIdQuery, Vault>, RetrieveVaultByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, RetrieveVaultCertificatesByOwnerAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusVaultTotalSupplyQuery, string>, RetrieveCirrusVaultTotalSupplyQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusBlockHashByHeightQuery, string>, RetrieveCirrusBlockHashByHeightQueryHandler>();
@@ -299,6 +305,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IModelAssembler<MiningPool, MiningPoolDto>, MiningPoolDtoAssembler>();
             services.AddTransient<IModelAssembler<Token, TokenDto>, TokenDtoAssembler>();
             services.AddTransient<IModelAssembler<MiningGovernance, MiningGovernanceDto>, MiningGovernanceDtoAssembler>();
+            services.AddTransient<IModelAssembler<Vault, VaultDto>, VaultDtoAssembler>();
 
             return services;
         }

@@ -3,16 +3,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries;
-using Opdex.Platform.Application.Abstractions.Queries.Blocks;
-using Opdex.Platform.Application.Abstractions.Queries.Governances;
-using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.Governances;
+using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
@@ -39,12 +41,16 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var vault = await _mediator.Send(new RetrieveVaultQuery(findOrThrow: true));
                 var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(token.Id, findOrThrow: true));
 
-                if (vault.TokenId != token.Id)
+                // process address balances
+                var vaultBalance = await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(token.Id, vault.Address, findOrThrow: false));
+                if (vaultBalance is null || request.BlockHeight >= vaultBalance.ModifiedBlock)
                 {
-                    return true;
+                    vaultBalance ??= new AddressBalance(token.Id, vault.Address, request.Log.VaultAmount, request.BlockHeight);
+                    // TODO: update balance for an existing record
+                    await _mediator.Send(new MakeAddressBalanceCommand(vaultBalance));
                 }
 
                 if (request.BlockHeight >= vault.ModifiedBlock)

@@ -36,7 +36,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             {
                 // Hosted environments would have indexed transaction already, local would need to reach out to Cirrus to get receipt
                 var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false), cancellationToken) ??
-                                  await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
+                                  await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash));
 
                 if (transaction == null)
                 {
@@ -45,60 +45,59 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                 // Hosted environments would not be null, local environments would be null
                 var localBlockQuery = new RetrieveBlockByHeightQuery(transaction.BlockHeight, findOrThrow: false);
-                var block = await _mediator.Send(localBlockQuery, CancellationToken.None);
+                var block = await _mediator.Send(localBlockQuery);
 
                 if (block == null)
                 {
                     // Get transaction block hash
                     var blockHashQuery = new RetrieveCirrusBlockHashByHeightQuery(transaction.BlockHeight);
-                    var blockHash = await _mediator.Send(blockHashQuery, CancellationToken.None);
+                    var blockHash = await _mediator.Send(blockHashQuery);
 
                     // Get block by hash
                     var blockQuery = new RetrieveCirrusBlockByHashQuery(blockHash);
-                    var blockReceiptDto = await _mediator.Send(blockQuery, CancellationToken.None);
+                    var blockReceiptDto = await _mediator.Send(blockQuery);
 
                     // Make block
                     var blockTime = blockReceiptDto.Time;
                     var blockMedianTime = blockReceiptDto.MedianTime;
                     var blockCommand = new MakeBlockCommand(blockReceiptDto.Height, blockReceiptDto.Hash, blockTime, blockMedianTime);
-                    var blockCreated = await _mediator.Send(blockCommand, CancellationToken.None);
+                    var blockCreated = await _mediator.Send(blockCommand);
                 }
 
                 // Insert ODX
                 var odxAddress = transaction.NewContractAddress;
                 var odxQuery = new RetrieveTokenByAddressQuery(odxAddress, findOrThrow: false);
-                var odx = await _mediator.Send(odxQuery, CancellationToken.None);
+                var odx = await _mediator.Send(odxQuery);
 
                 var odxId = odx?.Id ?? 0L;
                 if (odx == null)
                 {
                     var odxCommand = new MakeTokenCommand(odxAddress);
-                    odxId = await _mediator.Send(odxCommand, CancellationToken.None);
+                    odxId = await _mediator.Send(odxCommand);
                 }
 
                 // Get ODX token summary
                 var odxTokenSummaryQuery = new RetrieveStakingTokenContractSummaryByAddressQuery(odxAddress);
-                var odxTokenSummary = await _mediator.Send(odxTokenSummaryQuery, CancellationToken.None);
+                var odxTokenSummary = await _mediator.Send(odxTokenSummaryQuery);
 
                 // Get and/or create vault
-                var vaultQuery = new RetrieveVaultQuery(findOrThrow: false);
-                var vault = await _mediator.Send(vaultQuery, CancellationToken.None);
+                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(odxTokenSummary.Vault, findOrThrow: false));
 
                 if (vault == null)
                 {
                     vault = new Vault(odxTokenSummary.Vault, odxId, transaction.From, transaction.BlockHeight, "0", transaction.BlockHeight);
-                    await _mediator.Send(new MakeVaultCommand(vault), CancellationToken.None);
+                    await _mediator.Send(new MakeVaultCommand(vault));
                 }
 
                 // Get and/or create mining governance
                 var miningGovernanceQuery = new RetrieveMiningGovernanceByTokenIdQuery(odxId, findOrThrow: false);
-                var miningGovernance = await _mediator.Send(miningGovernanceQuery, CancellationToken.None);
+                var miningGovernance = await _mediator.Send(miningGovernanceQuery);
 
                 if (miningGovernance == null)
                 {
                     // Get governance contract summary
                     var miningGovernanceSummaryQuery = new RetrieveMiningGovernanceContractSummaryByAddressQuery(odxTokenSummary.MiningGovernance);
-                    var miningGovernanceSummary = await _mediator.Send(miningGovernanceSummaryQuery, CancellationToken.None);
+                    var miningGovernanceSummary = await _mediator.Send(miningGovernanceSummaryQuery);
 
                     // Create
                     miningGovernance = new MiningGovernance(odxTokenSummary.MiningGovernance, odxId, miningGovernanceSummary.NominationPeriodEnd,
@@ -107,13 +106,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                     // Persist
                     var miningGovernanceCommand = new MakeMiningGovernanceCommand(miningGovernance);
-                    var miningGovernanceId = await _mediator.Send(miningGovernanceCommand, CancellationToken.None);
+                    var miningGovernanceId = await _mediator.Send(miningGovernanceCommand);
                 }
 
                 // In hosted environments, transaction would've already been inserted. Local environments need to persist
                 if (transaction.Id == 0)
                 {
-                    await _mediator.Send(new MakeTransactionCommand(transaction), CancellationToken.None);
+                    await _mediator.Send(new MakeTransactionCommand(transaction));
                 }
             }
             catch (Exception ex)
