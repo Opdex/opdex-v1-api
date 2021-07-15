@@ -14,11 +14,11 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 {
-    public class SelectTransactionsByPoolWithFilterQueryHandler 
+    public class SelectTransactionsByPoolWithFilterQueryHandler
         : IRequestHandler<SelectTransactionsByPoolWithFilterQuery, IEnumerable<Transaction>>
     {
         private static readonly string SqlQuery =
-            @$"SELECT 
+            @$"SELECT
                 t.{nameof(TransactionEntity.Id)},
                 t.{nameof(TransactionEntity.Hash)},
                 t.{nameof(TransactionEntity.Block)},
@@ -28,9 +28,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                 t.{nameof(TransactionEntity.Success)},
                 t.{nameof(TransactionEntity.NewContractAddress)}
             FROM transaction t
-            LEFT JOIN transaction_log tl 
-                ON tl.{nameof(TransactionLogEntity.TransactionId)} = t.{nameof(TransactionEntity.Id)} 
-            LEFT JOIN pool_liquidity p 
+            LEFT JOIN transaction_log tl
+                ON tl.{nameof(TransactionLogEntity.TransactionId)} = t.{nameof(TransactionEntity.Id)}
+            LEFT JOIN pool_liquidity p
                 ON p.{nameof(LiquidityPoolEntity.Address)} = tl.{nameof(TransactionLogEntity.Contract)}
             WHERE tl.{nameof(TransactionLogEntity.Id)} IS NOT NULL
                 AND p.{nameof(LiquidityPoolEntity.Address)} = @{nameof(SqlParams.PoolAddress)}

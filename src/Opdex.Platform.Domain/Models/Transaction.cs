@@ -99,7 +99,7 @@ namespace Opdex.Platform.Domain.Models
 
         private void AttachLogs(IEnumerable<TransactionLog> logs)
         {
-            foreach (var txLog in logs)
+            foreach (var txLog in logs.OrderBy(log => log.SortOrder))
             {
                 if (txLog.TransactionId == 0)
                 {
