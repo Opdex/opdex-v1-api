@@ -49,6 +49,15 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        [HttpGet("{address}/balance/{token}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<AddressBalanceResponseModel>> GetAddressBalanceByToken(string address, string token, CancellationToken cancellationToken)
+        {
+            var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(address, token), cancellationToken);
+            var response = _mapper.Map<AddressBalanceResponseModel>(balance);
+            return Ok(response);
+        }
+
         [HttpGet("summary/pool/{poolAddress}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<string>> GetWalletSummaryByPool(string poolAddress, string walletAddress, CancellationToken cancellationToken)
