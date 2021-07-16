@@ -4,7 +4,6 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
 using System;
 using System.Linq;
@@ -40,29 +39,31 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
             // Build the default cursor without next or previous
             var defaultCursor = new StringBuilder($"wallet:{request.Wallet};direction:{request.Direction};limit:{request.Limit};")
-                .Append(BuildCursorFromList("includeEvents", request.IncludeEvents.Select(e => e.ToString()).ToList()))
-                .Append(BuildCursorFromList("excludeEvents", request.ExcludeEvents.Select(e => e.ToString()).ToList()))
-                .Append(BuildCursorFromList("contracts", request.Contracts.Select(c => c.ToString()).ToList()))
+                .Append(BuildCursorFromList("includeEvents", request.IncludeEvents.Select(e => e.ToString())))
+                .Append(BuildCursorFromList("excludeEvents", request.ExcludeEvents.Select(e => e.ToString())))
+                .Append(BuildCursorFromList("contracts", request.Contracts.Select(c => c)))
                 .ToString();
 
-            // Gather first and last values of the response set to build cursors
-            var firstCursorValue = sortedDtos.FirstOrDefault()?.Id;
-            var lastCursorValue = sortedDtos.LastOrDefault()?.Id;
+            // The count can change if we remove the + 1 record, we want the original
+            var sortedDtosCount = sortedDtos.Count;
+            var limitPlusOne = request.Limit + 1;
 
-            (CursorDto cursor, int? removeAt) = BuildCursorDto(request.Previous.HasValue(), request.Next.HasValue(), sortedDtos.Count,
-                                                               request.Limit + 1, defaultCursor, firstCursorValue?.ToString(), lastCursorValue?.ToString());
-
-            // Todo: Results are getting messed up because we're supposed to actually remove at before getting the first and last values above.
-            if (removeAt.HasValue)
+            // Remove the + 1 value if necessary
+            var removeAtIndex = RemoveAtIndex(request.PagingBackward, sortedDtosCount, limitPlusOne);
+            if (removeAtIndex.HasValue)
             {
-                sortedDtos.RemoveAt(removeAt.Value);
+                sortedDtos.RemoveAt(removeAtIndex.Value);
             }
 
-            return new TransactionsDto
-            {
-                TransactionDtos = sortedDtos,
-                Cursor = cursor
-            };
+            // Gather first and last values of the response set to build cursors after the + 1 has been removed.
+            var firstCursorValue = sortedDtos.FirstOrDefault()?.Id.ToString();
+            var lastCursorValue = sortedDtos.LastOrDefault()?.Id.ToString();
+
+            // Build the cursor DTO
+            var cursor = BuildCursorDto(request.PagingBackward, request.PagingForward, sortedDtosCount,
+                                        limitPlusOne, defaultCursor, firstCursorValue, lastCursorValue);
+
+            return new TransactionsDto { TransactionDtos = sortedDtos, Cursor = cursor };
         }
     }
 }

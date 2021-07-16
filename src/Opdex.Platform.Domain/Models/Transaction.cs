@@ -52,7 +52,7 @@ namespace Opdex.Platform.Domain.Models
             Logs = new List<TransactionLog>();
         }
 
-        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, bool success, IEnumerable<TransactionLog> logs, string newContractAddress = null)
+        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, bool success, string newContractAddress)
         {
             Id = id;
             Hash = txHash;
@@ -63,7 +63,6 @@ namespace Opdex.Platform.Domain.Models
             Success = success;
             NewContractAddress = newContractAddress;
             Logs = new List<TransactionLog>();
-            AttachLogs(logs);
         }
 
         public long Id { get; private set; }
@@ -131,31 +130,45 @@ namespace Opdex.Platform.Domain.Models
             {
                 TransactionLog opdexLog = topic switch
                 {
+                    // Deployers
+                    nameof(ChangeDeployerOwnerLog) => new ChangeDeployerOwnerLog(log, address, sortOrder),
+                    nameof(CreateMarketLog) => new CreateMarketLog(log, address, sortOrder),
+
+                    // Markets
+                    nameof(ChangeMarketOwnerLog) => new ChangeMarketOwnerLog(log, address, sortOrder),
+                    nameof(ChangeMarketPermissionLog) => new ChangeMarketPermissionLog(log, address, sortOrder),
+                    nameof(CreateLiquidityPoolLog) => new CreateLiquidityPoolLog(log, address, sortOrder),
+
+                    // Liquidity Pools
                     nameof(ReservesLog) => new ReservesLog(log, address, sortOrder),
                     nameof(BurnLog) => new BurnLog(log, address, sortOrder),
                     nameof(MintLog) => new MintLog(log, address, sortOrder),
                     nameof(SwapLog) => new SwapLog(log, address, sortOrder),
+                    nameof(StakeLog) => new StakeLog(log, address, sortOrder),
+                    nameof(CollectStakingRewardsLog) => new CollectStakingRewardsLog(log, address, sortOrder),
+
+                    // Mining Pools
+                    nameof(MineLog) => new MineLog(log, address, sortOrder),
+                    nameof(CollectMiningRewardsLog) => new CollectMiningRewardsLog(log, address, sortOrder),
+                    nameof(EnableMiningLog) => new EnableMiningLog(log, address, sortOrder),
+
+                    // Tokens
                     nameof(ApprovalLog) => new ApprovalLog(log, address, sortOrder),
                     nameof(TransferLog) => new TransferLog(log, address, sortOrder),
-                    nameof(CreateLiquidityPoolLog) => new CreateLiquidityPoolLog(log, address, sortOrder),
-                    nameof(StakeLog) => new StakeLog(log, address, sortOrder),
-                    nameof(MineLog) => new MineLog(log, address, sortOrder),
-                    nameof(CollectStakingRewardsLog) => new CollectStakingRewardsLog(log, address, sortOrder),
-                    nameof(CollectMiningRewardsLog) => new CollectMiningRewardsLog(log, address, sortOrder),
-                    nameof(RewardMiningPoolLog) => new RewardMiningPoolLog(log, address, sortOrder),
-                    nameof(EnableMiningLog) => new EnableMiningLog(log, address, sortOrder),
-                    nameof(NominationLog) => new NominationLog(log, address, sortOrder),
-                    nameof(ChangeVaultOwnerLog) => new ChangeVaultOwnerLog(log, address, sortOrder),
                     nameof(DistributionLog) => new DistributionLog(log, address, sortOrder),
-                    nameof(CreateMarketLog) => new CreateMarketLog(log, address, sortOrder),
-                    nameof(ChangeMarketOwnerLog) => new ChangeMarketOwnerLog(log, address, sortOrder),
-                    nameof(ChangeMarketPermissionLog) => new ChangeMarketPermissionLog(log, address, sortOrder),
-                    nameof(ChangeMarketLog) => new ChangeMarketLog(log, address, sortOrder),
+
+                    // Governances
+                    nameof(NominationLog) => new NominationLog(log, address, sortOrder),
+                    nameof(RewardMiningPoolLog) => new RewardMiningPoolLog(log, address, sortOrder),
+
+                    // Vaults
+                    nameof(ChangeVaultOwnerLog) => new ChangeVaultOwnerLog(log, address, sortOrder),
                     nameof(CreateVaultCertificateLog) => new CreateVaultCertificateLog(log, address, sortOrder),
                     nameof(RevokeVaultCertificateLog) => new RevokeVaultCertificateLog(log, address, sortOrder),
                     nameof(RedeemVaultCertificateLog) => new RedeemVaultCertificateLog(log, address, sortOrder),
-                    nameof(ChangeDeployerOwnerLog) => new ChangeDeployerOwnerLog(log, address, sortOrder),
-                    _ => null // Todo: think about keeping these around incase it is an opdex integrated tx
+
+                    // Else
+                    _ => null
                 };
 
                 if (opdexLog == null) return;

@@ -26,8 +26,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Transactions([FromQuery] IEnumerable<string> contracts,
-                                                      [FromQuery] IEnumerable<uint> includeEvents,
-                                                      [FromQuery] IEnumerable<uint> excludeEvents,
+                                                      [FromQuery] IEnumerable<uint> includedEvents,
+                                                      [FromQuery] IEnumerable<uint> excludedEvents,
                                                       [FromQuery] string wallet,
                                                       [FromQuery] uint limit,
                                                       [FromQuery] string direction,
@@ -35,7 +35,7 @@ namespace Opdex.Platform.WebApi.Controllers
                                                       [FromQuery] string previous,
                                                       CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(new GetTransactionsWithFilterQuery(wallet, includeEvents, excludeEvents, contracts,
+            var response = await _mediator.Send(new GetTransactionsWithFilterQuery(wallet, includedEvents, excludedEvents, contracts,
                                                     direction, limit, next, previous), cancellationToken);
 
             return Ok(response);

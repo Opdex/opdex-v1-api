@@ -10,13 +10,16 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries
     {
         protected EntryFilterQuery(string direction, uint limit, uint maxLimit, string next, string previous)
         {
+            // Set the max limit
             MaximumLimit = maxLimit;
 
+            // Only one or the other can have values
             if (next.HasValue() && previous.HasValue())
             {
                 throw new ArgumentException("Next and previous cannot both have values.");
             }
 
+            // Use encoded cursor if provided, ignoring other query strings
             if (next.HasValue() || previous.HasValue())
             {
                 var decoded = previous.HasValue() ? previous.Base64Decode() : next.Base64Decode();
@@ -35,29 +38,88 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries
                 Next = TryGetCursorDictionarySingle(nameof(next));
                 Previous = TryGetCursorDictionarySingle(nameof(previous));
 
-                ValidateBaseParameters(cursorDirection, uint.Parse(cursorLimit));
+                direction = cursorDirection;
+                limit = uint.Parse(cursorLimit);
             }
-            else
-            {
-                ValidateBaseParameters(direction, limit);
-            }
+
+            ValidateBaseParameters(direction, limit);
         }
 
-        public bool IsNewRequest => !Previous.HasValue() && !Next.HasValue();
-        public string Next { get; }
-        public string NextDecoded => Next.Base64Decode();
-        public string Previous { get; }
-        public string PreviousDecoded => Previous.Base64Decode();
-        public uint Limit { get; private set; }
-        public string Direction { get; private set; }
-        public uint MaximumLimit { get; }
-        public Dictionary<string, List<string>> DecodedCursorDictionary { get; }
+        /// <summary>
+        /// The next cursor (page) in a request. Would be a Base64 string if exists.
+        /// </summary>
+        private string Next { get; }
 
+        /// <summary>
+        /// Shorthand check for if the request included a next page to route too.
+        /// </summary>
+        public bool PagingForward => Next.HasValue();
+
+        /// <summary>
+        /// The decoded Base64 next cursor value as a string.
+        /// </summary>
+        protected string NextDecoded => Next.Base64Decode();
+
+        /// <summary>
+        /// The previous cursor (page) in a request. Would be a Base64 string if exists.
+        /// </summary>
+        private string Previous { get; }
+
+        /// <summary>
+        /// Shorthand check for if the request included a previous page to route too.
+        /// </summary>
+        public bool PagingBackward => Previous.HasValue();
+
+        /// <summary>
+        /// The decoded Base64 previous cursor value as a string.
+        /// </summary>
+        protected string PreviousDecoded => Previous.Base64Decode();
+
+        /// <summary>
+        /// Shorthand check for if the request is not paging, but requesting the first page.
+        /// </summary>
+        protected bool IsNewQuery => !Next.HasValue() && !Previous.HasValue();
+
+        /// <summary>
+        /// The page size of the request.
+        /// </summary>
+        public uint Limit { get; private set; }
+
+        /// <summary>
+        /// The sort direction of the request.
+        /// </summary>
+        public string Direction { get; private set; }
+
+        /// <summary>
+        /// The maximum page size of the request.
+        /// </summary>
+        private uint MaximumLimit { get; }
+
+        /// <summary>
+        /// A dictionary of keys and values of the passed in Base64 Encoded previous or next cursor.
+        /// </summary>
+        private Dictionary<string, List<string>> DecodedCursorDictionary { get; }
+
+        /// <summary>
+        /// TryGet a single string value from the cursor dictionary based on the provided key.
+        /// </summary>
+        /// <remarks>
+        /// The cursor dictionary stores all values as a list of strings, this method explicitly selects a Single
+        /// record if the provided key has a value or returns null.
+        /// </remarks>
+        /// <param name="key">The key to lookup the value decoded value of.</param>
+        /// <returns>A single string record or null.</returns>
         protected string TryGetCursorDictionarySingle(string key)
         {
             return DecodedCursorDictionary.TryGetValue(key, out var result) ? result.Single() : null;
         }
 
+        /// <summary>
+        /// TryGet a list of generic values from the cursor dictionary based on the provided key.
+        /// </summary>
+        /// <param name="key">The key to lookup the value decoded value of.</param>
+        /// <typeparam name="TK">Generic used to cast any found results too.</typeparam>
+        /// <returns>List of type TK of found values.</returns>
         protected List<TK> TryGetCursorDictionaryList<TK>(string key)
         {
             return DecodedCursorDictionary.TryGetValue(key, out var result) ? result as List<TK> : new List<TK>();

@@ -13,20 +13,21 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Transactions
                                               IEnumerable<string> contracts, string direction, uint limit, string next, string previous)
             : base(direction, limit, MaxLimit, next, previous)
         {
-            var walletRequest = IsNewRequest ? wallet : TryGetCursorDictionarySingle(nameof(wallet));
-            var includeEventsRequest = IsNewRequest ? includeEvents : TryGetCursorDictionaryList<uint>(nameof(includeEvents));
-            var excludeEventsRequest = IsNewRequest ? excludeEvents : TryGetCursorDictionaryList<uint>(nameof(excludeEvents));
-            var contractsRequest = IsNewRequest ? contracts : TryGetCursorDictionaryList<string>(nameof(contracts));
+            var walletRequest = IsNewQuery ? wallet : TryGetCursorDictionarySingle(nameof(wallet));
+            var includeEventsRequest = IsNewQuery ? includeEvents : TryGetCursorDictionaryList<uint>(nameof(includeEvents));
+            var excludeEventsRequest = IsNewQuery ? excludeEvents : TryGetCursorDictionaryList<uint>(nameof(excludeEvents));
+            var contractsRequest = IsNewQuery ? contracts : TryGetCursorDictionaryList<string>(nameof(contracts));
 
             // Todo: Switch events to Enum with validation if they're provided
 
-            // Decode the Next and Previous strings to make sure they're expected value types
+            // Decode the Previous cursor if it's provided and validate the value
             var parsedPrevious = long.TryParse(PreviousDecoded, out var previousParsed);
             if (PreviousDecoded.HasValue() && !parsedPrevious)
             {
                 throw new ArgumentOutOfRangeException(nameof(previous), "Invalid previous cursor value.");
             }
 
+            // Decode the Next cursor if it's provided and validate the value
             var parsedNext = long.TryParse(NextDecoded, out var nextParsed);
             if (NextDecoded.HasValue() && !parsedNext)
             {

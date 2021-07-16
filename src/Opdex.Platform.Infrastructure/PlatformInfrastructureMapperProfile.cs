@@ -1,7 +1,5 @@
 using AutoMapper;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Domain;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
@@ -45,7 +43,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TransactionEntity, Transaction>()
-                .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, src.Success, new TransactionLog[0], src.NewContractAddress))
+                .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, src.Success, src.NewContractAddress))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TokenEntity, Token>()
@@ -172,26 +170,44 @@ namespace Opdex.Platform.Infrastructure
                 {
                     return src.LogTypeId switch
                     {
+                        // Deployers
+                        (int)TransactionLogType.CreateMarketLog => new CreateMarketLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.ChangeDeployerOwnerLog => new ChangeDeployerOwnerLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+
+                        // Markets
+                        (int)TransactionLogType.CreateLiquidityPoolLog => new CreateLiquidityPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.ChangeMarketOwnerLog => new ChangeMarketOwnerLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.ChangeMarketPermissionLog => new ChangeMarketPermissionLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+
+                        // Liquidity Pools
                         (int)TransactionLogType.ReservesLog => new ReservesLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.BurnLog => new BurnLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.MintLog => new MintLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.SwapLog => new SwapLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.CollectStakingRewardsLog => new CollectStakingRewardsLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.StakeLog => new StakeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+
+                        // Mining Pools
+                        (int)TransactionLogType.MineLog => new MineLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.CollectMiningRewardsLog => new CollectMiningRewardsLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.EnableMiningLog => new EnableMiningLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+
+                        // Tokens
                         (int)TransactionLogType.ApprovalLog => new ApprovalLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.TransferLog => new TransferLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.CreateLiquidityPoolLog => new CreateLiquidityPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.StakeLog => new StakeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.MineLog => new MineLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.CollectStakingRewardsLog => new CollectStakingRewardsLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.CollectMiningRewardsLog => new CollectMiningRewardsLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.RewardMiningPoolLog => new RewardMiningPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.EnableMiningLog => new EnableMiningLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.NominationLog => new NominationLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.ChangeVaultOwnerLog => new ChangeVaultOwnerLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.DistributionLog => new DistributionLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.CreateMarketLog => new CreateMarketLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.ChangeMarketOwnerLog => new ChangeMarketOwnerLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.ChangeMarketPermissionLog => new ChangeMarketPermissionLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.ChangeMarketLog => new ChangeMarketLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+
+                        // Governances
+                        (int)TransactionLogType.RewardMiningPoolLog => new RewardMiningPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.NominationLog => new NominationLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+
+                        // Vault
+                        (int)TransactionLogType.ChangeVaultOwnerLog => new ChangeVaultOwnerLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.CreateVaultCertificateLog => new CreateVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.RevokeVaultCertificateLog => new RevokeVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.RedeemVaultCertificateLog => new RedeemVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+
+                        // Else
                         _ => null
                     };
                 })

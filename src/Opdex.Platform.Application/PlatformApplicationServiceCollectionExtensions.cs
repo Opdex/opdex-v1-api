@@ -107,6 +107,28 @@ using Opdex.Platform.Application.Handlers.Indexer;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Deployers;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Governances;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
+using Opdex.Platform.Application.Abstractions.Models.TransactionLogs.LiquidityPools;
+using Opdex.Platform.Application.Assemblers.TransactionEvents.Deployers;
+using Opdex.Platform.Application.Assemblers.TransactionEvents.Governances;
+using Opdex.Platform.Application.Assemblers.TransactionEvents.LiquidityPools;
+using Opdex.Platform.Application.Assemblers.TransactionEvents.Markets;
+using Opdex.Platform.Application.Assemblers.TransactionEvents.MiningPools;
+using Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens;
+using Opdex.Platform.Application.Assemblers.TransactionEvents.Vaults;
+using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
+using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
+using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
+using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
+using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
+using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
+using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 
 namespace Opdex.Platform.Application
 {
@@ -220,7 +242,6 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessBurnLogCommand, bool>, ProcessBurnLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessSwapLogCommand, bool>, ProcessSwapLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessReservesLogCommand, bool>, ProcessReservesLogCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessChangeMarketLogCommand, bool>, ProcessChangeMarketLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessCollectMiningRewardsLogCommand, bool>, ProcessCollectMiningRewardsLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessEnableMiningLogCommand, bool>, ProcessEnableMiningLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessStakeLogCommand, bool>, ProcessStakeLogCommandHandler>();
@@ -308,6 +329,44 @@ namespace Opdex.Platform.Application
             services.AddTransient<IModelAssembler<Token, TokenDto>, TokenDtoAssembler>();
             services.AddTransient<IModelAssembler<MiningGovernance, MiningGovernanceDto>, MiningGovernanceDtoAssembler>();
             services.AddTransient<IModelAssembler<Vault, VaultDto>, VaultDtoAssembler>();
+
+            // Transaction Logs
+
+            // Deployers
+            services.AddTransient<IModelAssembler<ChangeDeployerOwnerLog, ChangeDeployerOwnerLogDto>, ChangeDeployerOwnerEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<CreateMarketLog, CreateMarketEventDto>, CreateMarketEventDtoAssembler>();
+
+            // Markets
+            services.AddTransient<IModelAssembler<ChangeMarketOwnerLog, ChangeMarketOwnerLogDto>, ChangeMarketOwnerEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<ChangeMarketPermissionLog, ChangeMarketPermissionEventDto>, ChangeMarketPermissionEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<CreateLiquidityPoolLog, CreateLiquidityPoolEventDto>, CreateLiquidityPoolEventDtoAssembler>();
+
+            // Liquidity Pools
+            services.AddTransient<IModelAssembler<SwapLog, SwapEventDto>, SwapEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<BurnLog, ProvideEventDto>, ProvideEventDtoAssembler<BurnLog>>();
+            services.AddTransient<IModelAssembler<MintLog, ProvideEventDto>, ProvideEventDtoAssembler<MintLog>>();
+            services.AddTransient<IModelAssembler<StakeLog, StakeEventDto>, StakeEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<CollectStakingRewardsLog, CollectStakingRewardsEventDto>, CollectStakingRewardsEventDtoAssembler>();
+
+            // Mining Pools
+            services.AddTransient<IModelAssembler<EnableMiningLog, EnableMiningLogDto>, EnableMiningEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<MineLog, MineLogDto>, MineEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<CollectMiningRewardsLog, CollectMiningRewardsLogDto>, CollectMiningRewardsEventDtoAssembler>();
+
+            // Tokens
+            services.AddTransient<IModelAssembler<TransferLog, TransferLogDto>, TransferEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<ApprovalLog, ApprovalLogDto>, ApprovalEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<DistributionLog, DistributionEventDto>, DistributionEventDtoAssembler>();
+
+            // Governances
+            services.AddTransient<IModelAssembler<NominationLog, NominationEventDto>, NominationEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<RewardMiningPoolLog, RewardMiningPoolEventDto>, RewardMiningPoolEventDtoAssembler>();
+
+            // Vaults
+            services.AddTransient<IModelAssembler<ChangeVaultOwnerLog, ChangeVaultOwnerEventDto>, ChangeVaultOwnerEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<RevokeVaultCertificateLog, RevokeVaultCertificateEventDto>, RevokeVaultCertificateEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<RedeemVaultCertificateLog, RedeemVaultCertificateEventDto>, RedeemVaultCertificateEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<CreateVaultCertificateLog, CreateVaultCertificateEventDto>, CreateVaultCertificateEventDtoAssembler>();
 
             return services;
         }

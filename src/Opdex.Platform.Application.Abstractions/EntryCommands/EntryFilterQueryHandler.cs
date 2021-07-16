@@ -1,7 +1,6 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries;
 using Opdex.Platform.Application.Abstractions.Models;
-using Opdex.Platform.Common.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,75 +20,63 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands
 
         public abstract Task<TK> Handle(T request, CancellationToken cancellationToken);
 
-        protected (CursorDto cursorDto, int? removeAt) BuildCursorDto(bool previousHasValue, bool nextHasValue, int count, uint limitPlusOne,
-                                                                      string defaultCursor, string firstCursorString, string lastCursorString)
+        protected int? RemoveAtIndex(bool previousHasValue, int count, uint limitPlusOne)
+        {
+            // If there's the + 1 record only
+            if (count < limitPlusOne) return null;
+
+            // Moving backwards remove the first item else remove the last item
+            return previousHasValue ? 0 : count - 1;
+        }
+
+        protected CursorDto BuildCursorDto(bool pagingBackward, bool pagingForward, int count, uint limitPlusOne,
+                                           string defaultCursor, string firstCursorString, string lastCursorString)
         {
             var cursor = new CursorDto();
-            int? removeAt = null;
 
+            // Limit + 1 returned, there is more than 1 page of results
             if (count == limitPlusOne)
             {
                 // If the + 1 record is returned, there is always a next page
-                cursor.Next = BuildCursor(defaultCursor, lastCursorString, true);
+                cursor.BuildNextCursor(defaultCursor, lastCursorString);
 
-                if (previousHasValue) // Going backward
+                if (pagingBackward)
                 {
-                    // Moving backwards remove the first item (the +1)
-                    removeAt = 0;
-
-                    cursor.Previous = BuildCursor(defaultCursor, firstCursorString, false);
-
+                    // Paging backward with + 1 record returned, there is a previous page
+                    cursor.BuildPreviousCursor(defaultCursor, firstCursorString);
                 }
-                else // Going forward but maybe not only to the first page
+                else if (pagingForward)
                 {
-                    // Moving forwards remove the last item (the +1)
-                    removeAt = count - 1;
-
-                    // request.Next defined means we're past the first page moving onto the NEXT page.
-                    // meaning, we'll have a previous page. (The one we're coming from)
-                    if (nextHasValue)
-                    {
-                        cursor.Previous = BuildCursor(defaultCursor, firstCursorString, false);
-                    }
+                    // Paging forward with + 1 record returned, there is a next page
+                    cursor.BuildPreviousCursor(defaultCursor, firstCursorString);
                 }
             }
-            else // There was no +1, we've hit the end or beginning of our search
+            // There was no +1, we've hit the end or beginning of our search
+            else
             {
-                // going backward hitting the beginning
-                if (previousHasValue)
+                if (pagingBackward)
                 {
-                    cursor.Next = BuildCursor(defaultCursor, lastCursorString, true);
+                    // Paging backward hitting the beginning, there is a next page
+                    cursor.BuildNextCursor(defaultCursor, lastCursorString);
                 }
 
-                // going forward hitting the end
-                if (nextHasValue)
+                if (pagingForward)
                 {
-                    cursor.Previous = BuildCursor(defaultCursor, firstCursorString, false);
+                    // Paging forward hitting the end, there is a previous page
+                    cursor.BuildPreviousCursor(defaultCursor, firstCursorString);
                 }
             }
 
-            return (cursor, removeAt);
+            return cursor;
         }
 
-        protected static string BuildCursorFromList(string key, List<string> values)
+        protected static string BuildCursorFromList(string key, IEnumerable<string> values)
         {
             var sb = new StringBuilder();
 
             foreach (var value in values) sb.Append($"{key}:{value};");
 
             return sb.ToString();
-        }
-
-        private static string BuildCursor(string defaultCursor, string cursorValue, bool next)
-        {
-            var build = new StringBuilder(defaultCursor);
-
-            var cursorType = next ? "next" : "previous";
-
-            return build
-                .Append($"{cursorType}:{cursorValue.Base64Encode()};")
-                .ToString()
-                .Base64Encode();
         }
     }
 }
