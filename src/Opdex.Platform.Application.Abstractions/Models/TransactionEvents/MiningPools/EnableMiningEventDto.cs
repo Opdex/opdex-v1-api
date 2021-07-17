@@ -1,8 +1,6 @@
-using Opdex.Platform.Application.Abstractions.Models.TransactionLogs;
-
 namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools
 {
-    public class EnableMiningLogDto : TransactionEventDto
+    public class EnableMiningEventDto : TransactionEventDto
     {
         public string Amount { get; set; }
         public string RewardRate { get; set; }

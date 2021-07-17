@@ -1,4 +1,5 @@
 using MediatR;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Extensions;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens
 {
-    public class ApprovalEventDtoAssembler : IModelAssembler<ApprovalLog, ApprovalLogDto>
+    public class ApprovalEventDtoAssembler : IModelAssembler<ApprovalLog, ApprovalEventDto>
     {
         private readonly IMediator _mediator;
 
@@ -17,17 +18,17 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<ApprovalLogDto> Assemble(ApprovalLog log)
+        public async Task<ApprovalEventDto> Assemble(ApprovalLog log)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(log.Contract));
 
-            return new ApprovalLogDto
+            return new ApprovalEventDto
             {
                 Id = log.Id,
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
-                LogType = log.LogType.ToString(),
+                EventType = TransactionEventType.ApprovalEvent,
                 Owner = log.Owner,
                 Spender = log.Spender,
                 Amount = log.Amount.InsertDecimal(token.Decimals)

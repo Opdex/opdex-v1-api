@@ -1,5 +1,3 @@
-using Opdex.Platform.Application.Abstractions.Models.TransactionLogs;
-
 namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens
 {
     public class DistributionEventDto : TransactionEventDto

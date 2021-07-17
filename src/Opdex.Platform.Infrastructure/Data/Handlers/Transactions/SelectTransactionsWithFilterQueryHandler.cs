@@ -57,9 +57,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
             var results = await _context.ExecuteQueryAsync<TransactionEntity>(query);
 
-            // Set order again in case we're going backwards and the sort direction was flipped. (see "direction" in QueryBuilder)
-            // results = request.Direction == "ASC" ? results.OrderBy(tx => tx.Id) : results.OrderByDescending(tx => tx.Id);
-
             return _mapper.Map<List<Transaction>>(results).ToList();
         }
 

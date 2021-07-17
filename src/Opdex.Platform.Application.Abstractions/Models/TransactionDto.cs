@@ -8,7 +8,7 @@ namespace Opdex.Platform.Application.Abstractions.Models
     {
         public TransactionDto()
         {
-            Logs = Enumerable.Empty<TransactionEventDto>();
+            Events = Enumerable.Empty<TransactionEventDto>();
         }
 
         public long Id { get; set; }
@@ -19,6 +19,6 @@ namespace Opdex.Platform.Application.Abstractions.Models
         public int GasUsed { get; set; }
         public string From { get; set; }
         public string To { get; set; }
-        public IEnumerable<TransactionEventDto> Logs { get; set; }
+        public IEnumerable<TransactionEventDto> Events { get; set; }
     }
 }

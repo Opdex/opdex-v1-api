@@ -1,5 +1,6 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Models.TransactionLogs.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Constants;
@@ -40,7 +41,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.LiquidityPools
                 Id = log.Id,
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
-                LogType = log.LogType.ToString(),
+                EventType = TransactionEventType.ProvideEvent,
                 AmountCrs = isBurnLog
                     ? (log as BurnLog)?.AmountCrs.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals)
                     : (log as MintLog)?.AmountCrs.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals),
@@ -51,7 +52,8 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.LiquidityPools
                     ? (log as BurnLog)?.AmountLpt.InsertDecimal(lpToken.Decimals)
                     : (log as MintLog)?.AmountLpt.InsertDecimal(lpToken.Decimals),
                 TokenLp = lpToken.Address,
-                TokenSrc = srcToken.Address
+                TokenSrc = srcToken.Address,
+                SubEventType = isBurnLog ? "RemoveLiquidity" : "AddLiquidity"
             };
         }
     }

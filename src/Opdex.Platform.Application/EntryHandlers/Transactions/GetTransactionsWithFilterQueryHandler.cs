@@ -63,7 +63,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             var cursor = BuildCursorDto(request.PagingBackward, request.PagingForward, sortedDtosCount,
                                         limitPlusOne, defaultCursor, firstCursorValue, lastCursorValue);
 
-            return new TransactionsDto { TransactionDtos = sortedDtos, Cursor = cursor };
+            return new TransactionsDto { TransactionDtos = sortedDtos, CursorDto = cursor };
         }
     }
 }

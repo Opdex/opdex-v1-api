@@ -1,3 +1,4 @@
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
@@ -6,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers.TransactionEvents.MiningPools
 {
-    public class MineEventDtoAssembler : IModelAssembler<MineLog, MineLogDto>
+    public class MineEventDtoAssembler : IModelAssembler<MineLog, MineEventDto>
     {
-        public Task<MineLogDto> Assemble(MineLog log)
+        public Task<MineEventDto> Assemble(MineLog log)
         {
-            return Task.FromResult(new MineLogDto
+            return Task.FromResult(new MineEventDto
             {
                 Id = log.Id,
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
-                LogType = log.LogType.ToString(),
                 Amount = log.Amount.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals),
                 Miner = log.Miner,
-                EventType = log.EventType.ToString()
+                EventType = TransactionEventType.MineEvent,
+                SubEventType = log.EventType == 1 ? "StartMining" : "StopMining"
             });
         }
     }

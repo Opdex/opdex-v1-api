@@ -1,4 +1,5 @@
 using MediatR;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
@@ -37,7 +38,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.LiquidityPools
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
-                LogType = log.LogType.ToString()
+                EventType = TransactionEventType.SwapEvent
             };
         }
     }

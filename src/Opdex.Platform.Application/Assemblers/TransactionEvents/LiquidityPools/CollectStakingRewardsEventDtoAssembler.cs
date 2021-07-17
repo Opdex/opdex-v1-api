@@ -1,3 +1,4 @@
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
@@ -16,7 +17,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.LiquidityPools
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
-                LogType = log.LogType.ToString(),
+                EventType = TransactionEventType.CollectStakingRewardsEvent,
                 Reward = log.Reward.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals),
                 Staker = log.Staker
             });

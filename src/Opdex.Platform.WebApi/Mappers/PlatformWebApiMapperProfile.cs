@@ -5,15 +5,34 @@ using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Deployers;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Governances;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Responses;
+using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using Opdex.Platform.WebApi.Models.Responses.Governances;
 using Opdex.Platform.WebApi.Models.Responses.Markets;
 using Opdex.Platform.WebApi.Models.Responses.OHLC;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
+using Opdex.Platform.WebApi.Models.Responses.Transactions;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Deployers;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Governances;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.LiquidityPools;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Markets;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.MiningPools;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Tokens;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Vault;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
@@ -149,6 +168,179 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.TokensUnassigned, opt => opt.MapFrom(src => src.TokensUnassigned))
                 .ForMember(dest => dest.LockedToken, opt => opt.MapFrom(src => src.LockedToken))
                 .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<BlockDto, BlockResponseModel>()
+                .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
+                .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
+                .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time))
+                .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<CursorDto, CursorResponseModel>()
+                .ForMember(dest => dest.Next, opt => opt.MapFrom(src => src.Next))
+                .ForMember(dest => dest.Previous, opt => opt.MapFrom(src => src.Previous))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            // Transactions
+            CreateMap<TransactionsDto, TransactionsResponseModel>()
+                .ForMember(dest => dest.Transactions, opt => opt.MapFrom(src => src.TransactionDtos))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.CursorDto))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            // Transaction
+            CreateMap<TransactionDto, TransactionResponseModel>()
+                .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
+                .ForMember(dest => dest.Success, opt => opt.MapFrom(src => src.Success))
+                .ForMember(dest => dest.NewContractAddress, opt => opt.MapFrom(src => src.NewContractAddress))
+                .ForMember(dest => dest.Block, opt => opt.MapFrom(src => src.BlockDto))
+                .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
+                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            // Transaction Events
+            CreateMap<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => src.EventType))
+                .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
+                .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder));
+
+            // Deployer Transaction Events
+            CreateMap<ChangeDeployerOwnerEventDto, ChangeDeployerOwnerEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To));
+
+            CreateMap<CreateMarketEventDto, CreateMarketEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Router, opt => opt.MapFrom(src => src.Router))
+                .ForMember(dest => dest.AuthPoolCreators, opt => opt.MapFrom(src => src.AuthPoolCreators))
+                .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
+                .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
+                .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
+                .ForMember(dest => dest.StakingToken, opt => opt.MapFrom(src => src.StakingToken))
+                .ForMember(dest => dest.EnableMarketFee, opt => opt.MapFrom(src => src.EnableMarketFee));
+
+            // Market Transaction Events
+            CreateMap<CreateLiquidityPoolEventDto, CreateLiquidityPoolEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Pool, opt => opt.MapFrom(src => src.Pool))
+                .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token));
+
+            CreateMap<ChangeMarketOwnerEventDto, ChangeMarketOwnerEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To));
+
+            CreateMap<ChangeMarketPermissionEventDto, ChangeMarketPermissionEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Permission, opt => opt.MapFrom(src => src.Permission))
+                .ForMember(dest => dest.IsAuthorized, opt => opt.MapFrom(src => src.IsAuthorized));
+
+            // Liquidity Pool Transaction Events
+            CreateMap<ProvideEventDto, ProvideEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.AmountCrs, opt => opt.MapFrom(src => src.AmountCrs))
+                .ForMember(dest => dest.AmountSrc, opt => opt.MapFrom(src => src.AmountSrc))
+                .ForMember(dest => dest.AmountLpt, opt => opt.MapFrom(src => src.AmountLpt));
+
+            CreateMap<SwapEventDto, SwapEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender))
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForMember(dest => dest.AmountCrsIn, opt => opt.MapFrom(src => src.AmountCrsIn))
+                .ForMember(dest => dest.AmountCrsOut, opt => opt.MapFrom(src => src.AmountCrsOut))
+                .ForMember(dest => dest.AmountSrcIn, opt => opt.MapFrom(src => src.AmountSrcIn))
+                .ForMember(dest => dest.AmountSrcOut, opt => opt.MapFrom(src => src.AmountSrcOut));
+
+            CreateMap<CollectStakingRewardsEventDto, CollectStakingRewardsEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
+                .ForMember(dest => dest.Reward, opt => opt.MapFrom(src => src.Reward));
+
+            CreateMap<StakeEventDto, StakeEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => src.EventType));
+
+            // Mining Pool Transaction Events
+            CreateMap<CollectMiningRewardsEventDto, CollectMiningRewardsEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Miner, opt => opt.MapFrom(src => src.Miner))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
+
+            CreateMap<MineEventDto, MineEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Miner, opt => opt.MapFrom(src => src.Miner))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => src.EventType));
+
+            CreateMap<EnableMiningEventDto, EnableMiningEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.RewardRate, opt => opt.MapFrom(src => src.RewardRate))
+                .ForMember(dest => dest.MiningPeriodEndBlock, opt => opt.MapFrom(src => src.MiningPeriodEndBlock));
+
+            // Token Transaction Events
+            CreateMap<TransferEventDto, TransferEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
+
+            CreateMap<ApprovalEventDto, ApprovalEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
+
+            CreateMap<DistributionEventDto, DistributionEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.VaultAmount, opt => opt.MapFrom(src => src.VaultAmount))
+                .ForMember(dest => dest.MiningAmount, opt => opt.MapFrom(src => src.MiningAmount))
+                .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex));
+
+            // Governance Transaction Events
+            CreateMap<RewardMiningPoolEventDto, RewardMiningPoolEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.StakingPool, opt => opt.MapFrom(src => src.StakingPool))
+                .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
+
+            CreateMap<NominationEventDto, NominationEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.StakingPool, opt => opt.MapFrom(src => src.StakingPool))
+                .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
+                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight));
+
+            // Vaults Transaction Events
+            CreateMap<ChangeVaultOwnerEventDto, ChangeVaultOwnerEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To));
+
+            CreateMap<CreateVaultCertificateEventDto, CreateVaultCertificateEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.Holder, opt => opt.MapFrom(src => src.Holder))
+                .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock));
+
+            CreateMap<RevokeVaultCertificateEventDto, RevokeVaultCertificateEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.OldAmount, opt => opt.MapFrom(src => src.OldAmount))
+                .ForMember(dest => dest.NewAmount, opt => opt.MapFrom(src => src.NewAmount))
+                .ForMember(dest => dest.Holder, opt => opt.MapFrom(src => src.Holder))
+                .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock));
+
+            CreateMap<RedeemVaultCertificateEventDto, RedeemVaultCertificateEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.Holder, opt => opt.MapFrom(src => src.Holder))
+                .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock));
         }
 
         private static ReservesResponseModel MapReserves(ReservesDto reservesDto, int srcTokenDecimals)

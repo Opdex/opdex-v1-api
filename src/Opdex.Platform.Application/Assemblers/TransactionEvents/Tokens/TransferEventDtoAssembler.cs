@@ -1,4 +1,5 @@
 using MediatR;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Extensions;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens
 {
-    public class TransferEventDtoAssembler : IModelAssembler<TransferLog, TransferLogDto>
+    public class TransferEventDtoAssembler : IModelAssembler<TransferLog, TransferEventDto>
     {
         private readonly IMediator _mediator;
 
@@ -17,17 +18,17 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<TransferLogDto> Assemble(TransferLog log)
+        public async Task<TransferEventDto> Assemble(TransferLog log)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(log.Contract));
 
-            return new TransferLogDto
+            return new TransferEventDto
             {
                 Id = log.Id,
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
-                LogType = log.LogType.ToString(),
+                EventType = TransactionEventType.TransferEvent,
                 From = log.From,
                 To = log.To,
                 Amount = log.Amount.InsertDecimal(token.Decimals)

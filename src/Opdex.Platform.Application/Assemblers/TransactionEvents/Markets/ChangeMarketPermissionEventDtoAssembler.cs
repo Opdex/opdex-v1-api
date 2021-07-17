@@ -1,3 +1,4 @@
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Markets
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
-                LogType = log.LogType.ToString(),
+                EventType = TransactionEventType.ChangeMarketPermissionEvent,
                 Address = log.Address,
                 Permission = log.Permission.ToString(),
                 IsAuthorized = log.IsAuthorized

@@ -1,7 +1,6 @@
 using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
-using Opdex.Platform.Application.Abstractions.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Pools;
@@ -179,7 +178,7 @@ namespace Opdex.Platform.Application
 
             CreateMap<TransactionLog, TransactionEventDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.LogType, opt => opt.MapFrom(src => src.LogType))
+                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => src.LogType))
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))

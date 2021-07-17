@@ -1,3 +1,4 @@
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
@@ -6,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers.TransactionEvents.MiningPools
 {
-    public class EnableMiningEventDtoAssembler : IModelAssembler<EnableMiningLog, EnableMiningLogDto>
+    public class EnableMiningEventDtoAssembler : IModelAssembler<EnableMiningLog, EnableMiningEventDto>
     {
-        public Task<EnableMiningLogDto> Assemble(EnableMiningLog source)
+        public Task<EnableMiningEventDto> Assemble(EnableMiningLog log)
         {
-            return Task.FromResult(new EnableMiningLogDto
+            return Task.FromResult(new EnableMiningEventDto
             {
-                Id = source.Id,
-                TransactionId = source.TransactionId,
-                SortOrder = source.SortOrder,
-                Amount = source.Amount.InsertDecimal(TokenConstants.Opdex.Decimals),
-                Contract = source.Contract,
-                LogType = source.LogType.ToString(),
-                MiningPeriodEndBlock = source.MiningPeriodEndBlock,
-                RewardRate = source.RewardRate,
+                Id = log.Id,
+                TransactionId = log.TransactionId,
+                SortOrder = log.SortOrder,
+                Amount = log.Amount.InsertDecimal(TokenConstants.Opdex.Decimals),
+                Contract = log.Contract,
+                EventType = TransactionEventType.EnableMiningEvent,
+                MiningPeriodEndBlock = log.MiningPeriodEndBlock,
+                RewardRate = log.RewardRate.InsertDecimal(TokenConstants.Opdex.Decimals)
             });
         }
     }

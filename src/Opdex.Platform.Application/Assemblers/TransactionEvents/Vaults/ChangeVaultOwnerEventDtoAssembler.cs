@@ -1,3 +1,4 @@
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Vaults
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
-                LogType = log.LogType.ToString(),
+                EventType = TransactionEventType.ChangeVaultOwnerEvent,
                 From = log.From,
                 To = log.To
             });

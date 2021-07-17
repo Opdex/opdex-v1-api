@@ -1,3 +1,4 @@
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Deployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Deployers
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
-                LogType = log.LogType.ToString(),
+                EventType = TransactionEventType.CreateMarketEvent,
                 Market = log.Market,
                 Owner = log.Owner,
                 Router = log.Router,

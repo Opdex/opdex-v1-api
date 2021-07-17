@@ -11,8 +11,6 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
-using Opdex.Platform.Application.Abstractions.Models.TransactionLogs;
-using Opdex.Platform.Application.Abstractions.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions.TransactionLogs;
 using Opdex.Platform.Domain.Models;
@@ -36,19 +34,19 @@ namespace Opdex.Platform.Application.Assemblers
         private readonly IModelAssembler<SwapLog, SwapEventDto> _swapEventDtoAssembler;
         private readonly IModelAssembler<MintLog, ProvideEventDto> _mintLogDtoAssembler;
         private readonly IModelAssembler<BurnLog, ProvideEventDto> _burnLogDtoAssembler;
-        private readonly IModelAssembler<EnableMiningLog, EnableMiningLogDto> _enableMiningDtoAssembler;
+        private readonly IModelAssembler<EnableMiningLog, EnableMiningEventDto> _enableMiningDtoAssembler;
         private readonly IModelAssembler<StakeLog, StakeEventDto> _stakeEventDtoAssembler;
-        private readonly IModelAssembler<MineLog, MineLogDto> _mineEventDtoAssembler;
-        private readonly IModelAssembler<CollectMiningRewardsLog, CollectMiningRewardsLogDto> _collectMiningRewardsEventDtoAssembler;
+        private readonly IModelAssembler<MineLog, MineEventDto> _mineEventDtoAssembler;
+        private readonly IModelAssembler<CollectMiningRewardsLog, CollectMiningRewardsEventDto> _collectMiningRewardsEventDtoAssembler;
         private readonly IModelAssembler<CollectStakingRewardsLog, CollectStakingRewardsEventDto> _collectStakingRewardsEventDtoAssembler;
-        private readonly IModelAssembler<ChangeMarketOwnerLog, ChangeMarketOwnerLogDto> _changeMarketOwnerEventDtoAssembler;
+        private readonly IModelAssembler<ChangeMarketOwnerLog, ChangeMarketOwnerEventDto> _changeMarketOwnerEventDtoAssembler;
         private readonly IModelAssembler<ChangeVaultOwnerLog, ChangeVaultOwnerEventDto> _changeVaultOwnerEventDtoAssembler;
         private readonly IModelAssembler<CreateVaultCertificateLog, CreateVaultCertificateEventDto> _createVaultCertificateEventDtoAssembler;
         private readonly IModelAssembler<RedeemVaultCertificateLog, RedeemVaultCertificateEventDto> _redeemVaultCertificateEventDtoAssembler;
         private readonly IModelAssembler<RevokeVaultCertificateLog, RevokeVaultCertificateEventDto> _revokeVaultCertificateEventDtoAssembler;
-        private readonly IModelAssembler<ChangeDeployerOwnerLog, ChangeDeployerOwnerLogDto> _changeDeployerOwnerEventDtoAssembler;
-        private readonly IModelAssembler<TransferLog, TransferLogDto> _transferEventDtoAssembler;
-        private readonly IModelAssembler<ApprovalLog, ApprovalLogDto> _approvalEventDtoAssembler;
+        private readonly IModelAssembler<ChangeDeployerOwnerLog, ChangeDeployerOwnerEventDto> _changeDeployerOwnerEventDtoAssembler;
+        private readonly IModelAssembler<TransferLog, TransferEventDto> _transferEventDtoAssembler;
+        private readonly IModelAssembler<ApprovalLog, ApprovalEventDto> _approvalEventDtoAssembler;
         private readonly IModelAssembler<DistributionLog, DistributionEventDto> _distributionEventDtoAssembler;
         private readonly IModelAssembler<NominationLog, NominationEventDto> _nominationEventDtoAssembler;
         private readonly IModelAssembler<RewardMiningPoolLog, RewardMiningPoolEventDto> _rewardMiningPoolEventDtoAssembler;
@@ -61,19 +59,19 @@ namespace Opdex.Platform.Application.Assemblers
                                        IModelAssembler<SwapLog, SwapEventDto> swapEventDtoAssembler,
                                        IModelAssembler<MintLog, ProvideEventDto> mintLogDtoAssembler,
                                        IModelAssembler<BurnLog, ProvideEventDto> burnLogDtoAssembler,
-                                       IModelAssembler<EnableMiningLog, EnableMiningLogDto> enableMiningDtoAssembler,
+                                       IModelAssembler<EnableMiningLog, EnableMiningEventDto> enableMiningDtoAssembler,
                                        IModelAssembler<StakeLog, StakeEventDto> stakeEventDtoAssembler,
-                                       IModelAssembler<MineLog, MineLogDto> mineEventDtoAssembler,
-                                       IModelAssembler<CollectMiningRewardsLog, CollectMiningRewardsLogDto> collectMiningRewardsEventDtoAssembler,
+                                       IModelAssembler<MineLog, MineEventDto> mineEventDtoAssembler,
+                                       IModelAssembler<CollectMiningRewardsLog, CollectMiningRewardsEventDto> collectMiningRewardsEventDtoAssembler,
                                        IModelAssembler<CollectStakingRewardsLog, CollectStakingRewardsEventDto> collectStakingRewardsEventDtoAssembler,
-                                       IModelAssembler<ChangeMarketOwnerLog, ChangeMarketOwnerLogDto> changeMarketOwnerEventDtoAssembler,
+                                       IModelAssembler<ChangeMarketOwnerLog, ChangeMarketOwnerEventDto> changeMarketOwnerEventDtoAssembler,
                                        IModelAssembler<ChangeVaultOwnerLog, ChangeVaultOwnerEventDto> changeVaultOwnerEventDtoAssembler,
                                        IModelAssembler<CreateVaultCertificateLog, CreateVaultCertificateEventDto> createVaultCertificateEventDtoAssembler,
                                        IModelAssembler<RedeemVaultCertificateLog, RedeemVaultCertificateEventDto> redeemVaultCertificateEventDtoAssembler,
                                        IModelAssembler<RevokeVaultCertificateLog, RevokeVaultCertificateEventDto> revokeVaultCertificateEventDtoAssembler,
-                                       IModelAssembler<ChangeDeployerOwnerLog, ChangeDeployerOwnerLogDto> changeDeployerOwnerEventDtoAssembler,
-                                       IModelAssembler<TransferLog, TransferLogDto> transferEventDtoAssembler,
-                                       IModelAssembler<ApprovalLog, ApprovalLogDto> approvalEventDtoAssembler,
+                                       IModelAssembler<ChangeDeployerOwnerLog, ChangeDeployerOwnerEventDto> changeDeployerOwnerEventDtoAssembler,
+                                       IModelAssembler<TransferLog, TransferEventDto> transferEventDtoAssembler,
+                                       IModelAssembler<ApprovalLog, ApprovalEventDto> approvalEventDtoAssembler,
                                        IModelAssembler<DistributionLog, DistributionEventDto> distributionEventDtoAssembler,
                                        IModelAssembler<NominationLog, NominationEventDto> nominationEventDtoAssembler,
                                        IModelAssembler<RewardMiningPoolLog, RewardMiningPoolEventDto> rewardMiningPoolEventDtoAssembler,
@@ -162,7 +160,7 @@ namespace Opdex.Platform.Application.Assemblers
             var transactionDto =  _mapper.Map<TransactionDto>(new Transaction(tx.Id, tx.Hash, tx.BlockHeight, tx.GasUsed, tx.From, tx.To,
                                                                               tx.Success, tx.NewContractAddress));
 
-            transactionDto.Logs = txLogDtos.OrderBy(log => log.SortOrder);
+            transactionDto.Events = txLogDtos.OrderBy(log => log.SortOrder);
             transactionDto.BlockDto = _mapper.Map<BlockDto>(block);
 
             return transactionDto;
