@@ -24,7 +24,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 ab.{nameof(AddressBalanceEntity.CreatedBlock)},
                 ab.{nameof(AddressBalanceEntity.ModifiedBlock)}
             FROM address_balance ab
-            JOIN token t ON t.{nameof(TokenEntity.Id)} = ab.{nameof(AddressAllowance.TokenId)}
+            JOIN token t ON t.{nameof(TokenEntity.Id)} = ab.{nameof(AddressBalanceEntity.TokenId)}
             WHERE ab.{nameof(AddressBalanceEntity.Owner)} = @{nameof(SqlParams.Owner)} AND
                    t.{nameof(TokenEntity.Address)} = @{nameof(SqlParams.TokenAddress)}
             LIMIT 1;";
