@@ -1,6 +1,6 @@
 namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents
 {
-    public class TransactionEventDto
+    public abstract class TransactionEventDto
     {
         public long Id { get; set; }
         public long TransactionId { get; set; }

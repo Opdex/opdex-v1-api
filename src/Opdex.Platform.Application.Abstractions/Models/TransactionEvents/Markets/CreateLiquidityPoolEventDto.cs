@@ -3,6 +3,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Marke
     public class CreateLiquidityPoolEventDto : TransactionEventDto
     {
         public string Token { get; set; }
-        public string Pool { get; set; }
+        public string LiquidityPool { get; set; }
     }
 }

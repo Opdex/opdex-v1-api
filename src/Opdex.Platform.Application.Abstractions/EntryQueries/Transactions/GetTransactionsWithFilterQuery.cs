@@ -1,4 +1,5 @@
 using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Common.Extensions;
 using System;
 using System.Collections.Generic;
@@ -9,16 +10,13 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Transactions
     {
         private const uint MaxLimit = 100;
 
-        public GetTransactionsWithFilterQuery(string wallet, IEnumerable<uint> includeEvents, IEnumerable<uint> excludeEvents,
-                                              IEnumerable<string> contracts, string direction, uint limit, string next, string previous)
+        public GetTransactionsWithFilterQuery(string wallet, IEnumerable<TransactionEventType> eventTypes, IEnumerable<string> contracts,
+                                              string direction, uint limit, string next, string previous)
             : base(direction, limit, MaxLimit, next, previous)
         {
             var walletRequest = IsNewQuery ? wallet : TryGetCursorDictionarySingle(nameof(wallet));
-            var includeEventsRequest = IsNewQuery ? includeEvents : TryGetCursorDictionaryList<uint>(nameof(includeEvents));
-            var excludeEventsRequest = IsNewQuery ? excludeEvents : TryGetCursorDictionaryList<uint>(nameof(excludeEvents));
+            var eventTypesRequest = IsNewQuery ? eventTypes : TryGetCursorDictionaryList<TransactionEventType>(nameof(eventTypes));
             var contractsRequest = IsNewQuery ? contracts : TryGetCursorDictionaryList<string>(nameof(contracts));
-
-            // Todo: Switch events to Enum with validation if they're provided
 
             // Decode the Previous cursor if it's provided and validate the value
             var parsedPrevious = long.TryParse(PreviousDecoded, out var previousParsed);
@@ -37,14 +35,12 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Transactions
             PreviousParsed = previousParsed;
             NextParsed = nextParsed;
             Wallet = walletRequest;
-            IncludeEvents = includeEventsRequest;
-            ExcludeEvents = excludeEventsRequest;
+            EventTypes = eventTypesRequest;
             Contracts = contractsRequest;
         }
 
         public string Wallet { get; }
-        public IEnumerable<uint> IncludeEvents { get; }
-        public IEnumerable<uint> ExcludeEvents { get; }
+        public IEnumerable<TransactionEventType> EventTypes { get; }
         public IEnumerable<string> Contracts { get; }
         public long NextParsed { get; }
         public long PreviousParsed { get; }

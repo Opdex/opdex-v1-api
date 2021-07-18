@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System.Collections.Generic;
 
@@ -34,8 +35,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// This is not intended to be used to lookup all smart contract based transactions.
         /// </remarks>
         /// <param name="contracts">Optional list of smart contract address to filter transactions by.</param>
-        /// <param name="includedEvents">Might be removed, filter transactions based on events</param>
-        /// <param name="excludedEvents">Might be removed, filter transactions based on not including events.</param>
+        /// <param name="eventTypes">Filter transactions based on event types included.</param>
         /// <param name="wallet">Optionally filter transactions by wallet address.</param>
         /// <param name="limit">Number of transactions to take must be greater than 0 and less than 101.</param>
         /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
@@ -47,8 +47,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(TransactionsResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<TransactionsResponseModel>> Transactions([FromQuery] IEnumerable<string> contracts,
-                                                                                [FromQuery] IEnumerable<uint> includedEvents,
-                                                                                [FromQuery] IEnumerable<uint> excludedEvents,
+                                                                                [FromQuery] IEnumerable<TransactionEventType> eventTypes,
                                                                                 [FromQuery] string wallet,
                                                                                 [FromQuery] uint limit,
                                                                                 [FromQuery] string direction,
@@ -56,8 +55,8 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                 [FromQuery] string previous,
                                                                                 CancellationToken cancellationToken)
         {
-            var transactionsDto = await _mediator.Send(new GetTransactionsWithFilterQuery(wallet, includedEvents, excludedEvents, contracts,
-                                                    direction, limit, next, previous), cancellationToken);
+            var transactionsDto = await _mediator.Send(new GetTransactionsWithFilterQuery(wallet, eventTypes, contracts, direction, limit,
+                                                                                          next, previous), cancellationToken);
 
             var response = _mapper.Map<TransactionsResponseModel>(transactionsDto);
 

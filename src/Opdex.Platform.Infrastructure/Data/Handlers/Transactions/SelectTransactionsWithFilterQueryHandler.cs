@@ -51,7 +51,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
         {
             var transactionId = request.Next > 0 ? request.Next : request.Previous;
 
-            var queryParams = new SqlParams(transactionId, request.Wallet, request.IncludeEvents, request.ExcludeEvents, request.Contracts);
+            var queryParams = new SqlParams(transactionId, request.Wallet, request.LogTypes, request.Contracts);
 
             var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationTransaction);
 
@@ -65,10 +65,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
             var whereFilter = string.Empty;
             var tableJoins = string.Empty;
             var filterContracts = request.Contracts.Any();
-            var includeEvents = request.IncludeEvents.Any();
-            var excludeEvents = request.ExcludeEvents.Any();
+            var includeEvents = request.LogTypes.Any();
 
-            if (filterContracts || includeEvents || excludeEvents)
+            if (filterContracts || includeEvents)
             {
                 tableJoins += $" JOIN transaction_log tl ON tl.{nameof(TransactionLogEntity.TransactionId)} = t.{nameof(Transaction.Id)}";
             }
@@ -99,13 +98,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
             if (includeEvents)
             {
-                var filter = $"tl.{nameof(TransactionLogEntity.LogTypeId)} IN @{nameof(SqlParams.IncludeLogTypes)}";
-                whereFilter += whereFilter.HasValue() ? $" AND {filter}" : $" WHERE {filter}";
-            }
-
-            if (excludeEvents)
-            {
-                var filter = $"tl.{nameof(TransactionLogEntity.LogTypeId)} NOT IN @{nameof(SqlParams.ExcludeLogTypes)}";
+                var filter = $"tl.{nameof(TransactionLogEntity.LogTypeId)} IN @{nameof(SqlParams.LogTypes)}";
                 whereFilter += whereFilter.HasValue() ? $" AND {filter}" : $" WHERE {filter}";
             }
 
@@ -134,20 +127,17 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
         private sealed class SqlParams
         {
-            internal SqlParams(long transactionId, string wallet, IEnumerable<uint> includeLogTypes, IEnumerable<uint> excludeLogTypes,
-                               IEnumerable<string> contracts)
+            internal SqlParams(long transactionId, string wallet, IEnumerable<uint> logTypes, IEnumerable<string> contracts)
             {
                 TransactionId = transactionId;
                 Wallet = wallet;
-                IncludeLogTypes = includeLogTypes;
-                ExcludeLogTypes = excludeLogTypes;
+                LogTypes = logTypes;
                 Contracts = contracts;
             }
 
             public long TransactionId { get; }
             public string Wallet { get; }
-            public IEnumerable<uint> IncludeLogTypes { get; }
-            public IEnumerable<uint> ExcludeLogTypes { get; }
+            public IEnumerable<uint> LogTypes { get; }
             public IEnumerable<string> Contracts { get; }
         }
     }

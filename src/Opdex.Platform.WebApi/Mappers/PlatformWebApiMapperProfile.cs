@@ -226,7 +226,7 @@ namespace Opdex.Platform.WebApi.Mappers
             // Market Transaction Events
             CreateMap<CreateLiquidityPoolEventDto, CreateLiquidityPoolEventResponseModel>()
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
-                .ForMember(dest => dest.Pool, opt => opt.MapFrom(src => src.Pool))
+                .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool))
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token));
 
             CreateMap<ChangeMarketOwnerEventDto, ChangeMarketOwnerEventResponseModel>()
@@ -245,7 +245,8 @@ namespace Opdex.Platform.WebApi.Mappers
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
                 .ForMember(dest => dest.AmountCrs, opt => opt.MapFrom(src => src.AmountCrs))
                 .ForMember(dest => dest.AmountSrc, opt => opt.MapFrom(src => src.AmountSrc))
-                .ForMember(dest => dest.AmountLpt, opt => opt.MapFrom(src => src.AmountLpt));
+                .ForMember(dest => dest.AmountLpt, opt => opt.MapFrom(src => src.AmountLpt))
+                .ForMember(dest => dest.SubEventType, opt => opt.MapFrom(src => src.SubEventType));
 
             CreateMap<SwapEventDto, SwapEventResponseModel>()
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
@@ -265,7 +266,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
                 .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
-                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => src.EventType));
+                .ForMember(dest => dest.SubEventType, opt => opt.MapFrom(src => src.SubEventType));
 
             // Mining Pool Transaction Events
             CreateMap<CollectMiningRewardsEventDto, CollectMiningRewardsEventResponseModel>()
@@ -277,7 +278,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
                 .ForMember(dest => dest.Miner, opt => opt.MapFrom(src => src.Miner))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
-                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => src.EventType));
+                .ForMember(dest => dest.SubEventType, opt => opt.MapFrom(src => src.SubEventType));
 
             CreateMap<EnableMiningEventDto, EnableMiningEventResponseModel>()
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()

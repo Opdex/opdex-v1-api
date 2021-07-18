@@ -6,12 +6,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
 {
     public class SelectTransactionsWithFilterQuery : IRequest<List<Transaction>>
     {
-        public SelectTransactionsWithFilterQuery(string wallet, IEnumerable<uint> includeEvents, IEnumerable<uint> excludeEvents,
-                                                 IEnumerable<string> contracts, string direction, ulong limit, long next, long previous)
+        public SelectTransactionsWithFilterQuery(string wallet, IEnumerable<uint> logTypes, IEnumerable<string> contracts,
+                                                 string direction, ulong limit, long next, long previous)
         {
             Wallet = wallet;
-            IncludeEvents = includeEvents;
-            ExcludeEvents = excludeEvents;
+            LogTypes = logTypes;
             Contracts = contracts;
             Direction = direction;
             Limit = limit;
@@ -20,8 +19,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
         }
 
         public string Wallet { get; }
-        public IEnumerable<uint> IncludeEvents { get; }
-        public IEnumerable<uint> ExcludeEvents { get; }
+        public IEnumerable<uint> LogTypes { get; }
         public IEnumerable<string> Contracts { get; }
         public string Direction { get; }
         public ulong Limit { get; }

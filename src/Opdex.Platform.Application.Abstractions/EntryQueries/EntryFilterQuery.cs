@@ -122,7 +122,27 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries
         /// <returns>List of type TK of found values.</returns>
         protected List<TK> TryGetCursorDictionaryList<TK>(string key)
         {
-            return DecodedCursorDictionary.TryGetValue(key, out var result) ? result as List<TK> : new List<TK>();
+            // Get results return empty list if none found
+            var success = DecodedCursorDictionary.TryGetValue(key, out var results);
+            if (!success || results.Count < 1)
+            {
+                return new List<TK>();
+            }
+
+            // If it's not an emum type, cast and return
+            if (!typeof(TK).IsEnum)
+            {
+                return results.Cast<TK>().ToList();
+            }
+
+            // Assert all types that are enum, are valid values
+            if (results.Any(result => !typeof(TK).IsEnumDefined(result)))
+            {
+                throw new ArgumentOutOfRangeException(nameof(key), key, "Invalid enum type.");
+            }
+
+            // Return list of TK enum values
+            return results.Select(result => (TK)Enum.Parse(typeof(TK), result)).ToList();
         }
 
         private void ValidateBaseParameters(string direction, uint limit)

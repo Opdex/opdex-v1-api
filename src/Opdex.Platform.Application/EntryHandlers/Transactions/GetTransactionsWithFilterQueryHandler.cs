@@ -25,8 +25,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
         public override async Task<TransactionsDto> Handle(GetTransactionsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var transactions = await _mediator.Send(new RetrieveTransactionsWithFilterQuery(request.Wallet, request.IncludeEvents,
-                                                                                            request.ExcludeEvents, request.Contracts,
+            var transactions = await _mediator.Send(new RetrieveTransactionsWithFilterQuery(request.Wallet, request.EventTypes, request.Contracts,
                                                                                             request.Direction, request.Limit, request.NextParsed,
                                                                                             request.PreviousParsed), cancellationToken);
             // Assemble transaction DTOs
@@ -39,8 +38,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
             // Build the default cursor without next or previous
             var defaultCursor = new StringBuilder($"wallet:{request.Wallet};direction:{request.Direction};limit:{request.Limit};")
-                .Append(BuildCursorFromList("includeEvents", request.IncludeEvents.Select(e => e.ToString())))
-                .Append(BuildCursorFromList("excludeEvents", request.ExcludeEvents.Select(e => e.ToString())))
+                .Append(BuildCursorFromList("eventTypes", request.EventTypes.Select(e => e.ToString())))
                 .Append(BuildCursorFromList("contracts", request.Contracts.Select(c => c)))
                 .ToString();
 

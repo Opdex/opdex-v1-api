@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Markets
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
                 EventType = TransactionEventType.CreateLiquidityPoolEvent,
-                Pool = log.Pool,
+                LiquidityPool = log.Pool,
                 Token = log.Token
             });
         }
