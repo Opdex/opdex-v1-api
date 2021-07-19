@@ -8,20 +8,19 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 
 namespace Opdex.Platform.Application.Handlers.Addresses
 {
-    public class RetrieveAddressBalanceByTokenIdAndOwnerQueryHandler
-        : IRequestHandler<RetrieveAddressBalanceByTokenIdAndOwnerQuery, AddressBalance>
+    public class RetrieveAddressBalanceByTokenAddressAndOwnerQueryHandler
+        : IRequestHandler<RetrieveAddressBalanceByTokenAddressAndOwnerQuery, AddressBalance>
     {
         private readonly IMediator _mediator;
 
-        public RetrieveAddressBalanceByTokenIdAndOwnerQueryHandler(IMediator mediator)
+        public RetrieveAddressBalanceByTokenAddressAndOwnerQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<AddressBalance> Handle(RetrieveAddressBalanceByTokenIdAndOwnerQuery request, CancellationToken cancellationToken)
+        public Task<AddressBalance> Handle(RetrieveAddressBalanceByTokenAddressAndOwnerQuery request, CancellationToken cancellationToken)
         {
-            var query = new SelectAddressBalanceByTokenIdAndOwnerQuery(request.TokenId, request.Owner, request.FindOrThrow);
-
+            var query = new SelectAddressBalanceByTokenAddressAndOwnerQuery(request.TokenAddress, request.Owner, request.FindOrThrow);
             return _mediator.Send(query, cancellationToken);
         }
     }

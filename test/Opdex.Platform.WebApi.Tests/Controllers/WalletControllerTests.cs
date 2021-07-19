@@ -6,7 +6,6 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.WebApi.Controllers;
-using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 using System.Collections.Generic;
 using System.Threading;
@@ -67,6 +66,40 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             // Assert
             response.Should().BeOfType<OkObjectResult>();
             ((OkObjectResult)response).Value.Should().BeEquivalentTo(approvedAllowancesResponseModel);
+        }
+
+        [Fact]
+        public async Task GetAddressBalanceByToken_GetAddressBalanceByTokenQuery_Send()
+        {
+            // Arrange
+            var address = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
+            var token = "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5";
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            await _controller.GetAddressBalanceByToken(address, token, cancellationToken);
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(
+                It.Is<GetAddressBalanceByTokenQuery>(query => query.Address == address && query.TokenAddress == token),
+                cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetAddressBalanceByToken_Result_ReturnOk()
+        {
+            // Arrange
+            var tokenBalance = new AddressBalanceResponseModel();
+
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAddressBalanceByTokenQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new AddressBalanceDto());
+            _mapperMock.Setup(callTo => callTo.Map<AddressBalanceResponseModel>(It.IsAny<AddressBalanceDto>())).Returns(tokenBalance);
+
+            // Act
+            var response = await _controller.GetAddressBalanceByToken("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5", CancellationToken.None);
+
+            // Act
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(tokenBalance);
         }
     }
 }
