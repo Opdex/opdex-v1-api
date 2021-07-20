@@ -38,8 +38,8 @@ namespace Opdex.Platform.WebApi
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    if (context.HostingEnvironment.IsProduction())
-                    {
+                    // if (context.HostingEnvironment.IsProduction())
+                    // {
                         var builtConfig = config.Build();
                         var manager = new KeyVaultSecretManager();
                         var secretClient = new SecretClient(
@@ -51,7 +51,7 @@ namespace Opdex.Platform.WebApi
                             Manager = new KeyVaultSecretManager(),
                             ReloadInterval = TimeSpan.FromMinutes(10)
                         });
-                    }
+                    // }
                 })
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
                 .UseSerilog((context, services, loggingConfiguration) =>
