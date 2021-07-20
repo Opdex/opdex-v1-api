@@ -60,18 +60,9 @@ stages:
           artifactName: '$(ARTIFACT_NAME)'
         displayName: Share
 
-- stage: TEMP
-  displayName: 'Release to tempnet (Azure)'
-  dependsOn: CI
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop')) # Do we need this when the trigger is defined?
-  jobs:
-  - template: ${{ variables.releaseTemplate }}
-    parameters:
-      environment: 'temp'
-
 - stage: DEV
   displayName: 'Release to devnet (Azure)'
-  dependsOn: TEMP
+  dependsOn: CI
   jobs:
   - template: ${{ variables.releaseTemplate }}
     parameters:

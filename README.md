@@ -12,7 +12,7 @@ Add a bearer token signing key to your configuration, by running `dotnet user-se
 
 ### Create DB
 
-Using [Opdex DB Scripts](https://github.com/Opdex/opdex-db-scripts), create the Maria DB database then set the connection string in your configuration using `dotnet user-secrets set OpdexConfiguration:ConnectionString "Server=; Port=; Database=; Uid=; Pwd=;"`, providing the correct credentials.
+Using [Opdex DB Scripts](https://github.com/Opdex/opdex-db-scripts), create the Maria DB database then set the connection string in your configuration using `dotnet user-secrets set OpdexConfiguration:ConnectionString "Server=; Port=; Database=; Uid=; Pwd=; ConvertZeroDateTime=True;"`, providing the correct credentials.
 
 
 ### CMC API KEY
@@ -49,4 +49,4 @@ Using Opdex swagger, hit `index/process-latest-blocks` to begin syncing from the
 
 ### Logging
 
-Structured logging is managed and configured using Serilog. You can view structured logs locally, without any configuration changes, by using [Seq](https://datalust.co/download). 
+Structured logging is managed and configured using Serilog. You can view structured logs locally, without any configuration changes, by using [Seq](https://datalust.co/download).

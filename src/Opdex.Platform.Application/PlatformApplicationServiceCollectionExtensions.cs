@@ -154,6 +154,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetAllVaultsQuery, IEnumerable<VaultDto>>, GetAllVaultsQueryHandler>();
             services.AddTransient<IRequestHandler<GetVaultByAddressQuery, VaultDto>, GetVaultByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetTransactionsWithFilterQuery, TransactionsDto>, GetTransactionsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<GetAddressBalanceByTokenQuery, AddressBalanceDto>, GetAddressBalanceByTokenQueryHandler>();
 
             // Queries
             services.AddTransient<IRequestHandler<RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery, AddressAllowance>, RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQueryHandler>();
@@ -192,6 +193,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>, RetrieveAddressStakingByLiquidityPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>, RetrieveAddressMiningByMiningPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAddressBalanceByTokenIdAndOwnerQuery, AddressBalance>, RetrieveAddressBalanceByTokenIdAndOwnerQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveAddressBalanceByTokenAddressAndOwnerQuery, AddressBalance>, RetrieveAddressBalanceByTokenAddressAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningPoolByAddressQuery, MiningPool>, RetrieveMiningPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveActiveMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceNomination>>, RetrieveActiveMiningGovernanceNominationsQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceNominationCirrusDto>>, RetrieveCirrusMiningGovernanceNominationsQueryHandler>();
@@ -328,6 +330,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IModelAssembler<Token, TokenDto>, TokenDtoAssembler>();
             services.AddTransient<IModelAssembler<MiningGovernance, MiningGovernanceDto>, MiningGovernanceDtoAssembler>();
             services.AddTransient<IModelAssembler<Vault, VaultDto>, VaultDtoAssembler>();
+            services.AddTransient<IModelAssembler<AddressBalance, AddressBalanceDto>, AddressBalanceDtoAssembler>();
 
             // Transaction Logs
 

@@ -166,6 +166,10 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<AddressBalance, AddressBalanceDto>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Owner))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<Transaction, TransactionDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
