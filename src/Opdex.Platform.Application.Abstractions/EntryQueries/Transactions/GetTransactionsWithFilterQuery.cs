@@ -1,5 +1,6 @@
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,10 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Transactions
         private const uint MaxLimit = 100;
 
         public GetTransactionsWithFilterQuery(string wallet, IEnumerable<TransactionEventType> eventTypes, IEnumerable<string> contracts,
-                                              string direction, uint limit, string next, string previous)
+                                              SortDirectionType direction, uint limit, string next, string previous)
             : base(direction, limit, MaxLimit, next, previous)
         {
-            var walletRequest = IsNewQuery ? wallet : TryGetCursorDictionarySingle(nameof(wallet));
+            var walletRequest = IsNewQuery ? wallet : TryGetCursorDictionarySingle<string>(nameof(wallet));
             var eventTypesRequest = IsNewQuery ? eventTypes : TryGetCursorDictionaryList<TransactionEventType>(nameof(eventTypes));
             var contractsRequest = IsNewQuery ? contracts : TryGetCursorDictionaryList<string>(nameof(contracts));
 

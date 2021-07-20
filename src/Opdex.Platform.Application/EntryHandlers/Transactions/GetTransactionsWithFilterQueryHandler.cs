@@ -4,10 +4,10 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models;
 using System;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +16,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
     public class GetTransactionsWithFilterQueryHandler : EntryFilterQueryHandler<GetTransactionsWithFilterQuery, TransactionsDto>
     {
         private readonly IModelAssembler<Transaction, TransactionDto> _assembler;
+        private const string PagingBase = "wallet:{0};direction:{1};limit:{2};<eventTypes><contracts>";
 
         public GetTransactionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<Transaction, TransactionDto> assembler)
             : base(mediator)
@@ -32,15 +33,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             var transactionDtos = await Task.WhenAll(transactions.Select(transaction => _assembler.Assemble(transaction)));
 
             // Sort
-            var sortedDtos = request.Direction == "ASC"
+            var sortedDtos = request.Direction == SortDirectionType.ASC
                 ? transactionDtos.OrderBy(t => t.Id).ToList()
                 : transactionDtos.OrderByDescending(t => t.Id).ToList();
 
             // Build the default cursor without next or previous
-            var defaultCursor = new StringBuilder($"wallet:{request.Wallet};direction:{request.Direction};limit:{request.Limit};")
-                .Append(BuildCursorFromList("eventTypes", request.EventTypes.Select(e => e.ToString())))
-                .Append(BuildCursorFromList("contracts", request.Contracts.Select(c => c)))
-                .ToString();
+            var defaultCursor = string.Format(PagingBase, request.Wallet, request.Direction, request.Limit)
+                .Replace("<eventTypes>", BuildCursorFromList("eventTypes", request.EventTypes.Select(e => e.ToString())))
+                .Replace("<contracts>", BuildCursorFromList("contracts", request.Contracts.Select(c => c)));
 
             // The count can change if we remove the + 1 record, we want the original
             var sortedDtosCount = sortedDtos.Count;

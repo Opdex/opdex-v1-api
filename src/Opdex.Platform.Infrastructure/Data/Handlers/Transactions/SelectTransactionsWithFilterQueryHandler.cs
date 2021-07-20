@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
@@ -74,10 +75,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
             var sortOperator = string.Empty;
 
-            if (request.Next > 0 && request.Direction == "ASC") sortOperator = ">";
-            if (request.Next > 0 && request.Direction == "DESC") sortOperator = "<";
-            if (request.Previous > 0 && request.Direction == "ASC") sortOperator = "<";
-            if (request.Previous > 0 && request.Direction == "DESC") sortOperator = ">";
+            if (request.Next > 0 && request.Direction == SortDirectionType.ASC) sortOperator = ">";
+            if (request.Next > 0 && request.Direction == SortDirectionType.DESC) sortOperator = "<";
+            if (request.Previous > 0 && request.Direction == SortDirectionType.ASC) sortOperator = "<";
+            if (request.Previous > 0 && request.Direction == SortDirectionType.DESC) sortOperator = ">";
 
             if (sortOperator.HasValue())
             {
@@ -86,7 +87,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
             if (request.Wallet.HasValue())
             {
-                var filter = $"`t.{nameof(TransactionEntity.From)}` = @{nameof(SqlParams.Wallet)}";
+                var filter = $"t.`{nameof(TransactionEntity.From)}` = @{nameof(SqlParams.Wallet)}";
                 whereFilter += whereFilter.HasValue() ? $" AND {filter}" : $" WHERE {filter}";
             }
 
@@ -107,11 +108,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
             if (request.Previous > 0)
             {
-                direction = request.Direction == "DESC" ? "ASC" : "DESC";
+                direction = request.Direction == SortDirectionType.DESC ? nameof(SortDirectionType.ASC) : nameof(SortDirectionType.DESC);
             }
             else
             {
-                direction = request.Direction;
+                direction = Enum.GetName(typeof(SortDirectionType), request.Direction);
             }
 
             var orderBy = $" GROUP BY t.{nameof(TransactionEntity.Id)} ORDER BY t.{nameof(TransactionEntity.Id)} {direction}";

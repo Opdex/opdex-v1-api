@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System.Collections.Generic;
 
@@ -50,7 +51,7 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                 [FromQuery] IEnumerable<TransactionEventType> eventTypes,
                                                                                 [FromQuery] string wallet,
                                                                                 [FromQuery] uint limit,
-                                                                                [FromQuery] string direction,
+                                                                                [FromQuery] SortDirectionType direction,
                                                                                 [FromQuery] string next,
                                                                                 [FromQuery] string previous,
                                                                                 CancellationToken cancellationToken)
