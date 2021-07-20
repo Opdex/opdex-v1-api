@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands
+namespace Opdex.Platform.Application.EntryHandlers
 {
     public abstract class EntryFilterQueryHandler<T, TK> : IRequestHandler<T, TK> where T : EntryFilterQuery<TK>
     {
