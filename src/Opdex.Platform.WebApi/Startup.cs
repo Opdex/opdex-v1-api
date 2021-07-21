@@ -169,30 +169,16 @@ namespace Opdex.Platform.WebApi
             }
 
             app.UseProblemDetails();
-
             app.UseCors(options => options
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod());
-
+                            .AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod());
             app.UseSerilogRequestLogging();
-
-            if (env.IsProduction())
-            {
-                app.UseHttpsRedirection();
-            }
-
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
-
-            if (!env.IsProduction())
-            {
-                app.UseOpenApi();
-                app.UseSwaggerUi3();
-            }
-
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
 
