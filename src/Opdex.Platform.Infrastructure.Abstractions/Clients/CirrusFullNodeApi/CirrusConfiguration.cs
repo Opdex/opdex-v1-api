@@ -11,15 +11,15 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi
 
         public void Validate()
         {
-            if (!ApiUrl.HasValue())
-            {
-                throw new Exception($"{nameof(CirrusConfiguration)}.{nameof(ApiUrl)} must not be null or empty.");
-            }
-
-            if (ApiPort < 1)
-            {
-                throw new Exception($"{nameof(CirrusConfiguration)}.{nameof(ApiPort)} must be greater than 0.");
-            }
+            // if (!ApiUrl.HasValue())
+            // {
+            //     throw new Exception($"{nameof(CirrusConfiguration)}.{nameof(ApiUrl)} must not be null or empty.");
+            // }
+            //
+            // if (ApiPort < 1)
+            // {
+            //     throw new Exception($"{nameof(CirrusConfiguration)}.{nameof(ApiPort)} must be greater than 0.");
+            // }
         }
     }
 }
