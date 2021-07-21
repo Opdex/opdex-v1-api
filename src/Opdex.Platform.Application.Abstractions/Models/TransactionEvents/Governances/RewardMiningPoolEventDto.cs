@@ -5,5 +5,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Gover
         public string StakingPool { get; set; }
         public string MiningPool { get; set; }
         public string Amount { get; set; }
+        public override TransactionEventType EventType => TransactionEventType.RewardMiningPoolEvent;
     }
 }

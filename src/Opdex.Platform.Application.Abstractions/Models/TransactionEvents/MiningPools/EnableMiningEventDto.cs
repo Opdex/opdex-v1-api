@@ -5,5 +5,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Minin
         public string Amount { get; set; }
         public string RewardRate { get; set; }
         public ulong MiningPeriodEndBlock { get; set; }
+        public override TransactionEventType EventType => TransactionEventType.EnableMiningEvent;
     }
 }

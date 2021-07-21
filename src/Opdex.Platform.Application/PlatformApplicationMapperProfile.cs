@@ -10,12 +10,28 @@ using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Deployers;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Governances;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.Pools.Snapshots;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
+using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
+using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
+using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
+using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
+using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
+using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
+using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDtos.TokenDto;
 
 namespace Opdex.Platform.Application
@@ -170,6 +186,8 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Owner))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            // Transactions and Transaction Events
+
             CreateMap<Transaction, TransactionDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
@@ -182,11 +200,120 @@ namespace Opdex.Platform.Application
 
             CreateMap<TransactionLog, TransactionEventDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => src.LogType))
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForAllOtherMembers(opt => opt.Ignore());
+
+            // Deployer Events
+            CreateMap<ChangeDeployerOwnerLog, ChangeDeployerOwnerEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From));
+
+            CreateMap<CreateMarketLog, CreateMarketEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Router, opt => opt.MapFrom(src => src.Router))
+                .ForMember(dest => dest.AuthPoolCreators, opt => opt.MapFrom(src => src.AuthPoolCreators))
+                .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
+                .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
+                .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
+                .ForMember(dest => dest.StakingToken, opt => opt.MapFrom(src => src.StakingToken))
+                .ForMember(dest => dest.EnableMarketFee, opt => opt.MapFrom(src => src.EnableMarketFee));
+
+            // Market Events
+            CreateMap<ChangeMarketOwnerLog, ChangeMarketOwnerEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From));
+
+            CreateMap<ChangeMarketPermissionLog, ChangeMarketPermissionEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Permission, opt => opt.MapFrom(src => src.Permission.ToString()))
+                .ForMember(dest => dest.IsAuthorized, opt => opt.MapFrom(src => src.IsAuthorized));
+
+            CreateMap<CreateLiquidityPoolLog, CreateLiquidityPoolEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.Pool))
+                .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token));
+
+            // Liquidity Pool Events
+            CreateMap<CollectStakingRewardsLog, CollectStakingRewardsEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
+                .ForMember(dest => dest.Reward, opt => opt.MapFrom(src => src.Reward.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals)));
+
+            CreateMap<StakeLog, StakeEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.SubEventType, opt => opt.MapFrom(src => src.EventType == 1 ? "StartStaking" : "StopStaking"));
+
+            // Mining Pool Events
+            CreateMap<MineLog, MineEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.Miner, opt => opt.MapFrom(src => src.Miner))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals)))
+                .ForMember(dest => dest.SubEventType, opt => opt.MapFrom(src => src.EventType == 1 ? "StartMining" : "StopMining"));
+
+            CreateMap<CollectMiningRewardsLog, CollectMiningRewardsEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.Miner, opt => opt.MapFrom(src => src.Miner))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.InsertDecimal(TokenConstants.Opdex.Decimals)));
+
+            CreateMap<EnableMiningLog, EnableMiningEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.MiningPeriodEndBlock, opt => opt.MapFrom(src => src.MiningPeriodEndBlock))
+                .ForMember(dest => dest.RewardRate, opt => opt.MapFrom(src => src.RewardRate.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.InsertDecimal(TokenConstants.Opdex.Decimals)));
+
+            // Token Events
+            CreateMap<DistributionLog, DistributionEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex))
+                .ForMember(dest => dest.GovernanceAmount, opt => opt.MapFrom(src => src.MiningAmount.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.VaultAmount, opt => opt.MapFrom(src => src.VaultAmount.InsertDecimal(TokenConstants.Opdex.Decimals)));
+
+            // Governance Events
+            CreateMap<NominationLog, NominationEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
+                .ForMember(dest => dest.StakingPool, opt => opt.MapFrom(src => src.StakingPool))
+                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight.InsertDecimal(TokenConstants.Opdex.Decimals)));
+
+            CreateMap<RewardMiningPoolLog, RewardMiningPoolEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))
+                .ForMember(dest => dest.StakingPool, opt => opt.MapFrom(src => src.StakingPool))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.InsertDecimal(TokenConstants.Opdex.Decimals)));
+
+            // Vault Events
+            CreateMap<ChangeVaultOwnerLog, ChangeVaultOwnerEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From));
+
+            CreateMap<CreateVaultCertificateLog, CreateVaultCertificateEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.Holder, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock));
+
+            CreateMap<RedeemVaultCertificateLog, RedeemVaultCertificateEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.Holder, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock));
+
+            CreateMap<RevokeVaultCertificateLog, RevokeVaultCertificateEventDto>()
+                .IncludeBase<TransactionLog, TransactionEventDto>()
+                .ForMember(dest => dest.OldAmount, opt => opt.MapFrom(src => src.OldAmount.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.NewAmount, opt => opt.MapFrom(src => src.NewAmount.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.Holder, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock));
         }
     }
 }

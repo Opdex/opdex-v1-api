@@ -42,7 +42,6 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.LiquidityPools
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
-                EventType = TransactionEventType.ProvideEvent,
                 AmountCrs = isBurnLog
                     ? (log as BurnLog)?.AmountCrs.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals)
                     : (log as MintLog)?.AmountCrs.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals),

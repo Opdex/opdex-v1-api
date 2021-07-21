@@ -6,5 +6,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault
         public string NewAmount { get; set; }
         public string OldAmount { get; set; }
         public ulong VestedBlock { get; set; }
+        public override TransactionEventType EventType => TransactionEventType.RevokeVaultCertificateEvent;
     }
 }

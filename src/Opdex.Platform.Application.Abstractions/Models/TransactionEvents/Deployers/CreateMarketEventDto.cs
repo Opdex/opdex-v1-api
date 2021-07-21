@@ -11,5 +11,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Deplo
         public uint TransactionFee { get; set; }
         public string StakingToken { get; set; }
         public bool EnableMarketFee { get; set; }
+        public override TransactionEventType EventType => TransactionEventType.CreateMarketEvent;
     }
 }

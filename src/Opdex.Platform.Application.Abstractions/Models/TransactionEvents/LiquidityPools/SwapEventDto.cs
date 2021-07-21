@@ -9,5 +9,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Liqui
         public string AmountCrsOut { get; set; }
         public string AmountSrcOut { get; set; }
         public string SrcToken { get; set; }
+        public override TransactionEventType EventType => TransactionEventType.SwapEvent;
     }
 }

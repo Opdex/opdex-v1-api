@@ -28,7 +28,6 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
-                EventType = TransactionEventType.ApprovalEvent,
                 Owner = log.Owner,
                 Spender = log.Spender,
                 Amount = log.Amount.InsertDecimal(token.Decimals)

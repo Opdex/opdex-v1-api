@@ -4,5 +4,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Marke
     {
         public string Token { get; set; }
         public string LiquidityPool { get; set; }
+        public override TransactionEventType EventType => TransactionEventType.CreateLiquidityPoolEvent;
     }
 }

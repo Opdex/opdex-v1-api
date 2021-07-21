@@ -4,5 +4,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Minin
     {
         public string Miner { get; set; }
         public string Amount { get; set; }
+        public override TransactionEventType EventType => TransactionEventType.CollectMiningRewardsEvent;
     }
 }

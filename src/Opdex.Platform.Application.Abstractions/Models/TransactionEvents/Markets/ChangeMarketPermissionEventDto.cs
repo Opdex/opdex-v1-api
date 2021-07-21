@@ -5,5 +5,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Marke
         public string Address { get; set;  }
         public string Permission { get; set; }
         public bool IsAuthorized { get; set; }
+        public override TransactionEventType EventType => TransactionEventType.ChangeMarketPermissionEvent;
     }
 }

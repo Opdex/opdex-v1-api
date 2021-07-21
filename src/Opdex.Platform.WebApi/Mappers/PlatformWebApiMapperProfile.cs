@@ -307,7 +307,7 @@ namespace Opdex.Platform.WebApi.Mappers
             CreateMap<DistributionEventDto, DistributionEventResponseModel>()
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
                 .ForMember(dest => dest.VaultAmount, opt => opt.MapFrom(src => src.VaultAmount))
-                .ForMember(dest => dest.MiningAmount, opt => opt.MapFrom(src => src.MiningAmount))
+                .ForMember(dest => dest.GovernanceAmount, opt => opt.MapFrom(src => src.GovernanceAmount))
                 .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex));
 
             // Governance Transaction Events

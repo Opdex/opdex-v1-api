@@ -37,8 +37,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.LiquidityPools
                 Id = log.Id,
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
-                Contract = log.Contract,
-                EventType = TransactionEventType.SwapEvent
+                Contract = log.Contract
             };
         }
     }

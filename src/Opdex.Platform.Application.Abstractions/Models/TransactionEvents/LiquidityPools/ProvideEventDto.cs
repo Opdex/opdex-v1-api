@@ -8,5 +8,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Liqui
         public string TokenSrc { get; set; }
         public string TokenLp { get; set; }
         public string SubEventType { get; set; }
+        public override TransactionEventType EventType => TransactionEventType.ProvideEvent;
     }
 }
