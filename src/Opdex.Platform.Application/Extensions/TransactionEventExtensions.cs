@@ -20,7 +20,7 @@ namespace Opdex.Platform.Application.Extensions
                 TransactionEventType.CreateLiquidityPoolEvent => new[] {TransactionLogType.ChangeDeployerOwnerLog},
                 // Liquidity Pools
                 TransactionEventType.SwapEvent => new[] {TransactionLogType.SwapLog},
-                TransactionEventType.ProvideEvent => new[] {TransactionLogType.MineLog, TransactionLogType.BurnLog},
+                TransactionEventType.ProvideEvent => new[] {TransactionLogType.MintLog, TransactionLogType.BurnLog},
                 TransactionEventType.StakeEvent => new[] {TransactionLogType.StakeLog},
                 TransactionEventType.CollectStakingRewardsEvent => new[] {TransactionLogType.CollectStakingRewardsLog},
                 // Mining Pools
