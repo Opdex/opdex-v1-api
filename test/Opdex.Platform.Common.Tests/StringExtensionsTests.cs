@@ -2,7 +2,10 @@ using System;
 using System.Numerics;
 using FluentAssertions;
 using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -209,6 +212,89 @@ namespace Opdex.Platform.Common.Tests
         public void PercentChangeDecimals_Success(decimal current, decimal previous, decimal expected)
         {
             current.PercentChange(previous).Should().Be(expected);
+        }
+
+        [Fact]
+        public void ColonDelimitedCursor_Success()
+        {
+            // arrange
+            const string cursor = "sort:DESC;limit:10;";
+
+            // act
+            var dictionary = cursor.ColonDelimitedCursorToDictionary();
+
+            // assert
+            dictionary.TryGetValue("sort", out var sortResult);
+            dictionary.TryGetValue("limit", out var limit);
+
+            sortResult.Single().Should().Be("DESC");
+            limit.Single().Should().Be("10");
+        }
+
+        [Fact]
+        public void TryGetCursorProperties_Success()
+        {
+            // arrange
+            var dictionary = new Dictionary<string, List<string>>();
+
+            dictionary.Add("sort", new List<string> {"DESC"});
+            dictionary.Add("limit", new List<string> {"10"});
+            dictionary.Add("contracts", new List<string> {"contract1", "contract2"});
+
+            // act
+            var sort = dictionary.TryGetCursorProperties<SortDirectionType>("sort");
+            var limit = dictionary.TryGetCursorProperties<uint>("limit");
+            var contracts = dictionary.TryGetCursorProperties<string>("contracts");
+
+            // assert
+            sort.Single().Should().Be(SortDirectionType.DESC);
+            limit.Single().Should().Be(10);
+            contracts.Count.Should().Be(2);
+        }
+
+        [Fact]
+        public void TryGetCursorProperty_Success()
+        {
+            // arrange
+            var dictionary = new Dictionary<string, List<string>>();
+
+            dictionary.Add("sort", new List<string> {"DESC"});
+            dictionary.Add("limit", new List<string> {"10"});
+
+            // act
+            var sort = dictionary.TryGetCursorProperty<SortDirectionType>("sort");
+            var limit = dictionary.TryGetCursorProperty<uint>("limit");
+
+            // assert
+            sort.Should().Be(SortDirectionType.DESC);
+            limit.Should().Be(10);
+        }
+
+        [Fact]
+        public void TryGetCursorProperties_Throws_InvalidArgumentException_KeyInvalid()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, List<string>>();
+
+            // Act
+            void Act() => dictionary.TryGetCursorProperties<string>("");
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("The dictionary and a key must be provided.");
+        }
+
+        [Fact]
+        public void TryGetCursorProperties_Throws_ArgumentOutOfRangeException_EnumInvalid()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, List<string>>();
+            dictionary.Add("sort", new List<string> {"ASDF"});
+
+            // Act
+            void Act() => dictionary.TryGetCursorProperties<SortDirectionType>("sort");
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Invalid enum type.");
         }
     }
 }

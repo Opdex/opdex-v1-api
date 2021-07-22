@@ -26,8 +26,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
         public override async Task<TransactionsDto> Handle(GetTransactionsWithFilterQuery request, CancellationToken cancellationToken)
         {
             var transactions = await _mediator.Send(new RetrieveTransactionsWithFilterQuery(request.Wallet, request.EventTypes, request.Contracts,
-                                                                                            request.Direction, request.Limit, request.NextParsed,
-                                                                                            request.PreviousParsed), cancellationToken);
+                                                                                            request.Direction, request.Limit, request.Next,
+                                                                                            request.Previous), cancellationToken);
             // Assemble transaction DTOs
             var transactionDtos = await Task.WhenAll(transactions.Select(transaction => _assembler.Assemble(transaction)));
 
@@ -37,7 +37,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 : transactionDtos.OrderByDescending(t => t.Id).ToList();
 
             // Build the default cursor without next or previous
-            var defaultCursor = string.Format(PagingBase, request.Wallet, request.Direction, request.Limit)
+            var baseCursor = string.Format(PagingBase, request.Wallet, request.Direction, request.Limit)
                 .Replace("<eventTypes>", BuildCursorFromList("eventTypes", request.EventTypes.Select(e => e.ToString())))
                 .Replace("<contracts>", BuildCursorFromList("contracts", request.Contracts.Select(c => c)));
 
@@ -58,7 +58,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
             // Build the cursor DTO
             var cursor = BuildCursorDto(request.PagingBackward, request.PagingForward, sortedDtosCount,
-                                        limitPlusOne, defaultCursor, firstCursorValue, lastCursorValue);
+                                        limitPlusOne, baseCursor, firstCursorValue, lastCursorValue);
 
             return new TransactionsDto { TransactionDtos = sortedDtos, CursorDto = cursor };
         }

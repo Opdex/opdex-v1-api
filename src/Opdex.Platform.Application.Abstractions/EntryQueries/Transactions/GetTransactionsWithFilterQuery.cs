@@ -15,9 +15,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Transactions
                                               SortDirectionType direction, uint limit, string next, string previous)
             : base(direction, limit, MaxLimit, next, previous)
         {
-            var walletRequest = IsNewQuery ? wallet : TryGetCursorDictionarySingle<string>(nameof(wallet));
-            var eventTypesRequest = IsNewQuery ? eventTypes : TryGetCursorDictionaryList<TransactionEventType>(nameof(eventTypes));
-            var contractsRequest = IsNewQuery ? contracts : TryGetCursorDictionaryList<string>(nameof(contracts));
+            var walletRequest = IsNewRequest ? wallet : CursorProperties.TryGetCursorProperty<string>(nameof(wallet));
+            var eventTypesRequest = IsNewRequest ? eventTypes : CursorProperties.TryGetCursorProperties<TransactionEventType>(nameof(eventTypes));
+            var contractsRequest = IsNewRequest ? contracts : CursorProperties.TryGetCursorProperties<string>(nameof(contracts));
 
             // Decode the Previous cursor if it's provided and validate the value
             var parsedPrevious = long.TryParse(PreviousDecoded, out var previousParsed);
@@ -33,8 +33,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Transactions
                 throw new ArgumentOutOfRangeException(nameof(next), "Invalid next cursor value.");
             }
 
-            PreviousParsed = previousParsed;
-            NextParsed = nextParsed;
+            Previous = previousParsed;
+            Next = nextParsed;
             Wallet = walletRequest;
             EventTypes = eventTypesRequest;
             Contracts = contractsRequest;
@@ -43,7 +43,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Transactions
         public string Wallet { get; }
         public IEnumerable<TransactionEventType> EventTypes { get; }
         public IEnumerable<string> Contracts { get; }
-        public long NextParsed { get; }
-        public long PreviousParsed { get; }
+        public long Next { get; }
+        public long Previous { get; }
     }
 }

@@ -32,8 +32,8 @@ namespace Opdex.Platform.Application.Assemblers
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly IModelAssembler<SwapLog, SwapEventDto> _swapEventDtoAssembler;
-        private readonly IModelAssembler<MintLog, ProvideEventDto> _mintLogDtoAssembler;
-        private readonly IModelAssembler<BurnLog, ProvideEventDto> _burnLogDtoAssembler;
+        private readonly IModelAssembler<MintLog, ProvideEventDto> _mintProvideEventDtoAssembler;
+        private readonly IModelAssembler<BurnLog, ProvideEventDto> _burnProvideEventDtoAssembler;
         private readonly IModelAssembler<TransferLog, TransferEventDto> _transferEventDtoAssembler;
         private readonly IModelAssembler<ApprovalLog, ApprovalEventDto> _approvalEventDtoAssembler;
 
@@ -48,8 +48,8 @@ namespace Opdex.Platform.Application.Assemblers
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _swapEventDtoAssembler = swapEventDtoAssembler ?? throw new ArgumentNullException(nameof(swapEventDtoAssembler));
-            _mintLogDtoAssembler = mintLogDtoAssembler ?? throw new ArgumentNullException(nameof(mintLogDtoAssembler));
-            _burnLogDtoAssembler = burnLogDtoAssembler ?? throw new ArgumentNullException(nameof(burnLogDtoAssembler));
+            _mintProvideEventDtoAssembler = mintLogDtoAssembler ?? throw new ArgumentNullException(nameof(mintLogDtoAssembler));
+            _burnProvideEventDtoAssembler = burnLogDtoAssembler ?? throw new ArgumentNullException(nameof(burnLogDtoAssembler));
             _transferEventDtoAssembler = transferEventDtoAssembler ?? throw new ArgumentNullException(nameof(transferEventDtoAssembler));
             _approvalEventDtoAssembler = approvalEventDtoAssembler ?? throw new ArgumentNullException(nameof(approvalEventDtoAssembler));
         }
@@ -76,8 +76,8 @@ namespace Opdex.Platform.Application.Assemblers
 
                     // Liquidity Pools
                     TransactionLogType.SwapLog => await _swapEventDtoAssembler.Assemble((SwapLog)log),
-                    TransactionLogType.MintLog => await _mintLogDtoAssembler.Assemble((MintLog)log),
-                    TransactionLogType.BurnLog => await _burnLogDtoAssembler.Assemble((BurnLog)log),
+                    TransactionLogType.MintLog => await _mintProvideEventDtoAssembler.Assemble((MintLog)log),
+                    TransactionLogType.BurnLog => await _burnProvideEventDtoAssembler.Assemble((BurnLog)log),
                     TransactionLogType.StakeLog => _mapper.Map<StakeEventDto>((StakeLog)log),
                     TransactionLogType.CollectStakingRewardsLog => _mapper.Map<CollectStakingRewardsEventDto>((CollectStakingRewardsLog)log),
 

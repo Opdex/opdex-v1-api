@@ -52,7 +52,7 @@ namespace Opdex.Platform.Domain.Models
             Logs = new List<TransactionLog>();
         }
 
-        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, bool success, string newContractAddress)
+        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, bool success, string newContractAddress, List<TransactionLog> logs = null)
         {
             Id = id;
             Hash = txHash;
@@ -62,7 +62,15 @@ namespace Opdex.Platform.Domain.Models
             To = to;
             Success = success;
             NewContractAddress = newContractAddress;
-            Logs = new List<TransactionLog>();
+
+            if (logs == null)
+            {
+                Logs = new List<TransactionLog>();
+            }
+            else
+            {
+                AttachLogs(logs);
+            }
         }
 
         public long Id { get; private set; }
@@ -74,7 +82,7 @@ namespace Opdex.Platform.Domain.Models
         public bool Success { get; }
         public string NewContractAddress { get; }
 
-        public ICollection<TransactionLog> Logs { get; }
+        public List<TransactionLog> Logs { get; }
 
         // Todo: maybe enum - unknown | maybe | yeah | no
         public bool IsOpdexTx { get; private set; }

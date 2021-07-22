@@ -29,26 +29,26 @@ namespace Opdex.Platform.Application.EntryHandlers
             return previousHasValue ? 0 : count - 1;
         }
 
-        protected CursorDto BuildCursorDto(bool pagingBackward, bool pagingForward, int count, uint limitPlusOne,
-                                           string defaultCursor, string firstCursorString, string lastCursorString)
+        protected CursorDto BuildCursorDto(bool pagingBackward, bool pagingForward, int recordsFound, uint limitPlusOne,
+                                           string currentCursor, string firstRecordCursorString, string lastRecordCursorString)
         {
             var cursor = new CursorDto();
 
             // Limit + 1 returned, there is more than 1 page of results
-            if (count == limitPlusOne)
+            if (recordsFound == limitPlusOne)
             {
                 // If the + 1 record is returned, there is always a next page
-                cursor.BuildNextCursor(defaultCursor, lastCursorString);
+                cursor.SetNextCursor(currentCursor, lastRecordCursorString);
 
                 if (pagingBackward)
                 {
                     // Paging backward with + 1 record returned, there is a previous page
-                    cursor.BuildPreviousCursor(defaultCursor, firstCursorString);
+                    cursor.SetPreviousCursor(currentCursor, firstRecordCursorString);
                 }
                 else if (pagingForward)
                 {
                     // Paging forward with + 1 record returned, there is a next page
-                    cursor.BuildPreviousCursor(defaultCursor, firstCursorString);
+                    cursor.SetPreviousCursor(currentCursor, firstRecordCursorString);
                 }
             }
             // There was no +1, we've hit the end or beginning of our search
@@ -57,13 +57,13 @@ namespace Opdex.Platform.Application.EntryHandlers
                 if (pagingBackward)
                 {
                     // Paging backward hitting the beginning, there is a next page
-                    cursor.BuildNextCursor(defaultCursor, lastCursorString);
+                    cursor.SetNextCursor(currentCursor, lastRecordCursorString);
                 }
 
                 if (pagingForward)
                 {
                     // Paging forward hitting the end, there is a previous page
-                    cursor.BuildPreviousCursor(defaultCursor, firstCursorString);
+                    cursor.SetPreviousCursor(currentCursor, firstRecordCursorString);
                 }
             }
 

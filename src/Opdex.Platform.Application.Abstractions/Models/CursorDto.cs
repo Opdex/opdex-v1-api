@@ -8,14 +8,14 @@ namespace Opdex.Platform.Application.Abstractions.Models
         public string Next { get; set; }
         public string Previous { get; set; }
 
-        public void BuildNextCursor(string baseCursor, string cursorValue)
+        public void SetNextCursor(string baseCursor, string cursorValue)
         {
-            Next = BuildCursor(baseCursor, nameof(Next).ToLowerInvariant(), cursorValue);
+            Next = BuildCursor(baseCursor, nameof(Next), cursorValue);
         }
 
-        public void BuildPreviousCursor(string baseCursor, string cursorValue)
+        public void SetPreviousCursor(string baseCursor, string cursorValue)
         {
-            Previous = BuildCursor(baseCursor, nameof(Previous).ToLowerInvariant(), cursorValue);
+            Previous = BuildCursor(baseCursor, nameof(Previous), cursorValue);
         }
 
         private static string BuildCursor(string baseCursor, string key, string cursorValue)
