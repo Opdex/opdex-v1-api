@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -7,7 +6,6 @@ using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
@@ -19,11 +17,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
     {
         private readonly Mock<IDbContext> _dbContext;
         private readonly SelectTransactionByHashQueryHandler _handler;
-        
+
         public SelectTransactionByHashQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            
+
             _dbContext = new Mock<IDbContext>();
             _handler = new SelectTransactionByHashQueryHandler(_dbContext.Object, mapper);
         }
@@ -43,12 +41,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
                 Success = true,
                 NewContractAddress = "NewAddress"
             };
-            
+
             var command = new SelectTransactionByHashQuery(hash);
-        
+
             _dbContext.Setup(db => db.ExecuteFindAsync<TransactionEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedResponse));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Id.Should().Be(expectedResponse.Id);
@@ -61,14 +59,14 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             result.NewContractAddress.Should().Be(expectedResponse.NewContractAddress);
             result.Logs.Should().BeEmpty();
         }
-        
+
         [Fact]
         public void SelectTransactionByHash_Throws_NotFoundException()
         {
             const string hash = "SomeHash";
-            
+
             var command = new SelectTransactionByHashQuery(hash);
-        
+
             _dbContext.Setup(db => db.ExecuteFindAsync<TransactionEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<TransactionEntity>(null));
 

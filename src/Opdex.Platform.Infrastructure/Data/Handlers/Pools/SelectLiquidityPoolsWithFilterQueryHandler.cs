@@ -11,7 +11,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
