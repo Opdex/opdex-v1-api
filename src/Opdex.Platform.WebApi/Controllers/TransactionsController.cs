@@ -74,7 +74,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(TransactionResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<TransactionsResponseModel>> Transactions(string hash, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionResponseModel>> Transaction(string hash, CancellationToken cancellationToken)
         {
             var transactionsDto = await _mediator.Send(new GetTransactionByHashQuery(hash), cancellationToken);
 

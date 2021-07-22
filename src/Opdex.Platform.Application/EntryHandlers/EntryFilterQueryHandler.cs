@@ -20,15 +20,34 @@ namespace Opdex.Platform.Application.EntryHandlers
 
         public abstract Task<TK> Handle(T request, CancellationToken cancellationToken);
 
-        protected int? RemoveAtIndex(bool previousHasValue, int count, uint limitPlusOne)
+        /// <summary>
+        /// Based on the number of returned records and the expected limit + 1 value, return null or a value of
+        /// the index that should be removed from the final response to the client.
+        /// </summary>
+        /// <param name="pagingBackward">Flag indicating if this request is paging backward.</param>
+        /// <param name="count">The number of returned records.</param>
+        /// <param name="limitPlusOne">The number of the requests limit + 1.</param>
+        /// <returns>Nullable integer, when a value is present, the index of the result set to remove.</returns>
+        protected int? RemoveAtIndex(bool pagingBackward, int count, uint limitPlusOne)
         {
             // If there's the + 1 record only
             if (count < limitPlusOne) return null;
 
             // Moving backwards remove the first item else remove the last item
-            return previousHasValue ? 0 : count - 1;
+            return pagingBackward ? 0 : count - 1;
         }
 
+        /// <summary>
+        /// Builds and returns a CursorDto based on the query request and response.
+        /// </summary>
+        /// <param name="pagingBackward">Flag describing if the request is for the previous page.</param>
+        /// <param name="pagingForward">Flag describing if the request is for the next page.</param>
+        /// <param name="recordsFound">The number of records returned from the request (Maximum is limit + 1)</param>
+        /// <param name="limitPlusOne">The value of the requests limit + 1</param>
+        /// <param name="currentCursor">The base query cursor, unique per request, values will be appended to this current base.</param>
+        /// <param name="firstRecordCursorString">The first records cursor values as a string in the list of returned records.</param>
+        /// <param name="lastRecordCursorString">The last records cursor values as a string in the list of returned records.</param>
+        /// <returns><see cref="CursorDto"/> including next and previous page cursors.</returns>
         protected CursorDto BuildCursorDto(bool pagingBackward, bool pagingForward, int recordsFound, uint limitPlusOne,
                                            string currentCursor, string firstRecordCursorString, string lastRecordCursorString)
         {
@@ -70,6 +89,12 @@ namespace Opdex.Platform.Application.EntryHandlers
             return cursor;
         }
 
+        /// <summary>
+        /// Builds and a returns a colon/semi-colon delimited cursor string. (e.g. "contracts:<one>;contracts:<two>;")
+        /// </summary>
+        /// <param name="key">They key for setting values.</param>
+        /// <param name="values">List of values to set.</param>
+        /// <returns>Built cursor string</returns>
         protected static string BuildCursorFromList(string key, IEnumerable<string> values)
         {
             var sb = new StringBuilder();
