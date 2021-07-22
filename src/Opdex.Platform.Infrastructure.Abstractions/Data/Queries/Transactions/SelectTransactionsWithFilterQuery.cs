@@ -1,6 +1,8 @@
 using MediatR;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
+using System;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
@@ -13,10 +15,10 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
             Wallet = wallet;
             LogTypes = logTypes;
             Contracts = contracts;
-            Direction = direction;
-            Limit = limit;
             Next = next;
             Previous = previous;
+            Direction = direction.IsValid() ? direction : throw new ArgumentOutOfRangeException(nameof(direction), "Invalid sort direction");;
+            Limit = limit > 0 ? limit : throw new ArgumentOutOfRangeException(nameof(direction), "Invalid limit");
         }
 
         public string Wallet { get; }

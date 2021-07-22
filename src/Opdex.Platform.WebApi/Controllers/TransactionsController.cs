@@ -63,5 +63,24 @@ namespace Opdex.Platform.WebApi.Controllers
 
             return Ok(response);
         }
+
+        /// <summary>
+        /// Retrieve a transaction that has been indexed by its hash.
+        /// </summary>
+        /// <param name="hash">The transaction hash to of the transaction to look up.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TransactionResponseModel"/> details</returns>
+        [HttpGet("{hash}")]
+        [ProducesResponseType(typeof(TransactionResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<TransactionsResponseModel>> Transactions(string hash, CancellationToken cancellationToken)
+        {
+            var transactionsDto = await _mediator.Send(new GetTransactionByHashQuery(hash), cancellationToken);
+
+            var response = _mapper.Map<TransactionResponseModel>(transactionsDto);
+
+            return Ok(response);
+        }
     }
 }

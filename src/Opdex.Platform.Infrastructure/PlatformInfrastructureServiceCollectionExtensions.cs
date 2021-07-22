@@ -82,8 +82,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Snapshots;
-using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 
@@ -203,7 +201,6 @@ namespace Opdex.Platform.Infrastructure
             // Transactions
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, SelectTransactionLogsByTransactionIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTransactionsByPoolWithFilterQuery, IEnumerable<Transaction>>, SelectTransactionsByPoolWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTransactionsWithFilterQuery, List<Transaction>>, SelectTransactionsWithFilterQueryHandler>();
 
             // Vault

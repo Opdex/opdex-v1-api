@@ -127,7 +127,6 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetAddressAllowancesApprovedByOwnerQuery, IEnumerable<AddressAllowanceDto>>, GetAddressAllowancesApprovedByOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPoolDto>>, GetLiquidityPoolsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokensWithFilterQuery, IEnumerable<TokenDto>>, GetTokensWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<GetTransactionsByPoolWithFilterQuery, IEnumerable<TransactionDto>>, GetTransactionsByPoolWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolSwapQuoteQuery, string>, GetLiquidityPoolSwapQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolAddLiquidityQuoteQuery, string>, GetLiquidityPoolAddLiquidityQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<GetBestBlockQuery, BlockReceipt>, GetBestBlockQueryHandler>();
@@ -140,6 +139,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetVaultByAddressQuery, VaultDto>, GetVaultByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetTransactionsWithFilterQuery, TransactionsDto>, GetTransactionsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetAddressBalanceByTokenQuery, AddressBalanceDto>, GetAddressBalanceByTokenQueryHandler>();
+            services.AddTransient<IRequestHandler<GetTransactionByHashQuery, TransactionDto>, GetTransactionByHashQueryHandler>();
 
             // Queries
             services.AddTransient<IRequestHandler<RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery, AddressAllowance>, RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQueryHandler>();
@@ -148,7 +148,6 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveTokensWithFilterQuery, IEnumerable<Token>>, RetrieveTokensWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketSnapshotWithFilterQuery, MarketSnapshot>, RetrieveMarketSnapshotWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshot>>, RetrieveMarketSnapshotsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveTransactionsByPoolWithFilterQuery, IEnumerable<Transaction>>, RetrieveTransactionsByPoolWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusCurrentBlockQuery, BlockReceipt>, RetrieveCirrusCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusBlockByHashQuery, BlockReceipt>, RetrieveCirrusBlockByHashQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusTransactionByHashQuery, Transaction>, RetrieveCirrusTransactionByHashQueryHandler>();

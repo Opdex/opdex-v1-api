@@ -28,7 +28,6 @@
       <Folder Include="Handlers\Blocks" />
       <Folder Include="Handlers\Pools" />
       <Folder Include="Handlers\Tokens" />
-      <Folder Include="Handlers\Transactions" />
     </ItemGroup>
 
     <ItemGroup>

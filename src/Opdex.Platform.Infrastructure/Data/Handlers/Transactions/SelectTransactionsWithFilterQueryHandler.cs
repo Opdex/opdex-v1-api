@@ -75,9 +75,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
             var sortOperator = string.Empty;
 
+            // going forward in ascending order, use greater than
             if (request.Next > 0 && request.Direction == SortDirectionType.ASC) sortOperator = ">";
+
+            // going forward in descending order, use less than
             if (request.Next > 0 && request.Direction == SortDirectionType.DESC) sortOperator = "<";
+
+            // going backward in ascending order, use less than
             if (request.Previous > 0 && request.Direction == SortDirectionType.ASC) sortOperator = "<";
+
+            // going backward in descending order, use greater than
             if (request.Previous > 0 && request.Direction == SortDirectionType.DESC) sortOperator = ">";
 
             if (sortOperator.HasValue())

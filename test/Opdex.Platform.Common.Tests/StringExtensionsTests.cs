@@ -1,5 +1,4 @@
 using System;
-using System.Numerics;
 using FluentAssertions;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
