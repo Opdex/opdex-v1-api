@@ -27,7 +27,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
         private const string Limit = "{Limit}";
 
         private static readonly string SqlCommand =
-            $@"SELECT DISTINCT
+            $@"SELECT
                 pl.{nameof(LiquidityPoolEntity.Id)},
                 pl.{nameof(LiquidityPoolEntity.Address)},
                 pl.{nameof(LiquidityPoolEntity.SrcTokenId)},
