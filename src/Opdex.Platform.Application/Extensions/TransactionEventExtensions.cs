@@ -15,9 +15,9 @@ namespace Opdex.Platform.Application.Extensions
                 TransactionEventType.ChangeDeployerOwnerEvent => new[] {TransactionLogType.ChangeDeployerOwnerLog},
                 TransactionEventType.CreateMarketEvent => new[] {TransactionLogType.CreateMarketLog},
                 // Markets
-                TransactionEventType.ChangeMarketOwnerEvent => new[] {TransactionLogType.ChangeDeployerOwnerLog},
-                TransactionEventType.ChangeMarketPermissionEvent => new[] {TransactionLogType.ChangeDeployerOwnerLog},
-                TransactionEventType.CreateLiquidityPoolEvent => new[] {TransactionLogType.ChangeDeployerOwnerLog},
+                TransactionEventType.ChangeMarketOwnerEvent => new[] {TransactionLogType.ChangeMarketOwnerLog},
+                TransactionEventType.ChangeMarketPermissionEvent => new[] {TransactionLogType.ChangeMarketPermissionLog},
+                TransactionEventType.CreateLiquidityPoolEvent => new[] {TransactionLogType.CreateLiquidityPoolLog},
                 // Liquidity Pools
                 TransactionEventType.SwapEvent => new[] {TransactionLogType.SwapLog},
                 TransactionEventType.ProvideEvent => new[] {TransactionLogType.MintLog, TransactionLogType.BurnLog},

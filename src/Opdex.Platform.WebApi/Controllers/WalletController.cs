@@ -49,6 +49,23 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Retrieve the allowance of a spender for tokens owned by another wallet.
+        /// </summary>
+        /// <param name="address">The owner's wallet address of the tokens.</param>
+        /// <param name="token">The token address.</param>
+        /// <param name="spender">The spender of the allowance.</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns><see cref="ApprovedAllowanceResponseModel"/> summary</returns>
+        [HttpGet("{address}/allowance/{token}/approved/{spender}")]
+        [ProducesResponseType(typeof(ApprovedAllowanceResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<ApprovedAllowanceResponseModel>> GetAllowance(string address, string token, string spender, CancellationToken cancellationToken)
+        {
+            var allowances = await _mediator.Send(new GetAddressAllowanceQuery(address, spender, token), cancellationToken);
+            var response = _mapper.Map<ApprovedAllowanceResponseModel>(allowances);
+            return Ok(response);
+        }
+
         [HttpGet("{address}/balance/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<AddressBalanceResponseModel>> GetAddressBalanceByToken(string address, string token, CancellationToken cancellationToken)
