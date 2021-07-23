@@ -140,6 +140,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetTransactionsWithFilterQuery, TransactionsDto>, GetTransactionsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetAddressBalanceByTokenQuery, AddressBalanceDto>, GetAddressBalanceByTokenQueryHandler>();
             services.AddTransient<IRequestHandler<GetTransactionByHashQuery, TransactionDto>, GetTransactionByHashQueryHandler>();
+            services.AddTransient<IRequestHandler<GetAddressAllowanceQuery, AddressAllowanceDto>, GetAddressAllowanceQueryHandler>();
 
             // Queries
             services.AddTransient<IRequestHandler<RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQuery, AddressAllowance>, RetrieveAddressAllowanceByTokenIdAndOwnerAndSpenderQueryHandler>();
@@ -192,6 +193,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceByTokenIdQuery, MiningGovernance>, RetrieveMiningGovernanceByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveIndexerLockQuery, IndexLock>, RetrieveIndexerLockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTransactionsWithFilterQuery, List<Transaction>>, RetrieveTransactionsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveAddressAllowanceQuery, AddressAllowance>, RetrieveAddressAllowanceQueryHandler>();
 
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();
