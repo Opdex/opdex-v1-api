@@ -59,7 +59,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns><see cref="ApprovedAllowanceResponseModel"/> summary</returns>
         [HttpGet("{address}/allowance/{token}/approved/{spender}")]
         [ProducesResponseType(typeof(ApprovedAllowanceResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApprovedAllowanceResponseModel>> GetAllowance(string address,  string token, string spender, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApprovedAllowanceResponseModel>> GetAllowance(string address, string token, string spender, CancellationToken cancellationToken)
         {
             var allowances = await _mediator.Send(new GetAddressAllowanceQuery(address, spender, token), cancellationToken);
             var response = _mapper.Map<ApprovedAllowanceResponseModel>(allowances);
