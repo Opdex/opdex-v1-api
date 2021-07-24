@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
@@ -36,6 +37,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Block details</returns>
         [HttpGet("latest-block")]
+        [Authorize]
         public async Task<IActionResult> GetLastSyncedBlock(CancellationToken cancellationToken)
         {
             // Todo: Get Query with ResponseModel
