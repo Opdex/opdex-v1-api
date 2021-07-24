@@ -51,7 +51,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Transactions
         }
 
         [Fact]
-        public async Task RetrieveTransaction_Sends_SelectTransactionByHashQuery()
+        public async Task RetrieveTransactionsWithFilter_Sends_SelectTransactionsWithFilterQuery()
         {
             // Arrange
             const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
