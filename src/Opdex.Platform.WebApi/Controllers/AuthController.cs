@@ -83,7 +83,7 @@ namespace Opdex.Platform.WebApi.Controllers
             // At that time, consider creating queries and commands to whitelist devnet addresses
             if (_opdexConfiguration.Network == NetworkType.DEVNET)
             {
-                if (wallet.HasValue()) throw new AuthenticationException("Invalid wallet address");
+                if (!wallet.HasValue()) throw new AuthenticationException("Invalid wallet address");
 
                 var validWallet = false;
                 var tokens = await _mediator.Send(new RetrieveTokensWithFilterQuery(marketId, false, 0, 5, "Name", "ASC", new string[0]));
