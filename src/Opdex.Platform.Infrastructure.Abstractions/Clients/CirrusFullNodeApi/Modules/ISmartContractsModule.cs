@@ -15,5 +15,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken);
         Task<string> CallSmartContractAsync(SmartContractCallRequestDto call, CancellationToken cancellationToken);
         Task<string> CreateSmartContractAsync(SmartContractCreateRequestDto call, CancellationToken cancellationToken);
+        Task<ulong> GetDevnetWalletCrsBalance(string walletAddress, CancellationToken cancellationToken);
     }
 }

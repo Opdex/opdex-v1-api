@@ -66,8 +66,16 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Retrieves a wallet public key balance of a token.
+        /// </summary>
+        /// <param name="address">The wallet address.</param>
+        /// <param name="token">The token to get the balance of.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="AddressBalanceResponseModel"/> balance summary</returns>
         [HttpGet("{address}/balance/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AddressBalanceResponseModel>> GetAddressBalanceByToken(string address, string token, CancellationToken cancellationToken)
         {
             var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(address, token), cancellationToken);
@@ -81,10 +89,10 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(poolAddress, findOrThrow: true), cancellationToken);
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId, findOrThrow: true), cancellationToken);
-            var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(token.Id, walletAddress, findOrThrow: false));
+            var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(walletAddress, token.Id, findOrThrow: false), cancellationToken);
             var crsBalance = 0;
-            var lpTokens = await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(pool.LpTokenId, walletAddress, findOrThrow: false));
-            var staking = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(pool.Id, walletAddress, findOrThrow: false));
+            var lpTokens = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(walletAddress, pool.LpTokenId, findOrThrow: false), cancellationToken);
+            var staking = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(pool.Id, walletAddress, findOrThrow: false), cancellationToken);
 
             var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id, findOrThrow: false), cancellationToken);
 

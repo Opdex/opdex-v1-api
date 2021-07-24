@@ -101,7 +101,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(token.Id, address, findOrThrow: false));
+                var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(token.Address, tokenAddress: address, findOrThrow: false));
 
                 if (addressBalance != null && addressBalance.ModifiedBlock >= blockHeight)
                 {

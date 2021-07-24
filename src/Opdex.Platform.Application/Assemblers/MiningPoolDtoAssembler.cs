@@ -21,7 +21,7 @@ namespace Opdex.Platform.Application.Assemblers
         public async Task<MiningPoolDto> Assemble(MiningPool miningPool)
         {
             var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByIdQuery(miningPool.LiquidityPoolId));
-            var tokensMining = await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(liquidityPool.LpTokenId, miningPool.Address, false));
+            var tokensMining = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(miningPool.Address, liquidityPool.LpTokenId, findOrThrow: false));
             var latestBlock = await _mediator.Send(new RetrieveLatestBlockQuery());
 
             return new MiningPoolDto

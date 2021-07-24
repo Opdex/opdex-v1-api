@@ -7,13 +7,13 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Addresses
 {
     public class GetAddressBalanceByTokenQuery : IRequest<AddressBalanceDto>
     {
-        public GetAddressBalanceByTokenQuery(string address, string tokenAddress)
+        public GetAddressBalanceByTokenQuery(string walletAddress, string tokenAddress)
         {
-            Address = address.HasValue() ? address : throw new ArgumentNullException(nameof(address), "Address must be set.");
-            TokenAddress = address.HasValue() ? tokenAddress : throw new ArgumentNullException(nameof(tokenAddress), "Token address must be set.");
+            WalletAddress = walletAddress.HasValue() ? walletAddress : throw new ArgumentNullException(nameof(walletAddress), "Wallet address must be set.");
+            TokenAddress = tokenAddress.HasValue() ? tokenAddress : throw new ArgumentNullException(nameof(tokenAddress), "Token address must be set.");
         }
 
-        public string Address { get; }
+        public string WalletAddress { get; }
         public string TokenAddress { get; }
     }
 }

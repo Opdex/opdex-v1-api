@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             await _handler.Handle(new GetAddressBalanceByTokenQuery(address, token), cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveAddressBalanceByTokenAddressAndOwnerQuery>(
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveAddressBalanceByOwnerAndTokenQuery>(
                 query => query.Owner == address
                       && query.TokenAddress == token
                       && query.FindOrThrow
@@ -51,7 +51,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             // Arrange
             var dto = new AddressBalanceDto();
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByTokenAddressAndOwnerQuery>(), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(new AddressBalance(5, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk", "500000000", 500, 505));
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressBalance>())).ReturnsAsync(dto);
 
