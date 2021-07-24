@@ -11,6 +11,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Auth;
 using System.Linq;
@@ -83,7 +84,7 @@ namespace Opdex.Platform.WebApi.Controllers
             // At that time, consider creating queries and commands to whitelist devnet addresses
             if (_opdexConfiguration.Network == NetworkType.DEVNET)
             {
-                if (!wallet.HasValue()) throw new AuthenticationException("Invalid wallet address");
+                if (!wallet.HasValue()) throw new BadRequestException("Wallet address must be provided.");
 
                 var validWallet = false;
                 var tokens = await _mediator.Send(new RetrieveTokensWithFilterQuery(marketId, false, 0, 5, "Name", "ASC", new string[0]));
