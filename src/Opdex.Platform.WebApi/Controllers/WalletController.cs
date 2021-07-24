@@ -12,6 +12,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
@@ -72,6 +73,26 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(address, token), cancellationToken);
             var response = _mapper.Map<AddressBalanceResponseModel>(balance);
+            return Ok(response);
+        }
+
+        [HttpGet("{address}/balance")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<AddressBalanceResponseModel>>> GetAddressBalances(string address,
+                                                                                                     [FromQuery] IEnumerable<string> tokens,
+                                                                                                     [FromQuery] bool? includeLpTokens,
+                                                                                                     [FromQuery] bool? includeZeroBalances,
+                                                                                                     [FromQuery] SortDirectionType direction,
+                                                                                                     [FromQuery] uint limit,
+                                                                                                     [FromQuery] string next,
+                                                                                                     [FromQuery] string previous,
+                                                                                                     CancellationToken cancellationToken)
+        {
+            var balances = await _mediator.Send(new GetAddressBalancesWithFilterQuery(address, tokens, includeLpTokens ?? true, includeZeroBalances ?? false,
+                                                                                      direction, limit, next, previous), cancellationToken);
+
+            var response = _mapper.Map<AddressBalancesResponseModel>(balances);
+
             return Ok(response);
         }
 

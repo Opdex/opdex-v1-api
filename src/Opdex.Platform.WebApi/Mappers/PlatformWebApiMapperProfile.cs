@@ -154,6 +154,11 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token));
 
+            CreateMap<AddressBalancesDto, AddressBalancesResponseModel>()
+                .ForMember(dest => dest.Balances, opt => opt.MapFrom(src => src.Balances))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<MiningGovernanceDto, MiningGovernanceResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.MinedToken, opt => opt.MapFrom(src => src.MinedToken))
