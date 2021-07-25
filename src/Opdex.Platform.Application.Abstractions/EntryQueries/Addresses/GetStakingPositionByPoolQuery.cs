@@ -5,6 +5,9 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Addresses
 {
+    /// <summary>
+    /// Retrieves a staking position of a particular address in a liquidity pool
+    /// </summary>
     public class GetStakingPositionByPoolQuery : IRequest<StakingPositionDto>
     {
         public GetStakingPositionByPoolQuery(string staker, string liquidityPool)
