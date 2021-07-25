@@ -96,6 +96,22 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Retrieves the staking position of an address in a particular pool
+        /// </summary>
+        /// <param name="address">Address to lookup</param>
+        /// <param name="liquidityPool">Liquidity pool to search</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Staking position summary</returns>
+        [HttpGet("{address}/staking/{liquidityPool}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<StakingPositionResponseModel>> GetStakingPositionByPool(string address, string liquidityPool, CancellationToken cancellationToken)
+        {
+            var position = await _mediator.Send(new GetStakingPositionByPoolQuery(address, liquidityPool), cancellationToken);
+            var response = _mapper.Map<StakingPositionResponseModel>(position);
+            return Ok(response);
+        }
+
         [HttpGet("summary/pool/{poolAddress}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<string>> GetWalletSummaryByPool(string poolAddress, string walletAddress, CancellationToken cancellationToken)
