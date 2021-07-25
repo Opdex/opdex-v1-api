@@ -1,6 +1,10 @@
 using System;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -32,6 +36,23 @@ namespace Opdex.Platform.WebApi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((context, config) =>
+                {
+                    if (context.HostingEnvironment.IsProduction())
+                    {
+                        var builtConfig = config.Build();
+                        var manager = new KeyVaultSecretManager();
+                        var secretClient = new SecretClient(
+                            new Uri($"https://{builtConfig["KeyVaultName"]}.vault.azure.net/"),
+                            new DefaultAzureCredential());
+
+                        config.AddAzureKeyVault(secretClient, new AzureKeyVaultConfigurationOptions
+                        {
+                            Manager = new KeyVaultSecretManager(),
+                            ReloadInterval = TimeSpan.FromMinutes(10)
+                        });
+                    }
+                })
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
                 .UseSerilog((context, services, loggingConfiguration) =>
                 {

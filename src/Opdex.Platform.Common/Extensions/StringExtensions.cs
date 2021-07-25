@@ -1,5 +1,7 @@
 using Opdex.Platform.Common.Constants;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Opdex.Platform.Common.Extensions
@@ -209,6 +211,72 @@ namespace Opdex.Platform.Common.Extensions
             var usdDailyChange = (current - previous) / previous * 100;
 
             return Math.Round(usdDailyChange, 2, MidpointRounding.AwayFromZero);
+        }
+
+        /// <summary>
+        /// Convert a colon/sem-colon delimited string to a dictionary. (e.g. sort:DESC;limit:10;)
+        /// </summary>
+        /// <param name="cursor">The delimited string to parse.</param>
+        /// <returns>Dictionary with string keys and list of string values.</returns>
+        public static IDictionary<string, List<string>> ColonDelimitedCursorToDictionary(this string cursor)
+        {
+            return cursor
+                .Split(';')
+                .Select(part => part.Split(':'))
+                .Where(part => part.Length == 2)
+                .Select(array => new {Key = array[0], Value = array[1]})
+                .GroupBy(part => part.Key, part => part.Value)
+                .ToDictionary(sp => sp.Key, sp => sp.ToList());
+        }
+
+        /// <summary>
+        /// TryGet a single value from the cursor dictionary.
+        /// </summary>
+        /// <param name="dictionary">The dictionary containing to use.</param>
+        /// <param name="key">The key to lookup the value decoded value of.</param>
+        /// <typeparam name="TK">Generic used to cast any found results too.</typeparam>
+        /// <returns>A single string record or null.</returns>
+        public static TK TryGetCursorProperty<TK>(this IDictionary<string, List<string>> dictionary, string key)
+        {
+            // Return single record
+            return dictionary.TryGetCursorProperties<TK>(key).SingleOrDefault();
+        }
+
+        /// <summary>
+        /// TryGet a list of generic values from a cursor dictionary.
+        /// </summary>
+        /// <param name="dictionary">The dictionary containing to use.</param>
+        /// <param name="key">The key to lookup the value decoded value of.</param>
+        /// <typeparam name="TK">Generic used to cast any found results too.</typeparam>
+        /// <returns>List of type TK of found values.</returns>
+        public static List<TK> TryGetCursorProperties<TK>(this IDictionary<string, List<string>> dictionary, string key)
+        {
+            if (dictionary == null || !key.HasValue())
+            {
+                throw new ArgumentException("The dictionary and a key must be provided.");
+            }
+
+            // Get results return empty list if none found
+            var success = dictionary.TryGetValue(key, out var results);
+            if (!success || results.Count < 1)
+            {
+                return new List<TK>();
+            }
+
+            // If it's not an emum type, convert and return
+            if (!typeof(TK).IsEnum)
+            {
+                return results.Select(result => (TK)Convert.ChangeType(result, typeof(TK))).ToList();
+            }
+
+            // Assert all types that are enum, are valid values
+            if (results.Any(result => !typeof(TK).IsEnumDefined(result)))
+            {
+                throw new ArgumentOutOfRangeException(nameof(key), key, "Invalid enum type.");
+            }
+
+            // Return list of TK enum values
+            return results.Select(result => (TK)Enum.Parse(typeof(TK), result)).ToList();
         }
     }
 }

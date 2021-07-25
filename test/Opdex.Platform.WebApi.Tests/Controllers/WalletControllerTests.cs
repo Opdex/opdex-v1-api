@@ -102,7 +102,6 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             ((OkObjectResult)response.Result).Value.Should().Be(tokenBalance);
         }
 
-
         [Fact]
         public async Task GetStakingPositionByPool_GetStakingPositionByPoolQuery_Send()
         {
@@ -135,6 +134,50 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             // Act
             response.Result.Should().BeOfType<OkObjectResult>();
             ((OkObjectResult)response.Result).Value.Should().Be(stakingPosition);
+        }
+
+        [Fact]
+        public async Task GetAllowance_GetAddressAllowanceQuery_Send()
+        {
+            // Arrange
+            const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
+            const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            await _controller.GetAllowance(owner, token, spender, cancellationToken);
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetAddressAllowanceQuery>(
+                query => query.Owner == owner
+                      && query.Spender == spender
+                      && query.Token == token
+            ), cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetAllowance_GetAddressAllowanceQuery_ReturnMapped()
+        {
+            // Arrange
+            const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
+            const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            var addressAllowanceDto = new AddressAllowanceDto { Allowance = "500000", Owner = owner, Spender = spender, Token = token };
+            var approvedAllowanceResponseModel = new ApprovedAllowanceResponseModel { Allowance = "500000", Owner = owner, Spender = spender, Token = token };
+
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAddressAllowanceQuery>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(addressAllowanceDto);
+
+            _mapperMock.Setup(callTo => callTo.Map<ApprovedAllowanceResponseModel>(addressAllowanceDto))
+                .Returns(approvedAllowanceResponseModel);
+
+            // Act
+            var response = await _controller.GetAllowance(owner, token, spender, CancellationToken.None);
+
+            // Assert
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(approvedAllowanceResponseModel);
         }
     }
 }

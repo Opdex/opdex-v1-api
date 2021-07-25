@@ -1,6 +1,6 @@
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using System.Collections.Generic;
 using System.Linq;
-using Opdex.Platform.Application.Abstractions.Models.TransactionLogs;
 
 namespace Opdex.Platform.Application.Abstractions.Models
 {
@@ -8,15 +8,17 @@ namespace Opdex.Platform.Application.Abstractions.Models
     {
         public TransactionDto()
         {
-            Logs = Enumerable.Empty<TransactionLogDto>();
+            Events = Enumerable.Empty<TransactionEventDto>();
         }
-        
+
         public long Id { get; set; }
+        public bool Success { get; set; }
         public string Hash { get; set; }
-        public ulong BlockHeight { get; set; }
+        public string NewContractAddress { get; set; }
+        public BlockDto BlockDto { get; set; }
         public int GasUsed { get; set; }
         public string From { get; set; }
         public string To { get; set; }
-        public IEnumerable<TransactionLogDto> Logs { get; set; }
+        public IEnumerable<TransactionEventDto> Events { get; set; }
     }
 }

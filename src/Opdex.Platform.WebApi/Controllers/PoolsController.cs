@@ -131,16 +131,5 @@ namespace Opdex.Platform.WebApi.Controllers
 
             return Ok(response);
         }
-
-        [HttpGet("{address}/transactions")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<TransactionDto>>> GetTransactionsForPool(string address, CancellationToken cancellationToken)
-        {
-            var query = new GetTransactionsByPoolWithFilterQuery(address, new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 });
-
-            var response = await _mediator.Send(query, cancellationToken);
-
-            return Ok(response);
-        }
     }
 }

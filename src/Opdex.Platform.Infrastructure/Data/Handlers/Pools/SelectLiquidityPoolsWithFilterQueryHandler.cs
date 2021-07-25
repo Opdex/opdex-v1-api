@@ -11,7 +11,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
@@ -27,7 +26,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
         private const string Limit = "{Limit}";
 
         private static readonly string SqlCommand =
-            $@"SELECT DISTINCT
+            $@"SELECT
                 pl.{nameof(LiquidityPoolEntity.Id)},
                 pl.{nameof(LiquidityPoolEntity.Address)},
                 pl.{nameof(LiquidityPoolEntity.SrcTokenId)},

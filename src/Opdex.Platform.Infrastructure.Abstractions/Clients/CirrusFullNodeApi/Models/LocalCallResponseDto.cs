@@ -25,7 +25,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
             {
                 return default;
             }
-            
+
             var value = JsonConvert.SerializeObject(Return);
             return JsonConvert.DeserializeObject<T>(value);
         }

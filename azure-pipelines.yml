@@ -63,6 +63,7 @@ stages:
 - stage: DEV
   displayName: 'Release to devnet (Azure)'
   dependsOn: CI
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop')) # Don't run deployment for PRs against the branch.
   jobs:
   - template: ${{ variables.releaseTemplate }}
     parameters:
