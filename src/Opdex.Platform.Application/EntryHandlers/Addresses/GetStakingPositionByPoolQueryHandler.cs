@@ -2,6 +2,7 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
+using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Extensions;
@@ -25,9 +26,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses
             var addressStaking = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liqudityPool.Id,
                                                                                                                request.Address,
                                                                                                                findOrThrow: true), cancellationToken);
-
-            // TODO: retrieve staking token
-            var token = await _mediator.Send(new RetrieveTokenByIdQuery(liqudityPool.LpTokenId), cancellationToken);
+            var market = await _mediator.Send(new RetrieveMarketByIdQuery(liqudityPool.MarketId, findOrThrow: true), cancellationToken);
+            var token = await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId.Value, findOrThrow: true), cancellationToken);
 
             return new StakingPositionDto
             {
