@@ -216,6 +216,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectAddressBalanceByTokenAddressAndOwnerQuery, AddressBalance>, SelectAddressBalanceByTokenAddressAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>, SelectAddressMiningByMiningPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>, SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectAddressBalancesWithFilterQuery, List<AddressBalance>>, SelectAddressBalancesWithFilterQueryHandler>();
 
             // Indexer
             services.AddTransient<IRequestHandler<SelectIndexerLockQuery, IndexLock>, SelectIndexerLockQueryHandler>();
