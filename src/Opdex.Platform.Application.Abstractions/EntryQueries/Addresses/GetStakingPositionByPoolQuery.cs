@@ -9,7 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Addresses
     {
         public GetStakingPositionByPoolQuery(string staker, string liquidityPool)
         {
-            Address = staker.HasValue() ? staker : throw new ArgumentNullException(nameof(staker), "Staker ddress must be set.");
+            Address = staker.HasValue() ? staker : throw new ArgumentNullException(nameof(staker), "Staker address must be set.");
             LiquidityPoolAddress = liquidityPool.HasValue() ? liquidityPool : throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool address must be set.");
         }
 
