@@ -25,15 +25,19 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balan
             try
             {
                 return _network == NetworkType.DEVNET
-                    ? await _smartContractsModule.GetDevnetWalletCrsBalance(request.Address, cancellationToken)
+                    ? await _smartContractsModule.GetWalletAddressCrsBalance(request.Address, cancellationToken)
                     : 0ul;
             }
             catch (Exception)
             {
-                // Ignore and return 0. ApiClient will have already caught, logged, and thrown to here
-            }
+                // Already logged previous in ApiClientBase
+                if (request.FindOrThrow)
+                {
+                    throw;
+                }
 
-            return 0;
+                return 0;
+            }
         }
     }
 }

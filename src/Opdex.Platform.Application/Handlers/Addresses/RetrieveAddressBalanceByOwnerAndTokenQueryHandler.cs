@@ -28,7 +28,7 @@ namespace Opdex.Platform.Application.Handlers.Addresses
                 ? await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenAddress, request.FindOrThrow), cancellationToken)
                 : await _mediator.Send(new RetrieveTokenByIdQuery(request.TokenId.GetValueOrDefault(), request.FindOrThrow), cancellationToken);
 
-            if (!request.FindOrThrow && token == null)
+            if (token == null)
             {
                 return null;
             }
@@ -40,7 +40,7 @@ namespace Opdex.Platform.Application.Handlers.Addresses
                                                                                            request.FindOrThrow), cancellationToken);
             }
 
-            var balance = await _mediator.Send(new CallCirrusGetAddressBalanceQuery(request.Owner), cancellationToken);
+            var balance = await _mediator.Send(new CallCirrusGetAddressBalanceQuery(request.Owner, request.FindOrThrow), cancellationToken);
 
             return new AddressBalance(token.Id, request.Owner, balance.ToString(), 1);
         }

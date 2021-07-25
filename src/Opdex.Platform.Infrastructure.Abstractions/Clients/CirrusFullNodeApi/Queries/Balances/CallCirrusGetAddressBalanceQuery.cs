@@ -1,12 +1,21 @@
-using MediatR;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Queries;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Balances
 {
-    public class CallCirrusGetAddressBalanceQuery : IRequest<ulong>
+    /// <summary>
+    /// A query to get an address' CRS balance.
+    /// </summary>
+    public class CallCirrusGetAddressBalanceQuery : FindQuery<ulong>
     {
-        public CallCirrusGetAddressBalanceQuery(string address)
+        /// <summary>
+        /// Constructor building the get address balance query.
+        /// </summary>
+        /// <param name="address">The wallet address to get the balance of.</param>
+        /// <param name="findOrThrow">Flag to find or throw if not found.</param>
+        /// <exception cref="ArgumentNullException">Thrown for invalid query arguments.</exception>
+        public CallCirrusGetAddressBalanceQuery(string address, bool findOrThrow = true) : base(findOrThrow)
         {
             Address = address.HasValue()
                 ? address

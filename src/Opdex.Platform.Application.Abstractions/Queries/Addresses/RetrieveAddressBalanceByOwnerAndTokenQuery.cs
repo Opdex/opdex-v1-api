@@ -11,7 +11,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Addresses
         {
             Owner = owner.HasValue() ? owner : throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
 
-            if (!tokenId.HasValue && !tokenAddress.HasValue())
+            if (!(tokenId.HasValue && tokenId.Value > 0) && !tokenAddress.HasValue())
             {
                 throw new ArgumentException("Either a tokenId or a tokenAddress must be provided.");
             }

@@ -11,12 +11,12 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
         {
             if (!owner.HasValue())
             {
-                throw new ArgumentNullException(nameof(owner));
+                throw new ArgumentNullException(nameof(owner), "Owner must be provided.");
             }
 
             if (tokenId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(tokenId));
+                throw new ArgumentOutOfRangeException(nameof(tokenId), "TokenId must be provided.");
             }
 
             Owner = owner;
