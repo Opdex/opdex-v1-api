@@ -20,7 +20,7 @@ namespace Opdex.Platform.Application.Handlers.Vaults
 
         public async Task<IEnumerable<VaultCertificate>> Handle(RetrieveVaultCertificatesWithFilterQuery request, CancellationToken cancellationToken)
         {
-            return await _mediator.Send(new SelectVaultCertificatesWithFilterQuery(request.VaultId, request.Holder, request.Direction, request.Limit, request.Next, request.Previous), cancellationToken);
+            return await _mediator.Send(new SelectVaultCertificatesWithFilterQuery(request.VaultId, request.Cursor), cancellationToken);
         }
     }
 }

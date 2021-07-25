@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
@@ -89,8 +92,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="holder">Certificate holder address</param>
         /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
         /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
-        /// <param name="next">The next page cursor when paging forward.</param>
-        /// <param name="previous">The previous page cursor when paging backward.</param>
+        /// <param name="cursor">The cursor for paging.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Vault certificates</returns>
         [HttpGet("{address}/certificates")]
@@ -99,11 +101,33 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                         [FromQuery] string holder,
                                                                                         [FromQuery] uint limit,
                                                                                         [FromQuery] SortDirectionType direction,
-                                                                                        [FromQuery] string next,
-                                                                                        [FromQuery] string previous,
+                                                                                        [FromQuery] string cursor,
                                                                                         CancellationToken cancellationToken)
         {
-            var certificates = await _mediator.Send(new GetVaultCertificatesWithFilterQuery(address, holder, direction, limit, next, previous), cancellationToken);
+            VaultCertificatesCursor pagingCursor;
+
+            if (cursor.HasValue())
+            {
+                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !VaultCertificatesCursor.TryParse(decodedCursor, out var parsedCursor))
+                {
+                    var problemDetails = new ProblemDetails
+                    {
+                        Title = "Unprocessable Entity",
+                        Status = StatusCodes.Status422UnprocessableEntity,
+                        Detail = "A validation error occured.",
+                        Type = "https://httpstatuses.com/422"
+                    };
+                    problemDetails.Extensions.Add("Errors", new string[] { "Cursor not formed correctly." });
+                    return new UnprocessableEntityObjectResult(problemDetails);
+                }
+                pagingCursor = parsedCursor;
+            }
+            else
+            {
+                pagingCursor = new VaultCertificatesCursor(holder, direction, limit, 0, PagingDirection.Forward);
+            }
+
+            var certificates = await _mediator.Send(new GetVaultCertificatesWithFilterQuery(address, pagingCursor), cancellationToken);
             return Ok(_mapper.Map<CertificatesResponseModel>(certificates));
         }
 
