@@ -1,36 +1,47 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Enums;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
 {
-    public class VaultCertificatesCursor : Cursor<long>
+    public class TransactionsCursor : Cursor<long>
     {
         public const uint MaxLimit = 50;
 
-        public VaultCertificatesCursor(string holder, SortDirectionType orderBy, uint limit, long id, PagingDirection pagingDirection)
-            : base(orderBy, limit, pagingDirection, id)
+        public TransactionsCursor(string wallet, IEnumerable<TransactionEventType> eventTypes,
+                                  IEnumerable<string> contracts, SortDirectionType orderBy, uint limit,
+                                  PagingDirection pagingDirection, long pointer)
+            : base(orderBy, limit, pagingDirection, pointer)
         {
             if (limit > MaxLimit) throw new ArgumentOutOfRangeException(nameof(limit), $"Limit exceeds maximum limit of {MaxLimit}.");
-            Holder = holder;
+            Wallet = wallet;
+            EventTypes = eventTypes;
+            Contracts = contracts;
         }
-
-        /// <summary>
-        /// Filter for a particular certificate holder
-        /// </summary>
-        public string Holder { get; }
 
         /// <inheritdoc />
         public override bool IsFirstRequest => Pointer == 0;
+
+        public string Wallet { get; }
+        public IEnumerable<TransactionEventType> EventTypes { get; }
+        public IEnumerable<string> Contracts { get; }
 
         /// <inheritdoc />
         public override string ToString()
         {
             var pointerBytes = Encoding.UTF8.GetBytes(Pointer.ToString());
             var encodedPointer = Convert.ToBase64String(pointerBytes);
-            return $"holder:{Holder};direction:{OrderBy};limit:{Limit};paging:{PagingDirection};pointer:{encodedPointer};";
+
+            var sb = new StringBuilder();
+            sb.AppendFormat("direction:{0};limit:{1};paging:{2};", OrderBy, Limit, PagingDirection);
+            foreach (var eventType in EventTypes) sb.AppendFormat("eventTypes:{0};", eventType);
+            foreach (var contract in Contracts) sb.AppendFormat("contracts:{0};", contract);
+            sb.AppendFormat("pointer:{0};", encodedPointer);
+            return sb.ToString();
         }
 
         /// <inheritdoc />
@@ -39,11 +50,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
             if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
             if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-            return new VaultCertificatesCursor(Holder, OrderBy, Limit, pointer, direction);
+            return new TransactionsCursor(Wallet, EventTypes, Contracts, OrderBy, Limit, direction, pointer);
         }
-
-        /// <inheritdoc />
-        protected override bool ValidatePointer(long pointer) => pointer >= 0;
 
         /// <summary>
         /// Parses a stringified version of the cursor
@@ -51,7 +59,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
         /// <param name="raw">Stringified cursor</param>
         /// <param name="cursor">Parsed cursor</param>
         /// <returns>True if the value could be parsed, otherwise false</returns>
-        public static bool TryParse(string raw, out VaultCertificatesCursor cursor)
+        public static bool TryParse(string raw, out TransactionsCursor cursor)
         {
             cursor = null;
 
@@ -62,7 +70,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
                             .GroupBy(part => part.Key, part => part.Value)
                             .ToDictionary(sp => sp.Key, sp => sp.ToList().AsEnumerable());
 
-            var holder = TryGetCursorProperty<string>(values, "holder");
+            var wallet = TryGetCursorProperty<string>(values, "wallet");
+            var eventTypes = TryGetCursorProperties<TransactionEventType>(values, "eventTypes");
+            var contracts = TryGetCursorProperties<string>(values, "contracts");
 
             var direction = TryGetCursorProperty<SortDirectionType>(values, "direction");
             if (!direction.IsValid()) return false;
@@ -78,7 +88,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 
             var paging = TryGetCursorProperty<PagingDirection>(values, "paging");
 
-            cursor = new VaultCertificatesCursor(holder, direction, limit, pointer, paging);
+            cursor = new TransactionsCursor(wallet, eventTypes, contracts, direction, limit, paging, pointer);
 
             return true;
         }

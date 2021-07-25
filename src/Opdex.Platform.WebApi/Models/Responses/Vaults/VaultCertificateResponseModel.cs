@@ -1,6 +1,6 @@
-namespace Opdex.Platform.Application.Abstractions.Models.Vaults
+namespace Opdex.Platform.WebApi.Models.Responses.Vaults
 {
-    public class CertificateDto
+    public class VaultCertificateResponseModel
     {
         public string Owner { get; set; }
         public string Amount { get; set; }

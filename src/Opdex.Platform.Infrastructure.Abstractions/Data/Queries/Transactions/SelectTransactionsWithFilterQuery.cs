@@ -7,26 +7,13 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
 {
-    public class SelectTransactionsWithFilterQuery : IRequest<List<Transaction>>
+    public class SelectTransactionsWithFilterQuery : IRequest<IEnumerable<Transaction>>
     {
-        public SelectTransactionsWithFilterQuery(string wallet, IEnumerable<uint> logTypes, IEnumerable<string> contracts,
-                                                 SortDirectionType direction, ulong limit, long next, long previous)
+        public SelectTransactionsWithFilterQuery(TransactionsCursor cursor)
         {
-            Wallet = wallet;
-            LogTypes = logTypes;
-            Contracts = contracts;
-            Next = next;
-            Previous = previous;
-            Direction = direction.IsValid() ? direction : throw new ArgumentOutOfRangeException(nameof(direction), "Invalid sort direction");;
-            Limit = limit > 0 ? limit : throw new ArgumentOutOfRangeException(nameof(direction), "Invalid limit");
+            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor), "Cursor must be set.");
         }
 
-        public string Wallet { get; }
-        public IEnumerable<uint> LogTypes { get; }
-        public IEnumerable<string> Contracts { get; }
-        public SortDirectionType Direction { get; }
-        public ulong Limit { get; }
-        public long Next { get; }
-        public long Previous { get; }
+        public TransactionsCursor Cursor { get; }
     }
 }

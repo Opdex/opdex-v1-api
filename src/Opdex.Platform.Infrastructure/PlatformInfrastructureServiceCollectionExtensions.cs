@@ -201,7 +201,7 @@ namespace Opdex.Platform.Infrastructure
             // Transactions
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, SelectTransactionLogsByTransactionIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTransactionsWithFilterQuery, List<Transaction>>, SelectTransactionsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTransactionsWithFilterQuery, IEnumerable<Transaction>>, SelectTransactionsWithFilterQueryHandler>();
 
             // Vault
             services.AddTransient<IRequestHandler<SelectAllVaultsQuery, IEnumerable<Vault>>, SelectAllVaultsQueryHandler>();

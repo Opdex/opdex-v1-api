@@ -92,17 +92,17 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="holder">Certificate holder address</param>
         /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
         /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
-        /// <param name="cursor">The cursor for paging.</param>
+        /// <param name="cursor">The cursor when paging.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Vault certificates</returns>
         [HttpGet("{address}/certificates")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<CertificatesResponseModel>> GetVaultCertificates(string address,
-                                                                                        [FromQuery] string holder,
-                                                                                        [FromQuery] uint limit,
-                                                                                        [FromQuery] SortDirectionType direction,
-                                                                                        [FromQuery] string cursor,
-                                                                                        CancellationToken cancellationToken)
+        public async Task<ActionResult<VaultCertificatesResponseModel>> GetVaultCertificates(string address,
+                                                                                             [FromQuery] string holder,
+                                                                                             [FromQuery] uint limit,
+                                                                                             [FromQuery] SortDirectionType direction,
+                                                                                             [FromQuery] string cursor,
+                                                                                             CancellationToken cancellationToken)
         {
             VaultCertificatesCursor pagingCursor;
 
@@ -128,7 +128,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
 
             var certificates = await _mediator.Send(new GetVaultCertificatesWithFilterQuery(address, pagingCursor), cancellationToken);
-            return Ok(_mapper.Map<CertificatesResponseModel>(certificates));
+            return Ok(_mapper.Map<VaultCertificatesResponseModel>(certificates));
         }
 
         /// <summary>

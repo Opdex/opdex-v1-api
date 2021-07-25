@@ -46,7 +46,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
         public void From_CertificateDto_To_CertificateResponseModel()
         {
             // Arrange
-            var dto = new CertificateDto
+            var dto = new VaultCertificateDto
             {
                 Owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXM",
                 Amount = "5021.24920000",
@@ -57,7 +57,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             };
 
             // Act
-            var response = _mapper.Map<CertificateResponseModel>(dto);
+            var response = _mapper.Map<VaultCertificateResponseModel>(dto);
 
             // Assert
             response.Owner.Should().Be(dto.Owner);
@@ -72,14 +72,14 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
         public void From_CertificatesDto_To_CertificatesResponseModel()
         {
             // Arrange
-            var dto = new CertificatesDto
+            var dto = new VaultCertificatesDto
             {
-                Certificates = new CertificateDto[] { new CertificateDto(), new CertificateDto(), new CertificateDto() },
+                Certificates = new VaultCertificateDto[] { new VaultCertificateDto(), new VaultCertificateDto(), new VaultCertificateDto() },
                 Cursor = new CursorDto { Next = "aG9sZGVyOjtkaXJlY3Rpb246QVNDO2xpbWl0OjI7cGFnaW5nOkZvcndhcmQ7cG9pbnRlcjpNZz09Ow", Previous = "aG9sZGVyOjtkaXJlY3Rpb246QVNDO2xpbWl0OjI7cGFnaW5nOkZvcndhcmQ7cG9pbnRlcjpNZz09Ow==" }
             };
 
             // Act
-            var response = _mapper.Map<CertificatesResponseModel>(dto);
+            var response = _mapper.Map<VaultCertificatesResponseModel>(dto);
 
             // Assert
             response.Results.Count().Should().Be(dto.Certificates.Count());

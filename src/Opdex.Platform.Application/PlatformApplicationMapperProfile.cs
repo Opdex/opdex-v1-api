@@ -182,7 +182,7 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<VaultCertificate, CertificateDto>()
+            CreateMap<VaultCertificate, VaultCertificateDto>()
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.InsertDecimal(TokenConstants.Opdex.Decimals)))
                 .ForMember(dest => dest.VestingStartBlock, opt => opt.MapFrom(src => src.CreatedBlock))

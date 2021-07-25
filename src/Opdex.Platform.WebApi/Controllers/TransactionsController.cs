@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System.Collections.Generic;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
+using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -40,8 +42,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="wallet">Optionally filter transactions by wallet address.</param>
         /// <param name="limit">Number of transactions to take must be greater than 0 and less than 101.</param>
         /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
-        /// <param name="next">The next page cursor when paging forward.</param>
-        /// <param name="previous">The previous page cursor when paging backward.</param>
+        /// <param name="cursor">The cursor when paging.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionsResponseModel"/> with transactions and paging.</returns>
         [HttpGet]
@@ -52,12 +53,33 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                 [FromQuery] string wallet,
                                                                                 [FromQuery] uint limit,
                                                                                 [FromQuery] SortDirectionType direction,
-                                                                                [FromQuery] string next,
-                                                                                [FromQuery] string previous,
+                                                                                [FromQuery] string cursor,
                                                                                 CancellationToken cancellationToken)
         {
-            var transactionsDto = await _mediator.Send(new GetTransactionsWithFilterQuery(wallet, eventTypes, contracts, direction, limit,
-                                                                                          next, previous), cancellationToken);
+            TransactionsCursor pagingCursor;
+
+            if (cursor.HasValue())
+            {
+                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !TransactionsCursor.TryParse(decodedCursor, out var parsedCursor))
+                {
+                    var problemDetails = new ProblemDetails
+                    {
+                        Title = "Unprocessable Entity",
+                        Status = StatusCodes.Status422UnprocessableEntity,
+                        Detail = "A validation error occured.",
+                        Type = "https://httpstatuses.com/422"
+                    };
+                    problemDetails.Extensions.Add("Errors", new string[] { "Cursor not formed correctly." });
+                    return new UnprocessableEntityObjectResult(problemDetails);
+                }
+                pagingCursor = parsedCursor;
+            }
+            else
+            {
+                pagingCursor = new TransactionsCursor(wallet, eventTypes, contracts, direction, limit, PagingDirection.Forward, 0);
+            }
+
+            var transactionsDto = await _mediator.Send(new GetTransactionsWithFilterQuery(pagingCursor), cancellationToken);
 
             var response = _mapper.Map<TransactionsResponseModel>(transactionsDto);
 

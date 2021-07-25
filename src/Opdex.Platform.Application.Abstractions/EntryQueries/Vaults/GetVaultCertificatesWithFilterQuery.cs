@@ -6,7 +6,7 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Vaults
 {
-    public class GetVaultCertificatesWithFilterQuery : IRequest<CertificatesDto>
+    public class GetVaultCertificatesWithFilterQuery : IRequest<VaultCertificatesDto>
     {
         public GetVaultCertificatesWithFilterQuery(string vault, VaultCertificatesCursor cursor)
         {
