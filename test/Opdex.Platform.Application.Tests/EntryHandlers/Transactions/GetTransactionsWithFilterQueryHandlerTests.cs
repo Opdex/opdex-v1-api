@@ -36,7 +36,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         [Theory]
         [InlineData(0)]
         [InlineData(101)]
-        public async Task GetTransactionsWithFilter_ThrowsArgumentOutOfRangeException_InvalidLimit(uint limit)
+        public void GetTransactionsWithFilter_ThrowsArgumentOutOfRangeException_InvalidLimit(uint limit)
         {
             // Arrange
 
@@ -48,7 +48,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         }
 
         [Fact]
-        public async Task GetTransactionsWithFilter_ThrowsArgumentException_InvalidSortDirection()
+        public void GetTransactionsWithFilter_ThrowsArgumentException_InvalidSortDirection()
         {
             // Arrange
 
@@ -60,7 +60,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         }
 
         [Fact]
-        public async Task GetTransactionsWithFilter_ThrowsArgumentException_PreviousAndNextBothHaveValues()
+        public void GetTransactionsWithFilter_ThrowsArgumentException_PreviousAndNextBothHaveValues()
         {
             // Arrange
 
@@ -108,9 +108,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Transaction> { transactionTwo, transactionOne, transactionThree });
 
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionOne)).ReturnsAsync(new TransactionDto {Id = transactionOne.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionTwo)).ReturnsAsync(new TransactionDto {Id = transactionTwo.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionThree)).ReturnsAsync(new TransactionDto {Id = transactionThree.Id});
+            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionOne)).ReturnsAsync(new TransactionDto { Id = transactionOne.Id });
+            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionTwo)).ReturnsAsync(new TransactionDto { Id = transactionTwo.Id });
+            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionThree)).ReturnsAsync(new TransactionDto { Id = transactionThree.Id });
 
             // Act
             var transactions = await _handler.Handle(request, It.IsAny<CancellationToken>());
@@ -146,9 +146,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Transaction> { transactionTwo, transactionOne, transactionThree });
 
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionOne)).ReturnsAsync(new TransactionDto {Id = transactionOne.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionTwo)).ReturnsAsync(new TransactionDto {Id = transactionTwo.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionThree)).ReturnsAsync(new TransactionDto {Id = transactionThree.Id});
+            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionOne)).ReturnsAsync(new TransactionDto { Id = transactionOne.Id });
+            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionTwo)).ReturnsAsync(new TransactionDto { Id = transactionTwo.Id });
+            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionThree)).ReturnsAsync(new TransactionDto { Id = transactionThree.Id });
 
             // Act
             var transactions = await _handler.Handle(request, It.IsAny<CancellationToken>());
@@ -179,9 +179,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Transaction> { transactionTwo, transactionOne, transactionThree });
 
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionOne)).ReturnsAsync(new TransactionDto {Id = transactionOne.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionTwo)).ReturnsAsync(new TransactionDto {Id = transactionTwo.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionThree)).ReturnsAsync(new TransactionDto {Id = transactionThree.Id});
+            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionOne)).ReturnsAsync(new TransactionDto { Id = transactionOne.Id });
+            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionTwo)).ReturnsAsync(new TransactionDto { Id = transactionTwo.Id });
+            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionThree)).ReturnsAsync(new TransactionDto { Id = transactionThree.Id });
 
             // Act
             var transactions = await _handler.Handle(request, It.IsAny<CancellationToken>());

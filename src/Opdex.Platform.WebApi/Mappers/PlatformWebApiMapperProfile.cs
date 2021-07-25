@@ -186,6 +186,18 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Previous, opt => opt.MapFrom(src => src.Previous))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<CertificateDto, CertificateResponseModel>()
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.VestingStartBlock, opt => opt.MapFrom(src => src.VestingStartBlock))
+                .ForMember(dest => dest.VestingEndBlock, opt => opt.MapFrom(src => src.VestingEndBlock))
+                .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
+                .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked));
+
+            CreateMap<CertificatesDto, CertificatesResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Certificates))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
+
             // Transactions
             CreateMap<TransactionsDto, TransactionsResponseModel>()
                 .ForMember(dest => dest.Transactions, opt => opt.MapFrom(src => src.TransactionDtos))

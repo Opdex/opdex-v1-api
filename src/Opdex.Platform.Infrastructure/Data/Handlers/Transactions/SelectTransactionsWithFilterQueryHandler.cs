@@ -48,13 +48,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<List<Transaction>> Handle(SelectTransactionsWithFilterQuery request, CancellationToken cancellationTransaction)
+        public async Task<List<Transaction>> Handle(SelectTransactionsWithFilterQuery request, CancellationToken cancellationToken)
         {
             var transactionId = request.Next > 0 ? request.Next : request.Previous;
 
             var queryParams = new SqlParams(transactionId, request.Wallet, request.LogTypes, request.Contracts);
 
-            var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationTransaction);
+            var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
             var results = await _context.ExecuteQueryAsync<TransactionEntity>(query);
 

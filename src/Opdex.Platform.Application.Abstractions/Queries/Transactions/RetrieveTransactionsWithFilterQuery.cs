@@ -20,8 +20,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Transactions
             EventTypes = eventTypes ?? Enumerable.Empty<TransactionEventType>();
             Contracts = contracts ?? Enumerable.Empty<string>();
             Direction = direction.IsValid() ? direction : throw new ArgumentOutOfRangeException(nameof(direction), "Invalid sort direction");
-            Limit = limit > 0 ? limit : throw new ArgumentOutOfRangeException(nameof(direction), "Invalid limit");
-            ;
+            Limit = limit > 0 ? limit : throw new ArgumentOutOfRangeException(nameof(limit), "Invalid limit");
         }
 
         public string Wallet { get; }

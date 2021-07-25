@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
@@ -18,7 +19,7 @@ namespace Opdex.Platform.WebApi.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("vault")]
+    [Route("vaults")]
     public class VaultController : ControllerBase
     {
         private readonly IApplicationContext _context;
@@ -82,6 +83,31 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>
+        /// Retrieves vault certificates for a vault address
+        /// </summary>
+        /// <param name="address">Address of the vault</param>
+        /// <param name="holder">Certificate holder address</param>
+        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
+        /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
+        /// <param name="next">The next page cursor when paging forward.</param>
+        /// <param name="previous">The previous page cursor when paging backward.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Vault certificates</returns>
+        [HttpGet("{address}/certificates")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<CertificatesResponseModel>> GetVaultCertificates(string address,
+                                                                                        [FromQuery] string holder,
+                                                                                        [FromQuery] uint limit,
+                                                                                        [FromQuery] SortDirectionType direction,
+                                                                                        [FromQuery] string next,
+                                                                                        [FromQuery] string previous,
+                                                                                        CancellationToken cancellationToken)
+        {
+            var certificates = await _mediator.Send(new GetVaultCertificatesWithFilterQuery(address, holder, direction, limit, next, previous), cancellationToken);
+            return Ok(_mapper.Map<CertificatesResponseModel>(certificates));
+        }
+
+        /// <summary>
         /// Issues a new certificate from a vault with the default vesting period
         /// </summary>
         /// <param name="address">Vault contract address</param>
@@ -91,8 +117,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("{address}/certificates")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<string>> CreateCertificate(string address,
-                                                                 CreateVaultCertificateRequest request,
-                                                                 CancellationToken cancellationToken)
+                                                                  CreateVaultCertificateRequest request,
+                                                                  CancellationToken cancellationToken)
         {
             var transactionHash = await _mediator.Send(new CreateWalletCreateVaultCertificateCommand(_context.Wallet,
                                                                                                      address,
