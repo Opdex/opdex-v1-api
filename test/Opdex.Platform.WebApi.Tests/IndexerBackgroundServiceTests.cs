@@ -20,12 +20,15 @@ namespace Opdex.Platform.WebApi.Tests
     {
         private readonly Mock<IMediator> _mediator;
         private readonly IndexerBackgroundService _indexerService;
+        private readonly string Identity;
 
         public IndexerBackgroundServiceTests()
         {
             _mediator = new Mock<IMediator>();
 
             var opdexConfiguration = new OpdexConfiguration {Network = NetworkType.DEVNET};
+            Identity = opdexConfiguration.InstanceId;
+
             var logger = new NullLogger<IndexerBackgroundService>();
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddScoped(provider => _mediator.Object);
@@ -52,7 +55,7 @@ namespace Opdex.Platform.WebApi.Tests
         {
             // Arrange
             var token = new CancellationTokenSource().Token;
-            var indexLock = new IndexLock(false, false, DateTime.UtcNow);
+            var indexLock = new IndexLock(false, false, Identity, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
 
@@ -71,7 +74,7 @@ namespace Opdex.Platform.WebApi.Tests
         {
             // Arrange
             var token = new CancellationTokenSource().Token;
-            var indexLock = new IndexLock(true, true, DateTime.UtcNow);
+            var indexLock = new IndexLock(true, true, Identity, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
 
@@ -90,7 +93,7 @@ namespace Opdex.Platform.WebApi.Tests
         {
             // Arrange
             var token = new CancellationTokenSource().Token;
-            var indexLock = new IndexLock(true, false, DateTime.UtcNow);
+            var indexLock = new IndexLock(true, false, Identity, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
             _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>()))
@@ -111,7 +114,7 @@ namespace Opdex.Platform.WebApi.Tests
         {
             // Arrange
             var token = new CancellationTokenSource().Token;
-            var indexLock = new IndexLock(true, false, DateTime.UtcNow);
+            var indexLock = new IndexLock(true, false, Identity, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
 
@@ -123,6 +126,68 @@ namespace Opdex.Platform.WebApi.Tests
             _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
             _mediator.Verify(callTo => callTo.Send(It.IsAny<ProcessLatestBlocksCommand>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
             _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+        }
+
+        [Fact]
+        public async Task StopAsync_Sends_RetrieveIndexerLockQuery()
+        {
+            // Arrange
+            var token = new CancellationTokenSource().Token;
+
+            // Act
+            await _indexerService.StopAsync(token);
+
+            // Assert
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task StopAsync_DoesNotSend_MakeIndexerUnlockCommand_NotLocked()
+        {
+            // Arrange
+            var token = new CancellationTokenSource().Token;
+            var indexLock = new IndexLock(true, false, Identity, DateTime.UtcNow);
+
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+
+            // Act
+            await _indexerService.StopAsync(token);
+
+            // Assert
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task StopAsync_DoesNotSend_MakeIndexerUnlockCommand_DifferentInstance()
+        {
+            // Arrange
+            var newIdentity = Guid.NewGuid().ToString();
+            var token = new CancellationTokenSource().Token;
+            var indexLock = new IndexLock(true, true, newIdentity, DateTime.UtcNow);
+
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+
+            // Act
+            await _indexerService.StopAsync(token);
+
+            // Assert
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task StopAsync_Sends_MakeIndexerUnlockCommand()
+        {
+            // Arrange
+            var token = new CancellationTokenSource().Token;
+            var indexLock = new IndexLock(true, true, Identity, DateTime.UtcNow);
+
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+
+            // Act
+            await _indexerService.StopAsync(token);
+
+            // Assert
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
