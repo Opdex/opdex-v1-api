@@ -5,15 +5,24 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Addresses
 {
+    /// <summary>
+    /// Get the balance of a wallet address and specific token.
+    /// </summary>
     public class GetAddressBalanceByTokenQuery : IRequest<AddressBalanceDto>
     {
-        public GetAddressBalanceByTokenQuery(string address, string tokenAddress)
+        /// <summary>
+        /// Constructor for get balance query.
+        /// </summary>
+        /// <param name="walletAddress">The wallet address to check the balance of.</param>
+        /// <param name="tokenAddress">The token to check the wallet balance of.</param>
+        /// <exception cref="ArgumentNullException">Argument null exception for invalid request parameters.</exception>
+        public GetAddressBalanceByTokenQuery(string walletAddress, string tokenAddress)
         {
-            Address = address.HasValue() ? address : throw new ArgumentNullException(nameof(address), "Address must be set.");
-            TokenAddress = address.HasValue() ? tokenAddress : throw new ArgumentNullException(nameof(tokenAddress), "Token address must be set.");
+            WalletAddress = walletAddress.HasValue() ? walletAddress : throw new ArgumentNullException(nameof(walletAddress), "Wallet address must be set.");
+            TokenAddress = tokenAddress.HasValue() ? tokenAddress : throw new ArgumentNullException(nameof(tokenAddress), "Token address must be set.");
         }
 
-        public string Address { get; }
+        public string WalletAddress { get; }
         public string TokenAddress { get; }
     }
 }

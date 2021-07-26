@@ -22,7 +22,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses
 
         public async Task<AddressBalanceDto> Handle(GetAddressBalanceByTokenQuery request, CancellationToken cancellationToken)
         {
-            var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByTokenAddressAndOwnerQuery(request.TokenAddress, request.Address), cancellationToken);
+            var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(request.WalletAddress,
+                                                                                                     tokenAddress: request.TokenAddress), cancellationToken);
+
             return await _assembler.Assemble(addressBalance);
         }
     }

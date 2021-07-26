@@ -81,7 +81,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(
-                It.Is<GetAddressBalanceByTokenQuery>(query => query.Address == address && query.TokenAddress == token),
+                It.Is<GetAddressBalanceByTokenQuery>(query => query.WalletAddress == address && query.TokenAddress == token),
                 cancellationToken), Times.Once);
         }
 

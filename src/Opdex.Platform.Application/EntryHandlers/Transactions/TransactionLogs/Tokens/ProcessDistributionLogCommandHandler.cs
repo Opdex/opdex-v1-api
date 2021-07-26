@@ -45,7 +45,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(token.Id, findOrThrow: true));
 
                 // process address balances
-                var vaultBalance = await _mediator.Send(new RetrieveAddressBalanceByTokenIdAndOwnerQuery(token.Id, vault.Address, findOrThrow: false));
+                var vaultBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(vault.Address, token.Id, findOrThrow: false));
                 if (vaultBalance is null || request.BlockHeight >= vaultBalance.ModifiedBlock)
                 {
                     vaultBalance ??= new AddressBalance(token.Id, vault.Address, request.Log.VaultAmount, request.BlockHeight);
