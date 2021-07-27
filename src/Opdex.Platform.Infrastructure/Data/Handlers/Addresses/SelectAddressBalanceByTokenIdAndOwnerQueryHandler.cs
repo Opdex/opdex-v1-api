@@ -11,11 +11,11 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 {
-    public class SelectAddressBalanceByTokenIdAndOwnerQueryHandler
-        : IRequestHandler<SelectAddressBalanceByTokenIdAndOwnerQuery, AddressBalance>
+    public class SelectAddressBalanceByOwnerAndTokenIdQueryHandler
+        : IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>
     {
         private static readonly string SqlQuery =
-            @$"SELECT 
+            @$"SELECT
                 {nameof(AddressBalanceEntity.Id)},
                 {nameof(AddressBalanceEntity.TokenId)},
                 {nameof(AddressBalanceEntity.Owner)},
@@ -30,13 +30,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
-        public SelectAddressBalanceByTokenIdAndOwnerQueryHandler(IDbContext context, IMapper mapper)
+        public SelectAddressBalanceByOwnerAndTokenIdQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<AddressBalance> Handle(SelectAddressBalanceByTokenIdAndOwnerQuery request, CancellationToken cancellationToken)
+        public async Task<AddressBalance> Handle(SelectAddressBalanceByOwnerAndTokenIdQuery request, CancellationToken cancellationToken)
         {
             var queryParams = new SqlParams(request.TokenId, request.Owner);
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);

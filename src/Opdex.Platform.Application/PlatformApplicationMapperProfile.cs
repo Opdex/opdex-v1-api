@@ -191,6 +191,7 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked));
 
             CreateMap<AddressBalance, AddressBalanceDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Owner))
                 .ForAllOtherMembers(opt => opt.Ignore());
 

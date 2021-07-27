@@ -65,7 +65,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         }
 
         [Fact]
-        public async Task Assemble_RetrieveAddressBalanceByTokenIdAndOwnerQuery_Send()
+        public async Task Assemble_RetrieveAddressBalanceByTokenAddressAndOwnerQuery_Send()
         {
             // Arrange
             var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, "100000000", 505, 510);
@@ -81,9 +81,9 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             catch (Exception) { }
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveAddressBalanceByTokenIdAndOwnerQuery>(query => query.TokenId == vault.TokenId
-                                                                                                                 && query.Owner == vault.Address
-                                                                                                                 && query.FindOrThrow),
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveAddressBalanceByOwnerAndTokenQuery>(query => query.TokenId == token.Id
+                                                                                                                  && query.Owner == vault.Address
+                                                                                                                  && query.FindOrThrow),
                                                        It.IsAny<CancellationToken>()), Times.Once);
         }
     }
