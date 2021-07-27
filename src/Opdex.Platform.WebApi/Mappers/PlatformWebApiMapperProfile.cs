@@ -155,7 +155,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token));
 
             CreateMap<AddressBalancesDto, AddressBalancesResponseModel>()
-                .ForMember(dest => dest.Balances, opt => opt.MapFrom(src => src.Balances))
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Balances))
                 .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 

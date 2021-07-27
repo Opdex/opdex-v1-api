@@ -124,7 +124,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
             else
             {
-                pagingCursor = new VaultCertificatesCursor(holder, direction, limit, 0, PagingDirection.Forward);
+                pagingCursor = new VaultCertificatesCursor(holder, direction, limit, PagingDirection.Forward, default);
             }
 
             var certificates = await _mediator.Send(new GetVaultCertificatesWithFilterQuery(address, pagingCursor), cancellationToken);

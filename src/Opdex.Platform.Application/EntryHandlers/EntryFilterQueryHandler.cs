@@ -36,6 +36,7 @@ namespace Opdex.Platform.Application.EntryHandlers
         /// <param name="results">Query results required for building the cursor.</param>
         /// <returns><see cref="CursorDto"/> including next and previous page cursors.</returns>
         protected CursorDto BuildCursorDto<TResult, TPointer>(IList<TResult> results, Cursor<TPointer> cursor, Func<TResult, TPointer> extractPointerExpression)
+            where TPointer : IEquatable<TPointer>
         {
             // The count can change if we remove the + 1 record, we want the original
             var resultsCount = results.Count;

@@ -191,14 +191,12 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked));
 
             CreateMap<AddressBalance, AddressBalanceDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Owner))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             // Transactions and Transaction Events
 
             CreateMap<Transaction, TransactionDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
                 .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))

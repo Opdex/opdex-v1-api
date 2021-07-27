@@ -1,9 +1,7 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
@@ -22,9 +20,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
             EventTypes = eventTypes;
             Contracts = contracts;
         }
-
-        /// <inheritdoc />
-        public override bool IsFirstRequest => Pointer == 0;
 
         public string Wallet { get; }
         public IEnumerable<TransactionEventType> EventTypes { get; }
@@ -53,6 +48,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
             return new TransactionsCursor(Wallet, EventTypes, Contracts, OrderBy, Limit, direction, pointer);
         }
 
+        /// <inheritdoc />
+        protected override bool ValidatePointer(long pointer) => pointer >= 0;
+
         /// <summary>
         /// Parses a stringified version of the cursor
         /// </summary>
@@ -63,30 +61,25 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
         {
             cursor = null;
 
-            var values = raw.Split(';')
-                            .Select(part => part.Split(':'))
-                            .Where(part => part.Length == 2)
-                            .Select(array => new { Key = array[0], Value = array[1] })
-                            .GroupBy(part => part.Key, part => part.Value)
-                            .ToDictionary(sp => sp.Key, sp => sp.ToList().AsEnumerable());
+            var values = ToDictionary(raw);
 
-            var wallet = TryGetCursorProperty<string>(values, "wallet");
-            var eventTypes = TryGetCursorProperties<TransactionEventType>(values, "eventTypes");
-            var contracts = TryGetCursorProperties<string>(values, "contracts");
+            TryGetCursorProperty<string>(values, "wallet", out var wallet);
 
-            var direction = TryGetCursorProperty<SortDirectionType>(values, "direction");
-            if (!direction.IsValid()) return false;
+            TryGetCursorProperties<TransactionEventType>(values, "eventTypes", out var eventTypes);
 
-            var limit = TryGetCursorProperty<uint>(values, "limit");
+            TryGetCursorProperties<string>(values, "contracts", out var contracts);
 
-            var pointerEncoded = TryGetCursorProperty<string>(values, "pointer");
+            if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
+
+            if (!TryGetCursorProperty<uint>(values, "limit", out var limit)) return false;
+
+            if (!TryGetCursorProperty<string>(values, "pointer", out var pointerEncoded)) return false;
 
             if (!pointerEncoded.HasValue()) return false;
 
-            TryDecodePointer(pointerEncoded, out var pointer);
-            if (pointer == 0) return false;
+            if (!TryDecodePointer(pointerEncoded, out var pointer)) return false;
 
-            var paging = TryGetCursorProperty<PagingDirection>(values, "paging");
+            if (!TryGetCursorProperty<PagingDirection>(values, "paging", out var paging)) return false;
 
             cursor = new TransactionsCursor(wallet, eventTypes, contracts, direction, limit, paging, pointer);
 

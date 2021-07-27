@@ -87,6 +87,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
                 // going backward in descending order, use greater than
                 if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.OrderBy == SortDirectionType.DESC) sortOperator = ">";
+
                 whereFilter = $" WHERE c.{nameof(VaultCertificateEntity.Id)} {sortOperator} @{nameof(SqlParams.CertificateId)}";
             }
 

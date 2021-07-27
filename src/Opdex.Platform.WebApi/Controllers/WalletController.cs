@@ -15,6 +15,8 @@ using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Addresses;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -92,12 +94,33 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                                      [FromQuery] bool? includeZeroBalances,
                                                                                                      [FromQuery] SortDirectionType direction,
                                                                                                      [FromQuery] uint limit,
-                                                                                                     [FromQuery] string next,
-                                                                                                     [FromQuery] string previous,
+                                                                                                     [FromQuery] string cursor,
                                                                                                      CancellationToken cancellationToken)
         {
-            var balances = await _mediator.Send(new GetAddressBalancesWithFilterQuery(address, tokens, includeLpTokens ?? true, includeZeroBalances ?? false,
-                                                                                      direction, limit, next, previous), cancellationToken);
+            AddressBalancesCursor pagingCursor;
+
+            if (cursor.HasValue())
+            {
+                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !AddressBalancesCursor.TryParse(decodedCursor, out var parsedCursor))
+                {
+                    var problemDetails = new ProblemDetails
+                    {
+                        Title = "Unprocessable Entity",
+                        Status = StatusCodes.Status422UnprocessableEntity,
+                        Detail = "A validation error occured.",
+                        Type = "https://httpstatuses.com/422"
+                    };
+                    problemDetails.Extensions.Add("Errors", new string[] { "Cursor not formed correctly." });
+                    return new UnprocessableEntityObjectResult(problemDetails);
+                }
+                pagingCursor = parsedCursor;
+            }
+            else
+            {
+                pagingCursor = new AddressBalancesCursor(tokens, includeLpTokens ?? true, includeZeroBalances ?? false, direction, limit, PagingDirection.Forward, default);
+            }
+
+            var balances = await _mediator.Send(new GetAddressBalancesWithFilterQuery(address, pagingCursor), cancellationToken);
 
             var response = _mapper.Map<AddressBalancesResponseModel>(balances);
 

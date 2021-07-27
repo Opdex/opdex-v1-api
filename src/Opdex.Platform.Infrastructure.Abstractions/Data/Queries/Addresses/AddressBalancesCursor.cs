@@ -1,33 +1,43 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Text;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 {
-    public class VaultCertificatesCursor : Cursor<long>
+    public class AddressBalancesCursor : Cursor<long>
     {
-        public const uint MaxLimit = 50;
+        public const uint MaxLimit = 100;
 
-        public VaultCertificatesCursor(string holder, SortDirectionType orderBy, uint limit, PagingDirection pagingDirection, long pointer)
+        public AddressBalancesCursor(IEnumerable<string> tokens, bool includeLpTokens, bool includeZeroBalances,
+                                     SortDirectionType orderBy, uint limit, PagingDirection pagingDirection,
+                                     long pointer)
             : base(orderBy, limit, pagingDirection, pointer)
         {
             if (limit > MaxLimit) throw new ArgumentOutOfRangeException(nameof(limit), $"Limit exceeds maximum limit of {MaxLimit}.");
-            Holder = holder;
+            Tokens = tokens;
+            IncludeLpTokens = includeLpTokens;
+            IncludeZeroBalances = includeZeroBalances;
         }
 
-        /// <summary>
-        /// Filter for a particular certificate holder
-        /// </summary>
-        public string Holder { get; }
+        public IEnumerable<string> Tokens { get; }
+        public bool IncludeLpTokens { get; }
+        public bool IncludeZeroBalances { get; }
 
         /// <inheritdoc />
         public override string ToString()
         {
             var pointerBytes = Encoding.UTF8.GetBytes(Pointer.ToString());
             var encodedPointer = Convert.ToBase64String(pointerBytes);
-            return $"holder:{Holder};direction:{OrderBy};limit:{Limit};paging:{PagingDirection};pointer:{encodedPointer};";
+
+            var sb = new StringBuilder();
+            sb.AppendFormat("direction:{0};limit:{1};paging:{2};", OrderBy, Limit, PagingDirection);
+            foreach (var token in Tokens) sb.AppendFormat("tokens:{0};", token);
+            sb.AppendFormat("includeLpTokens:{0};", IncludeLpTokens);
+            sb.AppendFormat("includeZeroBalances:{0};", IncludeZeroBalances);
+            sb.AppendFormat("pointer:{0};", encodedPointer);
+            return sb.ToString();
         }
 
         /// <inheritdoc />
@@ -36,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
             if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
             if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-            return new VaultCertificatesCursor(Holder, OrderBy, Limit, direction, pointer);
+            return new AddressBalancesCursor(Tokens, IncludeLpTokens, IncludeZeroBalances, OrderBy, Limit, direction, pointer);
         }
 
         /// <inheritdoc />
@@ -48,13 +58,17 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
         /// <param name="raw">Stringified cursor</param>
         /// <param name="cursor">Parsed cursor</param>
         /// <returns>True if the value could be parsed, otherwise false</returns>
-        public static bool TryParse(string raw, out VaultCertificatesCursor cursor)
+        public static bool TryParse(string raw, out AddressBalancesCursor cursor)
         {
             cursor = null;
 
             var values = ToDictionary(raw);
 
-            TryGetCursorProperty<string>(values, "holder", out var holder);
+            TryGetCursorProperties<string>(values, "tokens", out var tokens);
+
+            if (!TryGetCursorProperty<bool>(values, "includeLpTokens", out var includeLpTokens)) return false;
+
+            if (!TryGetCursorProperty<bool>(values, "includeZeroBalances", out var includeZeroBalances)) return false;
 
             if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
 
@@ -68,7 +82,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 
             if (!TryGetCursorProperty<PagingDirection>(values, "paging", out var paging)) return false;
 
-            cursor = new VaultCertificatesCursor(holder, direction, limit, paging, pointer);
+            cursor = new AddressBalancesCursor(tokens, includeLpTokens, includeZeroBalances, direction, limit, paging, pointer);
 
             return true;
         }
