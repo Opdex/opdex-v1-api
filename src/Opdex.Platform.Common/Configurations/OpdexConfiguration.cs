@@ -1,5 +1,4 @@
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Extensions;
 using System;
 
 namespace Opdex.Platform.Common.Configurations
@@ -8,6 +7,8 @@ namespace Opdex.Platform.Common.Configurations
     {
         public string ConnectionString { get; set; }
         public NetworkType Network { get; set; }
+
+        public string InstanceId { get; } = Guid.NewGuid().ToString();
 
         public void Validate()
         {

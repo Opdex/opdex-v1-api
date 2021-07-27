@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
@@ -17,17 +16,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Indexer
             @$"SELECT
                 {nameof(IndexLockEntity.Available)},
                 {nameof(IndexLockEntity.Locked)},
+                {nameof(IndexLockEntity.InstanceId)},
                 {nameof(IndexLockEntity.ModifiedDate)}
             FROM index_lock
             LIMIT 1;";
 
         private readonly IDbContext _context;
-        private readonly IMapper _mapper;
 
-        public SelectIndexerLockQueryHandler(IDbContext context, IMapper mapper)
+        public SelectIndexerLockQueryHandler(IDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<IndexLock> Handle(SelectIndexerLockQuery request, CancellationToken cancellationToken)
@@ -41,7 +39,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Indexer
                 throw new NotFoundException($"{nameof(IndexLock)} not found.");
             }
 
-            return new IndexLock(result.Available, result.Locked, result.ModifiedDate);
+            return new IndexLock(result.Available, result.Locked, result.InstanceId, result.ModifiedDate);
         }
     }
 }

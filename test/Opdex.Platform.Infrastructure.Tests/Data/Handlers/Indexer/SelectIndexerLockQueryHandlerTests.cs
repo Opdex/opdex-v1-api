@@ -21,10 +21,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
 
         public SelectIndexerLockQueryHandlerTests()
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectIndexerLockQueryHandler(_dbContext.Object, mapper);
+            _handler = new SelectIndexerLockQueryHandler(_dbContext.Object);
         }
 
         [Fact]
