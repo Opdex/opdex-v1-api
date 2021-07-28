@@ -12,20 +12,20 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi
 
         public void Validate()
         {
-            // if (!ApiUrl.HasValue())
-            // {
-            //     throw new Exception($"{nameof(CoinMarketCapConfiguration)}.{nameof(ApiUrl)} must not be null or empty.");
-            // }
-            //
-            // if (!ApiKey.HasValue())
-            // {
-            //     throw new Exception($"{nameof(CoinMarketCapConfiguration)}.{nameof(ApiKey)} must not be null or empty.");
-            // }
-            //
-            // if (!HeaderName.HasValue())
-            // {
-            //     throw new Exception($"{nameof(CoinMarketCapConfiguration)}.{nameof(HeaderName)} must not be null or empty.");
-            // }
+            if (!ApiUrl.HasValue())
+            {
+                throw new Exception($"{nameof(CoinMarketCapConfiguration)}.{nameof(ApiUrl)} must not be null or empty.");
+            }
+
+            if (!ApiKey.HasValue())
+            {
+                throw new Exception($"{nameof(CoinMarketCapConfiguration)}.{nameof(ApiKey)} must not be null or empty.");
+            }
+
+            if (!HeaderName.HasValue())
+            {
+                throw new Exception($"{nameof(CoinMarketCapConfiguration)}.{nameof(HeaderName)} must not be null or empty.");
+            }
         }
     }
 }
