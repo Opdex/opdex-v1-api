@@ -1,7 +1,6 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using System;
-using System.Linq;
 using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
@@ -52,6 +51,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
         {
             cursor = null;
 
+            if (raw is null) return false;
+
             var values = ToDictionary(raw);
 
             TryGetCursorProperty<string>(values, "holder", out var holder);
@@ -68,7 +69,14 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 
             if (!TryGetCursorProperty<PagingDirection>(values, "paging", out var paging)) return false;
 
-            cursor = new VaultCertificatesCursor(holder, direction, limit, paging, pointer);
+            try
+            {
+                cursor = new VaultCertificatesCursor(holder, direction, limit, paging, pointer);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
             return true;
         }

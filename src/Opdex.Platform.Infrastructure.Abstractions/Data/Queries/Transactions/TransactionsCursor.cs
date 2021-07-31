@@ -2,6 +2,7 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
@@ -17,8 +18,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
         {
             if (limit > MaxLimit) throw new ArgumentOutOfRangeException(nameof(limit), $"Limit exceeds maximum limit of {MaxLimit}.");
             Wallet = wallet;
-            EventTypes = eventTypes;
-            Contracts = contracts;
+            EventTypes = eventTypes ?? Enumerable.Empty<TransactionEventType>();
+            Contracts = contracts ?? Enumerable.Empty<string>();
         }
 
         public string Wallet { get; }
@@ -33,6 +34,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
 
             var sb = new StringBuilder();
             sb.AppendFormat("direction:{0};limit:{1};paging:{2};", OrderBy, Limit, PagingDirection);
+            sb.AppendFormat("wallet:{0};", Wallet);
             foreach (var eventType in EventTypes) sb.AppendFormat("eventTypes:{0};", eventType);
             foreach (var contract in Contracts) sb.AppendFormat("contracts:{0};", contract);
             sb.AppendFormat("pointer:{0};", encodedPointer);
@@ -61,6 +63,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
         {
             cursor = null;
 
+            if (raw is null) return false;
+
             var values = ToDictionary(raw);
 
             TryGetCursorProperty<string>(values, "wallet", out var wallet);
@@ -81,7 +85,14 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
 
             if (!TryGetCursorProperty<PagingDirection>(values, "paging", out var paging)) return false;
 
-            cursor = new TransactionsCursor(wallet, eventTypes, contracts, direction, limit, paging, pointer);
+            try
+            {
+                cursor = new TransactionsCursor(wallet, eventTypes, contracts, direction, limit, paging, pointer);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
             return true;
         }

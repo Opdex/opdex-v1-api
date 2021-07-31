@@ -28,7 +28,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses
 
             var balancesResults = balances.ToList();
 
-            var cursorDto = BuildCursorDto(balancesResults, request.Cursor, extractPointerExpression: result => result.Id);
+            var cursorDto = BuildCursorDto(balancesResults, request.Cursor, pointerSelector: result => result.Id);
 
             var dtos = await Task.WhenAll(balancesResults.Select(balance => _assembler.Assemble(balance)));
 

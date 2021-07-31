@@ -1,12 +1,8 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +29,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
 
             var certificatesResults = certificates.ToList();
 
-            var cursorDto = BuildCursorDto(certificatesResults, request.Cursor, extractPointerExpression: result => result.Id);
+            var cursorDto = BuildCursorDto(certificatesResults, request.Cursor, pointerSelector: result => result.Id);
 
             return new VaultCertificatesDto { Certificates = _mapper.Map<IEnumerable<VaultCertificateDto>>(certificatesResults), Cursor = cursorDto };
         }

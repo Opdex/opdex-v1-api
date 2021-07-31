@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
             OrderBy = orderBy.IsValid() ? orderBy : throw new ArgumentOutOfRangeException(nameof(orderBy), "Invalid sort direction.");
             Limit = limit > 0 ? limit : throw new ArgumentOutOfRangeException(nameof(limit), $"Limit must be greater than zero.");
             PagingDirection = pagingDirection.IsValid() ? pagingDirection : throw new ArgumentOutOfRangeException(nameof(pagingDirection), "Invalid paging direction.");
-            Pointer = ValidatePointer(pointer) ? pointer : throw new ArgumentException(nameof(pointer), "Invalid cursor pointer.");
+            Pointer = ValidatePointer(pointer) ? pointer : throw new ArgumentException("Invalid cursor pointer.", nameof(pointer));
         }
 
         /// <summary>
@@ -41,9 +41,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
         public TPointer Pointer { get; }
 
         /// <summary>
-        /// Whether this is the first requests
+        /// Whether this is the first request
         /// </summary>
-        public virtual bool IsFirstRequest => Pointer.Equals(default);
+        public virtual bool IsFirstRequest => PagingDirection == PagingDirection.Forward && Pointer.Equals(default);
 
         /// <summary>
         /// Creates a new cursor pointing to an adjacent page of results
@@ -60,8 +60,13 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
         /// Checks that a provided pointer value is valid
         /// </summary>
         /// <returns>True if valid, otherwise false</returns>
-        protected virtual bool ValidatePointer(TPointer pointer) => true;
+        protected virtual bool ValidatePointer(TPointer pointer) => PagingDirection == PagingDirection.Forward || !Pointer.Equals(default);
 
+        /// <summary>
+        /// Converts a stringified cursor into a dictionary
+        /// </summary>
+        /// <param name="raw">Stringified cursor</param>
+        /// <returns>Dictionary for looking up cursor values</returns>
         protected static IDictionary<string, IEnumerable<string>> ToDictionary(string raw)
         {
             return raw.Split(';')
@@ -84,9 +89,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
             value = default;
 
             // Return single record
-            if (!TryGetCursorProperties<TK>(dictionary, key, out var results)) return false;
-            var values = results.ToArray();
-            if (values.Length != 1) return false;
+            if (!TryGetCursorProperties<TK>(dictionary, key, out var values)) return false;
+            if (values.Count != 1) return false;
 
             value = values[0];
             return true;
@@ -100,9 +104,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
         /// <param name="values">The values that get retrieved</param>
         /// <typeparam name="TK">Generic used to cast any found results too.</typeparam>
         /// <returns>True if cursor properties were retrieved, otherwise false.</returns>
-        protected static bool TryGetCursorProperties<TK>(IDictionary<string, IEnumerable<string>> dictionary, string key, out IEnumerable<TK> values)
+        protected static bool TryGetCursorProperties<TK>(IDictionary<string, IEnumerable<string>> dictionary, string key, out IReadOnlyList<TK> values)
         {
-            values = Enumerable.Empty<TK>();
+            values = new List<TK>().AsReadOnly();
 
             if (dictionary == null || !key.HasValue()) return false;
 
@@ -114,7 +118,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
             {
                 try
                 {
-                    values = results.Select(result => (TK)Convert.ChangeType(result, typeof(TK)));
+                    values = results.Select(result => (TK)Convert.ChangeType(result, typeof(TK))).ToList().AsReadOnly();
                 }
                 catch (Exception)
                 {
@@ -129,7 +133,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
             // Return list of TK enum values
             try
             {
-                values = results.Select(result => (TK)Enum.Parse(typeof(TK), result));
+                values = results.Select(result => (TK)Enum.Parse(typeof(TK), result)).ToList().AsReadOnly();
             }
             catch (Exception)
             {

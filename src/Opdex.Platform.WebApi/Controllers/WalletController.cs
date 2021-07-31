@@ -86,6 +86,18 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Retrieves token balances for an address.
+        /// </summary>
+        /// <param name="address">The address to lookup balances for.</param>
+        /// <param name="tokens">Specific tokens to lookup.</param>
+        /// <param name="includeLpTokens">Includes all tokens if true, otherwise excludes liquidity pool tokens.</param>
+        /// <param name="includeZeroBalances">Only includes 0 balances if true.</param>
+        /// <param name="direction">Order in which to sort results.</param>
+        /// <param name="limit">Number of results to take per page.</param>
+        /// <param name="cursor">Cursor for pagination.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>A collection of address balance summaries by token.</returns>
         [HttpGet("{address}/balance")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<AddressBalanceResponseModel>>> GetAddressBalances(string address,

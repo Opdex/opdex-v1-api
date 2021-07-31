@@ -2,13 +2,14 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 {
     public class AddressBalancesCursor : Cursor<long>
     {
-        public const uint MaxLimit = 100;
+        public const uint MaxLimit = 50;
 
         public AddressBalancesCursor(IEnumerable<string> tokens, bool includeLpTokens, bool includeZeroBalances,
                                      SortDirectionType orderBy, uint limit, PagingDirection pagingDirection,
@@ -16,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
             : base(orderBy, limit, pagingDirection, pointer)
         {
             if (limit > MaxLimit) throw new ArgumentOutOfRangeException(nameof(limit), $"Limit exceeds maximum limit of {MaxLimit}.");
-            Tokens = tokens;
+            Tokens = tokens ?? Enumerable.Empty<string>();
             IncludeLpTokens = includeLpTokens;
             IncludeZeroBalances = includeZeroBalances;
         }
@@ -62,6 +63,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
         {
             cursor = null;
 
+            if (raw is null) return false;
+
             var values = ToDictionary(raw);
 
             TryGetCursorProperties<string>(values, "tokens", out var tokens);
@@ -82,7 +85,14 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 
             if (!TryGetCursorProperty<PagingDirection>(values, "paging", out var paging)) return false;
 
-            cursor = new AddressBalancesCursor(tokens, includeLpTokens, includeZeroBalances, direction, limit, paging, pointer);
+            try
+            {
+                cursor = new AddressBalancesCursor(tokens, includeLpTokens, includeZeroBalances, direction, limit, paging, pointer);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
             return true;
         }

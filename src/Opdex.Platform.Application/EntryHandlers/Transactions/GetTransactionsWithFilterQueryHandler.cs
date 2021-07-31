@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
         public GetTransactionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<Transaction, TransactionDto> assembler)
         {
-            _mediator = mediator;
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
         }
 
@@ -28,10 +28,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
             var transactionResults = transactions.ToList();
 
-            var cursor = BuildCursorDto(transactionResults, request.Cursor, extractPointerExpression: result => result.Id);
+            var cursor = BuildCursorDto(transactionResults, request.Cursor, pointerSelector: result => result.Id);
 
             var dtos = await Task.WhenAll(transactionResults.Select(transaction => _assembler.Assemble(transaction)));
-            return new TransactionsDto { TransactionDtos = dtos, CursorDto = cursor };
+            return new TransactionsDto { Transactions = dtos, Cursor = cursor };
         }
     }
 }

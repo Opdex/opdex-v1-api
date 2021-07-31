@@ -211,8 +211,8 @@ namespace Opdex.Platform.WebApi.Mappers
 
             // Transactions
             CreateMap<TransactionsDto, TransactionsResponseModel>()
-                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.TransactionDtos))
-                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.CursorDto))
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Transactions))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             // Transaction
