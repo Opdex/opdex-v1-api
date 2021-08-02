@@ -222,8 +222,10 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessTransferLogCommand, bool>, ProcessTransferLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessCreateMarketLogCommand, bool>, ProcessCreateMarketLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessDistributionLogCommand, bool>, ProcessDistributionLogCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessChangeVaultOwnerLogCommand, bool>, ProcessChangeVaultOwnerLogCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessChangeMarketOwnerLogCommand, bool>, ProcessChangeMarketOwnerLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessClaimPendingVaultOwnershipLogCommand, bool>, ProcessClaimPendingVaultOwnershipLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessSetPendingVaultOwnershipLogCommand, bool>, ProcessSetPendingVaultOwnershipLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessClaimPendingMarketOwnershipLogCommand, bool>, ProcessClaimPendingMarketOwnershipLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessSetPendingMarketOwnershipLogCommand, bool>, ProcessSetPendingMarketOwnershipLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessMineLogCommand, bool>, ProcessMineLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessNominationLogCommand, bool>, ProcessNominationLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessChangeMarketPermissionLogCommand, bool>, ProcessChangeMarketPermissionLogCommandHandler>();
@@ -239,7 +241,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessCreateVaultCertificateLogCommand, bool>, ProcessCreateVaultCertificateLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessRevokeVaultCertificateLogCommand, bool>, ProcessRevokeVaultCertificateLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessRedeemVaultCertificateLogCommand, bool>, ProcessRedeemVaultCertificateLogCommandHandler>();
-            services.AddTransient<IRequestHandler<ProcessChangeDeployerOwnerLogCommand, bool>, ProcessChangeDeployerOwnerLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessClaimPendingDeployerOwnershipLogCommand, bool>, ProcessClaimPendingDeployerOwnershipLogCommandHandler>();
+            services.AddTransient<IRequestHandler<ProcessSetPendingDeployerOwnershipLogCommand, bool>, ProcessSetPendingDeployerOwnershipLogCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessLiquidityPoolSnapshotsByTransactionCommand, Unit>, ProcessLiquidityPoolSnapshotsByTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateBlockCommand, bool>, CreateBlockCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessLatestBlocksCommand, Unit>, ProcessLatestBlocksCommandHandler>();
@@ -324,8 +327,8 @@ namespace Opdex.Platform.Application
 
             // Liquidity Pools
             services.AddTransient<IModelAssembler<SwapLog, SwapEventDto>, SwapEventDtoAssembler>();
-            services.AddTransient<IModelAssembler<BurnLog, ProvideEventDto>, ProvideEventDtoAssembler<BurnLog>>();
-            services.AddTransient<IModelAssembler<MintLog, ProvideEventDto>, ProvideEventDtoAssembler<MintLog>>();
+            services.AddTransient<IModelAssembler<BurnLog, RemoveLiquidityEventDto>, RemoveLiquidityEventDtoAssembler>();
+            services.AddTransient<IModelAssembler<MintLog, AddLiquidityEventDto>, AddLiquidityEventDtoAssembler>();
 
             // Tokens
             services.AddTransient<IModelAssembler<TransferLog, TransferEventDto>, TransferEventDtoAssembler>();

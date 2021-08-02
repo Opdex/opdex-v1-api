@@ -365,13 +365,13 @@ namespace Opdex.Platform.Domain.Tests.Models.Pools.Snapshots
             const decimal volumeUsd = 515.23m;
 
             // txLog
-            dynamic txReservesLog = new ExpandoObject();
-            txReservesLog.staker = "StakerAddress";
-            txReservesLog.amount = "2000000000";
-            txReservesLog.totalStaked = "10000000000";
-            txReservesLog.eventType = (byte)1;
+            dynamic txStakingLog = new ExpandoObject();
+            txStakingLog.staker = "StakerAddress";
+            txStakingLog.amount = "2000000000";
+            txStakingLog.totalStaked = "10000000000";
+            txStakingLog.stakerBalance = "100";
 
-            var stakingLog = new StakeLog(txReservesLog, "poolAddress", 1);
+            var stakingLog = new StartStakingLog(txStakingLog, "poolAddress", 1);
 
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount,
                                                      new ReservesSnapshot(reserveCrs, reserveSrc, reserveUsd),
@@ -392,7 +392,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Pools.Snapshots
             snapshot.Volume.Usd.Should().Be(volumeUsd);
             snapshot.Rewards.ProviderUsd.Should().Be(rewardsProviderUsd);
             snapshot.Rewards.MarketUsd.Should().Be(rewardsMarketUsd);
-            snapshot.Staking.Weight.Should().Be(txReservesLog.totalStaked);
+            snapshot.Staking.Weight.Should().Be(txStakingLog.totalStaked);
             snapshot.Staking.Usd.Should().Be(100.00m);
             snapshot.Cost.SrcPerCrs.Open.Should().Be(srcPerCrsOpen);
             snapshot.Cost.SrcPerCrs.High.Should().Be(srcPerCrsHigh);

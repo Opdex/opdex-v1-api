@@ -35,7 +35,7 @@ namespace Opdex.Platform.Domain.Models
         public string Address { get; }
         public string Owner { get; private set; }
 
-        public void SetOwner(ChangeDeployerOwnerLog log, ulong blockHeight)
+        public void SetOwner(ClaimPendingDeployerOwnershipLog log, ulong blockHeight)
         {
             Owner = log.To;
             SetModifiedBlock(blockHeight);

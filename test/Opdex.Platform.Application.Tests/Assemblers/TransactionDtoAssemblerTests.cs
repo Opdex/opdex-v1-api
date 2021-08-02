@@ -23,8 +23,8 @@ namespace Opdex.Platform.Application.Tests.Assemblers
     public class TransactionDtoAssemblerTests
     {
         private readonly Mock<IModelAssembler<SwapLog, SwapEventDto>> _swapEventDtoAssembler;
-        private readonly Mock<IModelAssembler<MintLog, ProvideEventDto>> _mintProvideEventDtoAssembler;
-        private readonly Mock<IModelAssembler<BurnLog, ProvideEventDto>> _burnProvideEventDtoAssembler;
+        private readonly Mock<IModelAssembler<MintLog, AddLiquidityEventDto>> _mintProvideEventDtoAssembler;
+        private readonly Mock<IModelAssembler<BurnLog, RemoveLiquidityEventDto>> _burnProvideEventDtoAssembler;
         private readonly Mock<IModelAssembler<TransferLog, TransferEventDto>> _transferEventDtoAssembler;
         private readonly Mock<IModelAssembler<ApprovalLog, ApprovalEventDto>> _approvalEventDtoAssembler;
         private readonly Mock<IMediator> _mediatorMock;
@@ -33,8 +33,8 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public TransactionDtoAssemblerTests()
         {
             _swapEventDtoAssembler = new Mock<IModelAssembler<SwapLog, SwapEventDto>>();
-            _mintProvideEventDtoAssembler = new Mock<IModelAssembler<MintLog, ProvideEventDto>>();
-            _burnProvideEventDtoAssembler = new Mock<IModelAssembler<BurnLog, ProvideEventDto>>();
+            _mintProvideEventDtoAssembler = new Mock<IModelAssembler<MintLog, AddLiquidityEventDto>>();
+            _burnProvideEventDtoAssembler = new Mock<IModelAssembler<BurnLog, RemoveLiquidityEventDto>>();
             _transferEventDtoAssembler = new Mock<IModelAssembler<TransferLog, TransferEventDto>>();
             _approvalEventDtoAssembler = new Mock<IModelAssembler<ApprovalLog, ApprovalEventDto>>();
             _mediatorMock = new Mock<IMediator>();
@@ -85,6 +85,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             txLog.amountSrcIn = "12";
             txLog.amountCrsOut = 1234ul;
             txLog.amountSrcOut = "0";
+            txLog.totalSupply = "100";
             var swapLog = new SwapLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
             var transaction = new Transaction(1, "txHash", 2, 3, "from", "to", true, "newContractAddress");
 
@@ -111,6 +112,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             txLog.amountCrs = 1234ul;
             txLog.amountSrc = "83475";
             txLog.amountLpt = "23423";
+            txLog.totalSupply = "10";
             var mintLog = new MintLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
             var transaction = new Transaction(1, "txHash", 2, 3, "from", "to", true, "newContractAddress");
 
@@ -137,6 +139,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             txLog.amountCrs = 1234ul;
             txLog.amountSrc = "83475";
             txLog.amountLpt = "23423";
+            txLog.totalSupply = "100";
             var burnLog = new BurnLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
             var transaction = new Transaction(1, "txHash", 2, 3, "from", "to", true, "newContractAddress");
 

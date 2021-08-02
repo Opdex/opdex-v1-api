@@ -10,20 +10,20 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             : base(TransactionLogType.CollectStakingRewardsLog, address, sortOrder)
         {
             string staker = log?.staker;
-            string reward = log?.reward;
+            string amount = log?.amount;
 
             if (!staker.HasValue())
             {
                 throw new ArgumentNullException(nameof(staker), "Staker address must be set.");
             }
 
-            if (!reward.IsNumeric())
+            if (!amount.IsNumeric())
             {
-                throw new ArgumentOutOfRangeException(nameof(reward), "Reward must only contain numeric digits.");
+                throw new ArgumentOutOfRangeException(nameof(amount), "Reward must only contain numeric digits.");
             }
 
             Staker = staker;
-            Reward = reward;
+            Amount = amount;
         }
 
         public CollectStakingRewardsLog(long id, long transactionId, string address, int sortOrder, string details)
@@ -31,16 +31,16 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
         {
             var logDetails = DeserializeLogDetails(details);
             Staker = logDetails.Staker;
-            Reward = logDetails.Reward;
+            Amount = logDetails.Amount;
         }
 
         public string Staker { get; }
-        public string Reward { get; }
+        public string Amount { get; }
 
         private struct LogDetails
         {
             public string Staker { get; set; }
-            public string Reward { get; set; }
+            public string Amount { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)
@@ -53,7 +53,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             return JsonConvert.SerializeObject(new LogDetails
             {
                 Staker = Staker,
-                Reward = Reward
+                Amount = Amount
             });
         }
     }

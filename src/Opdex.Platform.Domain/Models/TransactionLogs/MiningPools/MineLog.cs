@@ -4,16 +4,11 @@ using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
 {
-    public class MineLog : TransactionLog
+    public abstract class MineLog : TransactionLog
     {
-        public MineLog(dynamic log, string address, int sortOrder)
-            : base(TransactionLogType.MineLog, address, sortOrder)
+        protected MineLog(TransactionLogType logType, string miner, string amount, string totalSupply, string minerBalance, string address, int sortOrder)
+            : base(logType, address, sortOrder)
         {
-            string miner = log?.miner;
-            string amount = log?.amount;
-            string totalSupply = log?.totalSupply;
-            byte eventType = log?.eventType;
-
             if (!miner.HasValue())
             {
                 throw new ArgumentNullException(nameof(miner), "Miner address must be set.");
@@ -29,33 +24,38 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
                 throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must only contain numeric digits.");
             }
 
+            if (!minerBalance.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException(nameof(minerBalance), "Miner balance amount must only contain numeric digits.");
+            }
+
             Miner = miner;
             Amount = amount;
             TotalSupply = totalSupply;
-            EventType = eventType;
+            MinerBalance = minerBalance;
         }
 
-        public MineLog(long id, long transactionId, string address, int sortOrder, string details)
-            : base(TransactionLogType.MineLog, id, transactionId, address, sortOrder)
+        protected MineLog(TransactionLogType logType, long id, long transactionId, string address, int sortOrder, string details)
+            : base(logType, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
             Miner = logDetails.Miner;
             Amount = logDetails.Amount;
             TotalSupply = logDetails.TotalSupply;
-            EventType = logDetails.EventType;
+            MinerBalance = logDetails.MinerBalance;
         }
 
         public string Miner { get; }
         public string Amount { get; }
         public string TotalSupply { get; }
-        public byte EventType { get; }
+        public string MinerBalance { get; }
 
         private struct LogDetails
         {
             public string Miner { get; set; }
             public string Amount { get; set; }
             public string TotalSupply { get; set; }
-            public byte EventType { get; set; }
+            public string MinerBalance { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)
@@ -70,7 +70,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
                 Miner = Miner,
                 Amount = Amount,
                 TotalSupply = TotalSupply,
-                EventType = EventType
+                MinerBalance = MinerBalance
             });
         }
     }

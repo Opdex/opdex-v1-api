@@ -50,6 +50,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             }
 
             // Todo: Only persist if IsOpdexTransaction
+            // If any logs are a token, liquidity/mining pool, market, deployer, vault or governance contract we track.
 
             var transactionId = await _mediator.Send(new MakeTransactionCommand(transaction));
             if (transactionId == 0)
@@ -62,7 +63,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             var height = transaction.BlockHeight;
             var sender = transaction.From;
 
-            foreach (var log in transaction.Logs.OrderByDescending(l => l.SortOrder))
+            foreach (var log in transaction.Logs.OrderBy(l => l.SortOrder))
             {
                 var success = false;
 
@@ -72,11 +73,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     {
                         // Deployers
                         TransactionLogType.CreateMarketLog => await _mediator.Send(new ProcessCreateMarketLogCommand(log, sender, height)),
-                        TransactionLogType.ChangeDeployerOwnerLog => await _mediator.Send(new ProcessChangeDeployerOwnerLogCommand(log, sender, height)),
+                        TransactionLogType.ClaimPendingDeployerOwnershipLog => await _mediator.Send(new ProcessClaimPendingDeployerOwnershipLogCommand(log, sender, height)),
+                        TransactionLogType.SetPendingDeployerOwnershipLog => await _mediator.Send(new ProcessSetPendingDeployerOwnershipLogCommand(log, sender, height)),
 
                         // Markets
                         TransactionLogType.CreateLiquidityPoolLog => await _mediator.Send(new ProcessCreateLiquidityPoolLogCommand(log, sender, height)),
-                        TransactionLogType.ChangeMarketOwnerLog => await _mediator.Send(new ProcessChangeMarketOwnerLogCommand(log, sender, height)),
+                        TransactionLogType.ClaimPendingMarketOwnershipLog => await _mediator.Send(new ProcessClaimPendingMarketOwnershipLogCommand(log, sender, height)),
+                        TransactionLogType.SetPendingMarketOwnershipLog => await _mediator.Send(new ProcessSetPendingMarketOwnershipLogCommand(log, sender, height)),
                         TransactionLogType.ChangeMarketPermissionLog => await _mediator.Send(new ProcessChangeMarketPermissionLogCommand(log, sender, height)),
 
                         // Liquidity Pools
@@ -84,11 +87,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                         TransactionLogType.BurnLog => await _mediator.Send(new ProcessBurnLogCommand(log, sender, height)),
                         TransactionLogType.SwapLog => await _mediator.Send(new ProcessSwapLogCommand(log, sender, height)),
                         TransactionLogType.ReservesLog => await _mediator.Send(new ProcessReservesLogCommand(log, sender, height)),
-                        TransactionLogType.StakeLog => await _mediator.Send(new ProcessStakeLogCommand(log, sender, height)),
+                        TransactionLogType.StartStakingLog => await _mediator.Send(new ProcessStakeLogCommand(log, sender, height)),
+                        TransactionLogType.StopStakingLog => await _mediator.Send(new ProcessStakeLogCommand(log, sender, height)),
                         TransactionLogType.CollectStakingRewardsLog => await _mediator.Send(new ProcessCollectStakingRewardsLogCommand(log, sender, height)),
 
                         // Mining Pools
-                        TransactionLogType.MineLog => await _mediator.Send(new ProcessMineLogCommand(log, sender, height)),
+                        TransactionLogType.StartMiningLog => await _mediator.Send(new ProcessMineLogCommand(log, sender, height)),
+                        TransactionLogType.StopMiningLog => await _mediator.Send(new ProcessMineLogCommand(log, sender, height)),
                         TransactionLogType.CollectMiningRewardsLog => await _mediator.Send(new ProcessCollectMiningRewardsLogCommand(log, sender, height)),
                         TransactionLogType.EnableMiningLog => await _mediator.Send(new ProcessEnableMiningLogCommand(log, sender, height)),
 
@@ -105,7 +110,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                         TransactionLogType.CreateVaultCertificateLog => await _mediator.Send(new ProcessCreateVaultCertificateLogCommand(log, sender, height)),
                         TransactionLogType.RevokeVaultCertificateLog => await _mediator.Send(new ProcessRevokeVaultCertificateLogCommand(log, sender, height)),
                         TransactionLogType.RedeemVaultCertificateLog => await _mediator.Send(new ProcessRedeemVaultCertificateLogCommand(log, sender, height)),
-                        TransactionLogType.ChangeVaultOwnerLog => await _mediator.Send(new ProcessChangeVaultOwnerLogCommand(log, sender, height)),
+                        TransactionLogType.ClaimPendingVaultOwnershipLog => await _mediator.Send(new ProcessClaimPendingDeployerOwnershipLogCommand(log, sender, height)),
+                        TransactionLogType.SetPendingVaultOwnershipLog => await _mediator.Send(new ProcessSetPendingDeployerOwnershipLogCommand(log, sender, height)),
 
                         // Else
                         _ => throw new ArgumentOutOfRangeException(nameof(TransactionLogType), "Unknown transaction log type.")
@@ -130,7 +136,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             // Maybe process these snapshots once per block after all transactions have been processed for performance.
             // Returning out the Transactions from this query that require snapshots to be processed.
             await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(transaction));
-            // Todo: Process mining pool snapshots this transaction affects
             // Todo: Process token snapshots this transaction has Transfer logs for
 
             return true;

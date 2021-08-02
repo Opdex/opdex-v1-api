@@ -12,7 +12,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
         {
             // Arrange
             // Act
-            static void Act() => new FakeTransactionLog(TransactionLogType.Unknown, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 1);
+            static void Act() => new FakeTransactionLog((TransactionLogType)100, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 1);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act);
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
         public void CreateTransactionLog_ValidArguments_PropertiesAreSet()
         {
             // Arrange
-            var logType = TransactionLogType.ChangeMarketOwnerLog;
+            var logType = TransactionLogType.ClaimPendingMarketOwnershipLog;
             var contract = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
             var sortOrder = 5;
 

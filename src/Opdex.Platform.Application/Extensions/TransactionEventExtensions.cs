@@ -12,20 +12,25 @@ namespace Opdex.Platform.Application.Extensions
             return eventType switch
             {
                 // Deployers
-                TransactionEventType.ChangeDeployerOwnerEvent => new[] {TransactionLogType.ChangeDeployerOwnerLog},
+                TransactionEventType.ClaimPendingDeployerOwnershipEvent => new[] {TransactionLogType.ClaimPendingDeployerOwnershipLog},
+                TransactionEventType.SetPendingDeployerOwnershipEvent => new[] {TransactionLogType.SetPendingDeployerOwnershipLog},
                 TransactionEventType.CreateMarketEvent => new[] {TransactionLogType.CreateMarketLog},
                 // Markets
-                TransactionEventType.ChangeMarketOwnerEvent => new[] {TransactionLogType.ChangeMarketOwnerLog},
+                TransactionEventType.ClaimPendingMarketOwnershipEvent => new[] {TransactionLogType.ClaimPendingMarketOwnershipLog},
+                TransactionEventType.SetPendingMarketOwnershipEvent => new[] {TransactionLogType.SetPendingMarketOwnershipLog},
                 TransactionEventType.ChangeMarketPermissionEvent => new[] {TransactionLogType.ChangeMarketPermissionLog},
                 TransactionEventType.CreateLiquidityPoolEvent => new[] {TransactionLogType.CreateLiquidityPoolLog},
                 // Liquidity Pools
                 TransactionEventType.SwapEvent => new[] {TransactionLogType.SwapLog},
-                TransactionEventType.ProvideEvent => new[] {TransactionLogType.MintLog, TransactionLogType.BurnLog},
-                TransactionEventType.StakeEvent => new[] {TransactionLogType.StakeLog},
+                TransactionEventType.AddLiquidityEvent => new[] {TransactionLogType.MintLog},
+                TransactionEventType.RemoveLiquidityEvent => new[] {TransactionLogType.BurnLog},
+                TransactionEventType.StartStakingEvent => new[] {TransactionLogType.StartStakingLog},
+                TransactionEventType.StopStakingEvent => new[] {TransactionLogType.StopStakingLog},
                 TransactionEventType.CollectStakingRewardsEvent => new[] {TransactionLogType.CollectStakingRewardsLog},
                 // Mining Pools
                 TransactionEventType.EnableMiningEvent => new[] {TransactionLogType.EnableMiningLog},
-                TransactionEventType.MineEvent => new[] {TransactionLogType.MineLog},
+                TransactionEventType.StartMiningEvent => new[] {TransactionLogType.StartMiningLog},
+                TransactionEventType.StopMiningEvent => new[] {TransactionLogType.StopMiningLog},
                 TransactionEventType.CollectMiningRewardsEvent => new[] {TransactionLogType.CollectMiningRewardsLog},
                 // Tokens
                 TransactionEventType.TransferEvent => new[] {TransactionLogType.TransferLog},
@@ -35,7 +40,8 @@ namespace Opdex.Platform.Application.Extensions
                 TransactionEventType.NominationEvent => new[] {TransactionLogType.NominationLog},
                 TransactionEventType.RewardMiningPoolEvent => new[] {TransactionLogType.RewardMiningPoolLog},
                 // Vaults
-                TransactionEventType.ChangeVaultOwnerEvent => new[] {TransactionLogType.ChangeVaultOwnerLog},
+                TransactionEventType.ClaimPendingVaultOwnershipEvent => new[] {TransactionLogType.ClaimPendingVaultOwnershipLog},
+                TransactionEventType.SetPendingVaultOwnershipEvent => new[] {TransactionLogType.SetPendingVaultOwnershipLog},
                 TransactionEventType.CreateVaultCertificateEvent => new[] {TransactionLogType.CreateVaultCertificateLog},
                 TransactionEventType.RedeemVaultCertificateEvent => new[] {TransactionLogType.RedeemVaultCertificateLog},
                 TransactionEventType.RevokeVaultCertificateEvent => new[] {TransactionLogType.RevokeVaultCertificateLog},

@@ -221,11 +221,16 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder));
 
-            // Deployer Transaction Events
-            CreateMap<ChangeDeployerOwnerEventDto, ChangeDeployerOwnerEventResponseModel>()
-                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
+            CreateMap<OwnershipEventDto, OwnershipEventResponseModel>()
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To));
+
+            // Deployer Transaction Events
+            CreateMap<ClaimPendingDeployerOwnershipEventDto, ClaimPendingDeployerOwnershipEventResponseModel>()
+                .IncludeBase<OwnershipEventDto, OwnershipEventResponseModel>();
+
+            CreateMap<SetPendingDeployerOwnershipEventDto, SetPendingDeployerOwnershipEventResponseModel>()
+                .IncludeBase<OwnershipEventDto, OwnershipEventResponseModel>();
 
             CreateMap<CreateMarketEventDto, CreateMarketEventResponseModel>()
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
@@ -245,10 +250,11 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool))
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token));
 
-            CreateMap<ChangeMarketOwnerEventDto, ChangeMarketOwnerEventResponseModel>()
-                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
-                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
-                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To));
+            CreateMap<ClaimPendingMarketOwnershipEventDto, ClaimPendingMarketOwnershipEventResponseModel>()
+                .IncludeBase<OwnershipEventDto, OwnershipEventResponseModel>();
+
+            CreateMap<SetPendingMarketOwnershipEventDto, SetPendingMarketOwnershipEventResponseModel>()
+                .IncludeBase<OwnershipEventDto, OwnershipEventResponseModel>();
 
             CreateMap<ChangeMarketPermissionEventDto, ChangeMarketPermissionEventResponseModel>()
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
@@ -262,7 +268,15 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.AmountCrs, opt => opt.MapFrom(src => src.AmountCrs))
                 .ForMember(dest => dest.AmountSrc, opt => opt.MapFrom(src => src.AmountSrc))
                 .ForMember(dest => dest.AmountLpt, opt => opt.MapFrom(src => src.AmountLpt))
-                .ForMember(dest => dest.SubEventType, opt => opt.MapFrom(src => src.SubEventType));
+                .ForMember(dest => dest.TokenSrc, opt => opt.MapFrom(src => src.TokenSrc))
+                .ForMember(dest => dest.TokenLp, opt => opt.MapFrom(src => src.TokenLp))
+                .ForMember(dest => dest.TokenLpTotalSupply, opt => opt.MapFrom(src => src.TokenLpTotalSupply));
+
+            CreateMap<AddLiquidityEventDto, AddLiquidityEventResponseModel>()
+                .IncludeBase<ProvideEventDto, ProvideEventResponseModel>();
+
+            CreateMap<RemoveLiquidityEventDto, RemoveLiquidityEventResponseModel>()
+                .IncludeBase<ProvideEventDto, ProvideEventResponseModel>();
 
             CreateMap<SwapEventDto, SwapEventResponseModel>()
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
@@ -276,13 +290,20 @@ namespace Opdex.Platform.WebApi.Mappers
             CreateMap<CollectStakingRewardsEventDto, CollectStakingRewardsEventResponseModel>()
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
                 .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
-                .ForMember(dest => dest.Reward, opt => opt.MapFrom(src => src.Reward));
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
 
             CreateMap<StakeEventDto, StakeEventResponseModel>()
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
                 .ForMember(dest => dest.Staker, opt => opt.MapFrom(src => src.Staker))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
-                .ForMember(dest => dest.SubEventType, opt => opt.MapFrom(src => src.SubEventType));
+                .ForMember(dest => dest.TotalStaked, opt => opt.MapFrom(src => src.TotalStaked))
+                .ForMember(dest => dest.StakerBalance, opt => opt.MapFrom(src => src.StakerBalance));
+
+            CreateMap<StartStakingEventDto, StartStakingEventResponseModel>()
+                .IncludeBase<StakeEventDto, StakeEventResponseModel>();
+
+            CreateMap<StopStakingEventDto, StopStakingEventResponseModel>()
+                .IncludeBase<StakeEventDto, StakeEventResponseModel>();
 
             // Mining Pool Transaction Events
             CreateMap<CollectMiningRewardsEventDto, CollectMiningRewardsEventResponseModel>()
@@ -294,7 +315,14 @@ namespace Opdex.Platform.WebApi.Mappers
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
                 .ForMember(dest => dest.Miner, opt => opt.MapFrom(src => src.Miner))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
-                .ForMember(dest => dest.SubEventType, opt => opt.MapFrom(src => src.SubEventType));
+                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
+                .ForMember(dest => dest.MinerBalance, opt => opt.MapFrom(src => src.MinerBalance));
+
+            CreateMap<StartMiningEventDto, StartMiningEventResponseModel>()
+                .IncludeBase<MineEventDto, MineEventResponseModel>();
+
+            CreateMap<StopMiningEventDto, StopMiningEventResponseModel>()
+                .IncludeBase<MineEventDto, MineEventResponseModel>();
 
             CreateMap<EnableMiningEventDto, EnableMiningEventResponseModel>()
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
@@ -319,7 +347,9 @@ namespace Opdex.Platform.WebApi.Mappers
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
                 .ForMember(dest => dest.VaultAmount, opt => opt.MapFrom(src => src.VaultAmount))
                 .ForMember(dest => dest.GovernanceAmount, opt => opt.MapFrom(src => src.GovernanceAmount))
-                .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex));
+                .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex))
+                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
+                .ForMember(dest => dest.NextDistributionBlock, opt => opt.MapFrom(src => src.NextDistributionBlock));
 
             // Governance Transaction Events
             CreateMap<RewardMiningPoolEventDto, RewardMiningPoolEventResponseModel>()
@@ -335,10 +365,11 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight));
 
             // Vaults Transaction Events
-            CreateMap<ChangeVaultOwnerEventDto, ChangeVaultOwnerEventResponseModel>()
-                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
-                .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
-                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To));
+            CreateMap<ClaimPendingVaultOwnershipEventDto, ClaimPendingVaultOwnershipEventResponseModel>()
+                .IncludeBase<OwnershipEventDto, OwnershipEventResponseModel>();
+
+            CreateMap<SetPendingVaultOwnershipEventDto, SetPendingVaultOwnershipEventResponseModel>()
+                .IncludeBase<OwnershipEventDto, OwnershipEventResponseModel>();
 
             CreateMap<CreateVaultCertificateEventDto, CreateVaultCertificateEventResponseModel>()
                 .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()

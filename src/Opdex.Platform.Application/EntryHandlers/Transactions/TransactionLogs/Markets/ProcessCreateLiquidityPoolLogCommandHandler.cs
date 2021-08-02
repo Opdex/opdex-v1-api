@@ -34,10 +34,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var marketQuery = new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: true);
-                var market = await _mediator.Send(marketQuery, CancellationToken.None);
+                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract), CancellationToken.None);
 
                 var srcTokenId = await MakeToken(request.Log.Token);
+
+                var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(srcTokenId));
 
                 // Todo: Adjust token names like "xBTC-CRS LPT" or "xBTC CRS Liquidity Pool Token", maybe add part of token address to be unique
                 var lpTokenId = await MakeToken(request.Log.Pool);
@@ -79,11 +80,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
         private async Task<long> MakeToken(string tokenAddress)
         {
-            var srcTokenQuery = new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false);
-            var srcToken = await _mediator.Send(srcTokenQuery);
+            var srcToken = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false));
 
-            var srcTokenCommand = new MakeTokenCommand(tokenAddress);
-            return srcToken?.Id ?? await _mediator.Send(srcTokenCommand);
+            return srcToken?.Id ?? await _mediator.Send(new MakeTokenCommand(tokenAddress));
         }
     }
 }

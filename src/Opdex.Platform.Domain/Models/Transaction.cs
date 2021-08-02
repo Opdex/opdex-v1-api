@@ -139,12 +139,13 @@ namespace Opdex.Platform.Domain.Models
                 TransactionLog opdexLog = topic switch
                 {
                     // Deployers
-                    nameof(ChangeDeployerOwnerLog) => new ChangeDeployerOwnerLog(log, address, sortOrder),
+                    nameof(SetPendingDeployerOwnershipLog) => new SetPendingDeployerOwnershipLog(log, address, sortOrder),
+                    nameof(ClaimPendingDeployerOwnershipLog) => new ClaimPendingDeployerOwnershipLog(log, address, sortOrder),
                     nameof(CreateMarketLog) => new CreateMarketLog(log, address, sortOrder),
 
                     // Markets
-                    nameof(ChangeMarketOwnerLog) => new ChangeMarketOwnerLog(log, address, sortOrder),
-                    nameof(ChangeMarketPermissionLog) => new ChangeMarketPermissionLog(log, address, sortOrder),
+                    nameof(SetPendingMarketOwnershipLog) => new SetPendingMarketOwnershipLog(log, address, sortOrder),
+                    nameof(ClaimPendingMarketOwnershipLog) => new ClaimPendingMarketOwnershipLog(log, address, sortOrder),                    nameof(ChangeMarketPermissionLog) => new ChangeMarketPermissionLog(log, address, sortOrder),
                     nameof(CreateLiquidityPoolLog) => new CreateLiquidityPoolLog(log, address, sortOrder),
 
                     // Liquidity Pools
@@ -152,11 +153,13 @@ namespace Opdex.Platform.Domain.Models
                     nameof(BurnLog) => new BurnLog(log, address, sortOrder),
                     nameof(MintLog) => new MintLog(log, address, sortOrder),
                     nameof(SwapLog) => new SwapLog(log, address, sortOrder),
-                    nameof(StakeLog) => new StakeLog(log, address, sortOrder),
+                    nameof(StartStakingLog) => new StartStakingLog(log, address, sortOrder),
+                    nameof(StopStakingLog) => new StopStakingLog(log, address, sortOrder),
                     nameof(CollectStakingRewardsLog) => new CollectStakingRewardsLog(log, address, sortOrder),
 
                     // Mining Pools
-                    nameof(MineLog) => new MineLog(log, address, sortOrder),
+                    nameof(StartMiningLog) => new StartMiningLog(log, address, sortOrder),
+                    nameof(StopMiningLog) => new StopMiningLog(log, address, sortOrder),
                     nameof(CollectMiningRewardsLog) => new CollectMiningRewardsLog(log, address, sortOrder),
                     nameof(EnableMiningLog) => new EnableMiningLog(log, address, sortOrder),
 
@@ -170,7 +173,8 @@ namespace Opdex.Platform.Domain.Models
                     nameof(RewardMiningPoolLog) => new RewardMiningPoolLog(log, address, sortOrder),
 
                     // Vaults
-                    nameof(ChangeVaultOwnerLog) => new ChangeVaultOwnerLog(log, address, sortOrder),
+                    nameof(SetPendingVaultOwnershipLog) => new SetPendingVaultOwnershipLog(log, address, sortOrder),
+                    nameof(ClaimPendingVaultOwnershipLog) => new ClaimPendingVaultOwnershipLog(log, address, sortOrder),
                     nameof(CreateVaultCertificateLog) => new CreateVaultCertificateLog(log, address, sortOrder),
                     nameof(RevokeVaultCertificateLog) => new RevokeVaultCertificateLog(log, address, sortOrder),
                     nameof(RedeemVaultCertificateLog) => new RedeemVaultCertificateLog(log, address, sortOrder),

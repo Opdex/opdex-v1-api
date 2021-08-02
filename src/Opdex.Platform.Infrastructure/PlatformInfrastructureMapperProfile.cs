@@ -172,12 +172,14 @@ namespace Opdex.Platform.Infrastructure
                     {
                         // Deployers
                         (int)TransactionLogType.CreateMarketLog => new CreateMarketLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.ChangeDeployerOwnerLog => new ChangeDeployerOwnerLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.SetPendingDeployerOwnershipLog => new SetPendingDeployerOwnershipLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.ClaimPendingDeployerOwnershipLog => new ClaimPendingDeployerOwnershipLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
                         // Markets
                         (int)TransactionLogType.CreateLiquidityPoolLog => new CreateLiquidityPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.ChangeMarketOwnerLog => new ChangeMarketOwnerLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.ChangeMarketPermissionLog => new ChangeMarketPermissionLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.SetPendingMarketOwnershipLog => new SetPendingMarketOwnershipLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.ClaimPendingMarketOwnershipLog => new ClaimPendingMarketOwnershipLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
                         // Liquidity Pools
                         (int)TransactionLogType.ReservesLog => new ReservesLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
@@ -185,10 +187,12 @@ namespace Opdex.Platform.Infrastructure
                         (int)TransactionLogType.MintLog => new MintLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.SwapLog => new SwapLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.CollectStakingRewardsLog => new CollectStakingRewardsLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                        (int)TransactionLogType.StakeLog => new StakeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.StartStakingLog => new StartStakingLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.StopStakingLog => new StopStakingLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
                         // Mining Pools
-                        (int)TransactionLogType.MineLog => new MineLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.StartMiningLog => new StartMiningLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.StopMiningLog => new StopMiningLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.CollectMiningRewardsLog => new CollectMiningRewardsLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.EnableMiningLog => new EnableMiningLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
@@ -202,7 +206,8 @@ namespace Opdex.Platform.Infrastructure
                         (int)TransactionLogType.NominationLog => new NominationLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
                         // Vault
-                        (int)TransactionLogType.ChangeVaultOwnerLog => new ChangeVaultOwnerLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.SetPendingVaultOwnershipLog => new SetPendingVaultOwnershipLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                        (int)TransactionLogType.ClaimPendingVaultOwnershipLog => new ClaimPendingVaultOwnershipLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.CreateVaultCertificateLog => new CreateVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.RevokeVaultCertificateLog => new RevokeVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.RedeemVaultCertificateLog => new RedeemVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),

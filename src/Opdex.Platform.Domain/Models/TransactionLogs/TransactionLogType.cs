@@ -2,50 +2,50 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
 {
     public enum TransactionLogType : uint
     {
-        Unknown = 0,
-
         // Market deployer logs
         CreateMarketLog = 1,
-        ChangeDeployerOwnerLog = 2,
+        SetPendingDeployerOwnershipLog = 2,
+        ClaimPendingDeployerOwnershipLog = 3,
 
         // Market logs
-        CreateLiquidityPoolLog = 3,
+        CreateLiquidityPoolLog = 4,
 
         // Standard market logs
-        ChangeMarketOwnerLog = 4,
-        ChangeMarketPermissionLog = 5,
+        SetPendingMarketOwnershipLog = 5,
+        ClaimPendingMarketOwnershipLog = 6,
+        ChangeMarketPermissionLog = 7,
 
         // Liquidity pool logs
-        MintLog = 6,
-        BurnLog = 7,
-        SwapLog = 8,
-        ReservesLog = 9,
-        ApprovalLog = 10,
-        TransferLog = 11,
-
-        // Standard pool logs
-        ChangeMarketLog = 12,
+        MintLog = 8,
+        BurnLog = 9,
+        SwapLog = 10,
+        ReservesLog = 11,
+        ApprovalLog = 12,
+        TransferLog = 13,
 
         // Staking pool logs
-        StakeLog = 13,
-        CollectStakingRewardsLog = 14,
+        StartStakingLog = 14,
+        StopStakingLog = 15,
+        CollectStakingRewardsLog = 16,
 
         // Mining governance logs
-        RewardMiningPoolLog = 15,
-        NominationLog = 16,
+        RewardMiningPoolLog = 17,
+        NominationLog = 18,
 
         // Mining pool logs
-        MineLog = 17,
-        CollectMiningRewardsLog = 18,
-        EnableMiningLog = 19,
+        StartMiningLog = 19,
+        StopMiningLog = 20,
+        CollectMiningRewardsLog = 21,
+        EnableMiningLog = 22,
 
         // Mined token logs
-        DistributionLog = 20,
+        DistributionLog = 23,
 
         // Vault
-        CreateVaultCertificateLog = 21,
-        RevokeVaultCertificateLog = 22,
-        RedeemVaultCertificateLog = 23,
-        ChangeVaultOwnerLog = 24
+        CreateVaultCertificateLog = 24,
+        RevokeVaultCertificateLog = 25,
+        RedeemVaultCertificateLog = 26,
+        SetPendingVaultOwnershipLog = 27,
+        ClaimPendingVaultOwnershipLog = 28
     }
 }

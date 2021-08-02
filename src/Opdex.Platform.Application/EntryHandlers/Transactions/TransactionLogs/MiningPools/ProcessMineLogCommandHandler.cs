@@ -33,36 +33,30 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
-                var miningPoolQuery = new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
-                var miningPool = await _mediator.Send(miningPoolQuery, CancellationToken.None);
 
-                var addressMiningQuery = new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, request.Log.Miner, findOrThrow: false);
-                var miningBalance = await _mediator.Send(addressMiningQuery, CancellationToken.None) ?? 
-                                    new AddressMining(miningPool.Id, request.Log.Miner, "0", request.BlockHeight);
+                var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
+
+                var miningBalance = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id,
+                                                                                                              request.Log.Miner,
+                                                                                                              findOrThrow: false))
+                                    ?? new AddressMining(miningPool.Id, request.Log.Miner, "0", request.BlockHeight);
 
                 var isNewer = request.BlockHeight < miningBalance.ModifiedBlock;
                 if (isNewer && miningBalance.Id != 0)
                 {
                     return false;
                 }
-                
-                var queryParameters = new[] {request.Log.Miner.ToSmartContractParameter(SmartContractParameterType.Address)};
-                var miningBalanceQuery = new RetrieveCirrusLocalCallSmartContractQuery(request.Log.Contract, "GetBalance", queryParameters);
-                var miningBalanceResponse = await _mediator.Send(miningBalanceQuery, CancellationToken.None);
-                var latestMiningBalance = miningBalanceResponse.DeserializeValue<string>();
-                
-                miningBalance.SetBalance(latestMiningBalance, request.BlockHeight);
 
-                var miningBalanceCommand = new MakeAddressMiningCommand(miningBalance);
-                var miningBalanceId = await _mediator.Send(miningBalanceCommand, CancellationToken.None);
+                miningBalance.SetBalance(request.Log.MinerBalance, request.BlockHeight);
+
+                var miningBalanceId = await _mediator.Send(new MakeAddressMiningCommand(miningBalance));
 
                 return miningBalanceId > 0;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(MineLog)}");
-               
+
                 return false;
             }
         }

@@ -7,6 +7,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         public string AmountLpt { get; set; }
         public string TokenSrc { get; set; }
         public string TokenLp { get; set; }
-        public string SubEventType { get; set; }
+        public string TokenLpTotalSupply { get; set; }
     }
 }

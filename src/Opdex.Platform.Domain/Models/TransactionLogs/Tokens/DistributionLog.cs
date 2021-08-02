@@ -12,6 +12,8 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             string vaultAmount = log?.vaultAmount;
             string miningAmount = log?.miningAmount;
             uint periodIndex = log?.periodIndex;
+            string totalSupply = log?.totalSupply;
+            ulong nextDistributionBlock = log?.nextDistributionBlock;
 
             if (!vaultAmount.IsNumeric())
             {
@@ -23,9 +25,21 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
                 throw new ArgumentOutOfRangeException(nameof(miningAmount), "Mining amount must only contain numeric digits.");
             }
 
+            if (!totalSupply.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must only contain numeric digits.");
+            }
+
+            if (nextDistributionBlock == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(nextDistributionBlock), "Next distribution block must be greater than 0.");
+            }
+
             VaultAmount = vaultAmount;
             MiningAmount = miningAmount;
             PeriodIndex = periodIndex;
+            TotalSupply = totalSupply;
+            NextDistributionBlock = nextDistributionBlock;
         }
 
         public DistributionLog(long id, long transactionId, string address, int sortOrder, string details)
@@ -35,17 +49,23 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             VaultAmount = logDetails.VaultAmount;
             MiningAmount = logDetails.MiningAmount;
             PeriodIndex = logDetails.PeriodIndex;
+            TotalSupply = logDetails.TotalSupply;
+            NextDistributionBlock = logDetails.NextDistributionBlock;
         }
 
         public string VaultAmount { get; }
         public string MiningAmount { get; }
         public uint PeriodIndex { get; }
+        public string TotalSupply { get; }
+        public ulong NextDistributionBlock { get; }
 
         private struct LogDetails
         {
             public string VaultAmount { get; set; }
             public string MiningAmount { get; set; }
             public uint PeriodIndex { get; set; }
+            public string TotalSupply { get; set; }
+            public ulong NextDistributionBlock { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)
@@ -59,7 +79,9 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             {
                 VaultAmount = VaultAmount,
                 MiningAmount = MiningAmount,
-                PeriodIndex = PeriodIndex
+                PeriodIndex = PeriodIndex,
+                TotalSupply = TotalSupply,
+                NextDistributionBlock = NextDistributionBlock
             });
         }
     }
