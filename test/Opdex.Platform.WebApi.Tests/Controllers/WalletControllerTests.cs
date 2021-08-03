@@ -137,6 +137,40 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
+        public async Task GetMiningPositionByPool_GetMiningPositionByPoolQuery_Send()
+        {
+            // Arrange
+            var address = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
+            var miningPool = "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5";
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            await _controller.GetMiningPositionByPool(address, miningPool, cancellationToken);
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(
+                It.Is<GetMiningPositionByPoolQuery>(query => query.Address == address && query.MiningPoolAddress == miningPool),
+                cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetMiningPositionByPool_Result_ReturnOk()
+        {
+            // Arrange
+            var miningPosition = new MiningPositionResponseModel();
+
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMiningPositionByPoolQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new MiningPositionDto());
+            _mapperMock.Setup(callTo => callTo.Map<MiningPositionResponseModel>(It.IsAny<MiningPositionDto>())).Returns(miningPosition);
+
+            // Act
+            var response = await _controller.GetMiningPositionByPool("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5", CancellationToken.None);
+
+            // Act
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(miningPosition);
+        }
+
+        [Fact]
         public async Task GetAllowance_GetAddressAllowanceQuery_Send()
         {
             // Arrange

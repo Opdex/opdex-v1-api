@@ -120,6 +120,22 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Retrieves the mining position of an address in a particular pool
+        /// </summary>
+        /// <param name="address">Address to lookup</param>
+        /// <param name="miningPool">Mining pool to search</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Mining position summary</returns>
+        [HttpGet("{address}/mining/{miningPool}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<MiningPositionResponseModel>> GetMiningPositionByPool(string address, string miningPool, CancellationToken cancellationToken)
+        {
+            var position = await _mediator.Send(new GetMiningPositionByPoolQuery(address, miningPool), cancellationToken);
+            var response = _mapper.Map<MiningPositionResponseModel>(position);
+            return Ok(response);
+        }
+
         [HttpGet("summary/pool/{poolAddress}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<string>> GetWalletSummaryByPool(string poolAddress, string walletAddress, CancellationToken cancellationToken)
