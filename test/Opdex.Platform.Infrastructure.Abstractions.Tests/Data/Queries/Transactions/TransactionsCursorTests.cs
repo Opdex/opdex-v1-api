@@ -108,7 +108,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
             adjacentCursor.Wallet.Should().Be(cursor.Wallet);
             adjacentCursor.EventTypes.Should().BeEquivalentTo(cursor.EventTypes);
             adjacentCursor.Contracts.Should().BeEquivalentTo(cursor.Contracts);
-            adjacentCursor.OrderBy.Should().Be(cursor.OrderBy);
+            adjacentCursor.SortDirection.Should().Be(cursor.SortDirection);
             adjacentCursor.Limit.Should().Be(cursor.Limit);
             adjacentCursor.PagingDirection.Should().Be(PagingDirection.Backward);
             adjacentCursor.Pointer.Should().Be(567);
@@ -154,7 +154,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
             cursor.Wallet.Should().Be("PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5");
             cursor.EventTypes.Should().ContainSingle(eventType => eventType == TransactionEventType.ProvideEvent);
             cursor.Contracts.Should().ContainSingle(contract => contract == "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L");
-            cursor.OrderBy.Should().Be(SortDirectionType.ASC);
+            cursor.SortDirection.Should().Be(SortDirectionType.ASC);
             cursor.Limit.Should().Be(50);
             cursor.PagingDirection.Should().Be(PagingDirection.Forward);
             cursor.Pointer.Should().Be(10);

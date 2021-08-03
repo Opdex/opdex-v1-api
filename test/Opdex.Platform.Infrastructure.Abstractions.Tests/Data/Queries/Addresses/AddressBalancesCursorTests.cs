@@ -78,7 +78,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
             adjacentCursor.Tokens.Should().BeEquivalentTo(cursor.Tokens);
             adjacentCursor.IncludeLpTokens.Should().Be(cursor.IncludeLpTokens);
             adjacentCursor.IncludeZeroBalances.Should().Be(cursor.IncludeZeroBalances);
-            adjacentCursor.OrderBy.Should().Be(cursor.OrderBy);
+            adjacentCursor.SortDirection.Should().Be(cursor.SortDirection);
             adjacentCursor.Limit.Should().Be(cursor.Limit);
             adjacentCursor.PagingDirection.Should().Be(PagingDirection.Backward);
             adjacentCursor.Pointer.Should().Be(567);
@@ -128,7 +128,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
             cursor.Tokens.Should().ContainSingle(token => token == "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L");
             cursor.IncludeLpTokens.Should().Be(true);
             cursor.IncludeZeroBalances.Should().Be(false);
-            cursor.OrderBy.Should().Be(SortDirectionType.ASC);
+            cursor.SortDirection.Should().Be(SortDirectionType.ASC);
             cursor.Limit.Should().Be(50);
             cursor.PagingDirection.Should().Be(PagingDirection.Forward);
             cursor.Pointer.Should().Be(10);

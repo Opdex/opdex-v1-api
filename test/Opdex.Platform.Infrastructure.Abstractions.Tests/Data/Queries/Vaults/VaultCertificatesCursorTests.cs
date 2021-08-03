@@ -61,7 +61,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
             result.Should().BeOfType<VaultCertificatesCursor>();
             var adjacentCursor = (VaultCertificatesCursor)result;
             adjacentCursor.Holder.Should().Be(cursor.Holder);
-            adjacentCursor.OrderBy.Should().Be(cursor.OrderBy);
+            adjacentCursor.SortDirection.Should().Be(cursor.SortDirection);
             adjacentCursor.Limit.Should().Be(cursor.Limit);
             adjacentCursor.PagingDirection.Should().Be(PagingDirection.Backward);
             adjacentCursor.Pointer.Should().Be(567);
@@ -105,7 +105,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
             // Assert
             canParse.Should().Be(true);
             cursor.Holder.Should().Be("");
-            cursor.OrderBy.Should().Be(SortDirectionType.ASC);
+            cursor.SortDirection.Should().Be(SortDirectionType.ASC);
             cursor.Limit.Should().Be(50);
             cursor.PagingDirection.Should().Be(PagingDirection.Forward);
             cursor.Pointer.Should().Be(10);
