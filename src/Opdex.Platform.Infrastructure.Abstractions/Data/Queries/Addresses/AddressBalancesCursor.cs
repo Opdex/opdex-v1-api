@@ -12,9 +12,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
         public const uint MaxLimit = 50;
 
         public AddressBalancesCursor(IEnumerable<string> tokens, bool includeLpTokens, bool includeZeroBalances,
-                                     SortDirectionType orderBy, uint limit, PagingDirection pagingDirection,
+                                     SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection,
                                      long pointer)
-            : base(orderBy, limit, pagingDirection, pointer)
+            : base(sortDirection, limit, pagingDirection, pointer)
         {
             if (limit > MaxLimit) throw new ArgumentOutOfRangeException(nameof(limit), $"Limit exceeds maximum limit of {MaxLimit}.");
             Tokens = tokens ?? Enumerable.Empty<string>();
@@ -33,7 +33,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
             var encodedPointer = Convert.ToBase64String(pointerBytes);
 
             var sb = new StringBuilder();
-            sb.AppendFormat("direction:{0};limit:{1};paging:{2};", OrderBy, Limit, PagingDirection);
+            sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
             foreach (var token in Tokens) sb.AppendFormat("tokens:{0};", token);
             sb.AppendFormat("includeLpTokens:{0};", IncludeLpTokens);
             sb.AppendFormat("includeZeroBalances:{0};", IncludeZeroBalances);
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
             if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
             if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-            return new AddressBalancesCursor(Tokens, IncludeLpTokens, IncludeZeroBalances, OrderBy, Limit, direction, pointer);
+            return new AddressBalancesCursor(Tokens, IncludeLpTokens, IncludeZeroBalances, SortDirection, Limit, direction, pointer);
         }
 
         /// <inheritdoc />

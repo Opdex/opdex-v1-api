@@ -9,8 +9,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
     {
         public const uint MaxLimit = 50;
 
-        public VaultCertificatesCursor(string holder, SortDirectionType orderBy, uint limit, PagingDirection pagingDirection, long pointer)
-            : base(orderBy, limit, pagingDirection, pointer)
+        public VaultCertificatesCursor(string holder, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
+            : base(sortDirection, limit, pagingDirection, pointer)
         {
             if (limit > MaxLimit) throw new ArgumentOutOfRangeException(nameof(limit), $"Limit exceeds maximum limit of {MaxLimit}.");
             Holder = holder;
@@ -26,7 +26,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
         {
             var pointerBytes = Encoding.UTF8.GetBytes(Pointer.ToString());
             var encodedPointer = Convert.ToBase64String(pointerBytes);
-            return $"holder:{Holder};direction:{OrderBy};limit:{Limit};paging:{PagingDirection};pointer:{encodedPointer};";
+            return $"holder:{Holder};direction:{SortDirection};limit:{Limit};paging:{PagingDirection};pointer:{encodedPointer};";
         }
 
         /// <inheritdoc />
@@ -35,7 +35,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
             if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
             if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-            return new VaultCertificatesCursor(Holder, OrderBy, Limit, direction, pointer);
+            return new VaultCertificatesCursor(Holder, SortDirection, Limit, direction, pointer);
         }
 
         /// <inheritdoc />

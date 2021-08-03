@@ -12,9 +12,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
         public const uint MaxLimit = 50;
 
         public TransactionsCursor(string wallet, IEnumerable<TransactionEventType> eventTypes,
-                                  IEnumerable<string> contracts, SortDirectionType orderBy, uint limit,
+                                  IEnumerable<string> contracts, SortDirectionType sortDirection, uint limit,
                                   PagingDirection pagingDirection, long pointer)
-            : base(orderBy, limit, pagingDirection, pointer)
+            : base(sortDirection, limit, pagingDirection, pointer)
         {
             if (limit > MaxLimit) throw new ArgumentOutOfRangeException(nameof(limit), $"Limit exceeds maximum limit of {MaxLimit}.");
             Wallet = wallet;
@@ -33,7 +33,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
             var encodedPointer = Convert.ToBase64String(pointerBytes);
 
             var sb = new StringBuilder();
-            sb.AppendFormat("direction:{0};limit:{1};paging:{2};", OrderBy, Limit, PagingDirection);
+            sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
             sb.AppendFormat("wallet:{0};", Wallet);
             foreach (var eventType in EventTypes) sb.AppendFormat("eventTypes:{0};", eventType);
             foreach (var contract in Contracts) sb.AppendFormat("contracts:{0};", contract);
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
             if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
             if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-            return new TransactionsCursor(Wallet, EventTypes, Contracts, OrderBy, Limit, direction, pointer);
+            return new TransactionsCursor(Wallet, EventTypes, Contracts, SortDirection, Limit, direction, pointer);
         }
 
         /// <inheritdoc />

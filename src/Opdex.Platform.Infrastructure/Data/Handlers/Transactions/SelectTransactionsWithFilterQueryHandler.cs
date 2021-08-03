@@ -63,7 +63,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
             // re-sort back into correct order
             if (request.Cursor.PagingDirection == PagingDirection.Backward)
             {
-                results = request.Cursor.OrderBy == SortDirectionType.ASC
+                results = request.Cursor.SortDirection == SortDirectionType.ASC
                     ? results.OrderBy(t => t.Id)
                     : results.OrderByDescending(t => t.Id);
             }
@@ -88,16 +88,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                 var sortOperator = string.Empty;
 
                 // going forward in ascending order, use greater than
-                if (request.Cursor.PagingDirection == PagingDirection.Forward && request.Cursor.OrderBy == SortDirectionType.ASC) sortOperator = ">";
+                if (request.Cursor.PagingDirection == PagingDirection.Forward && request.Cursor.SortDirection == SortDirectionType.ASC) sortOperator = ">";
 
                 // going forward in descending order, use less than or equal to
-                if (request.Cursor.PagingDirection == PagingDirection.Forward && request.Cursor.OrderBy == SortDirectionType.DESC) sortOperator = "<";
+                if (request.Cursor.PagingDirection == PagingDirection.Forward && request.Cursor.SortDirection == SortDirectionType.DESC) sortOperator = "<";
 
                 // going backward in ascending order, use less than
-                if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.OrderBy == SortDirectionType.ASC) sortOperator = "<";
+                if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.SortDirection == SortDirectionType.ASC) sortOperator = "<";
 
                 // going backward in descending order, use greater than
-                if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.OrderBy == SortDirectionType.DESC) sortOperator = ">";
+                if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.SortDirection == SortDirectionType.DESC) sortOperator = ">";
 
                 whereFilter = $" WHERE t.{nameof(TransactionEntity.Id)} {sortOperator} @{nameof(SqlParams.TransactionId)}";
             }
@@ -125,11 +125,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
             if (request.Cursor.PagingDirection == PagingDirection.Backward)
             {
-                direction = request.Cursor.OrderBy == SortDirectionType.DESC ? nameof(SortDirectionType.ASC) : nameof(SortDirectionType.DESC);
+                direction = request.Cursor.SortDirection == SortDirectionType.DESC ? nameof(SortDirectionType.ASC) : nameof(SortDirectionType.DESC);
             }
             else
             {
-                direction = Enum.GetName(typeof(SortDirectionType), request.Cursor.OrderBy);
+                direction = Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection);
             }
 
             var orderBy = $" GROUP BY t.{nameof(TransactionEntity.Id)} ORDER BY t.{nameof(TransactionEntity.Id)} {direction}";

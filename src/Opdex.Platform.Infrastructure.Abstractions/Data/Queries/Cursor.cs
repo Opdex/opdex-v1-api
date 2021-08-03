@@ -12,9 +12,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
     /// <typeparam name="TPointer">Pointer on which to mark location in the data source</typeparam>
     public abstract class Cursor<TPointer> where TPointer : IEquatable<TPointer>
     {
-        public Cursor(SortDirectionType orderBy, uint limit, PagingDirection pagingDirection, TPointer pointer)
+        public Cursor(SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, TPointer pointer)
         {
-            OrderBy = orderBy.IsValid() ? orderBy : throw new ArgumentOutOfRangeException(nameof(orderBy), "Invalid sort direction.");
+            SortDirection = sortDirection.IsValid() ? sortDirection : throw new ArgumentOutOfRangeException(nameof(sortDirection), "Invalid sort direction.");
             Limit = limit > 0 ? limit : throw new ArgumentOutOfRangeException(nameof(limit), $"Limit must be greater than zero.");
             PagingDirection = pagingDirection.IsValid() ? pagingDirection : throw new ArgumentOutOfRangeException(nameof(pagingDirection), "Invalid paging direction.");
             Pointer = ValidatePointer(pointer) ? pointer : throw new ArgumentException("Invalid cursor pointer.", nameof(pointer));
@@ -23,7 +23,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
         /// <summary>
         /// Order in which to sort items in the page
         /// </summary>
-        public SortDirectionType OrderBy { get; }
+        public SortDirectionType SortDirection { get; }
 
         /// <summary>
         /// Number of results to return in the page
