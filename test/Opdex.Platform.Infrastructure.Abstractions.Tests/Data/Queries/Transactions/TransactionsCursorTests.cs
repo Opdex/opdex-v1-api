@@ -18,7 +18,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
             static void Act() => new TransactionsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                                         Enumerable.Empty<TransactionEventType>(),
                                                         Enumerable.Empty<string>(), SortDirectionType.ASC,
-                                                        TransactionsCursor.MaxLimit + 1, PagingDirection.Forward, 0);
+                                                        50 + 1, PagingDirection.Forward, 0);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>("limit", Act);

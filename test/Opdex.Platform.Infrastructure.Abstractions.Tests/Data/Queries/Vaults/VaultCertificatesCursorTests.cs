@@ -14,7 +14,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
         {
             // Arrange
             // Act
-            static void Act() => new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", SortDirectionType.ASC, VaultCertificatesCursor.MaxLimit + 1, PagingDirection.Forward, 0);
+            static void Act() => new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>("limit", Act);

@@ -9,14 +9,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 {
     public class AddressBalancesCursor : Cursor<long>
     {
-        public const uint MaxLimit = 50;
-
         public AddressBalancesCursor(IEnumerable<string> tokens, bool includeLpTokens, bool includeZeroBalances,
                                      SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection,
                                      long pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
-            if (limit > MaxLimit) throw new ArgumentOutOfRangeException(nameof(limit), $"Limit exceeds maximum limit of {MaxLimit}.");
             Tokens = tokens ?? Enumerable.Empty<string>();
             IncludeLpTokens = includeLpTokens;
             IncludeZeroBalances = includeZeroBalances;

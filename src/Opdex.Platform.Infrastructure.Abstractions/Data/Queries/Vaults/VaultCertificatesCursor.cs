@@ -7,12 +7,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 {
     public class VaultCertificatesCursor : Cursor<long>
     {
-        public const uint MaxLimit = 50;
-
         public VaultCertificatesCursor(string holder, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
-            if (limit > MaxLimit) throw new ArgumentOutOfRangeException(nameof(limit), $"Limit exceeds maximum limit of {MaxLimit}.");
             Holder = holder;
         }
 

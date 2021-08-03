@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         {
             // Arrange
             // Act
-            static void Act() => new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, AddressBalancesCursor.MaxLimit + 1, PagingDirection.Forward, 0);
+            static void Act() => new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>("limit", Act);

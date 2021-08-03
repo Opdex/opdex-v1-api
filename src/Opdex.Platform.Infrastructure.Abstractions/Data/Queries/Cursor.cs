@@ -12,11 +12,22 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
     /// <typeparam name="TPointer">Pointer on which to mark location in the data source</typeparam>
     public abstract class Cursor<TPointer> where TPointer : IEquatable<TPointer>
     {
-        public Cursor(SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, TPointer pointer)
+        public Cursor(SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, TPointer pointer,
+                      uint defaultLimit = 10, uint maxLimit = 50, SortDirectionType defaultSortDirection = SortDirectionType.DESC)
         {
-            SortDirection = sortDirection.IsValid() ? sortDirection : throw new ArgumentOutOfRangeException(nameof(sortDirection), "Invalid sort direction.");
-            Limit = limit > 0 ? limit : throw new ArgumentOutOfRangeException(nameof(limit), $"Limit must be greater than zero.");
+            if (defaultLimit == 0) throw new ArgumentOutOfRangeException("Default limit must be greater than 0.");
+            if (maxLimit == 0) throw new ArgumentOutOfRangeException("Max limit must be greater than 0.");
+            if (defaultLimit > maxLimit) throw new ArgumentOutOfRangeException("Default limit cannot be greater than max limit.");
+            if (!defaultSortDirection.IsValid() || defaultSortDirection == SortDirectionType.Undefined) throw new ArgumentOutOfRangeException("Invalid default sort direction.");
+
+            if (sortDirection == SortDirectionType.Undefined) SortDirection = defaultSortDirection;
+            else SortDirection = sortDirection.IsValid() ? sortDirection : throw new ArgumentOutOfRangeException("Invalid sort direction.");
+
+            if (limit == default) Limit = defaultLimit;
+            else Limit = limit <= maxLimit ? limit : throw new ArgumentOutOfRangeException(nameof(limit), $"Limit cannot be greater than {maxLimit}.");
+
             PagingDirection = pagingDirection.IsValid() ? pagingDirection : throw new ArgumentOutOfRangeException(nameof(pagingDirection), "Invalid paging direction.");
+
             Pointer = ValidatePointer(pointer) ? pointer : throw new ArgumentException("Invalid cursor pointer.", nameof(pointer));
         }
 

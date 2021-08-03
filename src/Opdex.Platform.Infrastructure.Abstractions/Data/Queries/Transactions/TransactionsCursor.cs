@@ -9,14 +9,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
 {
     public class TransactionsCursor : Cursor<long>
     {
-        public const uint MaxLimit = 50;
-
         public TransactionsCursor(string wallet, IEnumerable<TransactionEventType> eventTypes,
                                   IEnumerable<string> contracts, SortDirectionType sortDirection, uint limit,
                                   PagingDirection pagingDirection, long pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
-            if (limit > MaxLimit) throw new ArgumentOutOfRangeException(nameof(limit), $"Limit exceeds maximum limit of {MaxLimit}.");
             Wallet = wallet;
             EventTypes = eventTypes ?? Enumerable.Empty<TransactionEventType>();
             Contracts = contracts ?? Enumerable.Empty<string>();
