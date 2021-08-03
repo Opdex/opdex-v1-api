@@ -9,7 +9,6 @@ using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Indexer;
 using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Exceptions;
 
 namespace Opdex.Platform.WebApi
@@ -18,7 +17,7 @@ namespace Opdex.Platform.WebApi
     {
         private readonly ILogger<IndexerBackgroundService> _logger;
         private readonly IServiceProvider _services;
-        private readonly NetworkType _network;
+        private readonly OpdexConfiguration _opdexConfiguration;
 
         private const string IndexingAlreadyRunningLog = "Index already running.";
 
@@ -26,7 +25,7 @@ namespace Opdex.Platform.WebApi
         {
             _services = services ?? throw new ArgumentNullException(nameof(services));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
+            _opdexConfiguration = opdexConfiguration ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -66,7 +65,7 @@ namespace Opdex.Platform.WebApi
 
                     await mediator.Send(new MakeIndexerLockCommand());
 
-                    await mediator.Send(new ProcessLatestBlocksCommand(_network), cancellationToken);
+                    await mediator.Send(new ProcessLatestBlocksCommand(_opdexConfiguration.Network), cancellationToken);
 
                     await mediator.Send(new MakeIndexerUnlockCommand());
 
@@ -87,9 +86,27 @@ namespace Opdex.Platform.WebApi
             }
         }
 
-        public override Task StopAsync(CancellationToken cancellationToken)
+        public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            return base.StopAsync(cancellationToken);
+            try
+            {
+                using var scope = _services.CreateScope();
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+                var indexLock = await mediator.Send(new RetrieveIndexerLockQuery());
+                if (indexLock.Locked && indexLock.InstanceId == _opdexConfiguration.InstanceId)
+                {
+                    await mediator.Send(new MakeIndexerUnlockCommand());
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Failure gracefully shutting down the indexer, indexing locked");
+            }
+            finally
+            {
+                await base.StopAsync(cancellationToken);
+            }
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)

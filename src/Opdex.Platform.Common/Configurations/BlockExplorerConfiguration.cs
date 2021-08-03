@@ -9,10 +9,10 @@ namespace Opdex.Platform.Common.Configurations
 
         public void Validate()
         {
-            // if (!TransactionEndpoint.HasValue())
-            // {
-            //     throw new Exception($"{nameof(BlockExplorerConfiguration)}.{nameof(TransactionEndpoint)} must not be null or empty.");
-            // }
+            if (!TransactionEndpoint.HasValue())
+            {
+                throw new Exception($"{nameof(BlockExplorerConfiguration)}.{nameof(TransactionEndpoint)} must not be null or empty.");
+            }
         }
     }
 }

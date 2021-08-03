@@ -21,8 +21,6 @@ namespace Opdex.Platform.Application.Handlers.Indexer
 
         public async Task<Unit> Handle(MakeIndexerUnlockCommand request, CancellationToken cancellationToken)
         {
-            // Todo: Calling this command can overwrite another instance that locked indexing.
-            // Considering using an identifier per instance to authorize who can persist the unlock flag
             var unlocked = await _mediator.Send(new PersistIndexerUnlockCommand());
             if (!unlocked)
             {

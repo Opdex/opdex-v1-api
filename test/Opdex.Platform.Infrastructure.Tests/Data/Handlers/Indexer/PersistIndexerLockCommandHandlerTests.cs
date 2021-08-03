@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Moq;
+using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
 using Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
@@ -17,7 +18,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
         public PersistIndexerLockCommandHandlerTests()
         {
             _dbContext = new Mock<IDbContext>();
-            _handler = new PersistIndexerLockCommandHandler(_dbContext.Object);
+
+            var opdexConfiguration = new OpdexConfiguration();
+
+            _handler = new PersistIndexerLockCommandHandler(_dbContext.Object, opdexConfiguration);
         }
 
         [Fact]

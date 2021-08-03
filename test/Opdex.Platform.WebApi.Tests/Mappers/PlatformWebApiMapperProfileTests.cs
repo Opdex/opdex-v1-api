@@ -86,5 +86,27 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             response.Paging.Next.Should().Be(dto.Cursor.Next);
             response.Paging.Previous.Should().Be(dto.Cursor.Previous);
         }
+
+        [Fact]
+        public void From_MiningPositionDto_To_MiningPositionResponseModel()
+        {
+            // Arrange
+            var dto = new MiningPositionDto
+            {
+                Address = "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK",
+                Amount = "200.00000000",
+                MiningPool = "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX",
+                MiningToken = "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L"
+            };
+
+            // Act
+            var response = _mapper.Map<MiningPositionResponseModel>(dto);
+
+            // Assert
+            response.Address.Should().Be(dto.Address);
+            response.Amount.Should().Be(dto.Amount);
+            response.MiningPool.Should().Be(dto.MiningPool);
+            response.MiningToken.Should().Be(dto.MiningToken);
+        }
     }
 }
