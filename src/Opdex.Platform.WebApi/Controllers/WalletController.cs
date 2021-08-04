@@ -15,6 +15,8 @@ using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Addresses;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -84,6 +86,18 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Retrieves token balances for an address.
+        /// </summary>
+        /// <param name="address">The address to lookup balances for.</param>
+        /// <param name="tokens">Specific tokens to lookup.</param>
+        /// <param name="includeLpTokens">Includes all tokens if true, otherwise excludes liquidity pool tokens.</param>
+        /// <param name="includeZeroBalances">Only includes 0 balances if true.</param>
+        /// <param name="direction">Order in which to sort results.</param>
+        /// <param name="limit">Number of results to take per page.</param>
+        /// <param name="cursor">Cursor for pagination.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>A collection of address balance summaries by token.</returns>
         [HttpGet("{address}/balance")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<AddressBalanceResponseModel>>> GetAddressBalances(string address,
@@ -92,12 +106,33 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                                      [FromQuery] bool? includeZeroBalances,
                                                                                                      [FromQuery] SortDirectionType direction,
                                                                                                      [FromQuery] uint limit,
-                                                                                                     [FromQuery] string next,
-                                                                                                     [FromQuery] string previous,
+                                                                                                     [FromQuery] string cursor,
                                                                                                      CancellationToken cancellationToken)
         {
-            var balances = await _mediator.Send(new GetAddressBalancesWithFilterQuery(address, tokens, includeLpTokens ?? true, includeZeroBalances ?? false,
-                                                                                      direction, limit, next, previous), cancellationToken);
+            AddressBalancesCursor pagingCursor;
+
+            if (cursor.HasValue())
+            {
+                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !AddressBalancesCursor.TryParse(decodedCursor, out var parsedCursor))
+                {
+                    var problemDetails = new ProblemDetails
+                    {
+                        Title = "Unprocessable Entity",
+                        Status = StatusCodes.Status422UnprocessableEntity,
+                        Detail = "A validation error occurred.",
+                        Type = "https://httpstatuses.com/422"
+                    };
+                    problemDetails.Extensions.Add("Errors", new string[] { "Cursor not formed correctly." });
+                    return new UnprocessableEntityObjectResult(problemDetails);
+                }
+                pagingCursor = parsedCursor;
+            }
+            else
+            {
+                pagingCursor = new AddressBalancesCursor(tokens, includeLpTokens ?? true, includeZeroBalances ?? false, direction, limit, PagingDirection.Forward, default);
+            }
+
+            var balances = await _mediator.Send(new GetAddressBalancesWithFilterQuery(address, pagingCursor), cancellationToken);
 
             var response = _mapper.Map<AddressBalancesResponseModel>(balances);
 

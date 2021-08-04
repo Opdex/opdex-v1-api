@@ -1,4 +1,4 @@
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
+using Opdex.Platform.Common.Enums;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents
 {

@@ -11,7 +11,6 @@ namespace Opdex.Platform.Application.Abstractions.Models
             Events = Enumerable.Empty<TransactionEventDto>();
         }
 
-        public long Id { get; set; }
         public bool Success { get; set; }
         public string Hash { get; set; }
         public string NewContractAddress { get; set; }

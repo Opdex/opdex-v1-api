@@ -32,7 +32,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public async Task GetTransaction_ThrowsArgumentNullException_InvalidHash(string hash)
+        public void GetTransaction_ThrowsArgumentNullException_InvalidHash(string hash)
         {
             // Arrange
 
@@ -53,7 +53,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
             try
             {
                 await _handler.Handle(request, It.IsAny<CancellationToken>());
-            } catch { }
+            }
+            catch { }
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTransactionByHashQuery>(q => q.Hash == request.Hash),
@@ -74,7 +75,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
             try
             {
                 await _handler.Handle(request, It.IsAny<CancellationToken>());
-            } catch { }
+            }
+            catch { }
 
             // Assert
             _transactionDtoAssembler.Verify(callTo => callTo.Assemble(transaction), Times.Once);

@@ -203,13 +203,14 @@ namespace Opdex.Platform.Infrastructure
             // Transactions
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, SelectTransactionLogsByTransactionIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTransactionsWithFilterQuery, List<Transaction>>, SelectTransactionsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTransactionsWithFilterQuery, IEnumerable<Transaction>>, SelectTransactionsWithFilterQueryHandler>();
 
             // Vault
             services.AddTransient<IRequestHandler<SelectAllVaultsQuery, IEnumerable<Vault>>, SelectAllVaultsQueryHandler>();
             services.AddTransient<IRequestHandler<SelectVaultByAddressQuery, Vault>, SelectVaultByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectVaultByTokenIdQuery, Vault>, SelectVaultByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesByOwnerAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectVaultCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesWithFilterQueryHandler>();
 
             // Addresses
             services.AddTransient<IRequestHandler<SelectAddressAllowanceByTokenIdAndOwnerAndSpenderQuery, AddressAllowance>, SelectAddressAllowanceByTokenIdAndOwnerAndSpenderQueryHandler>();
@@ -217,7 +218,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>, SelectAddressBalanceByOwnerAndTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>, SelectAddressMiningByMiningPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>, SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectAddressBalancesWithFilterQuery, List<AddressBalance>>, SelectAddressBalancesWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectAddressBalancesWithFilterQuery, IEnumerable<AddressBalance>>, SelectAddressBalancesWithFilterQueryHandler>();
 
             // Indexer
             services.AddTransient<IRequestHandler<SelectIndexerLockQuery, IndexLock>, SelectIndexerLockQueryHandler>();
