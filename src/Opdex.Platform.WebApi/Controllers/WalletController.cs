@@ -119,7 +119,7 @@ namespace Opdex.Platform.WebApi.Controllers
                     {
                         Title = "Unprocessable Entity",
                         Status = StatusCodes.Status422UnprocessableEntity,
-                        Detail = "A validation error occured.",
+                        Detail = "A validation error occurred.",
                         Type = "https://httpstatuses.com/422"
                     };
                     problemDetails.Extensions.Add("Errors", new string[] { "Cursor not formed correctly." });
