@@ -1,9 +1,9 @@
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Extensions
+namespace Opdex.Platform.Infrastructure.Abstractions.Extensions
 {
     public static class TransactionEventExtensions
     {
@@ -33,12 +33,12 @@ namespace Opdex.Platform.Application.Extensions
                 TransactionEventType.StopMiningEvent => new[] {TransactionLogType.StopMiningLog},
                 TransactionEventType.CollectMiningRewardsEvent => new[] {TransactionLogType.CollectMiningRewardsLog},
                 // Tokens
-                TransactionEventType.TransferEvent => new[] {TransactionLogType.TransferLog},
-                TransactionEventType.ApprovalEvent => new[] {TransactionLogType.ApprovalLog},
-                TransactionEventType.DistributionEvent => new[] {TransactionLogType.DistributionLog},
+                TransactionEventType.TransferEvent => new[] { TransactionLogType.TransferLog },
+                TransactionEventType.ApprovalEvent => new[] { TransactionLogType.ApprovalLog },
+                TransactionEventType.DistributionEvent => new[] { TransactionLogType.DistributionLog },
                 // Governances
-                TransactionEventType.NominationEvent => new[] {TransactionLogType.NominationLog},
-                TransactionEventType.RewardMiningPoolEvent => new[] {TransactionLogType.RewardMiningPoolLog},
+                TransactionEventType.NominationEvent => new[] { TransactionLogType.NominationLog },
+                TransactionEventType.RewardMiningPoolEvent => new[] { TransactionLogType.RewardMiningPoolLog },
                 // Vaults
                 TransactionEventType.ClaimPendingVaultOwnershipEvent => new[] {TransactionLogType.ClaimPendingVaultOwnershipLog},
                 TransactionEventType.SetPendingVaultOwnershipEvent => new[] {TransactionLogType.SetPendingVaultOwnershipLog},

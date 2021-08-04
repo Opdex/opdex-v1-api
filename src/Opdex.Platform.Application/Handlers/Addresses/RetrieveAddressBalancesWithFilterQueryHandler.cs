@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Addresses
 {
-    public class RetrieveAddressBalancesWithFilterQueryHandler : IRequestHandler<RetrieveAddressBalancesWithFilterQuery, List<AddressBalance>>
+    public class RetrieveAddressBalancesWithFilterQueryHandler : IRequestHandler<RetrieveAddressBalancesWithFilterQuery, IEnumerable<AddressBalance>>
     {
         private readonly IMediator _mediator;
 
@@ -18,10 +18,9 @@ namespace Opdex.Platform.Application.Handlers.Addresses
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<List<AddressBalance>> Handle(RetrieveAddressBalancesWithFilterQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<AddressBalance>> Handle(RetrieveAddressBalancesWithFilterQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectAddressBalancesWithFilterQuery(request.Wallet, request.Tokens, request.IncludeLpTokens, request.IncludeZeroBalances,
-                                                                           request.Direction, request.Limit, request.Next, request.Previous), cancellationToken);
+            return _mediator.Send(new SelectAddressBalancesWithFilterQuery(request.Address, request.Cursor), cancellationToken);
         }
     }
 }

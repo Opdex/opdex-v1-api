@@ -1,3 +1,5 @@
+using Opdex.Platform.Common.Enums;
+
 namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Governances
 {
     public class RewardMiningPoolEventDto : TransactionEventDto

@@ -1,4 +1,4 @@
-namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents
+namespace Opdex.Platform.Common.Enums
 {
     public enum TransactionEventType
     {

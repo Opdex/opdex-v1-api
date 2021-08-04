@@ -3,8 +3,10 @@ using Moq;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -30,20 +32,18 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             // Arrange
             const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType direction = SortDirectionType.ASC;
-            const long limit = 10;
-            const long next = 0;
-            const long previous = 0;
+            const uint limit = 10;
 
-            var command = new SelectAddressBalancesWithFilterQuery(wallet, new string[0], false, false, direction, limit, next, previous);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, direction, limit, PagingDirection.Backward, 0);
+
+            var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<AddressBalanceEntity>(
-                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("ab.Owner = @Wallet") &&
-                                                            q.Sql.Contains($"ORDER BY ab.Id {direction}") &&
-                                                            q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
+                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("ab.Owner = @Wallet"))), Times.Once);
         }
 
         [Fact]
@@ -52,12 +52,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             // Arrange
             const SortDirectionType direction = SortDirectionType.ASC;
             const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var tokens = new[] {"PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj"};
-            const long limit = 10;
-            const long next = 0;
-            const long previous = 0;
+            var tokens = new[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
+            const uint limit = 10;
 
-            var command = new SelectAddressBalancesWithFilterQuery(wallet, tokens, false, false, direction, limit, next, previous);
+            var cursor = new AddressBalancesCursor(tokens, false, false, direction, limit, PagingDirection.Backward, 0);
+
+            var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -66,9 +66,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             _dbContext.Verify(callTo =>
                                   callTo.ExecuteQueryAsync<AddressBalanceEntity>(
                                       It.Is<DatabaseQuery>(q => q.Sql.Contains("JOIN token t") &&
-                                                                q.Sql.Contains("t.Address IN @Tokens") &&
-                                                                q.Sql.Contains($"ORDER BY ab.Id {direction}") &&
-                                                                q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
+                                                                q.Sql.Contains("t.Address IN @Tokens"))), Times.Once);
         }
 
         [Fact]
@@ -78,11 +76,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             const SortDirectionType direction = SortDirectionType.ASC;
             const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const bool includeLpTokens = false;
-            const long limit = 10;
-            const long next = 0;
-            const long previous = 0;
+            const uint limit = 10;
 
-            var command = new SelectAddressBalancesWithFilterQuery(wallet, new string[0], includeLpTokens, false, direction, limit, next, previous);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), includeLpTokens, false, direction, limit, PagingDirection.Backward, 0);
+
+            var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -91,9 +89,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             _dbContext.Verify(callTo =>
                                   callTo.ExecuteQueryAsync<AddressBalanceEntity>(
                                       It.Is<DatabaseQuery>(q => q.Sql.Contains("JOIN token t") &&
-                                                                q.Sql.Contains("t.IsLpt = @IncludeLpTokens") &&
-                                                                q.Sql.Contains($"ORDER BY ab.Id {direction}") &&
-                                                                q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
+                                                                q.Sql.Contains("t.IsLpt = @IncludeLpTokens"))), Times.Once);
         }
 
         [Fact]
@@ -103,11 +99,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             const SortDirectionType direction = SortDirectionType.ASC;
             const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const bool includeZeroBalance = false;
-            const long limit = 10;
-            const long next = 0;
-            const long previous = 0;
+            const uint limit = 10;
 
-            var command = new SelectAddressBalancesWithFilterQuery(wallet, new string[0], true, includeZeroBalance, direction, limit, next, previous);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, includeZeroBalance, direction, limit, PagingDirection.Backward, 0);
+
+            var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -115,9 +111,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             // Assert
             _dbContext.Verify(callTo =>
                                   callTo.ExecuteQueryAsync<AddressBalanceEntity>(
-                                      It.Is<DatabaseQuery>(q => q.Sql.Contains("ab.Balance != '0'") &&
-                                                                q.Sql.Contains($"ORDER BY ab.Id {direction}") &&
-                                                                q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
+                                      It.Is<DatabaseQuery>(q => q.Sql.Contains("ab.Balance != '0'"))), Times.Once);
         }
 
         [Fact]
@@ -126,11 +120,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             // Arrange
             const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType direction = SortDirectionType.ASC;
-            const long limit = 10;
-            const long next = 15;
-            const long previous = 0;
+            const uint limit = 10;
 
-            var command = new SelectAddressBalancesWithFilterQuery(wallet, new string[0], true, false, direction, limit, next, previous);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, direction, limit, PagingDirection.Forward, 50);
+
+            var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -149,11 +143,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             // Arrange
             const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType direction = SortDirectionType.DESC;
-            const long limit = 10;
-            const long next = 15;
-            const long previous = 0;
+            const uint limit = 10;
 
-            var command = new SelectAddressBalancesWithFilterQuery(wallet, new string[0], true, false, direction, limit, next, previous);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, direction, limit, PagingDirection.Forward, 50);
+
+            var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -172,12 +166,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             // Arrange
             const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType requestDirection = SortDirectionType.DESC;
-            const long limit = 10;
-            const long next = 0;
-            const long previous = 15;
-            const SortDirectionType queryDirection = SortDirectionType.ASC;
+            const uint limit = 10;
 
-            var command = new SelectAddressBalancesWithFilterQuery(wallet, new string[0], true, false, requestDirection, limit, next, previous);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, requestDirection, limit, PagingDirection.Backward, 50);
+
+            var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -186,7 +179,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             _dbContext.Verify(callTo =>
                                   callTo.ExecuteQueryAsync<AddressBalanceEntity>(
                                       It.Is<DatabaseQuery>(q => q.Sql.Contains("ab.Id > @BalanceId") &&
-                                                                q.Sql.Contains($"ORDER BY ab.Id {queryDirection}") &&
+                                                                q.Sql.Contains($"ORDER BY ab.Id {SortDirectionType.ASC}") &&
                                                                 q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
         }
 
@@ -196,12 +189,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             // Arrange
             const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType requestDirection = SortDirectionType.ASC;
-            const long limit = 10;
-            const long next = 0;
-            const long previous = 15;
-            const SortDirectionType queryDirection = SortDirectionType.DESC;
+            const uint limit = 10;
 
-            var command = new SelectAddressBalancesWithFilterQuery(wallet, new string[0], true, false, requestDirection, limit, next, previous);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, requestDirection, limit, PagingDirection.Backward, 50);
+
+            var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -210,7 +202,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             _dbContext.Verify(callTo =>
                                   callTo.ExecuteQueryAsync<AddressBalanceEntity>(
                                       It.Is<DatabaseQuery>(q => q.Sql.Contains("ab.Id < @BalanceId") &&
-                                                                q.Sql.Contains($"ORDER BY ab.Id {queryDirection}") &&
+                                                                q.Sql.Contains($"ORDER BY ab.Id {SortDirectionType.DESC}") &&
                                                                 q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
         }
     }

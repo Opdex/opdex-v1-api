@@ -3,8 +3,10 @@ using Moq;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -30,11 +32,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             // Arrange
             const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType direction = SortDirectionType.ASC;
-            const long limit = 10;
-            const long next = 0;
-            const long previous = 0;
+            const uint limit = 10;
 
-            var command = new SelectTransactionsWithFilterQuery(wallet, new uint[0], new string[0], direction, limit, next, previous);
+            var cursor = new TransactionsCursor(wallet, Enumerable.Empty<TransactionEventType>(),
+                                                Enumerable.Empty<string>(), direction, limit, PagingDirection.Forward, 0);
+
+            var command = new SelectTransactionsWithFilterQuery(cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -50,13 +53,14 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         public async Task SelectTransactionWithFilter_ByContracts()
         {
             // Arrange
+            var contracts = new[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
             const SortDirectionType direction = SortDirectionType.ASC;
-            var contracts = new[] {"PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj"};
-            const long limit = 10;
-            const long next = 0;
-            const long previous = 0;
+            const uint limit = 10;
 
-            var command = new SelectTransactionsWithFilterQuery(string.Empty, new uint[0], contracts, direction, limit, next, previous);
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(),
+                                                contracts, direction, limit, PagingDirection.Forward, 0);
+
+            var command = new SelectTransactionsWithFilterQuery(cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -73,13 +77,13 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         public async Task SelectTransactionWithFilter_ByEventTypes()
         {
             // Arrange
+            var eventTypes = new TransactionEventType[] { TransactionEventType.CreateMarketEvent };
             const SortDirectionType direction = SortDirectionType.ASC;
-            var eventTypes = new uint[] {1};
-            const long limit = 10;
-            const long next = 0;
-            const long previous = 0;
+            const uint limit = 10;
 
-            var command = new SelectTransactionsWithFilterQuery(string.Empty, eventTypes, new string[0], direction, limit, next, previous);
+            var cursor = new TransactionsCursor("", eventTypes, Enumerable.Empty<string>(), direction, limit, PagingDirection.Forward, 0);
+
+            var command = new SelectTransactionsWithFilterQuery(cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -97,11 +101,13 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         {
             // Arrange
             const SortDirectionType direction = SortDirectionType.ASC;
-            const long limit = 10;
-            const long next = 15;
-            const long previous = 0;
+            const PagingDirection pagingDirection = PagingDirection.Forward;
+            const uint limit = 10;
 
-            var command = new SelectTransactionsWithFilterQuery(string.Empty, new uint[0], new string[0], direction, limit, next, previous);
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(),
+                                                Enumerable.Empty<string>(), direction, limit, pagingDirection, 50);
+
+            var command = new SelectTransactionsWithFilterQuery(cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -118,11 +124,13 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         {
             // Arrange
             const SortDirectionType direction = SortDirectionType.DESC;
-            const long limit = 10;
-            const long next = 15;
-            const long previous = 0;
+            const PagingDirection pagingDirection = PagingDirection.Forward;
+            const uint limit = 10;
 
-            var command = new SelectTransactionsWithFilterQuery(string.Empty, new uint[0], new string[0], direction, limit, next, previous);
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(),
+                                                Enumerable.Empty<string>(), direction, limit, pagingDirection, 50);
+
+            var command = new SelectTransactionsWithFilterQuery(cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -138,13 +146,14 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         public async Task SelectTransactionWithFilter_ByCursor_PreviousDESC()
         {
             // Arrange
-            const SortDirectionType requestDirection = SortDirectionType.DESC;
-            const long limit = 10;
-            const long next = 0;
-            const long previous = 15;
-            const SortDirectionType queryDirection = SortDirectionType.ASC;
+            const SortDirectionType direction = SortDirectionType.DESC;
+            const PagingDirection pagingDirection = PagingDirection.Backward;
+            const uint limit = 10;
 
-            var command = new SelectTransactionsWithFilterQuery(string.Empty, new uint[0], new string[0], requestDirection, limit, next, previous);
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(),
+                                                Enumerable.Empty<string>(), direction, limit, pagingDirection, 50);
+
+            var command = new SelectTransactionsWithFilterQuery(cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -152,7 +161,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             // Assert
             _dbContext.Verify(callTo =>
                                   callTo.ExecuteQueryAsync<TransactionEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("WHERE t.Id > @TransactionId") &&
-                                                                                                        q.Sql.Contains($"ORDER BY t.Id {queryDirection}") &&
+                                                                                                        q.Sql.Contains($"ORDER BY t.Id ASC") &&
                                                                                                         q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
         }
 
@@ -160,13 +169,14 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         public async Task SelectTransactionWithFilter_ByCursor_PreviousASC()
         {
             // Arrange
-            const SortDirectionType requestDirection = SortDirectionType.ASC;
-            const long limit = 10;
-            const long next = 0;
-            const long previous = 15;
-            const SortDirectionType queryDirection = SortDirectionType.DESC;
+            const SortDirectionType direction = SortDirectionType.ASC;
+            const PagingDirection pagingDirection = PagingDirection.Backward;
+            const uint limit = 10;
 
-            var command = new SelectTransactionsWithFilterQuery(string.Empty, new uint[0], new string[0], requestDirection, limit, next, previous);
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(),
+                                                Enumerable.Empty<string>(), direction, limit, pagingDirection, 50);
+
+            var command = new SelectTransactionsWithFilterQuery(cursor);
 
             // Act
             await _handler.Handle(command, CancellationToken.None);
@@ -174,7 +184,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             // Assert
             _dbContext.Verify(callTo =>
                                   callTo.ExecuteQueryAsync<TransactionEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("WHERE t.Id < @TransactionId") &&
-                                                                                                        q.Sql.Contains($"ORDER BY t.Id {queryDirection}") &&
+                                                                                                        q.Sql.Contains($"ORDER BY t.Id DESC") &&
                                                                                                         q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
         }
     }

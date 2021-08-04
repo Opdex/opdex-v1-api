@@ -3,15 +3,15 @@ using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Application.Abstractions.Models;
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,178 +21,257 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 {
     public class GetTransactionsWithFilterQueryHandlerTests
     {
-        private readonly Mock<IModelAssembler<Transaction, TransactionDto>> _transactionDtoAssembler;
         private readonly Mock<IMediator> _mediatorMock;
+        private readonly Mock<IModelAssembler<Transaction, TransactionDto>> _assemblerMock;
+
         private readonly GetTransactionsWithFilterQueryHandler _handler;
 
         public GetTransactionsWithFilterQueryHandlerTests()
         {
-            _transactionDtoAssembler = new Mock<IModelAssembler<Transaction, TransactionDto>>();
             _mediatorMock = new Mock<IMediator>();
+            _assemblerMock = new Mock<IModelAssembler<Transaction, TransactionDto>>();
 
-            _handler = new GetTransactionsWithFilterQueryHandler(_mediatorMock.Object, _transactionDtoAssembler.Object);
-        }
-
-        [Theory]
-        [InlineData(0)]
-        [InlineData(101)]
-        public async Task GetTransactionsWithFilter_ThrowsArgumentOutOfRangeException_InvalidLimit(uint limit)
-        {
-            // Arrange
-
-            // Act
-            void Act() => new GetTransactionsWithFilterQuery("wallet", new List<TransactionEventType>(), new List<string>(), SortDirectionType.ASC, limit, null, null);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Limit must be between 0 and");
+            _handler = new GetTransactionsWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
         }
 
         [Fact]
-        public async Task GetTransactionsWithFilter_ThrowsArgumentException_InvalidSortDirection()
+        public async Task Handle_RetrieveTransactionsWithFilterQuery_Send()
         {
             // Arrange
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var request = new GetTransactionsWithFilterQuery(cursor);
+            var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            void Act() => new GetTransactionsWithFilterQuery("wallet", new List<TransactionEventType>(), new List<string>(), (SortDirectionType)3, 10, null, null);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Supplied sort direction must be ASC or DESC.");
-        }
-
-        [Fact]
-        public async Task GetTransactionsWithFilter_ThrowsArgumentException_PreviousAndNextBothHaveValues()
-        {
-            // Arrange
-
-            // Act
-            void Act() => new GetTransactionsWithFilterQuery("wallet", new List<TransactionEventType>(), new List<string>(), (SortDirectionType)3, 10, "a", "b");
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Next and previous cannot both have values.");
-        }
-
-        [Fact]
-        public async Task GetTransactionsWithFilter_Sends_QueryAndAssembler()
-        {
-            // Arrange
-            var request = new GetTransactionsWithFilterQuery("wallet", new List<TransactionEventType>(), new List<string>(), SortDirectionType.ASC, 10, null, null);
-
-            var transaction = new Transaction(1, "txHash", 2, 3, "from", "to", true, "newContractAddress");
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Transaction> { transaction });
-
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transaction)).ReturnsAsync(new TransactionDto());
-
-            // Act
-            await _handler.Handle(request, It.IsAny<CancellationToken>());
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>()), Times.Once);
-            _transactionDtoAssembler.Verify(callTo => callTo.Assemble(transaction), Times.Once);
-        }
-
-        [Theory]
-        [InlineData(SortDirectionType.ASC)]
-        [InlineData(SortDirectionType.DESC)]
-        public async Task GetTransactionsWithFilter_OrderAndRemovePlusOne(SortDirectionType sortDirection)
-        {
-            // Arrange
-            const uint limit = 2;
-            var request = new GetTransactionsWithFilterQuery("wallet", new List<TransactionEventType>(), new List<string>(), sortDirection, limit, null, null);
-
-            var transactionOne = new Transaction(1, "txHash1", 2, 3, "from1", "1to", true, "newContractAddress1");
-            var transactionTwo = new Transaction(2, "txHash2", 2, 3, "from2", "2to", true, "newContractAddress2");
-            var transactionThree = new Transaction(3, "txHash3", 2, 3, "from3", "3to", true, "newContractAddress3");
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Transaction> { transactionTwo, transactionOne, transactionThree });
-
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionOne)).ReturnsAsync(new TransactionDto {Id = transactionOne.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionTwo)).ReturnsAsync(new TransactionDto {Id = transactionTwo.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionThree)).ReturnsAsync(new TransactionDto {Id = transactionThree.Id});
-
-            // Act
-            var transactions = await _handler.Handle(request, It.IsAny<CancellationToken>());
-
-            // Assert
-            transactions.TransactionDtos.Count().Should().Be((int)limit);
-            transactions.TransactionDtos.Last().Id.Should().Be(transactionTwo.Id);
-
-            if (sortDirection == SortDirectionType.ASC)
+            try
             {
-                transactions.TransactionDtos.First().Id.Should().Be(transactionOne.Id);
-                transactions.TransactionDtos.Select(tx => tx.Id).Should().BeInAscendingOrder();
+                await _handler.Handle(request, cancellationToken);
             }
-            else
+            catch (Exception) { }
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTransactionsWithFilterQuery>(query => query.Cursor == cursor), cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task Handle_TransactionsRetrieved_MapResults()
+        {
+            // Arrange
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var request = new GetTransactionsWithFilterQuery(cursor);
+
+            var transaction = new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null);
+            var transactions = new Transaction[] { transaction };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
+
+            // Act
+            await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            _assemblerMock.Verify(callTo => callTo.Assemble(transaction), Times.Once);
+        }
+
+        [Fact]
+        public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
+        {
+            // Arrange
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
+            var request = new GetTransactionsWithFilterQuery(cursor);
+
+            var transactions = new Transaction[]
             {
-                transactions.TransactionDtos.First().Id.Should().Be(transactionThree.Id);
-                transactions.TransactionDtos.Select(tx => tx.Id).Should().BeInDescendingOrder();
-            }
+                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            dto.Transactions.Count().Should().Be(transactions.Length);
         }
 
         [Fact]
-        public async Task GetTransactionsWithFilter_BuildsNextCursor()
+        public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
         {
             // Arrange
-            const uint limit = 2;
-            var request = new GetTransactionsWithFilterQuery("wallet", new List<TransactionEventType>(), new List<string>(), SortDirectionType.DESC,
-                                                             limit, null, null);
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
+            var request = new GetTransactionsWithFilterQuery(cursor);
 
-            var transactionOne = new Transaction(1, "txHash1", 2, 3, "from1", "1to", true, "newContractAddress1");
-            var transactionTwo = new Transaction(2, "txHash2", 2, 3, "from2", "2to", true, "newContractAddress2");
-            var transactionThree = new Transaction(3, "txHash3", 2, 3, "from3", "3to", true, "newContractAddress3");
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Transaction> { transactionTwo, transactionOne, transactionThree });
-
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionOne)).ReturnsAsync(new TransactionDto {Id = transactionOne.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionTwo)).ReturnsAsync(new TransactionDto {Id = transactionTwo.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionThree)).ReturnsAsync(new TransactionDto {Id = transactionThree.Id});
+            var transactions = new Transaction[]
+            {
+                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
 
             // Act
-            var transactions = await _handler.Handle(request, It.IsAny<CancellationToken>());
+            var dto = await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            transactions.TransactionDtos.Count().Should().Be((int)limit);
-            transactions.TransactionDtos.Last().Id.Should().Be(transactionTwo.Id);
-
-            transactions.CursorDto.Next.Should().NotBeNull();
-            transactions.CursorDto.Next.Base64Decode().Should().Contain($"next:{transactionTwo.Id.ToString().Base64Encode()};");
-            transactions.CursorDto.Previous.Should().BeNull();
+            _assemblerMock.Verify(callTo => callTo.Assemble(transactions[0]), Times.Never);
+            dto.Transactions.Count().Should().Be(transactions.Length - 1);
         }
 
         [Fact]
-        public async Task GetTransactionsWithFilter_BuildsPreviousCursor()
+        public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
         {
             // Arrange
-            const uint limit = 2;
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
+            var request = new GetTransactionsWithFilterQuery(cursor);
 
-            var nextCursor = $"limit:2;direction:DESC;next:{5.ToString().Base64Encode()};".Base64Encode();
-            var request = new GetTransactionsWithFilterQuery("wallet", new List<TransactionEventType>(), new List<string>(), SortDirectionType.DESC,
-                                                             limit, nextCursor, null);
-
-            var transactionOne = new Transaction(3, "txHash1", 2, 3, "from1", "1to", true, "newContractAddress1");
-            var transactionTwo = new Transaction(4, "txHash2", 2, 3, "from2", "2to", true, "newContractAddress2");
-            var transactionThree = new Transaction(5, "txHash3", 2, 3, "from3", "3to", true, "newContractAddress3");
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Transaction> { transactionTwo, transactionOne, transactionThree });
-
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionOne)).ReturnsAsync(new TransactionDto {Id = transactionOne.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionTwo)).ReturnsAsync(new TransactionDto {Id = transactionTwo.Id});
-            _transactionDtoAssembler.Setup(callTo => callTo.Assemble(transactionThree)).ReturnsAsync(new TransactionDto {Id = transactionThree.Id});
+            var transactions = new Transaction[]
+            {
+                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
 
             // Act
-            var transactions = await _handler.Handle(request, It.IsAny<CancellationToken>());
+            var dto = await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            transactions.TransactionDtos.Count().Should().Be((int)limit);
-            transactions.TransactionDtos.Last().Id.Should().Be(transactionTwo.Id);
+            _assemblerMock.Verify(callTo => callTo.Assemble(transactions[transactions.Length - 1]), Times.Never);
+            dto.Transactions.Count().Should().Be(transactions.Length - 1);
+        }
 
-            transactions.CursorDto.Previous.Should().NotBeNull();
-            transactions.CursorDto.Previous.Base64Decode().Should().Contain($"previous:{transactionThree.Id.ToString().Base64Encode()};");
-            transactions.CursorDto.Next.Base64Decode().Should().Contain($"next:{transactionTwo.Id.ToString().Base64Encode()};");
+        [Fact]
+        public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
+        {
+            // Arrange
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
+            var request = new GetTransactionsWithFilterQuery(cursor);
+
+            var transactions = new Transaction[]
+            {
+                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            AssertNext(dto.Cursor, transactions[^2].Id);
+            dto.Cursor.Previous.Should().Be(null);
+        }
+
+        [Fact]
+        public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
+        {
+            // Arrange
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var request = new GetTransactionsWithFilterQuery(cursor);
+
+            var transactions = new Transaction[]
+            {
+                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            AssertNext(dto.Cursor, transactions[^2].Id);
+            AssertPrevious(dto.Cursor, transactions[0].Id);
+        }
+
+        [Fact]
+        public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
+        {
+            // Arrange
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var request = new GetTransactionsWithFilterQuery(cursor);
+
+            var transactions = new Transaction[]
+            {
+                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            AssertNext(dto.Cursor, transactions[^1].Id);
+            AssertPrevious(dto.Cursor, transactions[1].Id);
+        }
+
+        [Fact]
+        public async Task Handle_PagingForwardLastPage_ReturnCursor()
+        {
+            // Arrange
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var request = new GetTransactionsWithFilterQuery(cursor);
+
+            var transactions = new Transaction[]
+            {
+                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            dto.Cursor.Next.Should().Be(null);
+            AssertPrevious(dto.Cursor, transactions[0].Id);
+        }
+
+        [Fact]
+        public async Task Handle_PagingBackwardLastPage_ReturnCursor()
+        {
+            // Arrange
+            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var request = new GetTransactionsWithFilterQuery(cursor);
+
+            var transactions = new Transaction[]
+            {
+                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            AssertNext(dto.Cursor, transactions[^1].Id);
+            dto.Cursor.Previous.Should().Be(null);
+        }
+
+        private void AssertNext(CursorDto dto, long pointer)
+        {
+            TransactionsCursor.TryParse(dto.Next.Base64Decode(), out var next).Should().Be(true);
+            next.PagingDirection.Should().Be(PagingDirection.Forward);
+            next.Pointer.Should().Be(pointer);
+        }
+
+        private void AssertPrevious(CursorDto dto, long pointer)
+        {
+            TransactionsCursor.TryParse(dto.Previous.Base64Decode(), out var next).Should().Be(true);
+            next.PagingDirection.Should().Be(PagingDirection.Backward);
+            next.Pointer.Should().Be(pointer);
         }
     }
 }

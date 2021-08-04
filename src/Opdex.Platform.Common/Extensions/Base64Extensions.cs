@@ -32,5 +32,18 @@ namespace Opdex.Platform.Common.Extensions
 
             return Encoding.UTF8.GetString(base64EncodedBytes);
         }
+
+        public static bool TryBase64Decode(this string base64EncodedData, out string plainText)
+        {
+            plainText = "";
+
+            Span<byte> decodedBytes = stackalloc byte[3 * base64EncodedData.Length / 4];
+
+            var canDecode = Convert.TryFromBase64String(base64EncodedData, decodedBytes, out var bytesWritten);
+            if (!canDecode) return false;
+
+            plainText = Encoding.UTF8.GetString(decodedBytes.Slice(0, bytesWritten));
+            return true;
+        }
     }
 }

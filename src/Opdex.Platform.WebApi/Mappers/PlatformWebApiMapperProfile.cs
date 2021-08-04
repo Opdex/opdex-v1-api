@@ -155,7 +155,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token));
 
             CreateMap<AddressBalancesDto, AddressBalancesResponseModel>()
-                .ForMember(dest => dest.Balances, opt => opt.MapFrom(src => src.Balances))
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Balances))
                 .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -164,6 +164,12 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForMember(dest => dest.StakingToken, opt => opt.MapFrom(src => src.StakingToken))
                 .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool));
+
+            CreateMap<MiningPositionDto, MiningPositionResponseModel>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.MiningToken, opt => opt.MapFrom(src => src.MiningToken))
+                .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool));
 
             CreateMap<MiningGovernanceDto, MiningGovernanceResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
@@ -197,10 +203,22 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Previous, opt => opt.MapFrom(src => src.Previous))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<VaultCertificateDto, VaultCertificateResponseModel>()
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.VestingStartBlock, opt => opt.MapFrom(src => src.VestingStartBlock))
+                .ForMember(dest => dest.VestingEndBlock, opt => opt.MapFrom(src => src.VestingEndBlock))
+                .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
+                .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked));
+
+            CreateMap<VaultCertificatesDto, VaultCertificatesResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Certificates))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
+
             // Transactions
             CreateMap<TransactionsDto, TransactionsResponseModel>()
-                .ForMember(dest => dest.Transactions, opt => opt.MapFrom(src => src.TransactionDtos))
-                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.CursorDto))
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Transactions))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             // Transaction

@@ -182,15 +182,21 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<VaultCertificate, VaultCertificateDto>()
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.VestingStartBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+                .ForMember(dest => dest.VestingEndBlock, opt => opt.MapFrom(src => src.VestedBlock))
+                .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
+                .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked));
+
             CreateMap<AddressBalance, AddressBalanceDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Owner))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             // Transactions and Transaction Events
 
             CreateMap<Transaction, TransactionDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
                 .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))

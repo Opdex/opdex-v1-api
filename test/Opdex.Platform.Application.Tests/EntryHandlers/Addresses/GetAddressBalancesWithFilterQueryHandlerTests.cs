@@ -1,204 +1,279 @@
-using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
+using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
-using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Addresses;
-using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Addresses;
+using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
+using FluentAssertions;
+using Xunit;
+using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using System;
-using System.Collections.Generic;
+using Opdex.Platform.Common.Enums;
 using System.Linq;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
 {
     public class GetAddressBalancesWithFilterQueryHandlerTests
     {
-        private readonly Mock<IModelAssembler<AddressBalance, AddressBalanceDto>> _addressAssemblerMock;
         private readonly Mock<IMediator> _mediatorMock;
+        private readonly Mock<IModelAssembler<AddressBalance, AddressBalanceDto>> _assemblerMock;
+
         private readonly GetAddressBalancesWithFilterQueryHandler _handler;
 
         public GetAddressBalancesWithFilterQueryHandlerTests()
         {
-            _addressAssemblerMock = new Mock<IModelAssembler<AddressBalance, AddressBalanceDto>>();
             _mediatorMock = new Mock<IMediator>();
+            _assemblerMock = new Mock<IModelAssembler<AddressBalance, AddressBalanceDto>>();
 
-            _handler = new GetAddressBalancesWithFilterQueryHandler(_mediatorMock.Object, _addressAssemblerMock.Object);
-        }
-
-        [Theory]
-        [InlineData(0)]
-        [InlineData(101)]
-        public void GetAddressBalancesWithFilterQuery_ThrowsArgumentOutOfRangeException_InvalidLimit(uint limit)
-        {
-            // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-
-            // Act
-            void Act() => new GetAddressBalancesWithFilterQuery(wallet, new List<string>(), false, false, SortDirectionType.ASC, limit, null, null);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Limit must be between 0 and");
+            _handler = new GetAddressBalancesWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
         }
 
         [Fact]
-        public void GetAddressBalancesWithFilterQuery_ThrowsArgumentException_InvalidSortDirection()
+        public async Task Handle_RetrieveAddressBalancesWithFilterQuery_Send()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
+            var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            void Act() => new GetAddressBalancesWithFilterQuery(wallet, new List<string>(), false, false, (SortDirectionType)3, 10, null, null);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Supplied sort direction must be ASC or DESC.");
-        }
-
-        [Fact]
-        public void GetAddressBalancesWithFilterQuery_ThrowsArgumentException_PreviousAndNextBothHaveValues()
-        {
-            // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-
-            // Act
-            void Act() => new GetAddressBalancesWithFilterQuery(wallet, new List<string>(), false, false, (SortDirectionType)3, 10, "a", "b");
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Next and previous cannot both have values.");
-        }
-
-        [Fact]
-        public async Task GetAddressBalancesWithFilterQuery_Sends_QueryAndAssembler()
-        {
-            // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var request = new GetAddressBalancesWithFilterQuery(wallet, new List<string>(), false, false, SortDirectionType.ASC, 10, null, null);
-
-            var transaction = new AddressBalance(1, 2, "owner", "100000000", 1, 1);
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<AddressBalance> { transaction });
-
-            _addressAssemblerMock.Setup(callTo => callTo.Assemble(transaction)).ReturnsAsync(new AddressBalanceDto());
-
-            // Act
-            await _handler.Handle(request, It.IsAny<CancellationToken>());
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>()), Times.Once);
-            _addressAssemblerMock.Verify(callTo => callTo.Assemble(transaction), Times.Once);
-        }
-
-        [Theory]
-        [InlineData(SortDirectionType.ASC)]
-        [InlineData(SortDirectionType.DESC)]
-        public async Task GetAddressBalancesWithFilterQuery_OrderAndRemovePlusOne(SortDirectionType sortDirection)
-        {
-            // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            const uint limit = 2;
-            var request = new GetAddressBalancesWithFilterQuery(wallet, new List<string>(), false, false, sortDirection, limit, null, null);
-
-            var balanceOne = new AddressBalance(1, 2, "owner1", "100000000", 1, 1);
-            var balanceTwo = new AddressBalance(2, 2, "owner2", "200000000", 1, 1);
-            var balanceThree = new AddressBalance(3, 2, "owner3", "300000000", 1, 1);
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<AddressBalance> { balanceTwo, balanceOne, balanceThree });
-
-            _addressAssemblerMock.Setup(callTo => callTo.Assemble(balanceOne)).ReturnsAsync(new AddressBalanceDto {Id = balanceOne.Id});
-            _addressAssemblerMock.Setup(callTo => callTo.Assemble(balanceTwo)).ReturnsAsync(new AddressBalanceDto {Id = balanceTwo.Id});
-            _addressAssemblerMock.Setup(callTo => callTo.Assemble(balanceThree)).ReturnsAsync(new AddressBalanceDto {Id = balanceThree.Id});
-
-            // Act
-            var transactions = await _handler.Handle(request, It.IsAny<CancellationToken>());
-
-            // Assert
-            transactions.Balances.Count().Should().Be((int)limit);
-            transactions.Balances.Last().Id.Should().Be(balanceTwo.Id);
-
-            if (sortDirection == SortDirectionType.ASC)
+            try
             {
-                transactions.Balances.First().Id.Should().Be(balanceOne.Id);
-                transactions.Balances.Select(tx => tx.Id).Should().BeInAscendingOrder();
+                await _handler.Handle(request, cancellationToken);
             }
-            else
+            catch (Exception) { }
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveAddressBalancesWithFilterQuery>(query => query.Address == request.Address
+                                                                                                           && query.Cursor == cursor), cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task Handle_BalancesRetrieved_MapResults()
+        {
+            // Arrange
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
+
+            var balance = new AddressBalance(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505);
+            var balances = new AddressBalance[] { balance };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(balances);
+
+            // Act
+            await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            _assemblerMock.Verify(callTo => callTo.Assemble(balance), Times.Once);
+        }
+
+        [Fact]
+        public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
+        {
+            // Arrange
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
+            var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
+
+            var balances = new AddressBalance[]
             {
-                transactions.Balances.First().Id.Should().Be(balanceThree.Id);
-                transactions.Balances.Select(tx => tx.Id).Should().BeInDescendingOrder();
-            }
+                new AddressBalance(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
+                new AddressBalance(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
+                new AddressBalance(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(balances);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressBalance>())).ReturnsAsync(new AddressBalanceDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            dto.Balances.Count().Should().Be(balances.Length);
         }
 
         [Fact]
-        public async Task GetAddressBalancesWithFilterQuery_BuildsNextCursor()
+        public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            const uint limit = 2;
-            var request = new GetAddressBalancesWithFilterQuery(wallet, new List<string>(), false, false,
-                                                                SortDirectionType.DESC, limit, null, null);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
+            var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-
-            var balanceOne = new AddressBalance(1, 2, "owner1", "100000000", 1, 1);
-            var balanceTwo = new AddressBalance(2, 2, "owner2", "200000000", 1, 1);
-            var balanceThree = new AddressBalance(3, 2, "owner3", "300000000", 1, 1);
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<AddressBalance> { balanceTwo, balanceOne, balanceThree });
-
-            _addressAssemblerMock.Setup(callTo => callTo.Assemble(balanceOne)).ReturnsAsync(new AddressBalanceDto {Id = balanceOne.Id});
-            _addressAssemblerMock.Setup(callTo => callTo.Assemble(balanceTwo)).ReturnsAsync(new AddressBalanceDto {Id = balanceTwo.Id});
-            _addressAssemblerMock.Setup(callTo => callTo.Assemble(balanceThree)).ReturnsAsync(new AddressBalanceDto {Id = balanceThree.Id});
+            var balances = new AddressBalance[]
+            {
+                new AddressBalance(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
+                new AddressBalance(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
+                new AddressBalance(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(balances);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressBalance>())).ReturnsAsync(new AddressBalanceDto());
 
             // Act
-            var balances = await _handler.Handle(request, It.IsAny<CancellationToken>());
+            var dto = await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            balances.Balances.Count().Should().Be((int)limit);
-            balances.Balances.Last().Id.Should().Be(balanceTwo.Id);
-
-            balances.Cursor.Next.Should().NotBeNull();
-            balances.Cursor.Next.Base64Decode().Should().Contain($"next:{balanceTwo.Id.ToString().Base64Encode()};");
-            balances.Cursor.Previous.Should().BeNull();
+            _assemblerMock.Verify(callTo => callTo.Assemble(balances[0]), Times.Never);
+            dto.Balances.Count().Should().Be(balances.Length - 1);
         }
 
         [Fact]
-        public async Task GetAddressBalancesWithFilterQuery_BuildsPreviousCursor()
+        public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
         {
             // Arrange
-            const uint limit = 2;
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var nextCursor = $"wallet:{wallet};direction:DESC;limit:2;includeLpTokens:false;includeZeroBalnces:false;next:{5.ToString().Base64Encode()};".Base64Encode();
-            var request = new GetAddressBalancesWithFilterQuery(wallet, new List<string>(), false, false,
-                                                                SortDirectionType.DESC, limit, nextCursor, null);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
+            var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var balanceOne = new AddressBalance(3, 2, "owner1", "100000000", 1, 1);
-            var balanceTwo = new AddressBalance(4, 2, "owner2", "200000000", 1, 1);
-            var balanceThree = new AddressBalance(5, 2, "owner3", "300000000", 1, 1);
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<AddressBalance> { balanceTwo, balanceOne, balanceThree });
-
-            _addressAssemblerMock.Setup(callTo => callTo.Assemble(balanceOne)).ReturnsAsync(new AddressBalanceDto {Id = balanceOne.Id});
-            _addressAssemblerMock.Setup(callTo => callTo.Assemble(balanceTwo)).ReturnsAsync(new AddressBalanceDto {Id = balanceTwo.Id});
-            _addressAssemblerMock.Setup(callTo => callTo.Assemble(balanceThree)).ReturnsAsync(new AddressBalanceDto {Id = balanceThree.Id});
+            var balances = new AddressBalance[]
+            {
+                new AddressBalance(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
+                new AddressBalance(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
+                new AddressBalance(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(balances);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressBalance>())).ReturnsAsync(new AddressBalanceDto());
 
             // Act
-            var balances = await _handler.Handle(request, It.IsAny<CancellationToken>());
+            var dto = await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            balances.Balances.Count().Should().Be((int)limit);
-            balances.Balances.Last().Id.Should().Be(balanceTwo.Id);
+            _assemblerMock.Verify(callTo => callTo.Assemble(balances[balances.Length - 1]), Times.Never);
+            dto.Balances.Count().Should().Be(balances.Length - 1);
+        }
 
-            balances.Cursor.Previous.Should().NotBeNull();
-            balances.Cursor.Previous.Base64Decode().Should().Contain($"previous:{balanceThree.Id.ToString().Base64Encode()};");
-            balances.Cursor.Next.Base64Decode().Should().Contain($"next:{balanceTwo.Id.ToString().Base64Encode()};");
+        [Fact]
+        public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
+        {
+            // Arrange
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
+            var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
+
+            var balances = new AddressBalance[]
+            {
+                new AddressBalance(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
+                new AddressBalance(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
+                new AddressBalance(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(balances);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressBalance>())).ReturnsAsync(new AddressBalanceDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            AssertNext(dto.Cursor, balances[^2].Id);
+            dto.Cursor.Previous.Should().Be(null);
+        }
+
+        [Fact]
+        public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
+        {
+            // Arrange
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
+
+            var balances = new AddressBalance[]
+            {
+                new AddressBalance(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
+                new AddressBalance(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
+                new AddressBalance(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(balances);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressBalance>())).ReturnsAsync(new AddressBalanceDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            AssertNext(dto.Cursor, balances[^2].Id);
+            AssertPrevious(dto.Cursor, balances[0].Id);
+        }
+
+        [Fact]
+        public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
+        {
+            // Arrange
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
+
+            var balances = new AddressBalance[]
+            {
+                new AddressBalance(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
+                new AddressBalance(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
+                new AddressBalance(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(balances);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressBalance>())).ReturnsAsync(new AddressBalanceDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            AssertNext(dto.Cursor, balances[^1].Id);
+            AssertPrevious(dto.Cursor, balances[1].Id);
+        }
+
+        [Fact]
+        public async Task Handle_PagingForwardLastPage_ReturnCursor()
+        {
+            // Arrange
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
+
+            var balances = new AddressBalance[]
+            {
+                new AddressBalance(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
+                new AddressBalance(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(balances);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressBalance>())).ReturnsAsync(new AddressBalanceDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            dto.Cursor.Next.Should().Be(null);
+            AssertPrevious(dto.Cursor, balances[0].Id);
+        }
+
+        [Fact]
+        public async Task Handle_PagingBackwardLastPage_ReturnCursor()
+        {
+            // Arrange
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
+
+            var balances = new AddressBalance[]
+            {
+                new AddressBalance(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
+                new AddressBalance(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505)
+            };
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(balances);
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressBalance>())).ReturnsAsync(new AddressBalanceDto());
+
+            // Act
+            var dto = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            AssertNext(dto.Cursor, balances[^1].Id);
+            dto.Cursor.Previous.Should().Be(null);
+        }
+
+        private void AssertNext(CursorDto dto, long pointer)
+        {
+            AddressBalancesCursor.TryParse(dto.Next.Base64Decode(), out var next).Should().Be(true);
+            next.PagingDirection.Should().Be(PagingDirection.Forward);
+            next.Pointer.Should().Be(pointer);
+        }
+
+        private void AssertPrevious(CursorDto dto, long pointer)
+        {
+            AddressBalancesCursor.TryParse(dto.Previous.Base64Decode(), out var next).Should().Be(true);
+            next.PagingDirection.Should().Be(PagingDirection.Backward);
+            next.Pointer.Should().Be(pointer);
         }
     }
 }
