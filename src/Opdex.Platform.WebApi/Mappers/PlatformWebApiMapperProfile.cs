@@ -222,6 +222,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder));
 
             CreateMap<OwnershipEventDto, OwnershipEventResponseModel>()
+                .IncludeBase<TransactionEventDto, TransactionEventResponseModel>()
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
                 .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To));
 

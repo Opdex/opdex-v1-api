@@ -196,6 +196,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveTransactionsWithFilterQuery, List<Transaction>>, RetrieveTransactionsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAddressAllowanceQuery, AddressAllowance>, RetrieveAddressAllowanceQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAddressBalancesWithFilterQuery, List<AddressBalance>>, RetrieveAddressBalancesWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery, MiningGovernanceNomination>, RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHandler>();
 
             // Entry Commands
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();

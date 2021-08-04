@@ -164,6 +164,72 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             response.Amount.Should().Be(dto.Amount);
         }
 
+        [Fact]
+        public void From_AddLiquidityEventDto_To_AddLiquidityResponseModel()
+        {
+            // Arrange
+            var dto = new AddLiquidityEventDto
+            {
+                Id = 1,
+                TransactionId = 2,
+                SortOrder = 1,
+                Contract = " PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
+                AmountCrs = "100.00000000",
+                AmountSrc = "200.00000000",
+                AmountLpt = "300.00000000",
+                TokenSrc = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
+                TokenLp = "PVguEK5irNcbk7ZfvJtSJgyGvV5JqMgWVr",
+                TokenLpTotalSupply = "400.00000000",
+            };
+
+            // Act
+            var response = _mapper.Map<AddLiquidityEventResponseModel>(dto);
+
+            // Assert
+            response.Contract.Should().Be(dto.Contract);
+            response.SortOrder.Should().Be(dto.SortOrder);
+            response.EventType.Should().Be(TransactionEventType.AddLiquidityEvent);
+            response.AmountCrs.Should().Be(dto.AmountCrs);
+            response.AmountSrc.Should().Be(dto.AmountSrc);
+            response.AmountLpt.Should().Be(dto.AmountLpt);
+            response.TokenSrc.Should().Be(dto.TokenSrc);
+            response.TokenLp.Should().Be(dto.TokenLp);
+            response.TokenLpTotalSupply.Should().Be(dto.TokenLpTotalSupply);
+        }
+
+        [Fact]
+        public void From_RemoveLiquidityEventDto_To_RemoveLiquidityResponseModel()
+        {
+            // Arrange
+            var dto = new RemoveLiquidityEventDto
+            {
+                Id = 1,
+                TransactionId = 2,
+                SortOrder = 1,
+                Contract = " PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
+                AmountCrs = "100.00000000",
+                AmountSrc = "200.00000000",
+                AmountLpt = "300.00000000",
+                TokenSrc = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
+                TokenLp = "PVguEK5irNcbk7ZfvJtSJgyGvV5JqMgWVr",
+                TokenLpTotalSupply = "400.00000000",
+            };
+
+            // Act
+            var response = _mapper.Map<RemoveLiquidityEventResponseModel>(dto);
+
+            // Assert
+            response.Contract.Should().Be(dto.Contract);
+            response.SortOrder.Should().Be(dto.SortOrder);
+            response.EventType.Should().Be(TransactionEventType.RemoveLiquidityEvent);
+            response.AmountCrs.Should().Be(dto.AmountCrs);
+            response.AmountSrc.Should().Be(dto.AmountSrc);
+            response.AmountLpt.Should().Be(dto.AmountLpt);
+            response.TokenSrc.Should().Be(dto.TokenSrc);
+            response.TokenLp.Should().Be(dto.TokenLp);
+            response.TokenLpTotalSupply.Should().Be(dto.TokenLpTotalSupply);
+        }
+
         #endregion
     }
 }

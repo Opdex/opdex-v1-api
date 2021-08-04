@@ -93,7 +93,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         }
 
         [Fact]
-        public void MiningGovernanceNomination_SetNominationStatus_Success()
+        public void MiningGovernanceNomination_SetStatus_Success()
         {
             // Arrange
             const long liquidityPoolId = 1;
@@ -107,10 +107,33 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const ulong modifiedBlock = 150;
 
             // Act
-            nomination.SetNominationStatus(false, modifiedBlock);
+            nomination.SetStatus(false, modifiedBlock);
 
             // Assert
             nomination.IsNominated.Should().BeFalse();
+            nomination.ModifiedBlock.Should().Be(modifiedBlock);
+        }
+
+        [Fact]
+        public void MiningGovernanceNomination_SetWeight_Success()
+        {
+            // Arrange
+            const long liquidityPoolId = 1;
+            const long miningPoolId = 2;
+            const bool isNominated = true;
+            const string weight = "125";
+            const ulong createdBlock = 100;
+            const string newWeight = "150";
+
+            var nomination = new MiningGovernanceNomination(liquidityPoolId, miningPoolId, isNominated, weight, createdBlock);
+
+            const ulong modifiedBlock = 150;
+
+            // Act
+            nomination.SetWeight(newWeight, modifiedBlock);
+
+            // Assert
+            nomination.Weight.Should().Be(newWeight);
             nomination.ModifiedBlock.Should().Be(modifiedBlock);
         }
     }

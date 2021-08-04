@@ -199,6 +199,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectActiveMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveMiningGovernanceNominationsQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningGovernanceByAddressQuery, MiningGovernance>, SelectMiningGovernanceByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningGovernanceByTokenIdQuery, MiningGovernance>, SelectMiningGovernanceByTokenIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery, MiningGovernanceNomination>, SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHandler>();
 
             // Transactions
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();

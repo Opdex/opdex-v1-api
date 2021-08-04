@@ -110,8 +110,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                         TransactionLogType.CreateVaultCertificateLog => await _mediator.Send(new ProcessCreateVaultCertificateLogCommand(log, sender, height)),
                         TransactionLogType.RevokeVaultCertificateLog => await _mediator.Send(new ProcessRevokeVaultCertificateLogCommand(log, sender, height)),
                         TransactionLogType.RedeemVaultCertificateLog => await _mediator.Send(new ProcessRedeemVaultCertificateLogCommand(log, sender, height)),
-                        TransactionLogType.ClaimPendingVaultOwnershipLog => await _mediator.Send(new ProcessClaimPendingDeployerOwnershipLogCommand(log, sender, height)),
-                        TransactionLogType.SetPendingVaultOwnershipLog => await _mediator.Send(new ProcessSetPendingDeployerOwnershipLogCommand(log, sender, height)),
+                        TransactionLogType.ClaimPendingVaultOwnershipLog => await _mediator.Send(new ProcessClaimPendingVaultOwnershipLogCommand(log, sender, height)),
+                        TransactionLogType.SetPendingVaultOwnershipLog => await _mediator.Send(new ProcessSetPendingVaultOwnershipLogCommand(log, sender, height)),
 
                         // Else
                         _ => throw new ArgumentOutOfRangeException(nameof(TransactionLogType), "Unknown transaction log type.")

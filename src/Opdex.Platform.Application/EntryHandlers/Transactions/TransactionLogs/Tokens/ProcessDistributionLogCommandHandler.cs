@@ -47,7 +47,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id, findOrThrow: true));
 
                 // process vault balances
-                var vaultResult = await UpdateAddressBalance(governance.Address, token, request.Log.VaultAmount, request.BlockHeight);
+                var vaultResult = await UpdateAddressBalance(vault.Address, token, request.Log.VaultAmount, request.BlockHeight);
                 if (!vaultResult) return false;
 
                 // process governance balances
