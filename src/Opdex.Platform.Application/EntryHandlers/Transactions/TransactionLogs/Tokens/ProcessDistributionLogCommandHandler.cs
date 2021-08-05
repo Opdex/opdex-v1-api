@@ -71,7 +71,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 if (request.BlockHeight >= token.ModifiedBlock)
                 {
                     token.UpdateTotalSupply(request.Log.TotalSupply, request.BlockHeight);
-                    await _mediator.Send(new MakeTokenCommand(token.Address, token));
+                    await _mediator.Send(new MakeTokenCommand(token));
                 }
 
                 // First period, index mining governance nominations

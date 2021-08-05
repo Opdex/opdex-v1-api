@@ -13,14 +13,14 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens
 {
-    public class CallCirrusGetSrcTokenDetailsByAddressQueryHandler
-        : IRequestHandler<CallCirrusGetSrcTokenDetailsByAddressQuery, Token>
+    public class CallCirrusGetSrcTokenSummaryByAddressQueryHandler
+        : IRequestHandler<CallCirrusGetSrcTokenSummaryByAddressQuery, TokenContractSummary>
     {
         private readonly ISmartContractsModule _smartContractsModule;
-        private readonly ILogger<CallCirrusGetSrcTokenDetailsByAddressQueryHandler> _logger;
+        private readonly ILogger<CallCirrusGetSrcTokenSummaryByAddressQueryHandler> _logger;
 
-        public CallCirrusGetSrcTokenDetailsByAddressQueryHandler(ISmartContractsModule smartContractsModule,
-            ILogger<CallCirrusGetSrcTokenDetailsByAddressQueryHandler> logger)
+        public CallCirrusGetSrcTokenSummaryByAddressQueryHandler(ISmartContractsModule smartContractsModule,
+            ILogger<CallCirrusGetSrcTokenSummaryByAddressQueryHandler> logger)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -28,7 +28,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Token
 
         // Todo: map the result dto to a domain model
         // Todo: TryCatch the module requests
-        public async Task<Token> Handle(CallCirrusGetSrcTokenDetailsByAddressQuery request, CancellationToken cancellationToken)
+        public async Task<TokenContractSummary> Handle(CallCirrusGetSrcTokenSummaryByAddressQuery request, CancellationToken cancellationToken)
         {
             var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Name", new string[0]);
             var nameResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
@@ -42,19 +42,18 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Token
 
             localCall.MethodName = "get_Decimals";
             var decimalResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-            var decimals = decimalResponse.DeserializeValue<short>();
+            var decimals = decimalResponse.DeserializeValue<uint>();
 
             localCall.MethodName = "get_TotalSupply";
             var totalSupplyResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
             var totalSupply = totalSupplyResponse.DeserializeValue<string>();
             if (!totalSupply.HasValue()) return null;
 
-            var isLpt = symbol == TokenConstants.LiquidityPoolToken.Symbol &&
-                        name == TokenConstants.LiquidityPoolToken.Name;
+            var isLpt = symbol == TokenConstants.LiquidityPoolToken.Symbol && name == TokenConstants.LiquidityPoolToken.Name;
 
             // Todo: Handle 1 - createdBlock param.
             // Shouldn't need it in this query, maybe domain model should not require it but then again...it kinda should
-            return new Token(request.Address, isLpt, name, symbol, decimals, ((int)decimals).DecimalsToSatoshis(), totalSupply, 1);
+            return new TokenContractSummary(request.Address, name, symbol, decimals, totalSupply);
         }
     }
 }

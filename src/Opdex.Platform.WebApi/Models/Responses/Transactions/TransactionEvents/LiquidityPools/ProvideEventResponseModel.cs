@@ -1,6 +1,6 @@
 namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.LiquidityPools
 {
-    public class ProvideEventResponseModel : TransactionEventResponseModel
+    public abstract class ProvideEventResponseModel : TransactionEventResponseModel
     {
         public string AmountCrs { get; set; }
         public string AmountSrc { get; set; }
