@@ -7,8 +7,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
-using Opdex.Platform.Application.Abstractions.Models;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Microsoft.AspNetCore.Authorization;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
@@ -21,14 +19,14 @@ namespace Opdex.Platform.WebApi.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("pools")]
-    public class PoolsController : ControllerBase
+    [Route("liquidity-pools")]
+    public class LiquidityPoolsController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly IApplicationContext _context;
 
-        public PoolsController(IMediator mediator, IMapper mapper, IApplicationContext applicationContext)
+        public LiquidityPoolsController(IMediator mediator, IMapper mapper, IApplicationContext applicationContext)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

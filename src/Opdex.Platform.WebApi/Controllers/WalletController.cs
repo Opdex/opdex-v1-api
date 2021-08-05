@@ -36,23 +36,6 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>
-        /// Retrieves a collection of approved allowances
-        /// </summary>
-        /// <param name="address">Wallet owner address</param>
-        /// <param name="spender">Spender address to filter by</param>
-        /// <param name="token">Token address to filter by</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>Collection of approved allowances</returns>
-        [HttpGet("{address}/allowance/approved")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetApprovedAllowances(string address, [FromQuery] string spender, [FromQuery] string token, CancellationToken cancellationToken)
-        {
-            var allowances = await _mediator.Send(new GetAddressAllowancesApprovedByOwnerQuery(address, spender, token), cancellationToken);
-            var response = _mapper.Map<IEnumerable<ApprovedAllowanceResponseModel>>(allowances);
-            return Ok(response);
-        }
-
-        /// <summary>
         /// Retrieve the allowance of a spender for tokens owned by another wallet.
         /// </summary>
         /// <param name="address">The owner's wallet address of the tokens.</param>
@@ -171,6 +154,7 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        // Todo: WIll be removed as part of WAPP-17
         [HttpGet("summary/pool/{poolAddress}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<string>> GetWalletSummaryByPool(string poolAddress, string walletAddress, CancellationToken cancellationToken)

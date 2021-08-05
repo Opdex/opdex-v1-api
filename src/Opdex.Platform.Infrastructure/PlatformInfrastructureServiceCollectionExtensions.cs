@@ -149,7 +149,6 @@ namespace Opdex.Platform.Infrastructure
 
             // Addresses
             services.AddTransient<IRequestHandler<PersistAddressBalanceCommand, long>, PersistAddressBalanceCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistAddressAllowanceCommand, long>, PersistAddressAllowanceCommandHandler>();
             services.AddTransient<IRequestHandler<PersistAddressMiningCommand, long>, PersistAddressMiningCommandHandler>();
             services.AddTransient<IRequestHandler<PersistAddressStakingCommand, long>, PersistAddressStakingCommandHandler>();
         }
@@ -214,8 +213,6 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectVaultCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesWithFilterQueryHandler>();
 
             // Addresses
-            services.AddTransient<IRequestHandler<SelectAddressAllowanceByTokenIdAndOwnerAndSpenderQuery, AddressAllowance>, SelectAddressAllowanceByTokenIdAndOwnerAndSpenderQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectAddressAllowancesByOwnerWithFilterQuery, IEnumerable<AddressAllowance>>, SelectAddressAllowancesByOwnerWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>, SelectAddressBalanceByOwnerAndTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>, SelectAddressMiningByMiningPoolIdAndOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>, SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler>();

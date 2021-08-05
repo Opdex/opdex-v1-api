@@ -15,14 +15,14 @@ namespace Opdex.Platform.WebApi.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("market")]
-    public class MarketController : ControllerBase
+    [Route("markets")]
+    public class MarketsController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly IApplicationContext _context;
 
-        public MarketController(IMediator mediator, IMapper mapper, IApplicationContext context)
+        public MarketsController(IMediator mediator, IMapper mapper, IApplicationContext context)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

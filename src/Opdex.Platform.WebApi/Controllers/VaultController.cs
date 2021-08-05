@@ -23,14 +23,14 @@ namespace Opdex.Platform.WebApi.Controllers
     [ApiController]
     [Authorize]
     [Route("vaults")]
-    public class VaultController : ControllerBase
+    public class VaultsController : ControllerBase
     {
         private readonly IApplicationContext _context;
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
         private readonly BlockExplorerConfiguration _blockExplorerConfig;
 
-        public VaultController(IApplicationContext context, IMapper mapper, IMediator mediator, BlockExplorerConfiguration blockExplorerConfig)
+        public VaultsController(IApplicationContext context, IMapper mapper, IMediator mediator, BlockExplorerConfiguration blockExplorerConfig)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

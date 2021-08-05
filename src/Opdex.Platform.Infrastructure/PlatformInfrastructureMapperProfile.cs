@@ -153,10 +153,6 @@ namespace Opdex.Platform.Infrastructure
                 .ConstructUsing(src => new AddressBalance(src.Id, src.TokenId, src.Owner, src.Balance, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<AddressAllowanceEntity, AddressAllowance>()
-                .ConstructUsing(src => new AddressAllowance(src.Id, src.TokenId, src.Owner, src.Spender, src.Allowance, src.CreatedBlock, src.ModifiedBlock))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
             CreateMap<AddressMiningEntity, AddressMining>()
                 .ConstructUsing(src => new AddressMining(src.Id, src.MiningPoolId, src.Owner, src.Balance, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
@@ -459,16 +455,6 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
-                .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
-                .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<AddressAllowance, AddressAllowanceEntity>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
-                .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
-                .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
-                .ForMember(dest => dest.Allowance, opt => opt.MapFrom(src => src.Allowance))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());

@@ -18,15 +18,15 @@ using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Controllers
 {
-    public class VaultControllerTests
+    public class VaultsControllerTests
     {
         private const string FakeTransactionEndpoint = "path/to/format/{0}";
         private readonly Mock<IApplicationContext> _applicationContextMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly VaultController _controller;
+        private readonly VaultsController _controller;
 
-        public VaultControllerTests()
+        public VaultsControllerTests()
         {
             _applicationContextMock = new Mock<IApplicationContext>();
             _mapperMock = new Mock<IMapper>();
@@ -34,7 +34,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
             var blockExplorerOptionsMock = new BlockExplorerConfiguration { TransactionEndpoint = FakeTransactionEndpoint };
 
-            _controller = new VaultController(_applicationContextMock.Object, _mapperMock.Object, _mediatorMock.Object, blockExplorerOptionsMock);
+            _controller = new VaultsController(_applicationContextMock.Object, _mapperMock.Object, _mediatorMock.Object, blockExplorerOptionsMock);
         }
 
         [Fact]

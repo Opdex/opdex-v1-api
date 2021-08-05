@@ -222,7 +222,7 @@ namespace Opdex.Platform.WebApi.Controllers
         // "7#32400"; // 6 realtime days in blocks per "year" - 12 hour mining period
         // "7#64800"; // 12 realtime days in blocks per "year - 1 day mining period
         // "7#75600"; // 14 realtime days in blocks per "year" - 1.x day mining period
-        private const string _distributionSchedulePeriodDuration = "7#75600";
+        private const string _distributionSchedulePeriodDuration = "7#64800";
         private readonly TokenDetails[] _createSrcTokensParams =
         {
             new TokenDetails
