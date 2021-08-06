@@ -1,23 +1,17 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.Commands.Deployers;
-using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
-using Opdex.Platform.Application.Abstractions.Queries.Markets;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
-using Opdex.Platform.Domain.Models.Markets;
-using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
@@ -46,28 +40,28 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 }
 
                 // Hosted environments would not be null, local environments would be null
-                var localBlockQuery = new RetrieveBlockByHeightQuery(transaction.BlockHeight, findOrThrow: false);
-                var block = await _mediator.Send(localBlockQuery, CancellationToken.None);
+                var block = await _mediator.Send(new RetrieveBlockByHeightQuery(transaction.BlockHeight, findOrThrow: false));
+                var blockTime = block?.MedianTime;
 
                 if (block == null)
                 {
                     // Get transaction block hash
-                    var blockHashQuery = new RetrieveCirrusBlockHashByHeightQuery(transaction.BlockHeight);
-                    var blockHash = await _mediator.Send(blockHashQuery, CancellationToken.None);
+                    var blockHash = await _mediator.Send(new RetrieveCirrusBlockHashByHeightQuery(transaction.BlockHeight));
 
                     // Get block by hash
-                    var blockQuery = new RetrieveCirrusBlockByHashQuery(blockHash);
-                    var blockReceiptDto = await _mediator.Send(blockQuery, CancellationToken.None);
+                    var blockReceipt = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(blockHash));
+
+                    blockTime = blockReceipt.MedianTime;
 
                     // Make block
-                    var blockCommand = new MakeBlockCommand(blockReceiptDto.Height, blockReceiptDto.Hash, blockReceiptDto.Time, blockReceiptDto.MedianTime);
-                    var blockCreated = await _mediator.Send(blockCommand, CancellationToken.None);
+                    await _mediator.Send(new MakeBlockCommand(blockReceipt.Height, blockReceipt.Hash, blockReceipt.Time, blockReceipt.MedianTime));
                 }
 
+                await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime.Value));
+
                 // No duplicate attempts to create the same deployer
-                var deployerQuery = new RetrieveDeployerByAddressQuery(transaction.NewContractAddress, findOrThrow: false);
-                var deployer = await _mediator.Send(deployerQuery, CancellationToken.None) ??
-                               new Deployer(transaction.NewContractAddress, transaction.From, transaction.BlockHeight);
+                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(transaction.NewContractAddress, findOrThrow: false))
+                               ?? new Deployer(transaction.NewContractAddress, transaction.From, transaction.BlockHeight);
 
                 var deployerId = deployer.Id;
                 if (deployerId == 0)
