@@ -8,7 +8,6 @@ using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
-using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
@@ -17,7 +16,9 @@ using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System.Linq;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens
@@ -43,55 +44,52 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true));
                 var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(token.Id, findOrThrow: true));
+                var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id, findOrThrow: true));
 
-                // process address balances
-                var vaultBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(vault.Address, token.Id, findOrThrow: false));
-                if (vaultBalance is null || request.BlockHeight >= vaultBalance.ModifiedBlock)
-                {
-                    vaultBalance ??= new AddressBalance(token.Id, vault.Address, request.Log.VaultAmount, request.BlockHeight);
-                    // TODO: update balance for an existing record
-                    await _mediator.Send(new MakeAddressBalanceCommand(vaultBalance));
-                }
+                // process vault balances
+                var vaultResult = await UpdateAddressBalance(vault.Address, token, request.Log.VaultAmount, request.BlockHeight);
+                if (!vaultResult) return false;
 
+                // process governance balances
+                var governanceResult = await UpdateAddressBalance(governance.Address, token, request.Log.MiningAmount, request.BlockHeight);
+                if (!governanceResult) return false;
+
+                // Process vault unassigned supply updates. (The vault's TotalSupply property in contract represents the amount of tokens
+                // available to the vault to distribute. The vault's balance could be 100 tokens but the TotalSupply could have only 50 tokens
+                // left that have not been distributed).
                 if (request.BlockHeight >= vault.ModifiedBlock)
                 {
-                    var totalSupply = await _mediator.Send(new RetrieveCirrusVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
+                    var unassignedSupply = await _mediator.Send(new RetrieveCirrusVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
 
-                    vault.SetUnassignedSupply(totalSupply, request.BlockHeight);
+                    vault.SetUnassignedSupply(unassignedSupply, request.BlockHeight);
 
                     var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault));
                     if (vaultUpdates == 0) return false;
                 }
 
-                var periodIndex = request.Log.PeriodIndex;
-                var nextPeriodIndex = periodIndex + 1;
+                // Process the distributed token total supply updates
+                if (request.BlockHeight >= token.ModifiedBlock)
+                {
+                    token.UpdateTotalSupply(request.Log.TotalSupply, request.BlockHeight);
+                    await _mediator.Send(new MakeTokenCommand(token));
+                }
 
                 // First period, index mining governance nominations
-                if (periodIndex == 0)
+                if (request.Log.PeriodIndex == 0)
                 {
                     var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id));
                     await InitializeNominations(miningGovernance.Address, request.BlockHeight);
                 }
 
-                // Get the period duration (per year) from the smart contract
-                var periodDurationRequest = new RetrieveCirrusLocalCallSmartContractQuery(token.Address, "get_PeriodDuration");
-                var periodDurationSerialized = await _mediator.Send(periodDurationRequest, CancellationToken.None);
-                var periodDuration = periodDurationSerialized.DeserializeValue<ulong>();
+                var latestDistribution = await _mediator.Send(new RetrieveLatestTokenDistributionQuery(findOrThrow: false));
 
-                var nextDistributionBlock = vault.Genesis + (periodDuration * nextPeriodIndex);
-
-                var latestDistributionQuery = new RetrieveLatestTokenDistributionQuery(findOrThrow: false);
-                var latestDistribution = await _mediator.Send(latestDistributionQuery, CancellationToken.None);
-
-                if (latestDistribution != null && latestDistribution.PeriodIndex >= periodIndex)
+                if (latestDistribution != null && latestDistribution.PeriodIndex >= request.Log.PeriodIndex)
                 {
                     return true;
                 }
 
-                var blockHeight = request.BlockHeight;
-                var vaultAmount = request.Log.VaultAmount;
-                var miningAmount = request.Log.MiningAmount;
-                var distribution = new TokenDistribution(vaultAmount, miningAmount, (int)periodIndex, blockHeight, nextDistributionBlock, blockHeight);
+                var distribution = new TokenDistribution(request.Log.VaultAmount, request.Log.MiningAmount, (int)request.Log.PeriodIndex,
+                                                         request.BlockHeight, request.Log.NextDistributionBlock, request.BlockHeight);
 
                 return await _mediator.Send(new MakeTokenDistributionCommand(distribution), CancellationToken.None);
             }
@@ -101,6 +99,32 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 return false;
             }
+        }
+
+        private async Task<bool> UpdateAddressBalance(string address, Token token, string distributionAmount, ulong blockHeight)
+        {
+            var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, token.Id, findOrThrow: false));
+
+            if (addressBalance is null || blockHeight >= addressBalance.ModifiedBlock)
+            {
+                if (addressBalance == null)
+                {
+                    addressBalance = new AddressBalance(token.Id, address, distributionAmount, blockHeight);
+                }
+                else
+                {
+                    var currentBalance = await _mediator.Send(new CallCirrusGetSrcTokenBalanceQuery(token.Address, address));
+
+                    addressBalance.SetBalance(currentBalance, blockHeight);
+                }
+
+                var result = await _mediator.Send(new MakeAddressBalanceCommand(addressBalance));
+
+                return result > 0;
+            }
+
+            // Nothing to do, exit happily
+            return true;
         }
 
         private async Task InitializeNominations(string miningGovernance, ulong blockHeight)

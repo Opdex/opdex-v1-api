@@ -5,13 +5,10 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools;
-using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools
 {
@@ -33,12 +30,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
-                var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
-                var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
-                
-                var addressBalanceQuery = new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liquidityPool.Id, request.Log.Staker, findOrThrow: false);
-                var stakingBalance = await _mediator.Send(addressBalanceQuery, CancellationToken.None) 
+
+                var liquidityPool = await _mediator.Send( new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
+
+                var stakingBalance = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liquidityPool.Id,
+                                                                                                                   request.Log.Staker,
+                                                                                                                   findOrThrow: false))
                                      ?? new AddressStaking(liquidityPool.Id, request.Log.Staker, "0", request.BlockHeight);
 
                 var balanceIsNewer = request.BlockHeight < stakingBalance.ModifiedBlock;
@@ -46,23 +43,17 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
-                var stakedBalanceParameters = new[] {request.Log.Staker.ToSmartContractParameter(SmartContractParameterType.Address)};
-                var stakeBalanceQuery = new RetrieveCirrusLocalCallSmartContractQuery(request.Log.Contract, "GetStakedBalance", stakedBalanceParameters);
-                var stakedBalanceResponse = await _mediator.Send(stakeBalanceQuery, CancellationToken.None);
-                var stakedBalance = stakedBalanceResponse.DeserializeValue<string>();
-                
-                stakingBalance.SetWeight(stakedBalance, request.BlockHeight);
 
-                var addressStakingCommand = new MakeAddressStakingCommand(stakingBalance);
-                var addressStakingId = await _mediator.Send(addressStakingCommand, CancellationToken.None);
-                    
+                stakingBalance.SetWeight(request.Log.StakerBalance, request.BlockHeight);
+
+                var addressStakingId = await _mediator.Send(new MakeAddressStakingCommand(stakingBalance));
+
                 return addressStakingId > 0;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(StakeLog)}");
-               
+
                 return false;
             }
         }

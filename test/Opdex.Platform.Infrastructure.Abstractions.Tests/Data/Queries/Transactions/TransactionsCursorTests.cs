@@ -71,7 +71,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
         {
             // Arrange
             var cursor = new TransactionsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
-                                                new TransactionEventType[] { TransactionEventType.ChangeDeployerOwnerEvent, TransactionEventType.SwapEvent },
+                                                new TransactionEventType[] { TransactionEventType.ClaimPendingDeployerOwnershipEvent, TransactionEventType.SwapEvent },
                                                 new string[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
                                                 SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
@@ -80,7 +80,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
 
             // Assert
             result.Should().Contain("wallet:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;");
-            result.Should().Contain("eventTypes:ChangeDeployerOwnerEvent;");
+            result.Should().Contain("eventTypes:ClaimPendingDeployerOwnershipEvent;");
             result.Should().Contain("eventTypes:SwapEvent;");
             result.Should().Contain("contracts:PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5;");
             result.Should().Contain("contracts:PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u;");
@@ -95,7 +95,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
         {
             // Arrange
             var cursor = new TransactionsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
-                                                new TransactionEventType[] { TransactionEventType.ChangeDeployerOwnerEvent, TransactionEventType.SwapEvent },
+                                                new TransactionEventType[] { TransactionEventType.ClaimPendingDeployerOwnershipEvent, TransactionEventType.SwapEvent },
                                                 new string[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
                                                 SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
@@ -144,7 +144,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
         public void TryParse_ValidCursor_ReturnTrue()
         {
             // Arrange
-            var stringified = "wallet:PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5;eventTypes:ProvideEvent;contracts:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;direction:ASC;limit:50;paging:Forward;pointer:MTA=;"; // pointer: 10;
+            var stringified = "wallet:PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5;eventTypes:AddLiquidityEvent;contracts:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;direction:ASC;limit:50;paging:Forward;pointer:MTA=;"; // pointer: 10;
 
             // Act
             var canParse = TransactionsCursor.TryParse(stringified, out var cursor);
@@ -152,7 +152,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
             // Assert
             canParse.Should().Be(true);
             cursor.Wallet.Should().Be("PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5");
-            cursor.EventTypes.Should().ContainSingle(eventType => eventType == TransactionEventType.ProvideEvent);
+            cursor.EventTypes.Should().ContainSingle(eventType => eventType == TransactionEventType.AddLiquidityEvent);
             cursor.Contracts.Should().ContainSingle(contract => contract == "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L");
             cursor.SortDirection.Should().Be(SortDirectionType.ASC);
             cursor.Limit.Should().Be(50);

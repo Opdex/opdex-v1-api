@@ -68,7 +68,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         public bool MarketFeeEnabled { get; }
         public bool IsStakingMarket => StakingTokenId > 0;
 
-        public void SetOwner(ChangeMarketOwnerLog log, ulong blockHeight)
+        public void SetOwner(ClaimPendingMarketOwnershipLog log, ulong blockHeight)
         {
             SetModifiedBlock(blockHeight);
             Owner = log.To;

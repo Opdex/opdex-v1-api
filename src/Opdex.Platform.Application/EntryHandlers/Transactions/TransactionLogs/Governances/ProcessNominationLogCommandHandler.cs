@@ -5,11 +5,10 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Domain.Models.Governances;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Governances;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,56 +34,66 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
+                // Get all DB Current Nominations
                 var currentNominations = await _mediator.Send(new RetrieveActiveMiningGovernanceNominationsQuery(), CancellationToken.None);
 
                 // Skip updates if records are newer than the log
-                var currentNominationsList = currentNominations as MiningGovernanceNomination[] ?? currentNominations.ToArray();
+                var currentNominationsList = currentNominations.ToList();
                 if (currentNominationsList.Any(n => n.ModifiedBlock > request.BlockHeight))
                 {
                     return true;
                 }
 
-                // Get latest nominations from contract
-                var latestNominationsQuery = new CallCirrusGetMiningGovernanceSummaryNominationsQuery(request.Log.Contract);
-                var latestNominationDtos = await _mediator.Send(latestNominationsQuery, CancellationToken.None);
-                var latestNominations = new List<MiningGovernanceNomination>();
+                // Get all latest Nominations from the governance contract
+                var latestNominationDtos = await _mediator.Send(new CallCirrusGetMiningGovernanceSummaryNominationsQuery(request.Log.Contract));
+                var latestNominations = await Task.WhenAll(latestNominationDtos.Select(nominationDto => BuildLatestNomination(nominationDto,
+                                                                                                                              request.BlockHeight)));
 
-                foreach (var nomination in latestNominationDtos)
-                {
-                    var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(nomination.StakingPool, findOrThrow: true);
-                    var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
-
-                    var miningPoolQuery = new RetrieveMiningPoolByLiquidityPoolIdQuery(liquidityPool.Id, findOrThrow: true);
-                    var miningPool = await _mediator.Send(miningPoolQuery, CancellationToken.None);
-
-                    latestNominations.Add(new MiningGovernanceNomination(liquidityPool.Id, miningPool.Id, true, nomination.Weight, request.BlockHeight));
-                }
-
-                // Disable nominations no longer qualified
+                // Update all current nominations statuses
                 foreach (var currentNomination in currentNominationsList)
                 {
-                    if (latestNominations.Any(n => n.LiquidityPoolId == currentNomination.LiquidityPoolId))
+                    var matchingLatest = latestNominations.SingleOrDefault(latest => latest.LiquidityPoolId == currentNomination.LiquidityPoolId);
+
+                    // Current is not in latest, disable it.
+                    if (matchingLatest == null)
                     {
-                        continue;
+                        currentNomination.SetStatus(false, request.BlockHeight);
+                    }
+                    else
+                    {
+                        currentNomination.SetWeight(matchingLatest.Weight, request.BlockHeight);
                     }
 
-                    // Disable the nomination
-                    currentNomination.SetNominationStatus(false, request.BlockHeight);
-                    var nominationCommand = new MakeMiningGovernanceNominationCommand(currentNomination);
-                    var nominationId = await _mediator.Send(nominationCommand, CancellationToken.None);
+                    await _mediator.Send(new MakeMiningGovernanceNominationCommand(currentNomination));
                 }
 
-                // Enable nominations not already enabled
-                foreach (var nomination in latestNominations)
+                // Handle latest nominations updates/inserts that weren't already current nominations
+                // LatestNominations are new MiningGovernanceNomination instances. For each latest nomination that
+                // is not a current nomination, attempt to retrieve an existing DB record for that nomination.
+                foreach (var latest in latestNominations)
                 {
-                    if (currentNominationsList.Any(n => n.LiquidityPoolId == nomination.LiquidityPoolId))
+                    var matchingCurrent = currentNominationsList.SingleOrDefault(current => current.LiquidityPoolId == latest.LiquidityPoolId);
+
+                    // Skip this latest nomination if its in our current list, we've already updated it.
+                    if (matchingCurrent != null)
                     {
                         continue;
                     }
 
-                    // enable the nomination
-                    var nominationCommand = new MakeMiningGovernanceNominationCommand(nomination);
-                    var nominationId = await _mediator.Send(nominationCommand, CancellationToken.None);
+                    var nomination = await _mediator.Send(new RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(latest.LiquidityPoolId,
+                                                                                                                                latest.MiningPoolId));
+
+                    if (nomination == null)
+                    {
+                        nomination = latest;
+                    }
+                    else
+                    {
+                        nomination.SetWeight(latest.Weight, request.BlockHeight);
+                        nomination.SetStatus(true, request.BlockHeight);
+                    }
+
+                    await _mediator.Send(new MakeMiningGovernanceNominationCommand(nomination));
                 }
 
                 return true;
@@ -95,6 +104,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 return false;
             }
+        }
+
+        private async Task<MiningGovernanceNomination> BuildLatestNomination(MiningGovernanceNominationCirrusDto nomination, ulong blockHeight)
+        {
+            var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(nomination.StakingPool, findOrThrow: true));
+            var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(liquidityPool.Id, findOrThrow: true));
+
+            return new MiningGovernanceNomination(liquidityPool.Id, miningPool.Id, true, nomination.Weight, blockHeight);
         }
     }
 }

@@ -9,6 +9,7 @@ namespace Opdex.Platform.Common.Extensions
     {
         // public static ulong DecimalsToSatoshis(this int decimals) => (int)Math.Pow(10, decimals);
         public static ulong DecimalsToSatoshis(this int decimals) => (ulong)Math.Pow(10, decimals);
+        public static ulong DecimalsToSatoshis(this uint decimals) => (ulong)Math.Pow(10, decimals);
 
         public static decimal ToDecimal(this ulong sats, int decimals)
         {

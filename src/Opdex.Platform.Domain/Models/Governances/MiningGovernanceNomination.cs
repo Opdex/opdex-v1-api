@@ -43,11 +43,22 @@ namespace Opdex.Platform.Domain.Models.Governances
         public long LiquidityPoolId { get; }
         public long MiningPoolId { get; }
         public bool IsNominated { get; private set; }
-        public string Weight { get; }
+        public string Weight { get; private set; }
 
-        public void SetNominationStatus(bool status, ulong block)
+        public void SetStatus(bool status, ulong block)
         {
             IsNominated = status;
+            SetModifiedBlock(block);
+        }
+
+        public void SetWeight(string weight, ulong block)
+        {
+            if (!weight.IsNumeric())
+            {
+                throw new ArgumentException("Nomination weight must be a numeric value.");
+            }
+
+            Weight = weight;
             SetModifiedBlock(block);
         }
     }

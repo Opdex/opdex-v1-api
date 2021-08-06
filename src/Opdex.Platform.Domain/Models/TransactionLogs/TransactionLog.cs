@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
     {
         protected internal TransactionLog(TransactionLogType logType, string contract, int sortOrder)
         {
-            if (logType == TransactionLogType.Unknown)
+            if (!logType.IsValid())
             {
                 throw new ArgumentOutOfRangeException(nameof(logType));
             }

@@ -8,7 +8,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
@@ -34,12 +33,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 }
 
                 // Get deployer
-                var deployerQuery = new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true);
-                var deployer = await _mediator.Send(deployerQuery, CancellationToken.None);
+                var deployer = await _mediator.Send( new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 // Check if market exists, skip if so
-                var marketQuery = new RetrieveMarketByAddressQuery(request.Log.Market, findOrThrow: false);
-                var market = await _mediator.Send(marketQuery, CancellationToken.None);
+                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Market, findOrThrow: false));
 
                 // Skip if market already exists
                 if (market != null)
@@ -52,18 +49,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var stakingToken = await _mediator.Send(stakingTokenQuery, CancellationToken.None);
                 var stakingTokenId = stakingToken?.Id ?? 0;
 
-                // Todo: Bug referenced with issue here: https://github.com/Opdex/opdex-v1-core/issues/5 adding this check for now while audit proceeds
-                var enableMarketFee = stakingTokenId > 0 || request.Log.EnableMarketFee;
-
                 // Create market
                 market = new Market(request.Log.Market, deployer.Id, stakingTokenId, request.Log.Owner, request.Log.AuthPoolCreators,
-                    request.Log.AuthProviders, request.Log.AuthTraders, request.Log.TransactionFee, enableMarketFee, request.BlockHeight);
+                                    request.Log.AuthProviders, request.Log.AuthTraders, request.Log.TransactionFee,
+                                    request.Log.EnableMarketFee, request.BlockHeight);
 
                 var marketId = await _mediator.Send(new MakeMarketCommand(market), CancellationToken.None);
 
                 // Create Router
-                var routerQuery = new RetrieveMarketRouterByAddressQuery(request.Log.Router, findOrThrow: false);
-                var router = await _mediator.Send(routerQuery, CancellationToken.None);
+                var router = await _mediator.Send(new RetrieveMarketRouterByAddressQuery(request.Log.Router, findOrThrow: false));
 
                 if (router == null)
                 {

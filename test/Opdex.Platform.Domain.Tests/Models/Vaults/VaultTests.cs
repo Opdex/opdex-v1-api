@@ -20,7 +20,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Vaults
             log.to = owner;
 
             // Act
-            vault.SetOwner(new ChangeVaultOwnerLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5), 510);
+            vault.SetOwner(new ClaimPendingVaultOwnershipLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5), 510);
 
             // Assert
             vault.Owner.Should().Be(owner);
@@ -38,7 +38,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Vaults
             log.to = "PTdjXpRFWXrUK7FCHcAjbsPWXaCSefipxh";
 
             // Act
-            vault.SetOwner(new ChangeVaultOwnerLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5), blockHeight);
+            vault.SetOwner(new ClaimPendingVaultOwnershipLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5), blockHeight);
 
             // Assert
             vault.ModifiedBlock.Should().Be(blockHeight);

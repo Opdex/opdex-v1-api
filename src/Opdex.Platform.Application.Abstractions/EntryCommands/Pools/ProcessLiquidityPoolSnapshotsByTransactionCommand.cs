@@ -15,20 +15,21 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Pools
         {
             Transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
         }
-        
+
         public Transaction Transaction { get; }
-        
+
         public readonly IReadOnlyList<TransactionLogType> PoolSnapshotLogTypes = new[]
         {
             TransactionLogType.ReservesLog,
             TransactionLogType.SwapLog,
-            TransactionLogType.StakeLog,
+            TransactionLogType.StartStakingLog,
+            TransactionLogType.StopStakingLog,
             TransactionLogType.CollectStakingRewardsLog,
         };
-        
+
         public readonly IReadOnlyList<SnapshotType> SnapshotTypes = new[]
         {
-            SnapshotType.Hourly, 
+            SnapshotType.Hourly,
             SnapshotType.Daily
         };
     }

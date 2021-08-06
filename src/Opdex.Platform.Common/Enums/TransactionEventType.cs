@@ -4,37 +4,43 @@ namespace Opdex.Platform.Common.Enums
     {
         // Market deployer logs
         CreateMarketEvent = 1,
-        ChangeDeployerOwnerEvent = 2,
+        SetPendingDeployerOwnershipEvent = 2,
+        ClaimPendingDeployerOwnershipEvent = 3,
 
         // Market logs
-        CreateLiquidityPoolEvent = 3,
-        ChangeMarketOwnerEvent = 4,
-        ChangeMarketPermissionEvent = 5,
+        CreateLiquidityPoolEvent = 4,
+        SetPendingMarketOwnershipEvent = 5,
+        ClaimPendingMarketOwnershipEvent = 6,
+        ChangeMarketPermissionEvent = 7,
 
         // Liquidity pool logs
-        ProvideEvent = 6,
-        SwapEvent = 7,
-        StakeEvent = 8,
-        CollectStakingRewardsEvent = 9,
+        AddLiquidityEvent = 8,
+        RemoveLiquidityEvent = 9,
+        SwapEvent = 10,
+        StartStakingEvent = 11,
+        StopStakingEvent = 12,
+        CollectStakingRewardsEvent = 13,
 
         // Mining pool logs
-        MineEvent = 10,
-        CollectMiningRewardsEvent = 11,
-        EnableMiningEvent = 12,
+        StartMiningEvent = 14,
+        StopMiningEvent = 15,
+        CollectMiningRewardsEvent = 16,
+        EnableMiningEvent = 17,
 
         // Tokens
-        ApprovalEvent = 13,
-        TransferEvent = 14,
-        DistributionEvent = 15,
+        ApprovalEvent = 18,
+        TransferEvent = 19,
+        DistributionEvent = 20,
 
         // Mining governance logs
-        RewardMiningPoolEvent = 16,
-        NominationEvent = 17,
+        RewardMiningPoolEvent = 21,
+        NominationEvent = 22,
 
         // Vault
-        CreateVaultCertificateEvent = 18,
-        RevokeVaultCertificateEvent = 19,
-        RedeemVaultCertificateEvent = 20,
-        ChangeVaultOwnerEvent = 21
+        CreateVaultCertificateEvent = 23,
+        RevokeVaultCertificateEvent = 24,
+        RedeemVaultCertificateEvent = 25,
+        SetPendingVaultOwnershipEvent = 26,
+        ClaimPendingVaultOwnershipEvent = 27
     }
 }

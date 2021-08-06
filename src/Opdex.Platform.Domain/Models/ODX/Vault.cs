@@ -59,7 +59,7 @@ namespace Opdex.Platform.Domain.Models.ODX
         public ulong Genesis { get; }
         public string UnassignedSupply { get; private set; }
 
-        public void SetOwner(ChangeVaultOwnerLog log, ulong block)
+        public void SetOwner(ClaimPendingVaultOwnershipLog log, ulong block)
         {
             Owner = log.To;
             SetModifiedBlock(block);

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# 
+#
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Platform.WebApi", "src\Opdex.Platform.WebApi\Opdex.Platform.WebApi.csproj", "{ED254916-2DA9-49F4-BD8C-E2DF40709D7D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Platform.Infrastructure", "src\Opdex.Platform.Infrastructure\Opdex.Platform.Infrastructure.csproj", "{0669C1C4-59F0-4FB5-B243-17407056050D}"
@@ -26,8 +26,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Platform.Common.Tests", "test\Opdex.Platform.Common.Tests\Opdex.Platform.Common.Tests.csproj", "{C70C6002-62BF-4990-B96C-C4AC86B5D006}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Platform.Domain.Tests", "test\Opdex.Platform.Domain.Tests\Opdex.Platform.Domain.Tests.csproj", "{6A137EDB-2D23-47D9-8BC6-9917EBA99071}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{24F37F7C-7801-4FE1-B697-5920ADD6D846}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opdex.Platform.Infrastructure.Abstractions.Tests", "test\Opdex.Platform.Infrastructure.Abstractions.Tests\Opdex.Platform.Infrastructure.Abstractions.Tests.csproj", "{C247C179-E151-4722-BEE8-4714580DEDBF}"
 EndProject
@@ -96,6 +94,6 @@ Global
 		{1E4763F2-FCF5-46BC-A5C9-203CB667B43B} = {FCA21EEB-0830-4E5B-BB5D-1B55FA916843}
 		{C70C6002-62BF-4990-B96C-C4AC86B5D006} = {FCA21EEB-0830-4E5B-BB5D-1B55FA916843}
 		{6A137EDB-2D23-47D9-8BC6-9917EBA99071} = {FCA21EEB-0830-4E5B-BB5D-1B55FA916843}
-		{C247C179-E151-4722-BEE8-4714580DEDBF} = {24F37F7C-7801-4FE1-B697-5920ADD6D846}
+		{C247C179-E151-4722-BEE8-4714580DEDBF} = {FCA21EEB-0830-4E5B-BB5D-1B55FA916843}
 	EndGlobalSection
 EndGlobal

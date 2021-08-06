@@ -5,10 +5,8 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools;
-using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Application.Handlers.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools
@@ -34,12 +32,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
                 var lpToken = await _mediator.Send(new RetrieveTokenByIdQuery(pool.LpTokenId, findOrThrow: true));
-                var summary = await _mediator.Send(new RetrieveCirrusLocalCallSmartContractQuery(pool.Address, "get_TotalSupply"));
-                var totalSupply = summary.DeserializeValue<string>();
 
-                lpToken.UpdateTotalSupply(totalSupply, request.BlockHeight);
+                lpToken.UpdateTotalSupply(request.Log.TotalSupply, request.BlockHeight);
 
-                var response = await _mediator.Send(new MakeTokenCommand(lpToken.Address, lpToken));
+                var response = await _mediator.Send(new MakeTokenCommand(lpToken));
 
                 return response > 1;
             }

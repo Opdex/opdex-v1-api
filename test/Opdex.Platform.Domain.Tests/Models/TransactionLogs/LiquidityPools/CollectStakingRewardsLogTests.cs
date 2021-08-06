@@ -17,7 +17,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             // Arrange
             dynamic txLog = new ExpandoObject();
             txLog.staker = staker;
-            txLog.reward = "3426893";
+            txLog.amount = "3426893";
 
             // Act
             void Act() => new CollectStakingRewardsLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -33,12 +33,12 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
         [InlineData("ABC")]
         [InlineData("100.005")]
         [InlineData("100_000")]
-        public void CollectStakingRewardsLog_RewardsNotNumeric_ThrowArgumentNullException(string reward)
+        public void CollectStakingRewardsLog_RewardsNotNumeric_ThrowArgumentNullException(string amount)
         {
             // Arrange
             dynamic txLog = new ExpandoObject();
             txLog.staker = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
-            txLog.reward = reward;
+            txLog.amount = amount;
 
             // Act
             void Act() => new CollectStakingRewardsLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -53,14 +53,14 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             // Arrange
             dynamic txLog = new ExpandoObject();
             txLog.staker = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
-            txLog.reward = "3426893";
+            txLog.amount = "3426893";
 
             // Act
             var collectStakingRewardsLog = new CollectStakingRewardsLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
             collectStakingRewardsLog.Staker.Should().Be(txLog.staker);
-            collectStakingRewardsLog.Reward.Should().Be(txLog.reward);
+            collectStakingRewardsLog.Amount.Should().Be(txLog.amount);
         }
     }
 }

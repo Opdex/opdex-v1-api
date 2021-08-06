@@ -14,6 +14,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             ulong amountCrs = log?.amountCrs;
             string amountSrc = log?.amountSrc;
             string amountLpt = log?.amountLpt;
+            string totalSupply = log?.totalSupply;
 
             if (!sender.HasValue())
             {
@@ -40,11 +41,17 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
                 throw new ArgumentOutOfRangeException(nameof(amountLpt), "LPT amount must only contain numeric digits.");
             }
 
+            if (!totalSupply.IsNumeric())
+            {
+                throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must only contain numeric digits.");
+            }
+
             Sender = sender;
             To = to;
             AmountCrs = amountCrs;
             AmountSrc = amountSrc;
             AmountLpt = amountLpt;
+            TotalSupply = totalSupply;
         }
 
         public MintLog(long id, long transactionId, string address, int sortOrder, string details)
@@ -56,6 +63,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             AmountCrs = logDetails.AmountCrs;
             AmountSrc = logDetails.AmountSrc;
             AmountLpt = logDetails.AmountLpt;
+            TotalSupply = logDetails.TotalSupply;
         }
 
         public string Sender { get; }
@@ -63,6 +71,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
         public ulong AmountCrs { get; }
         public string AmountSrc { get; }
         public string AmountLpt { get; }
+        public string TotalSupply { get; }
 
         private struct LogDetails
         {
@@ -71,6 +80,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             public ulong AmountCrs { get; set; }
             public string AmountSrc { get; set; }
             public string AmountLpt { get; set; }
+            public string TotalSupply { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)
@@ -86,7 +96,8 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
                 To = To,
                 AmountCrs = AmountCrs,
                 AmountSrc = AmountSrc,
-                AmountLpt = AmountLpt
+                AmountLpt = AmountLpt,
+                TotalSupply = TotalSupply
             });
         }
     }

@@ -22,6 +22,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             txLog.amountCrs = 1234ul;
             txLog.amountSrc = "83475";
             txLog.amountLpt = "23423";
+            txLog.totalSupply = "100";
 
             // Act
             void Act() => new MintLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -43,6 +44,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             txLog.amountCrs = 1234ul;
             txLog.amountSrc = "83475";
             txLog.amountLpt = "23423";
+            txLog.totalSupply = "100";
 
             // Act
             void Act() => new MintLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -61,6 +63,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             txLog.amountCrs = 0ul;
             txLog.amountSrc = "83475";
             txLog.amountLpt = "23423";
+            txLog.totalSupply = "100";
 
             // Act
             void Act() => new MintLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -85,6 +88,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             txLog.amountCrs = 100ul;
             txLog.amountSrc = amountSrc;
             txLog.amountLpt = "23423";
+            txLog.totalSupply = "100";
 
             // Act
             void Act() => new MintLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -109,6 +113,32 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             txLog.amountCrs = 100ul;
             txLog.amountSrc = "378901";
             txLog.amountLpt = amountLpt;
+            txLog.totalSupply = "100";
+
+            // Act
+            void Act() => new MintLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData("ABC")]
+        [InlineData("100.005")]
+        [InlineData("100_000")]
+        public void CreateMintLog_TotalSupplyInvalid_ThrowArgumentOutOfRangeException(string totalSupply)
+        {
+            // Arrange
+            dynamic txLog = new ExpandoObject();
+            txLog.sender = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
+            txLog.to = "PO2p2uVqojah5kcXzHiBtV8LVDVGVAgvk4";
+            txLog.amountCrs = 100ul;
+            txLog.amountSrc = "378901";
+            txLog.amountLpt = "235346";
+            txLog.totalSupply = totalSupply;
 
             // Act
             void Act() => new MintLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -129,6 +159,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             txLog.amountCrs = 1234ul;
             txLog.amountSrc = "83475";
             txLog.amountLpt = "23423";
+            txLog.totalSupply = "100";
 
             var log = new MintLog(txLog, address, sortOrder);
 

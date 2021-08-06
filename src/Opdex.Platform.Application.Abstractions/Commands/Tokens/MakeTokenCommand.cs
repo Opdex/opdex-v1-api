@@ -1,24 +1,16 @@
 using System;
 using MediatR;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Tokens
 {
     public class MakeTokenCommand : IRequest<long>
     {
-        public MakeTokenCommand(string address, Token token = null)
+        public MakeTokenCommand(Token token)
         {
-            if (!address.HasValue() && token == null)
-            {
-                throw new ArgumentException("Either address or token must not be null");
-            }
-
-            Address = address;
-            Token = token;
+            Token = token ?? throw new ArgumentException("Either address or token must not be null");
         }
 
-        public string Address { get; }
         public Token Token { get; }
     }
 }

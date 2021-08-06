@@ -66,7 +66,7 @@ namespace Opdex.Platform.Domain.Tests.Models
             log.to = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
 
             // Act
-            void Act() => deployer.SetOwner(new ChangeDeployerOwnerLog(log, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 0), 99_999);
+            void Act() => deployer.SetOwner(new ClaimPendingDeployerOwnershipLog(log, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 0), 99_999);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act);
@@ -85,7 +85,7 @@ namespace Opdex.Platform.Domain.Tests.Models
             log.to = updatedOwner;
 
             // Act
-            deployer.SetOwner(new ChangeDeployerOwnerLog(log, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 0), 100_001);
+            deployer.SetOwner(new ClaimPendingDeployerOwnershipLog(log, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 0), 100_001);
 
             // Assert
             deployer.Owner.Should().Be(updatedOwner);

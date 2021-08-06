@@ -10,8 +10,12 @@ using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Pools;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets
 {
@@ -34,37 +38,32 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var marketQuery = new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: true);
-                var market = await _mediator.Send(marketQuery, CancellationToken.None);
+                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract), CancellationToken.None);
 
-                var srcTokenId = await MakeToken(request.Log.Token);
+                var srcTokenId = await MakeToken(request.Log.Token, request.BlockHeight);
 
-                // Todo: Adjust token names like "xBTC-CRS LPT" or "xBTC CRS Liquidity Pool Token", maybe add part of token address to be unique
-                var lpTokenId = await MakeToken(request.Log.Pool);
+                var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(srcTokenId));
 
-                var liquidityPoolQuery = new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false);
-                var liquidityPool = await _mediator.Send(liquidityPoolQuery, CancellationToken.None);
+                var lpTokenId = await MakeToken(request.Log.Pool, request.BlockHeight, $"{srcToken.Symbol}/CRS {TokenConstants.LiquidityPoolToken.Symbol}");
 
+                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false));
                 long liquidityPoolId = 0;
 
                 if (liquidityPool == null)
                 {
                     liquidityPool = new LiquidityPool(request.Log.Pool, srcTokenId, lpTokenId, market.Id, request.BlockHeight);
-                    var liquidityPoolCommand = new MakeLiquidityPoolCommand(liquidityPool);
-                    liquidityPoolId = await _mediator.Send(liquidityPoolCommand, CancellationToken.None);
+                    liquidityPoolId = await _mediator.Send(new MakeLiquidityPoolCommand(liquidityPool));
                 }
 
                 // If it's the staking market, a new liquidity pool, and the pool src token isn't the markets staking token
                 if (market.StakingTokenId > 0 && liquidityPool.Id == 0 && srcTokenId != market.StakingTokenId)
                 {
-                    var getMiningPoolAddressQuery = new RetrieveCirrusLocalCallSmartContractQuery(request.Log.Pool, "get_MiningPool");
-                    var getMiningPoolAddressResponse = await _mediator.Send(getMiningPoolAddressQuery, CancellationToken.None);
+                    var getMiningPoolAddressResponse = await _mediator.Send(new RetrieveCirrusLocalCallSmartContractQuery(request.Log.Pool,
+                                                                                                                          "get_MiningPool"));
                     var miningPoolAddress = getMiningPoolAddressResponse.DeserializeValue<string>();
 
                     var miningPool = new MiningPool(liquidityPoolId, miningPoolAddress, request.BlockHeight);
-
-                    var miningPoolCommand = new MakeMiningPoolCommand(miningPool);
-                    var miningPoolId = await _mediator.Send(miningPoolCommand, CancellationToken.None);
+                    var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPool));
                 }
 
                 return liquidityPoolId > 0;
@@ -77,13 +76,28 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
         }
 
-        private async Task<long> MakeToken(string tokenAddress)
+        private async Task<long> MakeToken(string tokenAddress, ulong blockHeight, string lpSymbol = null)
         {
-            var srcTokenQuery = new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false);
-            var srcToken = await _mediator.Send(srcTokenQuery);
+            var srcToken = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false));
 
-            var srcTokenCommand = new MakeTokenCommand(tokenAddress);
-            return srcToken?.Id ?? await _mediator.Send(srcTokenCommand);
+            if (srcToken != null)
+            {
+                return srcToken.Id;
+            }
+
+            var isLpToken = lpSymbol.HasValue();
+
+            var summary = await _mediator.Send(new CallCirrusGetSrcTokenSummaryByAddressQuery(tokenAddress));
+
+            if (isLpToken)
+            {
+                summary.SetLpTokenSymbol(lpSymbol);
+            }
+
+            srcToken = new Token(summary.Address, isLpToken, summary.Name, summary.Symbol, (int)summary.Decimals, summary.Sats,
+                                 summary.TotalSupply, blockHeight);
+
+            return await _mediator.Send(new MakeTokenCommand(srcToken));
         }
     }
 }

@@ -146,7 +146,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Pools.Snapshots
                             liquidityPoolSnapshot.ProcessSwapLog((SwapLog)poolLog, crsUsd, srcSnapshot.Price.Close, srcToken.Sats,
                                                                  market.IsStakingMarket, market.TransactionFee, market.MarketFeeEnabled);
                         }
-                        else if (poolLog.LogType == TransactionLogType.StakeLog)
+                        else if (poolLog.LogType == TransactionLogType.StartStakingLog ||
+                                 poolLog.LogType == TransactionLogType.StopStakingLog)
                         {
                             // Process Staking Weight
                             liquidityPoolSnapshot.ProcessStakingLog((StakeLog)poolLog, stakingTokenUsd);
