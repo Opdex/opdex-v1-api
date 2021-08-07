@@ -15,17 +15,17 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 
             if (!liquidity.IsValidDecimalNumber())
             {
-                throw new ArgumentException(nameof(liquidity));
+                throw new ArgumentException("Liquidity must be a valid decimal number.", nameof(liquidity));
             }
 
             if (!amountCrsMin.IsValidDecimalNumber())
             {
-                throw new ArgumentException(nameof(amountCrsMin));
+                throw new ArgumentException("Amount CRS min must be a valid decimal number.", nameof(amountCrsMin));
             }
 
             if (!amountSrcMin.IsValidDecimalNumber())
             {
-                throw new ArgumentException(nameof(amountSrcMin));
+                throw new ArgumentException("Amount SRC min must be a valid decimal number.", nameof(amountSrcMin));
             }
 
             if (!recipient.HasValue())

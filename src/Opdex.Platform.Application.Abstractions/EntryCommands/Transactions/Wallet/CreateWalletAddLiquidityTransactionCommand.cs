@@ -15,12 +15,12 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 
             if (!amountCrs.IsValidDecimalNumber())
             {
-                throw new ArgumentException(nameof(amountCrs));
+                throw new ArgumentException("Amount CRS be a valid decimal number.", nameof(amountCrs));
             }
 
             if (!amountSrc.IsValidDecimalNumber())
             {
-                throw new ArgumentException(nameof(amountSrc));
+                throw new ArgumentException("Amount SRC be a valid decimal number.", nameof(amountSrc));
             }
 
             if (tolerance > .9999m || tolerance < .0001m)

@@ -10,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Pools
         {
             if (!amountIn.HasValue())
             {
-                throw new ArgumentException(nameof(amountIn));
+                throw new ArgumentNullException(nameof(amountIn));
             }
 
             if (!tokenIn.HasValue())
