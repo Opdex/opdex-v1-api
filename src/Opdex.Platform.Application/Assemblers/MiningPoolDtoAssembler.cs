@@ -27,6 +27,7 @@ namespace Opdex.Platform.Application.Assemblers
             return new MiningPoolDto
             {
                 Address = miningPool.Address,
+                LiquidityPool = liquidityPool.Address,
                 MiningPeriodEndBlock = miningPool.MiningPeriodEndBlock,
                 RewardPerBlock = miningPool.RewardPerBlock,
                 RewardPerLpt = miningPool.RewardPerLpt,

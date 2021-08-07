@@ -3,6 +3,7 @@ namespace Opdex.Platform.Application.Abstractions.Models
     public class MiningPoolDto
     {
         public string Address { get; set; }
+        public string LiquidityPool { get; set; }
         public ulong MiningPeriodEndBlock { get; set; }
         public string RewardPerBlock { get; set; }
         public string RewardPerLpt { get; set; }

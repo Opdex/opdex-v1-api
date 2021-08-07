@@ -106,6 +106,7 @@ namespace Opdex.Platform.WebApi.Mappers
 
             CreateMap<MiningPoolDto, MiningPoolResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool))
                 .ForMember(dest => dest.MiningPeriodEndBlock, opt => opt.MapFrom(src => src.MiningPeriodEndBlock))
                 .ForMember(dest => dest.RewardPerBlock, opt => opt.MapFrom(src => src.RewardPerBlock.InsertDecimal(TokenConstants.Opdex.Decimals)))
                 .ForMember(dest => dest.RewardPerLpt, opt => opt.MapFrom(src => src.RewardPerLpt.InsertDecimal(TokenConstants.Opdex.Decimals)))
