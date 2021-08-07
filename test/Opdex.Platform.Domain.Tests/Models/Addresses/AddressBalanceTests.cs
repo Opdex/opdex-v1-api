@@ -8,14 +8,14 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
     public class AddressBalanceTests
     {
         [Fact]
-        public void Constructor_TokenAndLiquidityPoolIdBothZero_ThrowArgumentException()
+        public void Constructor_TokenAndLiquidityPoolIdBothZero_ThrowArgumentOutOfRangeException()
         {
             // Arrange
             // Act
             static void Act() => new AddressBalance(0, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "50000", 10_001);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("tokenId must be greater than 0.");
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Token id must be greater than 0.");
         }
 
         [Theory]
