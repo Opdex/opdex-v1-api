@@ -308,6 +308,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             var dto = new MiningPoolDto
             {
                 Address = "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK",
+                LiquidityPool = "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                 IsActive = true,
                 MiningPeriodEndBlock = 500_000,
                 RewardPerBlock = "1666666666",
@@ -320,6 +321,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
 
             // Assert
             response.Address.Should().Be(dto.Address);
+            response.LiquidityPool.Should().Be(dto.LiquidityPool);
             response.IsActive.Should().Be(dto.IsActive);
             response.MiningPeriodEndBlock.Should().Be(dto.MiningPeriodEndBlock);
             response.RewardPerBlock.Should().Be("16.66666666");
