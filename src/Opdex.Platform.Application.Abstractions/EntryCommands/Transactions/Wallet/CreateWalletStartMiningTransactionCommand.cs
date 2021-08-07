@@ -9,7 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
         {
             if (!amount.IsValidDecimalNumber())
             {
-                throw new ArgumentException(nameof(amount));
+                throw new ArgumentException("Amount must be a valid decimal number.", nameof(amount));
             }
 
             if (!liquidityPool.HasValue())

@@ -55,7 +55,7 @@ namespace Opdex.Platform.Domain.Models.Governances
         {
             if (!weight.IsNumeric())
             {
-                throw new ArgumentException("Nomination weight must be a numeric value.");
+                throw new ArgumentException("Nomination weight must be a numeric value.", nameof(weight));
             }
 
             Weight = weight;

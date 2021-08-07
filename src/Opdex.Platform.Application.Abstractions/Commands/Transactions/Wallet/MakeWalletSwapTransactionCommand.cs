@@ -21,12 +21,12 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 
             if (!tokenInAmount.IsNumeric())
             {
-                throw new ArgumentException(nameof(tokenInAmount));
+                throw new ArgumentException("Token in amount must only contain numeric digits.", nameof(tokenInAmount));
             }
 
             if (!tokenOutAmount.IsNumeric())
             {
-                throw new ArgumentException(nameof(tokenInAmount));
+                throw new ArgumentException("Token out amount must only contain numeric digits.", nameof(tokenOutAmount));
             }
 
             if (tolerance > .9999m || tolerance < .0001m)

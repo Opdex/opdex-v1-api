@@ -10,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
         {
             if (!amount.IsNumeric())
             {
-                throw new ArgumentException(nameof(amount));
+                throw new ArgumentException("Amount must only contain numeric digits.", nameof(amount));
             }
 
             if (!miningPool.HasValue())

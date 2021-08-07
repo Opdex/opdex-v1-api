@@ -17,17 +17,17 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 
             if (!liquidity.IsNumeric())
             {
-                throw new ArgumentException(nameof(liquidity));
+                throw new ArgumentException("Liquidity must only contain numeric digits.", nameof(liquidity));
             }
 
             if (!amountCrsMin.IsNumeric())
             {
-                throw new ArgumentException(nameof(amountCrsMin));
+                throw new ArgumentException("Amount CRS min must only contain numeric digits.", nameof(amountCrsMin));
             }
 
             if (!amountSrcMin.IsNumeric())
             {
-                throw new ArgumentException(nameof(amountSrcMin));
+                throw new ArgumentException("Amount SRC min must only contain numeric digits.", nameof(amountSrcMin));
             }
 
             if (!recipient.HasValue())

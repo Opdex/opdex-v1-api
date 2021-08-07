@@ -11,12 +11,12 @@ namespace Opdex.Platform.Domain.Models.ODX
         {
             if (!vaultDistribution.IsNumeric())
             {
-                throw new ArgumentException(nameof(vaultDistribution), "Vault distribution must only contain numeric digits.");
+                throw new ArgumentException("Vault distribution must only contain numeric digits.", nameof(vaultDistribution));
             }
 
             if (!miningGovernanceDistribution.IsNumeric())
             {
-                throw new ArgumentException(nameof(miningGovernanceDistribution), "Mining governance distribution must only contain numeric digits.");
+                throw new ArgumentException("Mining governance distribution must only contain numeric digits.", nameof(miningGovernanceDistribution));
             }
 
             if (distributionBlock < 1)

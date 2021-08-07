@@ -30,7 +30,7 @@ namespace Opdex.Platform.Common.Extensions
         /// Validates that a string contains numeric digits only.
         /// </summary>
         /// <param name="value">The string to evaluate.</param>
-        /// <returns>Boolean value of validity..</returns>
+        /// <returns>Boolean value of validity.</returns>
         public static bool IsNumeric(this string value)
         {
             return value.HasValue() && Regex.IsMatch(value, @"^\d+$");

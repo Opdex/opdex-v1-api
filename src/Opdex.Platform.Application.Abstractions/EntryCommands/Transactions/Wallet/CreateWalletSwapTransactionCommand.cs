@@ -20,12 +20,12 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 
             if (!tokenInAmount.IsValidDecimalNumber())
             {
-                throw new ArgumentException(nameof(tokenInAmount));
+                throw new ArgumentException("Token in amount must be a valid decimal number.", nameof(tokenInAmount));
             }
 
             if (!tokenOutAmount.IsValidDecimalNumber())
             {
-                throw new ArgumentException(nameof(tokenInAmount));
+                throw new ArgumentException("Token out amount must be a valid decimal number.", nameof(tokenInAmount));
             }
 
             if (tolerance > .9999m || tolerance < .0001m)

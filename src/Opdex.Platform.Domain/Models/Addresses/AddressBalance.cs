@@ -10,7 +10,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
         {
             if (tokenId < 1)
             {
-                throw new ArgumentException(nameof(tokenId), $"{nameof(tokenId)} must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(tokenId), "Token id must be greater than 0.");
             }
 
             if (!owner.HasValue())
