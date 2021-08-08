@@ -176,6 +176,10 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.MiningToken, opt => opt.MapFrom(src => src.MiningToken))
                 .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool));
 
+            CreateMap<MiningPositionsDto, MiningPositionsResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Positions))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
+
             CreateMap<MiningGovernanceDto, MiningGovernanceResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.MinedToken, opt => opt.MapFrom(src => src.MinedToken))

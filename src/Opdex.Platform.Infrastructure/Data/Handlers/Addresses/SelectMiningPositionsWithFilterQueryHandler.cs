@@ -1,24 +1,22 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
-using Opdex.Platform.Infrastructure.Abstractions.Extensions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 {
-    public class SelectTransactionsWithFilterQueryHandler : IRequestHandler<SelectTransactionsWithFilterQuery, IEnumerable<Transaction>>
+    public class SelectMiningPositionsWithFilterQueryHandler : IRequestHandler<SelectMiningPositionsWithFilterQuery, IEnumerable<AddressMining>>
     {
         private const string TableJoins = "{TableJoins}";
         private const string WhereFilter = "{WhereFilter}";
@@ -27,15 +25,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
         private static readonly string SqlQuery =
             @$"SELECT
-                t.{nameof(TransactionEntity.Id)},
-                t.{nameof(TransactionEntity.Hash)},
-                t.{nameof(TransactionEntity.Block)},
-                t.{nameof(TransactionEntity.GasUsed)},
-                t.`{nameof(TransactionEntity.To)}`,
-                t.`{nameof(TransactionEntity.From)}`,
-                t.{nameof(TransactionEntity.Success)},
-                t.{nameof(TransactionEntity.NewContractAddress)}
-            FROM transaction t
+                m.{nameof(AddressMiningEntity.Id)},
+                m.{nameof(AddressMiningEntity.MiningPoolId)},
+                m.{nameof(AddressMiningEntity.Owner)},
+                m.{nameof(AddressMiningEntity.Balance)},
+                m.{nameof(AddressMiningEntity.CreatedBlock)},
+                m.{nameof(AddressMiningEntity.ModifiedBlock)}
+            FROM address_mining m
             {TableJoins}
             {WhereFilter}
             {OrderBy}
@@ -45,40 +41,46 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
         private const string SortDirection = "{SortDirection}";
 
         private static readonly string PagingBackwardQuery =
-            @$"SELECT * FROM ({InnerQuery}) r ORDER BY r.{nameof(TransactionEntity.Id)} {SortDirection};";
+            @$"SELECT * FROM ({InnerQuery}) r ORDER BY r.{nameof(AddressMiningEntity.Id)} {SortDirection};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
-        public SelectTransactionsWithFilterQueryHandler(IDbContext context, IMapper mapper)
+        public SelectMiningPositionsWithFilterQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<Transaction>> Handle(SelectTransactionsWithFilterQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AddressMining>> Handle(SelectMiningPositionsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var logTypes = request.Cursor.EventTypes.SelectMany(ev => ev.GetLogTypes()).Distinct().Cast<uint>();
+            var positionId = request.Cursor.Pointer;
 
-            var queryParams = new SqlParams(request.Cursor.Pointer, request.Cursor.Wallet, logTypes, request.Cursor.Contracts);
+            var queryParams = new SqlParams(positionId, request.Address, request.Cursor.LiquidityPools, request.Cursor.MiningPools);
 
             var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
-            var results = await _context.ExecuteQueryAsync<TransactionEntity>(query);
+            var results = await _context.ExecuteQueryAsync<AddressMiningEntity>(query);
 
-            return _mapper.Map<IEnumerable<Transaction>>(results);
+            return _mapper.Map<IEnumerable<AddressMining>>(results);
         }
 
-        private static string QueryBuilder(SelectTransactionsWithFilterQuery request)
+        private static string QueryBuilder(SelectMiningPositionsWithFilterQuery request)
         {
-            var whereFilter = string.Empty;
+            var whereFilter = $"WHERE m.{nameof(AddressMiningEntity.Owner)} = @{nameof(SqlParams.Address)}";
             var tableJoins = string.Empty;
-            var filterContracts = request.Cursor.Contracts.Any();
-            var includeEvents = request.Cursor.EventTypes.Any();
 
-            if (filterContracts || includeEvents)
+            var filterByLiquidityPools = request.Cursor.LiquidityPools.Any();
+            var filterByMiningPools = request.Cursor.MiningPools.Any();
+
+            if (filterByLiquidityPools || filterByMiningPools)
             {
-                tableJoins += $" JOIN transaction_log tl ON tl.{nameof(TransactionLogEntity.TransactionId)} = t.{nameof(Transaction.Id)}";
+                tableJoins += $" JOIN pool_mining pm ON pm.{nameof(MiningPoolEntity.Id)} = m.{nameof(AddressMiningEntity.MiningPoolId)}";
+            }
+
+            if (filterByLiquidityPools)
+            {
+                tableJoins += $" JOIN pool_liquidity pl ON pl.{nameof(LiquidityPoolEntity.Id)} = pm.{nameof(MiningPoolEntity.LiquidityPoolId)}";
             }
 
             if (!request.Cursor.IsFirstRequest)
@@ -97,25 +99,22 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                 // going backward in descending order, use greater than
                 if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.SortDirection == SortDirectionType.DESC) sortOperator = ">";
 
-                whereFilter = $" WHERE t.{nameof(TransactionEntity.Id)} {sortOperator} @{nameof(SqlParams.TransactionId)}";
+                whereFilter += $" AND m.{nameof(AddressMiningEntity.Id)} {sortOperator} @{nameof(SqlParams.PositionId)}";
             }
 
-            if (request.Cursor.Wallet.HasValue())
+            if (filterByMiningPools)
             {
-                var filter = $"t.`{nameof(TransactionEntity.From)}` = @{nameof(SqlParams.Wallet)}";
-                whereFilter += whereFilter.HasValue() ? $" AND {filter}" : $" WHERE {filter}";
+                whereFilter += $" AND pm.{nameof(MiningPoolEntity.Address)} IN @{nameof(SqlParams.MiningPools)}";
             }
 
-            if (filterContracts)
+            if (filterByLiquidityPools)
             {
-                var filter = $"tl.{nameof(TransactionLogEntity.Contract)} IN @{nameof(SqlParams.Contracts)}";
-                whereFilter += whereFilter.HasValue() ? $" AND {filter}" : $" WHERE {filter}";
+                whereFilter += $" AND pl.{nameof(LiquidityPoolEntity.Address)} IN @{nameof(SqlParams.LiquidityPools)}";
             }
 
-            if (includeEvents)
+            if (!request.Cursor.IncludeZeroAmounts)
             {
-                var filter = $"tl.{nameof(TransactionLogEntity.LogTypeId)} IN @{nameof(SqlParams.LogTypes)}";
-                whereFilter += whereFilter.HasValue() ? $" AND {filter}" : $" WHERE {filter}";
+                whereFilter += $" AND m.{nameof(AddressMiningEntity.Balance)} != '0'";
             }
 
             // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -130,7 +129,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                 direction = Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection);
             }
 
-            var orderBy = $" GROUP BY t.{nameof(TransactionEntity.Id)} ORDER BY t.{nameof(TransactionEntity.Id)} {direction}";
+            var orderBy = $" ORDER BY m.{nameof(AddressMiningEntity.Id)} {direction}";
 
             var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
@@ -147,18 +146,18 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
         private sealed class SqlParams
         {
-            internal SqlParams(long transactionId, string wallet, IEnumerable<uint> logTypes, IEnumerable<string> contracts)
+            public SqlParams(long positionId, string address, IEnumerable<string> liquidityPools, IEnumerable<string> miningPools)
             {
-                TransactionId = transactionId;
-                Wallet = wallet;
-                LogTypes = logTypes;
-                Contracts = contracts;
+                PositionId = positionId;
+                Address = address;
+                LiquidityPools = liquidityPools;
+                MiningPools = miningPools;
             }
 
-            public long TransactionId { get; }
-            public string Wallet { get; }
-            public IEnumerable<uint> LogTypes { get; }
-            public IEnumerable<string> Contracts { get; }
+            public long PositionId { get; }
+            public string Address { get; }
+            public IEnumerable<string> LiquidityPools { get; }
+            public IEnumerable<string> MiningPools { get; }
         }
     }
 }
