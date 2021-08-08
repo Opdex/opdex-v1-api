@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Addresses;
+using System;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers
@@ -15,7 +16,7 @@ namespace Opdex.Platform.Application.Assemblers
 
         public StakingPositionDtoAssembler(IMediator mediator)
         {
-            _mediator = mediator;
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<StakingPositionDto> Assemble(AddressStaking source)
