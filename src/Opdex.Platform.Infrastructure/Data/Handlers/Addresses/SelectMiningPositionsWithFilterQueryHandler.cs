@@ -37,6 +37,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
             {OrderBy}
             {Limit}".RemoveExcessWhitespace();
 
+        private const string InnerQuery = "{InnerQuery}";
+        private const string SortDirection = "{SortDirection}";
+
+        private static readonly string PagingBackwardQuery =
+            @$"SELECT * FROM ({InnerQuery}) r ORDER BY r.{nameof(AddressMiningEntity.Id)} {SortDirection};";
+
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
@@ -127,15 +133,15 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 
             var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
-            var query = SqlQuery
-                .Replace(TableJoins, tableJoins)
-                .Replace(WhereFilter, whereFilter)
-                .Replace(OrderBy, orderBy)
-                .Replace(Limit, limit);
+            var query = SqlQuery.Replace(TableJoins, tableJoins)
+                                .Replace(WhereFilter, whereFilter)
+                                .Replace(OrderBy, orderBy)
+                                .Replace(Limit, limit);
 
             if (request.Cursor.PagingDirection == PagingDirection.Forward) return $"{query};";
             // re-sort back into requested order
-            else return $"SELECT * FROM ({query}) r ORDER BY r.{nameof(AddressMiningEntity.Id)} {Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection)};";
+            else return PagingBackwardQuery.Replace(InnerQuery, query)
+                                           .Replace(SortDirection, Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection));
         }
 
         private sealed class SqlParams
