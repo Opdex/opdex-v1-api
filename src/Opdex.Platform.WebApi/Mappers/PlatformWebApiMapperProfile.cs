@@ -166,6 +166,10 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.StakingToken, opt => opt.MapFrom(src => src.StakingToken))
                 .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool));
 
+            CreateMap<StakingPositionsDto, StakingPositionsResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Positions))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
+
             CreateMap<MiningPositionDto, MiningPositionResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))

@@ -22,11 +22,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses
 
         public async Task<StakingPositionDto> Handle(GetStakingPositionByPoolQuery request, CancellationToken cancellationToken)
         {
-            var liqudityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPoolAddress, findOrThrow: true), cancellationToken);
-            var addressStaking = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liqudityPool.Id,
+            var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPoolAddress, findOrThrow: true), cancellationToken);
+            var addressStaking = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liquidityPool.Id,
                                                                                                                request.Address,
                                                                                                                findOrThrow: true), cancellationToken);
-            var market = await _mediator.Send(new RetrieveMarketByIdQuery(liqudityPool.MarketId, findOrThrow: true), cancellationToken);
+            var market = await _mediator.Send(new RetrieveMarketByIdQuery(liquidityPool.MarketId, findOrThrow: true), cancellationToken);
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId.Value, findOrThrow: true), cancellationToken);
 
             return new StakingPositionDto

@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Controllers;
+using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -61,6 +63,79 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             // Act
             response.Result.Should().BeOfType<OkObjectResult>();
             ((OkObjectResult)response.Result).Value.Should().Be(tokenBalance);
+        }
+
+        [Fact]
+        public async Task GetStakingPositions_CursorNotProvidedNullIncludeZeroAmounts_IncludeZeroAmountsFalse()
+        {
+            // Arrange
+            // Act
+            await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<string>(), null, SortDirectionType.DESC, 10, null, CancellationToken.None);
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetStakingPositionsWithFilterQuery>(query => query.Cursor.IncludeZeroAmounts == false), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetStakingPositions_CursorProvidedNotBase64_Return422ValidationError()
+        {
+            // Arrange
+            // Act
+            var response = await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", null, null, SortDirectionType.Undefined, 0, "NOT_BASE_64_****", CancellationToken.None);
+
+            // Assert
+            response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
+        }
+
+        [Fact]
+        public async Task GetStakingPositions_CursorProvidedNotValidCursor_Return422ValidationError()
+        {
+            // Arrange
+            // Act
+            var response = await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", null, null, SortDirectionType.Undefined, 0, "Tk9UX1ZBTElE", CancellationToken.None);
+
+            // Assert
+            response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
+        }
+
+        [Fact]
+        public async Task GetStakingPositions_GetStakingPositionsWithFilterQuery_Send()
+        {
+            // Arrange
+            var liquidityPools = Enumerable.Empty<string>();
+            var includeZeroBalances = true;
+            var sortDirection = SortDirectionType.ASC;
+            var limit = 10U;
+            var address = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            await _controller.GetStakingPositions(address, liquidityPools, includeZeroBalances, sortDirection, limit, null, cancellationToken);
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetStakingPositionsWithFilterQuery>(query => query.Address == address
+                                                                                                       && query.Cursor.IsFirstRequest
+                                                                                                       && query.Cursor.LiquidityPools.SequenceEqual(liquidityPools)
+                                                                                                       && query.Cursor.IncludeZeroAmounts == includeZeroBalances
+                                                                                                       && query.Cursor.SortDirection == sortDirection
+                                                                                                       && query.Cursor.Limit == limit), cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetStakingPositions_Result_ReturnOk()
+        {
+            // Arrange
+            var stakingPositions = new StakingPositionsResponseModel();
+
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetStakingPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new StakingPositionsDto());
+            _mapperMock.Setup(callTo => callTo.Map<StakingPositionsResponseModel>(It.IsAny<StakingPositionsDto>())).Returns(stakingPositions);
+
+            // Act
+            var response = await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<string>(), false, SortDirectionType.ASC, 10, null, CancellationToken.None);
+
+            // Assert
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(stakingPositions);
         }
 
         [Fact]

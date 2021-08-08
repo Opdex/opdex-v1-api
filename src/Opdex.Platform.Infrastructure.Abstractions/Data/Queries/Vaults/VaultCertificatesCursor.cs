@@ -36,7 +36,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
         }
 
         /// <inheritdoc />
-        protected override bool ValidatePointer(long pointer) => pointer >= 0;
+        protected override bool ValidatePointer(long pointer) => pointer >= 0 && base.ValidatePointer(pointer);
 
         /// <summary>
         /// Parses a stringified version of the cursor

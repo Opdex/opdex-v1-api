@@ -71,7 +71,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
         /// Checks that a provided pointer value is valid
         /// </summary>
         /// <returns>True if valid, otherwise false</returns>
-        protected virtual bool ValidatePointer(TPointer pointer) => PagingDirection == PagingDirection.Forward || !Pointer.Equals(default);
+        protected virtual bool ValidatePointer(TPointer pointer) => PagingDirection == PagingDirection.Forward || !pointer.Equals(default);
 
         /// <summary>
         /// Converts a stringified cursor into a dictionary
