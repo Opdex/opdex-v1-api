@@ -1,6 +1,6 @@
 name: Opdex-API
 trigger:
-- develop
+- main
 
 pool:
   vmImage: ubuntu-latest
@@ -23,7 +23,7 @@ stages:
     variables:
       SOLUTION: 'Opdex.sln'
       BUILD_CONFIGURATION: 'Release'
-    
+
     steps:
       - task: DotNetCoreCLI@2
         inputs:
@@ -44,7 +44,7 @@ stages:
           projects: test/**/*.Tests.csproj
           arguments: '--configuration $(BUILD_CONFIGURATION) --no-build'
         displayName: 'Unit Test'
-      
+
       - task: DotNetCoreCLI@2
         inputs:
           command: 'publish'
@@ -53,17 +53,17 @@ stages:
           arguments: '--configuration $(BUILD_CONFIGURATION) --no-build --output $(Build.ArtifactStagingDirectory)'
           zipAfterPublish: True
         displayName: Publish
-      
+
       - task: PublishBuildArtifacts@1
         inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)'
           artifactName: '$(ARTIFACT_NAME)'
         displayName: Share
 
 - stage: DEV
   displayName: 'Release to devnet (Azure)'
   dependsOn: CI
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop')) # Don't run deployment for PRs against the branch.
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main')) # Don't run deployment for PRs against the branch.
   jobs:
   - template: ${{ variables.releaseTemplate }}
     parameters:
