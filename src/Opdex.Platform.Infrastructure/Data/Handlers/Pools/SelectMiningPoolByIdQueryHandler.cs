@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
@@ -8,10 +5,13 @@ using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Pools;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 {
-    public class SelectMiningPoolByAddressQueryHandler : IRequestHandler<SelectMiningPoolByAddressQuery, MiningPool>
+    public class SelectMiningPoolByIdQueryHandler : IRequestHandler<SelectMiningPoolByIdQuery, MiningPool>
     {
         private static readonly string SqlQuery =
             @$"SELECT
@@ -24,20 +24,20 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
                 {nameof(MiningPoolEntity.ModifiedBlock)},
                 {nameof(MiningPoolEntity.CreatedBlock)}
             FROM pool_mining
-            WHERE {nameof(MiningPoolEntity.Address)} = @{nameof(SqlParams.Address)} LIMIT 1;";
+            WHERE {nameof(MiningPoolEntity.Id)} = @{nameof(SqlParams.Id)} LIMIT 1;";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
-        public SelectMiningPoolByAddressQueryHandler(IDbContext context, IMapper mapper)
+        public SelectMiningPoolByIdQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<MiningPool> Handle(SelectMiningPoolByAddressQuery request, CancellationToken cancellationToken)
+        public async Task<MiningPool> Handle(SelectMiningPoolByIdQuery request, CancellationToken cancellationToken)
         {
-            var queryParams = new SqlParams(request.Address);
+            var queryParams = new SqlParams(request.MiningPoolId);
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
             var result = await _context.ExecuteFindAsync<MiningPoolEntity>(query);
@@ -52,12 +52,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Pools
 
         private sealed class SqlParams
         {
-            internal SqlParams(string address)
+            internal SqlParams(long id)
             {
-                Address = address;
+                Id = id;
             }
 
-            public string Address { get; }
+            public long Id { get; }
         }
     }
 }

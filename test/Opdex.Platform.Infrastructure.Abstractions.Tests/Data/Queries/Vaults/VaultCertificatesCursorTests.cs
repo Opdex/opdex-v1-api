@@ -20,12 +20,15 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
             Assert.Throws<ArgumentOutOfRangeException>("limit", Act);
         }
 
-        [Fact]
-        public void Create_InvalidPointer_ThrowArgumentException()
+        [Theory]
+        [InlineData(PagingDirection.Forward, -1)]
+        [InlineData(PagingDirection.Backward, -1)]
+        [InlineData(PagingDirection.Backward, 0)] // zero indicates first request, only possible to page forward
+        public void Create_InvalidPointer_ThrowArgumentException(PagingDirection pagingDirection, long pointer)
         {
             // Arrange
             // Act
-            static void Act() => new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", SortDirectionType.ASC, 25, PagingDirection.Forward, -1);
+            void Act() => new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", SortDirectionType.ASC, 25, pagingDirection, pointer);
 
             // Assert
             Assert.Throws<ArgumentException>("pointer", Act);

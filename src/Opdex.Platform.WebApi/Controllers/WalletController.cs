@@ -54,23 +54,6 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>
-        /// Retrieves a wallet public key balance of a token.
-        /// </summary>
-        /// <param name="address">The wallet address.</param>
-        /// <param name="token">The token to get the balance of.</param>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns><see cref="AddressBalanceResponseModel"/> balance summary</returns>
-        [HttpGet("{address}/balance/{token}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AddressBalanceResponseModel>> GetAddressBalanceByToken(string address, string token, CancellationToken cancellationToken)
-        {
-            var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(address, token), cancellationToken);
-            var response = _mapper.Map<AddressBalanceResponseModel>(balance);
-            return Ok(response);
-        }
-
-        /// <summary>
         /// Retrieves token balances for an address.
         /// </summary>
         /// <param name="address">The address to lookup balances for.</param>
@@ -112,6 +95,83 @@ namespace Opdex.Platform.WebApi.Controllers
 
             var response = _mapper.Map<AddressBalancesResponseModel>(balances);
 
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Retrieves a wallet public key balance of a token.
+        /// </summary>
+        /// <param name="address">The wallet address.</param>
+        /// <param name="token">The token to get the balance of.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="AddressBalanceResponseModel"/> balance summary</returns>
+        [HttpGet("{address}/balance/{token}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AddressBalanceResponseModel>> GetAddressBalanceByToken(string address, string token, CancellationToken cancellationToken)
+        {
+            var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(address, token), cancellationToken);
+            var response = _mapper.Map<AddressBalanceResponseModel>(balance);
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Retrieves the mining position of an address in all mining pools
+        /// </summary>
+        /// <param name="address">Address to lookup</param>
+        /// <param name="liquidityPools">Specific liquidity pools to include.</param>
+        /// <param name="miningPools">Specific mining pools to include.</param>
+        /// <param name="includeZeroAmounts">Only includes 0 amounts if true.</param>
+        /// <param name="direction">Order in which to sort results.</param>
+        /// <param name="limit">Number of results to take per page.</param>
+        /// <param name="cursor">Cursor for pagination.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Staking position summaries</returns>
+        /// <returns></returns>
+        [HttpGet("{address}/mining")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<StakingPositionResponseModel>>> GetMiningPositions(string address,
+                                                                                                      [FromQuery] IEnumerable<string> liquidityPools,
+                                                                                                      [FromQuery] IEnumerable<string> miningPools,
+                                                                                                      [FromQuery] bool? includeZeroAmounts,
+                                                                                                      [FromQuery] SortDirectionType direction,
+                                                                                                      [FromQuery] uint limit,
+                                                                                                      [FromQuery] string cursor,
+                                                                                                      CancellationToken cancellationToken)
+        {
+            MiningPositionsCursor pagingCursor;
+
+            if (cursor.HasValue())
+            {
+                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !MiningPositionsCursor.TryParse(decodedCursor, out var parsedCursor))
+                {
+                    return new ValidationErrorProblemDetailsResult("Cursor not formed correctly.");
+                }
+                pagingCursor = parsedCursor;
+            }
+            else
+            {
+                pagingCursor = new MiningPositionsCursor(liquidityPools, miningPools, includeZeroAmounts ?? false, direction, limit, PagingDirection.Forward, default);
+            }
+
+            var positions = await _mediator.Send(new GetMiningPositionsWithFilterQuery(address, pagingCursor), cancellationToken);
+            var response = _mapper.Map<MiningPositionsResponseModel>(positions);
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Retrieves the mining position of an address in a particular pool
+        /// </summary>
+        /// <param name="address">Address to lookup</param>
+        /// <param name="miningPool">Mining pool to search</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Mining position summary</returns>
+        [HttpGet("{address}/mining/{miningPool}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<MiningPositionResponseModel>> GetMiningPositionByPool(string address, string miningPool, CancellationToken cancellationToken)
+        {
+            var position = await _mediator.Send(new GetMiningPositionByPoolQuery(address, miningPool), cancellationToken);
+            var response = _mapper.Map<MiningPositionResponseModel>(position);
             return Ok(response);
         }
 
@@ -169,22 +229,6 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             var position = await _mediator.Send(new GetStakingPositionByPoolQuery(address, liquidityPool), cancellationToken);
             var response = _mapper.Map<StakingPositionResponseModel>(position);
-            return Ok(response);
-        }
-
-        /// <summary>
-        /// Retrieves the mining position of an address in a particular pool
-        /// </summary>
-        /// <param name="address">Address to lookup</param>
-        /// <param name="miningPool">Mining pool to search</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>Mining position summary</returns>
-        [HttpGet("{address}/mining/{miningPool}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<MiningPositionResponseModel>> GetMiningPositionByPool(string address, string miningPool, CancellationToken cancellationToken)
-        {
-            var position = await _mediator.Send(new GetMiningPositionByPoolQuery(address, miningPool), cancellationToken);
-            var response = _mapper.Map<MiningPositionResponseModel>(position);
             return Ok(response);
         }
 

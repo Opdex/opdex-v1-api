@@ -24,15 +24,18 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
             Assert.Throws<ArgumentOutOfRangeException>("limit", Act);
         }
 
-        [Fact]
-        public void Create_InvalidPointer_ThrowArgumentException()
+        [Theory]
+        [InlineData(PagingDirection.Forward, -1)]
+        [InlineData(PagingDirection.Backward, -1)]
+        [InlineData(PagingDirection.Backward, 0)] // zero indicates first request, only possible to page forward
+        public void Create_InvalidPointer_ThrowArgumentException(PagingDirection pagingDirection, long pointer)
         {
             // Arrange
             // Act
-            static void Act() => new TransactionsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
+            void Act() => new TransactionsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                                         Enumerable.Empty<TransactionEventType>(),
                                                         Enumerable.Empty<string>(), SortDirectionType.ASC,
-                                                        25, PagingDirection.Forward, -1);
+                                                        25, pagingDirection, pointer);
 
             // Assert
             Assert.Throws<ArgumentException>("pointer", Act);
