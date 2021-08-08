@@ -7,21 +7,17 @@ using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 {
-    public class AddressBalancesCursor : Cursor<long>
+    public class StakingPositionsCursor : Cursor<long>
     {
-        public AddressBalancesCursor(IEnumerable<string> tokens, bool includeLpTokens, bool includeZeroBalances,
-                                     SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection,
-                                     long pointer)
+        public StakingPositionsCursor(IEnumerable<string> liquidityPools, bool includeZeroAmounts, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
-            Tokens = tokens ?? Enumerable.Empty<string>();
-            IncludeLpTokens = includeLpTokens;
-            IncludeZeroBalances = includeZeroBalances;
+            LiquidityPools = liquidityPools ?? Enumerable.Empty<string>();
+            IncludeZeroAmounts = includeZeroAmounts;
         }
 
-        public IEnumerable<string> Tokens { get; }
-        public bool IncludeLpTokens { get; }
-        public bool IncludeZeroBalances { get; }
+        public IEnumerable<string> LiquidityPools { get; }
+        public bool IncludeZeroAmounts { get; }
 
         /// <inheritdoc />
         public override string ToString()
@@ -31,9 +27,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 
             var sb = new StringBuilder();
             sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
-            foreach (var token in Tokens) sb.AppendFormat("tokens:{0};", token);
-            sb.AppendFormat("includeLpTokens:{0};", IncludeLpTokens);
-            sb.AppendFormat("includeZeroBalances:{0};", IncludeZeroBalances);
+            foreach (var pool in LiquidityPools) sb.AppendFormat("liquidityPools:{0};", pool);
+            sb.AppendFormat("includeZeroAmounts:{0};", IncludeZeroAmounts);
             sb.AppendFormat("pointer:{0};", encodedPointer);
             return sb.ToString();
         }
@@ -44,7 +39,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
             if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
             if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-            return new AddressBalancesCursor(Tokens, IncludeLpTokens, IncludeZeroBalances, SortDirection, Limit, direction, pointer);
+            return new StakingPositionsCursor(LiquidityPools, IncludeZeroAmounts, SortDirection, Limit, direction, pointer);
         }
 
         /// <inheritdoc />
@@ -56,7 +51,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
         /// <param name="raw">Stringified cursor</param>
         /// <param name="cursor">Parsed cursor</param>
         /// <returns>True if the value could be parsed, otherwise false</returns>
-        public static bool TryParse(string raw, out AddressBalancesCursor cursor)
+        public static bool TryParse(string raw, out StakingPositionsCursor cursor)
         {
             cursor = null;
 
@@ -64,11 +59,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 
             var values = ToDictionary(raw);
 
-            TryGetCursorProperties<string>(values, "tokens", out var tokens);
+            TryGetCursorProperties<string>(values, "liquidityPools", out var liquidityPools);
 
-            if (!TryGetCursorProperty<bool>(values, "includeLpTokens", out var includeLpTokens)) return false;
-
-            if (!TryGetCursorProperty<bool>(values, "includeZeroBalances", out var includeZeroBalances)) return false;
+            if (!TryGetCursorProperty<bool>(values, "includeZeroAmounts", out var includeZeroAmounts)) return false;
 
             if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
 
@@ -84,7 +77,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 
             try
             {
-                cursor = new AddressBalancesCursor(tokens, includeLpTokens, includeZeroBalances, direction, limit, paging, pointer);
+                cursor = new StakingPositionsCursor(liquidityPools, includeZeroAmounts, direction, limit, paging, pointer);
             }
             catch (Exception)
             {

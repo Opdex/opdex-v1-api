@@ -34,7 +34,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             const SortDirectionType direction = SortDirectionType.ASC;
             const uint limit = 10;
 
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, direction, limit, PagingDirection.Backward, 0);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, direction, limit, PagingDirection.Backward, 50);
 
             var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
@@ -55,7 +55,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             var tokens = new[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
             const uint limit = 10;
 
-            var cursor = new AddressBalancesCursor(tokens, false, false, direction, limit, PagingDirection.Backward, 0);
+            var cursor = new AddressBalancesCursor(tokens, false, false, direction, limit, PagingDirection.Backward, 50);
 
             var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
@@ -78,7 +78,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             const bool includeLpTokens = false;
             const uint limit = 10;
 
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), includeLpTokens, false, direction, limit, PagingDirection.Backward, 0);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), includeLpTokens, false, direction, limit, PagingDirection.Backward, 50);
 
             var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 
@@ -101,7 +101,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             const bool includeZeroBalance = false;
             const uint limit = 10;
 
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, includeZeroBalance, direction, limit, PagingDirection.Backward, 0);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<string>(), false, includeZeroBalance, direction, limit, PagingDirection.Backward, 50);
 
             var command = new SelectAddressBalancesWithFilterQuery(wallet, cursor);
 

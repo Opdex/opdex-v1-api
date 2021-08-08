@@ -5,7 +5,7 @@ using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using System;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 {
-    public class SelectAddressBalancesWithFilterQueryHandler : IRequestHandler<SelectAddressBalancesWithFilterQuery, IEnumerable<AddressBalance>>
+    public class SelectStakingPositionsWithFilterQueryHandler : IRequestHandler<SelectStakingPositionsWithFilterQuery, IEnumerable<AddressStaking>>
     {
         private const string TableJoins = "{TableJoins}";
         private const string WhereFilter = "{WhereFilter}";
@@ -25,13 +25,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 
         private static readonly string SqlQuery =
             @$"SELECT
-                ab.{nameof(AddressBalanceEntity.Id)},
-                ab.{nameof(AddressBalanceEntity.TokenId)},
-                ab.{nameof(AddressBalanceEntity.Owner)},
-                ab.{nameof(AddressBalanceEntity.Balance)},
-                ab.{nameof(AddressBalanceEntity.CreatedBlock)},
-                ab.{nameof(AddressBalanceEntity.ModifiedBlock)}
-            FROM address_balance ab
+                s.{nameof(AddressStakingEntity.Id)},
+                s.{nameof(AddressStakingEntity.LiquidityPoolId)},
+                s.{nameof(AddressStakingEntity.Owner)},
+                s.{nameof(AddressStakingEntity.Weight)},
+                s.{nameof(AddressStakingEntity.CreatedBlock)},
+                s.{nameof(AddressStakingEntity.ModifiedBlock)}
+            FROM address_staking s
             {TableJoins}
             {WhereFilter}
             {OrderBy}
@@ -40,21 +40,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
-        public SelectAddressBalancesWithFilterQueryHandler(IDbContext context, IMapper mapper)
+        public SelectStakingPositionsWithFilterQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<AddressBalance>> Handle(SelectAddressBalancesWithFilterQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AddressStaking>> Handle(SelectStakingPositionsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var balanceId = request.Cursor.Pointer;
+            var positionId = request.Cursor.Pointer;
 
-            var queryParams = new SqlParams(balanceId, request.Address, request.Cursor.Tokens, request.Cursor.IncludeLpTokens);
+            var queryParams = new SqlParams(positionId, request.Address, request.Cursor.LiquidityPools);
 
             var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
-            var results = await _context.ExecuteQueryAsync<AddressBalanceEntity>(query);
+            var results = await _context.ExecuteQueryAsync<AddressStakingEntity>(query);
 
             // re-sort back into correct order
             if (request.Cursor.PagingDirection == PagingDirection.Backward)
@@ -64,17 +64,17 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                     : results.OrderByDescending(t => t.Id);
             }
 
-            return _mapper.Map<IEnumerable<AddressBalance>>(results);
+            return _mapper.Map<IEnumerable<AddressStaking>>(results);
         }
 
-        private static string QueryBuilder(SelectAddressBalancesWithFilterQuery request)
+        private static string QueryBuilder(SelectStakingPositionsWithFilterQuery request)
         {
-            var whereFilter = $"WHERE ab.{nameof(AddressBalanceEntity.Owner)} = @{nameof(SqlParams.Wallet)}";
+            var whereFilter = $"WHERE s.{nameof(AddressStakingEntity.Owner)} = @{nameof(SqlParams.Address)}";
             var tableJoins = string.Empty;
 
-            if (request.Cursor.Tokens.Any() || !request.Cursor.IncludeLpTokens)
+            if (request.Cursor.LiquidityPools.Any())
             {
-                tableJoins += $" JOIN token t ON t.{nameof(TokenEntity.Id)} = ab.{nameof(AddressBalanceEntity.TokenId)}";
+                tableJoins += $" JOIN pool_liquidity pl ON pl.{nameof(LiquidityPoolEntity.Id)} = s.{nameof(AddressStakingEntity.LiquidityPoolId)}";
             }
 
             if (!request.Cursor.IsFirstRequest)
@@ -93,22 +93,17 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 // going backward in descending order, use greater than
                 if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.SortDirection == SortDirectionType.DESC) sortOperator = ">";
 
-                whereFilter += $" AND ab.{nameof(AddressBalanceEntity.Id)} {sortOperator} @{nameof(SqlParams.BalanceId)}";
+                whereFilter += $" AND s.{nameof(AddressStakingEntity.Id)} {sortOperator} @{nameof(SqlParams.PositionId)}";
             }
 
-            if (request.Cursor.Tokens.Any())
+            if (request.Cursor.LiquidityPools.Any())
             {
-                whereFilter += $" AND t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}";
+                whereFilter += $" AND pl.{nameof(LiquidityPoolEntity.Address)} IN @{nameof(SqlParams.LiquidityPools)}";
             }
 
-            if (!request.Cursor.IncludeLpTokens)
+            if (!request.Cursor.IncludeZeroAmounts)
             {
-                whereFilter += $" AND t.{nameof(TokenEntity.IsLpt)} = @{nameof(SqlParams.IncludeLpTokens)}";
-            }
-
-            if (!request.Cursor.IncludeZeroBalances)
-            {
-                whereFilter += $" AND ab.{nameof(AddressBalanceEntity.Balance)} != '0'";
+                whereFilter += $" AND s.{nameof(AddressStakingEntity.Weight)} != '0'";
             }
 
             // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -123,7 +118,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
                 direction = Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection);
             }
 
-            var orderBy = $" ORDER BY ab.{nameof(AddressBalanceEntity.Id)} {direction}";
+            var orderBy = $" ORDER BY s.{nameof(AddressStakingEntity.Id)} {direction}";
 
             var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
@@ -136,18 +131,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 
         private sealed class SqlParams
         {
-            internal SqlParams(long balanceId, string wallet, IEnumerable<string> tokens, bool includeLpTokens)
+            public SqlParams(long positionId, string address, IEnumerable<string> liquidityPools)
             {
-                BalanceId = balanceId;
-                Wallet = wallet;
-                Tokens = tokens;
-                IncludeLpTokens = includeLpTokens;
+                PositionId = positionId;
+                Address = address;
+                LiquidityPools = liquidityPools;
             }
 
-            public long BalanceId { get; }
-            public string Wallet { get; }
-            public IEnumerable<string> Tokens { get; }
-            public bool IncludeLpTokens { get; }
+            public long PositionId { get; }
+            public string Address { get; }
+            public IEnumerable<string> LiquidityPools { get; }
         }
     }
 }

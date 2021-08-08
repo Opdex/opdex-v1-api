@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Opdex.Platform.WebApi.Models.Responses;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -110,15 +111,7 @@ namespace Opdex.Platform.WebApi.Controllers
             {
                 if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !VaultCertificatesCursor.TryParse(decodedCursor, out var parsedCursor))
                 {
-                    var problemDetails = new ProblemDetails
-                    {
-                        Title = "Unprocessable Entity",
-                        Status = StatusCodes.Status422UnprocessableEntity,
-                        Detail = "A validation error occurred.",
-                        Type = "https://httpstatuses.com/422"
-                    };
-                    problemDetails.Extensions.Add("Errors", new string[] { "Cursor not formed correctly." });
-                    return new UnprocessableEntityObjectResult(problemDetails);
+                    return new ValidationErrorProblemDetailsResult("Cursor not formed correctly.");
                 }
                 pagingCursor = parsedCursor;
             }

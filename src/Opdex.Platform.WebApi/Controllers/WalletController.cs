@@ -17,6 +17,7 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
+using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -98,15 +99,7 @@ namespace Opdex.Platform.WebApi.Controllers
             {
                 if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !AddressBalancesCursor.TryParse(decodedCursor, out var parsedCursor))
                 {
-                    var problemDetails = new ProblemDetails
-                    {
-                        Title = "Unprocessable Entity",
-                        Status = StatusCodes.Status422UnprocessableEntity,
-                        Detail = "A validation error occurred.",
-                        Type = "https://httpstatuses.com/422"
-                    };
-                    problemDetails.Extensions.Add("Errors", new string[] { "Cursor not formed correctly." });
-                    return new UnprocessableEntityObjectResult(problemDetails);
+                    return new ValidationErrorProblemDetailsResult("Cursor not formed correctly.");
                 }
                 pagingCursor = parsedCursor;
             }
@@ -119,6 +112,47 @@ namespace Opdex.Platform.WebApi.Controllers
 
             var response = _mapper.Map<AddressBalancesResponseModel>(balances);
 
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Retrieves the staking position of an address in all staking pools
+        /// </summary>
+        /// <param name="address">Address to lookup</param>
+        /// <param name="liquidityPools">Specific liquidity pools to include.</param>
+        /// <param name="includeZeroAmounts">Only includes 0 amounts if true.</param>
+        /// <param name="direction">Order in which to sort results.</param>
+        /// <param name="limit">Number of results to take per page.</param>
+        /// <param name="cursor">Cursor for pagination.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Staking position summaries</returns>
+        [HttpGet("{address}/staking")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<StakingPositionResponseModel>>> GetStakingPositions(string address,
+                                                                                                       [FromQuery] IEnumerable<string> liquidityPools,
+                                                                                                       [FromQuery] bool? includeZeroAmounts,
+                                                                                                       [FromQuery] SortDirectionType direction,
+                                                                                                       [FromQuery] uint limit,
+                                                                                                       [FromQuery] string cursor,
+                                                                                                       CancellationToken cancellationToken)
+        {
+            StakingPositionsCursor pagingCursor;
+
+            if (cursor.HasValue())
+            {
+                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !StakingPositionsCursor.TryParse(decodedCursor, out var parsedCursor))
+                {
+                    return new ValidationErrorProblemDetailsResult("Cursor not formed correctly.");
+                }
+                pagingCursor = parsedCursor;
+            }
+            else
+            {
+                pagingCursor = new StakingPositionsCursor(liquidityPools, includeZeroAmounts ?? false, direction, limit, PagingDirection.Forward, default);
+            }
+
+            var positions = await _mediator.Send(new GetStakingPositionsWithFilterQuery(address, pagingCursor), cancellationToken);
+            var response = _mapper.Map<StakingPositionsResponseModel>(positions);
             return Ok(response);
         }
 
