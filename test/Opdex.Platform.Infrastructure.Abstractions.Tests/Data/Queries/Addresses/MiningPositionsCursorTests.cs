@@ -1,0 +1,149 @@
+using FluentAssertions;
+using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
+using System;
+using System.Linq;
+using Xunit;
+
+namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresses
+{
+    public class MiningPositionsCursorTests
+    {
+        [Fact]
+        public void Create_LimitExceedsMaximum_ThrowArgumentOutOfRangeException()
+        {
+            // Arrange
+            // Act
+            static void Act() => new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>("limit", Act);
+        }
+
+        [Theory]
+        [InlineData(PagingDirection.Forward, -1)]
+        [InlineData(PagingDirection.Backward, -1)]
+        [InlineData(PagingDirection.Backward, 0)] // zero indicates first request, only possible to page forward
+        public void Create_InvalidPointer_ThrowArgumentException(PagingDirection pagingDirection, long pointer)
+        {
+            // Arrange
+            // Act
+            void Act() => new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 25, pagingDirection, pointer);
+
+            // Assert
+            Assert.Throws<ArgumentException>("pointer", Act);
+        }
+
+        [Fact]
+        public void Create_NullLiquidityPoolsProvided_SetToEmpty()
+        {
+            // Arrange
+            // Act
+            var cursor = new MiningPositionsCursor(null, Enumerable.Empty<string>(), false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+
+            // Assert
+            cursor.LiquidityPools.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void Create_NullMiningPoolsProvided_SetToEmpty()
+        {
+            // Arrange
+            // Act
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), null, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+
+            // Assert
+            cursor.MiningPools.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void ToString_StringifiesCursor_FormatCorrectly()
+        {
+            // Arrange
+            var cursor = new MiningPositionsCursor(new string[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", "P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8" }, new string[] { "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV" }, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+
+            // Act
+            var result = cursor.ToString();
+
+            // Assert
+            result.Should().Contain("liquidityPools:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;");
+            result.Should().Contain("liquidityPools:P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8;");
+            result.Should().Contain("miningPools:PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV;");
+            result.Should().Contain("includeZeroAmounts:False;");
+            result.Should().Contain("direction:ASC;");
+            result.Should().Contain("limit:25;");
+            result.Should().Contain("paging:Forward;");
+            result.Should().Contain("pointer:NTAw;");
+        }
+
+        [Fact]
+        public void Turn_NonIdenticalPointer_ReturnAnotherCursor()
+        {
+            // Arrange
+            var cursor = new MiningPositionsCursor(new string[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L" }, new string[] { "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV" }, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+
+            // Act
+            var result = cursor.Turn(PagingDirection.Backward, 567);
+
+            // Assert
+            result.Should().BeOfType<MiningPositionsCursor>();
+            var adjacentCursor = (MiningPositionsCursor)result;
+            adjacentCursor.LiquidityPools.Should().BeEquivalentTo(cursor.LiquidityPools);
+            adjacentCursor.MiningPools.Should().BeEquivalentTo(cursor.MiningPools);
+            adjacentCursor.IncludeZeroAmounts.Should().Be(cursor.IncludeZeroAmounts);
+            adjacentCursor.SortDirection.Should().Be(cursor.SortDirection);
+            adjacentCursor.Limit.Should().Be(cursor.Limit);
+            adjacentCursor.PagingDirection.Should().Be(PagingDirection.Backward);
+            adjacentCursor.Pointer.Should().Be(567);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData(";:;;;;;::;;;:::;;;:::;;:::;;")]
+        [InlineData("includeZeroAmounts:Maybe;direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // invalid includeZeroAmounts
+        [InlineData("direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // missing includeZeroAmounts
+        [InlineData("includeZeroAmounts:False;direction:Invalid;limit:50;paging:Forward;pointer:NTAw;")] // invalid orderBy
+        [InlineData("includeZeroAmounts:False;limit:50;paging:Forward;pointer:NTAw;")] // missing orderBy
+        [InlineData("includeZeroAmounts:False;direction:ASC;limit:51;paging:Forward;pointer:NTAw;")] // over max limit
+        [InlineData("includeZeroAmounts:False;direction:ASC;paging:Forward;pointer:NTAw;")] // missing limit
+        [InlineData("includeZeroAmounts:False;direction:ASC;limit:50;paging:Invalid;pointer:NTAw;")] // invalid paging direction
+        [InlineData("includeZeroAmounts:False;direction:ASC;limit:50;pointer:NTAw;")] // missing paging direction
+        [InlineData("includeZeroAmounts:False;direction:ASC;limit:50;paging:Forward;pointer:LTE=;")] // pointer: -1;
+        [InlineData("includeZeroAmounts:False;direction:ASC;limit:50;paging:Forward;pointer:YWJj")] // pointer: abc;
+        [InlineData("includeZeroAmounts:False;direction:ASC;limit:50;paging:Forward;pointer:10")] // pointer not valid base64
+        [InlineData("includeZeroAmounts:False;direction:ASC;limit:50;paging:Forward;")] // pointer missing
+        public void TryParse_InvalidCursor_ReturnFalse(string stringified)
+        {
+            // Arrange
+            // Act
+            var canParse = MiningPositionsCursor.TryParse(stringified, out var cursor);
+
+            // Assert
+            canParse.Should().Be(false);
+            cursor.Should().Be(null);
+        }
+
+        [Fact]
+        public void TryParse_ValidCursor_ReturnTrue()
+        {
+            // Arrange
+            var stringified = "liquidityPools:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;miningPools:PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV;includeZeroAmounts:False;direction:ASC;limit:50;paging:Forward;pointer:MTA=;"; // pointer: 10;
+
+            // Act
+            var canParse = MiningPositionsCursor.TryParse(stringified, out var cursor);
+
+            // Assert
+            canParse.Should().Be(true);
+            cursor.LiquidityPools.Should().ContainSingle(pool => pool == "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L");
+            cursor.MiningPools.Should().ContainSingle(pool => pool == "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV");
+            cursor.IncludeZeroAmounts.Should().Be(false);
+            cursor.SortDirection.Should().Be(SortDirectionType.ASC);
+            cursor.Limit.Should().Be(50);
+            cursor.PagingDirection.Should().Be(PagingDirection.Forward);
+            cursor.Pointer.Should().Be(10);
+        }
+    }
+}

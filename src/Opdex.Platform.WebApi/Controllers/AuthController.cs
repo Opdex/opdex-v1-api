@@ -1,8 +1,23 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.WebApi.Auth;
+using System.Linq;
+using System.Net;
+using System.Security.Authentication;
+using System.Threading.Tasks;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -10,48 +25,87 @@ namespace Opdex.Platform.WebApi.Controllers
     [Route("auth")]
     public class AuthController : ControllerBase
     {
+        private readonly AuthConfiguration _authConfiguration;
+        private readonly OpdexConfiguration _opdexConfiguration;
         private readonly IMediator _mediator;
-        
-        public AuthController(IMediator mediator)
+
+        public AuthController(AuthConfiguration authConfiguration, OpdexConfiguration opdexConfiguration, IMediator mediator)
         {
+            _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
+            _opdexConfiguration = opdexConfiguration ?? throw new ArgumentNullException(nameof(opdexConfiguration));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         /// <summary>
-        /// Gets an Opdex client specific token based on referrer address.
+        /// Authorizes access to a specific market
         /// </summary>
-        /// <remarks>This is necessary for any API access but is only for internal Opdex clients without any API limits.</remarks>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns></returns>
-        [HttpGet("token")]
-        public Task<IActionResult> GetClientToken(CancellationToken cancellationToken)
+        /// <param name="market">The market contract address to request access to</param>
+        /// <param name="wallet">The wallet public key of the user</param>
+        /// <returns>An access token</returns>
+        [HttpPost("authorize")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> Authorize([FromQuery] string market, [FromQuery] string wallet)
         {
-            throw new NotImplementedException();
+            // Throws NotFoundException if not found
+            var marketDto = await _mediator.Send(new GetMarketByAddressQuery(market));
+
+            await ValidateWallet(wallet, marketDto.Id);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.Opdex.SigningKey));
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim("market", market)
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                IssuedAt = DateTime.UtcNow,
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            if (!string.IsNullOrEmpty(wallet))
+            {
+                tokenDescriptor.Subject.AddClaim(new Claim("wallet", wallet));
+            }
+
+            var jwt = tokenHandler.CreateToken(tokenDescriptor);
+            return new OkObjectResult(tokenHandler.WriteToken(jwt));
         }
 
-        /// <summary>
-        /// Requests a timestamped message to be included in a client signed messaged for authentication.
-        /// </summary>
-        /// <param name="walletAddress">The wallet address to be authenticated.</param>
-        /// <param name="cancellationToken">CancellationToken</param>
-        /// <returns>message as string to be included in signed message</returns>
-        [HttpGet("request/{walletAddress}")]
-        public Task<IActionResult> RequestAuthMessage(string walletAddress, CancellationToken cancellationToken)
+        // Todo: If private market; roles && enforce wallet != null && wallet has permission
+        private async Task ValidateWallet(string wallet, long marketId)
         {
-            throw new NotImplementedException();
-        }
+            // Devnet validate the wallet signing in has a balance,
+            // This is a hack to be able to remove the firewall and still close off the api by wallet address without adding new tables
+            // When we have stratis identity and stratis wallet details, there will be two flows, one for devnet and one for test/mainnet
+            // At that time, consider creating queries and commands to whitelist devnet addresses
+            if (_opdexConfiguration.Network == NetworkType.DEVNET)
+            {
+                if (!wallet.HasValue()) throw new BadRequestException("Wallet address must be provided.");
 
-        /// <summary>
-        /// Validates a client signed message and returns a valid JWT to be authed during each request.
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        [HttpPost("validate")]
-        public Task<IActionResult> ValidateMessageAuthWallet(string message, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
+                var validWallet = false;
+                var tokens = await _mediator.Send(new RetrieveTokensWithFilterQuery(marketId, false, 0, 5, "Name", "ASC", new string[0]));
+
+                foreach (var token in tokens.Where(t => t.Address != TokenConstants.Cirrus.Address))
+                {
+                    try
+                    {
+                        var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(wallet, token.Address));
+
+                        if (balance.Balance == "0") continue;
+
+                        validWallet = true;
+
+                        break;
+                    }
+                    catch { }
+                }
+
+                if (!validWallet) throw new AuthenticationException("Invalid wallet address");
+            }
         }
     }
 }

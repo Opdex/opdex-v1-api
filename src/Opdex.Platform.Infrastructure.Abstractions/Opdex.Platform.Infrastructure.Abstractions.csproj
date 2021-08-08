@@ -5,17 +5,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Dapper" Version="2.0.78" />
       <PackageReference Include="MediatR" Version="9.0.0" />
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Opdex.Core.Infrastructure.Abstractions\Opdex.Core.Infrastructure.Abstractions.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Data\Queries\Blocks" />
-      <Folder Include="Data\Queries\Transactions" />
+      <ProjectReference Include="..\Opdex.Platform.Domain\Opdex.Platform.Domain.csproj" />
     </ItemGroup>
 
 </Project>

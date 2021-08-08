@@ -1,0 +1,86 @@
+name: Opdex-API
+trigger:
+- develop
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  location: 'Central US'
+  azureSubscription: 'sub-opdex-dev'
+  ARTIFACT_NAME: platform-api
+  artifactName: ReleaseArtifact
+  releaseTemplate: 'azure-pipelines.release.yml'
+
+stages:
+- stage: CI
+  displayName: 'Continuous Integration'
+
+  jobs:
+  - job: Build
+    displayName: Build and Publish
+
+    variables:
+      SOLUTION: 'Opdex.sln'
+      BUILD_CONFIGURATION: 'Release'
+    
+    steps:
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'restore'
+          projects: $(SOLUTION)
+        displayName: Restore
+
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'build'
+          projects: $(SOLUTION)
+          arguments: '--configuration $(BUILD_CONFIGURATION) --no-restore'
+        displayName: 'Build'
+
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'test'
+          projects: test/**/*.Tests.csproj
+          arguments: '--configuration $(BUILD_CONFIGURATION) --no-build'
+        displayName: 'Unit Test'
+      
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'publish'
+          projects: $(SOLUTION)
+          publishWebProjects: True
+          arguments: '--configuration $(BUILD_CONFIGURATION) --no-build --output $(Build.ArtifactStagingDirectory)'
+          zipAfterPublish: True
+        displayName: Publish
+      
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+          artifactName: '$(ARTIFACT_NAME)'
+        displayName: Share
+
+- stage: DEV
+  displayName: 'Release to devnet (Azure)'
+  dependsOn: CI
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop')) # Don't run deployment for PRs against the branch.
+  jobs:
+  - template: ${{ variables.releaseTemplate }}
+    parameters:
+      environment: 'dev'
+
+- stage: TEST
+  displayName: 'Release to testnet (Azure)'
+  dependsOn: DEV
+  jobs:
+  - template: ${{ variables.releaseTemplate }}
+    parameters:
+      environment: 'test'
+
+- stage: MAIN
+  displayName: 'Release to mainnet (Azure)'
+  dependsOn: TEST
+  jobs:
+  - template: ${{ variables.releaseTemplate }}
+    parameters:
+      environment: 'main'

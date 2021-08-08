@@ -8,19 +8,15 @@
       <PackageReference Include="AutoMapper" Version="10.1.1" />
       <PackageReference Include="MediatR" Version="9.0.0" />
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.14" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Opdex.Core.Application.Abstractions\Opdex.Core.Application.Abstractions.csproj" />
       <ProjectReference Include="..\Opdex.Platform.Application.Abstractions\Opdex.Platform.Application.Abstractions.csproj" />
+      <ProjectReference Include="..\Opdex.Platform.Common\Opdex.Platform.Common.csproj" />
+      <ProjectReference Include="..\Opdex.Platform.Domain\Opdex.Platform.Domain.csproj" />
       <ProjectReference Include="..\Opdex.Platform.Infrastructure.Abstractions\Opdex.Platform.Infrastructure.Abstractions.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="EntryHandlers\Blocks" />
-      <Folder Include="EntryHandlers\Transactions" />
-      <Folder Include="Handlers\Blocks" />
-      <Folder Include="Handlers\Transactions" />
     </ItemGroup>
 
 </Project>

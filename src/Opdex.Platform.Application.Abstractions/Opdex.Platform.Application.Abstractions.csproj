@@ -10,15 +10,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="EntryQueries\Blocks" />
-      <Folder Include="EntryQueries\Transactions" />
-      <Folder Include="Models" />
-      <Folder Include="Queries\Blocks" />
-      <Folder Include="Queries\Transactions" />
+      <Folder Include="EntryQueries\Transactions\Wallet" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Opdex.Core.Application.Abstractions\Opdex.Core.Application.Abstractions.csproj" />
+      <ProjectReference Include="..\Opdex.Platform.Infrastructure.Abstractions\Opdex.Platform.Infrastructure.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,22 @@
+parameters:
+- name: environment
+  type: string
+
+jobs:
+  - deployment: ${{ parameters.environment }}
+    displayName: 'Deploy Resources'
+    variables:
+      - group: ${{ parameters.environment }} # points to variable group in Azure DevOps
+    environment: ${{ parameters.environment }} # points to environments in Azure DevOps
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - task: AzureWebApp@1
+              inputs:
+                azureSubscription: $(azureSubscription) 
+                appType: 'webApp'
+                appName: 'app-opdex-${{ parameters.environment }}-api'
+                package: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/*.zip'
+                deploymentMethod: 'auto'
+              displayName: Deploy to App Service

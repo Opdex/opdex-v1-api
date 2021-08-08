@@ -8,21 +8,30 @@
 
     <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="5.10.3" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
-        <PackageReference Include="xunit" Version="2.4.0" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
-        <PackageReference Include="coverlet.collector" Version="1.2.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+        <PackageReference Include="Moq" Version="4.16.1" />
+        <PackageReference Include="xunit" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector" Version="3.0.3">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="EntryHandlers\Blocks" />
-      <Folder Include="EntryHandlers\Pairs" />
+      <Folder Include="EntryHandlers\Pools" />
       <Folder Include="EntryHandlers\Tokens" />
-      <Folder Include="EntryHandlers\Transactions" />
       <Folder Include="Handlers\Blocks" />
-      <Folder Include="Handlers\Pairs" />
+      <Folder Include="Handlers\Pools" />
       <Folder Include="Handlers\Tokens" />
-      <Folder Include="Handlers\Transactions" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Opdex.Platform.Application\Opdex.Platform.Application.csproj" />
     </ItemGroup>
 
 </Project>

@@ -3,8 +3,8 @@
   "profiles": {
     "Opdex.Platform.WebApi": {
       "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "",
+      "launchBrowser": false,
+      "launchUrl": "http://localhost:44391/swagger/index.html",
       "applicationUrl": "https://localhost:44392;http://localhost:44391",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

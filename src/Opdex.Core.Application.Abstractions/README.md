@@ -1,1 +1,0 @@
-# Opdex.Core.Application.Abstractions
