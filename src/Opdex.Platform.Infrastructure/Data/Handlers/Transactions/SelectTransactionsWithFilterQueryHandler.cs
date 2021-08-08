@@ -39,7 +39,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
             {TableJoins}
             {WhereFilter}
             {OrderBy}
-            {Limit};".RemoveExcessWhitespace();
+            {Limit}".RemoveExcessWhitespace();
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -59,14 +59,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
             var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
             var results = await _context.ExecuteQueryAsync<TransactionEntity>(query);
-
-            // re-sort back into correct order
-            if (request.Cursor.PagingDirection == PagingDirection.Backward)
-            {
-                results = request.Cursor.SortDirection == SortDirectionType.ASC
-                    ? results.OrderBy(t => t.Id)
-                    : results.OrderByDescending(t => t.Id);
-            }
 
             return _mapper.Map<IEnumerable<Transaction>>(results);
         }
@@ -136,11 +128,15 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
             var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
-            return SqlQuery
+            var query = SqlQuery
                 .Replace(TableJoins, tableJoins)
                 .Replace(WhereFilter, whereFilter)
                 .Replace(OrderBy, orderBy)
                 .Replace(Limit, limit);
+
+            if (request.Cursor.PagingDirection == PagingDirection.Forward) return $"{query};";
+            // re-sort back into requested order
+            else return $"SELECT * FROM ({query}) r ORDER BY r.{nameof(TransactionEntity.Id)} {Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection)};";
         }
 
         private sealed class SqlParams
