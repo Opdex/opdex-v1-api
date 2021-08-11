@@ -58,11 +58,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 // If it's the staking market, a new liquidity pool, and the pool src token isn't the markets staking token
                 if (market.StakingTokenId > 0 && liquidityPool.Id == 0 && srcTokenId != market.StakingTokenId)
                 {
-                    var getMiningPoolAddressResponse = await _mediator.Send(new RetrieveCirrusLocalCallSmartContractQuery(request.Log.Pool,
-                                                                                                                          "get_MiningPool"));
-                    var miningPoolAddress = getMiningPoolAddressResponse.DeserializeValue<string>();
+                    var miningPoolAddress = await _mediator.Send(new CallCirrusGetMiningPoolByTokenQuery(request.Log.Pool, request.BlockHeight));
 
                     var miningPool = new MiningPool(liquidityPoolId, miningPoolAddress, request.BlockHeight);
+
                     var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPool));
                 }
 

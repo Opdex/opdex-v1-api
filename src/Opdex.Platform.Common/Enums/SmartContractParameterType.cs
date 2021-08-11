@@ -1,4 +1,4 @@
-namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
+namespace Opdex.Platform.Common.Enums
 {
     public enum SmartContractParameterType : uint
     {

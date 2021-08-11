@@ -20,7 +20,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         {
             Amount = "0.00";
             GasPrice = 100;
-            GasLimit = 100_000;
+            GasLimit = 250_000;
             ContractAddress = address;
             Sender = sender;
             MethodName = methodName;

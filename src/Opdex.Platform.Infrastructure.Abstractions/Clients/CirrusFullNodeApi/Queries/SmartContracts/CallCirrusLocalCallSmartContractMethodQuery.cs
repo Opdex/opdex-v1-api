@@ -1,31 +1,16 @@
 using System;
 using MediatR;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Platform.Domain.Models.Transactions;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts
 {
-    public class CallCirrusLocalCallSmartContractMethodQuery : IRequest<LocalCallResponseDto>
+    public class CallCirrusLocalCallSmartContractMethodQuery : IRequest<TransactionQuote>
     {
-        public CallCirrusLocalCallSmartContractMethodQuery(string address, string method, string[] parameters = null)
+        public CallCirrusLocalCallSmartContractMethodQuery(TransactionQuoteRequest quoteRequest)
         {
-            if (!address.HasValue())
-            {
-                throw new ArgumentNullException(nameof(address));
-            }
-            
-            if (!method.HasValue())
-            {
-                throw new ArgumentNullException(nameof(method));
-            }
-
-            Address = address;
-            Method = method;
-            Parameters = parameters ?? new string[0];
+            QuoteRequest = quoteRequest ?? throw new ArgumentNullException(nameof(quoteRequest));
         }
-        
-        public string Address { get; }
-        public string Method { get; }
-        public string[] Parameters { get; }
+
+        public TransactionQuoteRequest QuoteRequest { get; }
     }
 }

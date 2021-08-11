@@ -6,6 +6,7 @@ namespace Opdex.Platform.Common.Configurations
 {
     public class OpdexConfiguration : IValidatable
     {
+        public string WalletTransactionCallback { get; set; } = "https://dev-api.opdex.com/transactions";
         public string ConnectionString { get; set; }
         public NetworkType Network { get; set; }
         public string InstanceId { get; } = Guid.NewGuid().ToString();

@@ -6,6 +6,7 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Pools;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.WebApi.Controllers;
+using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,14 +18,16 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
     {
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<IMediator> _mediatorMock;
+        private readonly Mock<IApplicationContext> _contextMock;
         private readonly MiningPoolsController _controller;
 
         public MiningPoolsControllerTests()
         {
             _mapperMock = new Mock<IMapper>();
             _mediatorMock = new Mock<IMediator>();
+            _contextMock = new Mock<IApplicationContext>();
 
-            _controller = new MiningPoolsController(_mapperMock.Object, _mediatorMock.Object);
+            _controller = new MiningPoolsController(_mapperMock.Object, _mediatorMock.Object, _contextMock.Object);
         }
 
         [Fact]

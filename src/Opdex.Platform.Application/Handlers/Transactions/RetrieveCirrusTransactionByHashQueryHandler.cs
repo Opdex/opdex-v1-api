@@ -5,6 +5,7 @@ using MediatR;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
+using Opdex.Platform.Domain.Models.Transactions;
 
 namespace Opdex.Platform.Application.Handlers.Transactions
 {

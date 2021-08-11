@@ -6,6 +6,7 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.Transactions;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Pools
 {
