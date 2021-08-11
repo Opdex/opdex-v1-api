@@ -34,6 +34,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
+using System.Linq;
 using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDtos.TokenDto;
 
 namespace Opdex.Platform.Application
@@ -369,6 +370,16 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Label, opt => opt.MapFrom(src => src.Label))
                 .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Serialized))
                 .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<TransactionQuoteRequestDto, TransactionQuoteRequest>()
+                .ConstructUsing((src, ctx) =>
+                {
+                    var parameters = src.Parameters.Select(p => ctx.Mapper.Map<TransactionQuoteRequestParameter>(p)).ToList();
+                    return new TransactionQuoteRequest(src.Sender, src.To, src.Amount, src.Method, src.Callback, parameters);
+                });
+
+            CreateMap<TransactionQuoteRequestParameterDto, TransactionQuoteRequestParameter>()
+                .ConstructUsing(src => new TransactionQuoteRequestParameter(src.Label, src.Value));
         }
     }
 }

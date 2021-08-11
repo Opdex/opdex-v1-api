@@ -1,10 +1,8 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,8 +22,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
         public async Task<TransactionDto> Handle(GetTransactionByHashQuery request, CancellationToken cancellationToken)
         {
-            var vault = await _mediator.Send(new RetrieveTransactionByHashQuery(request.Hash), cancellationToken);
-            return await _transactionDtoAssembler.Assemble(vault);
+            var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.Hash), cancellationToken);
+
+            return await _transactionDtoAssembler.Assemble(transaction);
         }
     }
 }

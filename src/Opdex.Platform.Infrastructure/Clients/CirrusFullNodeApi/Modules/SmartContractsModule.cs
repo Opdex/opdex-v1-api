@@ -56,6 +56,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(request, uri, HttpMethod.Post);
             var response = await PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken);
 
+            // Todo: Should be done in localCallResponseDto
             if (response?.Logs?.Any() == true)
             {
                 response.Logs = response.Logs.Select((log, i) =>

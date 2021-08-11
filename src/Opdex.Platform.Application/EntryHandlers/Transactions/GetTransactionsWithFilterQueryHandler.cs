@@ -1,10 +1,8 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using System.Linq;

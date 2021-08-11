@@ -32,10 +32,11 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
             var localCall = new LocalCallRequestDto(request.QuoteRequest.To, request.QuoteRequest.Sender,
                                                     request.QuoteRequest.Method, request.QuoteRequest.SerializedParameters);
 
-            var response = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
+            var response = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 
             var transactionLogs = response.Logs.Select(t => _mapper.Map<TransactionLog>(t)).ToList();
 
+            // Todo: Better handle and parse errors into friendly Enum => Constant messages
             return new TransactionQuote(response.Return, response.ErrorMessage?.Value, response.GasConsumed.Value, transactionLogs, request.QuoteRequest);
         }
     }

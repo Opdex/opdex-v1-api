@@ -8,11 +8,16 @@ namespace Opdex.Platform.Domain.Models.Transactions
     {
         public TransactionQuote(object result, string error, uint gasUsed, IReadOnlyCollection<TransactionLog> logs, TransactionQuoteRequest request)
         {
+            if (gasUsed == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(gasUsed), $"{nameof(gasUsed)} must be greater than 0.");
+            }
+
             Result = result;
             Error = error;
+            GasUsed = gasUsed;
             Logs = logs ?? new List<TransactionLog>();
-            GasUsed = gasUsed > 0 ? gasUsed : throw new ArgumentOutOfRangeException(nameof(gasUsed));
-            Request = request ?? throw new ArgumentNullException(nameof(request));
+            Request = request ?? throw new ArgumentNullException(nameof(request), $"{nameof(request)} must not be null.");
         }
 
         public object Result { get; }

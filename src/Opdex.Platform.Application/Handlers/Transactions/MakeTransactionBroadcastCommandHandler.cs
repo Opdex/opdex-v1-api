@@ -21,6 +21,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions
         public Task<string> Handle(MakeTransactionBroadcastCommand request, CancellationToken cancellationToken)
         {
             var parameters = request.QuoteRequest.Parameters.Select(p => p.Serialized).ToArray();
+
             var callRequest = new SmartContractCallRequestDto(request.QuoteRequest.To, "cirrusdev", request.QuoteRequest.Sender,
                                                               "password", request.QuoteRequest.Amount, request.QuoteRequest.Method, parameters);
 

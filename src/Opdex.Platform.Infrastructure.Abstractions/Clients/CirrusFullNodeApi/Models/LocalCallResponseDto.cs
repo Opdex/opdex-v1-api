@@ -7,12 +7,21 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
 {
     public class LocalCallResponseDto
     {
-        public IList<InternalTransfer> InternalTransfers { get; set; }
+        [JsonProperty("internalTransfers")]
+        public IList<object> InternalTransfersBroken { get; set; }
+
+        public IList<InternalTransfer> InternalTransfers { get; set; } = new List<InternalTransfer>();
+
+        [JsonProperty("logs")]
+        public IList<object> BrokenLogs { get; set; }
+
+        // Todo: Fix when stratis adjusts deserialization in response models
+        public IList<TransactionLogDto> Logs { get; set; } = new List<TransactionLogDto>();
+
         public GasConsumed GasConsumed { get; set; }
         public bool Revert { get; set; }
         public Error ErrorMessage { get; set; }
         public object Return { get; set; }
-        public IList<TransactionLogDto> Logs { get; set; }
 
         // Todo: There should be two, Try and Regular
         // This should be done better in general
