@@ -1,12 +1,12 @@
-using System;
 using MediatR;
 using Opdex.Platform.Domain.Models.Transactions;
+using System;
 
-namespace Opdex.Platform.Application.Abstractions.Queries
+namespace Opdex.Platform.Application.Abstractions.Commands
 {
-    public class RetrieveCirrusLocalCallSmartContractQuery : IRequest<TransactionQuote>
+    public class MakeTransactionQuoteCommand : IRequest<TransactionQuote>
     {
-        public RetrieveCirrusLocalCallSmartContractQuery(TransactionQuoteRequest quoteRequest)
+        public MakeTransactionQuoteCommand(TransactionQuoteRequest quoteRequest)
         {
             QuoteRequest = quoteRequest ?? throw new ArgumentNullException(nameof(quoteRequest));
         }

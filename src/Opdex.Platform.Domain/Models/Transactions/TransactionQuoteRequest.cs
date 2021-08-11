@@ -20,7 +20,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
                 throw new ArgumentNullException(nameof(to));
             }
 
-            if (!amount.HasValue()) // Todo: IsValidDecimal would throw for 0 amounts?
+            if (!amount.IsValidDecimalNumber())
             {
                 throw new ArgumentNullException(nameof(to));
             }

@@ -10,13 +10,15 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public IList<InternalTransfer> InternalTransfers { get; set; }
         public GasConsumed GasConsumed { get; set; }
         public bool Revert { get; set; }
-        public string ErrorMessage { get; set; }
+        public Error ErrorMessage { get; set; }
         public object Return { get; set; }
         public IList<TransactionLogDto> Logs { get; set; }
 
+        // Todo: There should be two, Try and Regular
+        // This should be done better in general
         public T DeserializeValue<T>()
         {
-            if (ErrorMessage.HasValue())
+            if (ErrorMessage?.Value?.HasValue() != true)
             {
                 var error = JsonConvert.SerializeObject(ErrorMessage);
                 throw new Exception(error);
@@ -27,6 +29,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
             var value = JsonConvert.SerializeObject(Return);
             return JsonConvert.DeserializeObject<T>(value);
         }
+    }
+
+    public class Error
+    {
+        public string Value { get; set; }
     }
 
     public class GasConsumed

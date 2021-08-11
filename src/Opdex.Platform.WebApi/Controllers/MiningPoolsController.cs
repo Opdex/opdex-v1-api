@@ -57,9 +57,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> StartMining(string address, StartMiningQuote request, CancellationToken cancellationToken)
         {
-            var command = new CreateStartMiningTransactionQuoteCommand(_context.Wallet, request.Amount, request.MiningPool);
-
-            var response = await _mediator.Send(command, cancellationToken);
+            var response = await _mediator.Send(new CreateStartMiningTransactionQuoteCommand(_context.Wallet, request.Amount,
+                                                                                             request.MiningPool), cancellationToken);
 
             var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
 

@@ -13,6 +13,11 @@ namespace Opdex.Platform.Common.Configurations
 
         public void Validate()
         {
+            if (!WalletTransactionCallback.HasValue())
+            {
+                throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(WalletTransactionCallback)} must not be null or empty.");
+            }
+
             if (!ConnectionString.HasValue())
             {
                 throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(ConnectionString)} must not be null or empty.");

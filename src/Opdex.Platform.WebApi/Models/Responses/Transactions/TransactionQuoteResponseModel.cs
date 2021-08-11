@@ -9,22 +9,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
         public string Error { get; set; }
         public uint GasUsed { get; set; }
         public IReadOnlyCollection<TransactionEventResponseModel> Events { get; set; }
-        public TransactionQuoteRequestResponseModel Request { get; set; }
-    }
-
-    public class TransactionQuoteRequestResponseModel
-    {
-        public string Sender { get; set; }
-        public string To { get; set; }
-        public string Amount { get; set; }
-        public string Method { get; set; }
-        public IReadOnlyCollection<TransactionQuoteRequestParameterResponseModel> Parameters { get; set; }
-        public string Callback { get; set; }
-    }
-
-    public class TransactionQuoteRequestParameterResponseModel
-    {
-        public string Label { get; set; }
-        public string Value { get; set; }
+        public string Request { get; set; }
     }
 }

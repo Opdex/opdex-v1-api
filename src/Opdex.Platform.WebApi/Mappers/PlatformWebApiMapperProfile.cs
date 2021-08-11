@@ -1,4 +1,5 @@
 using AutoMapper;
+using Newtonsoft.Json;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Governances;
@@ -424,21 +425,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Error, opt => opt.MapFrom(src => src.Error))
                 .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
                 .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
-                .ForMember(dest => dest.Request, opt => opt.MapFrom(src => src.Request))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<TransactionQuoteRequestDto, TransactionQuoteRequestResponseModel>()
-                .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender))
-                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
-                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
-                .ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method))
-                .ForMember(dest => dest.Parameters, opt => opt.MapFrom(src => src.Parameters))
-                .ForMember(dest => dest.Callback, opt => opt.MapFrom(src => src.Callback))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<TransactionQuoteRequestParameterDto, TransactionQuoteRequestParameterResponseModel>()
-                .ForMember(dest => dest.Label, opt => opt.MapFrom(src => src.Label))
-                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Value))
+                .ForMember(dest => dest.Request, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Request).Base64Encode()))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
 

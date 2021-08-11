@@ -7,7 +7,6 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions.TransactionLogs;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
@@ -21,8 +20,7 @@ namespace Opdex.Platform.Application.Assemblers
         private readonly IMapper _mapper;
         private readonly IModelAssembler<IEnumerable<TransactionLog>, IReadOnlyCollection<TransactionEventDto>> _eventsAssembler;
 
-        public TransactionDtoAssembler(IMediator mediator,
-                                       IMapper mapper,
+        public TransactionDtoAssembler(IMediator mediator, IMapper mapper,
                                        IModelAssembler<IEnumerable<TransactionLog>, IReadOnlyCollection<TransactionEventDto>> eventsAssembler)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

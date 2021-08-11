@@ -11,7 +11,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Quo
         {
             if (!amount.IsValidDecimalNumber())
             {
-                throw new ArgumentException("Amount must only contain numeric digits.", nameof(amount));
+                throw new ArgumentException("Amount must be a valid decimal number.", nameof(amount));
             }
 
             if (!miningPool.HasValue())
