@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Transactions
 {
-    public class MakeBroadcastTransactionCommandHandler : IRequestHandler<MakeBroadcastTransactionCommand, string>
+    public class MakeTransactionBroadcastCommandHandler : IRequestHandler<MakeTransactionBroadcastCommand, string>
     {
         private readonly IMediator _mediator;
 
-        public MakeBroadcastTransactionCommandHandler(IMediator mediator)
+        public MakeTransactionBroadcastCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<string> Handle(MakeBroadcastTransactionCommand request, CancellationToken cancellationToken)
+        public Task<string> Handle(MakeTransactionBroadcastCommand request, CancellationToken cancellationToken)
         {
             var parameters = request.QuoteRequest.Parameters.Select(p => p.Serialized).ToArray();
             var callRequest = new SmartContractCallRequestDto(request.QuoteRequest.To, "cirrusdev", request.QuoteRequest.Sender,

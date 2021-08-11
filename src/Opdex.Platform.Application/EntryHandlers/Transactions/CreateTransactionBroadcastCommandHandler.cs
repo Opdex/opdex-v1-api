@@ -11,23 +11,23 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
-    public class CreateBroadcastTransactionCommandHandler
-        : IRequestHandler<CreateBroadcastTransactionCommand, string>
+    public class CreateTransactionBroadcastCommandHandler
+        : IRequestHandler<CreateTransactionBroadcastCommand, string>
     {
         private readonly IMediator _mediator;
 
-        public CreateBroadcastTransactionCommandHandler(IMediator mediator)
+        public CreateTransactionBroadcastCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<string> Handle(CreateBroadcastTransactionCommand request, CancellationToken cancellationToken)
+        public Task<string> Handle(CreateTransactionBroadcastCommand request, CancellationToken cancellationToken)
         {
             var dto = JsonConvert.DeserializeObject<TransactionQuoteRequestDto>(request.QuoteRequest);
             var parameters = dto.Parameters.Select(p => new TransactionQuoteRequestParameter(p.Label, p.Value)).ToList();
             var quoteRequest = new TransactionQuoteRequest(dto.Sender, dto.To, dto.Amount, dto.Method, dto.Callback, parameters);
 
-            return _mediator.Send(new MakeBroadcastTransactionCommand(quoteRequest), cancellationToken);
+            return _mediator.Send(new MakeTransactionBroadcastCommand(quoteRequest), cancellationToken);
         }
     }
 }

@@ -12,27 +12,27 @@ namespace Opdex.Platform.Domain.Models.Transactions
         {
             if (!sender.HasValue())
             {
-                throw new ArgumentNullException(nameof(sender));
+                throw new ArgumentNullException(nameof(sender), $"{nameof(sender)} must not be null or empty.");
             }
 
             if (!to.HasValue())
             {
-                throw new ArgumentNullException(nameof(to));
+                throw new ArgumentNullException(nameof(to), $"{nameof(to)} must not be null or empty.");
             }
 
             if (!amount.IsValidDecimalNumber())
             {
-                throw new ArgumentNullException(nameof(to));
+                throw new ArgumentException($"{nameof(amount)} must be a valid decimal number", nameof(amount));
             }
 
             if (!method.HasValue())
             {
-                throw new ArgumentNullException(nameof(method));
+                throw new ArgumentNullException(nameof(method), $"{nameof(method)} must not be null or empty.");
             }
 
             if (!callback.HasValue())
             {
-                throw new ArgumentNullException(nameof(callback));
+                throw new ArgumentNullException(nameof(callback), $"{nameof(callback)} must not be null or empty.");
             }
 
             Sender = sender;

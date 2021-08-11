@@ -269,7 +269,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessMarketSnapshotsCommand, Unit>, ProcessMarketSnapshotsCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessDailyLiquidityPoolSnapshotRefreshCommand, Unit>, ProcessDailyLiquidityPoolSnapshotRefreshCommandHandler>();
             services.AddTransient<IRequestHandler<CreateStartMiningTransactionQuoteCommand, TransactionQuoteDto>, CreateStartMiningTransactionQuoteCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateBroadcastTransactionCommand, string>, CreateBroadcastTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateTransactionBroadcastCommand, string>, CreateTransactionBroadcastCommandHandler>();
             services.AddTransient<IRequestHandler<CreateTransactionQuoteCommand, TransactionQuoteDto>, CreateTransactionQuoteCommandHandler>();
 
             // Commands
@@ -314,7 +314,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeWalletCreateVaultCertificateCommand, string>, MakeWalletCreateVaultCertificateCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletRedeemVaultCertificateCommand, string>, MakeWalletRedeemVaultCertificateCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletRevokeVaultCertificateCommand, string>, MakeWalletRevokeVaultCertificateCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeBroadcastTransactionCommand, string>, MakeBroadcastTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeTransactionBroadcastCommand, string>, MakeTransactionBroadcastCommandHandler>();
 
             // Entry Handlers
             services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();

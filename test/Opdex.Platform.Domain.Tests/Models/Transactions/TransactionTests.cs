@@ -1,10 +1,4 @@
-using System.Collections.Generic;
-using FluentAssertions;
-using Opdex.Platform.Domain.Models;
-using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
-using Xunit;
-
-namespace Opdex.Platform.Domain.Tests.Models
+namespace Opdex.Platform.Domain.Tests.Models.Transactions
 {
     public class TransactionTests
     {

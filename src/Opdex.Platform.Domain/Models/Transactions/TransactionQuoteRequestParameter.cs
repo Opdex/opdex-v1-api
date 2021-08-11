@@ -10,17 +10,17 @@ namespace Opdex.Platform.Domain.Models.Transactions
         {
             if (!label.HasValue())
             {
-                throw new ArgumentNullException(nameof(label));
+                throw new ArgumentNullException(nameof(label), $"{nameof(label)} must not be null or empty.");
             }
 
             if (!value.HasValue())
             {
-                throw new ArgumentNullException(nameof(value));
+                throw new ArgumentNullException(nameof(value), $"{nameof(value)} must not be null or empty.");
             }
 
             if (!type.IsValid())
             {
-                throw new ArgumentOutOfRangeException(nameof(type));
+                throw new ArgumentOutOfRangeException(nameof(type), $"{nameof(type)} is not valid.");
             }
 
             Label = label;
@@ -32,7 +32,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
         {
             if (!label.HasValue())
             {
-                throw new ArgumentNullException(nameof(label));
+                throw new ArgumentNullException(nameof(label), $"{nameof(label)} must not be null or empty.");
             }
 
             (SmartContractParameterType type, string decodedValue) = DeserializeParameterValue(encodedValue);
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
         public SmartContractParameterType Type { get; }
         public string Serialized => Value.ToSmartContractParameter(Type);
 
-        private (SmartContractParameterType, string) DeserializeParameterValue(string value)
+        private static (SmartContractParameterType, string) DeserializeParameterValue(string value)
         {
             if (!value.HasValue() || !value.Contains('#'))
             {

@@ -4,9 +4,9 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions
 {
-    public class MakeBroadcastTransactionCommand : IRequest<string>
+    public class MakeTransactionBroadcastCommand : IRequest<string>
     {
-        public MakeBroadcastTransactionCommand(TransactionQuoteRequest transactionQuote)
+        public MakeTransactionBroadcastCommand(TransactionQuoteRequest transactionQuote)
         {
             QuoteRequest = transactionQuote ?? throw new ArgumentNullException(nameof(transactionQuote));
         }

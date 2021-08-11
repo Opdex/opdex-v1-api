@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
+using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System.Collections.Generic;
@@ -28,12 +29,14 @@ namespace Opdex.Platform.WebApi.Controllers
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly IApplicationContext _context;
+        private readonly NetworkType _network;
 
-        public TransactionsController(IMediator mediator, IMapper mapper, IApplicationContext context)
+        public TransactionsController(IMediator mediator, IMapper mapper, IApplicationContext context, OpdexConfiguration opdexConfiguration)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
         /// <summary>
@@ -109,12 +112,24 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="request">The quoted transaction to broadcast.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Transaction hash and sender address.</returns>
-        // Todo: Network Attribute - Devnet Only; Else 404
         [HttpPost("broadcast-quote")]
         [ProducesResponseType(typeof(BroadcastTransactionResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<BroadcastTransactionResponseModel>> BroadcastTransactionQuote(QuoteReplayRequest request, CancellationToken cancellationToken)
         {
-            var txHash = await _mediator.Send(new CreateBroadcastTransactionCommand(request.Quote));
+            // Todo: Reusable Network Attribute - Devnet Only; Else 404
+            if (_network != NetworkType.DEVNET)
+            {
+                return new NotFoundResult();
+            }
+
+            if (!request.Quote.HasValue() || !request.Quote.TryBase64Decode(out string decodedRequest))
+            {
+                return new ValidationErrorProblemDetailsResult("Quote not formed correctly.");
+            }
+
+            var txHash = await _mediator.Send(new CreateTransactionBroadcastCommand(decodedRequest));
 
             return Ok(new BroadcastTransactionResponseModel { TxHash = txHash, Sender = _context.Wallet });
         }
