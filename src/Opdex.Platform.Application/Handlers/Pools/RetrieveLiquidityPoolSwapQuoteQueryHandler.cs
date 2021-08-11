@@ -25,7 +25,7 @@ namespace Opdex.Platform.Application.Handlers.Pools
         public async Task<string> Handle(RetrieveLiquidityPoolSwapQuoteQuery request, CancellationToken cancellationToken)
         {
             var isCrsIn = request.TokenIn.Address == TokenConstants.Cirrus.Address;
-            var isCrsOut = request.TokenOut.Address == TokenConstants.Cirrus.Address;;
+            var isCrsOut = request.TokenOut.Address == TokenConstants.Cirrus.Address;
             var isSrcToSrc = !isCrsIn && !isCrsOut;
 
             var market = await _mediator.Send(new SelectMarketByAddressQuery(request.Market, findOrThrow: true));

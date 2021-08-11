@@ -18,12 +18,20 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Pools
                 throw new ArgumentNullException(nameof(market));
             }
 
-            if (!tokenInAmount.IsValidDecimalNumber())
+            // Expected either or, not both
+            if (!(tokenInAmount.HasValue() ^ tokenOutAmount.HasValue()))
+            {
+                throw new ArgumentException("Only token in amount or token out amount can have a value.");
+            }
+
+            // Check hasValue in addition to isValidDecimalNumber enforcing we only check and throw when necessary
+            if (tokenInAmount.HasValue() && !tokenInAmount.IsValidDecimalNumber())
             {
                 throw new ArgumentException("Token in amount must be a valid decimal number.", nameof(tokenInAmount));
             }
 
-            if (!tokenOutAmount.IsValidDecimalNumber())
+            // Check hasValue in addition to isValidDecimalNumber enforcing we only check and throw when necessary
+            if (tokenOutAmount.HasValue() && !tokenOutAmount.IsValidDecimalNumber())
             {
                 throw new ArgumentException("Token out amount must be a valid decimal number.", nameof(tokenOutAmount));
             }

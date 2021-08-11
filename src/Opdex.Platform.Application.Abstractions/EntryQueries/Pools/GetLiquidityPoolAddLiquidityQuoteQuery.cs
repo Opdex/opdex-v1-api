@@ -8,9 +8,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Pools
     {
         public GetLiquidityPoolAddLiquidityQuoteQuery(string amountIn, string tokenIn, string pool, string market)
         {
-            if (!amountIn.IsNumeric())
+            if (!amountIn.IsValidDecimalNumber())
             {
-                throw new ArgumentException("Amount in must only contain numeric digits.", nameof(amountIn));
+                throw new ArgumentException("Amount in must be a valid decimal number.", nameof(amountIn));
             }
 
             if (!tokenIn.HasValue())

@@ -9,13 +9,13 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools.SwapQuotes
 {
-    public class CallCirrusGetAmountOutStandardQuoteQueryHandler 
+    public class CallCirrusGetAmountOutStandardQuoteQueryHandler
         : IRequestHandler<CallCirrusGetAmountOutStandardQuoteQuery, string>
     {
         private readonly ISmartContractsModule _smartContractsModule;
         private readonly ILogger<CallCirrusGetAmountOutStandardQuoteQueryHandler> _logger;
-        
-        public CallCirrusGetAmountOutStandardQuoteQueryHandler(ISmartContractsModule smartContractsModule, 
+
+        public CallCirrusGetAmountOutStandardQuoteQueryHandler(ISmartContractsModule smartContractsModule,
             ILogger<CallCirrusGetAmountOutStandardQuoteQueryHandler> logger)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
@@ -28,7 +28,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Pools
             var localCall = new LocalCallRequestDto(request.Market, request.Market, "GetAmountOut", quoteParams);
             var amountIn = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 
-            return amountIn.Return.ToString();
+            return amountIn.DeserializeValue<string>();
         }
     }
 }

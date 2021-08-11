@@ -27,7 +27,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         // This should be done better in general
         public T DeserializeValue<T>()
         {
-            if (ErrorMessage?.Value?.HasValue() != true)
+            if (ErrorMessage?.Value?.HasValue() == true)
             {
                 var error = JsonConvert.SerializeObject(ErrorMessage);
                 throw new Exception(error);
