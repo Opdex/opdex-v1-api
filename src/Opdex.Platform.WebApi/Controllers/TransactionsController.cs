@@ -6,13 +6,17 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
+using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System.Collections.Generic;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -24,11 +28,15 @@ namespace Opdex.Platform.WebApi.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly IApplicationContext _context;
+        private readonly NetworkType _network;
 
-        public TransactionsController(IMediator mediator, IMapper mapper)
+        public TransactionsController(IMediator mediator, IMapper mapper, IApplicationContext context, OpdexConfiguration opdexConfiguration)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
         /// <summary>
@@ -94,6 +102,51 @@ namespace Opdex.Platform.WebApi.Controllers
             var transactionsDto = await _mediator.Send(new GetTransactionByHashQuery(hash), cancellationToken);
 
             var response = _mapper.Map<TransactionResponseModel>(transactionsDto);
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Broadcast a previously quoted transaction. Network dependent, for devnet use only.
+        /// </summary>
+        /// <param name="request">The quoted transaction to broadcast.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Transaction hash and sender address.</returns>
+        [HttpPost("broadcast-quote")]
+        [ProducesResponseType(typeof(BroadcastTransactionResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<BroadcastTransactionResponseModel>> BroadcastTransactionQuote(QuoteReplayRequest request, CancellationToken cancellationToken)
+        {
+            // Todo: Reusable Network Attribute - Devnet Only; Else 404
+            if (_network != NetworkType.DEVNET)
+            {
+                return new NotFoundResult();
+            }
+
+            if (!request.Quote.HasValue() || !request.Quote.TryBase64Decode(out string decodedRequest))
+            {
+                return new ValidationErrorProblemDetailsResult("Quote not formed correctly.");
+            }
+
+            var txHash = await _mediator.Send(new CreateTransactionBroadcastCommand(decodedRequest));
+
+            return Ok(new BroadcastTransactionResponseModel { TxHash = txHash, Sender = _context.Wallet });
+        }
+
+        /// <summary>
+        /// Replay a previous transaction quote to see the current value.
+        /// </summary>
+        /// <param name="request">A previously quoted request</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TransactionQuoteResponseModel"/> outcome of the quote.</returns>
+        [HttpPost("replay-quote")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote(QuoteReplayRequest request, CancellationToken cancellationToken)
+        {
+            var quote = await _mediator.Send(new CreateTransactionQuoteCommand(request.Quote), cancellationToken);
+
+            var response = _mapper.Map<TransactionQuoteResponseModel>(quote);
 
             return Ok(response);
         }

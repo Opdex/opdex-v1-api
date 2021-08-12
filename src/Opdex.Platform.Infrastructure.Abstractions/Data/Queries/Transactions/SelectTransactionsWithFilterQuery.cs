@@ -2,6 +2,7 @@ using MediatR;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using System.Collections.Generic;
 

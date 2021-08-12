@@ -203,6 +203,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
+        [Obsolete]
         [HttpPost("start-mining")]
         public async Task<IActionResult> StartMining(StartMiningRequest request, CancellationToken cancellationToken)
         {

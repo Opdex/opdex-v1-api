@@ -57,9 +57,15 @@ namespace Opdex.Platform.Common.Tests
 
         [Theory]
         [InlineData("1.32", true)]
+        [InlineData("0.00", true)]
+        [InlineData("0", true)]
+        [InlineData(".12", true)]
+        [InlineData("1.1.12", false)]
         [InlineData("1.32e", false)]
         [InlineData("132", false)]
+        [InlineData("1", false)]
         [InlineData("", false)]
+        [InlineData("a", false)]
         [InlineData(null, false)]
         public void ValidDecimalNumber_Success(string value, bool expected)
         {

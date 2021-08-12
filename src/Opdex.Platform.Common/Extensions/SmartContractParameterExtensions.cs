@@ -1,8 +1,7 @@
+using Opdex.Platform.Common.Enums;
 using System;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi
+namespace Opdex.Platform.Common.Extensions
 {
     public static class SmartContractParameterExtensions
     {

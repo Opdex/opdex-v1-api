@@ -16,11 +16,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public LocalCallRequestDto(string address, string sender, string methodName, ulong? blockHeight = null)
             : this(address, sender, methodName, Array.Empty<string>(), blockHeight) { }
 
-        public LocalCallRequestDto(string address, string sender, string methodName, string[] parameters, ulong? blockHeight = null)
+        public LocalCallRequestDto(string address, string sender, string methodName, string[] parameters, ulong? blockHeight = null, string amount = null)
         {
-            Amount = "0.00";
+            Amount = amount ?? "0.00";
             GasPrice = 100;
-            GasLimit = 100_000;
+            GasLimit = 250_000;
             ContractAddress = address;
             Sender = sender;
             MethodName = methodName;

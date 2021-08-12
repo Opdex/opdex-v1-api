@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using System;
 using System.Collections.Generic;

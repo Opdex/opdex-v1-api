@@ -29,7 +29,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             var callDto = new SmartContractCallRequestDto(governance.Address, request.WalletName, request.WalletAddress,
                                                           request.WalletPassword, CrsToSend, MethodName);
 
-            return await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
+            return await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }
     }
 }

@@ -6,5 +6,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public string[] Topics { get; set; }
         public string Data { get; set; }
         public object Log { get; set; }
+        public int SortOrder { get; set; }
     }
 }

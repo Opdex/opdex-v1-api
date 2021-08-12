@@ -6,9 +6,8 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Constants;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
+using Opdex.Platform.Common.Enums;
 
 namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 {
@@ -130,7 +129,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             var callDto = new SmartContractCallRequestDto(request.Router, request.WalletName, request.WalletAddress, request.WalletPassword,
                 crsToSend, methodName, parameters);
 
-            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
+            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }
     }
 }

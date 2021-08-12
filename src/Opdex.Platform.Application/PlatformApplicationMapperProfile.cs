@@ -17,6 +17,7 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
+using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.OHLC;
@@ -32,6 +33,8 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
+using Opdex.Platform.Domain.Models.Transactions;
+using System.Linq;
 using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDtos.TokenDto;
 
 namespace Opdex.Platform.Application
@@ -346,6 +349,37 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.NewAmount, opt => opt.MapFrom(src => src.NewAmount.InsertDecimal(TokenConstants.Opdex.Decimals)))
                 .ForMember(dest => dest.Holder, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock));
+
+            CreateMap<TransactionQuote, TransactionQuoteDto>()
+                .ForMember(dest => dest.Result, opt => opt.MapFrom(src => src.Result))
+                .ForMember(dest => dest.Error, opt => opt.MapFrom(src => src.Error))
+                .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
+                .ForMember(dest => dest.Request, opt => opt.MapFrom(src => src.Request))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<TransactionQuoteRequest, TransactionQuoteRequestDto>()
+                .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender))
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+                .ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method))
+                .ForMember(dest => dest.Parameters, opt => opt.MapFrom(src => src.Parameters))
+                .ForMember(dest => dest.Callback, opt => opt.MapFrom(src => src.Callback))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<TransactionQuoteRequestParameter, TransactionQuoteRequestParameterDto>()
+                .ForMember(dest => dest.Label, opt => opt.MapFrom(src => src.Label))
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Serialized))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<TransactionQuoteRequestDto, TransactionQuoteRequest>()
+                .ConstructUsing((src, ctx) =>
+                {
+                    var parameters = src.Parameters.Select(p => ctx.Mapper.Map<TransactionQuoteRequestParameter>(p)).ToList();
+                    return new TransactionQuoteRequest(src.Sender, src.To, src.Amount, src.Method, src.Callback, parameters);
+                });
+
+            CreateMap<TransactionQuoteRequestParameterDto, TransactionQuoteRequestParameter>()
+                .ConstructUsing(src => new TransactionQuoteRequestParameter(src.Label, src.Value));
         }
     }
 }

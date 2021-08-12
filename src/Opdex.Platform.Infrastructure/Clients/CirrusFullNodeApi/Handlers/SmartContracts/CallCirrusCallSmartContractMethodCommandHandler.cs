@@ -1,27 +1,41 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
+using System.Linq;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
 {
     public class CallCirrusCallSmartContractMethodCommandHandler : IRequestHandler<CallCirrusCallSmartContractMethodCommand, string>
     {
         private readonly ISmartContractsModule _smartContractsModule;
-        private readonly IMapper _mapper;
-        
-        public CallCirrusCallSmartContractMethodCommandHandler(ISmartContractsModule smartContractsModule, IMapper mapper)
+
+        public CallCirrusCallSmartContractMethodCommandHandler(ISmartContractsModule smartContractsModule)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(smartContractsModule));
         }
-        
+
         public Task<string> Handle(CallCirrusCallSmartContractMethodCommand request, CancellationToken cancellationToken)
         {
-            return _smartContractsModule.CallSmartContractAsync(request.CallDto, cancellationToken);
+            SmartContractCallRequestDto callRequest;
+
+            if (request.QuoteRequest == null)
+            {
+                callRequest = request.CallDto;
+            }
+            else
+            {
+                var parameters = request.QuoteRequest.Parameters.Select(p => p.Serialized).ToArray();
+
+                callRequest = new SmartContractCallRequestDto(request.QuoteRequest.To, "cirrusdev", request.QuoteRequest.Sender,
+                                                              "password", request.QuoteRequest.Amount, request.QuoteRequest.Method, parameters);
+
+            }
+
+            return _smartContractsModule.CallSmartContractAsync(callRequest, cancellationToken);
         }
     }
 }

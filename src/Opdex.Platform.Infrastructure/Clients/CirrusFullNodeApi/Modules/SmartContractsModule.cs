@@ -50,11 +50,23 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return GetAsync<IEnumerable<TransactionReceiptDto>>(uri, cancellationToken);
         }
 
-        public Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken)
+        public async Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken)
         {
             const string uri = CirrusUriHelper.SmartContracts.LocalCall;
             var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(request, uri, HttpMethod.Post);
-            return PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken);
+            var response = await PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken);
+
+            // Todo: Should be done in localCallResponseDto
+            if (response?.Logs?.Any() == true)
+            {
+                response.Logs = response.Logs.Select((log, i) =>
+                {
+                    log.SortOrder = i;
+                    return log;
+                }).ToList();
+            }
+
+            return response;
         }
 
         public async Task<string> CallSmartContractAsync(SmartContractCallRequestDto call, CancellationToken cancellationToken)

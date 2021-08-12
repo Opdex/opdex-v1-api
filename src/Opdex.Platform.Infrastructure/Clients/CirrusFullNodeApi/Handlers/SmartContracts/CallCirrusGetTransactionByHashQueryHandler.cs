@@ -6,21 +6,22 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
-using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
 {
-    public class CallCirrusGetTransactionByHashQueryHandler 
+    public class CallCirrusGetTransactionByHashQueryHandler
         : IRequestHandler<CallCirrusGetTransactionByHashQuery, Transaction>
     {
         private readonly ISmartContractsModule _smartContractsModule;
         private readonly IBlockStoreModule _blockStoreModule;
         private readonly IMapper _mapper;
         private readonly ILogger<CallCirrusGetTransactionByHashQueryHandler> _logger;
-        
-        public CallCirrusGetTransactionByHashQueryHandler(ISmartContractsModule smartContractsModule, 
+
+        public CallCirrusGetTransactionByHashQueryHandler(ISmartContractsModule smartContractsModule,
             IBlockStoreModule blockStoreModule, IMapper mapper,
             ILogger<CallCirrusGetTransactionByHashQueryHandler> logger)
         {
@@ -29,7 +30,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-        
+
         // Todo: try catch with retry external from polly for 400 Bad Requests based on flag
         // (incase transaction has not been included in block yet)
         public async Task<Transaction> Handle(CallCirrusGetTransactionByHashQuery request, CancellationToken cancellationToken)
@@ -39,17 +40,10 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
 
             transaction.SetBlockHeight(block.Height);
 
-            var transactionResponse = _mapper.Map<Transaction>(transaction);
+            var transactionLogs = transaction.Logs.Select(t => _mapper.Map<TransactionLog>(t)).ToList();
 
-            for (var i = 0; i < transaction.Logs.Length; i++)
-            {
-                var txLog = transaction.Logs[i];
-                var logType = txLog.Topics[0].HexToString();
-                
-                transactionResponse.DeserializeLog(txLog.Address, logType, i, txLog.Log);
-            }
-
-            return transactionResponse;
+            return new Transaction(transaction.TransactionHash, transaction.BlockHeight, transaction.GasUsed, transaction.From,
+                                   transaction.To, transaction.Success, transaction.NewContractAddress, transactionLogs);
         }
     }
 }

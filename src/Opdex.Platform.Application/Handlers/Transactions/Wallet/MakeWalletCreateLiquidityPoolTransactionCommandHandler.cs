@@ -5,7 +5,8 @@ using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
+using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 {
@@ -26,11 +27,11 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             {
                 request.Token.ToSmartContractParameter(SmartContractParameterType.Address)
             };
-            
-            var callDto = new SmartContractCallRequestDto(request.Market, request.WalletName, request.WalletAddress, 
+
+            var callDto = new SmartContractCallRequestDto(request.Market, request.WalletName, request.WalletAddress,
                 request.WalletPassword, CrsToSend, MethodName, parameters);
-            
-            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
+
+            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }
     }
 }

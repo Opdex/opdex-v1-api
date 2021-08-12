@@ -1,4 +1,5 @@
 using AutoMapper;
+using Newtonsoft.Json;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Governances;
@@ -13,6 +14,7 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
+using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
@@ -417,6 +419,14 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForMember(dest => dest.Holder, opt => opt.MapFrom(src => src.Holder))
                 .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock));
+
+            CreateMap<TransactionQuoteDto, TransactionQuoteResponseModel>()
+                .ForMember(dest => dest.Result, opt => opt.MapFrom(src => src.Result))
+                .ForMember(dest => dest.Error, opt => opt.MapFrom(src => src.Error))
+                .ForMember(dest => dest.GasUsed, opt => opt.MapFrom(src => src.GasUsed))
+                .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
+                .ForMember(dest => dest.Request, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Request).Base64Encode()))
+                .ForAllOtherMembers(opt => opt.Ignore());
         }
 
         private static ReservesResponseModel MapReserves(ReservesDto reservesDto, int srcTokenDecimals)

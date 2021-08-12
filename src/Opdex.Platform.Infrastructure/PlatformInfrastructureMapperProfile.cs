@@ -18,6 +18,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
+using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
@@ -31,6 +32,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.Snapshots;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -38,12 +40,8 @@ namespace Opdex.Platform.Infrastructure
     {
         public PlatformInfrastructureMapperProfile()
         {
-            CreateMap<TransactionReceiptDto, Transaction>()
-                .ConstructUsing(src => new Transaction(src.TransactionHash, src.BlockHeight, src.GasUsed, src.From, src.To, src.Success, src.NewContractAddress))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
             CreateMap<TransactionEntity, Transaction>()
-                .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, src.Success, src.NewContractAddress, null))
+                .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, src.Success, src.NewContractAddress))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TokenEntity, Token>()
@@ -213,6 +211,60 @@ namespace Opdex.Platform.Infrastructure
                     };
                 })
                 .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<TransactionLogDto, TransactionLog>()
+                .ConstructUsing((src, ctx) =>
+                {
+                    var logType = src.Topics[0].HexToString();
+
+                    return logType switch
+                    {
+                        // Deployers
+                        nameof(SetPendingDeployerOwnershipLog) => new SetPendingDeployerOwnershipLog(src.Log, src.Address, src.SortOrder),
+                        nameof(ClaimPendingDeployerOwnershipLog) => new ClaimPendingDeployerOwnershipLog(src.Log, src.Address, src.SortOrder),
+                        nameof(CreateMarketLog) => new CreateMarketLog(src.Log, src.Address, src.SortOrder),
+
+                        // Markets
+                        nameof(SetPendingMarketOwnershipLog) => new SetPendingMarketOwnershipLog(src.Log, src.Address, src.SortOrder),
+                        nameof(ClaimPendingMarketOwnershipLog) => new ClaimPendingMarketOwnershipLog(src.Log, src.Address, src.SortOrder),
+                        nameof(ChangeMarketPermissionLog) => new ChangeMarketPermissionLog(src.Log, src.Address, src.SortOrder),
+                        nameof(CreateLiquidityPoolLog) => new CreateLiquidityPoolLog(src.Log, src.Address, src.SortOrder),
+
+                        // Liquidity Pools
+                        nameof(ReservesLog) => new ReservesLog(src.Log, src.Address, src.SortOrder),
+                        nameof(BurnLog) => new BurnLog(src.Log, src.Address, src.SortOrder),
+                        nameof(MintLog) => new MintLog(src.Log, src.Address, src.SortOrder),
+                        nameof(SwapLog) => new SwapLog(src.Log, src.Address, src.SortOrder),
+                        nameof(StartStakingLog) => new StartStakingLog(src.Log, src.Address, src.SortOrder),
+                        nameof(StopStakingLog) => new StopStakingLog(src.Log, src.Address, src.SortOrder),
+                        nameof(CollectStakingRewardsLog) => new CollectStakingRewardsLog(src.Log, src.Address, src.SortOrder),
+
+                        // Mining Pools
+                        nameof(StartMiningLog) => new StartMiningLog(src.Log, src.Address, src.SortOrder),
+                        nameof(StopMiningLog) => new StopMiningLog(src.Log, src.Address, src.SortOrder),
+                        nameof(CollectMiningRewardsLog) => new CollectMiningRewardsLog(src.Log, src.Address, src.SortOrder),
+                        nameof(EnableMiningLog) => new EnableMiningLog(src.Log, src.Address, src.SortOrder),
+
+                        // Tokens
+                        nameof(ApprovalLog) => new ApprovalLog(src.Log, src.Address, src.SortOrder),
+                        nameof(TransferLog) => new TransferLog(src.Log, src.Address, src.SortOrder),
+                        nameof(DistributionLog) => new DistributionLog(src.Log, src.Address, src.SortOrder),
+
+                        // Governances
+                        nameof(NominationLog) => new NominationLog(src.Log, src.Address, src.SortOrder),
+                        nameof(RewardMiningPoolLog) => new RewardMiningPoolLog(src.Log, src.Address, src.SortOrder),
+
+                        // Vaults
+                        nameof(SetPendingVaultOwnershipLog) => new SetPendingVaultOwnershipLog(src.Log, src.Address, src.SortOrder),
+                        nameof(ClaimPendingVaultOwnershipLog) => new ClaimPendingVaultOwnershipLog(src.Log, src.Address, src.SortOrder),
+                        nameof(CreateVaultCertificateLog) => new CreateVaultCertificateLog(src.Log, src.Address, src.SortOrder),
+                        nameof(RevokeVaultCertificateLog) => new RevokeVaultCertificateLog(src.Log, src.Address, src.SortOrder),
+                        nameof(RedeemVaultCertificateLog) => new RedeemVaultCertificateLog(src.Log, src.Address, src.SortOrder),
+
+                        // Else
+                        _ => null
+                    };
+                });
 
             CreateMap<Market, MarketEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

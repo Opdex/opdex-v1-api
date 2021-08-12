@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Models
+namespace Opdex.Platform.Application.Abstractions.Models.Transactions
 {
     public class TransactionsDto
     {

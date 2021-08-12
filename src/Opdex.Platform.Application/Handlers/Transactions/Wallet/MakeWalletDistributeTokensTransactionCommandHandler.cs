@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
@@ -26,7 +25,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             var callDto = new SmartContractCallRequestDto(request.Token, request.WalletName, request.WalletAddress,
                                                           request.WalletPassword, CrsToSend, MethodName);
 
-            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
+            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }
     }
 }

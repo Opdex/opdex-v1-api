@@ -2,7 +2,7 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Opdex.Platform.Application.Abstractions.Models
+namespace Opdex.Platform.Application.Abstractions.Models.Transactions
 {
     public class TransactionDto
     {

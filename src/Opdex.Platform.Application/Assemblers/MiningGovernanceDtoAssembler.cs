@@ -4,6 +4,7 @@ using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.Tokens;

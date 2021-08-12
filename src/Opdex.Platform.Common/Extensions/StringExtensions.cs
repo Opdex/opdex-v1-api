@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Constants;
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Opdex.Platform.Common.Extensions
@@ -23,7 +24,15 @@ namespace Opdex.Platform.Common.Extensions
         /// <returns>Boolean value of validity.</returns>
         public static bool IsValidDecimalNumber(this string value)
         {
-            return value.HasValue() && value.Contains('.') && value.Replace(".", "").IsNumeric();
+            if (!value.HasValue()) return false;
+
+            var count = value.Count(x => x == '.');
+
+            if (count > 1) return false;
+
+            if (count == 0 && !value.Equals("0")) return false;
+
+            return value.Replace(".", "").IsNumeric();
         }
 
         /// <summary>

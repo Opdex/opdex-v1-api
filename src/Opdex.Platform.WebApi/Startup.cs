@@ -149,11 +149,10 @@ namespace Opdex.Platform.WebApi
                 settings.Version = "v1";
                 settings.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                 {
-                    Description = "Type into textbox: Bearer [your jwt]",
-                    In = OpenApiSecurityApiKeyLocation.Header,
-                    Name = HeaderNames.Authorization,
-                    Type = OpenApiSecuritySchemeType.ApiKey,
-                    Scheme = JwtBearerDefaults.AuthenticationScheme
+                    Description = "Enter your JWT.",
+                    Type = OpenApiSecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT"
                 });
                 settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
             });
