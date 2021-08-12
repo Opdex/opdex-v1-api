@@ -1,12 +1,12 @@
+using MediatR;
+using Opdex.Platform.Application.Abstractions.Commands.Transactions;
+using Opdex.Platform.Domain.Models.Transactions;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Opdex.Platform.Application.Abstractions.Commands;
-using Opdex.Platform.Domain.Models.Transactions;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 
-namespace Opdex.Platform.Application.Handlers
+namespace Opdex.Platform.Application.Handlers.Transactions
 {
     public class MakeTransactionQuoteCommandHandler : IRequestHandler<MakeTransactionQuoteCommand, TransactionQuote>
     {

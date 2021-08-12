@@ -32,7 +32,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             var callDto = new SmartContractCallRequestDto(request.MiningPool, request.WalletName, request.WalletAddress,
                 request.WalletPassword, CrsToSend, MethodName, parameters);
 
-            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
+            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }
     }
 }

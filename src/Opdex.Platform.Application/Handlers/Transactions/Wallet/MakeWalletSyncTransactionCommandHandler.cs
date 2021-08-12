@@ -13,7 +13,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
         private readonly IMediator _mediator;
         private const string MethodName = "Sync";
         private const string CrsToSend = "0";
-        
+
         public MakeWalletSyncTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -21,10 +21,10 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 
         public Task<string> Handle(MakeWalletSyncTransactionCommand request, CancellationToken cancellationToken)
         {
-            var callDto = new SmartContractCallRequestDto(request.LiquidityPool, request.WalletName, request.WalletAddress, 
+            var callDto = new SmartContractCallRequestDto(request.LiquidityPool, request.WalletName, request.WalletAddress,
                 request.WalletPassword, CrsToSend, MethodName, new string[0]);
-            
-            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
+
+            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }
     }
 }

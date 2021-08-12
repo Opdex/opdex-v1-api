@@ -16,12 +16,10 @@ using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Domain.Models.Transactions;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
@@ -97,7 +95,7 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                              "CreateStakingMarket", createStakingMarketParams);
 
             var createStakingMarketTransaction = await CallAndWait(
-                async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(createStakingMarketRequest), cancellationToken));
+                async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: createStakingMarketRequest), cancellationToken));
 
             // Process Deployer deployment
             await _mediator.Send(new ProcessDeployerDeploymentTransactionCommand(deployerTransaction.Hash), CancellationToken.None);
@@ -119,14 +117,14 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                               request.WalletAddress, request.WalletPassword, "0.00", "Approve",
                                                                               new[] { $"9#{stakingMarket.Router}", "12#0", tokenParams.CreateParams[0]});
 
-                await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(approveAllowanceRequest), cancellationToken));
+                await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: approveAllowanceRequest), cancellationToken));
 
                 // Create SRC liquidity pools
                 var createLiquidityPoolRequest = new SmartContractCallRequestDto(stakingMarket.Market, request.WalletName, request.WalletAddress,
                                                                                  request.WalletPassword, "0.00", "CreatePool",
                                                                                  new[] {$"9#{createTokenTransaction.NewContractAddress}"});
                 var createLiquidityPoolTransaction = await CallAndWait(
-                    async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(createLiquidityPoolRequest), cancellationToken));
+                    async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: createLiquidityPoolRequest), cancellationToken));
 
                 createLiquidityPoolTransactions.Add(createLiquidityPoolTransaction);
 
@@ -147,7 +145,7 @@ namespace Opdex.Platform.WebApi.Controllers
             var distributeOdxRequest = new SmartContractCallRequestDto(odxTransaction.NewContractAddress, request.WalletName, request.WalletAddress,
                                                                        request.WalletPassword, "0.00", "DistributeGenesis", poolsParams);
 
-            await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(distributeOdxRequest), cancellationToken));
+            await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: distributeOdxRequest), cancellationToken));
 
             // Create ODX Liquidity Pool
             // Note: we can create the pool but to obtain tokens, the vault vesting period must clear or ODX must be mined
@@ -155,7 +153,7 @@ namespace Opdex.Platform.WebApi.Controllers
             var createOdxPoolRequest = new SmartContractCallRequestDto(stakingMarket.Market, request.WalletName, request.WalletAddress,
                                                                        request.WalletPassword, "0.00", "CreatePool", createOdxPoolParams);
 
-            await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(createOdxPoolRequest), cancellationToken));
+            await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: createOdxPoolRequest), cancellationToken));
 
             await _mediator.Send(new ProcessLatestBlocksCommand(_network), CancellationToken.None);
 

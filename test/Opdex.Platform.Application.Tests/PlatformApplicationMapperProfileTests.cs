@@ -4,13 +4,17 @@ using Newtonsoft.Json;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
+using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
+using Opdex.Platform.Domain.Models.Transactions;
+using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using Xunit;
 
 namespace Opdex.Platform.Application.Tests
@@ -38,7 +42,73 @@ namespace Opdex.Platform.Application.Tests
             dto.Spender.Should().Be(model.Spender);
         }
 
-        #region Transactions
+        #region Transaction Quotes
+
+        [Fact]
+        public void From_TransactionQuote_To_TransactionQuoteDto()
+        {
+            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            const string amount = "0";
+            const string method = "Swap";
+            const string callback = "https://dev-api.opdex.com/transactions";
+
+            var quoteRequest = new TransactionQuoteRequest(sender, to, amount, method, callback);
+            var transactionQuote = new TransactionQuote("result", "error", 10, null, quoteRequest);
+
+            // Act
+            var dto = _mapper.Map<TransactionQuoteDto>(transactionQuote);
+
+            // Assert
+            dto.Error.Should().Be("error");
+            dto.Result.Should().Be("result");
+            dto.GasUsed.Should().Be(10);
+            dto.Request.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void From_TransactionQuoteRequest_To_TransactionQuoteRequestDto()
+        {
+            // Arrange
+            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            const string amount = "1.1";
+            const string method = "Swap";
+            const string callback = "https://dev-api.opdex.com/transactions";
+
+            var parameters = new List<TransactionQuoteRequestParameter> { new TransactionQuoteRequestParameter("Amount", "1000", SmartContractParameterType.UInt256) };
+
+            var quoteRequest = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);
+
+            // Act
+            var dto = _mapper.Map<TransactionQuoteRequestDto>(quoteRequest);
+
+            // Assert
+            dto.Sender.Should().Be(sender);
+            dto.To.Should().Be(to);
+            dto.Amount.Should().Be(amount);
+            dto.Method.Should().Be(method);
+            dto.Callback.Should().Be(callback);
+            dto.Parameters.Select(p => p.Value).Should().BeEquivalentTo(parameters.Select(p => p.Serialized));
+        }
+
+        [Fact]
+        public void From_TransactionQuoteRequestParameter_To_TransactionQuoteRequestParameterDto()
+        {
+            // Arrange
+            var parameter = new TransactionQuoteRequestParameter("Amount", "1000", SmartContractParameterType.UInt256);
+
+            // Act
+            var dto = _mapper.Map<TransactionQuoteRequestParameterDto>(parameter);
+
+            // Assert
+            dto.Label.Should().Be(parameter.Label);
+            dto.Value.Should().Be(parameter.Serialized);
+        }
+
+        #endregion
+
+        #region Transaction Logs
 
         [Fact]
         public void From_StartMiningLog_To_StartMiningEventDto()

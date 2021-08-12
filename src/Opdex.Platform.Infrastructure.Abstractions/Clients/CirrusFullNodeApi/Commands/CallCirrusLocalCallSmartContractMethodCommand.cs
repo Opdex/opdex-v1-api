@@ -8,7 +8,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.C
     {
         public CallCirrusLocalCallSmartContractMethodCommand(TransactionQuoteRequest quoteRequest)
         {
-            QuoteRequest = quoteRequest ?? throw new ArgumentNullException(nameof(quoteRequest));
+            QuoteRequest = quoteRequest ?? throw new ArgumentNullException(nameof(quoteRequest), "Quote request must be provided.");
         }
 
         public TransactionQuoteRequest QuoteRequest { get; }

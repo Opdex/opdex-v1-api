@@ -3,7 +3,7 @@ using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Common.Extensions;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Quote
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.Pools
 {
     public class CreateStartMiningTransactionQuoteCommand : IRequest<TransactionQuoteDto>
     {
@@ -16,12 +16,12 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Quo
 
             if (!miningPool.HasValue())
             {
-                throw new ArgumentNullException(nameof(miningPool));
+                throw new ArgumentNullException(nameof(miningPool), "Mining pool must be provided.");
             }
 
             if (!walletAddress.HasValue())
             {
-                throw new ArgumentNullException(nameof(walletAddress));
+                throw new ArgumentNullException(nameof(walletAddress), "Wallet address must be provided.");
             }
 
             Amount = amount;

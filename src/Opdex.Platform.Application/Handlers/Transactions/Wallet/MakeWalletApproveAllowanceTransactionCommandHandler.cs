@@ -8,11 +8,10 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 
 namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 {
-    public class MakeWalletApproveAllowanceTransactionCommandHandler 
+    public class MakeWalletApproveAllowanceTransactionCommandHandler
         : IRequestHandler<MakeWalletApproveAllowanceTransactionCommand, string>
     {
         private readonly IMediator _mediator;
@@ -34,11 +33,11 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                 currentAllowance.ToSmartContractParameter(SmartContractParameterType.UInt256),
                 request.Amount.ToSmartContractParameter(SmartContractParameterType.UInt256)
             };
-            
-            var callDto = new SmartContractCallRequestDto(request.Token, request.WalletName, request.WalletAddress, 
+
+            var callDto = new SmartContractCallRequestDto(request.Token, request.WalletName, request.WalletAddress,
                 request.WalletPassword, CrsToSend, MethodName, parameters);
-            
-            return await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
+
+            return await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }
     }
 }

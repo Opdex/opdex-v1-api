@@ -1,7 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Newtonsoft.Json;
-using Opdex.Platform.Application.Abstractions.Commands;
+using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Assemblers;

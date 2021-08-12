@@ -116,7 +116,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 
-            var parameters = new List<TransactionQuoteRequestParameter>()
+            var parameters = new List<TransactionQuoteRequestParameter>
             {
                 new TransactionQuoteRequestParameter("Amount", "10", SmartContractParameterType.UInt256)
             };

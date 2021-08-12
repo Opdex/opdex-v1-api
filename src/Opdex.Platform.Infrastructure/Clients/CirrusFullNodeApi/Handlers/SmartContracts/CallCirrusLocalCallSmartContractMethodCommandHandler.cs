@@ -3,7 +3,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
@@ -16,21 +15,18 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
     public class CallCirrusLocalCallSmartContractMethodCommandHandler : IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>
     {
         private readonly ISmartContractsModule _smartContractsModule;
-        private readonly ILogger<CallCirrusLocalCallSmartContractMethodCommandHandler> _logger;
         private readonly IMapper _mapper;
 
-        public CallCirrusLocalCallSmartContractMethodCommandHandler(ISmartContractsModule smartContractsModule,
-            ILogger<CallCirrusLocalCallSmartContractMethodCommandHandler> logger, IMapper mapper)
+        public CallCirrusLocalCallSmartContractMethodCommandHandler(ISmartContractsModule smartContractsModule, IMapper mapper)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<TransactionQuote> Handle(CallCirrusLocalCallSmartContractMethodCommand request, CancellationToken cancellationToken)
         {
-            var localCall = new LocalCallRequestDto(request.QuoteRequest.To, request.QuoteRequest.Sender,
-                                                    request.QuoteRequest.Method, request.QuoteRequest.SerializedParameters);
+            var localCall = new LocalCallRequestDto(request.QuoteRequest.To, request.QuoteRequest.Sender, request.QuoteRequest.Method,
+                                                    request.QuoteRequest.SerializedParameters, amount: request.QuoteRequest.Amount);
 
             var response = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 

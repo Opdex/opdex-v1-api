@@ -1,6 +1,6 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Commands;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Quote;
+using Opdex.Platform.Application.Abstractions.Commands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Pools;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Common.Configurations;
@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.Quote
+namespace Opdex.Platform.Application.EntryHandlers.Pools
 {
     public class CreateStartMiningTransactionQuoteCommandHandler
         : IRequestHandler<CreateStartMiningTransactionQuoteCommand, TransactionQuoteDto>
@@ -43,8 +43,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Quote
                 new TransactionQuoteRequestParameter("Amount", amount, SmartContractParameterType.UInt256)
             };
 
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.MiningPool, CrsToSend, MethodName,
-                                                           _callbackEndpoint, requestParameters);
+            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.MiningPool, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
 
             var quote = await _mediator.Send(new MakeTransactionQuoteCommand(quoteRequest), cancellationToken);
 

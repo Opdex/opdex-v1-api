@@ -32,11 +32,11 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
                 request.Recipient.ToSmartContractParameter(SmartContractParameterType.Address),
                 0.ToSmartContractParameter(SmartContractParameterType.UInt64)
             };
-            
-            var callDto = new SmartContractCallRequestDto(request.Market, request.WalletName, request.WalletAddress, 
+
+            var callDto = new SmartContractCallRequestDto(request.Market, request.WalletName, request.WalletAddress,
                 request.WalletPassword, CrsToSend, MethodName, parameters);
-            
-            return await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto), cancellationToken);
+
+            return await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }
     }
 }
