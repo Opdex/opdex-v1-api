@@ -52,7 +52,7 @@ namespace Opdex.Platform.Common.Models
 
         public override bool Equals(object obj)
         {
-            return obj is Address || obj is string other && Equals(other);
+            return obj is Address a && Equals(a) || obj is string b && Equals(b);
         }
 
         public bool Equals(Address other)
