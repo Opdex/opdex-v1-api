@@ -4,6 +4,7 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Handlers.Addresses;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
@@ -29,11 +30,11 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidOwner(string owner)
+        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidOwner(Address owner)
         {
             // Arrange
-            const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
             // Act
             void Act() => new RetrieveAddressAllowanceQuery(owner, spender, token);
@@ -46,11 +47,11 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidSpender(string spender)
+        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidSpender(Address spender)
         {
             // Arrange
-            const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
             // Act
             void Act() => new RetrieveAddressAllowanceQuery(owner, spender, token);
@@ -63,11 +64,11 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidToken(string token)
+        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidToken(Address token)
         {
             // Arrange
-            const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
             // Act
             void Act() => new RetrieveAddressAllowanceQuery(owner, spender, token);

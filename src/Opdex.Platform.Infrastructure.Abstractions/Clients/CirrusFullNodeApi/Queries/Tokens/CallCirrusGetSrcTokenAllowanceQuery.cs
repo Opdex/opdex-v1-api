@@ -1,6 +1,7 @@
 using MediatR;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
+using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens
 {
@@ -8,9 +9,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
     {
         public CallCirrusGetSrcTokenAllowanceQuery(Address token, Address owner, Address spender)
         {
-            Token = token;
-            Owner = owner;
-            Spender = spender;
+            Token = token != Address.Zero ? token : throw new ArgumentNullException(nameof(token));
+            Owner = owner != Address.Zero ? owner : throw new ArgumentNullException(nameof(owner));
+            Spender = spender != Address.Zero ? spender : throw new ArgumentNullException(nameof(spender));
         }
 
         public Address Token { get; }

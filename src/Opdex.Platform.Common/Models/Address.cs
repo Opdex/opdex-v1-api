@@ -3,23 +3,30 @@ using System;
 
 namespace Opdex.Platform.Common.Models
 {
-    public readonly struct Address : IEquatable<string>
+    public readonly struct Address : IEquatable<string>, IEquatable<Address>
     {
         private string Value { get; }
 
+        public static Address Zero => new Address(null);
+
         public Address(string value)
         {
-            // Cheap check based on value and size, larger size for potential ETH compatibility if necessary
-            if (!value.HasValue() || value.Length < 30 || value.Length > 42)
+            // If provided, should be > 40 but < 42 characters. 42 for potential ETH addresses if ever necessary.
+            if (value.HasValue() && (value.Length < 30 || value.Length > 42))
             {
                 throw new ArgumentException("Invalid address.");
             }
 
-            this.Value = value;
+            this.Value = value.HasValue() ? value : null;
         }
 
         public static bool operator ==(Address a, Address b)
         {
+            if (a.Value == null)
+            {
+                return b.Value == null;
+            }
+
             return a.Value.Equals(b.Value);
         }
 

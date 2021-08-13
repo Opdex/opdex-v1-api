@@ -10,7 +10,6 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
         [Theory]
         [InlineData("PPQdeXdjWDBzVLUjgWwi4mFP4Y1mhuNcRu")]
         [InlineData("0x14F768657135D3DaAFB45D242157055f1C9143f3")]
-
         public void CreatesNew_Address(string value)
         {
             // Arrange
@@ -22,9 +21,6 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
         [InlineData("Wwi4mFP4Y1mhuNcRu")]
         [InlineData("0x14F768657135D3DaAFB45D242157055f1C9143f31")] // 1 extra
         public void CreatesNew_Address_ThrowsArgumentException(string value)
@@ -35,6 +31,22 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Invalid address.");
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void CreatesNew_Address_Null(string value)
+        {
+            // Arrange
+            // Act
+            var address = new Address(value);
+
+            // Assert
+            address.ToString().Should().BeNull();
+            address.Should().BeEquivalentTo(Address.Zero);
+            (address == Address.Zero).Should().BeTrue();
         }
 
         [Fact]
