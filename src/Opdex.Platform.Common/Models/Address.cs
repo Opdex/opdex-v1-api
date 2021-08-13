@@ -3,9 +3,9 @@ using System;
 
 namespace Opdex.Platform.Common.Models
 {
-    public struct Address : IComparable
+    public readonly struct Address : IEquatable<string>
     {
-        private readonly string value;
+        private string Value { get; }
 
         public Address(string value)
         {
@@ -15,12 +15,12 @@ namespace Opdex.Platform.Common.Models
                 throw new ArgumentException("Invalid address.");
             }
 
-            this.value = value;
+            this.Value = value;
         }
 
         public static bool operator ==(Address a, Address b)
         {
-            return a.value.CompareTo(b.value) == 0;
+            return a.Value.Equals(b.Value);
         }
 
         public static bool operator !=(Address a, Address b)
@@ -35,27 +35,32 @@ namespace Opdex.Platform.Common.Models
 
         public static explicit operator string(Address value)
         {
-            return value.value;
-        }
-
-        public int CompareTo(object b)
-        {
-            return String.Compare(this.value, ((Address)b).value, StringComparison.Ordinal);
+            return value.Value;
         }
 
         public override int GetHashCode()
         {
-            return this.value.GetHashCode();
-        }
-
-        public override bool Equals(object obj)
-        {
-            return this.CompareTo(obj) == 0;
+            return (Value != null ? Value.GetHashCode() : 0);
         }
 
         public override string ToString()
         {
-            return this.value;
+            return this.Value;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Address other && Equals(other);
+        }
+
+        public bool Equals(Address other)
+        {
+            return Value == other.Value;
+        }
+
+        public bool Equals(string other)
+        {
+            return Value == other;
         }
     }
 }

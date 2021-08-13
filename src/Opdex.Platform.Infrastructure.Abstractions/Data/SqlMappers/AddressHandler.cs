@@ -1,9 +1,10 @@
+using Dapper;
 using Opdex.Platform.Common.Models;
 using System.Data;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.SqlMapper
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.SqlMappers
 {
-    public class AddressHandler : Dapper.SqlMapper.TypeHandler<Address>
+    public class AddressHandler : SqlMapper.TypeHandler<Address>
     {
         public override void SetValue(IDbDataParameter parameter, Address value)
         {

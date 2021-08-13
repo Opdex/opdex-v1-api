@@ -54,7 +54,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distributio
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs;
-using Opdex.Platform.Infrastructure.Abstractions.Data.SqlMapper;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.BlockStore;
@@ -85,6 +84,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Data.SqlMappers;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balances;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 

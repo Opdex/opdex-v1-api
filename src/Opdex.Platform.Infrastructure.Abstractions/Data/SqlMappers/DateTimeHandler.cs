@@ -1,9 +1,10 @@
+using Dapper;
 using System;
 using System.Data;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.SqlMapper
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.SqlMappers
 {
-    public class DateTimeHandler : Dapper.SqlMapper.TypeHandler<DateTime>
+    public class DateTimeHandler : SqlMapper.TypeHandler<DateTime>
     {
         public override void SetValue(IDbDataParameter parameter, DateTime value)
         {

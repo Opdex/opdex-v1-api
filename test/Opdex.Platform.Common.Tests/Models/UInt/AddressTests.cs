@@ -69,9 +69,11 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
         public void Address_ShouldMatch()
         {
             const string value = "PPQdeXdjWDBzVLUjgWwi4mFP4Y1mhuNcRu";
-            var address = new Address("PPQdeXdjWDBzVLUjgWwi4mFP4Y1mhuNcRu");
+            Address address = new Address("PPQdeXdjWDBzVLUjgWwi4mFP4Y1mhuNcRu");
 
             (address == address).Should().BeTrue();
+            address.Equals(address).Should().BeTrue();
+            address.Equals(value).Should().BeTrue();
             (value == address).Should().BeTrue();
             (value != address).Should().BeFalse();
         }
@@ -84,6 +86,7 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
 
             (value != address).Should().BeTrue();
             (value == address).Should().BeFalse();
+            address.Equals(value).Should().BeFalse();
         }
     }
 }
