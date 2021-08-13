@@ -96,6 +96,8 @@ namespace Opdex.Platform.Infrastructure
             CoinMarketCapConfiguration cmcConfiguration)
         {
             SqlMapper.AddTypeHandler(new DateTimeHandler());
+            SqlMapper.AddTypeHandler(new UInt128Handler());
+            SqlMapper.AddTypeHandler(new UInt256Handler());
 
             // Data Services
             AddDataQueries(services);

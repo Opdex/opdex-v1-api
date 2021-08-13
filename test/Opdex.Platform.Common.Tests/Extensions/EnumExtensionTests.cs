@@ -3,7 +3,7 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Xunit;
 
-namespace Opdex.Platform.Common.Tests
+namespace Opdex.Platform.Common.Tests.Extensions
 {
     public class EnumExtensionTests
     {
