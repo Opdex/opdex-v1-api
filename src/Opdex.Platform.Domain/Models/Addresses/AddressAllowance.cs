@@ -15,12 +15,12 @@ namespace Opdex.Platform.Domain.Models.Addresses
                 throw new ArgumentOutOfRangeException(nameof(tokenId), "Token id must be greater than 0.");
             }
 
-            if (owner == Address.Zero)
+            if (owner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(owner), "Owner must be set.");
             }
 
-            if (spender == Address.Zero)
+            if (spender == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(spender), "Spender must be set.");
             }

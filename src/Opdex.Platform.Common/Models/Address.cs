@@ -7,7 +7,7 @@ namespace Opdex.Platform.Common.Models
     {
         private string Value { get; }
 
-        public static Address Zero => new Address(null);
+        public static Address Empty => new Address(null);
 
         public Address(string value)
         {
@@ -22,12 +22,7 @@ namespace Opdex.Platform.Common.Models
 
         public static bool operator ==(Address a, Address b)
         {
-            if (a.Value == null)
-            {
-                return b.Value == null;
-            }
-
-            return a.Value.Equals(b.Value);
+            return a.Equals(b);
         }
 
         public static bool operator !=(Address a, Address b)
@@ -57,7 +52,7 @@ namespace Opdex.Platform.Common.Models
 
         public override bool Equals(object obj)
         {
-            return obj is Address other && Equals(other);
+            return obj is Address || obj is string other && Equals(other);
         }
 
         public bool Equals(Address other)
