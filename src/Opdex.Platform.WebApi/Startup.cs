@@ -85,6 +85,7 @@ namespace Opdex.Platform.WebApi
                             new StringEnumConverter(),
                             new UInt128Converter(),
                             new UInt256Converter(),
+                            new AddressConverter(),
                             new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
                         };
                 });
