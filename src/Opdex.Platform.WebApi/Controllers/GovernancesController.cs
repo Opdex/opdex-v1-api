@@ -33,9 +33,8 @@ namespace Opdex.Platform.WebApi.Controllers
             _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
-        /// <summary>
-        /// Retrieves a governance smart contract's summary by its address.
-        /// </summary>
+        /// <summary>Get Governance</summary>
+        /// <remarks>Retrieves a governance smart contract's summary by its address.</remarks>
         /// <param name="address">The address of the governance smart contract.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="MiningGovernanceResponseModel"/> summary</returns>
@@ -51,9 +50,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Rewards nominated mining pools by distributing tokens to be mined when the nomination period has ended.
-        /// </summary>
+        /// <summary>Reward Mining Pools Quote</summary>
+        /// <remarks>Rewards nominated mining pools by distributing tokens to be mined when the nomination period has ended.</remarks>
         /// <param name="address">The address of the governance contract.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Transaction hash</returns>
@@ -72,9 +70,8 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
-        /// <summary>
-        /// Quotes a reward nominated mining pools transaction.
-        /// </summary>
+        /// <summary>Reward Mining Pool Quote</summary>
+        /// <remarks>Quotes a reward nominated mining pools transaction.</remarks>
         /// <param name="address">The address of the governance contract.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns></returns>

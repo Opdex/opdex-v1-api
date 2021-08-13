@@ -33,10 +33,8 @@ namespace Opdex.Platform.WebApi.Controllers
             _instanceId = opdexConfiguration?.InstanceId ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
-
-        /// <summary>
-        /// Retrieve the latest synced block.
-        /// </summary>
+        /// <summary>Get Latest Block</summary>
+        /// <remarks>Retrieve the latest synced block.</remarks>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Block details</returns>
         [HttpGet("latest-block")]
@@ -48,9 +46,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(latestSyncedBlock);
         }
 
-        /// <summary>
-        /// Retrieve the identifier of this specific host instance.
-        /// </summary>
+        /// <summary>Get Instance Identity</summary>
+        /// <remarks>Retrieve the identifier of this specific host instance.</remarks>
         /// <returns>GUID as string identifier</returns>
         [HttpGet("instance-identity")]
         [Authorize]
@@ -60,9 +57,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(new InstanceIdentityResponseModel { Identity = _instanceId });
         }
 
-        /// <summary>
-        /// Processes the odx and market deployer transactions then syncs to chain tip.
-        /// </summary>
+        /// <summary>Resync From Deployment</summary>
+        /// <remarks>Processes the odx and market deployer transactions then syncs to chain tip.</remarks>
         /// <remarks>
         /// For a successful redeployment, copy the odx and market deployer deployment transaction hashes.
         /// Then clear all non-lookup tables of any data in the database. Leaving only `_type` tables populated.

@@ -29,6 +29,10 @@ namespace Opdex.Platform.WebApi.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        /// <summary>Get Market</summary>
+        /// <remarks>Retrieves a market.</remarks>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>Market</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<MarketSnapshotResponseModel>> GetMarketDetails(CancellationToken cancellationToken)
@@ -40,6 +44,12 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>Get Market History</summary>
+        /// <summary>Retrieves the history of a market.</summary>
+        /// <param name="from">From Date</param>
+        /// <param name="to">To Date</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>Market History</returns>
         [HttpGet("history")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<MarketSnapshotResponseModel>> GetMarketHistory(DateTime? from, DateTime? to, CancellationToken cancellationToken)

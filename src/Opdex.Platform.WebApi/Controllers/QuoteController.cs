@@ -31,9 +31,10 @@ namespace Opdex.Platform.WebApi.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        /// <summary>
+        /// <summary>Swap Amount</summary>
+        /// <remarks>
         /// Gets a quote for the amount of tokens returned from any given token swap.
-        /// </summary>
+        /// </remarks>
         /// <remarks>
         /// Supports CRS-SRC transactions and SRC-SRC transactions. Given an amount of a token
         /// get the returned amount of another token.
@@ -52,9 +53,10 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(result);
         }
 
-        /// <summary>
+        /// <summary>Add Liquidity Amount</summary>
+        /// <remarks>
         /// Gets a quote for how many tokens are required to be input given the other token in a pool's desired input amount.
-        /// </summary>
+        /// </remarks>
         /// <param name="request">Request model detailing how many of which tokens are desired to be deposited.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>The number of tokens to match the desired input amount of tokens.</returns>

@@ -36,9 +36,8 @@ namespace Opdex.Platform.WebApi.Controllers
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        /// <summary>
-        /// Authorizes access to a specific market
-        /// </summary>
+        /// <summary>Authorize</summary>
+        /// <remarks>Authorizes access to a specific market</remarks>
         /// <param name="market">The market contract address to request access to</param>
         /// <param name="wallet">The wallet public key of the user</param>
         /// <returns>An access token</returns>

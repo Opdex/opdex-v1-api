@@ -39,9 +39,8 @@ namespace Opdex.Platform.WebApi.Controllers
             _blockExplorerConfig = blockExplorerConfig ?? throw new ArgumentNullException(nameof(blockExplorerConfig));
         }
 
-        /// <summary>
-        /// Retrieves vault details for all vaults
-        /// </summary>
+        /// <summary>Get Vaults</summary>
+        /// <remarks>Retrieves vault details for all vaults</remarks>
         /// <param name="cancellationToken"></param>
         /// <returns>Collection of vault details</returns>
         [HttpGet]
@@ -52,9 +51,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(_mapper.Map<IEnumerable<VaultResponseModel>>(vaults));
         }
 
-        /// <summary>
-        /// Retrieves vault details for a vault address
-        /// </summary>
+        /// <summary>Get Vault</summary>
+        /// <remarks>Retrieves vault details for a vault address</remarks>
         /// <param name="address">Address of the vault</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Vault details</returns>
@@ -67,12 +65,11 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(_mapper.Map<VaultResponseModel>(vault));
         }
 
-        /// <summary>
-        /// Sets the owner of a vault
-        /// </summary>
+        /// <summary>Set Owner Quote</summary>
+        /// <remarks>Sets the owner of a vault</remarks>
         /// <param name="address">Vault contract address</param>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="request">Set owner request.</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Cirrus transaction hash</returns>
         [HttpPost("{address}/owner")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -86,15 +83,14 @@ namespace Opdex.Platform.WebApi.Controllers
             return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
         }
 
-        /// <summary>
-        /// Retrieves vault certificates for a vault address
-        /// </summary>
+        /// <summary>Get Certificates</summary>
+        /// <remarks>Retrieves vault certificates for a vault address</remarks>
         /// <param name="address">Address of the vault</param>
         /// <param name="holder">Certificate holder address</param>
         /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
         /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
         /// <param name="cursor">The cursor when paging.</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Vault certificates</returns>
         [HttpGet("{address}/certificates")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -124,12 +120,11 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(_mapper.Map<VaultCertificatesResponseModel>(certificates));
         }
 
-        /// <summary>
-        /// Issues a new certificate from a vault with the default vesting period
-        /// </summary>
+        /// <summary>Create Certificate Quote</summary>
+        /// <remarks>Issues a new certificate from a vault with the default vesting period</remarks>
         /// <param name="address">Vault contract address</param>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="request">Create vault certificate request.</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Cirrus transaction hash</returns>
         [HttpPost("{address}/certificates")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -137,35 +132,30 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                   CreateVaultCertificateRequest request,
                                                                   CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new CreateWalletCreateVaultCertificateCommand(_context.Wallet,
-                                                                                                     address,
-                                                                                                    request.Holder,
-                                                                                                    request.Amount), cancellationToken);
+            var transactionHash = await _mediator.Send(new CreateWalletCreateVaultCertificateCommand(_context.Wallet, address,
+                                                                                                     request.Holder, request.Amount), cancellationToken);
+
             return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
         }
 
-        /// <summary>
-        /// Redeems all vested certificates in a vault, owned by the authorized wallet
-        /// </summary>
+        /// <summary>Redeem Certificate Quote</summary>
+        /// <remarks>Redeems all vested certificates in a vault, owned by the authorized wallet</remarks>
         /// <param name="address">Vault contract address</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Cirrus transaction hash</returns>
         [HttpPost("{address}/certificates/redeem")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<string>> RedeemCertificates(string address,
-                                                                CancellationToken cancellationToken)
+        public async Task<ActionResult<string>> RedeemCertificates(string address, CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new CreateWalletRedeemVaultCertificateCommand(_context.Wallet, address),
-                                                    cancellationToken);
+            var transactionHash = await _mediator.Send(new CreateWalletRedeemVaultCertificateCommand(_context.Wallet, address),  cancellationToken);
             return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
         }
 
-        /// <summary>
-        /// Revokes all non-vested certificates in a vault, held by a specified address
-        /// </summary>
+        /// <summary>Revoke Certificate Quote</summary>
+        /// <remarks>Revokes all non-vested certificates in a vault, held by a specified address</remarks>
         /// <param name="address">Vault contract address</param>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="request">Revoke certificate request</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Cirrus transaction hash</returns>
         [HttpPost("{address}/certificates/revoke")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -173,9 +163,7 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                 RevokeVaultCertificatesRequest request,
                                                                 CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new CreateWalletRevokeVaultCertificateCommand(_context.Wallet,
-                                                                                                    address,
-                                                                                                    request.Holder), cancellationToken);
+            var transactionHash = await _mediator.Send(new CreateWalletRevokeVaultCertificateCommand(_context.Wallet, address, request.Holder), cancellationToken);
             return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
         }
     }

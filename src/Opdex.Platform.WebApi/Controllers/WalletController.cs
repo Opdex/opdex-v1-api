@@ -36,9 +36,8 @@ namespace Opdex.Platform.WebApi.Controllers
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        /// <summary>
-        /// Retrieve the allowance of a spender for tokens owned by another wallet.
-        /// </summary>
+        /// <summary>Get Approved Allowance</summary>
+        /// <remarks>Retrieve the allowance of a spender for tokens owned by another wallet.</remarks>
         /// <param name="address">The owner's wallet address of the tokens.</param>
         /// <param name="token">The token address.</param>
         /// <param name="spender">The spender of the allowance.</param>
@@ -53,9 +52,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Retrieves token balances for an address.
-        /// </summary>
+        /// <summary>Get Balances</summary>
+        /// <remarks>Retrieves token balances for an address.</remarks>
         /// <param name="address">The address to lookup balances for.</param>
         /// <param name="tokens">Specific tokens to lookup.</param>
         /// <param name="includeLpTokens">Includes all tokens if true, otherwise excludes liquidity pool tokens.</param>
@@ -98,9 +96,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Retrieves a wallet public key balance of a token.
-        /// </summary>
+        /// <summary>Get Balance</summary>
+        /// <remarks>Retrieves a wallet public key balance of a token.</remarks>
         /// <param name="address">The wallet address.</param>
         /// <param name="token">The token to get the balance of.</param>
         /// <param name="cancellationToken">Cancellation token</param>
@@ -115,9 +112,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Retrieves the mining position of an address in all mining pools
-        /// </summary>
+        /// <summary>Get Mining Positions</summary>
+        /// <remarks>Retrieves the mining position of an address in all mining pools</remarks>
         /// <param name="address">Address to lookup</param>
         /// <param name="liquidityPools">Specific liquidity pools to include.</param>
         /// <param name="miningPools">Specific mining pools to include.</param>
@@ -159,9 +155,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Retrieves the mining position of an address in a particular pool
-        /// </summary>
+        /// <summary>Get Mining Position</summary>
+        /// <remarks>Retrieves the mining position of an address in a particular pool</remarks>
         /// <param name="address">Address to lookup</param>
         /// <param name="miningPool">Mining pool to search</param>
         /// <param name="cancellationToken"></param>
@@ -175,9 +170,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Retrieves the staking position of an address in all staking pools
-        /// </summary>
+        /// <summary>Get Staking Positions</summary>
+        /// <remarks>Retrieves the staking position of an address in all staking pools</remarks>
         /// <param name="address">Address to lookup</param>
         /// <param name="liquidityPools">Specific liquidity pools to include.</param>
         /// <param name="includeZeroAmounts">Only includes 0 amounts if true.</param>
@@ -216,9 +210,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Retrieves the staking position of an address in a particular pool
-        /// </summary>
+        /// <summary>Get Staking Position</summary>
+        /// <remarks>Retrieves the staking position of an address in a particular pool</remarks>
         /// <param name="address">Address to lookup</param>
         /// <param name="liquidityPool">Liquidity pool to search</param>
         /// <param name="cancellationToken"></param>

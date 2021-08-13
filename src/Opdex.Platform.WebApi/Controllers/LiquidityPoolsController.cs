@@ -33,9 +33,10 @@ namespace Opdex.Platform.WebApi.Controllers
             _context = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
         }
 
-        /// <summary>
+        /// <summary>Get Liquidity Pools</summary>
+        /// <remarks>
         /// Retrieve a list of pools that match the filters provided.
-        /// </summary>
+        /// </remarks>
         /// <param name="staking">Filter liquidity pools by staking status. Default null is ignored.</param>
         /// <param name="mining">Filter liquidity pools by mining status. Default null is ignored.</param>
         /// <param name="nominated">Filter liquidity pools by nomination status. Default null is ignored.</param>
@@ -76,9 +77,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Returns the liquidity pool that matches the provided address.
-        /// </summary>
+        /// <summary>Get Liquidity Pool</summary>
+        /// <remarks>Returns the liquidity pool that matches the provided address.</remarks>
         /// <param name="address">Contract address to get pools of</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>The requested pools</returns>
@@ -94,9 +94,10 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
+        /// <summary>Get Liquidity Pool History</summary>
+        /// <remarks>
         /// Retrieve historical data points for a liquidity pool such as reserves, volume, staking and associated token costs.
-        /// </summary>
+        /// </remarks>
         /// <param name="address">The address of the liquidity pool.</param>
         /// <param name="candleSpan">"Hourly" or "Daily" determining the time span of each data point. Default is daily.</param>
         /// <param name="timespan">"1D", "1W", "1M", "1Y" determining how much history to fetch. Default is 1 week.</param>

@@ -39,9 +39,8 @@ namespace Opdex.Platform.WebApi.Controllers
             _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
-        /// <summary>
-        /// Filter and retrieve Opdex related and indexed transactions.
-        /// </summary>
+        /// <summary>Get Transactions</summary>
+        /// <remarks>Filter and retrieve Opdex related and indexed transactions.</remarks>
         /// <remarks>
         /// Opdex does not index all smart contract transactions and only watches Opdex receipt logs specifically.
         /// This is not intended to be used to lookup all smart contract based transactions.
@@ -87,9 +86,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Retrieve a transaction that has been indexed by its hash.
-        /// </summary>
+        /// <summary>Get Transaction</summary>
+        /// <remarks>Retrieve a transaction that has been indexed by its hash.</remarks>
         /// <param name="hash">The transaction hash to of the transaction to look up.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionResponseModel"/> details</returns>
@@ -106,9 +104,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Broadcast a previously quoted transaction. Network dependent, for devnet use only.
-        /// </summary>
+        /// <summary>Broadcast Transaction Quote - Devnet Only</summary>
+        /// <remarks>Broadcast a previously quoted transaction. Network dependent, for devnet use only.</remarks>
         /// <param name="request">The quoted transaction to broadcast.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Transaction hash and sender address.</returns>
@@ -134,9 +131,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(new BroadcastTransactionResponseModel { TxHash = txHash, Sender = _context.Wallet });
         }
 
-        /// <summary>
-        /// Replay a previous transaction quote to see the current value.
-        /// </summary>
+        /// <summary>Replay Transaction Quote</summary>
+        /// <remarks>Replay a previous transaction quote to see the current value.</remarks>
         /// <param name="request">A previously quoted request</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> outcome of the quote.</returns>

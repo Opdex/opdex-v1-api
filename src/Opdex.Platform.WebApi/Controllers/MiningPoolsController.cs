@@ -31,9 +31,8 @@ namespace Opdex.Platform.WebApi.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        /// <summary>
-        /// Retrieves mining pool details.
-        /// </summary>
+        /// <summary>Get Mining Pool</summary>
+        /// <remarks>Retrieves mining pool details.</remarks>
         /// <param name="address">Address of the mining pool.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Mining pool details.</returns>
@@ -46,9 +45,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Quote a start mining transaction.
-        /// </summary>
+        /// <summary>Start Mining Quote</summary>
+        /// <remarks>Quote a start mining transaction.</remarks>
         /// <param name="address">The address of the mining pool.</param>
         /// <param name="request">A <see cref="StartMiningRequest"/> of how many tokens to mine with.</param>
         /// <param name="cancellationToken">Cancellation token</param>

@@ -41,9 +41,12 @@ namespace Opdex.Platform.WebApi.Controllers
             _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
-        /// <summary>
+
+        /// <summary>Deploy Devnet</summary>
+        /// <remarks>
         /// Long running (5 minutes) deployment of local environment opdex smart contracts.
-        /// </summary>
+        /// </remarks>
+        /// <para>Test</para>
         /// <remarks>
         /// Deploys ODX token, deploys the core Opdex Market Deployer contract, creates 4 additional SRC tokens and
         /// approves allowances to create liquidity pools and provide liquidity within Opdex staking market.

@@ -31,17 +31,16 @@ namespace Opdex.Platform.WebApi.Controllers
             _context = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="lpToken"></param>
-        /// <param name="skip"></param>
-        /// <param name="take"></param>
-        /// <param name="sortBy"></param>
-        /// <param name="orderBy"></param>
-        /// <param name="tokens"></param>
+        /// <summary>Get Tokens</summary>
+        /// <remarks>Retrieve tokens from within a market with a filter.</remarks>
+        /// <param name="lpToken">Optional flag to return liquidity pool tokens or not.</param>
+        /// <param name="skip">How many records to skip for pagination.</param>
+        /// <param name="take">How many records to take for pagination</param>
+        /// <param name="sortBy">Sort By</param>
+        /// <param name="orderBy">Order By</param>
+        /// <param name="tokens">Specific token addresses to filter for.</param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <returns>List of filtered tokens.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<TokenResponseModel>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<TokenResponseModel>>> Tokens([FromQuery] bool? lpToken,
@@ -61,9 +60,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Returns the token that matches the provided address.
-        /// </summary>
+        /// <summary>Get Token</summary>
+        /// <remarks>Returns the token that matches the provided address.</remarks>
         /// <param name="address">The token's smart contract address.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns><see cref="TokenResponseModel"/> of the requested token</returns>
@@ -81,9 +79,8 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Retrieve historical data points for a tokens tracking open, high, low, and close of USD prices..
-        /// </summary>
+        ///<summary>Get Token History</summary>
+        /// <remarks>Retrieve historical data points for a tokens tracking open, high, low, and close of USD prices.</remarks>
         /// <param name="address">The address of the token.</param>
         /// <param name="candleSpan">"Hourly" or "Daily" determining the time span of each data point. Default is daily.</param>
         /// <param name="timespan">"1D", "1W", "1M", "1Y" determining how much history to fetch. Default is 1 week.</param>
@@ -110,14 +107,6 @@ namespace Opdex.Platform.WebApi.Controllers
             };
 
             return Ok(response);
-        }
-
-        [HttpGet("{address}/transactions")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public Task<ActionResult<TokenResponseModel>> GetTransactionsForToken(string address, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
         }
     }
 }
