@@ -30,7 +30,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidOwner(Address owner)
+        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidOwner(string owner)
         {
             // Arrange
             Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidSpender(Address spender)
+        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidSpender(string spender)
         {
             // Arrange
             Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
@@ -64,7 +64,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidToken(Address token)
+        public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidToken(string token)
         {
             // Arrange
             Address spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";

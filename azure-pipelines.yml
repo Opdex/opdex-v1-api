@@ -11,7 +11,6 @@ variables:
   ARTIFACT_NAME: platform-api
   artifactName: ReleaseArtifact
   releaseTemplate: 'azure-pipelines.release.yml'
-  version: 3.1.18
 
 stages:
 - stage: CI
@@ -30,14 +29,12 @@ stages:
         inputs:
           command: 'restore'
           projects: $(SOLUTION)
-          version: ${{ variables.version }}
         displayName: Restore
 
       - task: DotNetCoreCLI@2
         inputs:
           command: 'build'
           projects: $(SOLUTION)
-          version: ${{ variables.version }}
           arguments: '--configuration $(BUILD_CONFIGURATION) --no-restore'
         displayName: 'Build'
 
@@ -45,7 +42,6 @@ stages:
         inputs:
           command: 'test'
           projects: test/**/*.Tests.csproj
-          version: ${{ variables.version }}
           arguments: '--configuration $(BUILD_CONFIGURATION) --no-build'
         displayName: 'Unit Test'
 
@@ -54,7 +50,6 @@ stages:
           command: 'publish'
           projects: $(SOLUTION)
           publishWebProjects: True
-          version: ${{ variables.version }}
           arguments: '--configuration $(BUILD_CONFIGURATION) --no-build --output $(Build.ArtifactStagingDirectory)'
           zipAfterPublish: True
         displayName: Publish
