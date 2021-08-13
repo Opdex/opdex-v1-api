@@ -1,20 +1,20 @@
-using System;
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens
 {
-    public class CallCirrusGetSrcTokenAllowanceQuery : IRequest<string>
+    public class CallCirrusGetSrcTokenAllowanceQuery : IRequest<UInt256>
     {
-        public CallCirrusGetSrcTokenAllowanceQuery(string token, string owner, string spender)
+        public CallCirrusGetSrcTokenAllowanceQuery(Address token, Address owner, Address spender)
         {
-            Token = token.HasValue() ? token : throw new ArgumentNullException(nameof(token));
-            Owner = owner.HasValue() ? owner : throw new ArgumentNullException(nameof(owner));
-            Spender = spender.HasValue() ? spender : throw new ArgumentNullException(nameof(spender));
+            Token = token;
+            Owner = owner;
+            Spender = spender;
         }
 
-        public string Token { get; }
-        public string Owner { get; }
-        public string Spender { get; }
+        public Address Token { get; }
+        public Address Owner { get; }
+        public Address Spender { get; }
     }
 }

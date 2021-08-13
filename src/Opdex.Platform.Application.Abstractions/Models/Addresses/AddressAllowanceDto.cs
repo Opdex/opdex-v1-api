@@ -1,13 +1,15 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.Application.Abstractions.Models.Addresses
 {
     public class AddressAllowanceDto
     {
         public string Allowance { get; set; }
 
-        public string Spender { get; set; }
+        public Address Spender { get; set; }
 
-        public string Owner { get; set; }
+        public Address Owner { get; set; }
 
-        public string Token { get; set; }
+        public Address Token { get; set; }
     }
 }

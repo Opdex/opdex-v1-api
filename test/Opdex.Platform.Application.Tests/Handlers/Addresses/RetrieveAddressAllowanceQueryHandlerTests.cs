@@ -4,6 +4,7 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Handlers.Addresses;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System;
@@ -137,7 +138,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
 
             var token = new Token(1, "address", false, "Opdex", "ODX", 8, 100_000_000, "100", 1, 1);
 
-            const string allowance = "10000";
+            var allowance = new UInt256("10000");
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), cancellationToken))

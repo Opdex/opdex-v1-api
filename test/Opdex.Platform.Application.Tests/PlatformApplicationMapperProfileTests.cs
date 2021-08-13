@@ -8,6 +8,7 @@ using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
@@ -32,7 +33,7 @@ namespace Opdex.Platform.Application.Tests
         public void From_AddressAllowance_To_AddressAllowanceDto()
         {
             // Arrange
-            var model = new AddressAllowance(5L, 15L, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PQFv8x66vXEQEjw7ZBi8kCavrz15S1ShcG", "5000060000", 500, 1000);
+            var model = new AddressAllowance(5L, 15L, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PQFv8x66vXEQEjw7ZBi8kCavrz15S1ShcG", new UInt256("5000060000"), 500, 1000);
 
             // Act
             var dto = _mapper.Map<AddressAllowanceDto>(model);

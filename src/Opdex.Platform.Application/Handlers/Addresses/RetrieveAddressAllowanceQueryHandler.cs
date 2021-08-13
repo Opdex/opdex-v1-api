@@ -19,7 +19,8 @@ namespace Opdex.Platform.Application.Handlers.Addresses
 
         public async Task<AddressAllowance> Handle(RetrieveAddressAllowanceQuery request, CancellationToken cancellationToken)
         {
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token), cancellationToken);
+            // Todo: Modify path and flows to use Address - using .ToString() for now
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token.ToString()), cancellationToken);
 
             var allowanceResponse = await _mediator.Send(new CallCirrusGetSrcTokenAllowanceQuery(request.Token, request.Owner, request.Spender), cancellationToken);
 
