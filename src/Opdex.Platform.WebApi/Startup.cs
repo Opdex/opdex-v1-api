@@ -36,6 +36,12 @@ using Opdex.Platform.Common.Converters;
 using Opdex.Platform.WebApi.Extensions;
 using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models;
+using System.ComponentModel;
+using Opdex.Platform.Common.Models;
+using NJsonSchema.Generation.TypeMappers;
+using NJsonSchema;
+using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.WebApi.Models.Requests;
 
 namespace Opdex.Platform.WebApi
 {
@@ -73,7 +79,12 @@ namespace Opdex.Platform.WebApi
             });
 
             services
-                .AddControllers()
+                .AddControllers(options =>
+                {
+                    options.ModelBinderProviders.Insert(0, new AddressModelBinderProvider());
+                    options.ModelBinderProviders.Insert(1, new UInt128ModelBinderProvider());
+                    options.ModelBinderProviders.Insert(2, new UInt256ModelBinderProvider());
+                })
                 .AddProblemDetailsConventions()
                 .AddNewtonsoftJson(options =>
                 {
@@ -132,7 +143,6 @@ namespace Opdex.Platform.WebApi
             services.AddScoped<IApplicationContext, ApplicationContext>();
 
 
-
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -149,6 +159,11 @@ namespace Opdex.Platform.WebApi
 
             services.AddOpenApiDocument(settings =>
             {
+                // must add type converter attribute to pass NSwag check for IsPrimitiveType
+                TypeDescriptor.AddAttributes(typeof(Address), new TypeConverterAttribute(typeof(AddressConverter)));
+                TypeDescriptor.AddAttributes(typeof(UInt128), new TypeConverterAttribute(typeof(UInt128Converter)));
+                TypeDescriptor.AddAttributes(typeof(UInt256), new TypeConverterAttribute(typeof(UInt256Converter)));
+
                 settings.Title = "Opdex Platform API";
                 settings.Version = "v1";
                 settings.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
@@ -159,6 +174,17 @@ namespace Opdex.Platform.WebApi
                     BearerFormat = "JWT"
                 });
                 settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
+                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Address), schema => schema.Type = JsonObjectType.String));
+                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(UInt128), schema =>
+                {
+                    schema.Type = JsonObjectType.Integer; // TODO: Find out if there are any consequences of defining as Integer
+                    schema.Format = "uint128";
+                }));
+                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(UInt256), schema =>
+                {
+                    schema.Type = JsonObjectType.Integer;
+                    schema.Format = "uint256";
+                }));
             });
         }
 

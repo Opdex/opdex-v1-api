@@ -193,6 +193,10 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.TotalRewardsPerPeriod, opt => opt.MapFrom(src => src.TotalRewardsPerPeriod.InsertDecimal(TokenConstants.Opdex.Decimals)))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<MiningGovernancesDto, MiningGovernancesResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Governances))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
+
             CreateMap<VaultDto, VaultResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
