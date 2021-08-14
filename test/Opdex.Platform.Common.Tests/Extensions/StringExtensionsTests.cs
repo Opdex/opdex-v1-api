@@ -1,14 +1,11 @@
-using System;
 using FluentAssertions;
 using Opdex.Platform.Common.Constants;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Opdex.Platform.Common.Tests
+namespace Opdex.Platform.Common.Tests.Extensions
 {
     public class StringExtensionsTests
     {

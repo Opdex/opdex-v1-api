@@ -1,11 +1,11 @@
-using System;
-using System.Globalization;
 using FluentAssertions;
 using Opdex.Platform.Common.Extensions;
+using System;
+using System.Globalization;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Opdex.Platform.Common.Tests
+namespace Opdex.Platform.Common.Tests.Extensions
 {
     public class DateTimeExtensionTests
     {
@@ -27,7 +27,7 @@ namespace Opdex.Platform.Common.Tests
             startOfDay.Minute.Should().Be(0);
             startOfDay.Second.Should().Be(0);
             startOfDay.Should().Be(new DateTime(2021, 6, 2));
-            
+
             _testOutputHelper.WriteLine(dateTime.ToString(CultureInfo.InvariantCulture));
             _testOutputHelper.WriteLine(startOfDay.ToString(CultureInfo.InvariantCulture));
         }
@@ -48,7 +48,7 @@ namespace Opdex.Platform.Common.Tests
             _testOutputHelper.WriteLine(dateTime.ToString(CultureInfo.InvariantCulture));
             _testOutputHelper.WriteLine(endOfDay.ToString(CultureInfo.InvariantCulture));
         }
-        
+
         [Fact]
         public void RoundsToStartOfHour_Success()
         {

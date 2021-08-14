@@ -32,6 +32,7 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Common.Converters;
 using Opdex.Platform.WebApi.Extensions;
 using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models;
@@ -82,6 +83,9 @@ namespace Opdex.Platform.WebApi
                         new List<JsonConverter>
                         {
                             new StringEnumConverter(),
+                            new UInt128Converter(),
+                            new UInt256Converter(),
+                            new AddressConverter(),
                             new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
                         };
                 });

@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Common.Extensions
@@ -45,6 +46,16 @@ namespace Opdex.Platform.Common.Extensions
             value = value.PadRight(value.Length + remainder, '0');
 
             return value.TrimStart('0').Length > 0 ? value.TrimStart('0') : "0";
+        }
+
+        public static string InsertDecimal(this UInt256 value, int decimals)
+        {
+            return value.ToString().InsertDecimal(decimals);
+        }
+
+        public static string InsertDecimal(this UInt128 value, int decimals)
+        {
+            return value.ToString().InsertDecimal(decimals);
         }
 
         public static string InsertDecimal(this string value, int decimals)

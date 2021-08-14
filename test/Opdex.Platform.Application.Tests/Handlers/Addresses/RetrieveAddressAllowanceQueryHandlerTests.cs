@@ -4,6 +4,8 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Handlers.Addresses;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System;
@@ -31,8 +33,8 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidOwner(string owner)
         {
             // Arrange
-            const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
             // Act
             void Act() => new RetrieveAddressAllowanceQuery(owner, spender, token);
@@ -48,8 +50,8 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidSpender(string spender)
         {
             // Arrange
-            const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
             // Act
             void Act() => new RetrieveAddressAllowanceQuery(owner, spender, token);
@@ -65,8 +67,8 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         public void RetrieveAddressAllowance_ThrowsArgumentNullException_InvalidToken(string token)
         {
             // Arrange
-            const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
             // Act
             void Act() => new RetrieveAddressAllowanceQuery(owner, spender, token);
@@ -137,7 +139,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
 
             var token = new Token(1, "address", false, "Opdex", "ODX", 8, 100_000_000, "100", 1, 1);
 
-            const string allowance = "10000";
+            var allowance = new UInt256("10000");
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), cancellationToken))

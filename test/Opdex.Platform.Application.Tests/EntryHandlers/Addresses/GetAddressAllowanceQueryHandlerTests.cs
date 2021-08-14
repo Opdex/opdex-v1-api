@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Addresses;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using System;
 using System.Threading;
@@ -113,7 +114,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
 
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var allowance = new AddressAllowance(1, 2, owner, spender, "1000000000", 1, 1);
+            var allowance = new AddressAllowance(1, 2, owner, spender, new UInt256("1000000000"), 1, 1);
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressAllowanceQuery>(), cancellationToken))
@@ -138,7 +139,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
 
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var allowance = new AddressAllowance(1, 2, owner, spender, "1000000000", 1, 1);
+            var allowance = new AddressAllowance(1, 2, owner, spender, new UInt256("1000000000"), 1, 1);
             var allowanceDto = new AddressAllowanceDto {Allowance = "10.00000000", Owner = owner, Spender = spender, Token = token};
 
             _mediatorMock

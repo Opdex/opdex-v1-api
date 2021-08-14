@@ -2,6 +2,7 @@ using Dapper;
 using System.Collections.Generic;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
@@ -54,7 +55,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distributio
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs;
-using Opdex.Platform.Infrastructure.Abstractions.Data.SqlMapper;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.BlockStore;
@@ -85,6 +85,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Data.SqlMappers;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balances;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 
@@ -96,6 +97,9 @@ namespace Opdex.Platform.Infrastructure
             CoinMarketCapConfiguration cmcConfiguration)
         {
             SqlMapper.AddTypeHandler(new DateTimeHandler());
+            SqlMapper.AddTypeHandler(new UInt128Handler());
+            SqlMapper.AddTypeHandler(new UInt256Handler());
+            SqlMapper.AddTypeHandler(new AddressHandler());
 
             // Data Services
             AddDataQueries(services);
@@ -249,7 +253,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenSummaryByAddressQuery, TokenContractSummary>, CallCirrusGetSrcTokenSummaryByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolByAddressQuery, LiquidityPool>, CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetOpdexMiningPoolByAddressQuery, MiningPoolSmartContractSummary>, CallCirrusGetOpdexMiningPoolByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenAllowanceQuery, string>, CallCirrusGetSrcTokenAllowanceQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenAllowanceQuery, UInt256>, CallCirrusGetSrcTokenAllowanceQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, string[]>, CallCirrusGetOpdexLiquidityPoolReservesQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAmountOutStandardQuoteQuery, string>, CallCirrusGetAmountOutStandardQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAmountInStandardQuoteQuery, string>, CallCirrusGetAmountInStandardQuoteQueryHandler>();
