@@ -202,6 +202,10 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.LockedToken, opt => opt.MapFrom(src => src.LockedToken))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<VaultsDto, VaultsResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Vaults))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
+
             CreateMap<BlockDto, BlockResponseModel>()
                 .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))

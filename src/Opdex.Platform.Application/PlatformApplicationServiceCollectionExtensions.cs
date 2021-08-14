@@ -139,7 +139,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshotDto>>, GetMarketSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshotDto>>, GetTokenSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetMiningGovernanceByAddressQuery, MiningGovernanceDto>, GetMiningGovernanceByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<GetAllVaultsQuery, IEnumerable<VaultDto>>, GetAllVaultsQueryHandler>();
+            services.AddTransient<IRequestHandler<GetVaultsWithFilterQuery, VaultsDto>, GetVaultsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetVaultByAddressQuery, VaultDto>, GetVaultByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetVaultCertificatesWithFilterQuery, VaultCertificatesDto>, GetVaultCertificatesWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTransactionsWithFilterQuery, TransactionsDto>, GetTransactionsWithFilterQueryHandler>();
@@ -177,7 +177,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLatestTokenDistributionQuery, TokenDistribution>, RetrieveLatestTokenDistributionQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceContractSummaryByAddressQuery, MiningGovernanceContractSummary>, RetrieveMiningGovernanceContractSummaryByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveStakingTokenContractSummaryByAddressQuery, StakingTokenContractSummary>, RetrieveStakingTokenContractSummaryByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveAllVaultsQuery, IEnumerable<Vault>>, RetrieveAllVaultsQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveVaultsWithFilterQuery, IEnumerable<Vault>>, RetrieveVaultsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveVaultByAddressQuery, Vault>, RetrieveVaultByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveVaultByTokenIdQuery, Vault>, RetrieveVaultByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, RetrieveVaultCertificatesByOwnerAddressQueryHandler>();

@@ -18,9 +18,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
             if (defaultLimit == 0) throw new ArgumentOutOfRangeException("Default limit must be greater than 0.");
             if (maxLimit == 0) throw new ArgumentOutOfRangeException("Max limit must be greater than 0.");
             if (defaultLimit > maxLimit) throw new ArgumentOutOfRangeException("Default limit cannot be greater than max limit.");
-            if (!defaultSortDirection.IsValid() || defaultSortDirection == SortDirectionType.Undefined) throw new ArgumentOutOfRangeException("Invalid default sort direction.");
+            if (!defaultSortDirection.IsValid()) throw new ArgumentOutOfRangeException("Invalid default sort direction.");
 
-            if (sortDirection == SortDirectionType.Undefined) SortDirection = defaultSortDirection;
+            if (sortDirection == default) SortDirection = defaultSortDirection;
             else SortDirection = sortDirection.IsValid() ? sortDirection : throw new ArgumentOutOfRangeException("Invalid sort direction.");
 
             if (limit == default) Limit = defaultLimit;
