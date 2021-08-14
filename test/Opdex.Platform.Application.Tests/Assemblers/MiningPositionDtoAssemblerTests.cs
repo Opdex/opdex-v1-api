@@ -1,11 +1,13 @@
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models.Addresses;
-using Opdex.Platform.Domain.Models.Pools;
+using Opdex.Platform.Domain.Models.LiquidityPools;
+using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
 using System.Threading;

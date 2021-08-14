@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
+using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;

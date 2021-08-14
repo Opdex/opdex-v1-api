@@ -7,7 +7,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
-using Opdex.Platform.Application.Abstractions.Queries.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;

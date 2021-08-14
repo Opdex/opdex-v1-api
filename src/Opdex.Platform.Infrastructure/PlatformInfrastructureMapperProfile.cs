@@ -4,12 +4,13 @@ using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Governances;
+using Opdex.Platform.Domain.Models.LiquidityPools;
+using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Domain.Models.Pools;
 using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.OHLC;
-using Opdex.Platform.Domain.Models.Pools.Snapshots;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
@@ -24,14 +25,15 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.Tran
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Pools.Snapshots;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions;
 
 namespace Opdex.Platform.Infrastructure
