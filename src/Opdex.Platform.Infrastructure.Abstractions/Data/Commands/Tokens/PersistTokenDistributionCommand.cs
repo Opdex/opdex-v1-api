@@ -1,6 +1,7 @@
 using System;
 using MediatR;
 using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens
 {

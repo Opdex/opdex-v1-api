@@ -78,8 +78,8 @@ namespace Opdex.Platform.WebApi.Controllers
 
             await _mediator.Send(new MakeIndexerLockCommand());
 
-            await _mediator.Send(new ProcessOdxDeploymentTransactionCommand(request.OdxDeploymentTxHash));
-            await _mediator.Send(new ProcessDeployerDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash));
+            await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.OdxDeploymentTxHash));
+            await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash));
             await _mediator.Send(new ProcessLatestBlocksCommand(_network));
 
             await _mediator.Send(new MakeIndexerUnlockCommand());

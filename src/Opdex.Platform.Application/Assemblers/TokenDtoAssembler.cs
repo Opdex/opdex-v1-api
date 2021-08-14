@@ -1,8 +1,8 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
-using Opdex.Platform.Application.Abstractions.Queries.Pools;
-using Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots;
+using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Constants;
