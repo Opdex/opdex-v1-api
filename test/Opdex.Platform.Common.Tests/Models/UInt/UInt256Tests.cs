@@ -18,15 +18,26 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
             _testOutputHelper = testOutputHelper;
         }
 
+        [Fact]
+        public void Create_Zero_UInt256()
+        {
+            // Act
+            var test = new UInt256();
+
+            // Assert
+            test.Should().Be(UInt256.Zero);
+        }
+
         [Theory]
-        [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
         public void CreateFails_UInt256(string amount)
         {
-            var test = new UInt256();
+            // Act
+            void Act() => new UInt256(amount);
 
-            test.Should().Be(UInt256.Zero);
+            // Assert
+            Assert.Throws<FormatException>(Act);
         }
 
         [Fact]

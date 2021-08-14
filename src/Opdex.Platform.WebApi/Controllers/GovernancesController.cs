@@ -56,7 +56,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Transaction hash</returns>
         [HttpPost("{address}/reward-mining-pools")]
-        public async Task<IActionResult> RewardMiningPools(string address)
+        public async Task<IActionResult> RewardMiningPools(string address, CancellationToken cancellationToken)
         {
             if (_network == NetworkType.DEVNET)
             {

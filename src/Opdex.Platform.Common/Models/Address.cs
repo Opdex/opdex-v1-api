@@ -11,7 +11,7 @@ namespace Opdex.Platform.Common.Models
 
         public Address(string value)
         {
-            // If provided, should be > 40 but < 42 characters. 42 for potential ETH addresses if ever necessary.
+            // If provided, should be > 30 but < 42 characters. 42 for potential ETH addresses if ever necessary.
             if (value.HasValue() && (value.Length < 30 || value.Length > 42))
             {
                 throw new ArgumentException("Invalid address.");

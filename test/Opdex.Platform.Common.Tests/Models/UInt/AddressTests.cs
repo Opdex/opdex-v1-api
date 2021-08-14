@@ -83,7 +83,6 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
             const string value = "PPQdeXdjWDBzVLUjgWwi4mFP4Y1mhuNcRu";
             Address address = new Address("PPQdeXdjWDBzVLUjgWwi4mFP4Y1mhuNcRu");
 
-            (address == address).Should().BeTrue();
             address.Equals(address).Should().BeTrue();
             address.Equals(value).Should().BeTrue();
             (value == address).Should().BeTrue();

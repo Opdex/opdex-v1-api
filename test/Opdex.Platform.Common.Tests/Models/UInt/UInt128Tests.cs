@@ -19,6 +19,28 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
         }
 
         [Fact]
+        public void Create_Zero_UInt128()
+        {
+            // Act
+            var test = new UInt128();
+
+            // Assert
+            test.Should().Be(UInt128.Zero);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void CreateFails_UInt128(string amount)
+        {
+            // Act
+            void Act() => new UInt128(amount);
+
+            // Assert
+            Assert.Throws<FormatException>(Act);
+        }
+
+        [Fact]
         public void Creates_UInt128()
         {
             var test = new UInt128("8765456789098756456789098765");
