@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
-using Opdex.Platform.Application.Abstractions.Queries.Pools;
-using Opdex.Platform.Application.Abstractions.Queries.Pools.Snapshots;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
 

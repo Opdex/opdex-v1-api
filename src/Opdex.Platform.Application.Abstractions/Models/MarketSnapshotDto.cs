@@ -1,4 +1,4 @@
-using Opdex.Platform.Application.Abstractions.Models.PoolDtos;
+using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Common.Extensions;
 using System;
 

@@ -2,7 +2,7 @@ using System;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models.Pools.Snapshots;
+using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 
 namespace Opdex.Platform.Domain.Models.Markets
 {

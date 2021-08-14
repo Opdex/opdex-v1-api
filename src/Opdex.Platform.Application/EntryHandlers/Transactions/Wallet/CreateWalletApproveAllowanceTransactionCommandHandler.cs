@@ -5,13 +5,11 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
-using Opdex.Platform.Application.Abstractions.Queries.Pools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Domain.Models.Pools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 {

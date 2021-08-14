@@ -1,9 +1,10 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
-using Opdex.Platform.Application.Abstractions.Queries.Pools;
-using Opdex.Platform.Domain.Models.Pools;
+using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
+using Opdex.Platform.Domain.Models.MiningPools;
 using System;
 using System.Threading.Tasks;
 

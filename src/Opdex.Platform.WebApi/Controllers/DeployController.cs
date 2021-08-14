@@ -83,7 +83,7 @@ namespace Opdex.Platform.WebApi.Controllers
                 async () => await _mediator.Send(new CallCirrusCreateSmartContractCommand(createOdxRequest), cancellationToken));
 
             // Process ODX deployment
-            await _mediator.Send(new ProcessOdxDeploymentTransactionCommand(odxTransaction.Hash), CancellationToken.None);
+            await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(odxTransaction.Hash), CancellationToken.None);
 
             // Deploy Market Deployer
             var createDeployerRequest = new SmartContractCreateRequestDto(marketDeployerByteCode, request.WalletAddress, new string[0],
@@ -101,7 +101,7 @@ namespace Opdex.Platform.WebApi.Controllers
                 async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: createStakingMarketRequest), cancellationToken));
 
             // Process Deployer deployment
-            await _mediator.Send(new ProcessDeployerDeploymentTransactionCommand(deployerTransaction.Hash), CancellationToken.None);
+            await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(deployerTransaction.Hash), CancellationToken.None);
 
             var stakingMarket = (CreateMarketLog)createStakingMarketTransaction.Logs.First();
             var createLiquidityPoolTransactions = new List<Transaction>();

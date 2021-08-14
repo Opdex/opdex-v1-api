@@ -23,9 +23,11 @@
 
     <ItemGroup>
       <Folder Include="EntryHandlers\Blocks" />
+      <Folder Include="EntryHandlers\LiquidityPools" />
       <Folder Include="EntryHandlers\Tokens" />
       <Folder Include="Handlers\Blocks" />
-      <Folder Include="Handlers\Pools" />
+      <Folder Include="Handlers\MiningPools" />
+      <Folder Include="Handlers\LiquidityPools" />
       <Folder Include="Handlers\Tokens" />
     </ItemGroup>
 
