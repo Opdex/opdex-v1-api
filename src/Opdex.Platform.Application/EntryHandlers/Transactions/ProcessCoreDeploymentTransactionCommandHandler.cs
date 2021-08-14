@@ -15,18 +15,18 @@ using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
-    public class ProcessDeployerDeploymentTransactionCommandHandler : IRequestHandler<ProcessDeployerDeploymentTransactionCommand, Unit>
+    public class ProcessCoreDeploymentTransactionCommandHandler : IRequestHandler<ProcessCoreDeploymentTransactionCommand, Unit>
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<ProcessDeployerDeploymentTransactionCommandHandler> _logger;
+        private readonly ILogger<ProcessCoreDeploymentTransactionCommandHandler> _logger;
 
-        public ProcessDeployerDeploymentTransactionCommandHandler(IMediator mediator, ILogger<ProcessDeployerDeploymentTransactionCommandHandler> logger)
+        public ProcessCoreDeploymentTransactionCommandHandler(IMediator mediator, ILogger<ProcessCoreDeploymentTransactionCommandHandler> logger)
         {
             _mediator = mediator;
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(ProcessDeployerDeploymentTransactionCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ProcessCoreDeploymentTransactionCommand request, CancellationToken cancellationToken)
         {
             try
             {

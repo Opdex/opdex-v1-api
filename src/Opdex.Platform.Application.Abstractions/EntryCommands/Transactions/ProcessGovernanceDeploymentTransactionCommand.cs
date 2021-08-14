@@ -4,9 +4,9 @@ using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions
 {
-    public class ProcessOdxDeploymentTransactionCommand : IRequest<Unit>
+    public class ProcessGovernanceDeploymentTransactionCommand : IRequest<Unit>
     {
-        public ProcessOdxDeploymentTransactionCommand(string txHash)
+        public ProcessGovernanceDeploymentTransactionCommand(string txHash)
         {
             if (!txHash.HasValue())
             {
@@ -15,7 +15,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions
 
             TxHash = txHash;
         }
-        
+
         public string TxHash { get; }
     }
 }

@@ -1,8 +1,8 @@
-using System;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Blocks;
+using System;
 
-namespace Opdex.Platform.Domain.Models.ODX
+namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class TokenDistribution : BlockAudit
     {

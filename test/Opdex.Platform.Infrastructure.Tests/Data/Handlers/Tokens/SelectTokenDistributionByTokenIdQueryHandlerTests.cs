@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distribution;

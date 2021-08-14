@@ -21,18 +21,18 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
-    public class ProcessOdxDeploymentTransactionCommandHandler : IRequestHandler<ProcessOdxDeploymentTransactionCommand, Unit>
+    public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHandler<ProcessGovernanceDeploymentTransactionCommand, Unit>
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<ProcessOdxDeploymentTransactionCommandHandler> _logger;
+        private readonly ILogger<ProcessGovernanceDeploymentTransactionCommandHandler> _logger;
 
-        public ProcessOdxDeploymentTransactionCommandHandler(IMediator mediator, ILogger<ProcessOdxDeploymentTransactionCommandHandler> logger)
+        public ProcessGovernanceDeploymentTransactionCommandHandler(IMediator mediator, ILogger<ProcessGovernanceDeploymentTransactionCommandHandler> logger)
         {
             _mediator = mediator;
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(ProcessOdxDeploymentTransactionCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ProcessGovernanceDeploymentTransactionCommand request, CancellationToken cancellationToken)
         {
             try
             {

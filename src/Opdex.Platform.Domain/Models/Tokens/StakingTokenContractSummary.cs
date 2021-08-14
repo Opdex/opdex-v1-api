@@ -1,8 +1,8 @@
-namespace Opdex.Platform.Domain.Models.ODX
+namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class StakingTokenContractSummary
     {
-        public StakingTokenContractSummary(string address, string miningGovernance, uint periodIndex, string vault, 
+        public StakingTokenContractSummary(string address, string miningGovernance, uint periodIndex, string vault,
             ulong genesis, ulong periodDuration)
         {
             Address = address;
@@ -12,7 +12,7 @@ namespace Opdex.Platform.Domain.Models.ODX
             Genesis = genesis;
             PeriodDuration = periodDuration;
         }
-        
+
         public string Address { get; }
         public string MiningGovernance { get; }
         public uint PeriodIndex { get; }

@@ -2,6 +2,7 @@ using System;
 using MediatR;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens
 {
