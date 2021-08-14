@@ -44,7 +44,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <remarks>Retrieves known vaults</remarks>
         /// <param name="lockedToken">Locked token address.</param>
         /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
-        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
+        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 51.</param>
         /// <param name="cursor">The cursor when paging.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Vaults paging results</returns>
@@ -112,7 +112,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="address">Address of the vault</param>
         /// <param name="holder">Certificate holder address</param>
         /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
-        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
+        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 51.</param>
         /// <param name="cursor">The cursor when paging.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Vault certificates</returns>

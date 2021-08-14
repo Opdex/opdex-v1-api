@@ -48,7 +48,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="contracts">Optional list of smart contract address to filter transactions by.</param>
         /// <param name="eventTypes">Filter transactions based on event types included.</param>
         /// <param name="wallet">Optionally filter transactions by wallet address.</param>
-        /// <param name="limit">Number of transactions to take must be greater than 0 and less than 101.</param>
+        /// <param name="limit">Number of transactions to take must be greater than 0 and less than 51.</param>
         /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
         /// <param name="cursor">The cursor when paging.</param>
         /// <param name="cancellationToken">Cancellation token</param>

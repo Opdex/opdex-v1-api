@@ -97,7 +97,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
             if (filterOnLockedToken)
             {
-                whereFilter += $" AND t.{nameof(TokenEntity.Address)} = @{nameof(SqlParams.LockedToken)}";
+                whereFilter += whereFilter == "" ? " WHERE" : " AND";
+                whereFilter += $" t.{nameof(TokenEntity.Address)} = @{nameof(SqlParams.LockedToken)}";
             }
 
             // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
