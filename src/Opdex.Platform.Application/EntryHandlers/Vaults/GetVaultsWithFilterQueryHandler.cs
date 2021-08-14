@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
         public GetVaultsWithFilterQueryHandler(IMediator mediator, IModelAssembler<Vault, VaultDto> vaultAssembler)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _vaultAssembler = vaultAssembler ?? throw new ArgumentNullException(nameof(vaultAssembler);
+            _vaultAssembler = vaultAssembler ?? throw new ArgumentNullException(nameof(vaultAssembler));
         }
 
         public async override Task<VaultsDto> Handle(GetVaultsWithFilterQuery request, CancellationToken cancellationToken)
