@@ -42,7 +42,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// Get Vaults
         /// </summary>
         /// <remarks>Retrieves known vaults</remarks>
-        /// <param name="lockedToken">Locked token address</param>
+        /// <param name="lockedToken">Locked token address.</param>
         /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
         /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
         /// <param name="cursor">The cursor when paging.</param>
