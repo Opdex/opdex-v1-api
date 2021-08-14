@@ -7,11 +7,12 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
+using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -38,46 +39,59 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetVaults_GetAllVaultsQuery_Send()
+        public async Task GetVaults_CursorProvidedNotBase64_Return422ValidationError()
         {
             // Arrange
+            // Act
+            var response = await _controller.GetVaults("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", SortDirectionType.Undefined, 0, "NOT_BASE_64_****", CancellationToken.None);
+
+            // Assert
+            response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
+        }
+
+        [Fact]
+        public async Task GetVaults_CursorProvidedNotValidCursor_Return422ValidationError()
+        {
+            // Arrange
+            // Act
+            var response = await _controller.GetVaults("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", SortDirectionType.Undefined, 0, "Tk9UX1ZBTElE", CancellationToken.None);
+
+            // Assert
+            response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
+        }
+
+        [Fact]
+        public async Task GetVaults_GetVaultsWithFilterQuery_Send()
+        {
+            // Arrange
+            var sortDirection = SortDirectionType.ASC;
+            var limit = 10U;
+            var lockedToken = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _controller.GetVaults(cancellationToken);
+            await _controller.GetVaults(lockedToken, sortDirection, limit, null, cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<GetAllVaultsQuery>(), cancellationToken), Times.Once);
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultsWithFilterQuery>(query => query.Cursor.IsFirstRequest
+                                                                                             && query.Cursor.LockedToken == lockedToken
+                                                                                             && query.Cursor.SortDirection == sortDirection
+                                                                                             && query.Cursor.Limit == limit), cancellationToken), Times.Once);
         }
 
         [Fact]
-        public async Task GetVaults_GetAllVaultsQueryResponse_Map()
+        public async Task GetVaults_Result_ReturnOk()
         {
             // Arrange
-            var dtos = new VaultDto[] { new VaultDto() };
+            var vaults = new VaultsResponseModel();
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAllVaultsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dtos);
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new VaultsDto());
+            _mapperMock.Setup(callTo => callTo.Map<VaultsResponseModel>(It.IsAny<VaultsDto>())).Returns(vaults);
 
             // Act
-            await _controller.GetVaults(CancellationToken.None);
+            var response = await _controller.GetVaults("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", SortDirectionType.ASC, 10, null, CancellationToken.None);
 
             // Assert
-            _mapperMock.Verify(callTo => callTo.Map<IEnumerable<VaultResponseModel>>(dtos), Times.Once);
-        }
-
-        [Fact]
-        public async Task GetVaults_GetAllVaultsQueryResponse_ReturnOk()
-        {
-            // Arrange
-            var vaults = new VaultResponseModel[] { new VaultResponseModel() };
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAllVaultsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new VaultDto[] { new VaultDto() });
-            _mapperMock.Setup(callTo => callTo.Map<IEnumerable<VaultResponseModel>>(It.IsAny<IEnumerable<VaultDto>>())).Returns(vaults);
-
-            // Act
-            var response = await _controller.GetVaults(CancellationToken.None);
-
-            // Act
             response.Result.Should().BeOfType<OkObjectResult>();
             ((OkObjectResult)response.Result).Value.Should().Be(vaults);
         }

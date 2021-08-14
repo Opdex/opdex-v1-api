@@ -14,7 +14,6 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Opdex.Platform.WebApi.Models.Responses;
@@ -39,16 +38,41 @@ namespace Opdex.Platform.WebApi.Controllers
             _blockExplorerConfig = blockExplorerConfig ?? throw new ArgumentNullException(nameof(blockExplorerConfig));
         }
 
-        /// <summary>Get Vaults</summary>
-        /// <remarks>Retrieves vault details for all vaults</remarks>
-        /// <param name="cancellationToken"></param>
-        /// <returns>Collection of vault details</returns>
+        /// <summary>
+        /// Get Vaults
+        /// </summary>
+        /// <remarks>Retrieves known vaults</remarks>
+        /// <param name="lockedToken">Locked token address</param>
+        /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
+        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
+        /// <param name="cursor">The cursor when paging.</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>Vaults paging results</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<VaultResponseModel>>> GetVaults(CancellationToken cancellationToken)
+        public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] string lockedToken,
+                                                                       [FromQuery] SortDirectionType direction,
+                                                                       [FromQuery] uint limit,
+                                                                       [FromQuery] string cursor,
+                                                                       CancellationToken cancellationToken)
         {
-            var vaults = await _mediator.Send(new GetAllVaultsQuery(), cancellationToken);
-            return Ok(_mapper.Map<IEnumerable<VaultResponseModel>>(vaults));
+            VaultsCursor pagingCursor;
+
+            if (cursor.HasValue())
+            {
+                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !VaultsCursor.TryParse(decodedCursor, out var parsedCursor))
+                {
+                    return new ValidationErrorProblemDetailsResult("Cursor not formed correctly.");
+                }
+                pagingCursor = parsedCursor;
+            }
+            else
+            {
+                pagingCursor = new VaultsCursor(lockedToken, direction, limit, PagingDirection.Forward, default);
+            }
+
+            var vaults = await _mediator.Send(new GetVaultsWithFilterQuery(pagingCursor), cancellationToken);
+            return Ok(_mapper.Map<VaultsResponseModel>(vaults));
         }
 
         /// <summary>Get Vault</summary>
@@ -87,8 +111,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <remarks>Retrieves vault certificates for a vault address</remarks>
         /// <param name="address">Address of the vault</param>
         /// <param name="holder">Certificate holder address</param>
-        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
         /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
+        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
         /// <param name="cursor">The cursor when paging.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Vault certificates</returns>
@@ -96,8 +120,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<VaultCertificatesResponseModel>> GetVaultCertificates(string address,
                                                                                              [FromQuery] string holder,
-                                                                                             [FromQuery] uint limit,
                                                                                              [FromQuery] SortDirectionType direction,
+                                                                                             [FromQuery] uint limit,
                                                                                              [FromQuery] string cursor,
                                                                                              CancellationToken cancellationToken)
         {
@@ -147,7 +171,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<string>> RedeemCertificates(string address, CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new CreateWalletRedeemVaultCertificateCommand(_context.Wallet, address),  cancellationToken);
+            var transactionHash = await _mediator.Send(new CreateWalletRedeemVaultCertificateCommand(_context.Wallet, address), cancellationToken);
             return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
         }
 
