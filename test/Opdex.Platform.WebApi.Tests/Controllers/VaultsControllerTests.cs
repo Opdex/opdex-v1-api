@@ -43,7 +43,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             // Act
-            var response = await _controller.GetVaults("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", SortDirectionType.Undefined, 0, "NOT_BASE_64_****", CancellationToken.None);
+            var response = await _controller.GetVaults(default, default, default, "NOT_BASE_64_****", CancellationToken.None);
 
             // Assert
             response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
@@ -54,7 +54,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             // Act
-            var response = await _controller.GetVaults("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", SortDirectionType.Undefined, 0, "Tk9UX1ZBTElE", CancellationToken.None);
+            var response = await _controller.GetVaults(default, default, default, "Tk9UX1ZBTElE", CancellationToken.None);
 
             // Assert
             response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
