@@ -144,11 +144,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools
             internal SqlParams(long miningPoolId, IEnumerable<Address> liquidityPools)
             {
                 MiningPoolId = miningPoolId;
-                LiquidityPools = liquidityPools;
+                LiquidityPools = liquidityPools.Select(pool => pool.ToString());
             }
 
             public long MiningPoolId { get; }
-            public IEnumerable<Address> LiquidityPools { get; }
+            public IEnumerable<string> LiquidityPools { get; }
         }
     }
 }

@@ -158,6 +158,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetLiquidityPoolByAddressQuery, LiquidityPoolDto>, GetLiquidityPoolByAddressQueryHandler>();
 
             // Mining Pools
+            services.AddTransient<IRequestHandler<GetMiningPoolsWithFilterQuery, MiningPoolsDto>, GetMiningPoolsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetMiningPoolByAddressQuery, MiningPoolDto>, GetMiningPoolByAddressQueryHandler>();
 
             // Vaults
@@ -318,6 +319,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>, RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler>();
 
             // Mining Pools
+            services.AddTransient<IRequestHandler<RetrieveMiningPoolsWithFilterQuery, IEnumerable<MiningPool>>, RetrieveMiningPoolsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningPoolByIdQuery, MiningPool>, RetrieveMiningPoolByIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningPoolByLiquidityPoolIdQuery, MiningPool>, RetrieveMiningPoolByLiquidityPoolIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningPoolByAddressQuery, MiningPool>, RetrieveMiningPoolByAddressQueryHandler>();
