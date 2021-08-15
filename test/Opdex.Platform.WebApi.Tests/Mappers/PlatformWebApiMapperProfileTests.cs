@@ -2,12 +2,14 @@ using AutoMapper;
 using FluentAssertions;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
+using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Mappers;
+using Opdex.Platform.WebApi.Models.Responses.Governances;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.LiquidityPools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.MiningPools;
@@ -328,6 +330,36 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             response.RewardPerBlock.Should().Be("16.66666666");
             response.RewardPerLpt.Should().Be("0.28882888");
             response.TokensMining.Should().Be("500382093.82219139");
+        }
+
+        [Fact]
+        public void From_MiningGovernanceDto_To_MiningGovernanceResponseModel()
+        {
+            // Arrange
+            var dto = new MiningGovernanceDto
+            {
+                Address = "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK",
+                MinedToken = "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
+                MiningPoolRewardPerPeriod = "1500.00000000",
+                PeriodBlockDuration = 10,
+                PeriodEndBlock = 500_000,
+                PeriodRemainingBlocks = 10_000,
+                PeriodsUntilRewardReset = 20,
+                TotalRewardsPerPeriod = "3000.00000000"
+            };
+
+            // Act
+            var response = _mapper.Map<MiningGovernanceResponseModel>(dto);
+
+            // Assert
+            response.Address.Should().Be(dto.Address);
+            response.MinedToken.Should().Be(dto.MinedToken);
+            response.MiningPoolRewardPerPeriod.Should().Be(dto.MiningPoolRewardPerPeriod);
+            response.PeriodBlockDuration.Should().Be(dto.PeriodBlockDuration);
+            response.PeriodEndBlock.Should().Be(dto.PeriodEndBlock);
+            response.PeriodRemainingBlocks.Should().Be(dto.PeriodRemainingBlocks);
+            response.PeriodsUntilRewardReset.Should().Be(dto.PeriodsUntilRewardReset);
+            response.TotalRewardsPerPeriod.Should().Be(dto.TotalRewardsPerPeriod);
         }
     }
 }

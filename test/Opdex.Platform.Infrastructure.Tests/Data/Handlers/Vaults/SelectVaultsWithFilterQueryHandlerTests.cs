@@ -43,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults
 
 
         [Fact]
-        public async Task SelectAddressBalancesWithFilter_ByCursor_NextASC()
+        public async Task SelectVaultsWithFilter_ByCursor_NextASC()
         {
             // Arrange
             var orderBy = SortDirectionType.ASC;
@@ -62,7 +62,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults
         }
 
         [Fact]
-        public async Task SelectAddressBalancesWithFilter_ByCursor_NextDESC()
+        public async Task SelectVaultsWithFilter_ByCursor_NextDESC()
         {
             // Arrange
             var orderBy = SortDirectionType.DESC;
@@ -81,7 +81,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults
         }
 
         [Fact]
-        public async Task SelectAddressBalancesWithFilter_ByCursor_PreviousDESC()
+        public async Task SelectVaultsWithFilter_ByCursor_PreviousDESC()
         {
             // Arrange
             var orderBy = SortDirectionType.DESC;
@@ -100,7 +100,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults
         }
 
         [Fact]
-        public async Task SelectAddressBalancesWithFilter_ByCursor_PreviousASC()
+        public async Task SelectVaultsWithFilter_ByCursor_PreviousASC()
         {
             // Arrange
             var orderBy = SortDirectionType.ASC;

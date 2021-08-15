@@ -50,7 +50,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         }
 
         [Fact]
-        public async Task SelectTransactionWithFilter_ByContracts()
+        public async Task SelectTransactionsWithFilter_ByContracts()
         {
             // Arrange
             var contracts = new[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
@@ -74,7 +74,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         }
 
         [Fact]
-        public async Task SelectTransactionWithFilter_ByEventTypes()
+        public async Task SelectTransactionsWithFilter_ByEventTypes()
         {
             // Arrange
             var eventTypes = new TransactionEventType[] { TransactionEventType.CreateMarketEvent };
@@ -97,7 +97,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         }
 
         [Fact]
-        public async Task SelectTransactionWithFilter_ByCursor_NextASC()
+        public async Task SelectTransactionsWithFilter_ByCursor_NextASC()
         {
             // Arrange
             const SortDirectionType direction = SortDirectionType.ASC;
@@ -120,7 +120,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         }
 
         [Fact]
-        public async Task SelectTransactionWithFilter_ByCursor_NextDESC()
+        public async Task SelectTransactionsWithFilter_ByCursor_NextDESC()
         {
             // Arrange
             const SortDirectionType direction = SortDirectionType.DESC;
@@ -143,7 +143,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         }
 
         [Fact]
-        public async Task SelectTransactionWithFilter_ByCursor_PreviousDESC()
+        public async Task SelectTransactionsWithFilter_ByCursor_PreviousDESC()
         {
             // Arrange
             const SortDirectionType direction = SortDirectionType.DESC;
@@ -166,7 +166,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         }
 
         [Fact]
-        public async Task SelectTransactionWithFilter_ByCursor_PreviousASC()
+        public async Task SelectTransactionsWithFilter_ByCursor_PreviousASC()
         {
             // Arrange
             const SortDirectionType direction = SortDirectionType.ASC;
