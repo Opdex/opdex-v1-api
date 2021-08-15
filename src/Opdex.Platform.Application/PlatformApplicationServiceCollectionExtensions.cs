@@ -314,6 +314,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolByIdQuery, LiquidityPool>, RetrieveLiquidityPoolByIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery, LiquidityPool>, RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolByAddressQuery, LiquidityPool>, RetrieveLiquidityPoolByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>, RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler>();
 
             // Mining Pools
             services.AddTransient<IRequestHandler<RetrieveMiningPoolByIdQuery, MiningPool>, RetrieveMiningPoolByIdQueryHandler>();
@@ -391,6 +392,7 @@ namespace Opdex.Platform.Application
             // Liquidity Pools
             services.AddTransient<IRequestHandler<MakeLiquidityPoolCommand, long>, MakeLiquidityPoolCommandHandler>();
             services.AddTransient<IRequestHandler<MakeLiquidityPoolSnapshotCommand, bool>, MakeLiquidityPoolSnapshotCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeLiquidityPoolSummaryCommand, long>, MakeLiquidityPoolSummaryCommandHandler>();
 
             // Mining Pools
             services.AddTransient<IRequestHandler<MakeMiningPoolCommand, long>, MakeMiningPoolCommandHandler>();
