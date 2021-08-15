@@ -22,8 +22,7 @@ namespace Opdex.Platform.Application.EntryHandlers.MiningPools
         private const string CrsToSend = "0";
 
         public CreateStartMiningTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                               IMediator mediator, OpdexConfiguration config)
-            : base(quoteAssembler, mediator, config)
+                                                               IMediator mediator, OpdexConfiguration config) : base(quoteAssembler, mediator, config)
         {
         }
 

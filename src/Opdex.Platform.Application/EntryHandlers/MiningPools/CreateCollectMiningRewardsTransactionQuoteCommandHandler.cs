@@ -11,15 +11,13 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.MiningPools
 {
-    public class CreateCollectMiningRewardsTransactionQuoteCommandHandler
-        : BaseQuoteCommandHandler<CreateCollectMiningRewardsTransactionQuoteCommand>
+    public class CreateCollectMiningRewardsTransactionQuoteCommandHandler : BaseQuoteCommandHandler<CreateCollectMiningRewardsTransactionQuoteCommand>
     {
         private const string MethodName = MiningPoolConstants.Methods.CollectRewards;
         private const string CrsToSend = "0";
 
         public CreateCollectMiningRewardsTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                                        IMediator mediator, OpdexConfiguration config)
-            : base(quoteAssembler, mediator, config)
+                                                                        IMediator mediator, OpdexConfiguration config) : base(quoteAssembler, mediator, config)
         {
         }
 
