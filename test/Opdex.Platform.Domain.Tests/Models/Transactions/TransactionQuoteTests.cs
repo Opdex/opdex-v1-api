@@ -71,7 +71,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         }
 
         [Fact]
-        public void CreateNew_Failed_TransactionQuote()
+        public void CreateNew_TransactionQuote_WithErrors()
         {
             // Arrange
             const string error = "Error";

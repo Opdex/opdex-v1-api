@@ -68,6 +68,11 @@ namespace Opdex.Platform.Infrastructure
                 .ConstructUsing(src => new LiquidityPool(src.Id, src.Address, src.SrcTokenId, src.LpTokenId, src.MarketId, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<LiquidityPoolSummaryEntity, LiquidityPoolSummary>()
+                .ConstructUsing(src => new LiquidityPoolSummary(src.Id, src.LiquidityPoolId, src.Liquidity, src.Volume, src.StakingWeight, src.LockedCrs, src.LockedSrc,
+                                    src.CreatedBlock, src.ModifiedBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<LiquidityPoolSnapshotEntity, LiquidityPoolSnapshot>()
                 .ConstructUsing((src, ctx) => new LiquidityPoolSnapshot(src.Id, src.LiquidityPoolId, src.TransactionCount, ctx.Mapper.Map<ReservesSnapshot>(src.Reserves),
                     ctx.Mapper.Map<RewardsSnapshot>(src.Rewards), ctx.Mapper.Map<StakingSnapshot>(src.Staking), ctx.Mapper.Map<VolumeSnapshot>(src.Volume),
@@ -385,6 +390,18 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.SrcTokenId, opt => opt.MapFrom(src => src.SrcTokenId))
                 .ForMember(dest => dest.LpTokenId, opt => opt.MapFrom(src => src.LpTokenId))
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
+                .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+                .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<LiquidityPoolSummary, LiquidityPoolSummaryEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.LiquidityPoolId, opt => opt.MapFrom(src => src.LiquidityPoolId))
+                .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
+                .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
+                .ForMember(dest => dest.StakingWeight, opt => opt.MapFrom(src => src.StakingWeight))
+                .ForMember(dest => dest.LockedSrc, opt => opt.MapFrom(src => src.LockedSrc))
+                .ForMember(dest => dest.LockedCrs, opt => opt.MapFrom(src => src.LockedCrs))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
