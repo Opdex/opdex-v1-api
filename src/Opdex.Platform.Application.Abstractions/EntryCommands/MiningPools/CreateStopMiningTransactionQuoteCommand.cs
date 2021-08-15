@@ -5,9 +5,9 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools
 {
-    public class CreateStartMiningTransactionQuoteCommand : BaseQuoteCommand
+    public class CreateStopMiningTransactionQuoteCommand : BaseQuoteCommand
     {
-        public CreateStartMiningTransactionQuoteCommand(Address miningPool, Address walletAddress, string amount)
+        public CreateStopMiningTransactionQuoteCommand(Address miningPool, Address walletAddress, string amount)
             : base(miningPool, walletAddress)
         {
             if (!amount.IsValidDecimalNumber())

@@ -241,6 +241,8 @@ namespace Opdex.Platform.Application
 
             // Mining Pools
             services.AddTransient<IRequestHandler<CreateStartMiningTransactionQuoteCommand, TransactionQuoteDto>, CreateStartMiningTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateStopMiningTransactionQuoteCommand, TransactionQuoteDto>, CreateStopMiningTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateCollectMiningRewardsTransactionQuoteCommand, TransactionQuoteDto>, CreateCollectMiningRewardsTransactionQuoteCommandHandler>();
 
             // Vaults
 

@@ -48,15 +48,46 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <summary>Start Mining Quote</summary>
         /// <remarks>Quote a start mining transaction.</remarks>
         /// <param name="address">The address of the mining pool.</param>
-        /// <param name="request">A <see cref="StartMiningRequest"/> of how many tokens to mine with.</param>
+        /// <param name="request">A <see cref="MiningQuote"/> of how many tokens to mine with.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
         [HttpPost("{address}/start")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> StartMining(string address, StartMiningQuote request, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> StartMining(string address, MiningQuote request, CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(new CreateStartMiningTransactionQuoteCommand(_context.Wallet, request.Amount,
-                                                                                             request.MiningPool), cancellationToken);
+            var response = await _mediator.Send(new CreateStartMiningTransactionQuoteCommand(address, _context.Wallet, request.Amount), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+
+        /// <summary>Stop Mining Quote</summary>
+        /// <remarks>Quote a stop mining transaction.</remarks>
+        /// <param name="address">The address of the mining pool.</param>
+        /// <param name="request">A <see cref="MiningQuote"/> of how many tokens to stop mining with.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
+        [HttpPost("{address}/stop")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> StopMining(string address, MiningQuote request, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateStopMiningTransactionQuoteCommand(address, _context.Wallet, request.Amount), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+        /// <summary>Collect Mining Rewards Quote</summary>
+        /// <remarks>Quote a collect mining rewards transaction.</remarks>
+        /// <param name="address">The address of the mining pool.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
+        [HttpPost("{address}/collect")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> CollectMiningRewards(string address, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateCollectMiningRewardsTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
 
             var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
 

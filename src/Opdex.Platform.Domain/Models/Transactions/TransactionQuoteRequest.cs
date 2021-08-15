@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +8,15 @@ namespace Opdex.Platform.Domain.Models.Transactions
 {
     public class TransactionQuoteRequest
     {
-        public TransactionQuoteRequest(string sender, string to, string amount, string method, string callback,
+        public TransactionQuoteRequest(Address sender, Address to, string amount, string method, string callback,
                                        IReadOnlyCollection<TransactionQuoteRequestParameter> parameters = null)
         {
-            if (!sender.HasValue())
+            if (sender == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(sender), $"{nameof(sender)} must not be null or empty.");
             }
 
-            if (!to.HasValue())
+            if (to == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(to), $"{nameof(to)} must not be null or empty.");
             }
@@ -43,8 +44,8 @@ namespace Opdex.Platform.Domain.Models.Transactions
             Parameters = parameters ?? new List<TransactionQuoteRequestParameter>();
         }
 
-        public string Sender { get; }
-        public string To { get; }
+        public Address Sender { get; }
+        public Address To { get; }
         public string Amount { get; }
         public string Method { get; }
         public IReadOnlyCollection<TransactionQuoteRequestParameter> Parameters { get; }

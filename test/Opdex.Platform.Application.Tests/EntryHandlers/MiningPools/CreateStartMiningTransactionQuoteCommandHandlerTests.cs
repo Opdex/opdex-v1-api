@@ -47,7 +47,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             const string miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
 
             // Act
-            void Act() => new CreateStartMiningTransactionQuoteCommand(walletAddress, amount, miningPool);
+            void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount must be a valid decimal number.");
@@ -64,10 +64,10 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             const string amount = "1.00";
 
             // Act
-            void Act() => new CreateStartMiningTransactionQuoteCommand(walletAddress, amount, miningPool);
+            void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Mining pool must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Contract address must be provided.");
         }
 
         [Theory]
@@ -81,7 +81,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             const string amount = "1.00";
 
             // Act
-            void Act() => new CreateStartMiningTransactionQuoteCommand(walletAddress, amount, miningPool);
+            void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Wallet address must be provided.");
@@ -97,7 +97,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             const string crsToSend = "0";
             const string methodName = MiningPoolConstants.Methods.StartMining;
 
-            var command = new CreateStartMiningTransactionQuoteCommand(walletAddress, amount, miningPool);
+            var command = new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
             var cancellationToken = new CancellationTokenSource().Token;
 
             var expectedParameters = new List<TransactionQuoteRequestParameter>
@@ -135,7 +135,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             const string crsToSend = "0";
             const string methodName = MiningPoolConstants.Methods.StartMining;
 
-            var command = new CreateStartMiningTransactionQuoteCommand(walletAddress, amount, miningPool);
+            var command = new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
             var cancellationToken = new CancellationTokenSource().Token;
 
             var expectedParameters = new List<TransactionQuoteRequestParameter>

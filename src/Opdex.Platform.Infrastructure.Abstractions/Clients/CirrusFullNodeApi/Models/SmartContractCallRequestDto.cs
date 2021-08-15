@@ -1,8 +1,10 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     public class SmartContractCallRequestDto
     {
-        public SmartContractCallRequestDto(string address, string walletName, string walletAddress, string walletPassword, string amount, 
+        public SmartContractCallRequestDto(Address address, string walletName, Address walletAddress, string walletPassword, string amount,
             string methodName, string[] parameters = null)
         {
             Amount = amount;
@@ -20,10 +22,10 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public ulong GasLimit => 250_000;
         public string Password { get; set; }
         public string WalletName { get; set; }
-        public string ContractAddress { get; set; }
+        public Address ContractAddress { get; set; }
         public string MethodName { get; set; }
         public string Amount { get; set; }
-        public string Sender { get; set; }
+        public Address Sender { get; set; }
         public string[] Parameters { get; set; }
     }
 }
