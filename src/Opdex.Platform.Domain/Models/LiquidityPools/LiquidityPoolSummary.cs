@@ -12,16 +12,16 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
         {
             if (liquidity < 0m)
             {
-                throw new ArgumentOutOfRangeException(nameof(liquidity), "Liquidity must be greater than or equal to 0.");
+                throw new ArgumentOutOfRangeException(nameof(liquidity), "LiquidityUsd must be greater than or equal to 0.");
             }
 
             if (volume < 0m)
             {
-                throw new ArgumentOutOfRangeException(nameof(liquidity), "Volume must be greater than or equal to 0.");
+                throw new ArgumentOutOfRangeException(nameof(volume), "VolumeUsd must be greater than or equal to 0.");
             }
 
-            Liquidity = liquidity;
-            Volume = volume;
+            LiquidityUsd = liquidity;
+            VolumeUsd = volume;
             StakingWeight = stakingWeight;
             LockedCrs = lockedCrs;
             LockedSrc = lockedSrc;
@@ -42,8 +42,8 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
         {
             Id = id;
             LiquidityPoolId = liquidityPoolId;
-            Liquidity = liquidity;
-            Volume = volume;
+            LiquidityUsd = liquidity;
+            VolumeUsd = volume;
             StakingWeight = stakingWeight;
             LockedCrs = lockedCrs;
             LockedSrc = lockedSrc;
@@ -51,16 +51,16 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
 
         public long Id { get; }
         public long LiquidityPoolId { get; }
-        public decimal Liquidity { get; private set; }
-        public decimal Volume { get; private set; }
+        public decimal LiquidityUsd { get; private set; }
+        public decimal VolumeUsd { get; private set; }
         public ulong StakingWeight { get; private set; }
         public ulong LockedCrs { get; private set; }
         public UInt256 LockedSrc { get; private set; }
 
         public void Update(LiquidityPoolSnapshot snapshot, ulong blockHeight)
         {
-            Liquidity = snapshot.Reserves.Usd;
-            Volume = snapshot.Volume.Usd;
+            LiquidityUsd = snapshot.Reserves.Usd;
+            VolumeUsd = snapshot.Volume.Usd;
             StakingWeight = ulong.Parse(snapshot.Staking.Weight);
             LockedCrs = snapshot.Reserves.Crs;
             LockedSrc = UInt256.Parse(snapshot.Reserves.Src);

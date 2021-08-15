@@ -16,8 +16,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO pool_liquidity_summary (
                 {nameof(LiquidityPoolSummaryEntity.LiquidityPoolId)},
-                {nameof(LiquidityPoolSummaryEntity.Liquidity)},
-                {nameof(LiquidityPoolSummaryEntity.Volume)},
+                {nameof(LiquidityPoolSummaryEntity.LiquidityUsd)},
+                {nameof(LiquidityPoolSummaryEntity.VolumeUsd)},
                 {nameof(LiquidityPoolSummaryEntity.StakingWeight)},
                 {nameof(LiquidityPoolSummaryEntity.LockedCrs)},
                 {nameof(LiquidityPoolSummaryEntity.LockedSrc)},
@@ -25,8 +25,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
                 {nameof(LiquidityPoolSummaryEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(LiquidityPoolSummaryEntity.LiquidityPoolId)},
-                @{nameof(LiquidityPoolSummaryEntity.Liquidity)},
-                @{nameof(LiquidityPoolSummaryEntity.Volume)},
+                @{nameof(LiquidityPoolSummaryEntity.LiquidityUsd)},
+                @{nameof(LiquidityPoolSummaryEntity.VolumeUsd)},
                 @{nameof(LiquidityPoolSummaryEntity.StakingWeight)},
                 @{nameof(LiquidityPoolSummaryEntity.LockedCrs)},
                 @{nameof(LiquidityPoolSummaryEntity.LockedSrc)},
@@ -38,8 +38,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
         private static readonly string UpdateSqlCommand =
             $@"UPDATE pool_liquidity_summary
                 SET
-                    {nameof(LiquidityPoolSummaryEntity.Liquidity)} = @{nameof(LiquidityPoolSummaryEntity.Liquidity)},
-                    {nameof(LiquidityPoolSummaryEntity.Volume)} = @{nameof(LiquidityPoolSummaryEntity.Volume)},
+                    {nameof(LiquidityPoolSummaryEntity.LiquidityUsd)} = @{nameof(LiquidityPoolSummaryEntity.LiquidityUsd)},
+                    {nameof(LiquidityPoolSummaryEntity.VolumeUsd)} = @{nameof(LiquidityPoolSummaryEntity.VolumeUsd)},
                     {nameof(LiquidityPoolSummaryEntity.StakingWeight)} = @{nameof(LiquidityPoolSummaryEntity.StakingWeight)},
                     {nameof(LiquidityPoolSummaryEntity.LockedCrs)} = @{nameof(LiquidityPoolSummaryEntity.LockedCrs)},
                     {nameof(LiquidityPoolSummaryEntity.LockedSrc)} = @{nameof(LiquidityPoolSummaryEntity.LockedSrc)},

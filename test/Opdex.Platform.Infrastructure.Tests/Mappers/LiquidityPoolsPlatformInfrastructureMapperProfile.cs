@@ -1,22 +1,12 @@
-using AutoMapper;
 using FluentAssertions;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests
+namespace Opdex.Platform.Infrastructure.Tests.Mappers
 {
-    public class PlatformInfrastructureMapperProfileTests
+    public class LiquidityPoolsPlatformInfrastructureMapperProfile : PlatformInfrastructureMapperProfileTests
     {
-        private readonly IMapper _mapper;
-
-        public PlatformInfrastructureMapperProfileTests()
-        {
-            _mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-        }
-
-        #region Liquidity Pools
-
         [Fact]
         public void From_LiquidityPoolSummary_To_LiquidityPoolSummaryEntity()
         {
@@ -29,8 +19,8 @@ namespace Opdex.Platform.Infrastructure.Tests
             // Assert
             entity.Id.Should().Be(model.Id);
             entity.LiquidityPoolId.Should().Be(model.LiquidityPoolId);
-            entity.Liquidity.Should().Be(model.Liquidity);
-            entity.Volume.Should().Be(model.Volume);
+            entity.LiquidityUsd.Should().Be(model.LiquidityUsd);
+            entity.VolumeUsd.Should().Be(model.VolumeUsd);
             entity.StakingWeight.Should().Be(model.StakingWeight);
             entity.LockedCrs.Should().Be(model.LockedCrs);
             entity.LockedSrc.Should().Be(model.LockedSrc);
@@ -46,8 +36,8 @@ namespace Opdex.Platform.Infrastructure.Tests
             {
                 Id = 100,
                 LiquidityPoolId = 1,
-                Liquidity = 2.00m,
-                Volume = 3.00m,
+                LiquidityUsd = 2.00m,
+                VolumeUsd = 3.00m,
                 StakingWeight = 4,
                 LockedCrs = 5,
                 LockedSrc = 6,
@@ -61,15 +51,13 @@ namespace Opdex.Platform.Infrastructure.Tests
             // Assert
             model.Id.Should().Be(entity.Id);
             model.LiquidityPoolId.Should().Be(entity.LiquidityPoolId);
-            model.Liquidity.Should().Be(entity.Liquidity);
-            model.Volume.Should().Be(entity.Volume);
+            model.LiquidityUsd.Should().Be(entity.LiquidityUsd);
+            model.VolumeUsd.Should().Be(entity.VolumeUsd);
             model.StakingWeight.Should().Be(entity.StakingWeight);
             model.LockedCrs.Should().Be(entity.LockedCrs);
             model.LockedSrc.Should().Be(entity.LockedSrc);
             model.CreatedBlock.Should().Be(entity.CreatedBlock);
             model.ModifiedBlock.Should().Be(entity.ModifiedBlock);
         }
-
-        #endregion
     }
 }

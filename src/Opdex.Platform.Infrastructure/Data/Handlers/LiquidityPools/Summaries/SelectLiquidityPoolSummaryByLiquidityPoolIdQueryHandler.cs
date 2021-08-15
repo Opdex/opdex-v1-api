@@ -18,8 +18,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
             @$"SELECT
                 {nameof(LiquidityPoolSummaryEntity.Id)},
                 {nameof(LiquidityPoolSummaryEntity.LiquidityPoolId)},
-                {nameof(LiquidityPoolSummaryEntity.Liquidity)},
-                {nameof(LiquidityPoolSummaryEntity.Volume)},
+                {nameof(LiquidityPoolSummaryEntity.LiquidityUsd)},
+                {nameof(LiquidityPoolSummaryEntity.VolumeUsd)},
                 {nameof(LiquidityPoolSummaryEntity.StakingWeight)},
                 {nameof(LiquidityPoolSummaryEntity.LockedCrs)},
                 {nameof(LiquidityPoolSummaryEntity.LockedSrc)},

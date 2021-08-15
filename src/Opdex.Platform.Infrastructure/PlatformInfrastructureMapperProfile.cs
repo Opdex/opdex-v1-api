@@ -69,7 +69,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolSummaryEntity, LiquidityPoolSummary>()
-                .ConstructUsing(src => new LiquidityPoolSummary(src.Id, src.LiquidityPoolId, src.Liquidity, src.Volume, src.StakingWeight, src.LockedCrs, src.LockedSrc,
+                .ConstructUsing(src => new LiquidityPoolSummary(src.Id, src.LiquidityPoolId, src.LiquidityUsd, src.VolumeUsd, src.StakingWeight, src.LockedCrs, src.LockedSrc,
                                     src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -397,8 +397,8 @@ namespace Opdex.Platform.Infrastructure
             CreateMap<LiquidityPoolSummary, LiquidityPoolSummaryEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.LiquidityPoolId, opt => opt.MapFrom(src => src.LiquidityPoolId))
-                .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
-                .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
+                .ForMember(dest => dest.LiquidityUsd, opt => opt.MapFrom(src => src.LiquidityUsd))
+                .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
                 .ForMember(dest => dest.StakingWeight, opt => opt.MapFrom(src => src.StakingWeight))
                 .ForMember(dest => dest.LockedSrc, opt => opt.MapFrom(src => src.LockedSrc))
                 .ForMember(dest => dest.LockedCrs, opt => opt.MapFrom(src => src.LockedCrs))

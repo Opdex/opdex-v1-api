@@ -1,15 +1,11 @@
-using AutoMapper;
 using FluentAssertions;
 using Newtonsoft.Json;
-using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Models.UInt;
-using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.Transactions;
@@ -18,33 +14,10 @@ using System.Dynamic;
 using System.Linq;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests
+namespace Opdex.Platform.Application.Tests.Mappers
 {
-    public class PlatformApplicationMapperProfileTests
+    public class TransactionsPlatformApplicationMapperProfile : PlatformApplicationMapperProfileTests
     {
-        private readonly IMapper _mapper;
-
-        public PlatformApplicationMapperProfileTests()
-        {
-            _mapper = new MapperConfiguration(config => config.AddProfile(new PlatformApplicationMapperProfile())).CreateMapper();
-        }
-
-        [Fact]
-        public void From_AddressAllowance_To_AddressAllowanceDto()
-        {
-            // Arrange
-            var model = new AddressAllowance(5L, 15L, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", "PQFv8x66vXEQEjw7ZBi8kCavrz15S1ShcG", new UInt256("5000060000"), 500, 1000);
-
-            // Act
-            var dto = _mapper.Map<AddressAllowanceDto>(model);
-
-            // Assert
-            dto.Owner.Should().Be(model.Owner);
-            dto.Spender.Should().Be(model.Spender);
-        }
-
-        #region Transaction Quotes
-
         [Fact]
         public void From_TransactionQuote_To_TransactionQuoteDto()
         {
@@ -106,10 +79,6 @@ namespace Opdex.Platform.Application.Tests
             dto.Label.Should().Be(parameter.Label);
             dto.Value.Should().Be(parameter.Serialized);
         }
-
-        #endregion
-
-        #region Transaction Logs
 
         [Fact]
         public void From_StartMiningLog_To_StartMiningEventDto()
@@ -222,7 +191,5 @@ namespace Opdex.Platform.Application.Tests
             response.TotalStaked.Should().Be(log.TotalStaked.InsertDecimal(TokenConstants.Opdex.Decimals));
             response.Amount.Should().Be(log.Amount.InsertDecimal(TokenConstants.Opdex.Decimals));
         }
-
-        #endregion
     }
 }

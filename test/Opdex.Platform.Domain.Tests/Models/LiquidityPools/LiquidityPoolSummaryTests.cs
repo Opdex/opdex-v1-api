@@ -46,7 +46,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
             void Act() => new LiquidityPoolSummary(liquidityPoolId, liquidity, volume, stakingWeight, lockedCrs, lockedSrc, createdBlock);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Liquidity must be greater than or equal to 0.");
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("LiquidityUsd must be greater than or equal to 0.");
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
             void Act() => new LiquidityPoolSummary(liquidityPoolId, liquidity, volume, stakingWeight, lockedCrs, lockedSrc, createdBlock);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Volume must be greater than or equal to 0.");
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("VolumeUsd must be greater than or equal to 0.");
         }
 
         [Fact]
@@ -86,8 +86,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
             // Assert
             result.Id.Should().Be(0);
             result.LiquidityPoolId.Should().Be(liquidityPoolId);
-            result.Liquidity.Should().Be(liquidity);
-            result.Volume.Should().Be(volume);
+            result.LiquidityUsd.Should().Be(liquidity);
+            result.VolumeUsd.Should().Be(volume);
             result.StakingWeight.Should().Be(stakingWeight);
             result.LockedCrs.Should().Be(lockedCrs);
             result.LockedSrc.Should().Be(lockedSrc);
@@ -115,8 +115,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
             // Assert
             result.Id.Should().Be(id);
             result.LiquidityPoolId.Should().Be(liquidityPoolId);
-            result.Liquidity.Should().Be(liquidity);
-            result.Volume.Should().Be(volume);
+            result.LiquidityUsd.Should().Be(liquidity);
+            result.VolumeUsd.Should().Be(volume);
             result.StakingWeight.Should().Be(stakingWeight);
             result.LockedCrs.Should().Be(lockedCrs);
             result.LockedSrc.Should().Be(lockedSrc);
@@ -139,8 +139,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
             summary.Update(snapshot, modifiedBlock);
 
             // Assert
-            summary.Liquidity.Should().Be(snapshot.Reserves.Usd);
-            summary.Volume.Should().Be(snapshot.Volume.Usd);
+            summary.LiquidityUsd.Should().Be(snapshot.Reserves.Usd);
+            summary.VolumeUsd.Should().Be(snapshot.Volume.Usd);
             summary.StakingWeight.Should().Be(ulong.Parse(snapshot.Staking.Weight));
             summary.LockedCrs.Should().Be(snapshot.Reserves.Crs);
             summary.LockedSrc.Should().Be(UInt256.Parse(snapshot.Reserves.Src));

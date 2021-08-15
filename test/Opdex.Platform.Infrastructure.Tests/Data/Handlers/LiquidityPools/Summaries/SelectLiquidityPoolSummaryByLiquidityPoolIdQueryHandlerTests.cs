@@ -35,8 +35,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
             {
                 Id = 1,
                 LiquidityPoolId = 2,
-                Liquidity = 3.00m,
-                Volume = 4.00m,
+                LiquidityUsd = 3.00m,
+                VolumeUsd = 4.00m,
                 StakingWeight = 5,
                 LockedCrs = 6,
                 LockedSrc = 7,
@@ -53,8 +53,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
 
             result.Id.Should().Be(expectedEntity.Id);
             result.LiquidityPoolId.Should().Be(expectedEntity.LiquidityPoolId);
-            result.Liquidity.Should().Be(expectedEntity.Liquidity);
-            result.Volume.Should().Be(expectedEntity.Volume);
+            result.LiquidityUsd.Should().Be(expectedEntity.LiquidityUsd);
+            result.VolumeUsd.Should().Be(expectedEntity.VolumeUsd);
             result.StakingWeight.Should().Be(expectedEntity.StakingWeight);
             result.LockedCrs.Should().Be(expectedEntity.LockedCrs);
             result.LockedSrc.Should().Be(expectedEntity.LockedSrc);
