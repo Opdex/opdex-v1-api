@@ -27,7 +27,6 @@
       <Folder Include="EntryHandlers\Tokens" />
       <Folder Include="Handlers\Blocks" />
       <Folder Include="Handlers\MiningPools" />
-      <Folder Include="Handlers\LiquidityPools" />
       <Folder Include="Handlers\Tokens" />
     </ItemGroup>
 

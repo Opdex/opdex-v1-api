@@ -7,7 +7,12 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Governances;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
 using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Governances;
 using System;
 using System.Threading;
@@ -33,6 +38,41 @@ namespace Opdex.Platform.WebApi.Controllers
             _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
+        /// <summary> Get Governances </summary>
+        /// <remarks>Retrieves a collection of mining governances.</remarks>
+        /// <param name="minedToken">The address of a mined token.</param>
+        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
+        /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
+        /// <param name="cursor">The cursor when paging.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Mining governances</returns>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<MiningGovernancesResponseModel>> GetGovernances([FromQuery] Address minedToken,
+                                                                                       [FromQuery] SortDirectionType direction,
+                                                                                       [FromQuery] uint limit,
+                                                                                       [FromQuery] string cursor,
+                                                                                       CancellationToken cancellationToken)
+        {
+            MiningGovernancesCursor pagingCursor;
+
+            if (cursor.HasValue())
+            {
+                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !MiningGovernancesCursor.TryParse(decodedCursor, out var parsedCursor))
+                {
+                    return new ValidationErrorProblemDetailsResult("Cursor not formed correctly.");
+                }
+                pagingCursor = parsedCursor;
+            }
+            else
+            {
+                pagingCursor = new MiningGovernancesCursor(minedToken, direction, limit, PagingDirection.Forward, default);
+            }
+
+            var certificates = await _mediator.Send(new GetMiningGovernancesWithFilterQuery(pagingCursor), cancellationToken);
+            return Ok(_mapper.Map<MiningGovernancesResponseModel>(certificates));
+        }
+
         /// <summary>Get Governance</summary>
         /// <remarks>Retrieves a governance smart contract's summary by its address.</remarks>
         /// <param name="address">The address of the governance smart contract.</param>
@@ -53,7 +93,6 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <summary>Reward Mining Pools Quote</summary>
         /// <remarks>Rewards nominated mining pools by distributing tokens to be mined when the nomination period has ended.</remarks>
         /// <param name="address">The address of the governance contract.</param>
-        /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Transaction hash</returns>
         [HttpPost("{address}/reward-mining-pools")]
         public async Task<IActionResult> RewardMiningPools(string address, CancellationToken cancellationToken)

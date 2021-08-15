@@ -189,10 +189,14 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.PeriodEndBlock, opt => opt.MapFrom(src => src.PeriodEndBlock))
                 .ForMember(dest => dest.PeriodRemainingBlocks, opt => opt.MapFrom(src => src.PeriodRemainingBlocks))
                 .ForMember(dest => dest.PeriodBlockDuration, opt => opt.MapFrom(src => src.PeriodBlockDuration))
-                .ForMember(dest => dest.MiningPoolRewardPerPeriod, opt => opt.MapFrom(src => src.MiningPoolRewardPerPeriod.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.MiningPoolRewardPerPeriod, opt => opt.MapFrom(src => src.MiningPoolRewardPerPeriod))
                 .ForMember(dest => dest.PeriodsUntilRewardReset, opt => opt.MapFrom(src => src.PeriodsUntilRewardReset))
-                .ForMember(dest => dest.TotalRewardsPerPeriod, opt => opt.MapFrom(src => src.TotalRewardsPerPeriod.InsertDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.TotalRewardsPerPeriod, opt => opt.MapFrom(src => src.TotalRewardsPerPeriod))
                 .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<MiningGovernancesDto, MiningGovernancesResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Governances))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 
             CreateMap<VaultDto, VaultResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))

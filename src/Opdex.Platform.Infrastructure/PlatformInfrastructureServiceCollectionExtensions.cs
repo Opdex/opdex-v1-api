@@ -83,6 +83,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Snapshots;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Summaries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.SqlMappers;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balances;
@@ -93,6 +94,7 @@ using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.MiningPoo
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots;
+using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.MiningPools;
 
 namespace Opdex.Platform.Infrastructure
@@ -131,10 +133,13 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<PersistIndexerLockCommand, bool>, PersistIndexerLockCommandHandler>();
             services.AddTransient<IRequestHandler<PersistIndexerUnlockCommand, bool>, PersistIndexerUnlockCommandHandler>();
 
-            // Pools
+            // Liquidity Pools
             services.AddTransient<IRequestHandler<PersistLiquidityPoolCommand, long>, PersistLiquidityPoolCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistMiningPoolCommand, long>, PersistMiningPoolCommandHandler>();
             services.AddTransient<IRequestHandler<PersistLiquidityPoolSnapshotCommand, bool>, PersistLiquidityPoolSnapshotCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistLiquidityPoolSummaryCommand, long>, PersistLiquidityPoolSummaryCommandHandler>();
+
+            // Mining Pools
+            services.AddTransient<IRequestHandler<PersistMiningPoolCommand, long>, PersistMiningPoolCommandHandler>();
 
             // Tokens
             services.AddTransient<IRequestHandler<PersistTokenCommand, long>, PersistTokenCommandHandler>();
@@ -186,17 +191,20 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectLatestBlockQuery, Block>, SelectLatestBlockQueryHandler>();
             services.AddTransient<IRequestHandler<SelectBlockByHeightQuery, Block>, SelectBlockByHeightQueryHandler>();
 
-            // Pools
+            // Liquidity Pools
             services.AddTransient<IRequestHandler<SelectLiquidityPoolByAddressQuery, LiquidityPool>, SelectLiquidityPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>, SelectLiquidityPoolsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshot>>, SelectLiquidityPoolSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLiquidityPoolBySrcTokenIdAndMarketIdQuery, LiquidityPool>, SelectLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningPoolByIdQuery, MiningPool>, SelectMiningPoolByIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningPoolByLiquidityPoolIdQuery, MiningPool>, SelectMiningPoolByLiquidityPoolIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningPoolByAddressQuery, MiningPool>, SelectMiningPoolByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>, SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLiquidityPoolByIdQuery, LiquidityPool>, SelectLiquidityPoolByIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLiquidityPoolSnapshotWithFilterQuery, LiquidityPoolSnapshot>, SelectLiquidityPoolSnapshotWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLiquidityPoolByLpTokenIdQuery, LiquidityPool>, SelectLiquidityPoolByLpTokenIdQueryHandler>();
+
+            // Mining Pools
+            services.AddTransient<IRequestHandler<SelectMiningPoolByIdQuery, MiningPool>, SelectMiningPoolByIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMiningPoolByLiquidityPoolIdQuery, MiningPool>, SelectMiningPoolByLiquidityPoolIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMiningPoolByAddressQuery, MiningPool>, SelectMiningPoolByAddressQueryHandler>();
 
             // Tokens
             services.AddTransient<IRequestHandler<SelectTokenByIdQuery, Token>, SelectTokenByIdQueryHandler>();
@@ -208,6 +216,7 @@ namespace Opdex.Platform.Infrastructure
 
             // Governances
             services.AddTransient<IRequestHandler<SelectActiveMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveMiningGovernanceNominationsQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMiningGovernancesWithFilterQuery, IEnumerable<MiningGovernance>>, SelectMiningGovernancesWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningGovernanceByAddressQuery, MiningGovernance>, SelectMiningGovernanceByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningGovernanceByTokenIdQuery, MiningGovernance>, SelectMiningGovernanceByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery, MiningGovernanceNomination>, SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHandler>();
