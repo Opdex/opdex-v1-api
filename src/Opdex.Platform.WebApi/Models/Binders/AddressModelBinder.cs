@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
-using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.WebApi.Models.Requests
+namespace Opdex.Platform.WebApi.Models.Binders
 {
-    public class UInt256ModelBinder : IModelBinder
+    public class AddressModelBinder : IModelBinder
     {
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
@@ -23,8 +23,8 @@ namespace Opdex.Platform.WebApi.Models.Requests
 
             try
             {
-                var result = UInt256.Parse(value);
-                bindingContext.Result = ModelBindingResult.Success(result);
+                var address = new Address(value);
+                bindingContext.Result = ModelBindingResult.Success(address);
             }
             catch (Exception e)
             {
@@ -35,13 +35,13 @@ namespace Opdex.Platform.WebApi.Models.Requests
         }
     }
 
-    public class UInt256ModelBinderProvider : IModelBinderProvider
+    public class AddressModelBinderProvider : IModelBinderProvider
     {
         public IModelBinder GetBinder(ModelBinderProviderContext context)
         {
             if (context is null) throw new ArgumentNullException(nameof(context));
 
-            if (context.Metadata.ModelType == typeof(UInt256)) return new BinderTypeModelBinder(typeof(UInt256ModelBinder));
+            if (context.Metadata.ModelType == typeof(Address)) return new BinderTypeModelBinder(typeof(AddressModelBinder));
 
             return null;
         }
