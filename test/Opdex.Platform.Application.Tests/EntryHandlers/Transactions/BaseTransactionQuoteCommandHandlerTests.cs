@@ -16,61 +16,61 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 {
-    public class BaseQuoteCommandHandlerTests
+    public class BaseTransactionQuoteCommandHandlerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
         private readonly Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>> _assemblerMock;
-        private readonly QuoteCommandHandler _handler;
+        private readonly TransactionQuoteCommandHandler _handler;
         private readonly OpdexConfiguration _config;
 
-        public BaseQuoteCommandHandlerTests()
+        public BaseTransactionQuoteCommandHandlerTests()
         {
             _config = new OpdexConfiguration();
             _mediatorMock = new Mock<IMediator>();
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
-            _handler = new QuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
+            _handler = new TransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void BaseQuoteCommand_InvalidWalletAddress_ThrowArgumentNullException(string walletAddress)
+        public void BaseTransactionQuoteCommand_InvalidWalletAddress_ThrowArgumentException(string walletAddress)
         {
             // Arrange
             Address contractAddress = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
 
             // Act
-            void Act() => new QuoteCommand(contractAddress, walletAddress);
+            void Act() => new TransactionQuoteCommand(contractAddress, walletAddress);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Wallet address must be provided.");
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Wallet address must be provided.");
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void BaseQuoteCommand_InvalidContractAddress_ThrowArgumentNullException(string contractAddress)
+        public void BaseTransactionQuoteCommand_InvalidContractAddress_ThrowArgumentException(string contractAddress)
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
 
             // Act
-            void Act() => new QuoteCommand(contractAddress, walletAddress);
+            void Act() => new TransactionQuoteCommand(contractAddress, walletAddress);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Contract address must be provided.");
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Contract address must be provided.");
         }
 
         [Fact]
-        public async Task BaseQuoteCommand_ExecuteAsync_Sends_MakeTransactionQuoteCommand()
+        public async Task BaseTransactionQuoteCommand_ExecuteAsync_Sends_MakeTransactionQuoteCommand()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address contractAddress = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
 
-            var command = new QuoteCommand(contractAddress, walletAddress);
+            var command = new TransactionQuoteCommand(contractAddress, walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
@@ -87,13 +87,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         }
 
         [Fact]
-        public async Task BaseQuoteCommand_ExecuteAsync_Assembles_TransactionQuoteDto()
+        public async Task BaseTransactionQuoteCommand_ExecuteAsync_Assembles_TransactionQuoteDto()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address contractAddress = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
 
-            var command = new QuoteCommand(contractAddress, walletAddress);
+            var command = new TransactionQuoteCommand(contractAddress, walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;
 
             var expectedRequest = new TransactionQuoteRequest(walletAddress, contractAddress, "0", "MethodName", _config.WalletTransactionCallback);
@@ -115,21 +115,21 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
                                                                                     && q.Request.To == contractAddress)), Times.Once);
         }
 
-        private class QuoteCommand : BaseQuoteCommand
+        private class TransactionQuoteCommand : BaseTransactionQuoteCommand
         {
-            public QuoteCommand(Address contractAddress, Address walletAddress) : base(contractAddress, walletAddress)
+            public TransactionQuoteCommand(Address contractAddress, Address walletAddress) : base(contractAddress, walletAddress)
             {
             }
         }
 
-        private class QuoteCommandHandler : BaseQuoteCommandHandler<QuoteCommand>
+        private class TransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<TransactionQuoteCommand>
         {
-            public QuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler, IMediator mediator, OpdexConfiguration config)
+            public TransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler, IMediator mediator, OpdexConfiguration config)
                 : base(quoteAssembler, mediator, config)
             {
             }
 
-            public override async Task<TransactionQuoteDto> Handle(QuoteCommand request, CancellationToken cancellationToken)
+            public override async Task<TransactionQuoteDto> Handle(TransactionQuoteCommand request, CancellationToken cancellationToken)
             {
                 var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.ContractAddress, "0", "MethodName", _callbackEndpoint);
 

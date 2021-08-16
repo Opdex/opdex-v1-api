@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Opdex.Platform.Application.EntryHandlers.MiningPools
 {
     public class CreateStartMiningTransactionQuoteCommandHandler
-        : BaseQuoteCommandHandler<CreateStartMiningTransactionQuoteCommand>
+        : BaseTransactionQuoteCommandHandler<CreateStartMiningTransactionQuoteCommand>
     {
         private const string MethodName = MiningPoolConstants.Methods.StartMining;
         private const string CrsToSend = "0";

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
-    public class CreateTransactionQuoteCommandHandler : BaseQuoteCommandHandler<CreateTransactionQuoteCommand>
+    public class CreateTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateTransactionQuoteCommand>
     {
         private readonly IMapper _mapper;
         public CreateTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,

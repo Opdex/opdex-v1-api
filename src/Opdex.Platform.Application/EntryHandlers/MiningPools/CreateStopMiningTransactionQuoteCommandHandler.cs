@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Opdex.Platform.Application.EntryHandlers.MiningPools
 {
     public class CreateStopMiningTransactionQuoteCommandHandler
-        : BaseQuoteCommandHandler<CreateStopMiningTransactionQuoteCommand>
+        : BaseTransactionQuoteCommandHandler<CreateStopMiningTransactionQuoteCommand>
     {
         private const string MethodName = MiningPoolConstants.Methods.StopMining;
         private const string CrsToSend = "0";

@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
-    public abstract class BaseQuoteCommandHandler<TCommand> : IRequestHandler<TCommand, TransactionQuoteDto>
+    public abstract class BaseTransactionQuoteCommandHandler<TCommand> : IRequestHandler<TCommand, TransactionQuoteDto>
         where TCommand : IRequest<TransactionQuoteDto>
     {
         protected readonly IMediator _mediator;
         protected readonly string _callbackEndpoint;
         private readonly IModelAssembler<TransactionQuote, TransactionQuoteDto> _quoteAssembler;
 
-        protected BaseQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler, IMediator mediator, OpdexConfiguration config)
+        protected BaseTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler, IMediator mediator, OpdexConfiguration config)
         {
             _quoteAssembler = quoteAssembler ?? throw new ArgumentNullException(nameof(quoteAssembler));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
