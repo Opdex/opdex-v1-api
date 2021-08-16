@@ -7,7 +7,7 @@ namespace Opdex.Platform.Common.Models
     {
         private string Value { get; }
 
-        public static Address Empty => new Address(null);
+        public static Address Empty => new Address("");
 
         public Address(string value)
         {
@@ -17,7 +17,7 @@ namespace Opdex.Platform.Common.Models
                 throw new ArgumentException("Invalid address.");
             }
 
-            this.Value = value.HasValue() ? value : null;
+            Value = value.HasValue() ? value : "";
         }
 
         public static bool operator ==(Address a, Address b)
@@ -42,12 +42,12 @@ namespace Opdex.Platform.Common.Models
 
         public override int GetHashCode()
         {
-            return (Value != null ? Value.GetHashCode() : 0);
+            return Value.GetHashCode();
         }
 
         public override string ToString()
         {
-            return this.Value;
+            return Value;
         }
 
         public override bool Equals(object obj)

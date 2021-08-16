@@ -22,9 +22,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         }
 
         [Theory]
-        [InlineData(PagingDirection.Forward, -1)]
-        [InlineData(PagingDirection.Backward, -1)]
-        [InlineData(PagingDirection.Backward, 0)] // zero indicates first request, only possible to page forward
+        [ClassData(typeof(InvalidLongPointerData))]
         public void Create_InvalidPointer_ThrowArgumentException(PagingDirection pagingDirection, long pointer)
         {
             // Arrange
@@ -99,9 +97,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
+        [ClassData(typeof(NullOrWhitespaceStringData))]
         [InlineData(";:;;;;;::;;;:::;;;:::;;:::;;")]
         [InlineData("includeZeroAmounts:Maybe;direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // invalid includeZeroAmounts
         [InlineData("direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // missing includeZeroAmounts

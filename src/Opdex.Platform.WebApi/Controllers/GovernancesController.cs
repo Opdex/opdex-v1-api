@@ -38,10 +38,10 @@ namespace Opdex.Platform.WebApi.Controllers
             _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
-        /// <summary> Get Governances </summary>
+        /// <summary>Get Governances</summary>
         /// <remarks>Retrieves a collection of mining governances.</remarks>
         /// <param name="minedToken">The address of a mined token.</param>
-        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 101.</param>
+        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 51.</param>
         /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
         /// <param name="cursor">The cursor when paging.</param>
         /// <param name="cancellationToken">Cancellation token</param>

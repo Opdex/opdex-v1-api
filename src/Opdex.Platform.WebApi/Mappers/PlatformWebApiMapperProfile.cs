@@ -117,6 +117,10 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<MiningPoolsDto, MiningPoolsResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.MiningPools))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
+
             CreateMap<OhlcDecimalDto, OhlcDecimalResponseModel>()
                 .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
                 .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
