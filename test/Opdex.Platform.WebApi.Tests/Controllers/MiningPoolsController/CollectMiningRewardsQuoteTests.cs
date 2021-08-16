@@ -41,7 +41,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             _contextMock.Setup(get => get.Wallet).Returns(() => walletAddress.ToString());
 
             // Act
-            await _controller.CollectMiningRewards(miningPool, cancellationToken);
+            await _controller.CollectMiningRewards(miningPool.ToString(), cancellationToken);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCollectMiningRewardsTransactionQuoteCommand>(query => query.ContractAddress == miningPool
@@ -61,7 +61,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCollectMiningRewardsTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
 
             // Act
-            await _controller.CollectMiningRewards(miningPool, cancellationToken);
+            await _controller.CollectMiningRewards(miningPool.ToString(), cancellationToken);
 
             // Assert
             _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(dto), Times.Once);
@@ -81,7 +81,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(quoteResponse);
 
             // Act
-            var response = await _controller.CollectMiningRewards(miningPool, cancellationToken);
+            var response = await _controller.CollectMiningRewards(miningPool.ToString(), cancellationToken);
 
             // Act
             response.Result.Should().BeOfType<OkObjectResult>();

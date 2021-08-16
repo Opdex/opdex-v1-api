@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
@@ -54,7 +53,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
         [HttpPost("{address}/start")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> StartMining(Address address, MiningQuote request, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> StartMining(string address, MiningQuote request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateStartMiningTransactionQuoteCommand(address, _context.Wallet, request.Amount), cancellationToken);
 
@@ -71,7 +70,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
         [HttpPost("{address}/stop")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> StopMining(Address address, MiningQuote request, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> StopMining(string address, MiningQuote request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateStopMiningTransactionQuoteCommand(address, _context.Wallet, request.Amount), cancellationToken);
 
@@ -86,7 +85,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
         [HttpPost("{address}/collect")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> CollectMiningRewards(Address address, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> CollectMiningRewards(string address, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateCollectMiningRewardsTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
 

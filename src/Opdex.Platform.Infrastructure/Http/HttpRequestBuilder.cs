@@ -2,6 +2,8 @@ using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Opdex.Platform.Common.Converters;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Http
 {
@@ -13,9 +15,15 @@ namespace Opdex.Platform.Infrastructure.Http
         {
             var json = JsonConvert.SerializeObject(request, new JsonSerializerSettings
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                Converters = new List<JsonConverter>
+                {
+                    new AddressConverter(),
+                    new UInt128Converter(),
+                    new UInt256Converter()
+                }
             });
-            
+
             return new HttpRequestMessage(method, uri)
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json")
