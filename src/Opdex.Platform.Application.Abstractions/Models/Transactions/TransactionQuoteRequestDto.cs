@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.Transactions
     {
         public TransactionQuoteRequestDto()
         {
-            Parameters = new List<TransactionQuoteRequestParameterDto>();
+            Parameters = new List<TransactionQuoteRequestParameterDto>().AsReadOnly();
         }
 
         public Address Sender { get; set; }

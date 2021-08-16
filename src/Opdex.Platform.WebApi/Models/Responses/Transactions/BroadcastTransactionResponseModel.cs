@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Transactions
@@ -8,6 +9,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
         public string TxHash { get; set; }
 
         [NotNull]
-        public string Sender { get; set; }
+        public Address Sender { get; set; }
     }
 }

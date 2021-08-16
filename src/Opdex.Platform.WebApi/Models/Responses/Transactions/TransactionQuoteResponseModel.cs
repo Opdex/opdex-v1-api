@@ -8,7 +8,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
     {
         public TransactionQuoteResponseModel()
         {
-            Events = new List<TransactionEventResponseModel>();
+            Events = new List<TransactionEventResponseModel>().AsReadOnly();
         }
 
         public object Result { get; set; }
