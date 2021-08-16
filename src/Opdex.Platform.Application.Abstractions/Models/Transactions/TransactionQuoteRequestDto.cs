@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.Abstractions.Models.Transactions
@@ -6,11 +7,11 @@ namespace Opdex.Platform.Application.Abstractions.Models.Transactions
     {
         public TransactionQuoteRequestDto()
         {
-            Parameters = new List<TransactionQuoteRequestParameterDto>();
+            Parameters = new List<TransactionQuoteRequestParameterDto>().AsReadOnly();
         }
 
-        public string Sender { get; set; }
-        public string To { get; set; }
+        public Address Sender { get; set; }
+        public Address To { get; set; }
         public string Amount { get; set; }
         public string Method { get; set; }
         public IReadOnlyCollection<TransactionQuoteRequestParameterDto> Parameters { get; set; }

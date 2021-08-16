@@ -15,18 +15,19 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.MiningPools
 {
-    public class CreateStartMiningTransactionQuoteCommandHandler
-        : BaseTransactionQuoteCommandHandler<CreateStartMiningTransactionQuoteCommand>
+    public class CreateStopMiningTransactionQuoteCommandHandler
+        : BaseTransactionQuoteCommandHandler<CreateStopMiningTransactionQuoteCommand>
     {
-        private const string MethodName = MiningPoolConstants.Methods.StartMining;
+        private const string MethodName = MiningPoolConstants.Methods.StopMining;
         private const string CrsToSend = "0";
 
-        public CreateStartMiningTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                               IMediator mediator, OpdexConfiguration config) : base(quoteAssembler, mediator, config)
+        public CreateStopMiningTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
+                                                              IMediator mediator, OpdexConfiguration config)
+            : base(quoteAssembler, mediator, config)
         {
         }
 
-        public override async Task<TransactionQuoteDto> Handle(CreateStartMiningTransactionQuoteCommand request, CancellationToken cancellationToken)
+        public override async Task<TransactionQuoteDto> Handle(CreateStopMiningTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
             var amount = request.Amount.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals);
 

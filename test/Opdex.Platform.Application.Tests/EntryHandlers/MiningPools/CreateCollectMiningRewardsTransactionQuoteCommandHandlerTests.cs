@@ -1,4 +1,3 @@
-using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
@@ -8,69 +7,40 @@ using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.MiningPools;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 {
-    public class CreateStartMiningTransactionQuoteCommandHandlerTests
+    public class CreateCollectMiningRewardsTransactionQuoteCommandHandlerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
         private readonly Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>> _assemblerMock;
-        private readonly CreateStartMiningTransactionQuoteCommandHandler _handler;
+        private readonly CreateCollectMiningRewardsTransactionQuoteCommandHandler _handler;
         private readonly OpdexConfiguration _config;
-        const string MethodName = MiningPoolConstants.Methods.StartMining;
+        const string MethodName = MiningPoolConstants.Methods.CollectRewards;
 
-        public CreateStartMiningTransactionQuoteCommandHandlerTests()
+        public CreateCollectMiningRewardsTransactionQuoteCommandHandlerTests()
         {
             _config = new OpdexConfiguration();
             _mediatorMock = new Mock<IMediator>();
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
-            _handler = new CreateStartMiningTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        [InlineData("123")]
-        [InlineData("asdf")]
-        public void CreateStartMiningTransactionQuoteCommand_InvalidAmount_ThrowArgumentException(string amount)
-        {
-            // Arrange
-            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-
-            // Act
-            void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount must be a valid decimal number.");
+            _handler = new CreateCollectMiningRewardsTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
         [Fact]
-        public async Task CreateStartMiningTransactionQuoteCommand_Sends_MakeTransactionQuoteCommand()
+        public async Task CreateCollectMiningRewardsTransactionQuoteCommand_Sends_MakeTransactionQuoteCommand()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.00";
             const string crsToSend = "0";
 
-            var command = new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
+            var command = new CreateCollectMiningRewardsTransactionQuoteCommand(miningPool, walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;
-
-            var expectedParameters = new List<TransactionQuoteRequestParameter>
-            {
-                new TransactionQuoteRequestParameter("Amount", "100000000", SmartContractParameterType.UInt256)
-            };
 
             // Act
             try
@@ -85,31 +55,22 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
                                                                                           && c.QuoteRequest.Amount == crsToSend
                                                                                           && c.QuoteRequest.Method == MethodName
                                                                                           && c.QuoteRequest.Callback != null
-                                                                                          && c.QuoteRequest.Parameters
-                                                                                              .All(p => expectedParameters
-                                                                                                       .Select(e => e.Serialized)
-                                                                                                       .Contains(p.Serialized))),
+                                                                                          && c.QuoteRequest.Parameters.Count == 0),
                                                        It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
-        public async Task CreateStartMiningTransactionQuoteCommand_Assembles_TransactionQuoteDto()
+        public async Task CreateCollectMiningRewardsTransactionQuoteCommand_Assembles_TransactionQuoteDto()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.00";
             const string crsToSend = "0";
 
-            var command = new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
+            var command = new CreateCollectMiningRewardsTransactionQuoteCommand(miningPool, walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var expectedParameters = new List<TransactionQuoteRequestParameter>
-            {
-                new TransactionQuoteRequestParameter("Amount", "100000000", SmartContractParameterType.UInt256)
-            };
-
-            var expectedRequest = new TransactionQuoteRequest(walletAddress, miningPool, crsToSend, MethodName, _config.WalletTransactionCallback, expectedParameters);
+            var expectedRequest = new TransactionQuoteRequest(walletAddress, miningPool, crsToSend, MethodName, _config.WalletTransactionCallback);
 
             var expectedQuote = new TransactionQuote("1000", null, 23800, null, expectedRequest);
 

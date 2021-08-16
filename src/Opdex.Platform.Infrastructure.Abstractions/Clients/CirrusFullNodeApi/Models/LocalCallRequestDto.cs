@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
@@ -7,16 +8,16 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
     /// </summary>
     public class LocalCallRequestDto
     {
-        public LocalCallRequestDto(string address, string methodName, ulong? blockHeight = null)
+        public LocalCallRequestDto(Address address, string methodName, ulong? blockHeight = null)
             : this(address, methodName, Array.Empty<string>(), blockHeight) { }
 
-        public LocalCallRequestDto(string address, string methodName, string[] parameters, ulong? blockHeight = null)
+        public LocalCallRequestDto(Address address, string methodName, string[] parameters, ulong? blockHeight = null)
             : this(address, address, methodName, parameters, blockHeight) { }
 
-        public LocalCallRequestDto(string address, string sender, string methodName, ulong? blockHeight = null)
+        public LocalCallRequestDto(Address address, Address sender, string methodName, ulong? blockHeight = null)
             : this(address, sender, methodName, Array.Empty<string>(), blockHeight) { }
 
-        public LocalCallRequestDto(string address, string sender, string methodName, string[] parameters, ulong? blockHeight = null, string amount = null)
+        public LocalCallRequestDto(Address address, Address sender, string methodName, string[] parameters, ulong? blockHeight = null, string amount = null)
         {
             Amount = amount ?? "0.00";
             GasPrice = 100;
@@ -31,7 +32,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         /// <summary>
         /// The address of the smart contract containing the method.
         /// </summary>
-        public string ContractAddress { get; set; }
+        public Address ContractAddress { get; set; }
 
         /// <summary>
         /// The name of the method to call.
@@ -67,7 +68,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         /// For example, some methods, such as a withdrawal method on an escrow smart contract, should only be executed
         /// by the deployer, and in this case, it is the Sender address that identifies the deployer.
         /// </summary>
-        public string Sender { get; set; }
+        public Address Sender { get; set; }
 
         /// <summary>
         /// An array of encoded strings containing the parameters (and their type) to pass to the smart contract
