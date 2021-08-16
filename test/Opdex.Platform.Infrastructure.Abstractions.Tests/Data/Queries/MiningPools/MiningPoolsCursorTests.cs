@@ -1,20 +1,22 @@
 using FluentAssertions;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningPools;
 using System;
+using System.Linq;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
+namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.MiningPools
 {
-    public class VaultCertificatesCursorTests
+    public class MiningPoolsCursorTests
     {
         [Fact]
         public void Create_LimitExceedsMaximum_ThrowArgumentOutOfRangeException()
         {
             // Arrange
             // Act
-            static void Act() => new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
+            static void Act() => new MiningPoolsCursor(Enumerable.Empty<Address>(), MiningStatusFilter.Any, SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>("limit", Act);
@@ -26,23 +28,36 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
         {
             // Arrange
             // Act
-            void Act() => new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", SortDirectionType.ASC, 25, pagingDirection, pointer);
+            void Act() => new MiningPoolsCursor(Enumerable.Empty<Address>(), MiningStatusFilter.Any, SortDirectionType.ASC, 25, pagingDirection, pointer);
 
             // Assert
             Assert.Throws<ArgumentException>("pointer", Act);
         }
 
         [Fact]
+        public void Create_NullLiquidityPoolsProvided_SetToEmpty()
+        {
+            // Arrange
+            // Act
+            var cursor = new MiningPoolsCursor(null, MiningStatusFilter.Any, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+
+            // Assert
+            cursor.LiquidityPools.Should().BeEmpty();
+        }
+
+        [Fact]
         public void ToString_StringifiesCursor_FormatCorrectly()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+            var cursor = new MiningPoolsCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", "P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8" }, MiningStatusFilter.Active, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
             // Act
             var result = cursor.ToString();
 
             // Assert
-            result.Should().Contain("holder:PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX;");
+            result.Should().Contain("liquidityPools:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;");
+            result.Should().Contain("liquidityPools:P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8;");
+            result.Should().Contain("miningStatus:Active");
             result.Should().Contain("direction:ASC;");
             result.Should().Contain("limit:25;");
             result.Should().Contain("paging:Forward;");
@@ -53,15 +68,16 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
         public void Turn_NonIdenticalPointer_ReturnAnotherCursor()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+            var cursor = new MiningPoolsCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L" }, MiningStatusFilter.Any, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
             // Act
             var result = cursor.Turn(PagingDirection.Backward, 567);
 
             // Assert
-            result.Should().BeOfType<VaultCertificatesCursor>();
-            var adjacentCursor = (VaultCertificatesCursor)result;
-            adjacentCursor.Holder.Should().Be(cursor.Holder);
+            result.Should().BeOfType<MiningPoolsCursor>();
+            var adjacentCursor = (MiningPoolsCursor)result;
+            adjacentCursor.LiquidityPools.Should().BeEquivalentTo(cursor.LiquidityPools);
+            adjacentCursor.MiningStatus.Should().Be(cursor.MiningStatus);
             adjacentCursor.SortDirection.Should().Be(cursor.SortDirection);
             adjacentCursor.Limit.Should().Be(cursor.Limit);
             adjacentCursor.PagingDirection.Should().Be(PagingDirection.Backward);
@@ -71,6 +87,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
         [Theory]
         [ClassData(typeof(NullOrWhitespaceStringData))]
         [InlineData(";:;;;;;::;;;:::;;;:::;;:::;;")]
+        [InlineData("miningStatus:Invalid;direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // invalid miningStatus
+        [InlineData("direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // missing includeZeroAmounts
         [InlineData("direction:Invalid;limit:50;paging:Forward;pointer:NTAw;")] // invalid orderBy
         [InlineData("limit:50;paging:Forward;pointer:NTAw;")] // missing orderBy
         [InlineData("direction:ASC;limit:51;paging:Forward;pointer:NTAw;")] // over max limit
@@ -85,7 +103,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
         {
             // Arrange
             // Act
-            var canParse = VaultCertificatesCursor.TryParse(stringified, out var cursor);
+            var canParse = MiningPoolsCursor.TryParse(stringified, out var cursor);
 
             // Assert
             canParse.Should().Be(false);
@@ -96,14 +114,15 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
         public void TryParse_ValidCursor_ReturnTrue()
         {
             // Arrange
-            var stringified = "holder:;direction:ASC;limit:50;paging:Forward;pointer:MTA=;"; // pointer: 10;
+            var stringified = "liquidityPools:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;miningStatus:Inactive;direction:ASC;limit:50;paging:Forward;pointer:MTA=;"; // pointer: 10;
 
             // Act
-            var canParse = VaultCertificatesCursor.TryParse(stringified, out var cursor);
+            var canParse = MiningPoolsCursor.TryParse(stringified, out var cursor);
 
             // Assert
             canParse.Should().Be(true);
-            cursor.Holder.Should().Be("");
+            cursor.LiquidityPools.Should().ContainSingle(pool => pool == "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L");
+            cursor.MiningStatus.Should().Be(MiningStatusFilter.Inactive);
             cursor.SortDirection.Should().Be(SortDirectionType.ASC);
             cursor.Limit.Should().Be(50);
             cursor.PagingDirection.Should().Be(PagingDirection.Forward);

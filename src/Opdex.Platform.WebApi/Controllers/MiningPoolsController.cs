@@ -5,11 +5,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
+using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningPools;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,6 +36,43 @@ namespace Opdex.Platform.WebApi.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+
+        /// <summary>Get Mining Pools</summary>
+        /// <remarks>Retrieves paginated collection of mining pool details</remarks>
+        /// <param name="liquidityPools">Liquidity pools that are used for mining.</param>
+        /// <param name="miningStatus">Mining pool activity status.</param>
+        /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
+        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 51.</param>
+        /// <param name="cursor">The cursor when paging.</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>Mining pool details page</returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(MiningPoolsResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<MiningPoolsResponseModel>> GetMiningPools([FromQuery] IEnumerable<Address> liquidityPools,
+                                                                                 [FromQuery] MiningStatusFilter miningStatus,
+                                                                                 [FromQuery] SortDirectionType direction,
+                                                                                 [FromQuery] uint limit,
+                                                                                 [FromQuery] string cursor,
+                                                                                 CancellationToken cancellationToken)
+        {
+            MiningPoolsCursor pagingCursor;
+
+            if (cursor.HasValue())
+            {
+                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !MiningPoolsCursor.TryParse(decodedCursor, out var parsedCursor))
+                {
+                    return new ValidationErrorProblemDetailsResult("Cursor not formed correctly.");
+                }
+                pagingCursor = parsedCursor;
+            }
+            else
+            {
+                pagingCursor = new MiningPoolsCursor(liquidityPools, miningStatus, direction, limit, PagingDirection.Forward, default);
+            }
+
+            var vaults = await _mediator.Send(new GetMiningPoolsWithFilterQuery(pagingCursor), cancellationToken);
+            return Ok(_mapper.Map<MiningPoolsResponseModel>(vaults));
         }
 
         /// <summary>Get Mining Pool</summary>

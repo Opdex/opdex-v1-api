@@ -44,7 +44,7 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
             var address = new Address(value);
 
             // Assert
-            address.ToString().Should().BeNull();
+            address.ToString().Should().Be("");
             address.Should().BeEquivalentTo(Address.Empty);
             (address == Address.Empty).Should().BeTrue();
         }

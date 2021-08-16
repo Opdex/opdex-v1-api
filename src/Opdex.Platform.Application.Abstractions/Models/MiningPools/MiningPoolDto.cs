@@ -1,9 +1,11 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.Application.Abstractions.Models.MiningPools
 {
     public class MiningPoolDto
     {
-        public string Address { get; set; }
-        public string LiquidityPool { get; set; }
+        public Address Address { get; set; }
+        public Address LiquidityPool { get; set; }
         public ulong MiningPeriodEndBlock { get; set; }
         public string RewardPerBlock { get; set; }
         public string RewardPerLpt { get; set; }
