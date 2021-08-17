@@ -76,6 +76,20 @@ namespace Opdex.Platform.WebApi
                 };
             });
 
+            var serializerSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                Converters = new List<JsonConverter>
+                {
+                    new StringEnumConverter(),
+                    new UInt128Converter(),
+                    new UInt256Converter(),
+                    new AddressConverter(),
+                    new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
+                }
+            };
+
             services
                 .AddControllers(options =>
                 {
@@ -84,18 +98,12 @@ namespace Opdex.Platform.WebApi
                 .AddProblemDetailsConventions()
                 .AddNewtonsoftJson(options =>
                 {
-                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    options.SerializerSettings.Converters =
-                        new List<JsonConverter>
-                        {
-                            new StringEnumConverter(),
-                            new UInt128Converter(),
-                            new UInt256Converter(),
-                            new AddressConverter(),
-                            new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
-                        };
+                    options.SerializerSettings.NullValueHandling = serializerSettings.NullValueHandling;
+                    options.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
+                    options.SerializerSettings.Converters = serializerSettings.Converters;
                 });
+
+            JsonConvert.DefaultSettings = (() => serializerSettings);
 
             services.AddProblemDetailTelemetryInitializer();
 
