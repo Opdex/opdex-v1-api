@@ -121,7 +121,23 @@ namespace Opdex.Platform.Domain.Models.Transactions
         public static SmartContractMethodParameter Deserialize(string value)
         {
             var values = value.Split('#', 2);
-            return new SmartContractMethodParameter(values[1], (SmartContractParameterType)int.Parse(values[0]));
+            var stringified = values[1];
+            return (SmartContractParameterType)int.Parse(values[0]) switch
+            {
+                SmartContractParameterType.Boolean => new SmartContractMethodParameter(bool.Parse(values[1])),
+                SmartContractParameterType.Byte => new SmartContractMethodParameter(byte.Parse(values[1])),
+                SmartContractParameterType.Char => new SmartContractMethodParameter(char.Parse(values[1])),
+                SmartContractParameterType.String => new SmartContractMethodParameter(values[1]),
+                SmartContractParameterType.UInt32 => new SmartContractMethodParameter(uint.Parse(values[1])),
+                SmartContractParameterType.Int32 => new SmartContractMethodParameter(int.Parse(values[1])),
+                SmartContractParameterType.UInt64 => new SmartContractMethodParameter(ulong.Parse(values[1])),
+                SmartContractParameterType.Int64 => new SmartContractMethodParameter(long.Parse(values[1])),
+                SmartContractParameterType.Address => new SmartContractMethodParameter(new Address(values[1])),
+                SmartContractParameterType.ByteArray => new SmartContractMethodParameter(Array.ConvertAll(values[1].Split('-'), s => Convert.ToByte(s, 16))),
+                SmartContractParameterType.UInt128 => new SmartContractMethodParameter(UInt128.Parse(values[1])),
+                SmartContractParameterType.UInt256 => new SmartContractMethodParameter(UInt256.Parse(values[1])),
+                _ => throw new ArgumentException("Serialized parameter is not a recognized type."),
+            };
         }
     }
 }
