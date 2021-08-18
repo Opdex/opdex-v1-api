@@ -6,8 +6,8 @@ using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Constants.SmartContracts;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
 using System.Threading;
@@ -28,11 +28,11 @@ namespace Opdex.Platform.Application.EntryHandlers.MiningPools
 
         public override async Task<TransactionQuoteDto> Handle(CreateStartMiningTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
-            var amount = request.Amount.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals);
+            var amount = UInt256.Parse(request.Amount.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals));
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Amount", amount, SmartContractParameterType.UInt256)
+                new TransactionQuoteRequestParameter("Amount", amount)
             };
 
             var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.ContractAddress, CrsToSend, MethodName, _callbackEndpoint, requestParameters);

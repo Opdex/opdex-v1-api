@@ -10,6 +10,7 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using System.Collections.Generic;
@@ -69,7 +70,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             var expectedParameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Amount", "100000000", SmartContractParameterType.UInt256)
+                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("100000000"))
             };
 
             // Act
@@ -86,9 +87,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
                                                                                           && c.QuoteRequest.Method == MethodName
                                                                                           && c.QuoteRequest.Callback != null
                                                                                           && c.QuoteRequest.Parameters
-                                                                                              .All(p => expectedParameters
-                                                                                                       .Select(e => e.Serialized)
-                                                                                                       .Contains(p.Serialized))),
+                                                                                              .All(p => expectedParameters.Select(e => e.Value).Contains(p.Value))),
                                                        It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -106,7 +105,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             var expectedParameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Amount", "100000000", SmartContractParameterType.UInt256)
+                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("100000000"))
             };
 
             var expectedRequest = new TransactionQuoteRequest(walletAddress, miningPool, crsToSend, MethodName, _config.WalletTransactionCallback, expectedParameters);

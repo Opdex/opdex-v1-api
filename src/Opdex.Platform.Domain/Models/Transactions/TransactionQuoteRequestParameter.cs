@@ -1,67 +1,106 @@
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Domain.Models.Transactions
 {
+    /// <summary>
+    /// Defines a labelled smart contract method parameter
+    /// </summary>
     public class TransactionQuoteRequestParameter
     {
-        public TransactionQuoteRequestParameter(string label, string value, SmartContractParameterType type)
+        private string _label;
+        private SmartContractMethodParameter _value;
+
+        public TransactionQuoteRequestParameter(string label, bool value)
         {
-            if (!label.HasValue())
-            {
-                throw new ArgumentNullException(nameof(label), $"{nameof(label)} must not be null or empty.");
-            }
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
 
-            if (!value.HasValue())
-            {
-                throw new ArgumentNullException(nameof(value), $"{nameof(value)} must not be null or empty.");
-            }
+        public TransactionQuoteRequestParameter(string label, byte value)
+        {
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
 
-            if (!type.IsValid())
-            {
-                throw new ArgumentOutOfRangeException(nameof(type), $"{nameof(type)} is not valid.");
-            }
+        public TransactionQuoteRequestParameter(string label, char value)
+        {
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
 
+        public TransactionQuoteRequestParameter(string label, string value)
+        {
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
+
+        public TransactionQuoteRequestParameter(string label, uint value)
+        {
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
+
+        public TransactionQuoteRequestParameter(string label, int value)
+        {
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
+
+        public TransactionQuoteRequestParameter(string label, ulong value)
+        {
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
+
+        public TransactionQuoteRequestParameter(string label, long value)
+        {
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
+
+        public TransactionQuoteRequestParameter(string label, Address value)
+        {
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
+
+        public TransactionQuoteRequestParameter(string label, byte[] value)
+        {
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
+
+        public TransactionQuoteRequestParameter(string label, UInt128 value)
+        {
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
+
+        public TransactionQuoteRequestParameter(string label, UInt256 value)
+        {
+            Label = label;
+            Value = new SmartContractMethodParameter(value);
+        }
+
+        public TransactionQuoteRequestParameter(string label, SmartContractMethodParameter value)
+        {
             Label = label;
             Value = value;
-            Type = type;
         }
 
-        public TransactionQuoteRequestParameter(string label, string encodedValue)
+        public string Label
         {
-            if (!label.HasValue())
-            {
-                throw new ArgumentNullException(nameof(label), $"{nameof(label)} must not be null or empty.");
-            }
-
-            (SmartContractParameterType type, string decodedValue) = DeserializeParameterValue(encodedValue);
-
-            Label = label;
-            Value = decodedValue;
-            Type = type;
+            get => _label;
+            private set => _label = value.HasValue() ? value : throw new ArgumentNullException("Label must not be null or empty.");
         }
 
-        public string Label { get; }
-        public string Value { get; }
-        public SmartContractParameterType Type { get; }
-        public string Serialized => Value.ToSmartContractParameter(Type);
-
-        private static (SmartContractParameterType, string) DeserializeParameterValue(string value)
+        public SmartContractMethodParameter Value
         {
-            if (!value.HasValue() || !value.Contains('#'))
-            {
-                throw new ArgumentException("Invalid parameter value", nameof(value));
-            }
-
-            var parts = value.Split("#");
-
-            if (!int.TryParse(parts[0], out var type) || !((SmartContractParameterType)type).IsValid())
-            {
-                throw new Exception("Unable to parse parameter type.");
-            }
-
-            return ((SmartContractParameterType)type, parts[1]);
+            get => _value;
+            private set => _value = value ?? throw new ArgumentNullException("Value must not be null.");
         }
     }
 }

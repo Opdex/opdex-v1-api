@@ -193,58 +193,6 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task CreateCertificate_ProcessCreateVaultCertificateCommand_Send()
-        {
-            // Arrange
-            var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
-
-            var vaultAddress = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
-            var request = new CreateVaultCertificateRequest
-            {
-                Holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                Amount = "1000.00000000"
-            };
-            var cancellationToken = new CancellationTokenSource().Token;
-
-            // Act
-            await _controller.CreateCertificate(vaultAddress, request, cancellationToken);
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateWalletCreateVaultCertificateCommand>(command
-                => command.Vault == vaultAddress
-                && command.Holder == request.Holder
-                && command.Amount == request.Amount
-                && command.WalletAddress == walletAddress
-            ), cancellationToken), Times.Once);
-        }
-
-        [Fact]
-        public async Task CreateCertificate_Success_ReturnCreated()
-        {
-            // Arrange
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
-
-            var txId = "j2oD0ma11BkSyx";
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateWalletCreateVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(txId);
-
-            var request = new CreateVaultCertificateRequest
-            {
-                Holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                Amount = "1000.00000000"
-            };
-
-            // Act
-            var response = await _controller.CreateCertificate("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", request, default);
-
-            // Act
-            response.Result.Should().BeOfType<CreatedResult>();
-            ((CreatedResult)response.Result).Value.Should().Be(txId);
-            ((CreatedResult)response.Result).Location.Should().Be(string.Format(FakeTransactionEndpoint, txId));
-        }
-
-        [Fact]
         public async Task RedeemCertificates_ProcessRedeemVaultCertificateCommand_Send()
         {
             // Arrange

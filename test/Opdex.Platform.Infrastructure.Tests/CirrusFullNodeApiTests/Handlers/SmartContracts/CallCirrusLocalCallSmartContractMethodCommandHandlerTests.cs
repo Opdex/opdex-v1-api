@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
@@ -53,7 +54,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
 
             var parameters = new List<TransactionQuoteRequestParameter>()
             {
-                new TransactionQuoteRequestParameter("Amount", "10", SmartContractParameterType.UInt256)
+                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
             };
 
             var cancellationToken = new CancellationTokenSource().Token;
@@ -88,7 +89,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
 
             var parameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Amount", "10", SmartContractParameterType.UInt256)
+                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
             };
 
             var request = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);
@@ -133,7 +134,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
 
             var parameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Amount", "10", SmartContractParameterType.UInt256)
+                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
             };
 
             var request = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);

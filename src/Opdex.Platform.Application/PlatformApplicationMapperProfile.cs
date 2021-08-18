@@ -2,7 +2,6 @@ using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs;
@@ -24,7 +23,6 @@ using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
@@ -369,7 +367,7 @@ namespace Opdex.Platform.Application
 
             CreateMap<TransactionQuoteRequestParameter, TransactionQuoteRequestParameterDto>()
                 .ForMember(dest => dest.Label, opt => opt.MapFrom(src => src.Label))
-                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Serialized))
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Value.Serialize()))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TransactionQuoteRequestDto, TransactionQuoteRequest>()
@@ -380,7 +378,7 @@ namespace Opdex.Platform.Application
                 });
 
             CreateMap<TransactionQuoteRequestParameterDto, TransactionQuoteRequestParameter>()
-                .ConstructUsing(src => new TransactionQuoteRequestParameter(src.Label, src.Value));
+                .ConstructUsing(src => new TransactionQuoteRequestParameter(src.Label, SmartContractMethodParameter.Deserialize(src.Value)));
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
             Amount = amount;
             Method = method;
             Callback = callback;
-            Parameters = parameters ?? new List<TransactionQuoteRequestParameter>();
+            Parameters = parameters ?? new List<TransactionQuoteRequestParameter>().AsReadOnly();
         }
 
         public Address Sender { get; }
@@ -49,7 +49,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
         public string Amount { get; }
         public string Method { get; }
         public IReadOnlyCollection<TransactionQuoteRequestParameter> Parameters { get; }
-        public string[] SerializedParameters => Parameters.Select(p => p.Serialized).ToArray();
+        public string[] SerializedParameters => Parameters.Select(p => p.Value.Serialize()).ToArray();
         public string Callback { get; }
     }
 }
