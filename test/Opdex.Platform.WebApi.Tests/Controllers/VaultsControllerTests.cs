@@ -5,14 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
+using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Models.Responses;
+using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -190,6 +194,87 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             response.Result.Should().BeOfType<CreatedResult>();
             ((CreatedResult)response.Result).Value.Should().Be(txId);
             ((CreatedResult)response.Result).Location.Should().Be(string.Format(FakeTransactionEndpoint, txId));
+        }
+
+        [Fact]
+        public async Task CreateCertificateQuote_CreateCreateVaultCertificateTransactionQuoteCommand_Send()
+        {
+            // Arrange
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+
+            Address vaultAddress = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+            var request = new CreateVaultCertificateQuoteRequest
+            {
+                Holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
+                Amount = "10000.00000000"
+            };
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            await _controller.CreateCertificateQuote(vaultAddress, request, cancellationToken);
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCreateVaultCertificateTransactionQuoteCommand>(command
+                => command.ContractAddress == vaultAddress
+                && command.WalletAddress == walletAddress
+                && command.Holder == request.Holder
+                && command.Amount == request.Amount
+            ), cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task CreateCertificateQuote_Result_Map()
+        {
+            // Arrange
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+
+            var quote = new TransactionQuoteDto();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateVaultCertificateTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(quote);
+
+            var request = new CreateVaultCertificateQuoteRequest
+            {
+                Amount = "1000.00000000",
+                Holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm"
+            };
+
+            // Act
+            try
+            {
+                await _controller.CreateCertificateQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", request, CancellationToken.None);
+            }
+            catch (Exception) { }
+
+            // Assert
+            _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
+        }
+
+        [Fact]
+        public async Task CreateCertificateQuote_Success_ReturnOk()
+        {
+            // Arrange
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+
+            var responseModel = new TransactionQuoteResponseModel();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateVaultCertificateTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new TransactionQuoteDto());
+            _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
+
+            var request = new CreateVaultCertificateQuoteRequest
+            {
+                Amount = "1000.00000000",
+                Holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm"
+            };
+
+            // Act
+            var response = await _controller.CreateCertificateQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", request, CancellationToken.None);
+
+            // Act
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
         }
 
         [Fact]

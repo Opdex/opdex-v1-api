@@ -17,6 +17,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Opdex.Platform.WebApi.Models.Responses;
+using Opdex.Platform.WebApi.Models.Responses.Transactions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -145,21 +147,22 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Create Certificate Quote</summary>
-        /// <remarks>Issues a new certificate from a vault with the default vesting period</remarks>
-        /// <param name="address">Vault contract address</param>
-        /// <param name="request">Create vault certificate request.</param>
-        /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>Cirrus transaction hash</returns>
+        /// <remarks>Quote a transaction to issue a vault certificate.</remarks>
+        /// <param name="address">The address of the vault.</param>
+        /// <param name="request">Information about the vault certificate that is to be issued.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
         [HttpPost("{address}/certificates")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<string>> CreateCertificate(string address,
-                                                                  CreateVaultCertificateRequest request,
-                                                                  CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> CreateCertificateQuote([FromRoute] Address address,
+                                                                                              CreateVaultCertificateQuoteRequest request,
+                                                                                              CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new CreateWalletCreateVaultCertificateCommand(_context.Wallet, address,
-                                                                                                     request.Holder, request.Amount), cancellationToken);
+            var response = await _mediator.Send(new CreateCreateVaultCertificateTransactionQuoteCommand(address, _context.Wallet, request.Holder, request.Amount), cancellationToken);
 
-            return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
         }
 
         /// <summary>Redeem Certificate Quote</summary>
