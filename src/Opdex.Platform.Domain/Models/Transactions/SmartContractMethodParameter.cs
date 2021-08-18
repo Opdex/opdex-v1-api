@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
 
         public SmartContractMethodParameter(string value)
         {
-            if (value is null || value == "") throw new ArgumentNullException(nameof(value), "String value must not be null or empty.");
+            if (value is null) throw new ArgumentNullException(nameof(value), "String value must not be null.");
             Value = value;
             Type = SmartContractParameterType.String;
         }
