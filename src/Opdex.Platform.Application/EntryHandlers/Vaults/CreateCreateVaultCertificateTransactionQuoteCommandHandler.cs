@@ -28,7 +28,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
 
         public override async Task<TransactionQuoteDto> Handle(CreateCreateVaultCertificateTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
-            var amount = UInt256.Parse(request.Amount.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals));
+            var amount = UInt256.Parse(request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals));
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {
