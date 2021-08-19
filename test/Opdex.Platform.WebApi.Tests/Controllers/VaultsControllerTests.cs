@@ -5,14 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
+using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Models.Responses;
+using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -193,55 +197,84 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task CreateCertificate_ProcessCreateVaultCertificateCommand_Send()
+        public async Task CreateCertificateQuote_CreateCreateVaultCertificateTransactionQuoteCommand_Send()
         {
             // Arrange
-            var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
 
-            var vaultAddress = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
-            var request = new CreateVaultCertificateRequest
+            Address vaultAddress = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+            var request = new CreateVaultCertificateQuoteRequest
             {
-                Holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                Amount = "1000.00000000"
+                Holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
+                Amount = "10000.00000000"
             };
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _controller.CreateCertificate(vaultAddress, request, cancellationToken);
+            await _controller.CreateCertificateQuote(vaultAddress, request, cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateWalletCreateVaultCertificateCommand>(command
-                => command.Vault == vaultAddress
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCreateVaultCertificateTransactionQuoteCommand>(command
+                => command.ContractAddress == vaultAddress
+                && command.WalletAddress == walletAddress
                 && command.Holder == request.Holder
                 && command.Amount == request.Amount
-                && command.WalletAddress == walletAddress
             ), cancellationToken), Times.Once);
         }
 
         [Fact]
-        public async Task CreateCertificate_Success_ReturnCreated()
+        public async Task CreateCertificateQuote_Result_Map()
         {
             // Arrange
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
 
-            var txId = "j2oD0ma11BkSyx";
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateWalletCreateVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(txId);
+            var quote = new TransactionQuoteDto();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateVaultCertificateTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(quote);
 
-            var request = new CreateVaultCertificateRequest
+            var request = new CreateVaultCertificateQuoteRequest
             {
-                Holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                Amount = "1000.00000000"
+                Amount = "1000.00000000",
+                Holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm"
             };
 
             // Act
-            var response = await _controller.CreateCertificate("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", request, default);
+            try
+            {
+                await _controller.CreateCertificateQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", request, CancellationToken.None);
+            }
+            catch (Exception) { }
+
+            // Assert
+            _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
+        }
+
+        [Fact]
+        public async Task CreateCertificateQuote_Success_ReturnOk()
+        {
+            // Arrange
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+
+            var responseModel = new TransactionQuoteResponseModel();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateVaultCertificateTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new TransactionQuoteDto());
+            _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
+
+            var request = new CreateVaultCertificateQuoteRequest
+            {
+                Amount = "1000.00000000",
+                Holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm"
+            };
 
             // Act
-            response.Result.Should().BeOfType<CreatedResult>();
-            ((CreatedResult)response.Result).Value.Should().Be(txId);
-            ((CreatedResult)response.Result).Location.Should().Be(string.Format(FakeTransactionEndpoint, txId));
+            var response = await _controller.CreateCertificateQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", request, CancellationToken.None);
+
+            // Act
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
         }
 
         [Fact]

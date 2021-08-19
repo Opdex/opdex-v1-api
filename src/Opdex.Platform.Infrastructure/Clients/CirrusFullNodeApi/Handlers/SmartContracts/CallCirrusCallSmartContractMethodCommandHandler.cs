@@ -28,7 +28,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
             }
             else
             {
-                var parameters = request.QuoteRequest.Parameters.Select(p => p.Serialized).ToArray();
+                var parameters = request.QuoteRequest.SerializedParameters;
 
                 callRequest = new SmartContractCallRequestDto(request.QuoteRequest.To, "cirrusdev", request.QuoteRequest.Sender,
                                                               "password", request.QuoteRequest.Amount, request.QuoteRequest.Method, parameters);

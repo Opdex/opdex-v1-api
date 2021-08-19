@@ -7,7 +7,7 @@ namespace Opdex.Platform.Common.Enums
         Byte = 2,
         Char = 3,
         String = 4,
-        Uint32 = 5,
+        UInt32 = 5,
         Int32 = 6,
         UInt64 = 7,
         Int64 = 8,

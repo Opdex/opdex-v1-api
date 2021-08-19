@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using System.Collections.Generic;
@@ -118,7 +118,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
 
             var parameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Amount", "10", SmartContractParameterType.UInt256)
+                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
             };
 
             // Act

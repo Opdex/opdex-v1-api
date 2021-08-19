@@ -3,7 +3,7 @@ using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Handlers.Transactions;
-using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.Transactions;
@@ -51,7 +51,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Transactions
 
             var parameters = new List<TransactionQuoteRequestParameter>()
             {
-                new TransactionQuoteRequestParameter("Amount", "10", SmartContractParameterType.UInt256)
+                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
             };
 
             var cancellationToken = new CancellationTokenSource().Token;

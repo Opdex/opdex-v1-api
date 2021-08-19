@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.Transactions;
@@ -50,7 +51,7 @@ namespace Opdex.Platform.Application.Tests.Mappers
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 
-            var parameters = new List<TransactionQuoteRequestParameter> { new TransactionQuoteRequestParameter("Amount", "1000", SmartContractParameterType.UInt256) };
+            var parameters = new List<TransactionQuoteRequestParameter> { new TransactionQuoteRequestParameter("Amount", UInt256.Parse("1000")) };
 
             var quoteRequest = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);
 
@@ -63,21 +64,21 @@ namespace Opdex.Platform.Application.Tests.Mappers
             dto.Amount.Should().Be(amount);
             dto.Method.Should().Be(method);
             dto.Callback.Should().Be(callback);
-            dto.Parameters.Select(p => p.Value).Should().BeEquivalentTo(parameters.Select(p => p.Serialized));
+            dto.Parameters.Select(p => p.Value).Should().BeEquivalentTo(parameters.Select(p => p.Value.Serialize()));
         }
 
         [Fact]
         public void From_TransactionQuoteRequestParameter_To_TransactionQuoteRequestParameterDto()
         {
             // Arrange
-            var parameter = new TransactionQuoteRequestParameter("Amount", "1000", SmartContractParameterType.UInt256);
+            var parameter = new TransactionQuoteRequestParameter("Amount", UInt256.Parse("1000"));
 
             // Act
             var dto = _mapper.Map<TransactionQuoteRequestParameterDto>(parameter);
 
             // Assert
             dto.Label.Should().Be(parameter.Label);
-            dto.Value.Should().Be(parameter.Serialized);
+            dto.Value.Should().Be(parameter.Value.Serialize());
         }
 
         [Fact]
