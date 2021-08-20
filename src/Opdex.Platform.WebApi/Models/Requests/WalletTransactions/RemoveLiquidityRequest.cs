@@ -1,3 +1,5 @@
+using System;
+
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
     public class RemoveLiquidityRequest
@@ -31,5 +33,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// The address of the market the pool belongs to.
         /// </summary>
         public string Market { get; set; }
+
+        public DateTime? Deadline { get; set; }
     }
 }

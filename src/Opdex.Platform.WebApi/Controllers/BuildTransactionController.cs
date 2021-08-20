@@ -106,7 +106,7 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             if (_network == NetworkType.DEVNET)
             {
-                var command = new CreateWalletSkimTransactionCommand(_context.Wallet, request.LiquidityPool, request.Recipient);
+                var command = new CreateWalletSkimTransactionCommand(_context.Wallet, request.LiquidityPool, request.Recipient.ToString());
 
                 var response = await _mediator.Send(command, cancellationToken);
 

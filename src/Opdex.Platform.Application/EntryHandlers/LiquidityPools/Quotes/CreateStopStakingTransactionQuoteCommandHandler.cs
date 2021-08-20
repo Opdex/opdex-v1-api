@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
@@ -13,27 +13,27 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Vaults
+namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
 {
-    public class CreateCreateVaultCertificateTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateCreateVaultCertificateTransactionQuoteCommand>
+    public class CreateStopStakingTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateStopStakingTransactionQuoteCommand>
     {
-        private const string MethodName = VaultConstants.Methods.CreateCertificate;
+        private const string MethodName = LiquidityPoolConstants.Methods.StopStaking;
         private const string CrsToSend = "0";
 
-        public CreateCreateVaultCertificateTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                                          IMediator mediator, OpdexConfiguration config)
+        public CreateStopStakingTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
+                                                               IMediator mediator, OpdexConfiguration config)
             : base(quoteAssembler, mediator, config)
         {
         }
 
-        public override async Task<TransactionQuoteDto> Handle(CreateCreateVaultCertificateTransactionQuoteCommand request, CancellationToken cancellationToken)
+        public override async Task<TransactionQuoteDto> Handle(CreateStopStakingTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
             var amount = UInt256.Parse(request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals));
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Holder", request.Holder),
-                new TransactionQuoteRequestParameter("Amount", amount)
+                new TransactionQuoteRequestParameter("Amount", amount),
+                new TransactionQuoteRequestParameter("Liquidate Rewards", request.Liquidate)
             };
 
             var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.ContractAddress, CrsToSend, MethodName, _callbackEndpoint, requestParameters);

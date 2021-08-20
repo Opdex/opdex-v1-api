@@ -23,6 +23,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
@@ -114,6 +115,7 @@ using Opdex.Platform.Application.Assemblers.TransactionEvents;
 using Opdex.Platform.Application.Assemblers.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools;
+using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.EntryHandlers.MiningPools;
 using Opdex.Platform.Application.Handlers.LiquidityPools;
@@ -238,6 +240,14 @@ namespace Opdex.Platform.Application
             // Liquidity Pools
             services.AddTransient<IRequestHandler<ProcessLiquidityPoolSnapshotsByTransactionCommand, Unit>, ProcessLiquidityPoolSnapshotsByTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessDailyLiquidityPoolSnapshotRefreshCommand, Unit>, ProcessDailyLiquidityPoolSnapshotRefreshCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateCreateLiquidityPoolTransactionQuoteCommand, TransactionQuoteDto>, CreateCreateLiquidityPoolTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateAddLiquidityTransactionQuoteCommand, TransactionQuoteDto>, CreateAddLiquidityTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRemoveLiquidityTransactionQuoteCommand, TransactionQuoteDto>, CreateRemoveLiquidityTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateSkimTransactionQuoteCommand, TransactionQuoteDto>, CreateSkimTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateSyncTransactionQuoteCommand, TransactionQuoteDto>, CreateSyncTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateStartStakingTransactionQuoteCommand, TransactionQuoteDto>, CreateStartStakingTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateStopStakingTransactionQuoteCommand, TransactionQuoteDto>, CreateStopStakingTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateCollectStakingRewardsTransactionQuoteCommand, TransactionQuoteDto>, CreateCollectStakingRewardsTransactionQuoteCommandHandler>();
 
             // Mining Pools
             services.AddTransient<IRequestHandler<CreateStartMiningTransactionQuoteCommand, TransactionQuoteDto>, CreateStartMiningTransactionQuoteCommandHandler>();
