@@ -36,11 +36,11 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
             var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool.ToString()), cancellationToken);
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId), cancellationToken);
             var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(pool.MarketId), cancellationToken);
-            var latestBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
 
             var deadline = 0ul;
             if (request.Deadline.HasValue)
             {
+                var latestBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
                 var secondDifference = request.Deadline.Value.Subtract(DateTime.UtcNow).TotalSeconds;
                 var blockDifference = (ulong)(secondDifference / 16);
                 deadline = latestBlock.Height + blockDifference;
