@@ -128,10 +128,6 @@ namespace Opdex.Platform.WebApi
             var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
             services.SetupConfiguration<OpdexConfiguration>(opdexConfig);
 
-            // Block Explorer Configurations
-            var blockExplorerConfig = Configuration.GetSection(nameof(BlockExplorerConfiguration));
-            services.SetupConfiguration<BlockExplorerConfiguration>(blockExplorerConfig);
-
             // Coin Market Cap Configurations
             var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
             services.SetupConfiguration<CoinMarketCapConfiguration>(cmcConfig);

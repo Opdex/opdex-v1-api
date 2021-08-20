@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
@@ -38,7 +39,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
         public async Task<Vault> Handle(SelectVaultByAddressQuery request, CancellationToken cancellationToken)
         {
-            var queryParams = new SqlParams(request.Address);
+            var queryParams = new SqlParams(request.Vault);
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
             var result = await _context.ExecuteFindAsync<VaultEntity>(query);
@@ -53,12 +54,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
         private sealed class SqlParams
         {
-            internal SqlParams(string address)
+            internal SqlParams(Address address)
             {
                 Address = address;
             }
 
-            public string Address { get; }
+            public Address Address { get; }
         }
     }
 }

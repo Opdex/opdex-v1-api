@@ -30,14 +30,12 @@ namespace Opdex.Platform.WebApi.Controllers
         private readonly IApplicationContext _context;
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
-        private readonly BlockExplorerConfiguration _blockExplorerConfig;
 
-        public VaultsController(IApplicationContext context, IMapper mapper, IMediator mediator, BlockExplorerConfiguration blockExplorerConfig)
+        public VaultsController(IApplicationContext context, IMapper mapper, IMediator mediator)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _blockExplorerConfig = blockExplorerConfig ?? throw new ArgumentNullException(nameof(blockExplorerConfig));
         }
 
         /// <summary>
@@ -78,10 +76,11 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Vault</summary>
-        /// <remarks>Retrieves vault details for a vault address</remarks>
-        /// <param name="address">Address of the vault</param>
+        /// <remarks>Retrieves vault details for a vault address.</remarks>
+        /// <param name="address">Address of the vault.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Vault details</returns>
+        /// <response code="404">The vault does not exist.</response>
         [HttpGet("{address}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -91,22 +90,45 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(_mapper.Map<VaultResponseModel>(vault));
         }
 
-        /// <summary>Set Owner Quote</summary>
-        /// <remarks>Sets the owner of a vault</remarks>
-        /// <param name="address">Vault contract address</param>
-        /// <param name="request">Set owner request.</param>
-        /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>Cirrus transaction hash</returns>
-        [HttpPost("{address}/owner")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<string>> SetOwner(string address,
-                                                         SetVaultOwnerRequest request,
-                                                         CancellationToken cancellationToken)
+        /// <summary>Set Ownership Quote</summary>
+        /// <remarks>Quote a transaction to set the vault owner, pending a transaction to redeem ownership.</remarks>
+        /// <param name="address">The address of the vault.</param>
+        /// <param name="request">Information about the new owner.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
+        /// <response code="404">The vault does not exist.</response>
+        [HttpPost("{address}/set-ownership")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> SetOwnerQuote([FromRoute] Address address,
+                                                                                     SetVaultOwnerQuoteRequest request,
+                                                                                     CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new CreateWalletSetVaultOwnerCommand(_context.Wallet,
-                                                                                            address,
-                                                                                            request.Owner), cancellationToken);
-            return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
+            var response = await _mediator.Send(new CreateSetPendingVaultOwnershipTransactionQuoteCommand(address, _context.Wallet, request.Owner),
+                                                cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+
+        /// <summary>Claim Ownership Quote</summary>
+        /// <remarks>Quote a transaction to claim ownership of a vault.</remarks>
+        /// <param name="address">The address of the vault.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
+        /// <response code="404">The vault does not exist.</response>
+        [HttpPost("{address}/claim-ownership")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> ClaimOwnershipQuote([FromRoute] Address address, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateClaimPendingVaultOwnershipTransactionQuoteCommand(address, _context.Wallet),
+                                                cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
         }
 
         /// <summary>Get Certificates</summary>
@@ -118,8 +140,10 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cursor">The cursor when paging.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Vault certificates</returns>
+        /// <response code="404">The vault does not exist.</response>
         [HttpGet("{address}/certificates")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<VaultCertificatesResponseModel>> GetVaultCertificates(string address,
                                                                                              [FromQuery] string holder,
                                                                                              [FromQuery] SortDirectionType direction,
@@ -152,46 +176,60 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="request">Information about the vault certificate that is to be issued.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
+        /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/certificates")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> CreateCertificateQuote([FromRoute] Address address,
                                                                                               CreateVaultCertificateQuoteRequest request,
                                                                                               CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(new CreateCreateVaultCertificateTransactionQuoteCommand(address, _context.Wallet, request.Holder, request.Amount), cancellationToken);
+            var response = await _mediator.Send(new CreateCreateVaultCertificateTransactionQuoteCommand(address, _context.Wallet, request.Holder, request.Amount),
+                                                cancellationToken);
 
             var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
 
             return Ok(quote);
         }
 
-        /// <summary>Redeem Certificate Quote</summary>
-        /// <remarks>Redeems all vested certificates in a vault, owned by the authorized wallet</remarks>
-        /// <param name="address">Vault contract address</param>
-        /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>Cirrus transaction hash</returns>
+        /// <summary>Redeem Certificates Quote</summary>
+        /// <remarks>Quote a transaction to redeem all vested certificates in the vault, that are owned by the authorized address.</remarks>
+        /// <param name="address">The address of the vault.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
+        /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/certificates/redeem")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<string>> RedeemCertificates(string address, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> RedeemCertificatesQuote([FromRoute] Address address,
+                                                                                               CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new CreateWalletRedeemVaultCertificateCommand(_context.Wallet, address), cancellationToken);
-            return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
+            var response = await _mediator.Send(new CreateRedeemVaultCertificatesTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
         }
 
-        /// <summary>Revoke Certificate Quote</summary>
-        /// <remarks>Revokes all non-vested certificates in a vault, held by a specified address</remarks>
-        /// <param name="address">Vault contract address</param>
-        /// <param name="request">Revoke certificate request</param>
-        /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>Cirrus transaction hash</returns>
+        /// <summary>Revoke Certificates Quote</summary>
+        /// <remarks>Quote a transaction to revoke all the certificates in a vault that are assigned to a particular address.</remarks>
+        /// <param name="address">The address of the vault.</param>
+        /// <param name="request">Information about the certificate holder.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
+        /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/certificates/revoke")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<string>> RevokeCertificates(string address,
-                                                                RevokeVaultCertificatesRequest request,
-                                                                CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> RevokeCertificatesQuote([FromRoute] Address address,
+                                                                                               RevokeVaultCertificatesQuoteRequest request,
+                                                                                               CancellationToken cancellationToken)
         {
-            var transactionHash = await _mediator.Send(new CreateWalletRevokeVaultCertificateCommand(_context.Wallet, address, request.Holder), cancellationToken);
-            return Created(string.Format(_blockExplorerConfig.TransactionEndpoint, transactionHash), transactionHash);
+            var response = await _mediator.Send(new CreateRevokeVaultCertificatesTransactionQuoteCommand(address, _context.Wallet, request.Holder), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
         }
     }
 }
