@@ -375,10 +375,12 @@ namespace Opdex.Platform.Application
                 {
                     var parameters = src.Parameters.Select(p => ctx.Mapper.Map<TransactionQuoteRequestParameter>(p)).ToList();
                     return new TransactionQuoteRequest(src.Sender, src.To, src.Amount, src.Method, src.Callback, parameters);
-                });
+                })
+                .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TransactionQuoteRequestParameterDto, TransactionQuoteRequestParameter>()
-                .ConstructUsing(src => new TransactionQuoteRequestParameter(src.Label, SmartContractMethodParameter.Deserialize(src.Value)));
+                .ConstructUsing(src => new TransactionQuoteRequestParameter(src.Label, SmartContractMethodParameter.Deserialize(src.Value)))
+                .ForAllOtherMembers(opt => opt.Ignore());
         }
     }
 }
