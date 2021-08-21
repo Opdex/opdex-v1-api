@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             await _handler.Handle(new GetVaultByAddressQuery(address), cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByAddressQuery>(query => query.Address == address
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByAddressQuery>(query => query.Vault == address
                                                                                                 && query.FindOrThrow), cancellationToken), Times.Once);
         }
 

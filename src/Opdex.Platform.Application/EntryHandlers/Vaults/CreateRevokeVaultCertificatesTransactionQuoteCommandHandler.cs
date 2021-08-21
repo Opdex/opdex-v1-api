@@ -5,10 +5,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Constants.SmartContracts;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,28 +13,25 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Vaults
 {
-    public class CreateCreateVaultCertificateTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateCreateVaultCertificateTransactionQuoteCommand>
+    public class CreateRevokeVaultCertificatesTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateRevokeVaultCertificatesTransactionQuoteCommand>
     {
-        private const string MethodName = VaultConstants.Methods.CreateCertificate;
+        private const string MethodName = VaultConstants.Methods.RevokeCertificates;
         private const string CrsToSend = "0";
 
-        public CreateCreateVaultCertificateTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                                          IMediator mediator, OpdexConfiguration config)
-            : base(quoteAssembler, mediator, config)
+        public CreateRevokeVaultCertificatesTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
+                                                                           IMediator mediator,
+                                                                           OpdexConfiguration config) : base(quoteAssembler, mediator, config)
         {
         }
 
-        public override async Task<TransactionQuoteDto> Handle(CreateCreateVaultCertificateTransactionQuoteCommand request, CancellationToken cancellationToken)
+        public override async Task<TransactionQuoteDto> Handle(CreateRevokeVaultCertificatesTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
             // ensure vault exists, if not throw to return 404
             _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.ContractAddress, findOrThrow: true), cancellationToken);
 
-            var amount = UInt256.Parse(request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals));
-
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Holder", request.Holder),
-                new TransactionQuoteRequestParameter("Amount", amount)
+                new TransactionQuoteRequestParameter("Holder", request.Holder)
             };
 
             var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.ContractAddress, CrsToSend, MethodName, _callbackEndpoint, requestParameters);

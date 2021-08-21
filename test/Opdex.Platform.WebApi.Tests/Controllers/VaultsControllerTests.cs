@@ -25,7 +25,6 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 {
     public class VaultsControllerTests
     {
-        private const string FakeTransactionEndpoint = "path/to/format/{0}";
         private readonly Mock<IApplicationContext> _applicationContextMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<IMediator> _mediatorMock;
@@ -37,9 +36,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             _mapperMock = new Mock<IMapper>();
             _mediatorMock = new Mock<IMediator>();
 
-            var blockExplorerOptionsMock = new BlockExplorerConfiguration { TransactionEndpoint = FakeTransactionEndpoint };
-
-            _controller = new VaultsController(_applicationContextMock.Object, _mapperMock.Object, _mediatorMock.Object, blockExplorerOptionsMock);
+            _controller = new VaultsController(_applicationContextMock.Object, _mapperMock.Object, _mediatorMock.Object);
         }
 
         [Fact]
@@ -148,52 +145,142 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task SetOwner_ProcessSetVaultOwnerCommand_Send()
+        public async Task SetOwnerQuote_CreateSetPendingVaultOwnershipTransactionQuoteCommand_Send()
         {
             // Arrange
-            var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
 
-            var vaultAddress = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
-            var request = new SetVaultOwnerRequest
+            Address vault = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+            var request = new SetVaultOwnerQuoteRequest
             {
-                Owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj"
+                Owner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm"
             };
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _controller.SetOwner(vaultAddress, request, cancellationToken);
+            await _controller.SetOwnerQuote(vault, request, cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateWalletSetVaultOwnerCommand>(command
-                => command.Vault == vaultAddress
-                && command.Owner == request.Owner
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateSetPendingVaultOwnershipTransactionQuoteCommand>(command
+                => command.ContractAddress == vault
+                && command.WalletAddress == walletAddress
+                && command.NewOwner == request.Owner
+            ), cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task SetOwnerQuote_Result_Map()
+        {
+            // Arrange
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+
+            var quote = new TransactionQuoteDto();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateSetPendingVaultOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(quote);
+
+            var request = new SetVaultOwnerQuoteRequest
+            {
+                Owner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm"
+            };
+
+            // Act
+            try
+            {
+                await _controller.SetOwnerQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", request, CancellationToken.None);
+            }
+            catch (Exception) { }
+
+            // Assert
+            _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
+        }
+
+        [Fact]
+        public async Task SetOwnerQuote_Success_ReturnOk()
+        {
+            // Arrange
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+
+            var responseModel = new TransactionQuoteResponseModel();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateSetPendingVaultOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new TransactionQuoteDto());
+            _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
+
+            var request = new SetVaultOwnerQuoteRequest
+            {
+                Owner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm"
+            };
+
+            // Act
+            var response = await _controller.SetOwnerQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", request, CancellationToken.None);
+
+            // Act
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
+        }
+
+        [Fact]
+        public async Task ClaimOwnershipQuote_CreateClaimPendingVaultOwnershipTransactionQuoteCommand_Send()
+        {
+            // Arrange
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+
+            Address vault = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            await _controller.ClaimOwnershipQuote(vault, cancellationToken);
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateClaimPendingVaultOwnershipTransactionQuoteCommand>(command
+                => command.ContractAddress == vault
                 && command.WalletAddress == walletAddress
             ), cancellationToken), Times.Once);
         }
 
         [Fact]
-        public async Task SetOwner_Success_ReturnCreated()
+        public async Task ClaimOwnershipQuote_Result_Map()
         {
             // Arrange
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
 
-            var txId = "j2oD0ma11BkSyx";
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateWalletSetVaultOwnerCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(txId);
+            var quote = new TransactionQuoteDto();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateClaimPendingVaultOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(quote);
 
-            var request = new SetVaultOwnerRequest
+            // Act
+            try
             {
-                Owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj"
-            };
+                await _controller.ClaimOwnershipQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", CancellationToken.None);
+            }
+            catch (Exception) { }
+
+            // Assert
+            _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
+        }
+
+        [Fact]
+        public async Task ClaimOwnershipQuote_Success_ReturnOk()
+        {
+            // Arrange
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+
+            var responseModel = new TransactionQuoteResponseModel();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateClaimPendingVaultOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new TransactionQuoteDto());
+            _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
 
             // Act
-            var response = await _controller.SetOwner("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", request, default);
+            var response = await _controller.ClaimOwnershipQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", CancellationToken.None);
 
             // Act
-            response.Result.Should().BeOfType<CreatedResult>();
-            ((CreatedResult)response.Result).Value.Should().Be(txId);
-            ((CreatedResult)response.Result).Location.Should().Be(string.Format(FakeTransactionEndpoint, txId));
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
         }
 
         [Fact]
@@ -278,88 +365,142 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task RedeemCertificates_ProcessRedeemVaultCertificateCommand_Send()
+        public async Task RedeemCertificatesQuote_CreateRedeemVaultCertificatesTransactionQuoteCommand_Send()
         {
             // Arrange
-            var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
 
-            var vaultAddress = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+            Address vault = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _controller.RedeemCertificates(vaultAddress, cancellationToken);
+            await _controller.RedeemCertificatesQuote(vault, cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateWalletRedeemVaultCertificateCommand>(command
-                => command.Vault == vaultAddress
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateRedeemVaultCertificatesTransactionQuoteCommand>(command
+                => command.ContractAddress == vault
                 && command.WalletAddress == walletAddress
             ), cancellationToken), Times.Once);
         }
 
         [Fact]
-        public async Task RedeemCertificates_Success_ReturnCreated()
+        public async Task RedeemCertificatesQuote_Result_Map()
         {
             // Arrange
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
 
-            var txId = "j2oD0ma11BkSyx";
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateWalletRedeemVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(txId);
-
-            // Act
-            var response = await _controller.RedeemCertificates("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                               default);
+            var quote = new TransactionQuoteDto();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateRedeemVaultCertificatesTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(quote);
 
             // Act
-            response.Result.Should().BeOfType<CreatedResult>();
-            ((CreatedResult)response.Result).Value.Should().Be(txId);
-            ((CreatedResult)response.Result).Location.Should().Be(string.Format(FakeTransactionEndpoint, txId));
+            try
+            {
+                await _controller.RedeemCertificatesQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", CancellationToken.None);
+            }
+            catch (Exception) { }
+
+            // Assert
+            _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
         }
 
         [Fact]
-        public async Task RevokeCertificates_ProcessRevokeVaultCertificateCommand_Send()
+        public async Task RedeemCertificatesQuote_Success_ReturnOk()
         {
             // Arrange
-            var walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
 
-            var vaultAddress = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
-            var holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            var responseModel = new TransactionQuoteResponseModel();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateRedeemVaultCertificatesTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new TransactionQuoteDto());
+            _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
+
+            // Act
+            var response = await _controller.RedeemCertificatesQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", CancellationToken.None);
+
+            // Act
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
+        }
+
+        [Fact]
+        public async Task RevokeCertificatesQuote_CreateRevokeVaultCertificatesTransactionQuoteCommand_Send()
+        {
+            // Arrange
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+
+            Address vault = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+            var request = new RevokeVaultCertificatesQuoteRequest
+            {
+                Holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm"
+            };
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _controller.RevokeCertificates(vaultAddress, new RevokeVaultCertificatesRequest { Holder = holder }, cancellationToken);
+            await _controller.RevokeCertificatesQuote(vault, request, cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateWalletRevokeVaultCertificateCommand>(command
-                => command.Vault == vaultAddress
-                && command.Holder == holder
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateRevokeVaultCertificatesTransactionQuoteCommand>(command
+                => command.ContractAddress == vault
                 && command.WalletAddress == walletAddress
+                && command.Holder == request.Holder
             ), cancellationToken), Times.Once);
         }
 
         [Fact]
-        public async Task RevokeCertificates_Success_ReturnCreated()
+        public async Task RevokeCertificatesQuote_Result_Map()
         {
             // Arrange
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk");
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
 
-            var txId = "j2oD0ma11BkSyx";
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateWalletRevokeVaultCertificateCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(txId);
+            var quote = new TransactionQuoteDto();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateRevokeVaultCertificatesTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(quote);
 
-            var request = new RevokeVaultCertificatesRequest { Holder = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
+            var request = new RevokeVaultCertificatesQuoteRequest
+            {
+                Holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm"
+            };
 
             // Act
-            var response = await _controller.RevokeCertificates("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                                request,
-                                                                default);
+            try
+            {
+                await _controller.RevokeCertificatesQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", request, CancellationToken.None);
+            }
+            catch (Exception) { }
+
+            // Assert
+            _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
+        }
+
+        [Fact]
+        public async Task RevokeCertificatesQuote_Success_ReturnOk()
+        {
+            // Arrange
+            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+
+            var responseModel = new TransactionQuoteResponseModel();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateRevokeVaultCertificatesTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new TransactionQuoteDto());
+            _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
+
+            var request = new RevokeVaultCertificatesQuoteRequest
+            {
+                Holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm"
+            };
 
             // Act
-            response.Result.Should().BeOfType<CreatedResult>();
-            ((CreatedResult)response.Result).Value.Should().Be(txId);
-            ((CreatedResult)response.Result).Location.Should().Be(string.Format(FakeTransactionEndpoint, txId));
+            var response = await _controller.RevokeCertificatesQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", request, CancellationToken.None);
+
+            // Act
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
         }
     }
 }
