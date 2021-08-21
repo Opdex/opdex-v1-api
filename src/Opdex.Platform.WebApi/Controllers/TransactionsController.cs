@@ -126,7 +126,7 @@ namespace Opdex.Platform.WebApi.Controllers
                 return new ValidationErrorProblemDetailsResult("Quote not formed correctly.");
             }
 
-            var txHash = await _mediator.Send(new CreateTransactionBroadcastCommand(decodedRequest));
+            var txHash = await _mediator.Send(new CreateTransactionBroadcastCommand(decodedRequest), cancellationToken);
 
             return Ok(new BroadcastTransactionResponseModel { TxHash = txHash, Sender = _context.Wallet });
         }

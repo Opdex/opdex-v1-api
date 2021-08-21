@@ -216,7 +216,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCreateVaultCertificateTransactionQuoteCommand>(command
-                => command.ContractAddress == vaultAddress
+                => command.Vault == vaultAddress
                 && command.WalletAddress == walletAddress
                 && command.Holder == request.Holder
                 && command.Amount == request.Amount

@@ -45,6 +45,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
+        [Obsolete]
         [HttpPost("add-liquidity")]
         public async Task<IActionResult> AddLiquidity(AddLiquidityRequest request, CancellationToken cancellationToken)
         {
@@ -63,6 +64,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
+        [Obsolete]
         [HttpPost("remove-liquidity")]
         public async Task<IActionResult> RemoveLiquidity(RemoveLiquidityRequest request, CancellationToken cancellationToken)
         {
@@ -101,6 +103,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
+        [Obsolete]
         [HttpPost("skim")]
         public async Task<IActionResult> Skim(SkimRequest request, CancellationToken cancellationToken)
         {
@@ -118,6 +121,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
+        [Obsolete]
         [HttpPost("sync")]
         public async Task<IActionResult> Sync(SyncRequest request, CancellationToken cancellationToken)
         {
@@ -135,6 +139,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
+        [Obsolete]
         [HttpPost("create-pool")]
         public async Task<IActionResult> CreatePool(CreatePoolRequest request, CancellationToken cancellationToken)
         {
@@ -152,6 +157,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
+        [Obsolete]
         [HttpPost("start-staking")]
         public async Task<IActionResult> StartStaking(StartStakingRequest request, CancellationToken cancellationToken)
         {
@@ -169,6 +175,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
+        [Obsolete]
         [HttpPost("stop-staking")]
         public async Task<IActionResult> StopStaking(StopStakingRequest request, CancellationToken cancellationToken)
         {
@@ -186,6 +193,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
+        [Obsolete]
         [HttpPost("collect-staking-rewards")]
         public async Task<IActionResult> CollectStakingRewards(CollectStakingRewardsRequest request, CancellationToken cancellationToken)
         {
@@ -221,6 +229,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
+        [Obsolete]
         [HttpPost("stop-mining")]
         public async Task<IActionResult> StopMining(StopMiningRequest request, CancellationToken cancellationToken)
         {
@@ -238,6 +247,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
+        [Obsolete]
         [HttpPost("collect-mining-rewards")]
         public async Task<IActionResult> CollectMiningRewards(CollectMiningRewardsRequest request, CancellationToken cancellationToken)
         {

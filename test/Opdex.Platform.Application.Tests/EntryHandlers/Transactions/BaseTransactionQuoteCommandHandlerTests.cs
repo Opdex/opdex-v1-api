@@ -38,29 +38,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         public void BaseTransactionQuoteCommand_InvalidWalletAddress_ThrowArgumentException(string walletAddress)
         {
             // Arrange
-            Address contractAddress = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-
             // Act
-            void Act() => new TransactionQuoteCommand(contractAddress, walletAddress);
+            void Act() => new TransactionQuoteCommand(walletAddress);
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Wallet address must be provided.");
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void BaseTransactionQuoteCommand_InvalidContractAddress_ThrowArgumentException(string contractAddress)
-        {
-            // Arrange
-            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-
-            // Act
-            void Act() => new TransactionQuoteCommand(contractAddress, walletAddress);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Contract address must be provided.");
         }
 
         [Fact]
@@ -68,9 +50,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address contractAddress = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
 
-            var command = new TransactionQuoteCommand(contractAddress, walletAddress);
+            var command = new TransactionQuoteCommand(walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
@@ -81,8 +62,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
             catch { }
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<MakeTransactionQuoteCommand>(c => c.QuoteRequest.Sender == walletAddress
-                                                                                          && c.QuoteRequest.To == contractAddress),
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<MakeTransactionQuoteCommand>(c => c.QuoteRequest.Sender == walletAddress),
                                                        It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -91,12 +71,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address contractAddress = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
 
-            var command = new TransactionQuoteCommand(contractAddress, walletAddress);
+            var command = new TransactionQuoteCommand(walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var expectedRequest = new TransactionQuoteRequest(walletAddress, contractAddress, "0", "MethodName", _config.WalletTransactionCallback);
+            var expectedRequest = new TransactionQuoteRequest(walletAddress, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", "0", "MethodName", _config.WalletTransactionCallback);
 
             var returnedQuote = new TransactionQuote("1000", null, 23800, null, expectedRequest);
 
@@ -111,13 +90,12 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
             catch { }
 
             // Assert
-            _assemblerMock.Verify(callTo => callTo.Assemble(It.Is<TransactionQuote>(q => q.Request.Sender == walletAddress
-                                                                                    && q.Request.To == contractAddress)), Times.Once);
+            _assemblerMock.Verify(callTo => callTo.Assemble(returnedQuote), Times.Once);
         }
 
         private class TransactionQuoteCommand : BaseTransactionQuoteCommand
         {
-            public TransactionQuoteCommand(Address contractAddress, Address walletAddress) : base(contractAddress, walletAddress)
+            public TransactionQuoteCommand(Address walletAddress) : base(walletAddress)
             {
             }
         }
@@ -131,7 +109,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 
             public override async Task<TransactionQuoteDto> Handle(TransactionQuoteCommand request, CancellationToken cancellationToken)
             {
-                var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.ContractAddress, "0", "MethodName", _callbackEndpoint);
+                var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", "0", "MethodName", _callbackEndpoint);
 
                 return await ExecuteAsync(quoteRequest, cancellationToken);
             }

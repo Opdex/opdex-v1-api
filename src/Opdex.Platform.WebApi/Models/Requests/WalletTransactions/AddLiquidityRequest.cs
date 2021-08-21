@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
@@ -7,13 +8,19 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// <summary>
         /// Decimal as a string of the amount of CRS to deposit.
         /// </summary>
+        [Required]
         public string AmountCrs { get; set; }
 
         /// <summary>
         /// Decimal as a string of the amount of SRC to deposit.
         /// </summary>
+        [Required]
         public string AmountSrc { get; set; }
+
+        [Required]
         public string AmountSrcMin { get; set; }
+
+        [Required]
         public string AmountCrsMin { get; set; }
 
         /// <summary>
@@ -24,6 +31,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// <summary>
         /// The recipient of the liquidity pool tokens.
         /// </summary>
+        [Required]
         public string Recipient { get; set; }
 
         /// <summary>

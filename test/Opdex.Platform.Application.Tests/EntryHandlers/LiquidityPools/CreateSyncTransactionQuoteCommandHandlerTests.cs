@@ -1,14 +1,17 @@
+using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
+using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -30,6 +33,45 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _handler = new CreateSyncTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void CreateSyncTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException(string liquidityPool)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+
+            // Act
+            void Act() => new CreateSyncTransactionQuoteCommand(liquidityPool, walletAddress);
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+        }
+
+        [Fact]
+        public async Task CreateSyncTransactionQuoteCommand_Sends_RetrieveLiquidityPoolByAddressQuery()
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+
+            var command = new CreateSyncTransactionQuoteCommand(liquidityPool, walletAddress);
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            try
+            {
+                await _handler.Handle(command, cancellationToken);
+            }
+            catch { }
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveLiquidityPoolByAddressQuery>(c => c.Address == liquidityPool && c.FindOrThrow == true),
+                                                       It.IsAny<CancellationToken>()), Times.Once);
+        }
+
 
         [Fact]
         public async Task CreateSyncTransactionQuoteCommand_Sends_MakeTransactionQuoteCommand()

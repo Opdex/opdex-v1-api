@@ -23,7 +23,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
 {
     public class CreateRemoveLiquidityTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateRemoveLiquidityTransactionQuoteCommand>
     {
-        private const string MethodName = LiquidityPoolConstants.Methods.RemoveLiquidity;
+        private const string MethodName = RouterConstants.Methods.RemoveLiquidity;
         private const string CrsToSend = "0";
 
         public CreateRemoveLiquidityTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,

@@ -44,7 +44,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             await _controller.CollectMiningRewards(miningPool.ToString(), cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCollectMiningRewardsTransactionQuoteCommand>(query => query.ContractAddress == miningPool
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCollectMiningRewardsTransactionQuoteCommand>(query => query.MiningPool == miningPool
                                                                                                        && query.WalletAddress == walletAddress), cancellationToken), Times.Once);
         }
 

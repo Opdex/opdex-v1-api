@@ -34,7 +34,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
         private readonly Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>> _assemblerMock;
         private readonly CreateRemoveLiquidityTransactionQuoteCommandHandler _handler;
         private readonly OpdexConfiguration _config;
-        const string MethodName = LiquidityPoolConstants.Methods.RemoveLiquidity;
+        const string MethodName = RouterConstants.Methods.RemoveLiquidity;
 
         public CreateRemoveLiquidityTransactionQuoteCommandHandlerTests()
         {
@@ -48,7 +48,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentNullException(string liquidityPool)
+        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException(string liquidityPool)
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
@@ -61,7 +61,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
                                                                            amountSrcMin, walletAddress, null);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
         }
 
         [Theory]
@@ -134,7 +134,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidRecipient_ThrowArgumentNullException(string recipient)
+        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidRecipient_ThrowArgumentException(string recipient)
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
@@ -148,7 +148,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
                                                                         amountSrcMin, recipient, null);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Recipient must be provided.");
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Recipient must be provided.");
         }
 
         [Fact]

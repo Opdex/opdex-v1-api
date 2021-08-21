@@ -5,14 +5,29 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes
 {
+    /// <summary>
+    /// Quote a remove liquidity transaction.
+    /// </summary>
     public class CreateRemoveLiquidityTransactionQuoteCommand : BaseTransactionQuoteCommand
     {
+        /// <summary>
+        /// Creates a remove liquidity transaction quote command.
+        /// </summary>
+        /// <param name="liquidityPool">The address of the liquidity pool.</param>
+        /// <param name="wallet">The address of the wallet sending the transaction.</param>
+        /// <param name="amountLpt">The amount of liquidity pool tokens to burn and remove liquidity for.</param>
+        /// <param name="amountCrsMin">The minimum amount of CRS tokens to collect.</param>
+        /// <param name="amountSrcMin">The minimum amount of STC tokens to collect.</param>
+        /// <param name="recipient">The recipient of the returned liquidity pool tokens.</param>
+        /// <param name="deadline">The block deadline that the transaction is valid before.</param>
+        /// <exception cref="ArgumentException">Invalid liquidity pool, amounts, or recipient command parameters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Invalid deadline</exception>
         public CreateRemoveLiquidityTransactionQuoteCommand(Address liquidityPool, Address wallet, string amountLpt, string amountCrsMin,
                                                             string amountSrcMin, Address recipient, DateTime? deadline) : base(wallet)
         {
             if (liquidityPool == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool must be provided.");
+                throw new ArgumentException("Liquidity pool must be provided.", nameof(liquidityPool));
             }
 
             if (!amountLpt.IsValidDecimalNumber())
@@ -32,7 +47,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
 
             if (recipient == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(recipient), "Recipient must be provided.");
+                throw new ArgumentException("Recipient must be provided.", nameof(recipient));
             }
 
             if (deadline.HasValue && deadline < DateTime.UtcNow)

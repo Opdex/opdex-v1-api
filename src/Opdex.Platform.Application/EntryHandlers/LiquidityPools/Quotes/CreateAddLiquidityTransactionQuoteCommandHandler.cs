@@ -23,7 +23,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
 {
     public class CreateAddLiquidityTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateAddLiquidityTransactionQuoteCommand>
     {
-        private const string MethodName = LiquidityPoolConstants.Methods.AddLiquidity;
+        private const string MethodName = RouterConstants.Methods.AddLiquidity;
 
         public CreateAddLiquidityTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                 IMediator mediator, OpdexConfiguration config)

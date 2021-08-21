@@ -13,19 +13,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions
         /// <summary>
         /// Creates the base of a transaction quote command.
         /// </summary>
-        /// <param name="contractAddress">The contract address being called.</param>
         /// <param name="walletAddress">The transaction sender's wallet address.</param>
-        /// <exception cref="ArgumentException">Contract or Wallet address empty argument exception.</exception>
-        protected BaseTransactionQuoteCommand(Address contractAddress, Address walletAddress) : this(walletAddress)
-        {
-            if (contractAddress == Address.Empty)
-            {
-                throw new ArgumentException("Contract address must be provided.", nameof(contractAddress));
-            }
-
-            ContractAddress = contractAddress;
-        }
-
+        /// <exception cref="ArgumentException">Wallet address empty argument exception.</exception>
         protected BaseTransactionQuoteCommand(Address walletAddress)
         {
             if (walletAddress == Address.Empty)
@@ -36,7 +25,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions
             WalletAddress = walletAddress;
         }
 
-        public Address ContractAddress { get; }
         public Address WalletAddress { get; }
     }
 }

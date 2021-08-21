@@ -4,11 +4,11 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
+using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.MiningPools;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
@@ -40,6 +40,23 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
         [Theory]
         [InlineData(null)]
         [InlineData("")]
+        [InlineData("  ")]
+        public void CreateStartMiningTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentException(string miningPool)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            const string amount = "1.00";
+
+            // Act
+            void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Mining pool address must be set.");
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
         [InlineData("   ")]
         [InlineData("123")]
         [InlineData("asdf")]
@@ -54,6 +71,29 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount must be a valid decimal number.");
+        }
+
+        [Fact]
+        public async Task CreateStartMiningTransactionQuoteCommand_Sends_RetrieveMiningPoolByAddressQuery()
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            const string amount = "1.00";
+
+            var command = new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            try
+            {
+                await _handler.Handle(command, cancellationToken);
+            }
+            catch { }
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveMiningPoolByAddressQuery>(c => c.Address == miningPool && c.FindOrThrow == true),
+                                                       It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]

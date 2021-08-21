@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
@@ -7,6 +8,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// <summary>
         /// The recipient of the skimmed tokens.
         /// </summary>
+        [Required]
         public Address Recipient { get; set; }
 
         /// <summary>

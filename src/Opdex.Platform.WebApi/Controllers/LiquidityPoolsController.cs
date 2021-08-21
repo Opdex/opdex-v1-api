@@ -81,10 +81,10 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Create Liquidity Pool Quote</summary>
-        /// <remarks> </remarks>
-        /// <param name="request"></param>
+        /// <remarks>Quote a create liquidity pool transaction.</remarks>
+        /// <param name="request">A create liquidity pool request.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>A create liquidity pool transaction quote.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> CreateLiquidityPool(CreateLiquidityPoolRequest request, CancellationToken cancellationToken)
@@ -151,11 +151,11 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Add Liquidity Quote</summary>
-        /// <remarks> </remarks>
-        /// <param name="address"></param>
-        /// <param name="request"></param>
+        /// <remarks>Quote an add liquidity transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">An add liquidity request.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>Quote an add liquidity transaction.</returns>
         [HttpPost("{address}/add")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> AddLiquidityQuote(string address, AddLiquidityRequest request, CancellationToken cancellationToken)
@@ -170,11 +170,11 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Remove Liquidity Quote</summary>
-        /// <remarks> </remarks>
-        /// <param name="address"></param>
-        /// <param name="request"></param>
+        /// <remarks>Quote a remove liquidity transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">A remove liquidity request.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>Quote a remove liquidity transaction.</returns>
         [HttpPost("{address}/remove")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> RemoveLiquidityQuote(string address, RemoveLiquidityRequest request, CancellationToken cancellationToken)
@@ -188,10 +188,10 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Sync Quote</summary>
-        /// <remarks> </remarks>
-        /// <param name="address"></param>
+        /// <remarks>Quote a sync transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>Quote a sync transaction.</returns>
         [HttpPost("{address}/sync")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> SyncQuote(string address, CancellationToken cancellationToken)
@@ -204,11 +204,11 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Skim Quote</summary>
-        /// <remarks> </remarks>
-        /// <param name="address"></param>
-        /// <param name="request"></param>
+        /// <remarks>Quote a skim transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">A skim request.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>Quote a skim transaction.</returns>
         [HttpPost("{address}/skim")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> SkimQuote(string address, SkimRequest request, CancellationToken cancellationToken)
@@ -221,11 +221,11 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Start Staking Quote</summary>
-        /// <remarks> </remarks>
-        /// <param name="address"></param>
-        /// <param name="request"></param>
+        /// <remarks>Quote a start staking transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">A start staking request.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>Quote a start staking transaction.</returns>
         [HttpPost("{address}/staking/start")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> StartStakingQuote(string address, StartStakingRequest request, CancellationToken cancellationToken)
@@ -238,11 +238,11 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Stop Staking Quote</summary>
-        /// <remarks> </remarks>
-        /// <param name="address"></param>
-        /// <param name="request"></param>
+        /// <remarks>Quote a stop staking transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">A stop staking request.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>Quote a stop staking transaction.</returns>
         [HttpPost("{address}/staking/stop")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> StopStakingQuote(string address, StopStakingRequest request, CancellationToken cancellationToken)
@@ -255,11 +255,11 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Collect Staking Rewards Quote</summary>
-        /// <remarks> </remarks>
+        /// <remarks>Quote a collect staking rewards transaction.</remarks>
         /// <param name="address">The liquidity pool address.</param>
-        /// <param name="request"></param>
+        /// <param name="request">A collect staking rewards request.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>Quote a collect staking rewards transaction.</returns>
         [HttpPost("{address}/staking/collect")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> CollectStakingRewardsQuote(string address, CollectStakingRewardsRequest request, CancellationToken cancellationToken)

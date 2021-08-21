@@ -122,6 +122,7 @@ namespace Opdex.Platform.WebApi.Controllers
 
             return Ok(quote);
         }
+
         /// <summary>Collect Mining Rewards Quote</summary>
         /// <remarks>Quote a collect mining rewards transaction.</remarks>
         /// <param name="address">The address of the mining pool.</param>

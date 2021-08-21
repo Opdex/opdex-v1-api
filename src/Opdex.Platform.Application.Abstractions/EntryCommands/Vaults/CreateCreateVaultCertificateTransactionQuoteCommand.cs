@@ -18,17 +18,19 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
         /// <param name="holder">The certificate holder address.</param>
         /// <param name="amount">The amount to store in the certificate.</param>
         /// <exception cref="ArgumentException">Invalid amount exception</exception>
-        public CreateCreateVaultCertificateTransactionQuoteCommand(Address vault, Address wallet, Address holder, string amount) : base(vault, wallet)
+        public CreateCreateVaultCertificateTransactionQuoteCommand(Address vault, Address wallet, Address holder, string amount) : base(wallet)
         {
             if (!amount.IsValidDecimalNumber())
             {
                 throw new ArgumentException("Amount must be a valid decimal number.", nameof(amount));
             }
 
-            Holder = holder != Address.Empty ? holder : throw new ArgumentNullException(nameof(holder), "Holder address must be set.");
+            Vault = vault != Address.Empty ? vault : throw new ArgumentException("Vault address must be set.", nameof(vault));
+            Holder = holder != Address.Empty ? holder : throw new ArgumentException("Holder address must be set.", nameof(holder));
             Amount = amount;
         }
 
+        public Address Vault { get; }
         public Address Holder { get; }
         public string Amount { get; }
     }

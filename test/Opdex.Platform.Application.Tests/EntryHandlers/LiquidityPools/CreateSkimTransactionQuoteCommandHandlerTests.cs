@@ -4,6 +4,7 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
+using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes;
 using Opdex.Platform.Common.Configurations;
@@ -35,8 +36,25 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             _handler = new CreateSkimTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void CreateSkimTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException(string liquidityPool)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address recipient = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
+
+            // Act
+            void Act() => new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+        }
+
         [Fact]
-        public void CreateSkimTransactionQuoteCommand_InvalidAmount_ThrowArgumentNullException()
+        public void CreateSkimTransactionQuoteCommand_InvalidRecipient_ThrowArgumentException()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
@@ -47,7 +65,31 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             void Act() => new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Recipient must be provided.");
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Recipient must be provided.");
+        }
+
+        [Fact]
+        public async Task CreateSkimTransactionQuoteCommand_Sends_RetrieveLiquidityPoolByAddressQuery()
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            Address recipient = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
+            const string crsToSend = "0";
+
+            var command = new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            try
+            {
+                await _handler.Handle(command, cancellationToken);
+            }
+            catch { }
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveLiquidityPoolByAddressQuery>(c => c.Address == liquidityPool && c.FindOrThrow == true),
+                                                       It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]

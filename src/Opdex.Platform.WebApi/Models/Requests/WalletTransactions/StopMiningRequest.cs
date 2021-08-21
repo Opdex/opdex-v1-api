@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
     public class StopMiningRequest
@@ -10,6 +12,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// <summary>
         /// The amount of tokens to stop mining with.
         /// </summary>
+        [Required]
         public string Amount { get; set; }
     }
 }
