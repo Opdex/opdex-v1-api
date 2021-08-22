@@ -7,12 +7,15 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
+using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System.Linq;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -48,7 +51,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// </param>
         /// <param name="orderBy">"ASC" or "DESC". Default is descending, is ignored if sortBy is null.</param>
         /// <param name="pools">A list of liquidity pool addresses to filter for specific pools.</param>
-        /// <param name="cancellationToken">cancellation token</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of <see cref="LiquidityPoolResponseModel"/>'s that match the filter criteria.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<LiquidityPoolResponseModel>), StatusCodes.Status200OK)]
@@ -77,10 +80,26 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>Create Liquidity Pool Quote</summary>
+        /// <remarks>Quote a create liquidity pool transaction.</remarks>
+        /// <param name="request">A create liquidity pool request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A create liquidity pool transaction quote.</returns>
+        [HttpPost]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> CreateLiquidityPool(CreateLiquidityPoolRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateCreateLiquidityPoolTransactionQuoteCommand(_context.Market, _context.Wallet, request.Token), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+
         /// <summary>Get Liquidity Pool</summary>
         /// <remarks>Returns the liquidity pool that matches the provided address.</remarks>
         /// <param name="address">Contract address to get pools of</param>
-        /// <param name="cancellationToken">cancellation token</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The requested pools</returns>
         [HttpGet("{address}")]
         [ProducesResponseType(typeof(LiquidityPoolResponseModel), StatusCodes.Status200OK)]
@@ -101,7 +120,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="address">The address of the liquidity pool.</param>
         /// <param name="candleSpan">"Hourly" or "Daily" determining the time span of each data point. Default is daily.</param>
         /// <param name="timespan">"1D", "1W", "1M", "1Y" determining how much history to fetch. Default is 1 week.</param>
-        /// <param name="cancellationToken">Cancellation token</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns><see cref="LiquidityPoolSnapshotHistoryResponseModel"/> with a list of historical data points.</returns>
         [HttpGet("{address}/history")]
         [ProducesResponseType(typeof(LiquidityPoolSnapshotHistoryResponseModel), StatusCodes.Status200OK)]
@@ -129,6 +148,127 @@ namespace Opdex.Platform.WebApi.Controllers
             };
 
             return Ok(response);
+        }
+
+        /// <summary>Add Liquidity Quote</summary>
+        /// <remarks>Quote an add liquidity transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">An add liquidity request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Quote an add liquidity transaction.</returns>
+        [HttpPost("{address}/add")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> AddLiquidityQuote(string address, AddLiquidityRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateAddLiquidityTransactionQuoteCommand(address, _context.Wallet, request.AmountCrs, request.AmountSrc,
+                                                                                              request.AmountCrsMin, request.AmountSrcMin, request.Recipient,
+                                                                                              request.Deadline), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+
+        /// <summary>Remove Liquidity Quote</summary>
+        /// <remarks>Quote a remove liquidity transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">A remove liquidity request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Quote a remove liquidity transaction.</returns>
+        [HttpPost("{address}/remove")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> RemoveLiquidityQuote(string address, RemoveLiquidityRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateRemoveLiquidityTransactionQuoteCommand(address, _context.Wallet, request.Liquidity, request.AmountCrsMin,
+                                                                                                 request.AmountSrcMin, request.Recipient, request.Deadline), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+
+        /// <summary>Sync Quote</summary>
+        /// <remarks>Quote a sync transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Quote a sync transaction.</returns>
+        [HttpPost("{address}/sync")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> SyncQuote(string address, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateSyncTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+
+        /// <summary>Skim Quote</summary>
+        /// <remarks>Quote a skim transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">A skim request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Quote a skim transaction.</returns>
+        [HttpPost("{address}/skim")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> SkimQuote(string address, SkimRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateSkimTransactionQuoteCommand(address, _context.Wallet, request.Recipient), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+
+        /// <summary>Start Staking Quote</summary>
+        /// <remarks>Quote a start staking transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">A start staking request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Quote a start staking transaction.</returns>
+        [HttpPost("{address}/staking/start")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> StartStakingQuote(string address, StartStakingRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateStartStakingTransactionQuoteCommand(address, _context.Wallet, request.Amount), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+
+        /// <summary>Stop Staking Quote</summary>
+        /// <remarks>Quote a stop staking transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">A stop staking request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Quote a stop staking transaction.</returns>
+        [HttpPost("{address}/staking/stop")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> StopStakingQuote(string address, StopStakingRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateStopStakingTransactionQuoteCommand(address, _context.Wallet, request.Amount, request.Liquidate), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+
+        /// <summary>Collect Staking Rewards Quote</summary>
+        /// <remarks>Quote a collect staking rewards transaction.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">A collect staking rewards request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Quote a collect staking rewards transaction.</returns>
+        [HttpPost("{address}/staking/collect")]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> CollectStakingRewardsQuote(string address, CollectStakingRewardsRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateCollectStakingRewardsTransactionQuoteCommand(address, _context.Wallet, request.Liquidate), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
         }
     }
 }

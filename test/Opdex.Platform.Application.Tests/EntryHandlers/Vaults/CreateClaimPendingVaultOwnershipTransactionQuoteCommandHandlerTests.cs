@@ -1,6 +1,8 @@
+using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Assemblers;
@@ -32,6 +34,22 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             _mediatorMock = new Mock<IMediator>();
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _handler = new CreateClaimPendingVaultOwnershipTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void CreateClaimPendingVaultOwnershipTransactionQuoteCommand_InvalidVault_ThrowArgumentException(string vault)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+
+            // Act
+            void Act() => new CreateClaimPendingVaultOwnershipTransactionQuoteCommand(vault, walletAddress);
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Vault address must be provided.");
         }
 
         [Fact]

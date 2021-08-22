@@ -1,3 +1,4 @@
+using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
@@ -32,6 +33,22 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             _mediatorMock = new Mock<IMediator>();
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _handler = new CreateRedeemVaultCertificatesTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void CreateRedeemVaultCertificatesTransactionQuoteCommand_InvalidVault_ThrowArgumentException(string vault)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+
+            // Act
+            void Act() => new CreateRedeemVaultCertificatesTransactionQuoteCommand(vault, walletAddress);
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Vault address must be provided.");
         }
 
         [Fact]

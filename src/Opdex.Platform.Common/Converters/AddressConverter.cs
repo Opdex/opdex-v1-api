@@ -13,7 +13,7 @@ namespace Opdex.Platform.Common.Converters
 
         public override Address ReadJson(JsonReader reader, Type objectType, Address existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            return new Address((string)reader.Value);
+            return new Address(reader.Value?.ToString());
         }
     }
 }

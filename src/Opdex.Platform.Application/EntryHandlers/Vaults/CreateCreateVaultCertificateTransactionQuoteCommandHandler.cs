@@ -29,8 +29,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
 
         public override async Task<TransactionQuoteDto> Handle(CreateCreateVaultCertificateTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
-            // ensure vault exists, if not throw to return 404
-            _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.ContractAddress, findOrThrow: true), cancellationToken);
+            // ensure the vault exists, else throw 404 not found
+            _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault), cancellationToken);
 
             var amount = UInt256.Parse(request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals));
 
@@ -40,7 +40,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
                 new TransactionQuoteRequestParameter("Amount", amount)
             };
 
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.ContractAddress, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
+            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
 
             return await ExecuteAsync(quoteRequest, cancellationToken);
         }

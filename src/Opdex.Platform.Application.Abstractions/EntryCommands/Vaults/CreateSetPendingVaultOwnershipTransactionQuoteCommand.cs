@@ -15,11 +15,13 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
         /// <param name="vault">The address of the vault.</param>
         /// <param name="currentOwner">The address of the current owner.</param>
         /// <param name="newOwner">The address of the new owner.</param>
-        public CreateSetPendingVaultOwnershipTransactionQuoteCommand(Address vault, Address currentOwner, Address newOwner) : base(vault, currentOwner)
+        public CreateSetPendingVaultOwnershipTransactionQuoteCommand(Address vault, Address currentOwner, Address newOwner) : base(currentOwner)
         {
+            Vault = vault != Address.Empty ? vault : throw new ArgumentException("Vault address must be provided.", nameof(vault));
             NewOwner = newOwner != Address.Empty ? newOwner : throw new ArgumentException("New owner address must be provided.", nameof(newOwner));
         }
 
+        public Address Vault { get; }
         public Address NewOwner { get; }
     }
 }

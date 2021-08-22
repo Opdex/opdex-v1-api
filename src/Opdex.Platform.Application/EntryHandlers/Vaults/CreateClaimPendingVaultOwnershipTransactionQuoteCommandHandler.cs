@@ -26,9 +26,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
         public override async Task<TransactionQuoteDto> Handle(CreateClaimPendingVaultOwnershipTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
             // ensure vault exists, if not throw to return 404
-            _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.ContractAddress, findOrThrow: true), cancellationToken);
+            _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
 
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.ContractAddress, CrsToSend, MethodName, _callbackEndpoint);
+            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, CrsToSend, MethodName, _callbackEndpoint);
 
             return await ExecuteAsync(quoteRequest, cancellationToken);
         }

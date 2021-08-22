@@ -1,14 +1,17 @@
+using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
+using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.MiningPools;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -29,6 +32,44 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             _mediatorMock = new Mock<IMediator>();
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _handler = new CreateCollectMiningRewardsTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void CreateCollectMiningRewardsTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentException(string miningPool)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+
+            // Act
+            void Act() => new CreateCollectMiningRewardsTransactionQuoteCommand(miningPool, walletAddress);
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Mining pool address must be set.");
+        }
+
+        [Fact]
+        public async Task CreateCollectMiningRewardsTransactionQuoteCommand_Sends_RetrieveMiningPoolByAddressQuery()
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+
+            var command = new CreateCollectMiningRewardsTransactionQuoteCommand(miningPool, walletAddress);
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            try
+            {
+                await _handler.Handle(command, cancellationToken);
+            }
+            catch { }
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveMiningPoolByAddressQuery>(c => c.Address == miningPool && c.FindOrThrow == true),
+                                                       It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]

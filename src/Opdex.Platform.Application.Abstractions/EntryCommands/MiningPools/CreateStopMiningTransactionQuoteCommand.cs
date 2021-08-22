@@ -18,16 +18,18 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools
         /// <param name="amount">The amount to stop mining with.</param>
         /// <exception cref="ArgumentException">Invalid amount exception</exception>
         public CreateStopMiningTransactionQuoteCommand(Address miningPool, Address walletAddress, string amount)
-            : base(miningPool, walletAddress)
+            : base(walletAddress)
         {
             if (!amount.IsValidDecimalNumber())
             {
                 throw new ArgumentException("Amount must be a valid decimal number.", nameof(amount));
             }
 
+            MiningPool = miningPool != Address.Empty ? miningPool : throw new ArgumentException("Mining pool address must be set.", nameof(miningPool));
             Amount = amount;
         }
 
+        public Address MiningPool { get; }
         public string Amount { get; }
     }
 }

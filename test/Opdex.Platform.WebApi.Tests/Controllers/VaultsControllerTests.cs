@@ -7,7 +7,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
-using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Controllers;
@@ -163,7 +162,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateSetPendingVaultOwnershipTransactionQuoteCommand>(command
-                => command.ContractAddress == vault
+                => command.Vault == vault
                 && command.WalletAddress == walletAddress
                 && command.NewOwner == request.Owner
             ), cancellationToken), Times.Once);
@@ -236,7 +235,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateClaimPendingVaultOwnershipTransactionQuoteCommand>(command
-                => command.ContractAddress == vault
+                => command.Vault == vault
                 && command.WalletAddress == walletAddress
             ), cancellationToken), Times.Once);
         }
@@ -303,7 +302,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCreateVaultCertificateTransactionQuoteCommand>(command
-                => command.ContractAddress == vaultAddress
+                => command.Vault == vaultAddress
                 && command.WalletAddress == walletAddress
                 && command.Holder == request.Holder
                 && command.Amount == request.Amount
@@ -379,7 +378,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateRedeemVaultCertificatesTransactionQuoteCommand>(command
-                => command.ContractAddress == vault
+                => command.Vault == vault
                 && command.WalletAddress == walletAddress
             ), cancellationToken), Times.Once);
         }
@@ -445,7 +444,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateRevokeVaultCertificatesTransactionQuoteCommand>(command
-                => command.ContractAddress == vault
+                => command.Vault == vault
                 && command.WalletAddress == walletAddress
                 && command.Holder == request.Holder
             ), cancellationToken), Times.Once);

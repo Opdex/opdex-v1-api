@@ -1,12 +1,12 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
+using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Constants.SmartContracts;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
@@ -30,6 +30,9 @@ namespace Opdex.Platform.Application.EntryHandlers.MiningPools
 
         public override async Task<TransactionQuoteDto> Handle(CreateStopMiningTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
+            // ensure the mining pool exists, else throw 404 not found
+            _ = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.MiningPool.ToString()), cancellationToken);
+
             var amount = UInt256.Parse(request.Amount.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals));
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
@@ -37,7 +40,7 @@ namespace Opdex.Platform.Application.EntryHandlers.MiningPools
                 new TransactionQuoteRequestParameter("Amount", amount)
             };
 
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.ContractAddress, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
+            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.MiningPool, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
 
             return await ExecuteAsync(quoteRequest, cancellationToken);
         }

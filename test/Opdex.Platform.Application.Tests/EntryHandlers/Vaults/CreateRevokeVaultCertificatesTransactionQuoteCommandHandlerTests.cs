@@ -1,3 +1,4 @@
+using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
@@ -32,6 +33,40 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             _mediatorMock = new Mock<IMediator>();
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _handler = new CreateRevokeVaultCertificatesTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void CreateRevokeVaultCertificatesTransactionQuoteCommand_InvalidVault_ThrowArgumentException(string vault)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
+
+            // Act
+            void Act() => new CreateRevokeVaultCertificatesTransactionQuoteCommand(vault, walletAddress, vault);
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Vault address must be provided.");
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void CreateRevokeVaultCertificatesTransactionQuoteCommand_InvalidHolder_ThrowArgumentException(string holder)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address vault = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
+
+            // Act
+            void Act() => new CreateRevokeVaultCertificatesTransactionQuoteCommand(vault, walletAddress, holder);
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Certificate holder address must be provided.");
         }
 
         [Fact]

@@ -4,6 +4,7 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Vaults;
 using Opdex.Platform.Common.Configurations;
@@ -39,6 +40,42 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         [Theory]
         [InlineData(null)]
         [InlineData("")]
+        [InlineData("  ")]
+        public void CreateCreateVaultCertificateTransactionQuoteCommand_InvalidVault_ThrowArgumentException(string vault)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
+            const string amount = "1.00";
+
+            // Act
+            void Act() => new CreateCreateVaultCertificateTransactionQuoteCommand(vault, walletAddress, holder, amount);
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Vault address must be set.");
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void CreateCreateVaultCertificateTransactionQuoteCommand_InvalidHolder_ThrowArgumentException(string holder)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            const string amount = "1.00";
+
+            // Act
+            void Act() => new CreateCreateVaultCertificateTransactionQuoteCommand(vault, walletAddress, holder, amount);
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Holder address must be set.");
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
         [InlineData("   ")]
         [InlineData("123")]
         [InlineData("asdf")]
@@ -54,6 +91,30 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount must be a valid decimal number.");
+        }
+
+        [Fact]
+        public async Task CreateCreateVaultCertificateTransactionQuoteCommand_Sends_RetrieveVaultByAddressQuery()
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
+            Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            const string amount = "1.00";
+
+            var command = new CreateCreateVaultCertificateTransactionQuoteCommand(vault, walletAddress, holder, amount);
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            try
+            {
+                await _handler.Handle(command, cancellationToken);
+            }
+            catch { }
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByAddressQuery>(c => c.Vault == vault && c.FindOrThrow == true),
+                                                       It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]

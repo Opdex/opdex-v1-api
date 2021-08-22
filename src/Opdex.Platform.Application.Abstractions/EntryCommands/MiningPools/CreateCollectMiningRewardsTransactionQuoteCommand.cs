@@ -1,5 +1,6 @@
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Common.Models;
+using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools
 {
@@ -13,8 +14,11 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools
         /// </summary>
         /// <param name="miningPool">The address of the mining pool.</param>
         /// <param name="walletAddress">The transaction sender's wallet address.</param>
-        public CreateCollectMiningRewardsTransactionQuoteCommand(Address miningPool, Address walletAddress) : base(miningPool, walletAddress)
+        public CreateCollectMiningRewardsTransactionQuoteCommand(Address miningPool, Address walletAddress) : base (walletAddress)
         {
+            MiningPool = miningPool != Address.Empty ? miningPool : throw new ArgumentException("Mining pool address must be set.", nameof(miningPool));
         }
+
+        public Address MiningPool { get; }
     }
 }

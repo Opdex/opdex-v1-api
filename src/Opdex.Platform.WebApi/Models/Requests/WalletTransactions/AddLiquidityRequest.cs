@@ -1,3 +1,6 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
 {
     public class AddLiquidityRequest
@@ -5,31 +8,49 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// <summary>
         /// Decimal as a string of the amount of CRS to deposit.
         /// </summary>
+        [Required]
         public string AmountCrs { get; set; }
 
         /// <summary>
         /// Decimal as a string of the amount of SRC to deposit.
         /// </summary>
+        [Required]
         public string AmountSrc { get; set; }
+
+        /// <summary>
+        /// The minimum amount of SRC tokens acceptable to provide.
+        /// </summary>
+        [Required]
+        public string AmountSrcMin { get; set; }
+
+        /// <summary>
+        /// The minimum amount of CRS tokens acceptable to provide.
+        /// </summary>
+        [Required]
+        public string AmountCrsMin { get; set; }
 
         /// <summary>
         /// Decimal number between .9999 and .0001 (99.99% to 0.01%)
         /// </summary>
+        [Obsolete] // Delete property when removing WalletBroadcast endpoints and flows.
         public decimal Tolerance { get; set; }
 
         /// <summary>
         /// The recipient of the liquidity pool tokens.
         /// </summary>
+        [Required]
         public string Recipient { get; set; }
 
         /// <summary>
         /// The address of the liquidity pool tokens are being deposited to.
         /// </summary>
+        [Obsolete] // Delete property when removing WalletBroadcast endpoints and flows.
         public string LiquidityPool { get; set; }
 
         /// <summary>
-        /// The address of the marker the pool belongs to.
+        /// The block number limit that the transaction is valid through.
         /// </summary>
-        public string Market { get; set; }
+        /// <remarks>A 0 deadline is equivalent to no deadline. Anything else must be greater than the current chain height.</remarks>
+        public ulong Deadline { get; set; }
     }
 }

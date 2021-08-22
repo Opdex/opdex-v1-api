@@ -27,14 +27,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
         public override async Task<TransactionQuoteDto> Handle(CreateRevokeVaultCertificatesTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
             // ensure vault exists, if not throw to return 404
-            _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.ContractAddress, findOrThrow: true), cancellationToken);
+            _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {
                 new TransactionQuoteRequestParameter("Holder", request.Holder)
             };
 
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.ContractAddress, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
+            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
 
             return await ExecuteAsync(quoteRequest, cancellationToken);
         }
