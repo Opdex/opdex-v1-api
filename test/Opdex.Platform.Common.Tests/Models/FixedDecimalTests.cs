@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Opdex.Platform.Common.Models;
 using System;
+using System.Numerics;
 using Xunit;
 
 namespace Opdex.Platform.Common.Tests.Models
@@ -305,6 +306,49 @@ namespace Opdex.Platform.Common.Tests.Models
 
             // Assert
             result.Should().Be(FixedDecimal.Parse(expected));
+        }
+
+        [Fact]
+        public void Resize_ReducePrecision_ThrowNotImplementedException()
+        {
+            // Arrange
+            var value = new FixedDecimal(100_000_000_000_000, 9);
+
+            // Act
+            void Act() => value.Resize(8);
+
+            // Assert
+            Assert.Throws<NotImplementedException>(Act);
+        }
+
+        [Fact]
+        public void Resize_SamePrecision_ReturnThis()
+        {
+            // Arrange
+            var value = new FixedDecimal(100_000_000_000_000, 9);
+
+            // Act
+            var result = value.Resize(9);
+
+            // Assert
+            result.Should().Be(value);
+        }
+
+        [Theory]
+        [InlineData(-999_444_222_999_222_111, 0, 255)]
+        [InlineData(0, 50, 51)]
+        [InlineData(888_888_888_888, 20, 200)]
+        public void Resize_HigherPrecision_ScaleUp(long underlying, byte currentPrecision, byte targetPrecision)
+        {
+            // Arrange
+            var value = new FixedDecimal(underlying, currentPrecision);
+
+            // Act
+            var result = value.Resize(targetPrecision);
+
+            // Assert
+            result.ScaledValue.Should().Be(underlying * BigInteger.Pow(10, targetPrecision - currentPrecision));
+            result.Precision.Should().Be(targetPrecision);
         }
     }
 }

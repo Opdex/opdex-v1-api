@@ -182,7 +182,7 @@ namespace Opdex.Platform.WebApi
                 settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema =>
                 {
                     schema.Type = JsonObjectType.String;
-                    schema.Pattern = @"^\d*\.\d{1,255}$"; // matches a number which must contain a decimal point and precision of 1 to 255
+                    schema.Pattern = @"^\d*\.\d{1,18}$"; // matches a number which must contain a decimal point and precision of 1 to 18
                 }));
             });
         }

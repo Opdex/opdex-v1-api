@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using System;
 
@@ -8,7 +9,6 @@ namespace Opdex.Platform.Common.Extensions
     /// </summary>
     public static class SatoshiConverterExtension
     {
-        // public static ulong DecimalsToSatoshis(this int decimals) => (int)Math.Pow(10, decimals);
         public static ulong DecimalsToSatoshis(this int decimals) => (ulong)Math.Pow(10, decimals);
         public static ulong DecimalsToSatoshis(this uint decimals) => (ulong)Math.Pow(10, decimals);
 
@@ -23,6 +23,7 @@ namespace Opdex.Platform.Common.Extensions
             return (ulong)Math.Floor(value * sats);
         }
 
+        [Obsolete("Convert decimal amounts from FixedDecimal instead.")]
         public static string ToSatoshis(this string value, int decimals)
         {
             var decimalIndex = value.IndexOf('.');
@@ -48,16 +49,40 @@ namespace Opdex.Platform.Common.Extensions
             return value.TrimStart('0').Length > 0 ? value.TrimStart('0') : "0";
         }
 
+        /// <summary>
+        /// Converts a token decimal value to its satoshi representation
+        /// </summary>
+        /// <param name="value">The token decimal value to convert.</param>
+        /// <param name="decimals">Decimal precision of the token.</param>
+        /// <returns>A <see cref="UInt256" /> representation of the token amount.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <see cref="decimals" /> is greater than 18.</exception>
+        /// <exception cref="OverflowException">Thrown if the integral part of <see cref="FixedDecimal" /> exceeds size of `UInt256.MaxValue`.</exception>
+
+        public static UInt256 ToSatoshis(this FixedDecimal value, byte decimals)
+        {
+            if (decimals > 18) throw new ArgumentOutOfRangeException(nameof(decimals), "Tokens over 18 decimals are not supported.");
+            var scaledValue = value.Resize(decimals).ScaledValue;
+            return (UInt256)scaledValue;
+        }
+
+        /// <summary>
+        /// Converts a token satoshi value to its decimal representation.
+        /// </summary>
+        /// <param name="value">The token satoshi value to convert.</param>
+        /// <param name="decimals">Decimal precision of the token.</param>
+        /// <returns>A <see cref="FixedDecimal" /> representation of the token amount.</returns>
+        public static FixedDecimal ToDecimal(this UInt256 value, byte decimals)
+        {
+            return new FixedDecimal(value, decimals);
+        }
+
+        [Obsolete("Store decimal amounts as FixedDecimal instead.")]
         public static string InsertDecimal(this UInt256 value, int decimals)
         {
             return value.ToString().InsertDecimal(decimals);
         }
 
-        public static string InsertDecimal(this UInt128 value, int decimals)
-        {
-            return value.ToString().InsertDecimal(decimals);
-        }
-
+        [Obsolete("Store decimal amounts as FixedDecimal instead.")]
         public static string InsertDecimal(this string value, int decimals)
         {
             // +1 to have a leading 0

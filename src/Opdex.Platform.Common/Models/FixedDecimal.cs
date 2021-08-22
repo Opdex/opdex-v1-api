@@ -9,26 +9,32 @@ namespace Opdex.Platform.Common.Models
     {
         public static readonly FixedDecimal Zero = default;
 
-        private FixedDecimal(BigInteger value, byte precision)
+        /// <summary>Creates a fixed-point number using the parts of its raw representation.</summary>
+        /// <param name="scaledValue">The value scaled by 10^<see cref="precision" />.</param>
+        /// <param name="precision">The amount of decimal places after the decimal point.</param>
+        public FixedDecimal(BigInteger scaledValue, byte precision)
         {
-            Value = value;
+            ScaledValue = scaledValue;
             Precision = precision;
         }
 
-        private BigInteger Value { get; }
+        /// <summary>Underlying value which represents the number, scaled by 10^<see cref="Precision" />.</summary>
+        public BigInteger ScaledValue { get; }
 
-        private byte Precision { get; }
+        /// <summary>The amount of decimal places after the decimal point.</summary>
+        public byte Precision { get; }
 
         /// <inheritdoc />
         /// <exception cref="OutOfMemoryException">Thrown if either underlying value is too large.</exception>
         public int CompareTo(FixedDecimal other)
         {
             var factor = Precision - other.Precision;
-            return factor >= 0 ? Value.CompareTo(Scale(other.Value, factor))
-                               : Scale(Value, factor * -1).CompareTo(other.Value);
+            return factor >= 0 ? ScaledValue.CompareTo(Scale(other.ScaledValue, factor))
+                               : Scale(ScaledValue, factor * -1).CompareTo(other.ScaledValue);
         }
 
         /// <inheritdoc />
+        /// <exception cref="ArgumentException">Thrown if <see cref="obj" /> is a type other than <see cref="FixedDecimal" /> and non-null.</exception>
         /// <exception cref="OutOfMemoryException">Thrown if either underlying value is too large.</exception>
         public int CompareTo(object obj)
         {
@@ -42,8 +48,8 @@ namespace Opdex.Platform.Common.Models
         public bool Equals(FixedDecimal other)
         {
             var factor = Precision - other.Precision;
-            return factor >= 0 ? Value == Scale(other.Value, factor)
-                               : Scale(Value, factor * -1) == other.Value;
+            return factor >= 0 ? ScaledValue == Scale(other.ScaledValue, factor)
+                               : Scale(ScaledValue, factor * -1) == other.ScaledValue;
         }
 
         /// <inheritdoc />
@@ -52,18 +58,31 @@ namespace Opdex.Platform.Common.Models
 
         /// <inheritdoc />
         /// <exception cref="OutOfMemoryException">Thrown if the underlying value is too large.</exception>
-        public override int GetHashCode() => Scale(Value, byte.MaxValue - Precision).GetHashCode();
+        public override int GetHashCode() => Scale(ScaledValue, byte.MaxValue - Precision).GetHashCode();
 
         /// <inheritdoc />
         public override string ToString()
         {
-            var stringified = Value.ToString();
+            var stringified = ScaledValue.ToString();
             if (Precision == 0) return stringified;
 
             var padded = stringified.PadLeft(Precision, '0');
             var decimalIndex = padded.Length - Precision;
             var result = padded.Insert(decimalIndex, decimalIndex != 0 ? "." : "0."); // include leading 0
             return result;
+        }
+
+        /// <summary>Resizes the precision of the <see cref="FixedDecimal" /> to another value.</summary>
+        /// <param name="precision">The desired number of decimal places.</param>
+        /// <returns>A <see cref="FixedDecimal" /> with the desired precision.</returns>
+        /// <exception cref="OutOfMemoryException">Thrown if the underlying value is too large.</exception>
+        public FixedDecimal Resize(byte precision)
+        {
+            if (Precision == precision) return this;
+            if (Precision > precision) throw new NotImplementedException("Reducing precision requires support for division.");
+
+            var factor = precision - Precision;
+            return new FixedDecimal(Scale(ScaledValue, factor), precision);
         }
 
         /// <exception cref="OutOfMemoryException">Thrown if the underlying value is too large.</exception>
@@ -76,14 +95,20 @@ namespace Opdex.Platform.Common.Models
         public static bool operator >=(FixedDecimal a, FixedDecimal b) => a.CompareTo(b) >= 0;
         public static bool operator <=(FixedDecimal a, FixedDecimal b) => a.CompareTo(b) <= 0;
 
+        public static implicit operator FixedDecimal(int value) => new FixedDecimal(value, 0);
+        public static implicit operator FixedDecimal(uint value) => new FixedDecimal(value, 0);
+        public static implicit operator FixedDecimal(long value) => new FixedDecimal(value, 0);
+        public static implicit operator FixedDecimal(ulong value) => new FixedDecimal(value, 0);
+        public static implicit operator FixedDecimal(BigInteger value) => new FixedDecimal(value, 0);
+
         /// <summary>Adds two numbers.</summary>
         /// <returns>The result of the addition.</returns>
         /// <exception cref="OutOfMemoryException">Thrown if the <see cref="FixedDecimal" /> gets too large.</exception>
         public static FixedDecimal operator +(FixedDecimal a, FixedDecimal b)
         {
             var factor = a.Precision - b.Precision;
-            return factor >= 0 ? new FixedDecimal(a.Value + Scale(b.Value, factor), a.Precision)
-                               : new FixedDecimal(Scale(a.Value, factor * -1) + b.Value, b.Precision);
+            return factor >= 0 ? new FixedDecimal(a.ScaledValue + Scale(b.ScaledValue, factor), a.Precision)
+                               : new FixedDecimal(Scale(a.ScaledValue, factor * -1) + b.ScaledValue, b.Precision);
         }
 
         /// <summary>Subtracts the right number from the left.</summary>
@@ -92,8 +117,8 @@ namespace Opdex.Platform.Common.Models
         public static FixedDecimal operator -(FixedDecimal a, FixedDecimal b)
         {
             var factor = a.Precision - b.Precision;
-            return factor >= 0 ? new FixedDecimal(a.Value - Scale(b.Value, factor), a.Precision)
-                               : new FixedDecimal(Scale(a.Value, factor * -1) - b.Value, b.Precision);
+            return factor >= 0 ? new FixedDecimal(a.ScaledValue - Scale(b.ScaledValue, factor), a.Precision)
+                               : new FixedDecimal(Scale(a.ScaledValue, factor * -1) - b.ScaledValue, b.Precision);
         }
 
         /// <summary>Converts the string representation of a number to its <see cref="FixedDecimal" /> equivalent.</summary>
