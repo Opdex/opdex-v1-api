@@ -13,6 +13,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// <summary>
         /// The liquidity pool contract address to start mining tokens for.
         /// </summary>
+        ///
         public string LiquidityPool { get; set; }
     }
 }

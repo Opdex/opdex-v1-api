@@ -23,7 +23,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         /// <exception cref="ArgumentException">Invalid liquidity pool, amounts, or recipient command parameters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Invalid deadline</exception>
         public CreateRemoveLiquidityTransactionQuoteCommand(Address liquidityPool, Address wallet, string amountLpt, string amountCrsMin,
-                                                            string amountSrcMin, Address recipient, DateTime? deadline) : base(wallet)
+                                                            string amountSrcMin, Address recipient, ulong deadline) : base(wallet)
         {
             if (liquidityPool == Address.Empty)
             {
@@ -50,11 +50,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
                 throw new ArgumentException("Recipient must be provided.", nameof(recipient));
             }
 
-            if (deadline.HasValue && deadline < DateTime.UtcNow)
-            {
-                throw new ArgumentOutOfRangeException(nameof(deadline), "Deadline must be in the future.");
-            }
-
             LiquidityPool = liquidityPool;
             AmountLpt = amountLpt;
             AmountCrsMin = amountCrsMin;
@@ -68,6 +63,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         public string AmountCrsMin { get; }
         public string AmountSrcMin { get; }
         public Address Recipient { get; }
-        public DateTime? Deadline { get; }
+        public ulong Deadline { get; }
     }
 }

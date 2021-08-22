@@ -1,7 +1,6 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
-using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
@@ -14,7 +13,6 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,15 +35,6 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId), cancellationToken);
             var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(pool.MarketId), cancellationToken);
 
-            var deadline = 0ul;
-            if (request.Deadline.HasValue)
-            {
-                var latestBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
-                var secondDifference = request.Deadline.Value.Subtract(DateTime.UtcNow).TotalSeconds;
-                var blockDifference = (ulong)(secondDifference / 16);
-                deadline = latestBlock.Height + blockDifference;
-            }
-
             var amountSrc = UInt256.Parse(request.AmountSrc.ToSatoshis(token.Decimals));
             var amountCrsMin = ulong.Parse(request.AmountCrsMin.ToSatoshis(TokenConstants.Cirrus.Decimals));
             var amountSrcMin = UInt256.Parse(request.AmountSrcMin.ToSatoshis(token.Decimals));
@@ -57,7 +46,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
                 new TransactionQuoteRequestParameter("Minimum CRS Amount", amountCrsMin),
                 new TransactionQuoteRequestParameter("Minimum SRC Amount", amountSrcMin),
                 new TransactionQuoteRequestParameter("Recipient", request.Recipient),
-                new TransactionQuoteRequestParameter("Deadline", deadline)
+                new TransactionQuoteRequestParameter("Deadline", request.Deadline)
             };
 
             var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, router.Address, request.AmountCrs, MethodName, _callbackEndpoint, requestParameters);

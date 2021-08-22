@@ -26,6 +26,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// <summary>
         /// The liquidity pool's smart contract address to remove liquidity from.
         /// </summary>
+        [Obsolete] // Delete property when removing WalletBroadcast endpoints and flows.
         public string LiquidityPool { get; set; }
 
         /// <summary>
@@ -35,10 +36,9 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         public string Recipient { get; set; }
 
         /// <summary>
-        /// The address of the market the pool belongs to.
+        /// The block number limit that the transaction is valid through.
         /// </summary>
-        public string Market { get; set; }
-
-        public DateTime? Deadline { get; set; }
+        /// <remarks>A 0 deadline is equivalent to no deadline. Anything else must be greater than the current chain height.</remarks>
+        public ulong Deadline { get; set; }
     }
 }

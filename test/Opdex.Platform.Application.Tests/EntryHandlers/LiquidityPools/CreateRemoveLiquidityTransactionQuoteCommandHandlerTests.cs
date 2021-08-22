@@ -58,14 +58,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
 
             // Act
             void Act() => new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                           amountSrcMin, walletAddress, null);
+                                                                           amountSrcMin, walletAddress, 0ul);
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
         }
 
         [Theory]
-        [InlineData("null")]
+        [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
         [InlineData("123")]
@@ -80,14 +80,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
 
             // Act
             void Act() => new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                           amountSrcMin, walletAddress, null);
+                                                                           amountSrcMin, walletAddress, 0ul);
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount LPT burned must be formatted as a decimal number.");
         }
 
         [Theory]
-        [InlineData("null")]
+        [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
         [InlineData("123")]
@@ -102,14 +102,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
 
             // Act
             void Act() => new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                        amountSrcMin, walletAddress, null);
+                                                                        amountSrcMin, walletAddress, 0ul);
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount CRS minimum must be formatted as a decimal number.");
         }
 
         [Theory]
-        [InlineData("null")]
+        [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
         [InlineData("123")]
@@ -124,7 +124,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
 
             // Act
             void Act() => new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                        amountSrcMin, walletAddress, null);
+                                                                        amountSrcMin, walletAddress, 0ul);
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount SRC minimum must be formatted as a decimal number.");
@@ -145,29 +145,10 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
 
             // Act
             void Act() => new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                        amountSrcMin, recipient, null);
+                                                                        amountSrcMin, recipient, 0ul);
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Recipient must be provided.");
-        }
-
-        [Fact]
-        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidDeadline_ThrowArgumentOutOfRangeException()
-        {
-            // Arrange
-            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amountLpt = "1.00";
-            const string amountCrsMin = "0.9";
-            const string amountSrcMin = "1.8";
-            var deadline = DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(1));
-
-            // Act
-            void Act() => new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                        amountSrcMin, walletAddress, deadline);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Deadline must be in the future.");
         }
 
         [Fact]
@@ -179,7 +160,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             const string amountLpt = "1.00";
             const string amountCrsMin = "0.9";
             const string amountSrcMin = "1.8";
-            const ulong deadline = 0ul;
+            const ulong deadline = 1ul;
 
             var pool = new LiquidityPool(1, liquidityPool.ToString(), 2, 3, 4, 6, 7);
             var token = new Token(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, "Bitcoin", "BTC", 8, 100_000_000, "10000000", 2, 3);
@@ -196,7 +177,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
                 .ReturnsAsync(marketRouter);
 
             var command = new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                        amountSrcMin, walletAddress, null);
+                                                                        amountSrcMin, walletAddress, deadline);
 
             var expectedParameters = new List<TransactionQuoteRequestParameter>
             {
@@ -237,13 +218,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             const string amountLpt = "1.00";
             const string amountCrsMin = "0.9";
             const string amountSrcMin = "1.8";
-            var givenDeadline = DateTime.UtcNow.AddDays(1);
-            const ulong expectedDeadline = 5410; // 5400 blocks per day, deadline is 1 day, current block is block 10
+            const ulong deadline = 5400ul;
 
             var pool = new LiquidityPool(1, liquidityPool.ToString(), 2, 3, 4, 6, 7);
             var token = new Token(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, "Bitcoin", "BTC", 8, 100_000_000, "10000000", 2, 3);
             var marketRouter = new MarketRouter(1, "PMsinMXrr2uNEL5AQD1LpiYTRFiRTA8uZU", 2, true, 3, 4);
-            var block = new BlockDto { Hash = "hash", Height = 10ul, Time = givenDeadline.Subtract(TimeSpan.FromDays(1)), MedianTime = givenDeadline.Subtract(TimeSpan.FromDays(1)) };
             var cancellationToken = new CancellationTokenSource().Token;
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), cancellationToken))
@@ -255,11 +234,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveMarketRouterByMarketIdQuery>(), cancellationToken))
                 .ReturnsAsync(marketRouter);
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), cancellationToken))
-                .ReturnsAsync(block);
-
             var command = new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                           amountSrcMin, walletAddress, givenDeadline);
+                                                                           amountSrcMin, walletAddress, deadline);
 
             var expectedParameters = new List<TransactionQuoteRequestParameter>
             {
@@ -268,7 +244,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
                 new TransactionQuoteRequestParameter("Minimum CRS Amount", 90000000ul),
                 new TransactionQuoteRequestParameter("Minimum SRC Amount", UInt256.Parse("180000000")),
                 new TransactionQuoteRequestParameter("Recipient", walletAddress),
-                new TransactionQuoteRequestParameter("Deadline", expectedDeadline)
+                new TransactionQuoteRequestParameter("Deadline", deadline)
             };
 
             var expectedRequest = new TransactionQuoteRequest(walletAddress, marketRouter.Address, "0", MethodName, _config.WalletTransactionCallback, expectedParameters);

@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
@@ -14,6 +15,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// <summary>
         /// The liquidity pool being skimmed.
         /// </summary>
+        [Obsolete] // Delete property when removing WalletBroadcast endpoints and flows.
         public string LiquidityPool { get; set; }
     }
 }
