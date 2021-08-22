@@ -274,40 +274,6 @@ namespace Opdex.Platform.Common.Tests.Models
             hashCodeA.Should().Be(hashCodeB);
         }
 
-        [Theory]
-        [InlineData("0", "500", "500")]
-        [InlineData("0.005", "500", "500.005")]
-        [InlineData("-300.000", "300", "0")]
-        public void Add(string a, string b, string expected)
-        {
-            // Arrange
-            var valueA = FixedDecimal.Parse(a);
-            var valueB = FixedDecimal.Parse(b);
-
-            // Act
-            var result = valueA + valueB;
-
-            // Assert
-            result.Should().Be(FixedDecimal.Parse(expected));
-        }
-
-        [Theory]
-        [InlineData("500", "500", "0")]
-        [InlineData("500.005", "500", "0.005")]
-        [InlineData("-300.000", "300", "-600")]
-        public void Subtract(string a, string b, string expected)
-        {
-            // Arrange
-            var valueA = FixedDecimal.Parse(a);
-            var valueB = FixedDecimal.Parse(b);
-
-            // Act
-            var result = valueA - valueB;
-
-            // Assert
-            result.Should().Be(FixedDecimal.Parse(expected));
-        }
-
         [Fact]
         public void Resize_ReducePrecision_ThrowNotImplementedException()
         {

@@ -101,26 +101,6 @@ namespace Opdex.Platform.Common.Models
         public static implicit operator FixedDecimal(ulong value) => new FixedDecimal(value, 0);
         public static implicit operator FixedDecimal(BigInteger value) => new FixedDecimal(value, 0);
 
-        /// <summary>Adds two numbers.</summary>
-        /// <returns>The result of the addition.</returns>
-        /// <exception cref="OutOfMemoryException">Thrown if the <see cref="FixedDecimal" /> gets too large.</exception>
-        public static FixedDecimal operator +(FixedDecimal a, FixedDecimal b)
-        {
-            var factor = a.Precision - b.Precision;
-            return factor >= 0 ? new FixedDecimal(a.ScaledValue + Scale(b.ScaledValue, factor), a.Precision)
-                               : new FixedDecimal(Scale(a.ScaledValue, factor * -1) + b.ScaledValue, b.Precision);
-        }
-
-        /// <summary>Subtracts the right number from the left.</summary>
-        /// <returns>The result of the subtraction.</returns>
-        /// <exception cref="OutOfMemoryException">Thrown if either underlying value is too large.</exception>
-        public static FixedDecimal operator -(FixedDecimal a, FixedDecimal b)
-        {
-            var factor = a.Precision - b.Precision;
-            return factor >= 0 ? new FixedDecimal(a.ScaledValue - Scale(b.ScaledValue, factor), a.Precision)
-                               : new FixedDecimal(Scale(a.ScaledValue, factor * -1) - b.ScaledValue, b.Precision);
-        }
-
         /// <summary>Converts the string representation of a number to its <see cref="FixedDecimal" /> equivalent.</summary>
         /// <param name="value">The stringified decimal value</param>
         /// <returns>A value that is equivalent to the number specified in the <see cref="value" /> parameter.</returns>
