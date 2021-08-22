@@ -42,9 +42,7 @@ Once this process is done you'll have a local environment with deployed contract
 
 ### Processing Transactions
 
-The indexing process is trigger based so it must be manually called in a local environment.
-
-Using Opdex swagger, hit `index/process-latest-blocks` to begin syncing from the most recently synced block to the tip of the Cirrus chain.
+Indexing is done in the background, as long as `Available` is set to `true` on the `index_lock` database table. Be mindful of stopping the application while indexing is idle, as this will mean that you will have to manually reset the `Locked` value on the `index_lock` table.
 
 
 ### Logging

@@ -113,7 +113,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             catch { }
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByAddressQuery>(c => c.Address == vault && c.FindOrThrow == true),
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByAddressQuery>(c => c.Vault == vault && c.FindOrThrow == true),
                                                        It.IsAny<CancellationToken>()), Times.Once);
         }
 

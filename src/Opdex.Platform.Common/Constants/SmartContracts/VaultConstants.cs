@@ -11,6 +11,10 @@ namespace Opdex.Platform.Common.Constants.SmartContracts
         public static class Methods
         {
             public const string CreateCertificate = "CreateCertificate";
+            public const string RedeemCertificates = "RedeemCertificates";
+            public const string RevokeCertificates = "RevokeCertificates";
+            public const string SetPendingOwnership = "SetPendingOwnership";
+            public const string ClaimPendingOwnership = "ClaimPendingOwnership";
         }
     }
 }

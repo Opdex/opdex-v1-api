@@ -52,8 +52,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             catch (Exception) { }
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByAddressQuery>(query => query.Address == request.Vault
-                                                                                                   && query.FindOrThrow), cancellationToken), Times.Once);
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByAddressQuery>(query => query.Vault == request.Vault
+                                                                                                && query.FindOrThrow), cancellationToken), Times.Once);
         }
 
         [Fact]

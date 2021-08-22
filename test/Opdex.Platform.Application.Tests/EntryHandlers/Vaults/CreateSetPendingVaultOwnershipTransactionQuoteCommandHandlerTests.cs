@@ -2,11 +2,10 @@ using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
-using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes;
+using Opdex.Platform.Application.EntryHandlers.Vaults;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Models;
@@ -18,94 +17,73 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
+namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 {
-    public class CreateSkimTransactionQuoteCommandHandlerTests
+    public class CreateSetPendingVaultOwnershipTransactionQuoteCommandHandlerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
         private readonly Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>> _assemblerMock;
-        private readonly CreateSkimTransactionQuoteCommandHandler _handler;
+        private readonly CreateSetPendingVaultOwnershipTransactionQuoteCommandHandler _handler;
         private readonly OpdexConfiguration _config;
-        const string MethodName = LiquidityPoolConstants.Methods.Skim;
+        const string MethodName = VaultConstants.Methods.SetPendingOwnership;
 
-        public CreateSkimTransactionQuoteCommandHandlerTests()
+        public CreateSetPendingVaultOwnershipTransactionQuoteCommandHandlerTests()
         {
             _config = new OpdexConfiguration();
             _mediatorMock = new Mock<IMediator>();
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
-            _handler = new CreateSkimTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
+            _handler = new CreateSetPendingVaultOwnershipTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData("  ")]
-        public void CreateSkimTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException(string liquidityPool)
+        public void CreateSetPendingVaultOwnershipTransactionQuoteCommand_InvalidVault_ThrowArgumentException(string vault)
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address recipient = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
+            Address newOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
 
             // Act
-            void Act() => new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
+            void Act() => new CreateSetPendingVaultOwnershipTransactionQuoteCommand(vault, walletAddress, newOwner);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Vault address must be provided.");
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void CreateSetPendingVaultOwnershipTransactionQuoteCommand_InvalidNewOwner_ThrowArgumentException(string newOwner)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address vault = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
+
+            // Act
+            void Act() => new CreateSetPendingVaultOwnershipTransactionQuoteCommand(vault, walletAddress, newOwner);
+
+            // Assert
+            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("New owner address must be provided.");
         }
 
         [Fact]
-        public void CreateSkimTransactionQuoteCommand_InvalidRecipient_ThrowArgumentException()
+        public async Task CreateSetPendingVaultOwnershipTransactionQuoteCommand_Sends_MakeTransactionQuoteCommand()
         {
             // Arrange
+            Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            Address recipient = null;
-
-            // Act
-            void Act() => new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Recipient must be provided.");
-        }
-
-        [Fact]
-        public async Task CreateSkimTransactionQuoteCommand_Sends_RetrieveLiquidityPoolByAddressQuery()
-        {
-            // Arrange
-            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            Address recipient = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
-
-            var command = new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
-            var cancellationToken = new CancellationTokenSource().Token;
-
-            // Act
-            try
-            {
-                await _handler.Handle(command, cancellationToken);
-            }
-            catch { }
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveLiquidityPoolByAddressQuery>(c => c.Address == liquidityPool && c.FindOrThrow == true),
-                                                       It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task CreateSkimTransactionQuoteCommand_Sends_MakeTransactionQuoteCommand()
-        {
-            // Arrange
-            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            Address recipient = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
+            Address newOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
             const string crsToSend = "0";
 
-            var command = new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
+            var command = new CreateSetPendingVaultOwnershipTransactionQuoteCommand(vault, walletAddress, newOwner);
             var cancellationToken = new CancellationTokenSource().Token;
 
             var expectedParameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Recipient", recipient)
+                new TransactionQuoteRequestParameter("New Owner", newOwner)
             };
 
             // Act
@@ -117,7 +95,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<MakeTransactionQuoteCommand>(c => c.QuoteRequest.Sender == walletAddress
-                                                                                          && c.QuoteRequest.To == liquidityPool
+                                                                                          && c.QuoteRequest.To == vault
                                                                                           && c.QuoteRequest.Amount == crsToSend
                                                                                           && c.QuoteRequest.Method == MethodName
                                                                                           && c.QuoteRequest.Callback != null
@@ -129,25 +107,25 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
         }
 
         [Fact]
-        public async Task CreateSkimTransactionQuoteCommand_Assembles_TransactionQuoteDto()
+        public async Task CreateSetPendingVaultOwnershipTransactionQuoteCommand_Assembles_TransactionQuoteDto()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            Address recipient = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
+            Address newOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
+            Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             const string crsToSend = "0";
 
-            var command = new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
+            var command = new CreateSetPendingVaultOwnershipTransactionQuoteCommand(vault, walletAddress, newOwner);
             var cancellationToken = new CancellationTokenSource().Token;
 
             var expectedParameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Recipient", recipient)
+                new TransactionQuoteRequestParameter("New Owner", newOwner)
             };
 
-            var expectedRequest = new TransactionQuoteRequest(walletAddress, liquidityPool, crsToSend, MethodName, _config.WalletTransactionCallback, expectedParameters);
+            var expectedRequest = new TransactionQuoteRequest(walletAddress, vault, crsToSend, MethodName, _config.WalletTransactionCallback, expectedParameters);
 
-            var expectedQuote = new TransactionQuote("PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjQf", null, 23800, null, expectedRequest);
+            var expectedQuote = new TransactionQuote("1000", null, 23800, null, expectedRequest);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedQuote);

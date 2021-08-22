@@ -30,7 +30,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
         public override async Task<TransactionQuoteDto> Handle(CreateCreateVaultCertificateTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
             // ensure the vault exists, else throw 404 not found
-            _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault.ToString()), cancellationToken);
+            _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault), cancellationToken);
 
             var amount = UInt256.Parse(request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals));
 

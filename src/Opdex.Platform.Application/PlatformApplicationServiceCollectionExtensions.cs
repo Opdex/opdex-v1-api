@@ -221,9 +221,6 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateWalletCollectMiningRewardsTransactionCommand, string>, CreateWalletCollectMiningRewardsTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateWalletDistributeTokensTransactionCommand, string>, CreateWalletDistributeTokensTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateWalletRewardMiningPoolsTransactionCommand, string>, CreateWalletRewardMiningPoolsTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletRedeemVaultCertificateCommand, string>, CreateWalletRedeemVaultCertificateCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletRevokeVaultCertificateCommand, string>, CreateWalletRevokeVaultCertificateCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletSetVaultOwnerCommand, string>, CreateWalletSetVaultOwnerCommandHandler>();
 
             // Transactions
             services.AddTransient<IRequestHandler<CreateTransactionCommand, bool>, CreateTransactionCommandHandler>();
@@ -255,7 +252,11 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateCollectMiningRewardsTransactionQuoteCommand, TransactionQuoteDto>, CreateCollectMiningRewardsTransactionQuoteCommandHandler>();
 
             // Vaults
+            services.AddTransient<IRequestHandler<CreateSetPendingVaultOwnershipTransactionQuoteCommand, TransactionQuoteDto>, CreateSetPendingVaultOwnershipTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateClaimPendingVaultOwnershipTransactionQuoteCommand, TransactionQuoteDto>, CreateClaimPendingVaultOwnershipTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateCreateVaultCertificateTransactionQuoteCommand, TransactionQuoteDto>, CreateCreateVaultCertificateTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRedeemVaultCertificatesTransactionQuoteCommand, TransactionQuoteDto>, CreateRedeemVaultCertificatesTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRevokeVaultCertificatesTransactionQuoteCommand, TransactionQuoteDto>, CreateRevokeVaultCertificatesTransactionQuoteCommandHandler>();
 
             // Governances
 
@@ -452,9 +453,6 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeWalletCollectMiningRewardsTransactionCommand, string>, MakeWalletCollectMiningRewardsTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletDistributeTokensTransactionCommand, string>, MakeWalletDistributeTokensTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletRewardMiningPoolsTransactionCommand, string>, MakeWalletRewardMiningPoolsTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletSetVaultOwnerCommand, string>, MakeWalletSetVaultOwnerCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletRedeemVaultCertificateCommand, string>, MakeWalletRedeemVaultCertificateCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletRevokeVaultCertificateCommand, string>, MakeWalletRevokeVaultCertificateCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTransactionBroadcastCommand, string>, MakeTransactionBroadcastCommandHandler>(); // Keep this one around
 
             return services;

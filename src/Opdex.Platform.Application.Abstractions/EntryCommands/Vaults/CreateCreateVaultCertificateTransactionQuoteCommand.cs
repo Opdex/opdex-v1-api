@@ -11,14 +11,14 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
     public class CreateCreateVaultCertificateTransactionQuoteCommand : BaseTransactionQuoteCommand
     {
         /// <summary>
-        /// Creates a create vault certificate quote command
+        /// Creates a create vault certificate quote command.
         /// </summary>
         /// <param name="vault">The address of the vault.</param>
-        /// <param name="wallet">The transaction sender's wallet address.</param>
+        /// <param name="owner">The vault owner address.</param>
         /// <param name="holder">The certificate holder address.</param>
         /// <param name="amount">The amount to store in the certificate.</param>
         /// <exception cref="ArgumentException">Invalid amount exception</exception>
-        public CreateCreateVaultCertificateTransactionQuoteCommand(Address vault, Address wallet, Address holder, string amount) : base(wallet)
+        public CreateCreateVaultCertificateTransactionQuoteCommand(Address vault, Address owner, Address holder, string amount) : base(owner)
         {
             if (!amount.IsValidDecimalNumber())
             {

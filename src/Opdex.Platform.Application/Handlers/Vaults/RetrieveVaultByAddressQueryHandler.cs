@@ -16,9 +16,9 @@ namespace Opdex.Platform.Application.Handlers.Vaults
             _mediator = mediator;
         }
 
-        public Task<Vault> Handle(RetrieveVaultByAddressQuery request, CancellationToken cancellationToken)
+        public async Task<Vault> Handle(RetrieveVaultByAddressQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectVaultByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
+            return await _mediator.Send(new SelectVaultByAddressQuery(request.Vault, request.FindOrThrow), cancellationToken);
         }
     }
 }
