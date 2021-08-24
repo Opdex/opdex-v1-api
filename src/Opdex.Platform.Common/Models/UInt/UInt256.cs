@@ -167,6 +167,12 @@ namespace Opdex.Platform.Common.Models.UInt
             return new UInt256(bytes);
         }
 
+        // NON-STANDARD
+        public static implicit operator BigInteger(UInt256 value)
+        {
+            return value.value.GetValue();
+        }
+
         public static explicit operator int(UInt256 value)
         {
             return (int)value.value.GetValue();
@@ -190,6 +196,12 @@ namespace Opdex.Platform.Common.Models.UInt
         public static explicit operator UInt128(UInt256 value)
         {
             return new UInt128(value.value.GetValue());
+        }
+
+        // NON-STANDARD
+        public static explicit operator UInt256(BigInteger value)
+        {
+            return new UInt256(value);
         }
 
         public byte[] ToBytes()

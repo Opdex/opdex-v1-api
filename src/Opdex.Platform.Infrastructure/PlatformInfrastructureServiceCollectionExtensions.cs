@@ -108,6 +108,7 @@ namespace Opdex.Platform.Infrastructure
             SqlMapper.AddTypeHandler(new UInt128Handler());
             SqlMapper.AddTypeHandler(new UInt256Handler());
             SqlMapper.AddTypeHandler(new AddressHandler());
+            SqlMapper.AddTypeHandler(new FixedDecimalHandler());
 
             // Data Services
             AddDataQueries(services);

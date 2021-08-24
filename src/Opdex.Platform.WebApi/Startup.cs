@@ -86,6 +86,7 @@ namespace Opdex.Platform.WebApi
                     new UInt128Converter(),
                     new UInt256Converter(),
                     new AddressConverter(),
+                    new FixedDecimalConverter(),
                     new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
                 }
             };
@@ -161,6 +162,7 @@ namespace Opdex.Platform.WebApi
             {
                 // must add type converter attribute to pass NSwag check for IsPrimitiveType
                 TypeDescriptor.AddAttributes(typeof(Address), new TypeConverterAttribute(typeof(AddressConverter)));
+                TypeDescriptor.AddAttributes(typeof(FixedDecimal), new TypeConverterAttribute(typeof(FixedDecimalConverter)));
 
                 settings.Title = "Opdex Platform API";
                 settings.Version = "v1";
@@ -173,6 +175,11 @@ namespace Opdex.Platform.WebApi
                 });
                 settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
                 settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Address), schema => schema.Type = JsonObjectType.String));
+                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema =>
+                {
+                    schema.Type = JsonObjectType.String;
+                    schema.Pattern = @"^\d*\.\d{1,18}$"; // matches a number which must contain a decimal point and precision of 1 to 18
+                }));
             });
         }
 
