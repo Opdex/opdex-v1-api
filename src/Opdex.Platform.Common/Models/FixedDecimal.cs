@@ -109,7 +109,7 @@ namespace Opdex.Platform.Common.Models
         /// <exception cref="FormatException" />
         public static FixedDecimal Parse(string value)
         {
-            if (value is null) throw new ArgumentNullException(nameof(value));
+            if (string.IsNullOrWhiteSpace(value)) throw new ArgumentNullException(nameof(value));
 
             var index = value.IndexOf('.');
             if (index == -1) return new FixedDecimal(BigInteger.Parse(value), 0);
@@ -132,7 +132,7 @@ namespace Opdex.Platform.Common.Models
         public static bool TryParse(string value, out FixedDecimal result)
         {
             result = default;
-            if (value is null) return false;
+            if (string.IsNullOrWhiteSpace(value)) return false;
 
             BigInteger scaled;
 
