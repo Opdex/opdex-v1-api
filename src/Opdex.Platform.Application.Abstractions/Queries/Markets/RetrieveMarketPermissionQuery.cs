@@ -11,7 +11,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets
         {
             if (marketId < 1) throw new ArgumentOutOfRangeException(nameof(marketId), "Id must be greater than zero.");
             if (!address.HasValue()) throw new ArgumentNullException(nameof(address), "Address must be set.");
-            if (permission == Permissions.Unknown) throw new ArgumentNullException(nameof(permission), "Permission must be set.");
+            if (!permission.IsValid()) throw new ArgumentOutOfRangeException(nameof(permission), "Permission must be valid.");
             MarketId = marketId;
             Address = address;
             Permission = permission;

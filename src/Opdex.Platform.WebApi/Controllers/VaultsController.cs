@@ -91,7 +91,7 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Set Ownership Quote</summary>
-        /// <remarks>Quote a transaction to set the vault owner, pending a transaction to redeem ownership.</remarks>
+        /// <remarks>Quote a transaction to set the owner of a vault, pending a transaction to redeem ownership.</remarks>
         /// <param name="address">The address of the vault.</param>
         /// <param name="request">Information about the new owner.</param>
         /// <param name="cancellationToken">Cancellation token</param>

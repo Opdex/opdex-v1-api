@@ -175,6 +175,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddScoped<IDbContext, DbContext>();
 
             // Deployer
+            services.AddTransient<IRequestHandler<SelectActiveDeployerQuery, Deployer>, SelectActiveDeployerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectDeployerByAddressQuery, Deployer>, SelectDeployerByAddressQueryHandler>();
 
             // Market
