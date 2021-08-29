@@ -62,7 +62,7 @@ namespace Opdex.Platform.WebApi.Controllers
             {
                 if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !VaultsCursor.TryParse(decodedCursor, out var parsedCursor))
                 {
-                    return new ValidationErrorProblemDetailsResult("Cursor not formed correctly.");
+                    return new ValidationErrorProblemDetailsResult(nameof(cursor), "Cursor not formed correctly.");
                 }
                 pagingCursor = parsedCursor;
             }
@@ -157,7 +157,7 @@ namespace Opdex.Platform.WebApi.Controllers
             {
                 if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !VaultCertificatesCursor.TryParse(decodedCursor, out var parsedCursor))
                 {
-                    return new ValidationErrorProblemDetailsResult("Cursor not formed correctly.");
+                    return new ValidationErrorProblemDetailsResult(nameof(cursor), "Cursor not formed correctly.");
                 }
                 pagingCursor = parsedCursor;
             }
