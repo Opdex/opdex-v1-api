@@ -20,7 +20,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets
         {
             Market = market != Address.Empty ? market : throw new ArgumentNullException(nameof(market), "Market address must be set.");
             Token = token != Address.Empty ? token : throw new ArgumentNullException(nameof(token), "Token address must be set.");
-            Amount = amount;
+            Amount = amount > FixedDecimal.Zero ? amount : throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than zero.");
         }
 
         public Address Market { get; }
