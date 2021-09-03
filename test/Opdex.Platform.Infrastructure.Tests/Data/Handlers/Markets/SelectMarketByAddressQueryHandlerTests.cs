@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
@@ -29,12 +30,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public async Task SelectMarketByAddress_Success()
         {
-            const string address = "SomeAddress";
+            Address address = "PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3";
 
             var expectedEntity = new MarketEntity
             {
                 Id = 123454,
-                Address = "SomeAddress",
+                Address = "PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3",
                 Owner = "Owner",
                 AuthPoolCreators = false,
                 AuthProviders = true,
@@ -67,7 +68,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public void SelectMarketByAddress_Throws_NotFoundException()
         {
-            const string address = "SomeAddress";
+            Address address = "PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3";
 
             var command = new SelectMarketByAddressQuery(address);
 
@@ -83,7 +84,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public async Task SelectMarketByAddress_ReturnsNull()
         {
-            const string address = "SomeAddress";
+            Address address = "PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3";
             const bool findOrThrow = false;
 
             var command = new SelectMarketByAddressQuery(address, findOrThrow);

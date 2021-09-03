@@ -58,10 +58,10 @@ namespace Opdex.Platform.Common.Extensions
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <see cref="decimals" /> is greater than 18.</exception>
         /// <exception cref="OverflowException">Thrown if the integral part of <see cref="FixedDecimal" /> exceeds size of `UInt256.MaxValue`.</exception>
 
-        public static UInt256 ToSatoshis(this FixedDecimal value, byte decimals)
+        public static UInt256 ToSatoshis(this FixedDecimal value, int decimals)
         {
             if (decimals > 18) throw new ArgumentOutOfRangeException(nameof(decimals), "Tokens over 18 decimals are not supported.");
-            var scaledValue = value.Resize(decimals).ScaledValue;
+            var scaledValue = value.Resize((byte)decimals).ScaledValue;
             return (UInt256)scaledValue;
         }
 
@@ -71,9 +71,9 @@ namespace Opdex.Platform.Common.Extensions
         /// <param name="value">The token satoshi value to convert.</param>
         /// <param name="decimals">Decimal precision of the token.</param>
         /// <returns>A <see cref="FixedDecimal" /> representation of the token amount.</returns>
-        public static FixedDecimal ToDecimal(this UInt256 value, byte decimals)
+        public static FixedDecimal ToDecimal(this UInt256 value, int decimals)
         {
-            return new FixedDecimal(value, decimals);
+            return new FixedDecimal(value, (byte)decimals);
         }
 
         [Obsolete("Store decimal amounts as FixedDecimal instead.")]

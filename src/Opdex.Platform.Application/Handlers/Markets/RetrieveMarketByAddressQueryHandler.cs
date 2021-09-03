@@ -11,7 +11,7 @@ namespace Opdex.Platform.Application.Handlers.Markets
     public class RetrieveMarketByAddressQueryHandler : IRequestHandler<RetrieveMarketByAddressQuery, Market>
     {
         private readonly IMediator _mediator;
-        
+
         public RetrieveMarketByAddressQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

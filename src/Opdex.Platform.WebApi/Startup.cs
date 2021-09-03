@@ -40,6 +40,7 @@ using Opdex.Platform.Common.Models;
 using NJsonSchema.Generation.TypeMappers;
 using NJsonSchema;
 using Opdex.Platform.WebApi.Models.Binders;
+using Opdex.Platform.WebApi.Models.Responses;
 
 namespace Opdex.Platform.WebApi
 {
@@ -65,6 +66,7 @@ namespace Opdex.Platform.WebApi
             {
                 options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
                 options.Map<BadRequestException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
+                options.Map<InvalidDataException>(e => ValidationErrorProblemDetailsResult.CreateProblemDetails(e.PropertyName, e.Message));
                 options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
                 options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
                 options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
