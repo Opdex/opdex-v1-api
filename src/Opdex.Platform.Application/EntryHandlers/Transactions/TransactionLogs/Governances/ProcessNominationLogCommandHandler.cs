@@ -37,6 +37,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 // Get all DB Current Nominations
                 var currentNominations = await _mediator.Send(new RetrieveActiveMiningGovernanceNominationsQuery(), CancellationToken.None);
+                var governance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.Log.Contract));
 
                 // Skip updates if records are newer than the log
                 var currentNominationsList = currentNominations.ToList();
@@ -47,7 +48,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 // Get all latest Nominations from the governance contract
                 var latestNominationDtos = await _mediator.Send(new CallCirrusGetMiningGovernanceSummaryNominationsQuery(request.Log.Contract));
-                var latestNominations = await Task.WhenAll(latestNominationDtos.Select(nominationDto => BuildLatestNomination(nominationDto,
+                var latestNominations = await Task.WhenAll(latestNominationDtos.Select(nominationDto => BuildLatestNomination(governance.Id, nominationDto,
                                                                                                                               request.BlockHeight)));
 
                 // Update all current nominations statuses
@@ -108,12 +109,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
         }
 
-        private async Task<MiningGovernanceNomination> BuildLatestNomination(MiningGovernanceNominationCirrusDto nomination, ulong blockHeight)
+        private async Task<MiningGovernanceNomination> BuildLatestNomination(long governanceId, MiningGovernanceNominationCirrusDto nomination, ulong blockHeight)
         {
             var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(nomination.StakingPool, findOrThrow: true));
             var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(liquidityPool.Id, findOrThrow: true));
 
-            return new MiningGovernanceNomination(liquidityPool.Id, miningPool.Id, true, nomination.Weight, blockHeight);
+            return new MiningGovernanceNomination(governanceId, liquidityPool.Id, miningPool.Id, true, nomination.Weight, blockHeight);
         }
     }
 }

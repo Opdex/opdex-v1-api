@@ -2,7 +2,6 @@ namespace Opdex.Platform.Common.Enums
 {
     public enum SnapshotType
     {
-        Unknown = 0,
         Minute = 1,
         Hourly = 2,
         Daily = 3,

@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Vaults;
 using System;
 using System.Collections.Generic;
 

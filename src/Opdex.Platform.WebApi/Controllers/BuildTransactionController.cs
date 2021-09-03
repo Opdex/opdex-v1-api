@@ -265,8 +265,8 @@ namespace Opdex.Platform.WebApi.Controllers
             }
         }
 
-        [HttpPost("distribute-odx")]
-        public async Task<IActionResult> DistributeOdxTokens(DistributeTokensRequest request, CancellationToken cancellationToken)
+        [HttpPost("distribute")]
+        public async Task<IActionResult> DistributeGovernanceTokens(DistributeTokensRequest request, CancellationToken cancellationToken)
         {
             if (_network == NetworkType.DEVNET)
             {

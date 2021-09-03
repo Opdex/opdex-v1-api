@@ -19,6 +19,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
         private static readonly string SqlQuery =
             @$"SELECT
                 {nameof(MiningGovernanceNominationEntity.Id)},
+                {nameof(MiningGovernanceNominationEntity.GovernanceId)},
                 {nameof(MiningGovernanceNominationEntity.LiquidityPoolId)},
                 {nameof(MiningGovernanceNominationEntity.MiningPoolId)},
                 {nameof(MiningGovernanceNominationEntity.IsNominated)},

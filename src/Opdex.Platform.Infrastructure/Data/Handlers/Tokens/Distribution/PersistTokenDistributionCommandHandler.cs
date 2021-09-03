@@ -6,14 +6,15 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
 {
     public class PersistTokenDistributionCommandHandler : IRequestHandler<PersistTokenDistributionCommand, bool>
     {
         private static readonly string InsertSqlCommand =
-            $@"INSERT INTO odx_distribution (
+            $@"INSERT INTO token_distribution (
+                {nameof(TokenDistributionEntity.TokenId)},
                 {nameof(TokenDistributionEntity.VaultDistribution)},
                 {nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
                 {nameof(TokenDistributionEntity.PeriodIndex)},
@@ -22,6 +23,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
                 {nameof(TokenDistributionEntity.CreatedBlock)},
                 {nameof(TokenDistributionEntity.ModifiedBlock)}
               ) VALUES (
+                @{nameof(TokenDistributionEntity.TokenId)},
                 @{nameof(TokenDistributionEntity.VaultDistribution)},
                 @{nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
                 @{nameof(TokenDistributionEntity.PeriodIndex)},
@@ -34,7 +36,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        
+
         public PersistTokenDistributionCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistTokenDistributionCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -47,9 +49,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
             try
             {
                 var poolEntity = _mapper.Map<TokenDistributionEntity>(request.TokenDistribution);
-                
+
                 var command = DatabaseQuery.Create(InsertSqlCommand, poolEntity, cancellationToken);
-            
+
                 var result = await _context.ExecuteCommandAsync(command);
 
                 return result >= 1;
@@ -57,7 +59,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure persisting {nameof(TokenDistributionEntity)} record.");
-                
+
                 return false;
             }
         }

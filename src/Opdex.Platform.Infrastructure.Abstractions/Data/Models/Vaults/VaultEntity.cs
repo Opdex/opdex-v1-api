@@ -1,4 +1,4 @@
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults
 {
     public class VaultEntity : AuditEntity
     {

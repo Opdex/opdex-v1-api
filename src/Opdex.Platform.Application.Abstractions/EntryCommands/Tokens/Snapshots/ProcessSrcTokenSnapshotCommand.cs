@@ -1,6 +1,5 @@
 using System;
 using MediatR;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Tokens;
@@ -22,7 +21,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
                 throw new ArgumentNullException(nameof(srcToken), $"{nameof(srcToken)} must be not be null.");
             }
 
-            if (snapshotType == SnapshotType.Unknown)
+            if (!snapshotType.IsValid())
             {
                 throw new ArgumentOutOfRangeException(nameof(snapshotType), $"{nameof(snapshotType)} must be a valid type.");
             }

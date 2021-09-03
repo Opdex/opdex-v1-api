@@ -15,8 +15,8 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Domain.Models.Governances;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
@@ -113,7 +113,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failure processing ODX deployment.");
+                _logger.LogError(ex, "Failure processing mined token and governance deployment.");
             }
 
             return Unit.Value;

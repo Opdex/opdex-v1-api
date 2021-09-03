@@ -18,6 +18,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
         private static readonly string SqlQuery =
             @$"SELECT
                 {nameof(MiningGovernanceNominationEntity.Id)},
+                {nameof(MiningGovernanceNominationEntity.GovernanceId)},
                 {nameof(MiningGovernanceNominationEntity.LiquidityPoolId)},
                 {nameof(MiningGovernanceNominationEntity.MiningPoolId)},
                 {nameof(MiningGovernanceNominationEntity.IsNominated)},
@@ -25,7 +26,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
                 {nameof(MiningGovernanceNominationEntity.CreatedBlock)},
                 {nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
             FROM governance_nomination
-            WHERE {nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
+            WHERE AND {nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
                 AND {nameof(MiningGovernanceNominationEntity.MiningPoolId)} = @{nameof(SqlParams.MiningPoolId)}
             LIMIT 1;".RemoveExcessWhitespace();
 

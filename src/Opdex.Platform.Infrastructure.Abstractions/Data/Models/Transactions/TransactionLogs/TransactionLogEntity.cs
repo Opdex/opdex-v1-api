@@ -1,5 +1,3 @@
-using System;
-
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs
 {
     public class TransactionLogEntity
