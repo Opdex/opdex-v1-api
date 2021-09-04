@@ -82,7 +82,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                         continue;
                     }
 
-                    var nomination = await _mediator.Send(new RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(latest.LiquidityPoolId,
+                    var nomination = await _mediator.Send(new RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(governance.Id,
+                                                                                                                                latest.LiquidityPoolId,
                                                                                                                                 latest.MiningPoolId,
                                                                                                                                 findOrThrow: false));
 

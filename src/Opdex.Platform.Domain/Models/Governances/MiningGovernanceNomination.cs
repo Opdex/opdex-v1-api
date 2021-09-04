@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.Governances
 {
     public class MiningGovernanceNomination : BlockAudit
     {
-        public MiningGovernanceNomination( long governanceId, long liquidityPoolId, long miningPoolId, bool isNominated, string weight, ulong createdBlock) : base(createdBlock)
+        public MiningGovernanceNomination(long governanceId, long liquidityPoolId, long miningPoolId, bool isNominated, string weight, ulong createdBlock) : base(createdBlock)
         {
             if (governanceId < 1)
             {

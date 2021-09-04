@@ -30,13 +30,14 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
         public async Task SelectMiningGovernanceNominationByLiquidityAndMiningPoolId_Success()
         {
             // Arrange
+            const long governanceId = 3;
             const long liquidityPoolId = 4;
             const long miningPoolId = 5;
 
             var expectedEntity = new MiningGovernanceNominationEntity
             {
                 Id = 123454,
-                GovernanceId = 3,
+                GovernanceId = governanceId,
                 LiquidityPoolId = liquidityPoolId,
                 MiningPoolId = miningPoolId,
                 IsNominated = true,
@@ -45,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
                 ModifiedBlock = 2,
             };
 
-            var command = new SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(liquidityPoolId, miningPoolId);
+            var command = new SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(governanceId, liquidityPoolId, miningPoolId);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceNominationEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
@@ -68,7 +69,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
         public void SelectMiningGovernanceNominationByLiquidityAndMiningPoolId_Throws_NotFoundException()
         {
             // Arrange
-            var command = new SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(10, 15);
+            var command = new SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(5, 10, 15);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceNominationEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<MiningGovernanceNominationEntity>(null));
@@ -87,7 +88,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
             // Arrange
             const bool findOrThrow = false;
 
-            var command = new SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(10, 15, findOrThrow);
+            var command = new SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(5, 10, 15, findOrThrow);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceNominationEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<MiningGovernanceNominationEntity>(null));

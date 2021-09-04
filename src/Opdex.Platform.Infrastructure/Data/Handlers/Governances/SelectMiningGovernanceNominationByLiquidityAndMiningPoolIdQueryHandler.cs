@@ -26,7 +26,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
                 {nameof(MiningGovernanceNominationEntity.CreatedBlock)},
                 {nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
             FROM governance_nomination
-            WHERE AND {nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
+            WHERE {nameof(MiningGovernanceNominationEntity.GovernanceId)} = @{nameof(SqlParams.GovernanceId)}
+                AND {nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
                 AND {nameof(MiningGovernanceNominationEntity.MiningPoolId)} = @{nameof(SqlParams.MiningPoolId)}
             LIMIT 1;".RemoveExcessWhitespace();
 
@@ -41,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
 
         public async Task<MiningGovernanceNomination> Handle(SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery request, CancellationToken cancellationToken)
         {
-            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.LiquidityPoolId, request.MiningPoolId), cancellationToken);
+            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.GovernanceId, request.LiquidityPoolId, request.MiningPoolId), cancellationToken);
 
             var result = await _context.ExecuteFindAsync<MiningGovernanceNominationEntity>(query);
 
@@ -55,12 +56,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
 
         private sealed class SqlParams
         {
-            internal SqlParams(long liquidityPoolId, long miningPoolId)
+            internal SqlParams(long governanceId, long liquidityPoolId, long miningPoolId)
             {
+                GovernanceId = governanceId;
                 LiquidityPoolId = liquidityPoolId;
                 MiningPoolId = miningPoolId;
             }
 
+            public long GovernanceId { get; }
             public long LiquidityPoolId { get; }
             public long MiningPoolId { get; }
         }
