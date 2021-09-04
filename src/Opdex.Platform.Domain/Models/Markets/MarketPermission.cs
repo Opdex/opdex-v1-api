@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.Markets
 {
     public class MarketPermission : BlockAudit
     {
-        private string blame;
+        private string _blame;
 
         public MarketPermission(long marketId,
                                 string user,
@@ -15,15 +15,8 @@ namespace Opdex.Platform.Domain.Models.Markets
                                 string blame,
                                 ulong createdBlock) : base(createdBlock)
         {
-            if (!user.HasValue())
-            {
-                throw new ArgumentNullException(nameof(user), "User address must be set.");
-            }
-
-            if (permission == Permissions.Unknown)
-            {
-                throw new ArgumentNullException(nameof(permission), "Permission must be set.");
-            }
+            if (!user.HasValue()) throw new ArgumentNullException(nameof(user), "User address must be set.");
+            if (!permission.IsValid()) throw new ArgumentOutOfRangeException(nameof(permission), "Permission must be valid.");
 
             MarketId = marketId;
             User = user;
@@ -56,8 +49,8 @@ namespace Opdex.Platform.Domain.Models.Markets
         public bool IsAuthorized { get; private set; }
         public string Blame
         {
-            get => blame;
-            private set => blame = value.HasValue() ? value : throw new ArgumentNullException("Blame address must be set.");
+            get => _blame;
+            private set => _blame = value.HasValue() ? value : throw new ArgumentNullException("Blame address must be set.");
         }
 
         public void Authorize(string blame, ulong block)

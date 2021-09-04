@@ -229,6 +229,12 @@ namespace Opdex.Platform.Application
 
             // Markets
             services.AddTransient<IRequestHandler<ProcessMarketSnapshotsCommand, Unit>, ProcessMarketSnapshotsCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateClaimStandardMarketOwnershipTransactionQuoteCommand, TransactionQuoteDto>, CreateClaimStandardMarketOwnershipTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateCollectStandardMarketFeesTransactionQuoteCommand, TransactionQuoteDto>, CreateCollectStandardMarketFeesTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateCreateStakingMarketTransactionQuoteCommand, TransactionQuoteDto>, CreateCreateStakingMarketTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateCreateStandardMarketTransactionQuoteCommand, TransactionQuoteDto>, CreateCreateStandardMarketTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateSetStandardMarketOwnershipTransactionQuoteCommand, TransactionQuoteDto>, CreateSetStandardMarketOwnershipTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateSetStandardMarketPermissionsTransactionQuoteCommand, TransactionQuoteDto>, CreateSetStandardMarketPermissionsTransactionQuoteCommandHandler>();
 
             // Blocks
             services.AddTransient<IRequestHandler<CreateBlockCommand, bool>, CreateBlockCommandHandler>();
@@ -305,6 +311,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveBlockByHeightQuery, Block>, RetrieveBlockByHeightQueryHandler>();
 
             // Deployers
+            services.AddTransient<IRequestHandler<RetrieveActiveDeployerQuery, Deployer>, RetrieveActiveDeployerQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveDeployerByAddressQuery, Deployer>, RetrieveDeployerByAddressQueryHandler>();
 
             // Markets

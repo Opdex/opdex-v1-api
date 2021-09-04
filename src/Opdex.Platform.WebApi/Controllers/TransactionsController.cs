@@ -70,7 +70,7 @@ namespace Opdex.Platform.WebApi.Controllers
             {
                 if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !TransactionsCursor.TryParse(decodedCursor, out var parsedCursor))
                 {
-                    return new ValidationErrorProblemDetailsResult("Cursor not formed correctly.");
+                    return new ValidationErrorProblemDetailsResult(nameof(cursor), "Cursor not formed correctly.");
                 }
                 pagingCursor = parsedCursor;
             }
@@ -123,7 +123,7 @@ namespace Opdex.Platform.WebApi.Controllers
 
             if (!request.Quote.HasValue() || !request.Quote.TryBase64Decode(out string decodedRequest))
             {
-                return new ValidationErrorProblemDetailsResult("Quote not formed correctly.");
+                return new ValidationErrorProblemDetailsResult(nameof(request.Quote), "Quote not formed correctly.");
             }
 
             var txHash = await _mediator.Send(new CreateTransactionBroadcastCommand(decodedRequest), cancellationToken);
