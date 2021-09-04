@@ -63,8 +63,26 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                     vault.SetUnassignedSupply(unassignedSupply, request.BlockHeight);
 
+                    if (request.Log.PeriodIndex == 0)
+                    {
+                        vault.SetGenesis(request.BlockHeight, request.BlockHeight);
+                    }
+
                     var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault));
                     if (vaultUpdates == 0) return false;
+                }
+
+                // Modify mining governance if applicable
+                if (request.BlockHeight >= governance.ModifiedBlock)
+                {
+                    if (request.Log.PeriodIndex == 0)
+                    {
+                        var summary = await _mediator.Send(new RetrieveMiningGovernanceContractSummaryByAddressQuery(governance.Address));
+
+                        governance.Update(summary, request.BlockHeight);
+
+                        await _mediator.Send(new MakeMiningGovernanceCommand(governance));
+                    }
                 }
 
                 // Process the distributed token total supply updates

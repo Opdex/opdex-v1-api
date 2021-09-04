@@ -56,12 +56,18 @@ namespace Opdex.Platform.Domain.Models.Vaults
         public string Address { get; }
         public long TokenId { get; }
         public string Owner { get; private set; }
-        public ulong Genesis { get; }
+        public ulong Genesis { get; private set; }
         public string UnassignedSupply { get; private set; }
 
         public void SetOwner(ClaimPendingVaultOwnershipLog log, ulong block)
         {
             Owner = log.To;
+            SetModifiedBlock(block);
+        }
+
+        public void SetGenesis(ulong genesis, ulong block)
+        {
+            Genesis = genesis;
             SetModifiedBlock(block);
         }
 
