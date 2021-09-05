@@ -47,7 +47,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 }
 
                 // Get all latest Nominations from the governance contract
-                var latestNominationDtos = await _mediator.Send(new CallCirrusGetMiningGovernanceSummaryNominationsQuery(request.Log.Contract));
+                var latestNominationDtos = await _mediator.Send(new CallCirrusGetMiningGovernanceSummaryNominationsQuery(request.Log.Contract, request.BlockHeight));
                 var latestNominations = await Task.WhenAll(latestNominationDtos.Select(nominationDto => BuildLatestNomination(governance.Id, nominationDto,
                                                                                                                               request.BlockHeight)));
 

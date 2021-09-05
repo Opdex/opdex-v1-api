@@ -21,7 +21,7 @@ namespace Opdex.Platform.Application.Handlers.Governances
 
         public Task<IEnumerable<MiningGovernanceNominationCirrusDto>> Handle(RetrieveCirrusMiningGovernanceNominationsQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new CallCirrusGetMiningGovernanceSummaryNominationsQuery(request.Address), cancellationToken);
+            return _mediator.Send(new CallCirrusGetMiningGovernanceSummaryNominationsQuery(request.Address, request.BlockHeight), cancellationToken);
         }
     }
 }
