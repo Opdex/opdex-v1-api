@@ -2,8 +2,8 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
+using Opdex.Platform.Common.Exceptions;
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +26,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
             // Ensure the rewind block exists
             var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.Block, false), cancellationToken);
-            if (block == null) throw new InvalidDataException("Unable to find a block by the provided block number.");
+            if (block == null) throw new InvalidDataException(nameof(block), "Unable to find a block by the provided block number.");
 
             var rewound = await _mediator.Send(new MakeRewindToBlockCommand(request.Block));
             if (!rewound) return false;

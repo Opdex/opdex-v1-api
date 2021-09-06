@@ -26,7 +26,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
         {
             try
             {
-                var command = DatabaseQuery.Create(SqlCommand, CommandType.StoredProcedure, new {request.Block}, cancellationToken);
+                var command = DatabaseQuery.Create(SqlCommand, CommandType.StoredProcedure, new {rewindHeight = request.Block}, cancellationToken);
 
                 await _context.ExecuteCommandAsync(command);
 

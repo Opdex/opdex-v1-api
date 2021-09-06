@@ -99,13 +99,17 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("rewind")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
         {
             await _mediator.Send(new MakeIndexerLockCommand());
 
             try
             {
                 await _mediator.Send(new CreateRewindToBlockCommand(request.Block));
+            }
+            catch
+            {
+                // Empty - maybe log
             }
             finally
             {
