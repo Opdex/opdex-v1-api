@@ -9,7 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Blocks
         {
             if (block < 1)
             {
-                throw new ArgumentNullException(nameof(block), "Block number must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(block), "Block number must be greater than 0.");
             }
 
             Block = block;

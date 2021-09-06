@@ -26,6 +26,17 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
         }
 
         [Fact]
+        public void ExecuteRewindToBlockCommand_InvalidBlock_ThrowsArgumentOutOfRangeException()
+        {
+            // Arrange
+            // Act
+            static void Act() => new ExecuteRewindToBlockCommand(0);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block number must be greater than 0.");
+        }
+
+        [Fact]
         public async Task ExecuteRewindToBlockCommand_Executes_StoredProcedure()
         {
             // Arrange

@@ -26,6 +26,17 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         }
 
         [Fact]
+        public void CreateRewindToBlockCommand_InvalidBlock_ThrowsArgumentOutOfRangeException()
+        {
+            // Arrange
+            // Act
+            static void Act() => new CreateRewindToBlockCommand(0);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block number must be greater than 0.");
+        }
+
+        [Fact]
         public async Task CreateRewindToBlockCommand_Sends_RetrieveBlockByHeightQuery()
         {
             // Arrange

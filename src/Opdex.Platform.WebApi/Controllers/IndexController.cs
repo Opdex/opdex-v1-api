@@ -84,6 +84,10 @@ namespace Opdex.Platform.WebApi.Controllers
                 await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash));
                 await _mediator.Send(new ProcessLatestBlocksCommand(_network));
             }
+            catch
+            {
+                // Ignore - maybe log
+            }
             finally
             {
                 await _mediator.Send(new MakeIndexerUnlockCommand());
@@ -109,7 +113,7 @@ namespace Opdex.Platform.WebApi.Controllers
             }
             catch
             {
-                // Empty - maybe log
+                // Empty - maybe log / alter response
             }
             finally
             {

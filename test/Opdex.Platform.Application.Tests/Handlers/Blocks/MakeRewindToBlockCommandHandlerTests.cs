@@ -4,6 +4,7 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Handlers.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -19,6 +20,17 @@ namespace Opdex.Platform.Application.Tests.Handlers.Blocks
         {
             _mediator = new Mock<IMediator>();
             _handler = new MakeRewindToBlockCommandHandler(_mediator.Object);
+        }
+
+        [Fact]
+        public void MakeRewindToBlockCommand_InvalidBlock_ThrowsArgumentOutOfRangeException()
+        {
+            // Arrange
+            // Act
+            static void Act() => new MakeRewindToBlockCommand(0);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block number must be greater than 0.");
         }
 
         [Fact]
