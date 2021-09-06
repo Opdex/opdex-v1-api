@@ -1,6 +1,6 @@
 using MediatR;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Markets;
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots
                 throw new ArgumentOutOfRangeException(nameof(marketId), $"{nameof(marketId)} must be greater than 0.");
             }
 
-            if (snapshotType == SnapshotType.Unknown)
+            if (!snapshotType.IsValid())
             {
                 throw new ArgumentOutOfRangeException(nameof(snapshotType));
             }

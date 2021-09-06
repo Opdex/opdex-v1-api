@@ -1,6 +1,6 @@
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Queries;
-using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Vaults;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults

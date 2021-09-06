@@ -1,5 +1,4 @@
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
-using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets
 {

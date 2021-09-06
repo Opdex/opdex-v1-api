@@ -4,7 +4,7 @@ using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Vaults;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers

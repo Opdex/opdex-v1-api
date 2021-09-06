@@ -3,7 +3,6 @@ using Moq;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
 using Opdex.Platform.Infrastructure.Data.Handlers.Governances;

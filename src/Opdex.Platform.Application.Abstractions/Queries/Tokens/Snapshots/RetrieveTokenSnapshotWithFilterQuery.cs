@@ -1,6 +1,7 @@
 using System;
 using MediatR;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots
@@ -14,7 +15,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots
                 throw new ArgumentOutOfRangeException(nameof(tokenId), $"{nameof(tokenId)} must be greater than 0.");
             }
 
-            if (snapshotType == SnapshotType.Unknown)
+            if (!snapshotType.IsValid())
             {
                 throw new ArgumentOutOfRangeException(nameof(snapshotType));
             }

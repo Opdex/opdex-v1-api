@@ -82,7 +82,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
                 new TransactionQuoteRequestParameter("Enable Fee", new SmartContractMethodParameter(command.EnableMarketFee))
             };
 
-            var deployer = new Deployer(5, "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw", "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", 500, 505);
+            var deployer = new Deployer(5, "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw", "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveDeployerQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(deployer);
 
             // Act
@@ -114,7 +114,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
 
             var expectedRequest = new TransactionQuoteRequest(deployerOwner, marketOwner, "0", MarketDeployerConstants.Methods.CreateStandardMarket, _callbackEndpoint);
 
-            var deployer = new Deployer(5, "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw", "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", 500, 505);
+            var deployer = new Deployer(5, "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw", "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveDeployerQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(deployer);
 
             var expectedQuote = new TransactionQuote("PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjQf", null, 23800, null, expectedRequest);

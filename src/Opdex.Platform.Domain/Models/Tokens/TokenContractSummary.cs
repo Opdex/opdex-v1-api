@@ -46,15 +46,5 @@ namespace Opdex.Platform.Domain.Models.Tokens
         public uint Decimals { get; }
         public ulong Sats => Decimals.DecimalsToSatoshis();
         public string TotalSupply { get; }
-
-        public void SetLpTokenSymbol(string symbol)
-        {
-            if (Name != TokenConstants.LiquidityPoolToken.Name || Symbol != TokenConstants.LiquidityPoolToken.Symbol)
-            {
-                throw new Exception("The token must be a liquidity pool token to change it's ticker symbol.");
-            }
-
-            this.Symbol = symbol;
-        }
     }
 }

@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models
 {
     public class Deployer : BlockAudit
     {
-        public Deployer(string address, string owner, ulong createdBlock) : base(createdBlock)
+        public Deployer(string address, string owner, bool isActive, ulong createdBlock) : base(createdBlock)
         {
             if (!address.HasValue())
             {
@@ -21,19 +21,22 @@ namespace Opdex.Platform.Domain.Models
 
             Address = address;
             Owner = owner;
+            IsActive = isActive;
         }
 
-        public Deployer(long id, string address, string owner, ulong createdBlock, ulong modifiedBlock)
+        public Deployer(long id, string address, string owner, bool isActive, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
             Owner = owner;
+            IsActive = isActive;
         }
 
         public long Id { get; }
         public string Address { get; }
         public string Owner { get; private set; }
+        public bool IsActive { get; private set; }
 
         public void SetOwner(ClaimPendingDeployerOwnershipLog log, ulong blockHeight)
         {

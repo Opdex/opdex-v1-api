@@ -20,7 +20,8 @@ namespace Opdex.Platform.Application.Handlers.Governances
 
         public Task<MiningGovernanceNomination> Handle(RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(request.LiquidityPoolId,
+            return _mediator.Send(new SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(request.GovernanceId,
+                                                                                                      request.LiquidityPoolId,
                                                                                                       request.MiningPoolId,
                                                                                                       request.FindOrThrow), cancellationToken);
         }

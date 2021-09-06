@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
+using Opdex.Platform.Domain.Models.Vaults;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
 {

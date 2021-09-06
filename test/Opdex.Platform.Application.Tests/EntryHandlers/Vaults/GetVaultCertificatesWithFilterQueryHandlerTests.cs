@@ -9,7 +9,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.EntryHandlers.Vaults;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using System;

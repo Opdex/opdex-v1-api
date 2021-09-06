@@ -16,7 +16,6 @@ using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Governances;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
@@ -64,8 +63,26 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                     vault.SetUnassignedSupply(unassignedSupply, request.BlockHeight);
 
+                    if (request.Log.PeriodIndex == 0)
+                    {
+                        vault.SetGenesis(request.BlockHeight, request.BlockHeight);
+                    }
+
                     var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault));
                     if (vaultUpdates == 0) return false;
+                }
+
+                // Modify mining governance if applicable
+                if (request.BlockHeight >= governance.ModifiedBlock)
+                {
+                    if (request.Log.PeriodIndex == 0)
+                    {
+                        var summary = await _mediator.Send(new RetrieveMiningGovernanceContractSummaryByAddressQuery(governance.Address));
+
+                        governance.Update(summary, request.BlockHeight);
+
+                        await _mediator.Send(new MakeMiningGovernanceCommand(governance));
+                    }
                 }
 
                 // Process the distributed token total supply updates
@@ -79,7 +96,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 if (request.Log.PeriodIndex == 0)
                 {
                     var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id));
-                    await InitializeNominations(miningGovernance.Address, request.BlockHeight);
+                    await InitializeNominations(miningGovernance.Id, miningGovernance.Address, request.BlockHeight);
                 }
 
                 var latestDistribution = await _mediator.Send(new RetrieveLatestTokenDistributionQuery(findOrThrow: false));
@@ -89,7 +106,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return true;
                 }
 
-                var distribution = new TokenDistribution(request.Log.VaultAmount, request.Log.MiningAmount, (int)request.Log.PeriodIndex,
+                var distribution = new TokenDistribution(token.Id, request.Log.VaultAmount, request.Log.MiningAmount, (int)request.Log.PeriodIndex,
                                                          request.BlockHeight, request.Log.NextDistributionBlock, request.BlockHeight);
 
                 return await _mediator.Send(new MakeTokenDistributionCommand(distribution), CancellationToken.None);
@@ -128,9 +145,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             return true;
         }
 
-        private async Task InitializeNominations(string miningGovernance, ulong blockHeight)
+        private async Task InitializeNominations(long governanceId, string miningGovernance, ulong blockHeight)
         {
-            var nominatedPools = await _mediator.Send(new RetrieveCirrusMiningGovernanceNominationsQuery(miningGovernance));
+            var nominatedPools = await _mediator.Send(new RetrieveCirrusMiningGovernanceNominationsQuery(miningGovernance, blockHeight));
 
             var nominatedLiquidityPools = await Task.WhenAll(
                 nominatedPools.Select(nomination => _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(nomination.StakingPool))));
@@ -138,7 +155,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             var nominatedMiningPools = await Task.WhenAll(
                 nominatedLiquidityPools.Select(pool => _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id))));
 
-            var nominations = nominatedMiningPools.Select(miningPool => new MiningGovernanceNomination(miningPool.LiquidityPoolId,
+            var nominations = nominatedMiningPools.Select(miningPool => new MiningGovernanceNomination(governanceId,
+                                                                                                       miningPool.LiquidityPoolId,
                                                                                                        miningPool.Id,
                                                                                                        true,
                                                                                                        "1",

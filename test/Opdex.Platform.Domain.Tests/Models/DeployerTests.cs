@@ -16,8 +16,10 @@ namespace Opdex.Platform.Domain.Tests.Models
         public void CreateDeployer_InvalidAddress_ThrowArgumentNullException(string address)
         {
             // Arrange
+            const bool isActive = true;
+
             // Act
-            void Act() => new Deployer(address, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 100_000);
+            void Act() => new Deployer(address, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", isActive, 100_000);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act);
@@ -30,8 +32,10 @@ namespace Opdex.Platform.Domain.Tests.Models
         public void CreateDeployer_InvalidOwner_ThrowArgumentNullException(string owner)
         {
             // Arrange
+            const bool isActive = true;
+
             // Act
-            void Act() => new Deployer("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", owner, 100_000);
+            void Act() => new Deployer("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", owner, isActive, 100_000);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act);
@@ -44,13 +48,15 @@ namespace Opdex.Platform.Domain.Tests.Models
             var address = "PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD";
             var owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             ulong createdBlock = 100_000;
+            const bool isActive = true;
 
             // Act
-            var deployer = new Deployer(address, owner, createdBlock);
+            var deployer = new Deployer(address, owner, isActive, createdBlock);
 
             // Assert
             deployer.Address.Should().Be(address);
             deployer.Owner.Should().Be(owner);
+            deployer.IsActive.Should().Be(isActive);
             deployer.CreatedBlock.Should().Be(createdBlock);
             deployer.ModifiedBlock.Should().Be(createdBlock);
         }
@@ -59,7 +65,8 @@ namespace Opdex.Platform.Domain.Tests.Models
         public void SetOwner_PreviousModifiedBlock_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            var deployer = new Deployer("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 100_000);
+            const bool isActive = true;
+            var deployer = new Deployer("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", isActive, 100_000);
 
             dynamic log = new ExpandoObject();
             log.from = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
@@ -76,7 +83,8 @@ namespace Opdex.Platform.Domain.Tests.Models
         public void SetOwner_ValidArguments_SetProperties()
         {
             // Arrange
-            var deployer = new Deployer("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 100_000);
+            const bool isActive = true;
+            var deployer = new Deployer("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", isActive, 100_000);
 
             var updatedOwner = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
 
