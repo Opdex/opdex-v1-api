@@ -228,6 +228,7 @@ namespace Opdex.Platform.Application
 
             // Blocks
             services.AddTransient<IRequestHandler<CreateBlockCommand, bool>, CreateBlockCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindToBlockCommand, bool>, CreateRewindToBlockCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessLatestBlocksCommand, Unit>, ProcessLatestBlocksCommandHandler>();
 
             // Liquidity Pools
@@ -389,6 +390,7 @@ namespace Opdex.Platform.Application
         {
             // Blocks
             services.AddTransient<IRequestHandler<MakeBlockCommand, bool>, MakeBlockCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeRewindToBlockCommand, bool>, MakeRewindToBlockCommandHandler>();
 
             // Indexer
             services.AddTransient<IRequestHandler<MakeIndexerLockCommand, Unit>, MakeIndexerLockCommandHandler>();

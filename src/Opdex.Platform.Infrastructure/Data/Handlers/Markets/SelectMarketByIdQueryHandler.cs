@@ -34,19 +34,19 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
-        
+
         public SelectMarketByIdQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-        
+
         public async Task<Market> Handle(SelectMarketByIdQuery request, CancellationToken cancellationToken)
         {
             var queryParams = new SqlParams(request.MarketId);
-            
-            var command = DatabaseQuery.Create(SqlCommand,  queryParams, cancellationToken);
-            
+
+            var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
+
             var result =  await _context.ExecuteFindAsync<MarketEntity>(command);
 
             if (request.FindOrThrow && result == null)
@@ -56,7 +56,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
             return result == null ? null : _mapper.Map<Market>(result);
         }
-        
+
         private sealed class SqlParams
         {
             internal SqlParams(long marketId)

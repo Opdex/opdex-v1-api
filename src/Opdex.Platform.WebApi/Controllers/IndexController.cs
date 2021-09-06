@@ -78,11 +78,39 @@ namespace Opdex.Platform.WebApi.Controllers
 
             await _mediator.Send(new MakeIndexerLockCommand());
 
-            await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash));
-            await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash));
-            await _mediator.Send(new ProcessLatestBlocksCommand(_network));
+            try
+            {
+                await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash));
+                await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash));
+                await _mediator.Send(new ProcessLatestBlocksCommand(_network));
+            }
+            finally
+            {
+                await _mediator.Send(new MakeIndexerUnlockCommand());
+            }
 
-            await _mediator.Send(new MakeIndexerUnlockCommand());
+            return NoContent();
+        }
+
+        /// <summary>Rewind to Block</summary>
+        /// <param name="request">Request object containing the block height ot rewind too.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>No content</returns>
+        [HttpPost("rewind")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new MakeIndexerLockCommand());
+
+            try
+            {
+                await _mediator.Send(new CreateRewindToBlockCommand(request.Block));
+            }
+            finally
+            {
+                await _mediator.Send(new MakeIndexerUnlockCommand());
+            }
 
             return NoContent();
         }
