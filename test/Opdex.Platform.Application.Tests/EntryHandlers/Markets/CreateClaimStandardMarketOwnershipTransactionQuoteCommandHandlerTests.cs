@@ -20,17 +20,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
     {
         private readonly Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>> _assemblerMock;
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly string _callbackEndpoint;
+        private readonly OpdexConfiguration _config;
         private readonly CreateClaimStandardMarketOwnershipTransactionQuoteCommandHandler _handler;
 
         public CreateClaimStandardMarketOwnershipTransactionQuoteCommandHandlerTests()
         {
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _mediatorMock = new Mock<IMediator>();
-            _callbackEndpoint = "https://dev-api.opdex.com/transactions";
-            var configuration = new OpdexConfiguration();
-
-            _handler = new CreateClaimStandardMarketOwnershipTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, configuration);
+            _config = new OpdexConfiguration {ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions"};
+            _handler = new CreateClaimStandardMarketOwnershipTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
         [Fact]
@@ -87,7 +85,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             var command = new CreateClaimStandardMarketOwnershipTransactionQuoteCommand(market, pendingOwner);
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var expectedRequest = new TransactionQuoteRequest(market, pendingOwner, "0", StandardMarketConstants.Methods.ClaimPendingOwnership, _callbackEndpoint);
+            var expectedRequest = new TransactionQuoteRequest(market, pendingOwner, "0", StandardMarketConstants.Methods.ClaimPendingOwnership, _config.WalletTransactionCallback);
 
             var expectedQuote = new TransactionQuote("PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjQf", null, 23800, null, expectedRequest);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedQuote);

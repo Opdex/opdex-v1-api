@@ -28,17 +28,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
     {
         private readonly Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>> _assemblerMock;
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly string _callbackEndpoint;
+        private readonly OpdexConfiguration _config;
         private readonly CreateCollectStandardMarketFeesTransactionQuoteCommandHandler _handler;
 
         public CreateCollectStandardMarketFeesTransactionQuoteCommandHandlerTests()
         {
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _mediatorMock = new Mock<IMediator>();
-            _callbackEndpoint = "https://dev-api.opdex.com/transactions";
-            var configuration = new OpdexConfiguration();
-
-            _handler = new CreateCollectStandardMarketFeesTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, configuration);
+            _config = new OpdexConfiguration {ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions"};
+            _handler = new CreateCollectStandardMarketFeesTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
         [Fact]
@@ -154,7 +152,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             var token = new Token(5, "PNEPCzpKSXns3jWtVfkF7WJeZKdNeEZTBK", false, "Opdex", "dODX", 8, 10000000000, "5000000000000000", 500, 501);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
-            var expectedRequest = new TransactionQuoteRequest(market, owner, "0", StandardMarketConstants.Methods.CollectMarketFees, _callbackEndpoint);
+            var expectedRequest = new TransactionQuoteRequest(market, owner, "0", StandardMarketConstants.Methods.CollectMarketFees, _config.WalletTransactionCallback);
 
             var expectedQuote = new TransactionQuote("PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjQf", null, 23800, null, expectedRequest);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedQuote);

@@ -24,17 +24,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
     {
         private readonly Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>> _assemblerMock;
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly string _callbackEndpoint;
+        private readonly OpdexConfiguration _config;
         private readonly CreateCreateStakingMarketTransactionQuoteCommandHandler _handler;
 
         public CreateCreateStakingMarketTransactionQuoteCommandHandlerTests()
         {
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _mediatorMock = new Mock<IMediator>();
-            _callbackEndpoint = "https://dev-api.opdex.com/transactions";
-            var configuration = new OpdexConfiguration();
-
-            _handler = new CreateCreateStakingMarketTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, configuration);
+            _config = new OpdexConfiguration {ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions"};
+            _handler = new CreateCreateStakingMarketTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
         [Fact]
@@ -101,7 +99,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             var command = new CreateCreateStakingMarketTransactionQuoteCommand(deployerOwner, stakingToken);
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var expectedRequest = new TransactionQuoteRequest(deployerOwner, stakingToken, "0", MarketDeployerConstants.Methods.CreateStakingMarket, _callbackEndpoint);
+            var expectedRequest = new TransactionQuoteRequest(deployerOwner, stakingToken, "0", MarketDeployerConstants.Methods.CreateStakingMarket, _config.WalletTransactionCallback);
 
             var deployer = new Deployer(5, "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw", "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveDeployerQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(deployer);
