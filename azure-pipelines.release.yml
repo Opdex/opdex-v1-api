@@ -40,6 +40,6 @@ jobs:
                 azureSubscription: $(azureSubscription)
                 appType: 'webApp'
                 appName: 'app-opdex-${{ parameters.environment }}-api'
-                package: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/*.zip'
+                package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
                 deploymentMethod: 'auto'
               displayName: Deploy to App Service
