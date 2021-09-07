@@ -29,7 +29,7 @@ jobs:
             - task: ArchiveFiles@2
               displayName: 'Archive files'
               inputs:
-                rootFolderOrFile: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/**/*'
+                rootFolderOrFile: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/**'
                 includeRootFolder: false
                 archiveType: zip
                 archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
