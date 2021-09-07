@@ -39,6 +39,7 @@ using System.ComponentModel;
 using Opdex.Platform.Common.Models;
 using NJsonSchema.Generation.TypeMappers;
 using NJsonSchema;
+using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.WebApi.Models.Binders;
 using Opdex.Platform.WebApi.Models.Responses;
 
@@ -130,6 +131,10 @@ namespace Opdex.Platform.WebApi
             // Opdex Configurations
             var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
             services.SetupConfiguration<OpdexConfiguration>(opdexConfig);
+
+            // Database Configurations
+            var databaseConfig = Configuration.GetSection(nameof(DatabaseConfiguration));
+            services.SetupConfiguration<DatabaseConfiguration>(databaseConfig);
 
             // Coin Market Cap Configurations
             var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
