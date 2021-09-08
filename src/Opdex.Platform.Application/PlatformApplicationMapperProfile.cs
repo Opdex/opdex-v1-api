@@ -1,6 +1,7 @@
 using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
+using Opdex.Platform.Application.Abstractions.Models.Admins;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
@@ -22,6 +23,7 @@ using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
@@ -42,6 +44,11 @@ namespace Opdex.Platform.Application
     {
         public PlatformApplicationMapperProfile()
         {
+            CreateMap<Admin, AdminDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<Block, BlockDto>()
                 .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))

@@ -2,6 +2,7 @@ using AutoMapper;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
+using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.LiquidityPools;
@@ -24,6 +25,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Admins;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
@@ -42,6 +44,10 @@ namespace Opdex.Platform.Infrastructure
     {
         public PlatformInfrastructureMapperProfile()
         {
+            CreateMap<AdminEntity, Admin>()
+                .ConstructUsing(src => new Admin(src.Id, src.Address))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<TransactionEntity, Transaction>()
                 .ConstructUsing(src => new Transaction(src.Id, src.Hash, src.Block, src.GasUsed, src.From, src.To, src.Success, src.NewContractAddress))
                 .ForAllOtherMembers(opt => opt.Ignore());
@@ -272,6 +278,11 @@ namespace Opdex.Platform.Infrastructure
                         _ => null
                     };
                 });
+
+            CreateMap<Admin, AdminEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<Market, MarketEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
