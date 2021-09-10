@@ -9,6 +9,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// The amount of liquidity pool tokens to use for the quote.
         /// </summary>
         [Required]
-        public string Amount { get; set; }
+        public FixedDecimal Amount { get; set; }
     }
 }

@@ -12,12 +12,12 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Auth;
 using System.Linq;
 using System.Net;
 using System.Security.Authentication;
 using System.Threading.Tasks;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -45,7 +45,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public async Task<IActionResult> Authorize([FromQuery] string market, [FromQuery] string wallet)
+        public async Task<IActionResult> Authorize([FromQuery] Address market, [FromQuery] Address wallet)
         {
             // Throws NotFoundException if not found
             var marketDto = await _mediator.Send(new GetMarketByAddressQuery(market));
@@ -58,16 +58,16 @@ namespace Opdex.Platform.WebApi.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim("market", market)
+                    new Claim("market", market.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 IssuedAt = DateTime.UtcNow,
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
             };
 
-            if (!string.IsNullOrEmpty(wallet))
+            if (wallet != Address.Empty)
             {
-                tokenDescriptor.Subject.AddClaim(new Claim("wallet", wallet));
+                tokenDescriptor.Subject.AddClaim(new Claim("wallet", wallet.ToString()));
             }
 
             var jwt = tokenHandler.CreateToken(tokenDescriptor);
@@ -75,7 +75,7 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         // Todo: If private market; roles && enforce wallet != null && wallet has permission
-        private async Task ValidateWallet(string wallet, long marketId)
+        private async Task ValidateWallet(Address wallet, long marketId)
         {
             // Devnet validate the wallet signing in has a balance,
             // This is a hack to be able to remove the firewall and still close off the api by wallet address without adding new tables
@@ -83,18 +83,18 @@ namespace Opdex.Platform.WebApi.Controllers
             // At that time, consider creating queries and commands to whitelist devnet addresses
             if (_opdexConfiguration.Network == NetworkType.DEVNET)
             {
-                if (!wallet.HasValue()) throw new BadRequestException("Wallet address must be provided.");
+                if (wallet == Address.Empty) throw new BadRequestException("Wallet address must be provided.");
 
                 var validWallet = false;
-                var tokens = await _mediator.Send(new RetrieveTokensWithFilterQuery(marketId, false, 0, 5, "Name", "ASC", new string[0]));
+                var tokens = await _mediator.Send(new RetrieveTokensWithFilterQuery(marketId, false, 0, 5, "Name", "ASC", new Address[0]));
 
                 foreach (var token in tokens.Where(t => t.Address != TokenConstants.Cirrus.Address))
                 {
                     try
                     {
-                        var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(wallet, token.Address));
+                        var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(wallet, token.Address.ToString()));
 
-                        if (balance.Balance == "0") continue;
+                        if (balance.Balance == FixedDecimal.Zero) continue;
 
                         validWallet = true;
 

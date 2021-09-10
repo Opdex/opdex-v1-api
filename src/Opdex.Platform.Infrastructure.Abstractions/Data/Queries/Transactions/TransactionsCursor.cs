@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,19 +10,19 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
 {
     public class TransactionsCursor : Cursor<long>
     {
-        public TransactionsCursor(string wallet, IEnumerable<TransactionEventType> eventTypes,
-                                  IEnumerable<string> contracts, SortDirectionType sortDirection, uint limit,
+        public TransactionsCursor(Address wallet, IEnumerable<TransactionEventType> eventTypes,
+                                  IEnumerable<Address> contracts, SortDirectionType sortDirection, uint limit,
                                   PagingDirection pagingDirection, long pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
             Wallet = wallet;
             EventTypes = eventTypes ?? Enumerable.Empty<TransactionEventType>();
-            Contracts = contracts ?? Enumerable.Empty<string>();
+            Contracts = contracts ?? Enumerable.Empty<Address>();
         }
 
-        public string Wallet { get; }
+        public Address Wallet { get; }
         public IEnumerable<TransactionEventType> EventTypes { get; }
-        public IEnumerable<string> Contracts { get; }
+        public IEnumerable<Address> Contracts { get; }
 
         /// <inheritdoc />
         public override string ToString()
@@ -84,7 +85,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
 
             try
             {
-                cursor = new TransactionsCursor(wallet, eventTypes, contracts, direction, limit, paging, pointer);
+                cursor = new TransactionsCursor(wallet, eventTypes, contracts.Select(contract => new Address(contract)), direction, limit, paging, pointer);
             }
             catch (Exception)
             {

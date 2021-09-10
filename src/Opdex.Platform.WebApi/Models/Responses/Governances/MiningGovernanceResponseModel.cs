@@ -9,8 +9,8 @@ namespace Opdex.Platform.WebApi.Models.Responses.Governances
         public ulong PeriodRemainingBlocks { get; set; }
         public ulong PeriodBlockDuration { get; set; }
         public uint PeriodsUntilRewardReset { get; set; }
-        public string MiningPoolRewardPerPeriod { get; set; }
-        public string TotalRewardsPerPeriod { get; set; }
+        public FixedDecimal MiningPoolRewardPerPeriod { get; set; }
+        public FixedDecimal TotalRewardsPerPeriod { get; set; }
         public Address MinedToken { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using System;
 using System.Collections.Generic;
@@ -8,9 +8,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
 {
     public class CallCirrusGetMiningGovernanceSummaryNominationsQuery : IRequest<IEnumerable<MiningGovernanceNominationCirrusDto>>
     {
-        public CallCirrusGetMiningGovernanceSummaryNominationsQuery(string address)
+        public CallCirrusGetMiningGovernanceSummaryNominationsQuery(Address address)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address));
             }
@@ -18,6 +18,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
             Address = address;
         }
 
-        public string Address { get; }
+        public Address Address { get; }
     }
 }

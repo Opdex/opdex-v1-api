@@ -1,5 +1,5 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 
@@ -7,10 +7,10 @@ namespace Opdex.Platform.Domain.Models.Markets
 {
     public class Market : BlockAudit
     {
-        public Market(string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders,
+        public Market(Address address, long deployerId, long? stakingTokenId, Address owner, bool authPoolCreators, bool authProviders,
             bool authTraders, uint transactionFee, bool marketFeeEnabled, ulong createdBlock) : base(createdBlock)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), "Address must be set.");
             }
@@ -20,7 +20,7 @@ namespace Opdex.Platform.Domain.Models.Markets
                 throw new ArgumentOutOfRangeException(nameof(deployerId), "Deployer id must be greater than 0.");
             }
 
-            if (!owner.HasValue())
+            if (owner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(owner), "Owner must be set.");
             }
@@ -41,7 +41,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             MarketFeeEnabled = marketFeeEnabled;
         }
 
-        public Market(long id, string address, long deployerId, long? stakingTokenId, string owner, bool authPoolCreators, bool authProviders,
+        public Market(long id, Address address, long deployerId, long? stakingTokenId, Address owner, bool authPoolCreators, bool authProviders,
             bool authTraders, uint transactionFee, bool marketFeeEnabled, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -57,10 +57,10 @@ namespace Opdex.Platform.Domain.Models.Markets
         }
 
         public long Id { get; }
-        public string Address { get; }
+        public Address Address { get; }
         public long DeployerId { get; }
         public long? StakingTokenId { get; }
-        public string Owner { get; private set; }
+        public Address Owner { get; private set; }
         public bool AuthPoolCreators { get; }
         public bool AuthProviders { get; }
         public bool AuthTraders { get; }

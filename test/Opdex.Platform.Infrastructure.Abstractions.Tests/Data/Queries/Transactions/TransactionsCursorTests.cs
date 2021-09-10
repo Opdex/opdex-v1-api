@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using System;
@@ -17,7 +18,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
             // Act
             static void Act() => new TransactionsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                                         Enumerable.Empty<TransactionEventType>(),
-                                                        Enumerable.Empty<string>(), SortDirectionType.ASC,
+                                                        Enumerable.Empty<Address>(), SortDirectionType.ASC,
                                                         50 + 1, PagingDirection.Forward, 0);
 
             // Assert
@@ -32,7 +33,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
             // Act
             void Act() => new TransactionsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                                         Enumerable.Empty<TransactionEventType>(),
-                                                        Enumerable.Empty<string>(), SortDirectionType.ASC,
+                                                        Enumerable.Empty<Address>(), SortDirectionType.ASC,
                                                         25, pagingDirection, pointer);
 
             // Assert
@@ -46,7 +47,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
             // Act
             // Arrange
             var cursor = new TransactionsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
-                                                null, Enumerable.Empty<string>(),
+                                                null, Enumerable.Empty<Address>(),
                                                 SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
             // Assert
@@ -73,7 +74,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
             // Arrange
             var cursor = new TransactionsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                                 new TransactionEventType[] { TransactionEventType.ClaimPendingDeployerOwnershipEvent, TransactionEventType.SwapEvent },
-                                                new string[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
+                                                new Address[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
                                                 SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
             // Act
@@ -97,7 +98,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Transact
             // Arrange
             var cursor = new TransactionsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                                 new TransactionEventType[] { TransactionEventType.ClaimPendingDeployerOwnershipEvent, TransactionEventType.SwapEvent },
-                                                new string[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
+                                                new Address[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
                                                 SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
             // Act

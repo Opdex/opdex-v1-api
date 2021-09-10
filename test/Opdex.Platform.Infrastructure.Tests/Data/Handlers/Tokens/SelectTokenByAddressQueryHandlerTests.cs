@@ -4,6 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
@@ -29,23 +30,23 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task SelectTokenByAddress_Success()
         {
-            const string address = "SomeAddress";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
             var expectedEntity = new TokenEntity
             {
                 Id = 123454,
-                Address = "SomeAddress",
+                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
                 IsLpt = true,
                 Name = "SomeName",
                 Symbol = "SomeSymbol",
                 Sats = 987689076,
                 Decimals = 18,
-                TotalSupply = "98765434567898765",
+                TotalSupply = 98765434567898765,
                 CreatedBlock = 1,
                 ModifiedBlock = 2
             };
 
-            var command = new SelectTokenByAddressQuery(address);
+            var command = new SelectTokenByAddressQuery(address.ToString());
 
             _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
@@ -65,9 +66,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public void SelectTokenByAddress_Throws_NotFoundException()
         {
-            const string address = "SomeAddress";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
-            var command = new SelectTokenByAddressQuery(address);
+            var command = new SelectTokenByAddressQuery(address.ToString());
 
             _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<TokenEntity>(null));
@@ -81,10 +82,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task SelectTokenByAddress_ReturnsNull()
         {
-            const string address = "SomeAddress";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             const bool findOrThrow = false;
 
-            var command = new SelectTokenByAddressQuery(address, findOrThrow);
+            var command = new SelectTokenByAddressQuery(address.ToString(), findOrThrow);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<TokenEntity>(null));

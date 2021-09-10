@@ -8,6 +8,7 @@ using Opdex.Platform.Common;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
@@ -35,7 +36,7 @@ namespace Opdex.Platform.Application.Assemblers
         {
             var marketDto = _mapper.Map<MarketDto>(market);
 
-            var now = DateTime.UtcNow.ToEndOf(SnapshotType);;
+            var now = DateTime.UtcNow.ToEndOf(SnapshotType);
             var yesterday = now.Subtract(TimeSpan.FromDays(1)).ToStartOf(SnapshotType);
 
             // get staking token if necessary
@@ -56,7 +57,7 @@ namespace Opdex.Platform.Application.Assemblers
             marketDto.Summary = _mapper.Map<MarketSnapshotDto>(currentMarketSnapshot);
 
             // Adjust daily change values
-            marketDto.Summary.Staking.SetDailyChange(previousMarketSnapshot?.Staking?.Weight);
+            marketDto.Summary.Staking.SetDailyChange(previousMarketSnapshot?.Staking?.Weight ?? UInt256.Zero);
             marketDto.Summary.SetLiquidityDailyChange(previousMarketSnapshot?.Liquidity ?? 0);
 
             // Assemble tokens

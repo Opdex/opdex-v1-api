@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Governances;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Governances;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,7 +50,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
             var retrieveRequest = new RetrieveMiningGovernanceByAddressQuery(governance);
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var miningGovernance = new MiningGovernance(5, governance, 10, 100, 1000, 4, "500", 10_000, 10_001);
+            var miningGovernance = new MiningGovernance(5, governance, 10, 100, 1000, 4, UInt256.Parse("500"), 10_000, 10_001);
 
             _mediatorMock.Setup(callTo => callTo.Send(retrieveRequest, cancellationToken)).ReturnsAsync(miningGovernance);
 

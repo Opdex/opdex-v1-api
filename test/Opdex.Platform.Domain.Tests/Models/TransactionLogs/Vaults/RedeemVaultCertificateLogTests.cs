@@ -1,6 +1,7 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Xunit;
 
@@ -46,7 +47,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Vaults
             void Act() => new RedeemVaultCertificateLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
@@ -69,9 +70,11 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Vaults
         public void CreateRedeemVaultCertificateLog_ValidArguments_SetProperties()
         {
             // Arrange
+            UInt256 amount = 23238;
+
             dynamic txLog = new ExpandoObject();
             txLog.owner = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj2";
-            txLog.amount = "43892";
+            txLog.amount = amount.ToString();
             txLog.vestedBlock = 1000ul;
 
             // Act
@@ -79,7 +82,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Vaults
 
             // Assert
             log.Owner.Should().Be(txLog.owner);
-            log.Amount.Should().Be(txLog.amount);
+            log.Amount.Should().Be(amount);
             log.VestedBlock.Should().Be(txLog.vestedBlock);
         }
     }

@@ -20,7 +20,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens
 
         public async Task<ApprovalEventDto> Assemble(ApprovalLog log)
         {
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(log.Contract));
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(log.Contract.ToString()));
 
             return new ApprovalEventDto
             {
@@ -30,7 +30,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens
                 Contract = log.Contract,
                 Owner = log.Owner,
                 Spender = log.Spender,
-                Amount = log.Amount.InsertDecimal(token.Decimals)
+                Amount = log.Amount.ToDecimal(token.Decimals)
             };
         }
     }

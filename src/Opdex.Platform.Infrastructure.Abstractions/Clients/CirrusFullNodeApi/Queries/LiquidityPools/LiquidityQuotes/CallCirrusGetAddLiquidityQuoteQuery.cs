@@ -1,29 +1,15 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.LiquidityQuotes
 {
-    public class CallCirrusGetAddLiquidityQuoteQuery : IRequest<string>
+    public class CallCirrusGetAddLiquidityQuoteQuery : IRequest<UInt256>
     {
-        public CallCirrusGetAddLiquidityQuoteQuery(string amountA, string reserveA, string reserveB, string market)
+        public CallCirrusGetAddLiquidityQuoteQuery(UInt256 amountA, UInt256 reserveA, UInt256 reserveB, Address market)
         {
-            if (!amountA.HasValue())
-            {
-                throw new ArgumentNullException(nameof(amountA));
-            }
-
-            if (!reserveA.HasValue())
-            {
-                throw new ArgumentNullException(nameof(reserveA));
-            }
-
-            if (!reserveB.HasValue())
-            {
-                throw new ArgumentNullException(nameof(reserveB));
-            }
-
-            if (!market.HasValue())
+            if (market == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(market));
             }
@@ -34,9 +20,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
             Market = market;
         }
 
-        public string AmountA { get; }
-        public string ReserveA { get; }
-        public string ReserveB { get; }
-        public string Market { get; }
+        public UInt256 AmountA { get; }
+        public UInt256 ReserveA { get; }
+        public UInt256 ReserveB { get; }
+        public Address Market { get; }
     }
 }

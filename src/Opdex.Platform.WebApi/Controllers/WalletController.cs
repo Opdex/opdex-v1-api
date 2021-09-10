@@ -15,6 +15,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
@@ -46,7 +47,10 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns><see cref="ApprovedAllowanceResponseModel"/> summary</returns>
         [HttpGet("{address}/allowance/{token}/approved/{spender}")]
         [ProducesResponseType(typeof(ApprovedAllowanceResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApprovedAllowanceResponseModel>> GetAllowance(string address, string token, string spender, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApprovedAllowanceResponseModel>> GetAllowance([FromRoute] Address address,
+                                                                                     [FromRoute] Address token,
+                                                                                     [FromRoute] Address spender,
+                                                                                     CancellationToken cancellationToken)
         {
             var allowances = await _mediator.Send(new GetAddressAllowanceQuery(address, spender, token), cancellationToken);
             var response = _mapper.Map<ApprovedAllowanceResponseModel>(allowances);
@@ -66,8 +70,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>A collection of address balance summaries by token.</returns>
         [HttpGet("{address}/balance")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<AddressBalanceResponseModel>>> GetAddressBalances(string address,
-                                                                                                     [FromQuery] IEnumerable<string> tokens,
+        public async Task<ActionResult<IEnumerable<AddressBalanceResponseModel>>> GetAddressBalances([FromRoute] Address address,
+                                                                                                     [FromQuery] IEnumerable<Address> tokens,
                                                                                                      [FromQuery] bool? includeLpTokens,
                                                                                                      [FromQuery] bool? includeZeroBalances,
                                                                                                      [FromQuery] SortDirectionType direction,
@@ -106,9 +110,11 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}/balance/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AddressBalanceResponseModel>> GetAddressBalanceByToken(string address, string token, CancellationToken cancellationToken)
+        public async Task<ActionResult<AddressBalanceResponseModel>> GetAddressBalanceByToken([FromRoute] Address address,
+                                                                                              [FromRoute] Address token,
+                                                                                              CancellationToken cancellationToken)
         {
-            var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(address, token), cancellationToken);
+            var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(address, token.ToString()), cancellationToken);
             var response = _mapper.Map<AddressBalanceResponseModel>(balance);
             return Ok(response);
         }
@@ -127,9 +133,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns></returns>
         [HttpGet("{address}/mining")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<StakingPositionResponseModel>>> GetMiningPositions(string address,
-                                                                                                      [FromQuery] IEnumerable<string> liquidityPools,
-                                                                                                      [FromQuery] IEnumerable<string> miningPools,
+        public async Task<ActionResult<IEnumerable<StakingPositionResponseModel>>> GetMiningPositions([FromRoute] Address address,
+                                                                                                      [FromQuery] IEnumerable<Address> liquidityPools,
+                                                                                                      [FromQuery] IEnumerable<Address> miningPools,
                                                                                                       [FromQuery] bool? includeZeroAmounts,
                                                                                                       [FromQuery] SortDirectionType direction,
                                                                                                       [FromQuery] uint limit,
@@ -164,7 +170,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Mining position summary</returns>
         [HttpGet("{address}/mining/{miningPool}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<MiningPositionResponseModel>> GetMiningPositionByPool(string address, string miningPool, CancellationToken cancellationToken)
+        public async Task<ActionResult<MiningPositionResponseModel>> GetMiningPositionByPool([FromRoute] Address address,
+                                                                                             [FromRoute] Address miningPool,
+                                                                                             CancellationToken cancellationToken)
         {
             var position = await _mediator.Send(new GetMiningPositionByPoolQuery(address, miningPool), cancellationToken);
             var response = _mapper.Map<MiningPositionResponseModel>(position);
@@ -183,8 +191,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Staking position summaries</returns>
         [HttpGet("{address}/staking")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<StakingPositionResponseModel>>> GetStakingPositions(string address,
-                                                                                                       [FromQuery] IEnumerable<string> liquidityPools,
+        public async Task<ActionResult<IEnumerable<StakingPositionResponseModel>>> GetStakingPositions([FromRoute] Address address,
+                                                                                                       [FromQuery] IEnumerable<Address> liquidityPools,
                                                                                                        [FromQuery] bool? includeZeroAmounts,
                                                                                                        [FromQuery] SortDirectionType direction,
                                                                                                        [FromQuery] uint limit,
@@ -219,7 +227,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Staking position summary</returns>
         [HttpGet("{address}/staking/{liquidityPool}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<StakingPositionResponseModel>> GetStakingPositionByPool(string address, string liquidityPool, CancellationToken cancellationToken)
+        public async Task<ActionResult<StakingPositionResponseModel>> GetStakingPositionByPool([FromRoute] Address address,
+                                                                                               [FromRoute] Address liquidityPool,
+                                                                                               CancellationToken cancellationToken)
         {
             var position = await _mediator.Send(new GetStakingPositionByPoolQuery(address, liquidityPool), cancellationToken);
             var response = _mapper.Map<StakingPositionResponseModel>(position);
@@ -229,7 +239,9 @@ namespace Opdex.Platform.WebApi.Controllers
         // Todo: WIll be removed as part of WAPP-17
         [HttpGet("summary/pool/{poolAddress}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<string>> GetWalletSummaryByPool(string poolAddress, string walletAddress, CancellationToken cancellationToken)
+        public async Task<ActionResult<string>> GetWalletSummaryByPool([FromRoute] Address poolAddress,
+                                                                       Address walletAddress,
+                                                                       CancellationToken cancellationToken)
         {
             var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(poolAddress, findOrThrow: true), cancellationToken);
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId, findOrThrow: true), cancellationToken);
@@ -249,11 +261,11 @@ namespace Opdex.Platform.WebApi.Controllers
 
             return Ok(new
             {
-                SrcBalance = addressBalance?.Balance?.InsertDecimal(token.Decimals) ?? "0.00000000",
+                SrcBalance = addressBalance?.Balance.ToDecimal(token.Decimals),
                 CrsBalance = crsBalance,
-                Providing = lpTokens?.Balance?.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals) ?? "0.00000000",
-                Staking = staking?.Weight?.InsertDecimal(TokenConstants.Opdex.Decimals) ?? "0.00000000",
-                Mining = mining?.Balance?.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals) ?? "0.00000000"
+                Providing = lpTokens?.Balance.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals),
+                Staking = staking?.Weight.ToDecimal(TokenConstants.Opdex.Decimals),
+                Mining = mining?.Balance.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals)
             });
         }
     }

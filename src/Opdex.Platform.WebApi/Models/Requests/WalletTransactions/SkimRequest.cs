@@ -16,6 +16,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// The liquidity pool being skimmed.
         /// </summary>
         [Obsolete] // Delete property when removing WalletBroadcast endpoints and flows.
-        public string LiquidityPool { get; set; }
+        public Address LiquidityPool { get; set; }
     }
 }

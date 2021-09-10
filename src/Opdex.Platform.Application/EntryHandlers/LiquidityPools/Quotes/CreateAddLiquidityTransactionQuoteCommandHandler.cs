@@ -10,8 +10,6 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Models;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
 using System.Threading;
@@ -31,19 +29,19 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
 
         public override async Task<TransactionQuoteDto> Handle(CreateAddLiquidityTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
-            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool.ToString()), cancellationToken);
+            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool), cancellationToken);
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId), cancellationToken);
             var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(pool.MarketId), cancellationToken);
 
-            var amountSrc = UInt256.Parse(request.AmountSrc.ToSatoshis(token.Decimals));
-            var amountCrsMin = ulong.Parse(request.AmountCrsMin.ToSatoshis(TokenConstants.Cirrus.Decimals));
-            var amountSrcMin = UInt256.Parse(request.AmountSrcMin.ToSatoshis(token.Decimals));
+            var amountSrc = request.AmountSrc.ToSatoshis(token.Decimals);
+            var amountCrsMin = request.AmountCrsMin.ToSatoshis(TokenConstants.Cirrus.Decimals);
+            var amountSrcMin = request.AmountSrcMin.ToSatoshis(token.Decimals);
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Token", new Address(token.Address)),
+                new TransactionQuoteRequestParameter("Token", token.Address),
                 new TransactionQuoteRequestParameter("SRC Amount", amountSrc),
-                new TransactionQuoteRequestParameter("Minimum CRS Amount", amountCrsMin),
+                new TransactionQuoteRequestParameter("Minimum CRS Amount", (ulong)amountCrsMin),
                 new TransactionQuoteRequestParameter("Minimum SRC Amount", amountSrcMin),
                 new TransactionQuoteRequestParameter("Recipient", request.Recipient),
                 new TransactionQuoteRequestParameter("Deadline", request.Deadline)

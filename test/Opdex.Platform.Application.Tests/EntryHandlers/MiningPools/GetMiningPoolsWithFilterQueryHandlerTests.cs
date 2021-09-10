@@ -10,6 +10,7 @@ using Opdex.Platform.Application.EntryHandlers.MiningPools;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningPools;
@@ -64,9 +65,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             var miningPools = new MiningPool[]
             {
-                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "5000000", "1000", 500000, 500, 505)
+                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPools);
 
@@ -86,9 +87,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             var miningPools = new MiningPool[]
             {
-                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "5000000", "1000", 500000, 500, 505)
+                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPools);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<MiningPool>())).ReturnsAsync(new MiningPoolDto());
@@ -109,9 +110,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             var miningPools = new MiningPool[]
             {
-                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "5000000", "1000", 500000, 500, 505)
+                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPools);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<MiningPool>())).ReturnsAsync(new MiningPoolDto());
@@ -133,9 +134,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             var miningPools = new MiningPool[]
             {
-                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "5000000", "1000", 500000, 500, 505)
+                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPools);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<MiningPool>())).ReturnsAsync(new MiningPoolDto());
@@ -157,9 +158,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             var miningPools = new MiningPool[]
             {
-                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "5000000", "1000", 500000, 500, 505)
+                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPools);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<MiningPool>())).ReturnsAsync(new MiningPoolDto());
@@ -181,9 +182,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             var miningPools = new MiningPool[]
             {
-                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "5000000", "1000", 500000, 500, 505)
+                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPools);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<MiningPool>())).ReturnsAsync(new MiningPoolDto());
@@ -205,9 +206,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             var miningPools = new MiningPool[]
             {
-                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "5000000", "1000", 500000, 500, 505)
+                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(15, 5, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPools);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<MiningPool>())).ReturnsAsync(new MiningPoolDto());
@@ -229,8 +230,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             var miningPools = new MiningPool[]
             {
-                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", "5000000", "1000", 500000, 500, 505)
+                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPools);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<MiningPool>())).ReturnsAsync(new MiningPoolDto());
@@ -252,8 +253,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
             var miningPools = new MiningPool[]
             {
-                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "5000000", "1000", 500000, 500, 505),
-                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", "5000000", "1000", 500000, 500, 505)
+                new MiningPool(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505),
+                new MiningPool(10, 5, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", UInt256.Parse("5000000"), UInt256.Parse("1000"), 500000, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPools);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<MiningPool>())).ReturnsAsync(new MiningPoolDto());

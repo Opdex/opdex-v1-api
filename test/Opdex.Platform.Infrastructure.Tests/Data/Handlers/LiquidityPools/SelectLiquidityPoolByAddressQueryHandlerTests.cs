@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
@@ -29,7 +30,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
         [Fact]
         public async Task SelectLiquidityPoolByAddress_Success()
         {
-            const string address = "SomeAddress";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
             var expectedEntity = new LiquidityPoolEntity
             {
@@ -37,7 +38,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
                 SrcTokenId = 1235,
                 LpTokenId = 8765,
                 MarketId = 1,
-                Address = "SomeAddress",
+                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
                 CreatedBlock = 1,
                 ModifiedBlock = 1
             };
@@ -61,7 +62,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
         [Fact]
         public void SelectLiquidityPoolByAddress_Throws_NotFoundException()
         {
-            const string address = "SomeAddress";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
             var command = new SelectLiquidityPoolByAddressQuery(address);
 
@@ -77,7 +78,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
         [Fact]
         public async Task SelectLiquidityPoolByAddress_ReturnsNull()
         {
-            const string address = "SomeAddress";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             const bool findOrThrow = false;
 
             var command = new SelectLiquidityPoolByAddressQuery(address, findOrThrow);

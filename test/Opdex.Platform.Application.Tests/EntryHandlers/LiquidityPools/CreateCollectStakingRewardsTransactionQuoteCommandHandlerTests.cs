@@ -36,13 +36,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             _handler = new CreateCollectStakingRewardsTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateCollectStakingRewardsTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException(string liquidityPool)
+        [Fact]
+        public void CreateCollectStakingRewardsTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException()
         {
             // Arrange
+            Address liquidityPool = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             const bool liquidate = true;
 
@@ -82,7 +80,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
             const bool liquidate = true;
 
             var command = new CreateCollectStakingRewardsTransactionQuoteCommand(liquidityPool, walletAddress, liquidate);
@@ -120,7 +118,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
             const bool liquidate = true;
 
             var command = new CreateCollectStakingRewardsTransactionQuoteCommand(liquidityPool, walletAddress, liquidate);

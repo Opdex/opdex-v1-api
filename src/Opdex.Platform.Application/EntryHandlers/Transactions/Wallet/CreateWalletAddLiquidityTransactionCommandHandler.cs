@@ -7,9 +7,9 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 {
@@ -25,7 +25,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 
         public async Task<string> Handle(CreateWalletAddLiquidityTransactionCommand request, CancellationToken cancellationToken)
         {
-            if (!decimal.TryParse(request.AmountCrs, out var amountCrsDecimal))
+            if (request.AmountCrs == FixedDecimal.Zero)
             {
                 throw new Exception("Cannot add liquidity with 0 CRS");
             }
@@ -34,13 +34,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId), cancellationToken);
             var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(pool.MarketId, findOrThrow: true), cancellationToken);
 
-            var amountCrsMin = Math.Round(amountCrsDecimal * request.Tolerance, 8).ToSatoshis(TokenConstants.Cirrus.Decimals);
+            var amountCrsMin = FixedDecimal.Parse(Math.Round(request.AmountCrs * request.Tolerance, TokenConstants.Cirrus.Decimals).ToString())
+                                           .ToSatoshis(TokenConstants.Cirrus.Decimals);
 
             var amountSrc = request.AmountSrc.ToSatoshis(srcToken.Decimals);
             var amountSrcMin = amountSrc.ToleranceAsSatoshis(request.Tolerance);
 
             var command = new MakeWalletAddLiquidityTransactionCommand(request.WalletAddress, srcToken.Address, request.AmountCrs, amountSrc,
-                                                                       amountCrsMin.ToString(), amountSrcMin, request.Recipient, router.Address);
+                                                                       (ulong)amountCrsMin, amountSrcMin, request.Recipient, router.Address);
 
             return await _mediator.Send(command, cancellationToken);
         }

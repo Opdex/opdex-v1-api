@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,12 +17,12 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// The address of the liquidity pool to stop staking in.
         /// </summary>
         [Obsolete] // Delete property when removing WalletBroadcast endpoints and flows.
-        public string LiquidityPool { get; set; }
+        public Address LiquidityPool { get; set; }
 
         /// <summary>
         /// The amount of tokens to stop staking.
         /// </summary>
         [Required]
-        public string Amount { get; set; }
+        public FixedDecimal Amount { get; set; }
     }
 }

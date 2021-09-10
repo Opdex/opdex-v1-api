@@ -1,29 +1,26 @@
 using MediatR;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
 {
-    public class RetrieveLiquidityPoolAddLiquidityQuoteQuery : IRequest<string>
+    public class RetrieveLiquidityPoolAddLiquidityQuoteQuery : IRequest<UInt256>
     {
-        public RetrieveLiquidityPoolAddLiquidityQuoteQuery(string amountIn, string tokenIn, string pool, string router)
+        public RetrieveLiquidityPoolAddLiquidityQuoteQuery(UInt256 amountIn, string tokenIn, Address pool, Address router)
         {
-            if (!amountIn.HasValue())
-            {
-                throw new ArgumentNullException(nameof(amountIn));
-            }
-
-            if (!tokenIn.HasValue())
+            if (tokenIn == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(tokenIn));
             }
 
-            if (!pool.HasValue())
+            if (pool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(pool));
             }
 
-            if (!router.HasValue())
+            if (router == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(router));
             }
@@ -34,9 +31,9 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
             Router = router;
         }
 
-        public string AmountIn { get; }
+        public UInt256 AmountIn { get; }
         public string TokenIn { get; }
-        public string Pool { get; }
-        public string Router { get; }
+        public Address Pool { get; }
+        public Address Router { get; }
     }
 }

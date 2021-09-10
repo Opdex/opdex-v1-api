@@ -8,6 +8,7 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace Opdex.Platform.Application.EntryHandlers.MiningPools
         : BaseTransactionQuoteCommandHandler<CreateStopMiningTransactionQuoteCommand>
     {
         private const string MethodName = MiningPoolConstants.Methods.StopMining;
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
 
         public CreateStopMiningTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                               IMediator mediator, OpdexConfiguration config)
@@ -31,9 +32,9 @@ namespace Opdex.Platform.Application.EntryHandlers.MiningPools
         public override async Task<TransactionQuoteDto> Handle(CreateStopMiningTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
             // ensure the mining pool exists, else throw 404 not found
-            _ = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.MiningPool.ToString()), cancellationToken);
+            _ = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.MiningPool), cancellationToken);
 
-            var amount = UInt256.Parse(request.Amount.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals));
+            var amount = request.Amount.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals);
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {

@@ -8,6 +8,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 {
@@ -26,7 +27,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             var isCrsIn = request.TokenIn == TokenConstants.Cirrus.Address;
             string[] parameters;
             string methodName;
-            var crsToSend = "0";
+            var crsToSend = FixedDecimal.Zero;
 
             if (isCrsOut)
             {
@@ -64,7 +65,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             else if (isCrsIn)
             {
                 methodName = request.TokenInExactAmount ? "SwapExactCrsForSrc" : "SwapCrsForExactSrc";
-                crsToSend = request.TokenInAmount.InsertDecimal(TokenConstants.Cirrus.Decimals);
+                crsToSend = request.TokenInAmount.ToDecimal(TokenConstants.Cirrus.Decimals);
 
                 if (methodName == "SwapExactCrsForSrc")
                 {

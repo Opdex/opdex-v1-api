@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Text;
 
@@ -7,13 +8,13 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 {
     public class VaultsCursor : Cursor<long>
     {
-        public VaultsCursor(string lockedToken, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
+        public VaultsCursor(Address lockedToken, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
             LockedToken = lockedToken;
         }
 
-        public string LockedToken { get; }
+        public Address LockedToken { get; }
 
         /// <inheritdoc />
         public override string ToString()

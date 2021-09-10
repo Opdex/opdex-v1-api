@@ -35,13 +35,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             _handler = new CreateSetPendingVaultOwnershipTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateSetPendingVaultOwnershipTransactionQuoteCommand_InvalidVault_ThrowArgumentException(string vault)
+        [Fact]
+        public void CreateSetPendingVaultOwnershipTransactionQuoteCommand_InvalidVault_ThrowArgumentException()
         {
             // Arrange
+            Address vault = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address newOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
 
@@ -52,15 +50,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Vault address must be provided.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateSetPendingVaultOwnershipTransactionQuoteCommand_InvalidNewOwner_ThrowArgumentException(string newOwner)
+        [Fact]
+        public void CreateSetPendingVaultOwnershipTransactionQuoteCommand_InvalidNewOwner_ThrowArgumentException()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address vault = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
+            Address newOwner = Address.Empty;
 
             // Act
             void Act() => new CreateSetPendingVaultOwnershipTransactionQuoteCommand(vault, walletAddress, newOwner);
@@ -76,7 +72,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address newOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateSetPendingVaultOwnershipTransactionQuoteCommand(vault, walletAddress, newOwner);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -113,7 +109,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address newOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
             Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateSetPendingVaultOwnershipTransactionQuoteCommand(vault, walletAddress, newOwner);
             var cancellationToken = new CancellationTokenSource().Token;

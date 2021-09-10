@@ -1,11 +1,13 @@
 using MediatR;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
 {
-    public class RetrieveLiquidityPoolSwapQuoteQuery : IRequest<string>
+    public class RetrieveLiquidityPoolSwapQuoteQuery : IRequest<UInt256>
     {
-        public RetrieveLiquidityPoolSwapQuoteQuery(Token tokenIn, Token tokenOut, string tokenInAmount, string tokenOutAmount, string market, string router)
+        public RetrieveLiquidityPoolSwapQuoteQuery(Token tokenIn, Token tokenOut, UInt256 tokenInAmount, UInt256 tokenOutAmount, Address market, Address router)
         {
             TokenIn = tokenIn;
             TokenOut = tokenOut;
@@ -17,9 +19,9 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
 
         public Token TokenIn { get; }
         public Token TokenOut { get; }
-        public string TokenInAmount { get; }
-        public string TokenOutAmount { get; }
-        public string Market { get; }
-        public string Router { get; }
+        public UInt256 TokenInAmount { get; }
+        public UInt256 TokenOutAmount { get; }
+        public Address Market { get; }
+        public Address Router { get; }
     }
 }

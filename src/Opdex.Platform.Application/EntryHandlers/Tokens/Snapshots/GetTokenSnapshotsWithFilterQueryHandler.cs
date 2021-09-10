@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
             var start = now.StartDateOfDuration(request.TimeSpan).ToStartOf(request.SnapshotType);
             var end = DateTime.UtcNow.ToEndOf(request.SnapshotType);
 
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenAddress), cancellationToken);
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenAddress.ToString()), cancellationToken);
 
             var market = token.Address == TokenConstants.Cirrus.Address
                     ? null

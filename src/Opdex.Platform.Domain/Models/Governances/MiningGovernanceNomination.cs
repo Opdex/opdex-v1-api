@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 using System;
 
@@ -6,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.Governances
 {
     public class MiningGovernanceNomination : BlockAudit
     {
-        public MiningGovernanceNomination(long liquidityPoolId, long miningPoolId, bool isNominated, string weight, ulong createdBlock) : base(createdBlock)
+        public MiningGovernanceNomination(long liquidityPoolId, long miningPoolId, bool isNominated, UInt256 weight, ulong createdBlock) : base(createdBlock)
         {
             if (liquidityPoolId < 1)
             {
@@ -18,18 +19,13 @@ namespace Opdex.Platform.Domain.Models.Governances
                 throw new ArgumentOutOfRangeException(nameof(miningPoolId), "Mining pool id must be greater than 0.");
             }
 
-            if (!weight.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(weight), "Weight must only contain numeric digits.");
-            }
-
             LiquidityPoolId = liquidityPoolId;
             MiningPoolId = miningPoolId;
             IsNominated = isNominated;
             Weight = weight;
         }
 
-        public MiningGovernanceNomination(long id, long liquidityPoolId, long miningPoolId, bool isNominated, string weight, ulong createdBlock, ulong modifiedBlock)
+        public MiningGovernanceNomination(long id, long liquidityPoolId, long miningPoolId, bool isNominated, UInt256 weight, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -43,7 +39,7 @@ namespace Opdex.Platform.Domain.Models.Governances
         public long LiquidityPoolId { get; }
         public long MiningPoolId { get; }
         public bool IsNominated { get; private set; }
-        public string Weight { get; private set; }
+        public UInt256 Weight { get; private set; }
 
         public void SetStatus(bool status, ulong block)
         {
@@ -51,13 +47,8 @@ namespace Opdex.Platform.Domain.Models.Governances
             SetModifiedBlock(block);
         }
 
-        public void SetWeight(string weight, ulong block)
+        public void SetWeight(UInt256 weight, ulong block)
         {
-            if (!weight.IsNumeric())
-            {
-                throw new ArgumentException("Nomination weight must be a numeric value.", nameof(weight));
-            }
-
             Weight = weight;
             SetModifiedBlock(block);
         }

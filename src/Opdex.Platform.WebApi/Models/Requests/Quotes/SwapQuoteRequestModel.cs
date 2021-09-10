@@ -1,3 +1,5 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.WebApi.Models.Requests.Quotes
 {
     public class SwapQuoteRequestModel
@@ -15,11 +17,11 @@ namespace Opdex.Platform.WebApi.Models.Requests.Quotes
         /// <summary>
         /// The amount of tokens to swap
         /// </summary>
-        public string TokenInAmount { get; set; }
+        public FixedDecimal TokenInAmount { get; set; }
 
         /// <summary>
         /// The amount of tokens to receive
         /// </summary>
-        public string TokenOutAmount { get; set; }
+        public FixedDecimal TokenOutAmount { get; set; }
     }
 }

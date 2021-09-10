@@ -37,15 +37,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             _handler = new CreateStartMiningTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateStartMiningTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentException(string miningPool)
+        [Fact]
+        public void CreateStartMiningTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentException()
         {
             // Arrange
+            Address miningPool = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string amount = "1.00";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
 
             // Act
             void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
@@ -54,32 +52,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Mining pool address must be set.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        [InlineData("123")]
-        [InlineData("asdf")]
-        public void CreateStartMiningTransactionQuoteCommand_InvalidAmount_ThrowArgumentException(string amount)
-        {
-            // Arrange
-            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-
-            // Act
-            void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount must be a valid decimal number.");
-        }
-
         [Fact]
         public async Task CreateStartMiningTransactionQuoteCommand_Sends_RetrieveMiningPoolByAddressQuery()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.00";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
 
             var command = new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -102,8 +81,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.00";
-            const string crsToSend = "0";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -137,8 +116,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.00";
-            const string crsToSend = "0";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
             var cancellationToken = new CancellationTokenSource().Token;

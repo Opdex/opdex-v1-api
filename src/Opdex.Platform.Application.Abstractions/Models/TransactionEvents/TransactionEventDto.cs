@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents
 {
@@ -6,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents
     {
         public long Id { get; set; }
         public long TransactionId { get; set; }
-        public string Contract { get; set; }
+        public Address Contract { get; set; }
         public int SortOrder { get; set; }
         public abstract TransactionEventType EventType { get; }
     }

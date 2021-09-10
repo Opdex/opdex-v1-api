@@ -25,7 +25,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 
         public async Task<string> Handle(CreateWalletApproveAllowanceTransactionCommand request, CancellationToken cancellationToken)
         {
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: false), cancellationToken);
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token.ToString(), findOrThrow: false), cancellationToken);
 
             var amount = request.Amount.ToSatoshis(token.Decimals);
 

@@ -3,9 +3,7 @@ using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
-using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
@@ -44,17 +42,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             _handler = new CreateRemoveLiquidityTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException(string liquidityPool)
+        [Fact]
+        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException()
         {
             // Arrange
+            Address liquidityPool = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string amountLpt = "1.00";
-            const string amountCrsMin = "0.9";
-            const string amountSrcMin = "1.8";
+            FixedDecimal amountLpt = FixedDecimal.Parse("1.00");
+            FixedDecimal amountCrsMin = FixedDecimal.Parse("0.9");
+            FixedDecimal amountSrcMin = FixedDecimal.Parse("1.8");
 
             // Act
             void Act() => new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
@@ -64,88 +60,20 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        [InlineData("123")]
-        [InlineData("asdf")]
-        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidAmountLpt_ThrowArgumentException(string amountLpt)
+        [Fact]
+        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidRecipient_ThrowArgumentException()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amountCrsMin = "0.9";
-            const string amountSrcMin = "1.8";
+            Address recipient = Address.Empty;
+            FixedDecimal amountLpt = FixedDecimal.Parse("1.00");
+            FixedDecimal amountCrsMin = FixedDecimal.Parse("0.9");
+            FixedDecimal amountSrcMin = FixedDecimal.Parse("1.8");
 
             // Act
             void Act() => new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                           amountSrcMin, walletAddress, 0ul);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount LPT burned must be formatted as a decimal number.");
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        [InlineData("123")]
-        [InlineData("asdf")]
-        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidAmountCrsMin_ThrowArgumentException(string amountCrsMin)
-        {
-            // Arrange
-            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amountLpt = "1.00";
-            const string amountSrcMin = "1.8";
-
-            // Act
-            void Act() => new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                        amountSrcMin, walletAddress, 0ul);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount CRS minimum must be formatted as a decimal number.");
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        [InlineData("123")]
-        [InlineData("asdf")]
-        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidAmountSrcMin_ThrowArgumentException(string amountSrcMin)
-        {
-            // Arrange
-            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amountLpt = "1.00";
-            const string amountCrsMin = "0.9";
-
-            // Act
-            void Act() => new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                        amountSrcMin, walletAddress, 0ul);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount SRC minimum must be formatted as a decimal number.");
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateRemoveLiquidityTransactionQuoteCommand_InvalidRecipient_ThrowArgumentException(string recipient)
-        {
-            // Arrange
-            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amountLpt = "1.00";
-            const string amountCrsMin = "0.9";
-            const string amountSrcMin = "1.8";
-
-            // Act
-            void Act() => new CreateRemoveLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountLpt, amountCrsMin,
-                                                                        amountSrcMin, recipient, 0ul);
+                                                                           amountSrcMin, recipient, 0ul);
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Recipient must be provided.");
@@ -157,13 +85,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amountLpt = "1.00";
-            const string amountCrsMin = "0.9";
-            const string amountSrcMin = "1.8";
+            FixedDecimal amountLpt = FixedDecimal.Parse("1.00");
+            FixedDecimal amountCrsMin = FixedDecimal.Parse("0.9");
+            FixedDecimal amountSrcMin = FixedDecimal.Parse("1.8");
             const ulong deadline = 1ul;
 
             var pool = new LiquidityPool(1, liquidityPool.ToString(), 2, 3, 4, 6, 7);
-            var token = new Token(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, "Bitcoin", "BTC", 8, 100_000_000, "10000000", 2, 3);
+            var token = new Token(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, "Bitcoin", "BTC", 8, 100_000_000, 10000000, 2, 3);
             var marketRouter = new MarketRouter(1, "PMsinMXrr2uNEL5AQD1LpiYTRFiRTA8uZU", 2, true, 3, 4);
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -181,7 +109,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
 
             var expectedParameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Token", new Address(token.Address)),
+                new TransactionQuoteRequestParameter("Token", token.Address),
                 new TransactionQuoteRequestParameter("OLPT Amount", UInt256.Parse("100000000")),
                 new TransactionQuoteRequestParameter("Minimum CRS Amount", 90000000ul),
                 new TransactionQuoteRequestParameter("Minimum SRC Amount", UInt256.Parse("180000000")),
@@ -198,8 +126,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<MakeTransactionQuoteCommand>(c => c.QuoteRequest.Sender == walletAddress
-                                                                                          && c.QuoteRequest.To == new Address(marketRouter.Address)
-                                                                                          && c.QuoteRequest.Amount == "0"
+                                                                                          && c.QuoteRequest.To == marketRouter.Address
+                                                                                          && c.QuoteRequest.Amount == FixedDecimal.Zero
                                                                                           && c.QuoteRequest.Method == MethodName
                                                                                           && c.QuoteRequest.Callback != null
                                                                                           && c.QuoteRequest.Parameters
@@ -215,13 +143,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amountLpt = "1.00";
-            const string amountCrsMin = "0.9";
-            const string amountSrcMin = "1.8";
+            FixedDecimal amountLpt = FixedDecimal.Parse("1.00");
+            FixedDecimal amountCrsMin = FixedDecimal.Parse("0.9");
+            FixedDecimal amountSrcMin = FixedDecimal.Parse("1.8");
             const ulong deadline = 5400ul;
 
             var pool = new LiquidityPool(1, liquidityPool.ToString(), 2, 3, 4, 6, 7);
-            var token = new Token(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, "Bitcoin", "BTC", 8, 100_000_000, "10000000", 2, 3);
+            var token = new Token(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, "Bitcoin", "BTC", 8, 100_000_000, 10000000, 2, 3);
             var marketRouter = new MarketRouter(1, "PMsinMXrr2uNEL5AQD1LpiYTRFiRTA8uZU", 2, true, 3, 4);
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -239,7 +167,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
 
             var expectedParameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Token", new Address(token.Address)),
+                new TransactionQuoteRequestParameter("Token", token.Address),
                 new TransactionQuoteRequestParameter("OLPT Amount", UInt256.Parse("100000000")),
                 new TransactionQuoteRequestParameter("Minimum CRS Amount", 90000000ul),
                 new TransactionQuoteRequestParameter("Minimum SRC Amount", UInt256.Parse("180000000")),
@@ -247,7 +175,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
                 new TransactionQuoteRequestParameter("Deadline", deadline)
             };
 
-            var expectedRequest = new TransactionQuoteRequest(walletAddress, marketRouter.Address, "0", MethodName, _config.WalletTransactionCallback, expectedParameters);
+            var expectedRequest = new TransactionQuoteRequest(walletAddress, marketRouter.Address, FixedDecimal.Zero, MethodName, _config.WalletTransactionCallback, expectedParameters);
 
             var expectedQuote = new TransactionQuote("1000", null, 23800, null, expectedRequest);
 

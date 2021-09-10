@@ -1,6 +1,7 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.LiquidityQuotes;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.LiquidityPools
 {
-    public class RetrieveLiquidityPoolAddLiquidityQuoteQueryHandler : IRequestHandler<RetrieveLiquidityPoolAddLiquidityQuoteQuery, string>
+    public class RetrieveLiquidityPoolAddLiquidityQuoteQueryHandler : IRequestHandler<RetrieveLiquidityPoolAddLiquidityQuoteQuery, UInt256>
     {
         private readonly IMediator _mediator;
 
@@ -18,7 +19,7 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<string> Handle(RetrieveLiquidityPoolAddLiquidityQuoteQuery request, CancellationToken cancellationToken)
+        public async Task<UInt256> Handle(RetrieveLiquidityPoolAddLiquidityQuoteQuery request, CancellationToken cancellationToken)
         {
             var reserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(request.Pool), cancellationToken);
 

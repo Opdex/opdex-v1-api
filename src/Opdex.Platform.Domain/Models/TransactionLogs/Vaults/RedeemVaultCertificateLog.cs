@@ -1,26 +1,23 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
 {
     public class RedeemVaultCertificateLog : TransactionLog
     {
-        public RedeemVaultCertificateLog(dynamic log, string address, int sortOrder)
+        public RedeemVaultCertificateLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.RedeemVaultCertificateLog, address, sortOrder)
         {
-            string owner = log?.owner;
-            string amount = log?.amount;
+            Address owner = log?.owner;
+            UInt256 amount = UInt256.Parse(log?.amount);
             ulong vestedBlock = log?.vestedBlock;
 
-            if (!owner.HasValue())
+            if (owner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(owner), "Owner must be set.");
-            }
-
-            if (!amount.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
             }
 
             if (vestedBlock < 1)
@@ -33,7 +30,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
             VestedBlock = vestedBlock;
         }
 
-        public RedeemVaultCertificateLog(long id, long transactionId, string address, int sortOrder, string details)
+        public RedeemVaultCertificateLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.RedeemVaultCertificateLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -42,14 +39,14 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
             VestedBlock = logDetails.VestedBlock;
         }
 
-        public string Owner { get; }
-        public string Amount { get; }
+        public Address Owner { get; }
+        public UInt256 Amount { get; }
         public ulong VestedBlock { get; }
 
         private struct LogDetails
         {
-            public string Owner { get; set; }
-            public string Amount { get; set; }
+            public Address Owner { get; set; }
+            public UInt256 Amount { get; set; }
             public ulong VestedBlock { get; set; }
         }
 

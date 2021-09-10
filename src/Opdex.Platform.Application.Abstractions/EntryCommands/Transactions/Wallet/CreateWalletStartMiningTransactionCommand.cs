@@ -1,18 +1,13 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet
 {
     public class CreateWalletStartMiningTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletStartMiningTransactionCommand(string walletAddress, string amount, string liquidityPool) : base(walletAddress)
+        public CreateWalletStartMiningTransactionCommand(Address walletAddress, FixedDecimal amount, Address liquidityPool) : base(walletAddress)
         {
-            if (!amount.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Amount must be a valid decimal number.", nameof(amount));
-            }
-
-            if (!liquidityPool.HasValue())
+            if (liquidityPool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(liquidityPool));
             }
@@ -21,7 +16,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             LiquidityPool = liquidityPool;
         }
 
-        public string Amount { get; }
-        public string LiquidityPool { get; }
+        public FixedDecimal Amount { get; }
+        public Address LiquidityPool { get; }
     }
 }

@@ -1,8 +1,8 @@
 using System;
 using FluentAssertions;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.Markets;
 using Xunit;
@@ -18,12 +18,12 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             const SnapshotType snapshotType = SnapshotType.Daily;
             var date = new DateTime(2021, 6, 22, 12, 23, 32);
 
-            var marketSnapshot = new MarketSnapshot(marketId,snapshotType, date);
+            var marketSnapshot = new MarketSnapshot(marketId, snapshotType, date);
 
             marketSnapshot.MarketId.Should().Be(marketId);
             marketSnapshot.Liquidity.Should().Be(0.00m);
             marketSnapshot.Volume.Should().Be(0.00m);
-            marketSnapshot.Staking.Weight.Should().Be("0");
+            marketSnapshot.Staking.Weight.Should().Be(UInt256.Zero);
             marketSnapshot.Staking.Usd.Should().Be(0.00m);
             marketSnapshot.Rewards.ProviderUsd.Should().Be(0.00m);
             marketSnapshot.Rewards.MarketUsd.Should().Be(0.00m);
@@ -39,7 +39,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             const long marketId = 2;
             const decimal liquidity = 234543.32m;
             const decimal volume = 345456.23m;
-            var staking = new StakingSnapshot("999", 5.43m);
+            var staking = new StakingSnapshot(999, 5.43m);
             var rewards = new RewardsSnapshot(1.42m, 5.43m);
             const SnapshotType snapshotType = SnapshotType.Daily;
             var startDate = DateTime.UtcNow.StartOfDay();

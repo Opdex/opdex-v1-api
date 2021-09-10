@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 }
 
                 // Get deployer
-                var deployer = await _mediator.Send( new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 // Check if market exists, skip if so
                 var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Market, findOrThrow: false));
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 }
 
                 // Get potential market staking token
-                var stakingTokenQuery = new RetrieveTokenByAddressQuery(request.Log.StakingToken, findOrThrow: false);
+                var stakingTokenQuery = new RetrieveTokenByAddressQuery(request.Log.StakingToken.ToString(), findOrThrow: false);
                 var stakingToken = await _mediator.Send(stakingTokenQuery, CancellationToken.None);
                 var stakingTokenId = stakingToken?.Id ?? 0;
 

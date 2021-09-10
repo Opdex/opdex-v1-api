@@ -1,42 +1,29 @@
 using MediatR;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.SwapQuotes
 {
-    public class CallCirrusGetAmountOutStandardQuoteQuery : IRequest<string>
+    public class CallCirrusGetAmountOutStandardQuoteQuery : IRequest<UInt256>
     {
-        public CallCirrusGetAmountOutStandardQuoteQuery(string market, string amountIn, string  reserveIn, string reserveOut)
+        public CallCirrusGetAmountOutStandardQuoteQuery(Address router, UInt256 amountIn, UInt256 reserveIn, UInt256 reserveOut)
         {
-            if (!market.HasValue())
+            if (router == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(market));
+                throw new ArgumentNullException(nameof(router));
             }
 
-            if (!amountIn.HasValue())
-            {
-                throw new ArgumentNullException(nameof(amountIn));
-            }
-
-            if (!reserveIn.HasValue())
-            {
-                throw new ArgumentNullException(nameof(reserveIn));
-            }
-
-            if (!reserveOut.HasValue())
-            {
-                throw new ArgumentNullException(nameof(reserveOut));
-            }
-
-            Market = market;
+            Router = router;
             AmountIn = amountIn;
             ReserveIn = reserveIn;
             ReserveOut = reserveOut;
         }
 
-        public string Market { get; }
-        public string AmountIn { get; }
-        public string ReserveIn { get; }
-        public string ReserveOut { get; }
+        public Address Router { get; }
+        public UInt256 AmountIn { get; }
+        public UInt256 ReserveIn { get; }
+        public UInt256 ReserveOut { get; }
     }
 }

@@ -7,7 +7,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 
@@ -26,7 +25,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
         public async Task<string> Handle(CreateWalletRemoveLiquidityTransactionCommand request, CancellationToken cancellationToken)
         {
             var liquidity = request.Liquidity.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals);
-            var amountCrsMin = request.AmountCrsMin.ToSatoshis(TokenConstants.Cirrus.Decimals);
+            var amountCrsMin = (ulong)request.AmountCrsMin.ToSatoshis(TokenConstants.Cirrus.Decimals);
 
             var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool), cancellationToken);
             var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId), cancellationToken);

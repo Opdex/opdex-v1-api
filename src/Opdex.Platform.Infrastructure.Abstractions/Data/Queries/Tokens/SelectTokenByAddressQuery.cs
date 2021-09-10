@@ -1,5 +1,4 @@
 using System;
-using MediatR;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Tokens;
@@ -18,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
 
             Address = address;
         }
-        
+
         public string Address { get; }
     }
 }

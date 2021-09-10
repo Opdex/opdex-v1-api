@@ -1,28 +1,23 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletStopMiningTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletStopMiningTransactionCommand(string walletAddress,
-            string miningPool, string amount) : base(walletAddress)
+        public MakeWalletStopMiningTransactionCommand(Address walletAddress, Address miningPool, UInt256 amount) : base(walletAddress)
         {
-            if (!miningPool.HasValue())
+            if (miningPool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(miningPool));
-            }
-
-            if (!amount.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(amount));
             }
 
             MiningPool = miningPool;
             Amount = amount;
         }
 
-        public string MiningPool { get; }
-        public string Amount { get; }
+        public Address MiningPool { get; }
+        public UInt256 Amount { get; }
     }
 }

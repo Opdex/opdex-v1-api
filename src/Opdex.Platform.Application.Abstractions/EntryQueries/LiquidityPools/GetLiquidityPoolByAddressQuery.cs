@@ -1,15 +1,16 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
 {
     public class GetLiquidityPoolByAddressQuery : IRequest<LiquidityPoolDto>
     {
-        public GetLiquidityPoolByAddressQuery(string address)
+        public GetLiquidityPoolByAddressQuery(Address address)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address));
             }
@@ -17,6 +18,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
             Address = address;
         }
 
-        public string Address { get; }
+        public Address Address { get; }
     }
 }

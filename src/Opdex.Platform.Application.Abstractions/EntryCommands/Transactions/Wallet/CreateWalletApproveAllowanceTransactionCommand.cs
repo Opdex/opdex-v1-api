@@ -1,23 +1,18 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet
 {
     public class CreateWalletApproveAllowanceTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletApproveAllowanceTransactionCommand(string walletAddress, string token, string amount, string spender) : base(walletAddress)
+        public CreateWalletApproveAllowanceTransactionCommand(Address walletAddress, Address token, FixedDecimal amount, Address spender) : base(walletAddress)
         {
-            if (!token.HasValue())
+            if (token == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            if (!amount.IsValidDecimalNumber())
-            {
-                throw new ArgumentNullException(nameof(amount));
-            }
-
-            if (!spender.HasValue())
+            if (spender == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(spender));
             }
@@ -27,8 +22,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             Spender = spender;
         }
 
-        public string Token { get; }
-        public string Amount { get; }
-        public string Spender { get; }
+        public Address Token { get; }
+        public FixedDecimal Amount { get; }
+        public Address Spender { get; }
     }
 }

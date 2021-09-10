@@ -4,7 +4,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.Addresses
 {
     public class AddressAllowanceDto
     {
-        public string Allowance { get; set; }
+        public FixedDecimal Allowance { get; set; }
 
         public Address Spender { get; set; }
 

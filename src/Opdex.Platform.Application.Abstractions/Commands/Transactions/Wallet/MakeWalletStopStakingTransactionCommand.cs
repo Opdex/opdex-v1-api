@@ -1,21 +1,16 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletStopStakingTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletStopStakingTransactionCommand(string walletAddress,
-            string liquidityPool, string amount, bool liquidate) : base(walletAddress)
+        public MakeWalletStopStakingTransactionCommand(Address walletAddress, Address liquidityPool, UInt256 amount, bool liquidate) : base(walletAddress)
         {
-            if (!liquidityPool.HasValue())
+            if (liquidityPool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(liquidityPool));
-            }
-
-            if (!amount.IsNumeric())
-            {
-                throw new ArgumentNullException(nameof(amount));
             }
 
             LiquidityPool = liquidityPool;
@@ -23,8 +18,8 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             Amount = amount;
         }
 
-        public string LiquidityPool { get; }
+        public Address LiquidityPool { get; }
         public bool Liquidate { get; }
-        public string Amount { get; }
+        public UInt256 Amount { get; }
     }
 }

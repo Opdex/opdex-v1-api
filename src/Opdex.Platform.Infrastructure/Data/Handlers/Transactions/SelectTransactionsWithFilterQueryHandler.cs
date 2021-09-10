@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
@@ -101,7 +102,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                 whereFilter = $" WHERE t.{nameof(TransactionEntity.Id)} {sortOperator} @{nameof(SqlParams.TransactionId)}";
             }
 
-            if (request.Cursor.Wallet.HasValue())
+            if (request.Cursor.Wallet != Address.Empty)
             {
                 var filter = $"t.`{nameof(TransactionEntity.From)}` = @{nameof(SqlParams.Wallet)}";
                 whereFilter += whereFilter.HasValue() ? $" AND {filter}" : $" WHERE {filter}";
@@ -148,16 +149,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
         private sealed class SqlParams
         {
-            internal SqlParams(long transactionId, string wallet, IEnumerable<uint> logTypes, IEnumerable<string> contracts)
+            internal SqlParams(long transactionId, Address wallet, IEnumerable<uint> logTypes, IEnumerable<Address> contracts)
             {
                 TransactionId = transactionId;
                 Wallet = wallet;
                 LogTypes = logTypes;
-                Contracts = contracts;
+                Contracts = contracts.Select(contract => contract.ToString());
             }
 
             public long TransactionId { get; }
-            public string Wallet { get; }
+            public Address Wallet { get; }
             public IEnumerable<uint> LogTypes { get; }
             public IEnumerable<string> Contracts { get; }
         }

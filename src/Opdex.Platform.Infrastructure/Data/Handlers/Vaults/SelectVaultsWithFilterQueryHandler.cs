@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
@@ -72,7 +72,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
             var whereFilter = string.Empty;
             var tableJoins = string.Empty;
 
-            var filterOnLockedToken = request.Cursor.LockedToken.HasValue();
+            var filterOnLockedToken = request.Cursor.LockedToken != Address.Empty;
 
             if (filterOnLockedToken) tableJoins += $" JOIN token t ON t.{nameof(TokenEntity.Id)} = v.{nameof(VaultEntity.TokenId)}";
 
@@ -130,14 +130,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
         private sealed class SqlParams
         {
-            internal SqlParams(long vaultId, string lockedToken)
+            internal SqlParams(long vaultId, Address lockedToken)
             {
                 VaultId = vaultId;
                 LockedToken = lockedToken;
             }
 
             public long VaultId { get; }
-            public string LockedToken { get; }
+            public Address LockedToken { get; }
         }
     }
 }

@@ -1,23 +1,22 @@
 using System;
 using MediatR;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Tokens
 {
     public class RetrieveStakingTokenContractSummaryByAddressQuery : IRequest<StakingTokenContractSummary>
     {
-        public RetrieveStakingTokenContractSummaryByAddressQuery(string address)
+        public RetrieveStakingTokenContractSummaryByAddressQuery(Address address)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address));
             }
 
             Address = address;
         }
-        
-        public string Address { get; }
+
+        public Address Address { get; }
     }
 }

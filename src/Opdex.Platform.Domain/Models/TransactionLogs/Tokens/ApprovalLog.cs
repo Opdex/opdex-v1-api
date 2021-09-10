@@ -1,37 +1,29 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
 {
     public class ApprovalLog : TransactionLog
     {
-        public ApprovalLog(dynamic log, string address, int sortOrder)
+        public ApprovalLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.ApprovalLog, address, sortOrder)
         {
-            string owner = log?.owner;
-            string spender = log?.spender;
-            string amount = log?.amount;
-            string oldAmount = log?.oldAmount;
+            Address owner = log?.owner;
+            Address spender = log?.spender;
+            UInt256 amount = UInt256.Parse(log?.amount);
+            UInt256 oldAmount = UInt256.Parse(log?.oldAmount);
 
-            if (!owner.HasValue())
+            if (owner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
             }
 
-            if (!spender.HasValue())
+            if (spender == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(spender), "Spender address must be set.");
-            }
-
-            if (!amount.IsNumeric())
-            {
-                throw new ArgumentNullException(nameof(amount), "Amount must only contain numeric digits.");
-            }
-
-            if (!oldAmount.IsNumeric())
-            {
-                throw new ArgumentNullException(nameof(oldAmount), "Old amount must only contain numeric digits.");
             }
 
             Owner = owner;
@@ -40,7 +32,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             OldAmount = oldAmount;
         }
 
-        public ApprovalLog(long id, long transactionId, string address, int sortOrder, string details)
+        public ApprovalLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.ApprovalLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -50,17 +42,17 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             OldAmount = logDetails.OldAmount;
         }
 
-        public string Owner { get; }
-        public string Spender { get; }
-        public string Amount { get; }
-        public string OldAmount { get; }
+        public Address Owner { get; }
+        public Address Spender { get; }
+        public UInt256 Amount { get; }
+        public UInt256 OldAmount { get; }
 
         private struct LogDetails
         {
-            public string Owner { get; set; }
-            public string Spender { get; set; }
-            public string Amount { get; set; }
-            public string OldAmount { get; set; }
+            public Address Owner { get; set; }
+            public Address Spender { get; set; }
+            public UInt256 Amount { get; set; }
+            public UInt256 OldAmount { get; set; }
         }
 
         private LogDetails DeserializeLogDetails(string details)

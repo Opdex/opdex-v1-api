@@ -5,6 +5,7 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
@@ -15,7 +16,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
     {
         private readonly IMediator _mediator;
         private const string MethodName = "CollectStakingRewards";
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
 
         public MakeWalletCollectStakingRewardsTransactionCommandHandler(IMediator mediator)
         {
@@ -30,7 +31,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             };
 
             var callDto = new SmartContractCallRequestDto(request.LiquidityPool, request.WalletName, request.WalletAddress,
-                request.WalletPassword, CrsToSend, MethodName, parameters);
+                                                          request.WalletPassword, CrsToSend, MethodName, parameters);
 
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }

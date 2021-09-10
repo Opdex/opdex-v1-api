@@ -2,13 +2,15 @@ using System.Collections.Generic;
 using MediatR;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
+using Opdex.Platform.Common.Models;
+using System.Linq;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
 {
     public class SelectTokensWithFilterQuery : IRequest<IEnumerable<Token>>
     {
         public SelectTokensWithFilterQuery(long marketId, bool? lpToken = null, uint skip = 0, uint take = 0, string sortBy = null,
-                                           string orderBy = null, IEnumerable<string> tokens = null)
+                                           string orderBy = null, IEnumerable<Address> tokens = null)
         {
             if (marketId < 1)
             {
@@ -21,7 +23,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
             Take = take;
             SortBy = sortBy;
             OrderBy = orderBy;
-            Tokens = tokens;
+            Tokens = tokens ?? Enumerable.Empty<Address>();
         }
 
         public long MarketId { get; }
@@ -30,6 +32,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
         public uint Take { get; }
         public string SortBy { get; }
         public string OrderBy { get; }
-        public IEnumerable<string> Tokens { get; }
+        public IEnumerable<Address> Tokens { get; }
     }
 }

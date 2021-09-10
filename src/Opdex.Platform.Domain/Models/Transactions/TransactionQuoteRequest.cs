@@ -8,7 +8,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
 {
     public class TransactionQuoteRequest
     {
-        public TransactionQuoteRequest(Address sender, Address to, string amount, string method, string callback,
+        public TransactionQuoteRequest(Address sender, Address to, FixedDecimal amount, string method, string callback,
                                        IReadOnlyCollection<TransactionQuoteRequestParameter> parameters = null)
         {
             if (sender == Address.Empty)
@@ -19,11 +19,6 @@ namespace Opdex.Platform.Domain.Models.Transactions
             if (to == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(to), $"{nameof(to)} must not be null or empty.");
-            }
-
-            if (!amount.IsValidDecimalNumber())
-            {
-                throw new ArgumentException($"{nameof(amount)} must be a valid decimal number", nameof(amount));
             }
 
             if (!method.HasValue())
@@ -46,7 +41,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
 
         public Address Sender { get; }
         public Address To { get; }
-        public string Amount { get; }
+        public FixedDecimal Amount { get; }
         public string Method { get; }
         public IReadOnlyCollection<TransactionQuoteRequestParameter> Parameters { get; }
         public string[] SerializedParameters => Parameters.Select(p => p.Value.Serialize()).ToArray();

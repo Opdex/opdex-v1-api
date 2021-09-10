@@ -1,12 +1,14 @@
 using System;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 
 namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class Token : BlockAudit
     {
-        public Token(string address, bool isLpt, string name, string symbol, int decimals, ulong sats, string totalSupply, ulong createdBlock)
+        public Token(string address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply, ulong createdBlock)
             : base(createdBlock)
         {
             if (!address.HasValue())
@@ -34,11 +36,6 @@ namespace Opdex.Platform.Domain.Models.Tokens
                 throw new ArgumentOutOfRangeException(nameof(sats), "Sats must be greater than zero.");
             }
 
-            if (!totalSupply.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must only contain numeric digits.");
-            }
-
             Address = address;
             IsLpt = isLpt;
             Name = name;
@@ -48,7 +45,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
             TotalSupply = totalSupply;
         }
 
-        public Token(long id, string address, bool isLpt, string name, string symbol, int decimals, ulong sats, string totalSupply, ulong createdBlock, ulong modifiedBlock)
+        public Token(long id, string address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -68,16 +65,11 @@ namespace Opdex.Platform.Domain.Models.Tokens
         public string Symbol { get; }
         public int Decimals { get; }
         public ulong Sats { get; }
-        public string TotalSupply { get; private set; }
+        public UInt256 TotalSupply { get; private set; }
         public long? MarketId { get; private set; }
 
-        public void UpdateTotalSupply(string value, ulong blockHeight)
+        public void UpdateTotalSupply(UInt256 value, ulong blockHeight)
         {
-            if (!value.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException("Total supply must be a numeric value.");
-            }
-
             TotalSupply = value;
             SetModifiedBlock(blockHeight);
         }

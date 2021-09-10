@@ -16,11 +16,12 @@ using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Governances;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System.Linq;
+using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens
 {
@@ -43,7 +44,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract.ToString(), findOrThrow: true));
                 var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(token.Id, findOrThrow: true));
                 var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id, findOrThrow: true));
 
@@ -102,7 +103,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
         }
 
-        private async Task<bool> UpdateAddressBalance(string address, Token token, string distributionAmount, ulong blockHeight)
+        private async Task<bool> UpdateAddressBalance(Address address, Token token, UInt256 distributionAmount, ulong blockHeight)
         {
             var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, token.Id, findOrThrow: false));
 
@@ -128,7 +129,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             return true;
         }
 
-        private async Task InitializeNominations(string miningGovernance, ulong blockHeight)
+        private async Task InitializeNominations(Address miningGovernance, ulong blockHeight)
         {
             var nominatedPools = await _mediator.Send(new RetrieveCirrusMiningGovernanceNominationsQuery(miningGovernance));
 
@@ -141,7 +142,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             var nominations = nominatedMiningPools.Select(miningPool => new MiningGovernanceNomination(miningPool.LiquidityPoolId,
                                                                                                        miningPool.Id,
                                                                                                        true,
-                                                                                                       "1",
+                                                                                                       1,
                                                                                                        blockHeight));
 
             await Task.WhenAll(

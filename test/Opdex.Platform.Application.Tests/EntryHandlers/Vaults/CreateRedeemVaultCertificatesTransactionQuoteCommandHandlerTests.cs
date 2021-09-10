@@ -35,13 +35,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             _handler = new CreateRedeemVaultCertificatesTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateRedeemVaultCertificatesTransactionQuoteCommand_InvalidVault_ThrowArgumentException(string vault)
+        [Fact]
+        public void CreateRedeemVaultCertificatesTransactionQuoteCommand_InvalidVault_ThrowArgumentException()
         {
             // Arrange
+            Address vault = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
 
             // Act
@@ -57,7 +55,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             // Arrange
             Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateRedeemVaultCertificatesTransactionQuoteCommand(vault, walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -90,7 +88,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateRedeemVaultCertificatesTransactionQuoteCommand(vault, walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;

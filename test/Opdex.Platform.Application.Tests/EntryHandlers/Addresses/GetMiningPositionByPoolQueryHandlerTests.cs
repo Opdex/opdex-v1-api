@@ -7,6 +7,8 @@ using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.EntryHandlers.Addresses;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.MiningPools;
@@ -54,7 +56,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             var request = new GetMiningPositionByPoolQuery("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX");
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var miningPool = new MiningPool(5, 5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10", "10", 10000, 25, 30);
+            var miningPool = new MiningPool(5, 5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("10"), UInt256.Parse("10"), 10000, 25, 30);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
 
@@ -79,8 +81,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             var request = new GetMiningPositionByPoolQuery("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX");
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var addressMining = new AddressMining(5, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "100000000000", 50, 500);
-            var miningPool = new MiningPool(5, 5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10", "10", 10000, 25, 30);
+            var addressMining = new AddressMining(5, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("100000000000"), 50, 500);
+            var miningPool = new MiningPool(5, 5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("10"), UInt256.Parse("10"), 10000, 25, 30);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressMiningByMiningPoolIdAndOwnerQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(addressMining);
@@ -105,8 +107,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             var cancellationToken = new CancellationTokenSource().Token;
 
             var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 15, 20, 25, 30);
-            var addressMining = new AddressMining(5, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "100000000000", 50, 500);
-            var miningPool = new MiningPool(5, 5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10", "10", 10000, 25, 30);
+            var addressMining = new AddressMining(5, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("100000000000"), 50, 500);
+            var miningPool = new MiningPool(5, 5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("10"), UInt256.Parse("10"), 10000, 25, 30);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liqudityPool);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
@@ -131,9 +133,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             var cancellationToken = new CancellationTokenSource().Token;
 
             var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 15, 20, 25, 30);
-            var addressMining = new AddressMining(5, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "100000000000", 50, 500);
-            var miningPool = new MiningPool(5, 5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10", "10", 10000, 25, 30);
-            var token = new Token(5, "PDrzyNsewpj4KDnDttqcJT5EK7vZXQufNU", false, "Opdex", "ODX", 8, 10000000, "10000000000000000000", 10, 20);
+            var addressMining = new AddressMining(5, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("100000000000"), 50, 500);
+            var miningPool = new MiningPool(5, 5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("10"), UInt256.Parse("10"), 10000, 25, 30);
+            var token = new Token(5, "PDrzyNsewpj4KDnDttqcJT5EK7vZXQufNU", false, "Opdex", "ODX", 8, 10000000, UInt256.Parse("10000000000000000000"), 10, 20);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liqudityPool);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
@@ -147,7 +149,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             // Assert
             response.Address.Should().Be(request.Address);
             response.MiningPool.Should().Be(miningPool.Address);
-            response.Amount.Should().Be("1000.00000000");
+            response.Amount.Should().Be(FixedDecimal.Parse("1000.00000000"));
             response.MiningToken.Should().Be(token.Address);
         }
     }

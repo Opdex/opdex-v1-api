@@ -3,35 +3,33 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens
 {
-    public class CallCirrusGetSrcTokenBalanceQueryHandler
-        : IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, string>
+    public class CallCirrusGetSrcTokenBalanceQueryHandler : IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, UInt256>
     {
         private readonly ISmartContractsModule _smartContractsModule;
         private readonly ILogger<CallCirrusGetSrcTokenBalanceQueryHandler> _logger;
-        
-        public CallCirrusGetSrcTokenBalanceQueryHandler(ISmartContractsModule smartContractsModule, 
+
+        public CallCirrusGetSrcTokenBalanceQueryHandler(ISmartContractsModule smartContractsModule,
             ILogger<CallCirrusGetSrcTokenBalanceQueryHandler> logger)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-        
+
         // Todo: try catch requests
-        public async Task<string> Handle(CallCirrusGetSrcTokenBalanceQuery request, CancellationToken cancellationToken)
+        public async Task<UInt256> Handle(CallCirrusGetSrcTokenBalanceQuery request, CancellationToken cancellationToken)
         {
-            var parameters = new[] {$"9#{request.Owner}"};
+            var parameters = new[] { $"9#{request.Owner}" };
             var balanceRequest = new LocalCallRequestDto(request.Token, request.Owner, "GetBalance", parameters);
 
             var response = await _smartContractsModule.LocalCallAsync(balanceRequest, cancellationToken);
-
-            return response.Return.ToString();
+            return response.DeserializeValue<UInt256>();
         }
     }
 }

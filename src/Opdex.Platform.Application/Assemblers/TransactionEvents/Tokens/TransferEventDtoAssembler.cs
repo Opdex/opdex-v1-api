@@ -20,7 +20,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens
 
         public async Task<TransferEventDto> Assemble(TransferLog log)
         {
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(log.Contract));
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(log.Contract.ToString()));
 
             return new TransferEventDto
             {
@@ -30,7 +30,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens
                 Contract = log.Contract,
                 From = log.From,
                 To = log.To,
-                Amount = log.Amount.InsertDecimal(token.Decimals)
+                Amount = log.Amount.ToDecimal(token.Decimals)
             };
         }
     }

@@ -7,7 +7,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 {
@@ -15,7 +15,8 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
     {
         private readonly IMediator _mediator;
         private const string MethodName = "RemoveLiquidity";
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+
         public MakeWalletRemoveLiquidityTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -23,7 +24,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 
         public async Task<string> Handle(MakeWalletRemoveLiquidityTransactionCommand request, CancellationToken cancellationToken)
         {
-            var parameters = new []
+            var parameters = new[]
             {
                 request.Token.ToSmartContractParameter(SmartContractParameterType.Address),
                 request.Liquidity.ToSmartContractParameter(SmartContractParameterType.UInt256),

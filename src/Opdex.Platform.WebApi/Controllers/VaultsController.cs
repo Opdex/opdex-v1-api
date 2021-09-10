@@ -50,7 +50,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Vaults paging results</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] string lockedToken,
+        public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] Address lockedToken,
                                                                        [FromQuery] SortDirectionType direction,
                                                                        [FromQuery] uint limit,
                                                                        [FromQuery] string cursor,
@@ -84,7 +84,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<VaultResponseModel>> GetVaultByAddress(string address, CancellationToken cancellationToken)
+        public async Task<ActionResult<VaultResponseModel>> GetVaultByAddress([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var vault = await _mediator.Send(new GetVaultByAddressQuery(address), cancellationToken);
             return Ok(_mapper.Map<VaultResponseModel>(vault));
@@ -144,8 +144,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}/certificates")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<VaultCertificatesResponseModel>> GetVaultCertificates(string address,
-                                                                                             [FromQuery] string holder,
+        public async Task<ActionResult<VaultCertificatesResponseModel>> GetVaultCertificates([FromRoute] Address address,
+                                                                                             [FromQuery] Address holder,
                                                                                              [FromQuery] SortDirectionType direction,
                                                                                              [FromQuery] uint limit,
                                                                                              [FromQuery] string cursor,

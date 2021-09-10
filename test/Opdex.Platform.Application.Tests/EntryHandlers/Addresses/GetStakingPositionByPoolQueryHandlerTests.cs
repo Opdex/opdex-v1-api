@@ -7,6 +7,8 @@ using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.EntryHandlers.Addresses;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.Markets;
@@ -80,7 +82,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             var cancellationToken = new CancellationTokenSource().Token;
 
             var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 15, 20, 25, 30);
-            var addressStaking = new AddressStaking(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "50000000000", 50, 100);
+            var addressStaking = new AddressStaking(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("50000000000"), 50, 100);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liqudityPool);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(addressStaking);
@@ -105,7 +107,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             var cancellationToken = new CancellationTokenSource().Token;
 
             var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 15, 20, 25, 30);
-            var addressStaking = new AddressStaking(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "50000000000", 50, 100);
+            var addressStaking = new AddressStaking(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("50000000000"), 50, 100);
             var market = new Market(5, "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", 5, 25, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, false, false, 3, false, 50, 100);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liqudityPool);
@@ -132,9 +134,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             var cancellationToken = new CancellationTokenSource().Token;
 
             var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 15, 20, 25, 30);
-            var addressStaking = new AddressStaking(5, 5, "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm", "50000000000", 50, 100);
+            var addressStaking = new AddressStaking(5, 5, "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm", UInt256.Parse("50000000000"), 50, 100);
             var market = new Market(5, "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", 5, 25, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, false, false, 3, false, 50, 100);
-            var token = new Token(5, "PDrzyNsewpj4KDnDttqcJT5EK7vZXQufNU", false, "Opdex", "ODX", 8, 10000000, "10000000000000000000", 10, 20);
+            var token = new Token(5, "PDrzyNsewpj4KDnDttqcJT5EK7vZXQufNU", false, "Opdex", "ODX", 8, 10000000, UInt256.Parse("10000000000000000000"), 10, 20);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liqudityPool);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(addressStaking);
@@ -148,7 +150,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             // Assert
             response.Address.Should().Be(addressStaking.Owner);
             response.LiquidityPool.Should().Be(liqudityPool.Address);
-            response.Amount.Should().Be("500.00000000");
+            response.Amount.Should().Be(FixedDecimal.Parse("500.00000000"));
             response.StakingToken.Should().Be(token.Address);
         }
     }

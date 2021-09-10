@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using System;
 using System.Dynamic;
@@ -48,7 +49,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MiningPools
             void Act() => new StopMiningLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Theory]
@@ -71,7 +72,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MiningPools
             void Act() => new StopMiningLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Theory]
@@ -94,27 +95,31 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MiningPools
             void Act() => new StopMiningLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
         public void StopMiningLog_ValidArguments_PropertiesSet()
         {
             // Arrange
+            UInt256 amount = 44;
+            UInt256 totalSupply = 332432;
+            UInt256 minerBalance = 100;
+
             dynamic txLog = new ExpandoObject();
             txLog.miner = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj4";
-            txLog.amount = "44";
-            txLog.totalSupply = "545578999";
-            txLog.minerBalance = "100";
+            txLog.amount = amount.ToString();
+            txLog.totalSupply = totalSupply.ToString();
+            txLog.minerBalance = minerBalance.ToString();
 
             // Act
             var log = new StopMiningLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
             log.Miner.Should().Be(txLog.miner);
-            log.Amount.Should().Be(txLog.amount);
-            log.TotalSupply.Should().Be(txLog.totalSupply);
-            log.MinerBalance.Should().Be(txLog.minerBalance);
+            log.Amount.Should().Be(amount);
+            log.TotalSupply.Should().Be(totalSupply);
+            log.MinerBalance.Should().Be(minerBalance);
         }
     }
 }

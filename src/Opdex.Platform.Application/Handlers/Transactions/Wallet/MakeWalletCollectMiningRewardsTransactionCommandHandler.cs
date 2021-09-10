@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
@@ -13,7 +14,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
     {
         private readonly IMediator _mediator;
         private const string MethodName = "CollectMiningRewards";
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
 
         public MakeWalletCollectMiningRewardsTransactionCommandHandler(IMediator mediator)
         {
@@ -23,7 +24,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
         public Task<string> Handle(MakeWalletCollectMiningRewardsTransactionCommand request, CancellationToken cancellationToken)
         {
             var callDto = new SmartContractCallRequestDto(request.MiningPool, request.WalletName, request.WalletAddress,
-                request.WalletPassword, CrsToSend, MethodName, new string[0]);
+                                                          request.WalletPassword, CrsToSend, MethodName, new string[0]);
 
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }

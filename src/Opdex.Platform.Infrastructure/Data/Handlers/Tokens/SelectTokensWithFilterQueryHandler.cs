@@ -12,6 +12,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using System.Linq;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 {
@@ -53,7 +54,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
         {
             var command = DatabaseQuery.Create(QueryBuilder(request), new SqlParams(request.MarketId, request.LpToken, request.Tokens), cancellationToken);
 
-            var tokenEntities =  await _context.ExecuteQueryAsync<TokenEntity>(command);
+            var tokenEntities = await _context.ExecuteQueryAsync<TokenEntity>(command);
 
             return _mapper.Map<IEnumerable<Token>>(tokenEntities);
         }
@@ -64,7 +65,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
             var tableJoins = string.Empty;
 
             // Tokens Filter
-            if (request.Tokens?.Any() == true)
+            if (request.Tokens.Any())
             {
                 whereFilter += $" WHERE t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}";
             }
@@ -128,11 +129,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
         private sealed class SqlParams
         {
-            internal SqlParams(long marketId, bool? isLpt, IEnumerable<string> tokens)
+            internal SqlParams(long marketId, bool? isLpt, IEnumerable<Address> tokens)
             {
                 MarketId = marketId;
                 IsLpt = isLpt;
-                Tokens = tokens;
+                Tokens = tokens.Select(token => token.ToString());
             }
 
             public long MarketId { get; }

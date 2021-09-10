@@ -1,31 +1,28 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
 {
     public class TransferLog : TransactionLog
     {
-        public TransferLog(dynamic log, string address, int sortOrder)
+        public TransferLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.TransferLog, address, sortOrder)
         {
-            string from = log?.from;
-            string to = log?.to;
-            string amount = log?.amount;
+            Address from = log?.from;
+            Address to = log?.to;
+            UInt256 amount = UInt256.Parse(log?.amount);
 
-            if (!from.HasValue())
+            if (from == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(from), "From address must be set.");
             }
 
-            if (!to.HasValue())
+            if (to == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(to), "To address must be set.");
-            }
-
-            if (!amount.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
             }
 
             From = from;
@@ -33,7 +30,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             Amount = amount;
         }
 
-        public TransferLog(long id, long transactionId, string address, int sortOrder, string details)
+        public TransferLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.TransferLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -42,15 +39,15 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             Amount = logDetails.Amount;
         }
 
-        public string From { get; }
-        public string To { get; }
-        public string Amount { get; }
+        public Address From { get; }
+        public Address To { get; }
+        public UInt256 Amount { get; }
 
         private struct LogDetails
         {
-            public string From { get; set; }
-            public string To { get; set; }
-            public string Amount { get; set; }
+            public Address From { get; set; }
+            public Address To { get; set; }
+            public UInt256 Amount { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)

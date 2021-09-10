@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using System;
 using Xunit;
@@ -7,21 +8,6 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
 {
     public class StakingSnapshotTests
     {
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData("1.234")]
-        [InlineData(null)]
-        public void CreateStakingSnapshot_InvalidWeight_ThrowsArgumentOutOfRangeException(string stakingWeight)
-        {
-            // Arrange
-            // Act
-            void Act() => new StakingSnapshot(stakingWeight, 1.00m);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(stakingWeight)} must be a numeric value.");
-        }
-
         [Fact]
         public void CreateStakingSnapshot_InvalidUsd_ThrowsArgumentOutOfRangeException()
         {
@@ -29,7 +15,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             const decimal stakingUsd = -1.00m;
 
             // Act
-            void Act() => new StakingSnapshot("1234", stakingUsd);
+            void Act() => new StakingSnapshot(1234, stakingUsd);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(stakingUsd)} must be greater or equal to 0.");
@@ -39,7 +25,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void CreateStakingSnapshot_Success()
         {
             // Arrange
-            const string stakingWeight = "123";
+            UInt256 stakingWeight = 123;
             const decimal stakingUsd = 1.23m;
 
             // Act
@@ -58,7 +44,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             var snapshot = new StakingSnapshot();
 
             // Assert
-            snapshot.Weight.Should().Be("0");
+            snapshot.Weight.Should().Be(UInt256.Zero);
             snapshot.Usd.Should().Be(0.00m);
         }
     }

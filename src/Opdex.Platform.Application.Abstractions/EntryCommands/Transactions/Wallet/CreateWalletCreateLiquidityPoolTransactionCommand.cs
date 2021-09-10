@@ -1,18 +1,18 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet
 {
     public class CreateWalletCreateLiquidityPoolTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletCreateLiquidityPoolTransactionCommand(string walletAddress, string token, string market) : base(walletAddress)
+        public CreateWalletCreateLiquidityPoolTransactionCommand(Address walletAddress, Address token, Address market) : base(walletAddress)
         {
-            if (!token.HasValue())
+            if (token == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            if (!market.HasValue())
+            if (market == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(token));
             }
@@ -21,7 +21,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             Market = market;
         }
 
-        public string Token { get; }
-        public string Market { get; }
+        public Address Token { get; }
+        public Address Market { get; }
     }
 }

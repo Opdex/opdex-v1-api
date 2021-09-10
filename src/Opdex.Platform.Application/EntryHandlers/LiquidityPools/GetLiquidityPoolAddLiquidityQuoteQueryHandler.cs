@@ -5,13 +5,14 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
 {
-    public class GetLiquidityPoolAddLiquidityQuoteQueryHandler : IRequestHandler<GetLiquidityPoolAddLiquidityQuoteQuery, string>
+    public class GetLiquidityPoolAddLiquidityQuoteQueryHandler : IRequestHandler<GetLiquidityPoolAddLiquidityQuoteQuery, FixedDecimal>
     {
         private readonly IMediator _mediator;
 
@@ -20,7 +21,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<string> Handle(GetLiquidityPoolAddLiquidityQuoteQuery request, CancellationToken cancellationToken)
+        public async Task<FixedDecimal> Handle(GetLiquidityPoolAddLiquidityQuoteQuery request, CancellationToken cancellationToken)
         {
             var tokenInIsCrs = request.TokenIn.EqualsIgnoreCase(TokenConstants.Cirrus.Address);
             var tokenIn = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenIn), cancellationToken);
@@ -37,7 +38,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
             var quote = await _mediator.Send(new RetrieveLiquidityPoolAddLiquidityQuoteQuery(amountIn, request.TokenIn,
                                                                                              request.Pool, router.Address), cancellationToken);
 
-            return quote.InsertDecimal(tokenOut.Decimals);
+            return quote.ToDecimal(tokenOut.Decimals);
         }
     }
 }

@@ -1,18 +1,19 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Vaults
 {
-    public class RetrieveCirrusVaultTotalSupplyQuery : IRequest<string>
+    public class RetrieveCirrusVaultTotalSupplyQuery : IRequest<UInt256>
     {
-        public RetrieveCirrusVaultTotalSupplyQuery(string vaultAddress, ulong blockHeight)
+        public RetrieveCirrusVaultTotalSupplyQuery(Address vaultAddress, ulong blockHeight)
         {
-            VaultAddress = vaultAddress.HasValue() ? vaultAddress : throw new ArgumentNullException(nameof(vaultAddress), "Vault address must be set.");
+            VaultAddress = vaultAddress != Address.Empty ? vaultAddress : throw new ArgumentNullException(nameof(vaultAddress), "Vault address must be set.");
             BlockHeight = blockHeight;
         }
 
-        public string VaultAddress { get; }
+        public Address VaultAddress { get; }
         public ulong BlockHeight { get; }
     }
 }

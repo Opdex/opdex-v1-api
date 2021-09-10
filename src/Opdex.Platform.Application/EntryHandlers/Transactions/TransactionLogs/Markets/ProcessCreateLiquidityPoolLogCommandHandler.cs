@@ -13,6 +13,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.Tokens;
@@ -77,9 +78,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
         }
 
-        private async Task<long> MakeToken(string tokenAddress, ulong blockHeight, string lpSymbol = null)
+        private async Task<long> MakeToken(Address tokenAddress, ulong blockHeight, string lpSymbol = null)
         {
-            var srcToken = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false));
+            var srcToken = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress.ToString(), findOrThrow: false));
 
             if (srcToken != null)
             {
@@ -95,7 +96,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 summary.SetLpTokenSymbol(lpSymbol);
             }
 
-            srcToken = new Token(summary.Address, isLpToken, summary.Name, summary.Symbol, (int)summary.Decimals, summary.Sats,
+            srcToken = new Token(summary.Address.ToString(), isLpToken, summary.Name, summary.Symbol, (int)summary.Decimals, summary.Sats,
                                  summary.TotalSupply, blockHeight);
 
             return await _mediator.Send(new MakeTokenCommand(srcToken));

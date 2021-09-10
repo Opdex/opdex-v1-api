@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,7 +17,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
     public class CreateSkimTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateSkimTransactionQuoteCommand>
     {
         private const string MethodName = LiquidityPoolConstants.Methods.Skim;
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
 
         public CreateSkimTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                         IMediator mediator, OpdexConfiguration config)
@@ -27,7 +28,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
         public override async Task<TransactionQuoteDto> Handle(CreateSkimTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
             // ensure liquidity pool exists, if not throw to return 404
-            _ = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool.ToString(), findOrThrow: true), cancellationToken);
+            _ = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool, findOrThrow: true), cancellationToken);
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {

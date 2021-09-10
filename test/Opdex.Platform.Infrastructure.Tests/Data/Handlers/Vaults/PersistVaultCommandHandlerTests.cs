@@ -31,11 +31,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults
         public async Task Insert_Vault_Success()
         {
             const long expectedId = 10;
-            var allowance = new Vault("VaultAddress", 1, "VaultOwner", 2, "500000000", 4);
+            var allowance = new Vault("PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1, "PPGBccfFS1cKedqY5ZzJY7iaeEwpXHKzNb", 2, 500000000, 4);
             var command = new PersistVaultCommand(allowance);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedId));
+            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedId);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -46,11 +45,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults
         public async Task Update_Vault_Success()
         {
             const long expectedId = 10;
-            var allowance = new Vault(expectedId, "VaultAddress", 1, "VaultOwner", 2, "500000000", 3, 4);
+            var allowance = new Vault(expectedId, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1, "PPGBccfFS1cKedqY5ZzJY7iaeEwpXHKzNb", 2, 500000000, 3, 4);
             var command = new PersistVaultCommand(allowance);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedId));
+            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedId);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -61,11 +59,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults
         public async Task PersistsVault_Fail()
         {
             const long expectedId = 0;
-            var allowance = new Vault("VaultAddress", 1, "VaultOwner", 2, "500000000", 4);
+            var allowance = new Vault("PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1, "PPGBccfFS1cKedqY5ZzJY7iaeEwpXHKzNb", 2, 500000000, 4);
             var command = new PersistVaultCommand(allowance);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Throws(new Exception("Some SQL Exception"));
+            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).Throws(new Exception("Some SQL Exception"));
 
             var result = await _handler.Handle(command, CancellationToken.None);
 

@@ -3,6 +3,7 @@ using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
@@ -45,13 +46,13 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
                 EndDate = new DateTime(2021, 6, 21, 23, 59, 59),
                 ModifiedDate = DateTime.UtcNow,
                 Rewards = new SnapshotRewardsEntity { MarketUsd = 1.23m, ProviderUsd = 9.87m },
-                Reserves = new SnapshotReservesEntity { Crs = 123, Src = "987", Usd = 7.65m },
-                Volume = new SnapshotVolumeEntity { Crs = 876, Src = "654", Usd = 2.34m },
-                Staking = new SnapshotStakingEntity { Usd = 9.12m, Weight = "648" },
+                Reserves = new SnapshotReservesEntity { Crs = 123, Src = 987, Usd = 7.65m },
+                Volume = new SnapshotVolumeEntity { Crs = 876, Src = 654, Usd = 2.34m },
+                Staking = new SnapshotStakingEntity { Usd = 9.12m, Weight = 648 },
                 Cost = new SnapshotCostEntity
                 {
-                    CrsPerSrc = new OhlcBigIntEntity { Open = "1", High = "9", Low = "1", Close = "4" },
-                    SrcPerCrs = new OhlcBigIntEntity { Open = "6", High = "6", Low = "2", Close = "2" }
+                    CrsPerSrc = new OhlcBigIntEntity { Open = 1, High = 9, Low = 1, Close = 4 },
+                    SrcPerCrs = new OhlcBigIntEntity { Open = 6, High = 6, Low = 2, Close = 2 }
                 }
             };
 
@@ -117,28 +118,28 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
             result.TransactionCount.Should().Be(0);
 
             result.Reserves.Crs.Should().Be(0ul);
-            result.Reserves.Src.Should().Be("0");
+            result.Reserves.Src.Should().Be(UInt256.Zero);
             result.Reserves.Usd.Should().Be(0.00m);
 
             result.Rewards.ProviderUsd.Should().Be(0.00m);
             result.Rewards.MarketUsd.Should().Be(0.00m);
 
             result.Volume.Crs.Should().Be(0ul);
-            result.Volume.Src.Should().Be("0");
+            result.Volume.Src.Should().Be(UInt256.Zero);
             result.Volume.Usd.Should().Be(0.00m);
 
-            result.Staking.Weight.Should().Be("0");
+            result.Staking.Weight.Should().Be(UInt256.Zero);
             result.Staking.Usd.Should().Be(0.00m);
 
-            result.Cost.CrsPerSrc.Open.Should().Be("0");
-            result.Cost.CrsPerSrc.High.Should().Be("0");
-            result.Cost.CrsPerSrc.Low.Should().Be("0");
-            result.Cost.CrsPerSrc.Close.Should().Be("0");
+            result.Cost.CrsPerSrc.Open.Should().Be(UInt256.Zero);
+            result.Cost.CrsPerSrc.High.Should().Be(UInt256.Zero);
+            result.Cost.CrsPerSrc.Low.Should().Be(UInt256.Zero);
+            result.Cost.CrsPerSrc.Close.Should().Be(UInt256.Zero);
 
-            result.Cost.SrcPerCrs.Open.Should().Be("0");
-            result.Cost.SrcPerCrs.High.Should().Be("0");
-            result.Cost.SrcPerCrs.Low.Should().Be("0");
-            result.Cost.SrcPerCrs.Close.Should().Be("0");
+            result.Cost.SrcPerCrs.Open.Should().Be(UInt256.Zero);
+            result.Cost.SrcPerCrs.High.Should().Be(UInt256.Zero);
+            result.Cost.SrcPerCrs.Low.Should().Be(UInt256.Zero);
+            result.Cost.SrcPerCrs.Close.Should().Be(UInt256.Zero);
         }
     }
 }

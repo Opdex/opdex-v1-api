@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;

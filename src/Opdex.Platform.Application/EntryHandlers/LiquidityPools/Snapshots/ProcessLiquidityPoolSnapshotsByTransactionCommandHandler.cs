@@ -10,7 +10,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
@@ -52,7 +52,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
             var logsGroupedByLiquidityPool = request.Transaction.GroupedLogsOfTypes(request.PoolSnapshotLogTypes);
 
             // Each pool in the dictionary
-            foreach ((string poolContract, List<TransactionLog> transactionLogs) in logsGroupedByLiquidityPool)
+            foreach ((Address poolContract, List<TransactionLog> transactionLogs) in logsGroupedByLiquidityPool)
             {
                 var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(poolContract));
                 var market = await _mediator.Send(new RetrieveMarketByIdQuery(liquidityPool.MarketId));

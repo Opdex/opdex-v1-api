@@ -68,7 +68,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
                 Id = 1,
                 Owner = owner,
                 TokenId = tokenId,
-                Balance = "100",
+                Balance = 100,
                 CreatedBlock = 1,
                 ModifiedBlock = 2
             };

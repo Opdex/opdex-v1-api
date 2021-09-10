@@ -2,6 +2,7 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;
 
@@ -9,9 +10,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Sn
 {
     public class GetLiquidityPoolSnapshotsWithFilterQuery : IRequest<IEnumerable<LiquidityPoolSnapshotDto>>
     {
-        public GetLiquidityPoolSnapshotsWithFilterQuery(string liquidityPoolAddress, string candleSpan, string timeSpan)
+        public GetLiquidityPoolSnapshotsWithFilterQuery(Address liquidityPoolAddress, string candleSpan, string timeSpan)
         {
-            if (!liquidityPoolAddress.HasValue())
+            if (liquidityPoolAddress == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(liquidityPoolAddress));
             }
@@ -30,7 +31,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Sn
             LiquidityPoolAddress = liquidityPoolAddress;
         }
 
-        public string LiquidityPoolAddress { get; }
+        public Address LiquidityPoolAddress { get; }
         public SnapshotType SnapshotType { get; }
         public string TimeSpan { get; }
     }

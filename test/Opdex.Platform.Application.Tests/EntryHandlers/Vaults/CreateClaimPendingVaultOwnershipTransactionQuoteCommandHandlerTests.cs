@@ -2,7 +2,6 @@ using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Assemblers;
@@ -36,13 +35,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             _handler = new CreateClaimPendingVaultOwnershipTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateClaimPendingVaultOwnershipTransactionQuoteCommand_InvalidVault_ThrowArgumentException(string vault)
+        [Fact]
+        public void CreateClaimPendingVaultOwnershipTransactionQuoteCommand_InvalidVault_ThrowArgumentException()
         {
             // Arrange
+            Address vault = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
 
             // Act
@@ -58,7 +55,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             // Arrange
             Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateClaimPendingVaultOwnershipTransactionQuoteCommand(vault, walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -91,7 +88,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateClaimPendingVaultOwnershipTransactionQuoteCommand(vault, walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;

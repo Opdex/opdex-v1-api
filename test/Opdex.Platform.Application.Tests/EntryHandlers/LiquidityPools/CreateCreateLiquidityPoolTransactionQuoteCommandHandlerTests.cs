@@ -36,15 +36,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             _handler = new CreateCreateLiquidityPoolTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateCreateLiquidityPoolTransactionQuoteCommand_InvalidMarket_ThrowArgumentException(string market)
+        [Fact]
+        public void CreateCreateLiquidityPoolTransactionQuoteCommand_InvalidMarket_ThrowArgumentException()
         {
             // Arrange
+            Address market = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address token = null;
+            Address token = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
 
             // Act
             void Act() => new CreateCreateLiquidityPoolTransactionQuoteCommand(market, walletAddress, token);
@@ -53,15 +51,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Market must be provided.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateCreateLiquidityPoolTransactionQuoteCommand_InvalidToken_ThrowArgumentException(string token)
+        [Fact]
+        public void CreateCreateLiquidityPoolTransactionQuoteCommand_InvalidToken_ThrowArgumentException()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address market = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            Address token = Address.Empty;
 
             // Act
             void Act() => new CreateCreateLiquidityPoolTransactionQuoteCommand(market, walletAddress, token);
@@ -100,7 +96,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address market = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address token = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateCreateLiquidityPoolTransactionQuoteCommand(market, walletAddress, token);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -137,7 +133,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address market = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address token = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateCreateLiquidityPoolTransactionQuoteCommand(market, walletAddress, token);
             var cancellationToken = new CancellationTokenSource().Token;

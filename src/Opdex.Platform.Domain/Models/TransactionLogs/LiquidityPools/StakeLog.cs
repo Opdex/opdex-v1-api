@@ -1,32 +1,19 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
 {
     public abstract class StakeLog : TransactionLog
     {
-        protected StakeLog(TransactionLogType logType, string staker, string amount, string totalStaked, string stakerBalance, string address, int sortOrder)
+        protected StakeLog(TransactionLogType logType, Address staker, UInt256 amount, UInt256 totalStaked, UInt256 stakerBalance, Address address, int sortOrder)
             : base(logType, address, sortOrder)
         {
-            if (!staker.HasValue())
+            if (staker == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(staker), "Staker address must be set.");
-            }
-
-            if (!amount.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
-            }
-
-            if (!totalStaked.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(totalStaked), "Total staked amount must only contain numeric digits.");
-            }
-
-            if (!stakerBalance.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(stakerBalance), "Staker balance must only contain numeric digits.");
             }
 
             Staker = staker;
@@ -35,7 +22,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             StakerBalance = stakerBalance;
         }
 
-        protected StakeLog(TransactionLogType logType, long id, long transactionId, string address, int sortOrder, string details)
+        protected StakeLog(TransactionLogType logType, long id, long transactionId, Address address, int sortOrder, string details)
             : base(logType, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -45,17 +32,17 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             StakerBalance = logDetails.StakerBalance;
         }
 
-        public string Staker { get; }
-        public string Amount { get; }
-        public string TotalStaked { get; }
-        public string StakerBalance { get; }
+        public Address Staker { get; }
+        public UInt256 Amount { get; }
+        public UInt256 TotalStaked { get; }
+        public UInt256 StakerBalance { get; }
 
         private struct LogDetails
         {
-            public string Staker { get; set; }
-            public string Amount { get; set; }
-            public string TotalStaked { get; set; }
-            public string StakerBalance { get; set; }
+            public Address Staker { get; set; }
+            public UInt256 Amount { get; set; }
+            public UInt256 TotalStaked { get; set; }
+            public UInt256 StakerBalance { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)

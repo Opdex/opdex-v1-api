@@ -1,3 +1,6 @@
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
+
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens
 {
     public class TokenEntity : AuditEntity
@@ -9,6 +12,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens
         public string Name { get; set; }
         public byte Decimals { get; set; }
         public ulong Sats { get; set; }
-        public string TotalSupply { get; set; }
+        public UInt256 TotalSupply { get; set; }
     }
 }

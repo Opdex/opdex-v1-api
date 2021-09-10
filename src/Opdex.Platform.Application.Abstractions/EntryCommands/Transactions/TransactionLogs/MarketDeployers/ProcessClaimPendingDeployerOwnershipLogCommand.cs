@@ -1,5 +1,5 @@
 using System;
-using MediatR;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Tra
 {
     public class ProcessClaimPendingDeployerOwnershipLogCommand : ProcessTransactionLogCommand
     {
-        public ProcessClaimPendingDeployerOwnershipLogCommand(TransactionLog log, string sender, ulong blockHeight) : base(sender, blockHeight)
+        public ProcessClaimPendingDeployerOwnershipLogCommand(TransactionLog log, Address sender, ulong blockHeight) : base(sender, blockHeight)
         {
             Log = log as ClaimPendingDeployerOwnershipLog ?? throw new ArgumentNullException(nameof(log));
         }

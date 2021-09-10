@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
@@ -17,6 +16,7 @@ using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.Tokens;
 using System.Linq;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Application.Assemblers
 {
@@ -99,7 +99,7 @@ namespace Opdex.Platform.Application.Assemblers
                 poolDto.StakingToken = stakingTokenDto;
 
                 // Set staking daily change
-                poolDto.Summary.Staking.SetDailyChange(previousPoolSnapshot?.Staking?.Weight);
+                poolDto.Summary.Staking.SetDailyChange(previousPoolSnapshot?.Staking?.Weight ?? UInt256.Zero);
 
                 // Get mining pool
                 var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id));

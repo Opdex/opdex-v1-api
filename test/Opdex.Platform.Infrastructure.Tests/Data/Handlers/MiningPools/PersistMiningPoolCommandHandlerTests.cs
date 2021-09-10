@@ -30,7 +30,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
         [Fact]
         public async Task InsertMiningPool_Success()
         {
-            var pool = new MiningPool(1, "Address", 2);
+            var pool = new MiningPool(1, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 2);
             var command = new PersistMiningPoolCommand(pool);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -46,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
         {
             const long id = 99;
 
-            var pool = new MiningPool(id, 2, "Address", "3", "4", 5, 6, 7);
+            var pool = new MiningPool(id, 2, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 3, 4, 5, 6, 7);
             var command = new PersistMiningPoolCommand(pool);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -60,7 +60,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
         [Fact]
         public async Task InsertMiningPool_Fail()
         {
-            var pool = new MiningPool(1, "Address", 2);
+            var pool = new MiningPool(1, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 2);
             var command = new PersistMiningPoolCommand(pool);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -74,7 +74,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
         [Fact]
         public async Task InsertMiningPool_Throws()
         {
-            var pool = new MiningPool(1, "Address", 2);
+            var pool = new MiningPool(1, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 2);
             var command = new PersistMiningPoolCommand(pool);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).Throws<Exception>();

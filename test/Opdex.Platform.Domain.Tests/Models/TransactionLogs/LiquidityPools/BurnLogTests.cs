@@ -1,6 +1,8 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Xunit;
@@ -94,7 +96,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             void Act() => new BurnLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Theory]
@@ -119,7 +121,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             void Act() => new BurnLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Theory]
@@ -144,22 +146,25 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             void Act() => new BurnLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
         public void CreatesBurnLog_Success()
         {
-            const string address = "Address";
+            UInt256 amountSrc = 545345;
+            UInt256 amountLpt = 345345;
+            UInt256 totalSupply = 100;
+            Address address = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
             const int sortOrder = 1;
 
             dynamic txLog = new ExpandoObject();
-            txLog.sender = "Sender";
-            txLog.to = "To";
+            txLog.sender = "PV82zusMGuAQCmv3fbibN18s3kd6YALBTx";
+            txLog.to = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW";
             txLog.amountCrs = 1234ul;
-            txLog.amountSrc = "83475";
-            txLog.amountLpt = "23423";
-            txLog.totalSupply = "100";
+            txLog.amountSrc = amountSrc.ToString();
+            txLog.amountLpt = amountLpt.ToString();
+            txLog.totalSupply = totalSupply.ToString();
 
             var log = new BurnLog(txLog, address, sortOrder);
 
@@ -171,9 +176,9 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             log.Sender.Should().Be(txLog.sender);
             log.To.Should().Be(txLog.to);
             log.AmountCrs.Should().Be(txLog.amountCrs);
-            log.AmountSrc.Should().Be(txLog.amountSrc);
-            log.AmountLpt.Should().Be(txLog.amountLpt);
-            log.TotalSupply.Should().Be(txLog.totalSupply);
+            log.AmountSrc.Should().Be(amountSrc);
+            log.AmountLpt.Should().Be(amountLpt);
+            log.TotalSupply.Should().Be(totalSupply);
         }
     }
 }

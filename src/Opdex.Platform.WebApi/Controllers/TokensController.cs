@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
 
@@ -48,7 +49,7 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                 [FromQuery] uint? take,
                                                                                 [FromQuery] string sortBy,
                                                                                 [FromQuery] string orderBy,
-                                                                                [FromQuery] IEnumerable<string> tokens,
+                                                                                [FromQuery] IEnumerable<Address> tokens,
                                                                                 CancellationToken cancellationToken)
         {
             var query = new GetTokensWithFilterQuery(_context.Market, lpToken, skip ?? 0, take ?? 10, sortBy, orderBy, tokens);
@@ -70,7 +71,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TokenResponseModel>> Token(string address, CancellationToken cancellationToken)
         {
-            var query = new GetTokenByAddressQuery(address, _context.Market);
+            var query = new GetTokenByAddressQuery(address, _context.Market.ToString());
 
             var result = await _mediator.Send(query, cancellationToken);
 
@@ -88,12 +89,12 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns><see cref="TokenSnapshotHistoryResponseModel"/> with a list of historical data points.</returns>
         [HttpGet("{address}/history")]
         [ProducesResponseType(typeof(TokenSnapshotHistoryResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TokenSnapshotHistoryResponseModel>> TokenHistory(string address,
+        public async Task<ActionResult<TokenSnapshotHistoryResponseModel>> TokenHistory([FromRoute] Address address,
                                                                                         [FromQuery] string candleSpan,
                                                                                         [FromQuery] string timespan,
                                                                                         CancellationToken cancellationToken)
         {
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(address), cancellationToken);
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(address.ToString()), cancellationToken);
 
             var tokenSnapshotDtos = await _mediator.Send(new GetTokenSnapshotsWithFilterQuery(address,
                                                                                              _context.Market,

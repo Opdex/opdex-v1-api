@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +10,17 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 {
     public class AddressBalancesCursor : Cursor<long>
     {
-        public AddressBalancesCursor(IEnumerable<string> tokens, bool includeLpTokens, bool includeZeroBalances,
+        public AddressBalancesCursor(IEnumerable<Address> tokens, bool includeLpTokens, bool includeZeroBalances,
                                      SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection,
                                      long pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
-            Tokens = tokens ?? Enumerable.Empty<string>();
+            Tokens = tokens ?? Enumerable.Empty<Address>();
             IncludeLpTokens = includeLpTokens;
             IncludeZeroBalances = includeZeroBalances;
         }
 
-        public IEnumerable<string> Tokens { get; }
+        public IEnumerable<Address> Tokens { get; }
         public bool IncludeLpTokens { get; }
         public bool IncludeZeroBalances { get; }
 
@@ -84,7 +85,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 
             try
             {
-                cursor = new AddressBalancesCursor(tokens, includeLpTokens, includeZeroBalances, direction, limit, paging, pointer);
+                cursor = new AddressBalancesCursor(tokens.Select(token => new Address(token)), includeLpTokens, includeZeroBalances, direction, limit, paging, pointer);
             }
             catch (Exception)
             {

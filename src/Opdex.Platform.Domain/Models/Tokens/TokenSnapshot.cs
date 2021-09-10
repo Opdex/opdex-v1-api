@@ -2,6 +2,7 @@ using System;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.OHLC;
 
 namespace Opdex.Platform.Domain.Models.Tokens
@@ -46,7 +47,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
             ModifiedDate = DateTime.UtcNow;
         }
 
-        public void UpdatePrice(ulong reserveCrs, string reserveSrc, decimal crsUsd, ulong srcSats)
+        public void UpdatePrice(ulong reserveCrs, UInt256 reserveSrc, decimal crsUsd, ulong srcSats)
         {
             var price = reserveCrs
                 .Token0PerToken1(reserveSrc, srcSats)
@@ -55,7 +56,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
             UpdatePrice(price);
         }
 
-        public void ResetStaleSnapshot(string crsPerSrc, decimal crsUsd, DateTime blockTime)
+        public void ResetStaleSnapshot(UInt256 crsPerSrc, decimal crsUsd, DateTime blockTime)
         {
             Id = 0;
 

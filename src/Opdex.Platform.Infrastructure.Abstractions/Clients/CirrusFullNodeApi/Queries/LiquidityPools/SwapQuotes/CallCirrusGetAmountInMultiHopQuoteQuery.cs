@@ -1,45 +1,21 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.SwapQuotes
 {
-    public class CallCirrusGetAmountInMultiHopQuoteQuery : IRequest<string>
+    public class CallCirrusGetAmountInMultiHopQuoteQuery : IRequest<UInt256>
     {
-        public CallCirrusGetAmountInMultiHopQuoteQuery(string market, string tokenOutAmount, string  tokenOutReserveCrs, string tokenOutReserveSrc,
-            string tokenInReserveCrs, string tokenInReserveSrc)
+        public CallCirrusGetAmountInMultiHopQuoteQuery(Address router, UInt256 tokenOutAmount, ulong tokenOutReserveCrs, UInt256 tokenOutReserveSrc,
+            ulong tokenInReserveCrs, UInt256 tokenInReserveSrc)
         {
-            if (!market.HasValue())
+            if (router == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(market));
+                throw new ArgumentNullException(nameof(router));
             }
 
-            if (!tokenOutAmount.HasValue())
-            {
-                throw new ArgumentNullException(nameof(tokenOutAmount));
-            }
-
-            if (!tokenOutReserveCrs.HasValue())
-            {
-                throw new ArgumentNullException(nameof(tokenOutReserveCrs));
-            }
-
-            if (!tokenOutReserveSrc.HasValue())
-            {
-                throw new ArgumentNullException(nameof(tokenOutReserveSrc));
-            }
-
-            if (!tokenInReserveCrs.HasValue())
-            {
-                throw new ArgumentNullException(nameof(tokenInReserveCrs));
-            }
-
-            if (!tokenInReserveSrc.HasValue())
-            {
-                throw new ArgumentNullException(nameof(tokenInReserveSrc));
-            }
-
-            Market = market;
+            Router = router;
             TokenOutAmount = tokenOutAmount;
             TokenOutReserveCrs = tokenOutReserveCrs;
             TokenOutReserveSrc = tokenOutReserveSrc;
@@ -47,11 +23,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
             TokenInReserveSrc = tokenInReserveSrc;
         }
 
-        public string Market { get; }
-        public string TokenOutAmount { get; }
-        public string TokenOutReserveCrs { get; }
-        public string TokenOutReserveSrc { get; }
-        public string TokenInReserveCrs { get; }
-        public string TokenInReserveSrc { get; }
+        public Address Router { get; }
+        public UInt256 TokenOutAmount { get; }
+        public ulong TokenOutReserveCrs { get; }
+        public UInt256 TokenOutReserveSrc { get; }
+        public ulong TokenInReserveCrs { get; }
+        public UInt256 TokenInReserveSrc { get; }
     }
 }

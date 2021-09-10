@@ -32,7 +32,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses
             return new StakingPositionDto
             {
                 Address = addressStaking.Owner,
-                Amount = addressStaking.Weight.InsertDecimal(token.Decimals),
+                Amount = addressStaking.Weight.ToDecimal(token.Decimals),
                 LiquidityPool = request.LiquidityPoolAddress,
                 StakingToken = token.Address
             };

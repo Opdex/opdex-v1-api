@@ -5,6 +5,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
@@ -34,19 +35,19 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
-        
+
         public SelectMarketByAddressQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-        
+
         public async Task<Market> Handle(SelectMarketByAddressQuery request, CancellationToken cancellationToken)
         {
             var sqlParams = new SqlParams(request.Address);
-            
+
             var command = DatabaseQuery.Create(SqlCommand, sqlParams, cancellationToken);
-            
+
             var result = await _context.ExecuteFindAsync<MarketEntity>(command);
 
             if (request.FindOrThrow && result == null)
@@ -56,15 +57,15 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
             return result == null ? null : _mapper.Map<Market>(result);
         }
-        
+
         private sealed class SqlParams
         {
-            internal SqlParams(string address)
+            internal SqlParams(Address address)
             {
                 Address = address;
             }
 
-            public string Address { get; }
+            public Address Address { get; }
         }
     }
 }

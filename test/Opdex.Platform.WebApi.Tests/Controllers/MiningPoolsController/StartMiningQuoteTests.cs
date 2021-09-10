@@ -37,7 +37,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             // Arrange
             Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             Address miningPool = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
-            var miningQuoteRequest = new MiningQuote { Amount = "1.00" };
+            var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
             var cancellationToken = new CancellationTokenSource().Token;
 
             _contextMock.Setup(get => get.Wallet).Returns(() => walletAddress.ToString());
@@ -57,7 +57,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             var dto = new TransactionQuoteDto();
             Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             Address miningPool = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
-            var miningQuoteRequest = new MiningQuote { Amount = "1.00" };
+            var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
             var cancellationToken = new CancellationTokenSource().Token;
 
             _contextMock.Setup(get => get.Wallet).Returns(() => walletAddress.ToString());
@@ -77,7 +77,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             var quoteResponse = new TransactionQuoteResponseModel();
             Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             Address miningPool = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
-            var miningQuoteRequest = new MiningQuote { Amount = "1.00" };
+            var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
             var cancellationToken = new CancellationTokenSource().Token;
 
             _contextMock.Setup(get => get.Wallet).Returns(() => walletAddress.ToString());

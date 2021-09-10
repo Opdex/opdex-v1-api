@@ -1,14 +1,14 @@
 using System;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletDistributeTokensTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletDistributeTokensTransactionCommand(string walletAddress, string token)
-            : base(walletAddress)
+        public MakeWalletDistributeTokensTransactionCommand(Address walletAddress, Address token) : base(walletAddress)
         {
-            if (!token.HasValue())
+            if (token == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(token));
             }
@@ -16,6 +16,6 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             Token = token;
         }
 
-        public string Token { get; }
+        public Address Token { get; }
     }
 }

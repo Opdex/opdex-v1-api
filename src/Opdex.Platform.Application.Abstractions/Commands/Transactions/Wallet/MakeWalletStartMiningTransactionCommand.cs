@@ -1,19 +1,14 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletStartMiningTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletStartMiningTransactionCommand(string walletAddress,
-            string amount, string miningPool) : base(walletAddress)
+        public MakeWalletStartMiningTransactionCommand(Address walletAddress, UInt256 amount, Address miningPool) : base(walletAddress)
         {
-            if (!amount.IsNumeric())
-            {
-                throw new ArgumentException("Amount must only contain numeric digits.", nameof(amount));
-            }
-
-            if (!miningPool.HasValue())
+            if (miningPool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(miningPool));
             }
@@ -22,7 +17,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             MiningPool = miningPool;
         }
 
-        public string Amount { get; }
-        public string MiningPool { get; }
+        public UInt256 Amount { get; }
+        public Address MiningPool { get; }
     }
 }

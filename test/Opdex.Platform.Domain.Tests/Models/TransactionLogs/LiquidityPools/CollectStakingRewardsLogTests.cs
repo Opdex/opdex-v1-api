@@ -1,6 +1,7 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Xunit;
 
@@ -44,23 +45,24 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             void Act() => new CollectStakingRewardsLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
         public void CollectStakingRewardsLog_ValidArguments_SetProperties()
         {
             // Arrange
+            UInt256 amount = 545345;
             dynamic txLog = new ExpandoObject();
             txLog.staker = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
-            txLog.amount = "3426893";
+            txLog.amount = amount.ToString();
 
             // Act
             var collectStakingRewardsLog = new CollectStakingRewardsLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
             collectStakingRewardsLog.Staker.Should().Be(txLog.staker);
-            collectStakingRewardsLog.Amount.Should().Be(txLog.amount);
+            collectStakingRewardsLog.Amount.Should().Be(amount);
         }
     }
 }

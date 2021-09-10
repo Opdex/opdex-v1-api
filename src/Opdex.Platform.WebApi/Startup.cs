@@ -40,6 +40,7 @@ using Opdex.Platform.Common.Models;
 using NJsonSchema.Generation.TypeMappers;
 using NJsonSchema;
 using Opdex.Platform.WebApi.Models.Binders;
+using Opdex.Platform.Common;
 
 namespace Opdex.Platform.WebApi
 {
@@ -76,20 +77,7 @@ namespace Opdex.Platform.WebApi
                 };
             });
 
-            var serializerSettings = new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Converters = new List<JsonConverter>
-                {
-                    new StringEnumConverter(),
-                    new UInt128Converter(),
-                    new UInt256Converter(),
-                    new AddressConverter(),
-                    new FixedDecimalConverter(),
-                    new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
-                }
-            };
+            var serializerSettings = Serialization.DefaultJsonSettings;
 
             services
                 .AddControllers(options =>
@@ -104,7 +92,7 @@ namespace Opdex.Platform.WebApi
                     options.SerializerSettings.Converters = serializerSettings.Converters;
                 });
 
-            JsonConvert.DefaultSettings = (() => serializerSettings);
+            JsonConvert.DefaultSettings = () => serializerSettings;
 
             services.AddProblemDetailTelemetryInitializer();
 

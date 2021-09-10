@@ -40,9 +40,9 @@ namespace Opdex.Platform.Application.Handlers.Addresses
                                                                                            request.FindOrThrow), cancellationToken);
             }
 
-            var balance = await _mediator.Send(new CallCirrusGetAddressBalanceQuery(request.Owner, request.FindOrThrow), cancellationToken);
+            var balance = await _mediator.Send(new CallCirrusGetAddressBalanceQuery(request.Owner.ToString(), request.FindOrThrow), cancellationToken);
 
-            return new AddressBalance(token.Id, request.Owner, balance.ToString(), 1);
+            return new AddressBalance(token.Id, request.Owner, balance, 1);
         }
     }
 }

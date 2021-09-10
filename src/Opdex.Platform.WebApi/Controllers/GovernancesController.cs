@@ -81,7 +81,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}")]
         [ProducesResponseType(typeof(MiningGovernanceResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<MiningGovernanceResponseModel>> Governance(string address, CancellationToken cancellationToken)
+        public async Task<ActionResult<MiningGovernanceResponseModel>> Governance([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var governanceDto = await _mediator.Send(new GetMiningGovernanceByAddressQuery(address), cancellationToken);
 
@@ -95,7 +95,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="address">The address of the governance contract.</param>
         /// <returns>Transaction hash</returns>
         [HttpPost("{address}/reward-mining-pools")]
-        public async Task<IActionResult> RewardMiningPools(string address, CancellationToken cancellationToken)
+        public async Task<IActionResult> RewardMiningPools([FromRoute] Address address, CancellationToken cancellationToken)
         {
             if (_network == NetworkType.DEVNET)
             {
@@ -115,7 +115,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns></returns>
         [HttpPost("{address}/reward-mining-pools/quote")]
-        public Task<IActionResult> RewardMiningPoolsQuote(string address, CancellationToken cancellationToken)
+        public Task<IActionResult> RewardMiningPoolsQuote([FromRoute] Address address, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

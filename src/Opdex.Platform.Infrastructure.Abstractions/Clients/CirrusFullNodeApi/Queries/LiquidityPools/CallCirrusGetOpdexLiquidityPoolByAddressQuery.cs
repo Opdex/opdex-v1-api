@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using System;
 
@@ -7,9 +8,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
 {
     public class CallCirrusGetOpdexLiquidityPoolByAddressQuery : IRequest<LiquidityPool>
     {
-        public CallCirrusGetOpdexLiquidityPoolByAddressQuery(string address)
+        public CallCirrusGetOpdexLiquidityPoolByAddressQuery(Address address)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address));
             }
@@ -17,6 +18,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
             Address = address;
         }
 
-        public string Address { get; }
+        public Address Address { get; }
     }
 }

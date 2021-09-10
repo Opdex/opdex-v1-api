@@ -1,35 +1,36 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
 {
     public class CreateMarketLog : TransactionLog
     {
-        public CreateMarketLog(dynamic log, string address, int sortOrder)
+        public CreateMarketLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.CreateMarketLog, address, sortOrder)
         {
-            string market = log?.market;
-            string owner = log?.owner;
-            string router = log?.router;
+            Address market = log?.market;
+            Address owner = log?.owner;
+            Address router = log?.router;
             bool authPoolCreators = log?.authPoolCreators;
             bool authProviders = log?.authProviders;
             bool authTraders = log?.authTraders;
             uint transactionFee = log?.transactionFee;
-            string stakingToken = log?.stakingToken;
+            Address stakingToken = log?.stakingToken;
             bool enableMarketFee = log?.marketFeeEnabled;
 
-            if (!market.HasValue())
+            if (market == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(market), "Market address must be set.");
             }
 
-            if (!owner.HasValue())
+            if (owner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
             }
 
-            if (!router.HasValue())
+            if (router == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(router), "Router address must be set.");
             }
@@ -50,7 +51,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
             EnableMarketFee = enableMarketFee;
         }
 
-        public CreateMarketLog(long id, long transactionId, string address, int sortOrder, string details)
+        public CreateMarketLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.CreateMarketLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -65,26 +66,26 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
             EnableMarketFee = logDetails.EnableMarketFee;
         }
 
-        public string Market { get; }
-        public string Owner { get; }
-        public string Router { get; }
+        public Address Market { get; }
+        public Address Owner { get; }
+        public Address Router { get; }
         public bool AuthPoolCreators { get; }
         public bool AuthProviders { get; }
         public bool AuthTraders { get; }
         public uint TransactionFee { get; }
-        public string StakingToken { get; }
+        public Address StakingToken { get; }
         public bool EnableMarketFee { get; }
 
         public struct LogDetails
         {
-            public string Market { get; set; }
-            public string Owner { get; set; }
-            public string Router { get; set; }
+            public Address Market { get; set; }
+            public Address Owner { get; set; }
+            public Address Router { get; set; }
             public bool AuthPoolCreators { get; set; }
             public bool AuthProviders { get; set; }
             public bool AuthTraders { get; set; }
             public uint TransactionFee { get; set; }
-            public string StakingToken { get; set; }
+            public Address StakingToken { get; set; }
             public bool EnableMarketFee { get; set; }
         }
 

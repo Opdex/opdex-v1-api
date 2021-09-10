@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +10,14 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 {
     public class StakingPositionsCursor : Cursor<long>
     {
-        public StakingPositionsCursor(IEnumerable<string> liquidityPools, bool includeZeroAmounts, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
+        public StakingPositionsCursor(IEnumerable<Address> liquidityPools, bool includeZeroAmounts, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
-            LiquidityPools = liquidityPools ?? Enumerable.Empty<string>();
+            LiquidityPools = liquidityPools ?? Enumerable.Empty<Address>();
             IncludeZeroAmounts = includeZeroAmounts;
         }
 
-        public IEnumerable<string> LiquidityPools { get; }
+        public IEnumerable<Address> LiquidityPools { get; }
         public bool IncludeZeroAmounts { get; }
 
         /// <inheritdoc />
@@ -77,7 +78,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 
             try
             {
-                cursor = new StakingPositionsCursor(liquidityPools, includeZeroAmounts, direction, limit, paging, pointer);
+                cursor = new StakingPositionsCursor(liquidityPools.Select(pool => new Address(pool)), includeZeroAmounts, direction, limit, paging, pointer);
             }
             catch (Exception)
             {

@@ -1,5 +1,6 @@
 using System;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Xunit;
 
@@ -7,13 +8,12 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
 {
     public class MarketTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateMarket_InvalidAddress_ThrowArgumentNullException(string address)
+        [Fact]
+        public void CreateMarket_InvalidAddress_ThrowArgumentNullException()
         {
             // Arrange
+            var address = Address.Empty;
+
             // Act
             void Act() => new Market(address, 5, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 3, true, 100_000);
 
@@ -65,10 +65,10 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         public void CreateMarket_ValidArguments_PropertiesAreSet()
         {
             // Arrange
-            var address = "PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi";
+            Address address = "PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi";
             var deployerId = 5;
             var stakingTokenId = 10;
-            var owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var authPoolCreators = true;
             var authProviders = true;
             var authTraders = true;

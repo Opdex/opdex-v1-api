@@ -1,39 +1,24 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet
 {
     public class CreateWalletRemoveLiquidityTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletRemoveLiquidityTransactionCommand(string walletAddress, string liquidityPool, string liquidity, string amountCrsMin,
-                                                             string amountSrcMin, string recipient, string router) : base(walletAddress)
+        public CreateWalletRemoveLiquidityTransactionCommand(Address walletAddress, Address liquidityPool, FixedDecimal liquidity, FixedDecimal amountCrsMin,
+                                                             FixedDecimal amountSrcMin, Address recipient, Address router) : base(walletAddress)
         {
-            if (!liquidityPool.HasValue())
+            if (liquidityPool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(liquidityPool));
             }
 
-            if (!liquidity.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Liquidity must be a valid decimal number.", nameof(liquidity));
-            }
-
-            if (!amountCrsMin.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Amount CRS min must be a valid decimal number.", nameof(amountCrsMin));
-            }
-
-            if (!amountSrcMin.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Amount SRC min must be a valid decimal number.", nameof(amountSrcMin));
-            }
-
-            if (!recipient.HasValue())
+            if (recipient == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(recipient));
             }
 
-            if (!router.HasValue())
+            if (router == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(router));
             }
@@ -46,11 +31,11 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             Router = router;
         }
 
-        public string Liquidity { get; }
-        public string AmountCrsMin { get; }
-        public string AmountSrcMin { get; }
-        public string LiquidityPool { get; }
-        public string Recipient { get; }
-        public string Router { get; }
+        public FixedDecimal Liquidity { get; }
+        public FixedDecimal AmountCrsMin { get; }
+        public FixedDecimal AmountSrcMin { get; }
+        public Address LiquidityPool { get; }
+        public Address Recipient { get; }
+        public Address Router { get; }
     }
 }

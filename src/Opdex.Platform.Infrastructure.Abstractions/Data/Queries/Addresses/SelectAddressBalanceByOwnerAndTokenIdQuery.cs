@@ -1,5 +1,5 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Addresses;
 
@@ -18,9 +18,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
         /// <param name="findOrThrow">Defaulted to true, optionally throw if a record is not found.</param>
         /// <exception cref="ArgumentNullException">Thrown when the owner parameter is invalid.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the tokenId provided is invalid.</exception>
-        public SelectAddressBalanceByOwnerAndTokenIdQuery(string owner, long tokenId, bool findOrThrow = true) : base(findOrThrow)
+        public SelectAddressBalanceByOwnerAndTokenIdQuery(Address owner, long tokenId, bool findOrThrow = true) : base(findOrThrow)
         {
-            if (!owner.HasValue())
+            if (owner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(owner), "Owner must be provided.");
             }
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
             TokenId = tokenId;
         }
 
-        public string Owner { get; }
+        public Address Owner { get; }
         public long TokenId { get; }
     }
 }

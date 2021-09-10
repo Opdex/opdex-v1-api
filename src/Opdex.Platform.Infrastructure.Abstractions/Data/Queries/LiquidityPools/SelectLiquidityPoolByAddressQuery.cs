@@ -1,4 +1,4 @@
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using System;
@@ -7,9 +7,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
 {
     public class SelectLiquidityPoolByAddressQuery : FindQuery<LiquidityPool>
     {
-        public SelectLiquidityPoolByAddressQuery(string address, bool findOrThrow = true) : base(findOrThrow)
+        public SelectLiquidityPoolByAddressQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address));
             }
@@ -17,6 +17,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
             Address = address;
         }
 
-        public string Address { get; }
+        public Address Address { get; }
     }
 }

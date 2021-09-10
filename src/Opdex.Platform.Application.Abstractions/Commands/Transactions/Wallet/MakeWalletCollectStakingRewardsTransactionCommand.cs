@@ -1,14 +1,13 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletCollectStakingRewardsTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletCollectStakingRewardsTransactionCommand(string walletAddress,
-            string liquidityPool, bool liquidate) : base(walletAddress)
+        public MakeWalletCollectStakingRewardsTransactionCommand(Address walletAddress, Address liquidityPool, bool liquidate) : base(walletAddress)
         {
-            if (!liquidityPool.HasValue())
+            if (liquidityPool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(liquidityPool));
             }
@@ -17,7 +16,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             Liquidate = liquidate;
         }
 
-        public string LiquidityPool { get; }
+        public Address LiquidityPool { get; }
         public bool Liquidate { get; }
     }
 }

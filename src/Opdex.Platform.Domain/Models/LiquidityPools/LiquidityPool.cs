@@ -1,4 +1,4 @@
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using System;
 
@@ -6,9 +6,9 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
 {
     public class LiquidityPool : BlockAudit
     {
-        public LiquidityPool(string address, long srcTokenId, long lptTokenId, long marketId, ulong createdBlock) : base(createdBlock)
+        public LiquidityPool(Address address, long srcTokenId, long lptTokenId, long marketId, ulong createdBlock) : base(createdBlock)
         {
-            if (!address.HasValue())
+            if (Address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), $"{nameof(address)} must be provided");
             }
@@ -35,14 +35,14 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
         }
 
         // Todo: This shouldn't exist
-        public LiquidityPool(string address, string tokenAddress, ulong createdBlock) : base(createdBlock)
+        public LiquidityPool(Address address, Address tokenAddress, ulong createdBlock) : base(createdBlock)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), $"{nameof(address)} must be provided");
             }
 
-            if (!tokenAddress.HasValue())
+            if (tokenAddress == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(tokenAddress), $"{nameof(tokenAddress)} must be provided");
             }
@@ -51,7 +51,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
             TokenAddress = tokenAddress;
         }
 
-        public LiquidityPool(long id, string address, long srcTokenId, long lptTokenId, long marketId, ulong createdBlock, ulong modifiedBlock)
+        public LiquidityPool(long id, Address address, long srcTokenId, long lptTokenId, long marketId, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -62,12 +62,12 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
         }
 
         public long Id { get; }
-        public string Address { get; }
+        public Address Address { get; }
         public long SrcTokenId { get; }
         public long LpTokenId { get; }
         public long MarketId { get; }
 
         // Todo: Rip this out
-        public string TokenAddress { get; }
+        public Address TokenAddress { get; }
     }
 }

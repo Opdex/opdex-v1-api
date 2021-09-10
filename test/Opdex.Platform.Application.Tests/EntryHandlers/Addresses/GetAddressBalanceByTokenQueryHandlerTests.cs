@@ -52,7 +52,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             var dto = new AddressBalanceDto();
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new AddressBalance(5, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk", "500000000", 500, 505));
+                         .ReturnsAsync(new AddressBalance(5, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk", 500000000, 500, 505));
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressBalance>())).ReturnsAsync(dto);
 
             // Act

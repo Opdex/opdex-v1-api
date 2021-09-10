@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Moq.Contrib.HttpClient;
-using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules;
 using Xunit;
 

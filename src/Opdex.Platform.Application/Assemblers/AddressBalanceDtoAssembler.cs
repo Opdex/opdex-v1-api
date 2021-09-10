@@ -24,7 +24,7 @@ namespace Opdex.Platform.Application.Assemblers
             var dto = _mapper.Map<AddressBalanceDto>(source);
 
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(source.TokenId));
-            dto.Balance = source.Balance.InsertDecimal(token.Decimals);
+            dto.Balance = source.Balance.ToDecimal(token.Decimals);
             dto.Token = token.Address;
 
             return dto;

@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
@@ -92,7 +93,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
             var filter = $"c.`{nameof(VaultCertificateEntity.VaultId)}` = @{nameof(SqlParams.VaultId)}";
             whereFilter += whereFilter.HasValue() ? $" AND {filter}" : $" WHERE {filter}";
 
-            if (request.Cursor.Holder.HasValue())
+            if (request.Cursor.Holder != Address.Empty)
             {
                 whereFilter += $" AND c.`{nameof(VaultCertificateEntity.Owner)}` = @{nameof(SqlParams.Holder)}";
             }
@@ -125,7 +126,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
         private sealed class SqlParams
         {
-            internal SqlParams(long certificateId, long vaultId, string holder)
+            internal SqlParams(long certificateId, long vaultId, Address holder)
             {
                 CertificateId = certificateId;
                 VaultId = vaultId;
@@ -134,7 +135,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
             public long CertificateId { get; }
             public long VaultId { get; }
-            public string Holder { get; }
+            public Address Holder { get; }
         }
     }
 }

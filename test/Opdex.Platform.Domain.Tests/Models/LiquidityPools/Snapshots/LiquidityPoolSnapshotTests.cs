@@ -2,6 +2,7 @@ using FluentAssertions;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
@@ -90,11 +91,11 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             const long id = 12345;
             const long liquidityPoolId = 124;
             const long transactionCount = 1;
-            var reserves = new ReservesSnapshot(100_000_000, "200000000", 3.00m); // 1 crs, 2 src,
+            var reserves = new ReservesSnapshot(100_000_000, 200000000, 3.00m); // 1 crs, 2 src,
             var rewards = new RewardsSnapshot(5.00m, 1.00m);
-            var staking = new StakingSnapshot("50000000", 10.00m);
-            var volume = new VolumeSnapshot(100, "300", 515.23m);
-            var cost = new CostSnapshot(new OhlcBigIntSnapshot("10", "100", "9", "50"), new OhlcBigIntSnapshot("50", "125", "50", "100"));
+            var staking = new StakingSnapshot(50000000, 10.00m);
+            var volume = new VolumeSnapshot(100, 300, 515.23m);
+            var cost = new CostSnapshot(new OhlcBigIntSnapshot(10, 100, 9, 50), new OhlcBigIntSnapshot(50, 125, 50, 100));
             const SnapshotType snapshotType = SnapshotType.Daily;
             var startDate = new DateTime(2021, 6, 21);
             var endDate = new DateTime(2021, 6, 21, 23, 59, 59);
@@ -132,32 +133,32 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
 
             // Reserves
             const long reserveCrs = 100_000_000;
-            const string reserveSrc = "200000000";
+            UInt256 reserveSrc = 200000000;
             const decimal reserveUsd = 3.00m;
 
             // CrsPerSrc Cost
-            const string crsPerSrcOpen = "10";
-            const string crsPerSrcHigh = "100";
-            const string crsPerSrcLow = "10";
-            const string crsPerSrcClose = "90";
+            UInt256 crsPerSrcOpen = 10;
+            UInt256 crsPerSrcHigh = 100;
+            UInt256 crsPerSrcLow = 10;
+            UInt256 crsPerSrcClose = 90;
 
             // SrcPerCrsCost
-            const string srcPerCrsOpen = "10";
-            const string srcPerCrsHigh = "100";
-            const string srcPerCrsLow = "10";
-            const string srcPerCrsClose = "90";
+            UInt256 srcPerCrsOpen = 10;
+            UInt256 srcPerCrsHigh = 100;
+            UInt256 srcPerCrsLow = 10;
+            UInt256 srcPerCrsClose = 90;
 
             // Rewards
             const decimal rewardsProviderUsd = .50m;
             const decimal rewardsMarketUsd = .10m;
 
             // Staking
-            const string stakingWeight = "50000000";
+            UInt256 stakingWeight = 50000000;
             const decimal stakingUsd = 10.00m;
 
             // Volume
             const ulong volumeCrs = 100;
-            const string volumeSrc = "300";
+            UInt256 volumeSrc = 300;
             const decimal volumeUsd = 515.23m;
 
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount,
@@ -204,11 +205,11 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             const long id = 12345;
             const long liquidityPoolId = 124;
             const long transactionCount = 1;
-            var reserves = new ReservesSnapshot(100_000_000, "200000000", 3.00m); // 1 crs, 2 src,
+            var reserves = new ReservesSnapshot(100_000_000, 200000000, 3.00m); // 1 crs, 2 src,
             var rewards = new RewardsSnapshot(.50m, .10m);
-            var staking = new StakingSnapshot("50000000", 10.00m);
-            var volume = new VolumeSnapshot(100, "300", 515.23m);
-            var cost = new CostSnapshot(new OhlcBigIntSnapshot("10", "100", "9", "50"), new OhlcBigIntSnapshot("50", "125", "50", "100"));
+            var staking = new StakingSnapshot(50000000, 10.00m);
+            var volume = new VolumeSnapshot(100, 300, 515.23m);
+            var cost = new CostSnapshot(new OhlcBigIntSnapshot(10, 100, 9, 50), new OhlcBigIntSnapshot(50, 125, 50, 100));
             const SnapshotType snapshotType = SnapshotType.Daily;
             var startDate = new DateTime(2021, 6, 21);
             var endDate = new DateTime(2021, 6, 21, 23, 59, 59);
@@ -218,10 +219,10 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             txSwapLog.amountCrsOut = 0ul;
             txSwapLog.amountSrcIn = "0";
             txSwapLog.amountSrcOut = "2000000000";
-            txSwapLog.sender = "Sender";
-            txSwapLog.to = "To";
+            txSwapLog.sender = "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK";
+            txSwapLog.to = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";
 
-            var swapLog = new SwapLog(txSwapLog, "poolAddress", 1);
+            var swapLog = new SwapLog(txSwapLog, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 1);
 
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount, reserves, rewards, staking, volume, cost,
                                                      snapshotType, startDate, endDate, startDate);
@@ -233,7 +234,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Id.Should().Be(id);
             snapshot.Volume.Usd.Should().BeGreaterThan(515.23m);
             snapshot.Volume.Crs.Should().BeGreaterThan(100);
-            snapshot.Volume.Src.ToBigInteger().Should().BeGreaterThan("300".ToBigInteger());
+            (snapshot.Volume.Src > 300).Should().Be(true);
             snapshot.Rewards.ProviderUsd.Should().BeGreaterThan(.50m);
             snapshot.Rewards.MarketUsd.Should().BeGreaterThan(.10m);
             snapshot.Staking.Should().Be(staking);
@@ -256,41 +257,41 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             var endDate = new DateTime(2021, 6, 21, 23, 59, 59);
 
             // Reserves
-            const long reserveCrs = 100_000_000;
-            const string reserveSrc = "200000000";
+            const ulong reserveCrs = 100_000_000;
+            UInt256 reserveSrc = 200000000;
             const decimal reserveUsd = 3.00m;
 
             // CrsPerSrc Cost
-            const string crsPerSrcOpen = "10";
-            const string crsPerSrcHigh = "100";
-            const string crsPerSrcLow = "10";
-            const string crsPerSrcClose = "90";
+            UInt256 crsPerSrcOpen = 10;
+            UInt256 crsPerSrcHigh = 100;
+            UInt256 crsPerSrcLow = 10;
+            UInt256 crsPerSrcClose = 90;
 
             // SrcPerCrsCost
-            const string srcPerCrsOpen = "10";
-            const string srcPerCrsHigh = "100";
-            const string srcPerCrsLow = "10";
-            const string srcPerCrsClose = "90";
+            UInt256 srcPerCrsOpen = 10;
+            UInt256 srcPerCrsHigh = 100;
+            UInt256 srcPerCrsLow = 10;
+            UInt256 srcPerCrsClose = 90;
 
             // Rewards
             const decimal rewardsProviderUsd = .50m;
             const decimal rewardsMarketUsd = .10m;
 
             // Staking
-            const string stakingWeight = "50000000";
+            UInt256 stakingWeight = 50000000;
             const decimal stakingUsd = 10.00m;
 
             // Volume
             const ulong volumeCrs = 100;
-            const string volumeSrc = "300";
+            UInt256 volumeSrc = 300;
             const decimal volumeUsd = 515.23m;
 
             // txLog
             dynamic txReservesLog = new ExpandoObject();
-            txReservesLog.reserveCrs = 1_000_000_000ul;
-            txReservesLog.reserveSrc = "2000000000";
+            txReservesLog.reserveCrs = reserveCrs;
+            txReservesLog.reserveSrc = reserveSrc.ToString();
 
-            var reservesLog = new ReservesLog(txReservesLog, "poolAddress", 1);
+            var reservesLog = new ReservesLog(txReservesLog, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 1);
 
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount,
                                                      new ReservesSnapshot(reserveCrs, reserveSrc, reserveUsd),
@@ -315,8 +316,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Staking.Usd.Should().Be(stakingUsd);
             snapshot.Cost.SrcPerCrs.Close.Should().NotBe(srcPerCrsOpen).And.NotBe(srcPerCrsClose);
             snapshot.Cost.CrsPerSrc.Close.Should().NotBe(crsPerSrcOpen).And.NotBe(crsPerSrcClose);
-            snapshot.Reserves.Crs.Should().Be(txReservesLog.reserveCrs);
-            snapshot.Reserves.Src.Should().Be(txReservesLog.reserveSrc);
+            snapshot.Reserves.Crs.Should().Be(reserveCrs);
+            snapshot.Reserves.Src.Should().Be(reserveSrc);
             snapshot.Reserves.Usd.Should().BeGreaterThan(reserveUsd);
             snapshot.TransactionCount.Should().Be(transactionCount);
             snapshot.StartDate.Should().Be(startDate);
@@ -336,42 +337,46 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
 
             // Reserves
             const long reserveCrs = 100_000_000;
-            const string reserveSrc = "200000000";
+            UInt256 reserveSrc = 200000000;
             const decimal reserveUsd = 3.00m;
 
             // CrsPerSrc Cost
-            const string crsPerSrcOpen = "10";
-            const string crsPerSrcHigh = "100";
-            const string crsPerSrcLow = "10";
-            const string crsPerSrcClose = "90";
+            UInt256 crsPerSrcOpen = 10;
+            UInt256 crsPerSrcHigh = 100;
+            UInt256 crsPerSrcLow = 10;
+            UInt256 crsPerSrcClose = 90;
 
             // SrcPerCrsCost
-            const string srcPerCrsOpen = "10";
-            const string srcPerCrsHigh = "100";
-            const string srcPerCrsLow = "10";
-            const string srcPerCrsClose = "90";
+            UInt256 srcPerCrsOpen = 10;
+            UInt256 srcPerCrsHigh = 100;
+            UInt256 srcPerCrsLow = 10;
+            UInt256 srcPerCrsClose = 90;
 
             // Rewards
             const decimal rewardsProviderUsd = .50m;
             const decimal rewardsMarketUsd = .10m;
 
             // Staking
-            const string stakingWeight = "50000000";
+            UInt256 stakingWeight = 50000000;
             const decimal stakingUsd = 10.00m;
 
             // Volume
             const ulong volumeCrs = 100;
-            const string volumeSrc = "300";
+            UInt256 volumeSrc = 300;
             const decimal volumeUsd = 515.23m;
 
             // txLog
-            dynamic txStakingLog = new ExpandoObject();
-            txStakingLog.staker = "StakerAddress";
-            txStakingLog.amount = "2000000000";
-            txStakingLog.totalStaked = "10000000000";
-            txStakingLog.stakerBalance = "100";
+            UInt256 amount = 2000000000;
+            UInt256 totalStaked = 10000000000;
+            UInt256 stakerBalance = 100;
 
-            var stakingLog = new StartStakingLog(txStakingLog, "poolAddress", 1);
+            dynamic txStakingLog = new ExpandoObject();
+            txStakingLog.staker = "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw";
+            txStakingLog.amount = amount.ToString();
+            txStakingLog.totalStaked = totalStaked.ToString();
+            txStakingLog.stakerBalance = stakerBalance.ToString();
+
+            var stakingLog = new StartStakingLog(txStakingLog, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 1);
 
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount,
                                                      new ReservesSnapshot(reserveCrs, reserveSrc, reserveUsd),
@@ -392,7 +397,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Volume.Usd.Should().Be(volumeUsd);
             snapshot.Rewards.ProviderUsd.Should().Be(rewardsProviderUsd);
             snapshot.Rewards.MarketUsd.Should().Be(rewardsMarketUsd);
-            snapshot.Staking.Weight.Should().Be(txStakingLog.totalStaked);
+            snapshot.Staking.Weight.Should().Be(totalStaked);
             snapshot.Staking.Usd.Should().Be(100.00m);
             snapshot.Cost.SrcPerCrs.Open.Should().Be(srcPerCrsOpen);
             snapshot.Cost.SrcPerCrs.High.Should().Be(srcPerCrsHigh);

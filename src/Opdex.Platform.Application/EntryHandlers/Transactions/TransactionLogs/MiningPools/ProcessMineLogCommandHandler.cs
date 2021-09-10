@@ -5,13 +5,11 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
-using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningPools
 {
@@ -39,7 +37,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var miningBalance = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id,
                                                                                                               request.Log.Miner,
                                                                                                               findOrThrow: false))
-                                    ?? new AddressMining(miningPool.Id, request.Log.Miner, "0", request.BlockHeight);
+                                    ?? new AddressMining(miningPool.Id, request.Log.Miner, UInt256.Zero, request.BlockHeight);
 
                 var isNewer = request.BlockHeight < miningBalance.ModifiedBlock;
                 if (isNewer && miningBalance.Id != 0)

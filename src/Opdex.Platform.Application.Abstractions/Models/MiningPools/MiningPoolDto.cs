@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Application.Abstractions.Models.MiningPools
 {
@@ -7,9 +8,9 @@ namespace Opdex.Platform.Application.Abstractions.Models.MiningPools
         public Address Address { get; set; }
         public Address LiquidityPool { get; set; }
         public ulong MiningPeriodEndBlock { get; set; }
-        public string RewardPerBlock { get; set; }
-        public string RewardPerLpt { get; set; }
-        public string TokensMining { get; set; }
+        public UInt256 RewardPerBlock { get; set; }
+        public UInt256 RewardPerLpt { get; set; }
+        public UInt256 TokensMining { get; set; }
         public bool IsActive { get; set; }
     }
 }

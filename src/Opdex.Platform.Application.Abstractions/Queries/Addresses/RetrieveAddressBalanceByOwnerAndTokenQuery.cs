@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Addresses;
 using System;
@@ -19,9 +20,9 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Addresses
         /// <param name="findOrThrow">Defaulted to true, optionally throw not found exception when applicable.</param>
         /// <exception cref="ArgumentNullException">Argument null exception for invalid request arguments.</exception>
         /// <exception cref="ArgumentException">Argument exception thrown when tokenId and tokenAddress are both invalid.</exception>
-        public RetrieveAddressBalanceByOwnerAndTokenQuery(string owner, long? tokenId = null, string tokenAddress = null, bool findOrThrow = true) : base(findOrThrow)
+        public RetrieveAddressBalanceByOwnerAndTokenQuery(Address owner, long? tokenId = null, string tokenAddress = null, bool findOrThrow = true) : base(findOrThrow)
         {
-            Owner = owner.HasValue() ? owner : throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
+            Owner = owner != Address.Empty ? owner : throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
 
             if (!(tokenId.HasValue && tokenId.Value > 0) && !tokenAddress.HasValue())
             {
@@ -34,6 +35,6 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Addresses
 
         public string TokenAddress { get; }
         public long? TokenId { get; }
-        public string Owner { get; }
+        public Address Owner { get; }
     }
 }

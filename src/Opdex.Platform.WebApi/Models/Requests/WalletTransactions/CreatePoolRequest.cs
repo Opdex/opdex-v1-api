@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -10,6 +11,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// The SRC token's smart contract address.
         /// </summary>
         [Required]
-        public string Token { get; set; }
+        public Address Token { get; set; }
     }
 }

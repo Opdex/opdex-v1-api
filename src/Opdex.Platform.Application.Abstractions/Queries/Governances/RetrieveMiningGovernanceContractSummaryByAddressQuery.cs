@@ -1,16 +1,15 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Governances;
-using Opdex.Platform.Domain.Models.ODX;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Governances
 {
     public class RetrieveMiningGovernanceContractSummaryByAddressQuery : IRequest<MiningGovernanceContractSummary>
     {
-        public RetrieveMiningGovernanceContractSummaryByAddressQuery(string address)
+        public RetrieveMiningGovernanceContractSummaryByAddressQuery(Address address)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address));
             }
@@ -18,6 +17,6 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Governances
             Address = address;
         }
 
-        public string Address { get; }
+        public Address Address { get; }
     }
 }
