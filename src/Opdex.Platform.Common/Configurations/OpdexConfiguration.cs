@@ -6,26 +6,35 @@ namespace Opdex.Platform.Common.Configurations
 {
     public class OpdexConfiguration : IValidatable
     {
-        public string WalletTransactionCallback { get; set; } = "https://dev-api.opdex.com/transactions";
-        public string ConnectionString { get; set; }
+        private string _walletTransactionCallback;
+
+        public string ApiUrl { get; set; }
+
+        public string WalletTransactionCallback
+        {
+            get => $"{this.ApiUrl}{this._walletTransactionCallback}";
+            set => _walletTransactionCallback = value;
+        }
+
         public NetworkType Network { get; set; }
+
         public string InstanceId { get; } = Guid.NewGuid().ToString();
 
         public void Validate()
         {
+            if (!ApiUrl.HasValue())
+            {
+                throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(ApiUrl)} must not be null or empty.");
+            }
+
             if (!WalletTransactionCallback.HasValue())
             {
                 throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(WalletTransactionCallback)} must not be null or empty.");
             }
 
-            if (!ConnectionString.HasValue())
-            {
-                throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(ConnectionString)} must not be null or empty.");
-            }
-
             if (!Network.IsValid())
             {
-                throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(Network)} must be a valid network type.");
+                throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(Environment)} must be a valid network type.");
             }
         }
     }

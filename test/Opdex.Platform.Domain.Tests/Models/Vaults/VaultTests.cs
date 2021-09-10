@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Opdex.Platform.Common.Models.UInt;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
+using Opdex.Platform.Domain.Models.Vaults;
 using System.Dynamic;
 using Xunit;
 

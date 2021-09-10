@@ -25,9 +25,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
 
         public async Task<string> Handle(CreateWalletAddLiquidityTransactionCommand request, CancellationToken cancellationToken)
         {
-            if (request.AmountCrs == FixedDecimal.Zero)
+            if (request.AmountCrs == 0m)
             {
-                throw new Exception("Cannot add liquidity with 0 CRS");
+                throw new ArgumentOutOfRangeException("Cannot add liquidity with 0 CRS");
             }
 
             var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool), cancellationToken);

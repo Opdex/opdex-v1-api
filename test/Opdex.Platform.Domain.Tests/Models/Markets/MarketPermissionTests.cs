@@ -22,19 +22,19 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         }
 
         [Fact]
-        public void CreateMarketPermission_UnknownPermission_ThrowArgumentNullException()
+        public void CreateMarketPermission_UnknownPermission_ThrowArgumentOutOfRangeException()
         {
             // Arrange
             // Act
             static void Act() => new MarketPermission(5,
                                                       "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                      Permissions.Unknown,
+                                                      0,
                                                       true,
                                                       "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                       500);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Permission must be set.");
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Permission must be valid.");
         }
 
         [Theory]

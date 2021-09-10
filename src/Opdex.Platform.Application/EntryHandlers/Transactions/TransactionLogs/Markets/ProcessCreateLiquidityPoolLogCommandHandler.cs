@@ -7,12 +7,9 @@ using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Commands.MiningPools;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
-using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Common.Constants;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.MiningPools;
@@ -45,9 +42,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var srcTokenId = await MakeToken(request.Log.Token, request.BlockHeight);
 
-                var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(srcTokenId));
-
-                var lpTokenId = await MakeToken(request.Log.Pool, request.BlockHeight, $"{srcToken.Symbol}/CRS {TokenConstants.LiquidityPoolToken.Symbol}");
+                var lpTokenId = await MakeToken(request.Log.Pool, request.BlockHeight, true);
 
                 var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false));
                 long liquidityPoolId = 0;
@@ -78,7 +73,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
         }
 
-        private async Task<long> MakeToken(Address tokenAddress, ulong blockHeight, string lpSymbol = null)
+        private async Task<long> MakeToken(Address tokenAddress, ulong blockHeight, bool isLpToken = false)
         {
             var srcToken = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress.ToString(), findOrThrow: false));
 
@@ -87,14 +82,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 return srcToken.Id;
             }
 
-            var isLpToken = lpSymbol.HasValue();
-
             var summary = await _mediator.Send(new CallCirrusGetSrcTokenSummaryByAddressQuery(tokenAddress));
-
-            if (isLpToken)
-            {
-                summary.SetLpTokenSymbol(lpSymbol);
-            }
 
             srcToken = new Token(summary.Address.ToString(), isLpToken, summary.Name, summary.Symbol, (int)summary.Decimals, summary.Sats,
                                  summary.TotalSupply, blockHeight);

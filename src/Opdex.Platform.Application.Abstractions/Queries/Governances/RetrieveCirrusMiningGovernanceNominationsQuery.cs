@@ -8,16 +8,23 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Governances
 {
     public class RetrieveCirrusMiningGovernanceNominationsQuery : IRequest<IEnumerable<MiningGovernanceNominationCirrusDto>>
     {
-        public RetrieveCirrusMiningGovernanceNominationsQuery(Address address)
+        public RetrieveCirrusMiningGovernanceNominationsQuery(Address address, ulong blockHeight)
         {
             if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address));
             }
 
+            if (blockHeight < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockHeight));
+            }
+
             Address = address;
+            BlockHeight = blockHeight;
         }
 
         public Address Address { get; }
+        public ulong BlockHeight { get; }
     }
 }

@@ -9,12 +9,12 @@ using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.Transactions;
+using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
@@ -176,6 +176,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddScoped<IDbContext, DbContext>();
 
             // Deployer
+            services.AddTransient<IRequestHandler<SelectActiveDeployerQuery, Deployer>, SelectActiveDeployerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectDeployerByAddressQuery, Deployer>, SelectDeployerByAddressQueryHandler>();
 
             // Market

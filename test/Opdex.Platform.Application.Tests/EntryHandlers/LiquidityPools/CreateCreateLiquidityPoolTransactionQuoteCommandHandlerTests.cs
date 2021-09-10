@@ -30,7 +30,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
 
         public CreateCreateLiquidityPoolTransactionQuoteCommandHandlerTests()
         {
-            _config = new OpdexConfiguration();
+            _config = new OpdexConfiguration {ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions"};
             _mediatorMock = new Mock<IMediator>();
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _handler = new CreateCreateLiquidityPoolTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);

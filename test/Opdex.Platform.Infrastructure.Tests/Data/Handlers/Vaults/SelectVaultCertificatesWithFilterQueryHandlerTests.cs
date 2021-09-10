@@ -2,7 +2,7 @@ using AutoMapper;
 using Moq;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;

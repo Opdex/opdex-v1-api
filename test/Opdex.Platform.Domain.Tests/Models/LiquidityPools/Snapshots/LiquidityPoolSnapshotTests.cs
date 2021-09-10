@@ -31,7 +31,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void CreateLiquidityPoolSnapshot_InvalidSnapshotType_ThrowsArgumentOutOfRangeException()
         {
             // Arrange
-            const SnapshotType snapshotType = SnapshotType.Unknown;
+            const SnapshotType snapshotType = 0;
 
             // Act
             void Act() => new LiquidityPoolSnapshot(1, snapshotType, DateTime.UtcNow);
@@ -108,7 +108,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Id.Should().Be(0L);
             snapshot.Volume.Should().BeEquivalentTo(new VolumeSnapshot());
             snapshot.Rewards.Should().BeEquivalentTo(new RewardsSnapshot());
-            snapshot.Staking.Usd.Should().Be(.25m); // .5 ODX * .5
+            snapshot.Staking.Usd.Should().Be(.25m); // .5 staking * .5
             snapshot.Staking.Weight.Should().Be(staking.Weight);
             snapshot.Cost.CrsPerSrc.Open.Should().Be(cost.CrsPerSrc.Close); // Rolls close to open
             snapshot.Cost.SrcPerCrs.Open.Should().Be(cost.SrcPerCrs.Close); // Rolls close to open
@@ -181,7 +181,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Rewards.ProviderUsd.Should().Be(rewardsProviderUsd);
             snapshot.Rewards.MarketUsd.Should().Be(rewardsMarketUsd);
             snapshot.Staking.Weight.Should().Be(stakingWeight);
-            snapshot.Staking.Usd.Should().Be(.25m); // .5 ODX * .5
+            snapshot.Staking.Usd.Should().Be(.25m); // .5 staking * .5
             snapshot.Cost.SrcPerCrs.Open.Should().Be(srcPerCrsOpen);
             snapshot.Cost.SrcPerCrs.High.Should().Be(srcPerCrsHigh);
             snapshot.Cost.SrcPerCrs.Low.Should().Be(srcPerCrsLow);

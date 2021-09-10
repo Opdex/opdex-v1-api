@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using System;
 
@@ -26,7 +27,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapsho
                 throw new ArgumentOutOfRangeException(nameof(liquidityPoolId), "liquidityPoolId must be greater than 0.");
             }
 
-            if (snapshotType == SnapshotType.Unknown)
+            if (!snapshotType.IsValid())
             {
                 throw new ArgumentOutOfRangeException(nameof(snapshotType));
             }

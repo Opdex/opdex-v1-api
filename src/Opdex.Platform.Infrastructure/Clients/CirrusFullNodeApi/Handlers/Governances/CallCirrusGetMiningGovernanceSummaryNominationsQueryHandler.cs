@@ -26,7 +26,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Gover
 
         public async Task<IEnumerable<MiningGovernanceNominationCirrusDto>> Handle(CallCirrusGetMiningGovernanceSummaryNominationsQuery request, CancellationToken cancellationToken)
         {
-            var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Nominations", new string[0]);
+            var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Nominations", new string[0], request.BlockHeight);
             var nominationsResponse = await _smartContractsModule.LocalCallAsync(localCall, CancellationToken.None);
 
             var serialized = JsonConvert.SerializeObject(nominationsResponse.Return);

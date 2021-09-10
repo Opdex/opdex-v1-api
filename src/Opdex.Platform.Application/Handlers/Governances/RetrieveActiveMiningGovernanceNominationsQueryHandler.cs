@@ -1,7 +1,6 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Domain.Models.Governances;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
 using System;
 using System.Collections.Generic;

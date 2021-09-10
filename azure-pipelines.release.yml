@@ -6,17 +6,40 @@ jobs:
   - deployment: ${{ parameters.environment }}
     displayName: 'Deploy Resources'
     variables:
-      - group: ${{ parameters.environment }} # points to variable group in Azure DevOps
+      - group: '${{ parameters.environment }}-api' # points to variable group in Azure DevOps
     environment: ${{ parameters.environment }} # points to environments in Azure DevOps
     strategy:
       runOnce:
         deploy:
           steps:
+            - task: replacetokens@3
+              displayName: 'Replace Variables'
+              inputs:
+                targetFiles: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/**/appsettings.Production.json'
+                encoding: 'auto'
+                writeBOM: true
+                verbosity: 'detailed'
+                actionOnMissing: 'warn'
+                keepToken: false
+                tokenPrefix: '#{'
+                tokenSuffix: '}#'
+                useLegacyPattern: false
+                enableTelemetry: true
+
+            - task: ArchiveFiles@2
+              displayName: 'Archive files'
+              inputs:
+                rootFolderOrFile: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/Opdex.Platform.WebApi'
+                includeRootFolder: false
+                archiveType: zip
+                archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+                replaceExistingArchive: true
+
             - task: AzureWebApp@1
               inputs:
-                azureSubscription: $(azureSubscription) 
+                azureSubscription: $(azureSubscription)
                 appType: 'webApp'
                 appName: 'app-opdex-${{ parameters.environment }}-api'
-                package: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/*.zip'
+                package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
                 deploymentMethod: 'auto'
               displayName: Deploy to App Service

@@ -14,6 +14,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
     {
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO governance_nomination (
+                {nameof(MiningGovernanceNominationEntity.GovernanceId)},
                 {nameof(MiningGovernanceNominationEntity.LiquidityPoolId)},
                 {nameof(MiningGovernanceNominationEntity.MiningPoolId)},
                 {nameof(MiningGovernanceNominationEntity.IsNominated)},
@@ -21,6 +22,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
                 {nameof(MiningGovernanceNominationEntity.CreatedBlock)},
                 {nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
               ) VALUES (
+                @{nameof(MiningGovernanceNominationEntity.GovernanceId)},
                 @{nameof(MiningGovernanceNominationEntity.LiquidityPoolId)},
                 @{nameof(MiningGovernanceNominationEntity.MiningPoolId)},
                 @{nameof(MiningGovernanceNominationEntity.IsNominated)},

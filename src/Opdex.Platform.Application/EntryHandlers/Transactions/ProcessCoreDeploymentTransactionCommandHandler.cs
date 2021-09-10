@@ -61,7 +61,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                 // No duplicate attempts to create the same deployer
                 var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(transaction.NewContractAddress, findOrThrow: false))
-                               ?? new Deployer(transaction.NewContractAddress, transaction.From, transaction.BlockHeight);
+                               ?? new Deployer(transaction.NewContractAddress, transaction.From, isActive: true, transaction.BlockHeight);
 
                 var deployerId = deployer.Id;
                 if (deployerId == 0)

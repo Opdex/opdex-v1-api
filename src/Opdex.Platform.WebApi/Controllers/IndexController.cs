@@ -58,12 +58,12 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Resync From Deployment</summary>
-        /// <remarks>Processes the odx and market deployer transactions then syncs to chain tip.</remarks>
+        /// <remarks>Processes the mined governance token and market deployer transactions then syncs to chain tip.</remarks>
         /// <remarks>
-        /// For a successful redeployment, copy the odx and market deployer deployment transaction hashes.
+        /// For a successful redeployment, copy the mined token and market deployer deployment transaction hashes.
         /// Then clear all non-lookup tables of any data in the database. Leaving only `_type` tables populated.
         /// </remarks>
-        /// <param name="request">The odx and market deployer transaction hashes to look up.</param>
+        /// <param name="request">The mined token and market deployer transaction hashes to look up.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>No Content</returns>
         [HttpPost("resync-from-deployment")]
@@ -78,7 +78,7 @@ namespace Opdex.Platform.WebApi.Controllers
 
             await _mediator.Send(new MakeIndexerLockCommand());
 
-            await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.OdxDeploymentTxHash));
+            await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash));
             await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash));
             await _mediator.Send(new ProcessLatestBlocksCommand(_network));
 

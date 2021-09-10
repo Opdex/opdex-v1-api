@@ -1,6 +1,6 @@
 using System;
 using MediatR;
-using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Vaults;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults
 {

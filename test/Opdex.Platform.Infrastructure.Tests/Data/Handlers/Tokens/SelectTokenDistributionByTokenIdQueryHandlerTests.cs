@@ -6,7 +6,7 @@ using Moq;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distribution;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution;
 using Xunit;
@@ -32,6 +32,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
             var expectedEntity = new TokenDistributionEntity
             {
                 Id = 123454,
+                TokenId = 99999,
                 VaultDistribution = 10000,
                 MiningGovernanceDistribution = 10000000,
                 DistributionBlock = 87654,
@@ -49,6 +50,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Id.Should().Be(expectedEntity.Id);
+            result.TokenId.Should().Be(expectedEntity.TokenId);
             result.VaultDistribution.Should().Be(expectedEntity.VaultDistribution);
             result.MiningGovernanceDistribution.Should().Be(expectedEntity.MiningGovernanceDistribution);
             result.DistributionBlock.Should().Be(expectedEntity.DistributionBlock);

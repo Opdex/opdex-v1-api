@@ -103,7 +103,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
 
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var token = new Token(1, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", false, "Opdex", "ODX", 8, 100_000_000, UInt256.Parse("100"), 1, 1);
+            var token = new Token(1, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", false, "Bitcoin", "wBTC", 8, 100_000_000, 100, 1, 1);
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), cancellationToken))
@@ -133,7 +133,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
 
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var token = new Token(1, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", false, "Opdex", "ODX", 8, 100_000_000, UInt256.Parse("100"), 1, 1);
+            var token = new Token(1, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", false, "Bitcoin", "wBTC", 8, 100_000_000, 100, 1, 1);
 
             var allowance = new UInt256("10000");
 

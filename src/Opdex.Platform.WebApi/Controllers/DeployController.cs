@@ -14,7 +14,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
@@ -49,13 +48,6 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <remarks>
         /// Long running (5 minutes) deployment of local environment opdex smart contracts.
         /// </remarks>
-        /// <para>Test</para>
-        /// <remarks>
-        /// Deploys ODX token, deploys the core Opdex Market Deployer contract, creates 4 additional SRC tokens and
-        /// approves allowances to create liquidity pools and provide liquidity within Opdex staking market.
-        /// Serializes the 4 SRC token liquidity pool addresses and distributes ODX tokens to the vault and to the mining
-        /// governance contract (already deployed during ODX creation).
-        /// </remarks>
         /// <param name="request">The wallet parameters needed for local env smart contract transactions.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>Success</returns>
@@ -71,22 +63,22 @@ namespace Opdex.Platform.WebApi.Controllers
 
             await _mediator.Send(new MakeIndexerLockCommand());
 
-            // Deploy ODX
-            var createOdxParams = new[] {
-                "Opdex".ToSmartContractParameter(SmartContractParameterType.String),
-                "ODX".ToSmartContractParameter(SmartContractParameterType.String),
+            // Deploy governance token
+            var createGovernanceTokenParams = new[] {
+                "Governance Token".ToSmartContractParameter(SmartContractParameterType.String),
+                "GOV".ToSmartContractParameter(SmartContractParameterType.String),
                 _vaultDistributionSchedule,
                 _minerDistributionSchedule,
                 _distributionSchedulePeriodDuration
             };
-            var createOdxRequest = new SmartContractCreateRequestDto(governanceByteCode, request.WalletAddress, createOdxParams,
-                                                                     request.WalletName, request.WalletPassword);
+            var createGovernanceTokenRequest = new SmartContractCreateRequestDto(governanceByteCode, request.WalletAddress, createGovernanceTokenParams,
+                                                                                 request.WalletName, request.WalletPassword);
 
-            var odxTransaction = await CallAndWait(
-                async () => await _mediator.Send(new CallCirrusCreateSmartContractCommand(createOdxRequest), cancellationToken));
+            var governanceTokenTransaction = await CallAndWait(
+                async () => await _mediator.Send(new CallCirrusCreateSmartContractCommand(createGovernanceTokenRequest), cancellationToken));
 
-            // Process ODX deployment
-            await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(odxTransaction.Hash), CancellationToken.None);
+            // Process governance token deployment
+            await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(governanceTokenTransaction.Hash), CancellationToken.None);
 
             // Deploy Market Deployer
             var createDeployerRequest = new SmartContractCreateRequestDto(marketDeployerByteCode, request.WalletAddress, new string[0],
@@ -95,7 +87,7 @@ namespace Opdex.Platform.WebApi.Controllers
             var deployerTransaction = await CallAndWait(
                 async () => await _mediator.Send(new CallCirrusCreateSmartContractCommand(createDeployerRequest), cancellationToken));
 
-            var createStakingMarketParams = new[] { odxTransaction.NewContractAddress.ToSmartContractParameter(SmartContractParameterType.Address) };
+            var createStakingMarketParams = new[] { governanceTokenTransaction.NewContractAddress.ToSmartContractParameter(SmartContractParameterType.Address) };
             var createStakingMarketRequest = new SmartContractCallRequestDto(deployerTransaction.NewContractAddress, request.WalletName,
                                                                              request.WalletAddress, request.WalletPassword, FixedDecimal.Zero,
                                                                              "CreateStakingMarket", createStakingMarketParams);
@@ -143,23 +135,23 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                                                 stakingMarket.Router), cancellationToken));
             }
 
-            // Get liquidity pools to use for initial ODX distribution and mining governance nominations
+            // Get liquidity pools to use for initial governance token distribution and mining governance nominations
             var poolAddresses = createLiquidityPoolTransactions
                 .Select(t => ((CreateLiquidityPoolLog)t.Logs.First(log => log.LogType == TransactionLogType.CreateLiquidityPoolLog)).Pool);
 
             var poolsParams = poolAddresses.Select(address => address.ToSmartContractParameter(SmartContractParameterType.Address)).ToArray();
-            var distributeOdxRequest = new SmartContractCallRequestDto(odxTransaction.NewContractAddress, request.WalletName, request.WalletAddress,
-                                                                       request.WalletPassword, FixedDecimal.Zero, "DistributeGenesis", poolsParams);
+            var distributeGovernanceTokenRequest = new SmartContractCallRequestDto(governanceTokenTransaction.NewContractAddress, request.WalletName, request.WalletAddress,
+                                                                                   request.WalletPassword, FixedDecimal.Zero, "DistributeGenesis", poolsParams);
 
-            await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: distributeOdxRequest), cancellationToken));
+            await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: distributeGovernanceTokenRequest), cancellationToken));
 
-            // Create ODX Liquidity Pool
-            // Note: we can create the pool but to obtain tokens, the vault vesting period must clear or ODX must be mined
-            var createOdxPoolParams = new[] { odxTransaction.NewContractAddress.ToSmartContractParameter(SmartContractParameterType.Address) };
-            var createOdxPoolRequest = new SmartContractCallRequestDto(stakingMarket.Market, request.WalletName, request.WalletAddress,
-                                                                       request.WalletPassword, FixedDecimal.Zero, "CreatePool", createOdxPoolParams);
+            // Create Governance Token's Liquidity Pool
+            // Note: we can create the pool but to obtain tokens, the vault vesting period must clear or the governance token must be mined
+            var createGovernanceTokenPoolParams = new[] { governanceTokenTransaction.NewContractAddress.ToSmartContractParameter(SmartContractParameterType.Address) };
+            var createGovernanceTokenPoolRequest = new SmartContractCallRequestDto(stakingMarket.Market, request.WalletName, request.WalletAddress,
+                                                                                   request.WalletPassword, FixedDecimal.Zero, "CreatePool", createGovernanceTokenPoolParams);
 
-            await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: createOdxPoolRequest), cancellationToken));
+            await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: createGovernanceTokenPoolRequest), cancellationToken));
 
             await _mediator.Send(new ProcessLatestBlocksCommand(_network), CancellationToken.None);
 

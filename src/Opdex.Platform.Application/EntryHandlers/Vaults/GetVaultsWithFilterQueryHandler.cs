@@ -3,7 +3,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Vaults;
 using System;
 using System.Linq;
 using System.Threading;

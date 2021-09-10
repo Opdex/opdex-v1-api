@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
 
@@ -35,7 +36,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
                 throw new ArgumentOutOfRangeException(nameof(crsUsd));
             }
 
-            if (snapshotType == SnapshotType.Unknown)
+            if (!snapshotType.IsValid())
             {
                 throw new ArgumentOutOfRangeException(nameof(snapshotType), $"{nameof(snapshotType)} must be valid.");
             }

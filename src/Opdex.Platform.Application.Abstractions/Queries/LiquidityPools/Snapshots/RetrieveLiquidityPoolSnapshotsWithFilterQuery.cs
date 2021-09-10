@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapsho
                 throw new ArgumentOutOfRangeException(nameof(endDate));
             }
 
-            if (snapshotType == SnapshotType.Unknown)
+            if (!snapshotType.IsValid())
             {
                 throw new ArgumentOutOfRangeException(nameof(snapshotType));
             }

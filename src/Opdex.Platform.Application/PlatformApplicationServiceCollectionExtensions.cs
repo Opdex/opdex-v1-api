@@ -14,7 +14,6 @@ using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs;
@@ -129,6 +128,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Vaults;
 
 namespace Opdex.Platform.Application
 {
@@ -210,17 +210,7 @@ namespace Opdex.Platform.Application
             // Wallet Transactions - most to be removed with new quote flow
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateWalletAddLiquidityTransactionCommand, string>, CreateWalletAddLiquidityTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletRemoveLiquidityTransactionCommand, string>, CreateWalletRemoveLiquidityTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateWalletApproveAllowanceTransactionCommand, string>, CreateWalletApproveAllowanceTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletCreateLiquidityPoolTransactionCommand, string>, CreateWalletCreateLiquidityPoolTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletSkimTransactionCommand, string>, CreateWalletSkimTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletSyncTransactionCommand, string>, CreateWalletSyncTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletStartStakingTransactionCommand, string>, CreateWalletStartStakingTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletStopStakingTransactionCommand, string>, CreateWalletStopStakingTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletCollectStakingRewardsTransactionCommand, string>, CreateWalletCollectStakingRewardsTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletStartMiningTransactionCommand, string>, CreateWalletStartMiningTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletStopMiningTransactionCommand, string>, CreateWalletStopMiningTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateWalletCollectMiningRewardsTransactionCommand, string>, CreateWalletCollectMiningRewardsTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateWalletDistributeTokensTransactionCommand, string>, CreateWalletDistributeTokensTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateWalletRewardMiningPoolsTransactionCommand, string>, CreateWalletRewardMiningPoolsTransactionCommandHandler>();
 
@@ -231,6 +221,12 @@ namespace Opdex.Platform.Application
 
             // Markets
             services.AddTransient<IRequestHandler<ProcessMarketSnapshotsCommand, Unit>, ProcessMarketSnapshotsCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateClaimStandardMarketOwnershipTransactionQuoteCommand, TransactionQuoteDto>, CreateClaimStandardMarketOwnershipTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateCollectStandardMarketFeesTransactionQuoteCommand, TransactionQuoteDto>, CreateCollectStandardMarketFeesTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateCreateStakingMarketTransactionQuoteCommand, TransactionQuoteDto>, CreateCreateStakingMarketTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateCreateStandardMarketTransactionQuoteCommand, TransactionQuoteDto>, CreateCreateStandardMarketTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateSetStandardMarketOwnershipTransactionQuoteCommand, TransactionQuoteDto>, CreateSetStandardMarketOwnershipTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateSetStandardMarketPermissionsTransactionQuoteCommand, TransactionQuoteDto>, CreateSetStandardMarketPermissionsTransactionQuoteCommandHandler>();
 
             // Blocks
             services.AddTransient<IRequestHandler<CreateBlockCommand, bool>, CreateBlockCommandHandler>();
@@ -307,6 +303,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveBlockByHeightQuery, Block>, RetrieveBlockByHeightQueryHandler>();
 
             // Deployers
+            services.AddTransient<IRequestHandler<RetrieveActiveDeployerQuery, Deployer>, RetrieveActiveDeployerQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveDeployerByAddressQuery, Deployer>, RetrieveDeployerByAddressQueryHandler>();
 
             // Markets
@@ -442,17 +439,7 @@ namespace Opdex.Platform.Application
             // Wallet Broadcast Transactions - Most to be removed
             services.AddTransient<IRequestHandler<MakeWalletSwapTransactionCommand, string>, MakeWalletSwapTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletAddLiquidityTransactionCommand, string>, MakeWalletAddLiquidityTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletRemoveLiquidityTransactionCommand, string>, MakeWalletRemoveLiquidityTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletApproveAllowanceTransactionCommand, string>, MakeWalletApproveAllowanceTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletCreateLiquidityPoolTransactionCommand, string>, MakeWalletCreateLiquidityPoolTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletSkimTransactionCommand, string>, MakeWalletSkimTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletSyncTransactionCommand, string>, MakeWalletSyncTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletStartStakingTransactionCommand, string>, MakeWalletStartStakingTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletStopStakingTransactionCommand, string>, MakeWalletStopStakingTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletCollectStakingRewardsTransactionCommand, string>, MakeWalletCollectStakingRewardsTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletStartMiningTransactionCommand, string>, MakeWalletStartMiningTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletStopMiningTransactionCommand, string>, MakeWalletStopMiningTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeWalletCollectMiningRewardsTransactionCommand, string>, MakeWalletCollectMiningRewardsTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletDistributeTokensTransactionCommand, string>, MakeWalletDistributeTokensTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeWalletRewardMiningPoolsTransactionCommand, string>, MakeWalletRewardMiningPoolsTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTransactionBroadcastCommand, string>, MakeTransactionBroadcastCommandHandler>(); // Keep this one around

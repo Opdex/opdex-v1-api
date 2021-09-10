@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

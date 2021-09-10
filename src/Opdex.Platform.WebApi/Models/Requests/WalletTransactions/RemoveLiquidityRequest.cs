@@ -1,5 +1,4 @@
 using Opdex.Platform.Common.Models;
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
@@ -23,12 +22,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// </summary>
         [Required]
         public FixedDecimal AmountSrcMin { get; set; }
-
-        /// <summary>
-        /// The liquidity pool's smart contract address to remove liquidity from.
-        /// </summary>
-        [Obsolete] // Delete property when removing WalletBroadcast endpoints and flows.
-        public Address LiquidityPool { get; set; }
 
         /// <summary>
         /// The recipient of the removed liquidity.

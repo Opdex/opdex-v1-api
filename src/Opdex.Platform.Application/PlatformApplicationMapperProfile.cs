@@ -19,7 +19,6 @@ using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.OHLC;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
@@ -33,6 +32,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
+using Opdex.Platform.Domain.Models.Vaults;
 using System.Linq;
 using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDtos.TokenDto;
 

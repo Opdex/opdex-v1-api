@@ -7,7 +7,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Vaults;
 using Opdex.Platform.Common.Models.UInt;
-using Opdex.Platform.Domain.Models.ODX;
+using Opdex.Platform.Domain.Models.Vaults;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;

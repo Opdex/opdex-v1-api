@@ -4,7 +4,7 @@ using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 
-namespace Opdex.Platform.Domain.Models.ODX
+namespace Opdex.Platform.Domain.Models.Vaults
 {
     public class Vault : BlockAudit
     {
@@ -52,12 +52,18 @@ namespace Opdex.Platform.Domain.Models.ODX
         public Address Address { get; }
         public long TokenId { get; }
         public Address Owner { get; private set; }
-        public ulong Genesis { get; }
+        public ulong Genesis { get; private set; }
         public UInt256 UnassignedSupply { get; private set; }
 
         public void SetOwner(ClaimPendingVaultOwnershipLog log, ulong block)
         {
             Owner = log.To;
+            SetModifiedBlock(block);
+        }
+
+        public void SetGenesis(ulong genesis, ulong block)
+        {
+            Genesis = genesis;
             SetModifiedBlock(block);
         }
 

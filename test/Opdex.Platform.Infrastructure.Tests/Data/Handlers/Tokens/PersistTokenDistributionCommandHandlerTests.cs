@@ -4,7 +4,6 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Domain.Models.ODX;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
@@ -30,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task PersistsTokenDistribution_Success()
         {
-            var tokenDistribution = new TokenDistribution(10011, 100011, 1, 2, 3, 4);
+            var tokenDistribution = new TokenDistribution(999, 10011, 100011, 1, 2, 3, 4);
             var command = new PersistTokenDistributionCommand(tokenDistribution);
 
             _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
@@ -44,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task PersistsTokenDistribution_Fail()
         {
-            var tokenDistribution = new TokenDistribution(10011, 100011, 1, 2, 3, 4);
+            var tokenDistribution = new TokenDistribution(999, 10011, 100011, 1, 2, 3, 4);
             var command = new PersistTokenDistributionCommand(tokenDistribution);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

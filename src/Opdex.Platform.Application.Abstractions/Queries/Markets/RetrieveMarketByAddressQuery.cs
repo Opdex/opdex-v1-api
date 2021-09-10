@@ -9,12 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets
     {
         public RetrieveMarketByAddressQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
         {
-            if (address == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(address));
-            }
-
-            Address = address;
+            Address = address != Address.Empty ? address : throw new ArgumentNullException(nameof(address));
         }
 
         public Address Address { get; }

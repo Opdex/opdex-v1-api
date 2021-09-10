@@ -21,10 +21,8 @@ namespace Opdex.Platform.Domain.Models.Markets
                 throw new ArgumentNullException(nameof(user), "User address must be set.");
             }
 
-            if (permission == Permissions.Unknown)
-            {
-                throw new ArgumentNullException(nameof(permission), "Permission must be set.");
-            }
+            if (!permission.IsValid()) throw new ArgumentOutOfRangeException(nameof(permission), "Permission must be valid.");
+
 
             MarketId = marketId;
             User = user;

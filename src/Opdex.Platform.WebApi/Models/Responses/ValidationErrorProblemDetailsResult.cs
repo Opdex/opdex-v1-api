@@ -1,27 +1,32 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Models.Responses
 {
     public class ValidationErrorProblemDetailsResult : UnprocessableEntityObjectResult
     {
-        public ValidationErrorProblemDetailsResult(params string[] errors) : base(CreateProblemDetails(errors))
+        public ValidationErrorProblemDetailsResult(string key, params string[] value) : base(CreateProblemDetails(key, value))
         {
         }
 
-        private static ProblemDetails CreateProblemDetails(string[] errors)
-        {
-            if (errors is null || errors.Length == 0) throw new ArgumentNullException(nameof(errors), "Must have one or more errors.");
+        public static ProblemDetails CreateProblemDetails(string key, params string[] value) => CreateProblemDetails(new Dictionary<string, string[]> { { key, value } });
 
-            var problemDetails = new ProblemDetails
+        public static ProblemDetails CreateProblemDetails(IDictionary<string, string[]> errors)
+        {
+            if (errors is null || errors.Count == 0) throw new ArgumentNullException(nameof(errors), "Must have one or more errors.");
+
+            var problemDetails = new ValidationProblemDetails
             {
                 Title = "Unprocessable Entity",
                 Status = StatusCodes.Status422UnprocessableEntity,
                 Detail = "A validation error occurred.",
                 Type = "https://httpstatuses.com/422"
             };
-            problemDetails.Extensions.Add("Errors", errors);
+
+            foreach (var pair in errors) problemDetails.Errors.Add(pair);
+
             return problemDetails;
         }
     }

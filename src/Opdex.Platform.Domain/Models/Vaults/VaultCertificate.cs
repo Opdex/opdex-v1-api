@@ -1,11 +1,11 @@
-using System;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
+using System;
 
-namespace Opdex.Platform.Domain.Models.ODX
+namespace Opdex.Platform.Domain.Models.Vaults
 {
     public class VaultCertificate : BlockAudit
     {

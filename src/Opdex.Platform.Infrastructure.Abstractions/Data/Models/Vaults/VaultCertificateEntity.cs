@@ -1,7 +1,7 @@
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.ODX
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults
 {
     public class VaultCertificateEntity : AuditEntity
     {

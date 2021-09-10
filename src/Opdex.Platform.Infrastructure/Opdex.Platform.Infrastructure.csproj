@@ -19,10 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Clients\BitcoreNodeApi" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Opdex.Platform.Domain\Opdex.Platform.Domain.csproj" />
       <ProjectReference Include="..\Opdex.Platform.Infrastructure.Abstractions\Opdex.Platform.Infrastructure.Abstractions.csproj" />
     </ItemGroup>

@@ -4,15 +4,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Opdex.Platform.Application;
 using Opdex.Platform.Infrastructure;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi;
 using Opdex.Platform.WebApi.Mappers;
 using Serilog;
-using System.Collections.Generic;
 using Hellang.Middleware.ProblemDetails;
 using System;
 using Microsoft.AspNetCore.Http;
@@ -39,8 +36,10 @@ using System.ComponentModel;
 using Opdex.Platform.Common.Models;
 using NJsonSchema.Generation.TypeMappers;
 using NJsonSchema;
+using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.WebApi.Models.Binders;
 using Opdex.Platform.Common;
+using Opdex.Platform.WebApi.Models.Responses;
 
 namespace Opdex.Platform.WebApi
 {
@@ -66,6 +65,7 @@ namespace Opdex.Platform.WebApi
             {
                 options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
                 options.Map<BadRequestException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
+                options.Map<InvalidDataException>(e => ValidationErrorProblemDetailsResult.CreateProblemDetails(e.PropertyName, e.Message));
                 options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
                 options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
                 options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
@@ -116,6 +116,10 @@ namespace Opdex.Platform.WebApi
             // Opdex Configurations
             var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
             services.SetupConfiguration<OpdexConfiguration>(opdexConfig);
+
+            // Database Configurations
+            var databaseConfig = Configuration.GetSection(nameof(DatabaseConfiguration));
+            services.SetupConfiguration<DatabaseConfiguration>(databaseConfig);
 
             // Coin Market Cap Configurations
             var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
