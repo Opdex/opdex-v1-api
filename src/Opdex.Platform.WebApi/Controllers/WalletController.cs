@@ -225,36 +225,5 @@ namespace Opdex.Platform.WebApi.Controllers
             var response = _mapper.Map<StakingPositionResponseModel>(position);
             return Ok(response);
         }
-
-        // Todo: WIll be removed as part of WAPP-17
-        [HttpGet("summary/pool/{poolAddress}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<string>> GetWalletSummaryByPool(string poolAddress, string walletAddress, CancellationToken cancellationToken)
-        {
-            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(poolAddress, findOrThrow: true), cancellationToken);
-            var token = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId, findOrThrow: true), cancellationToken);
-            var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(walletAddress, token.Id, findOrThrow: false), cancellationToken);
-            var crsBalance = 0;
-            var lpTokens = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(walletAddress, pool.LpTokenId, findOrThrow: false), cancellationToken);
-            var staking = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(pool.Id, walletAddress, findOrThrow: false), cancellationToken);
-
-            var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id, findOrThrow: false), cancellationToken);
-
-            AddressMining mining = null;
-
-            if (miningPool != null)
-            {
-                mining = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, walletAddress, findOrThrow: false), cancellationToken);
-            }
-
-            return Ok(new
-            {
-                SrcBalance = addressBalance?.Balance?.InsertDecimal(token.Decimals) ?? "0.00000000",
-                CrsBalance = crsBalance,
-                Providing = lpTokens?.Balance?.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals) ?? "0.00000000",
-                Staking = staking?.Weight?.InsertDecimal(TokenConstants.Opdex.Decimals) ?? "0.00000000",
-                Mining = mining?.Balance?.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals) ?? "0.00000000"
-            });
-        }
     }
 }
