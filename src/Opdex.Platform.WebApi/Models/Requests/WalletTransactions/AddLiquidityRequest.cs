@@ -10,7 +10,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// Decimal amount of CRS to deposit.
         /// </summary>
         [Required]
-        public decimal AmountCrs { get; set; }
+        public FixedDecimal AmountCrs { get; set; }
 
         /// <summary>
         /// Decimal amount of SRC to deposit.

@@ -9,7 +9,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// The address of the token's smart contract.
         /// </summary>
         [Required]
-        public string Token { get; set; }
+        public Address Token { get; set; }
 
         /// <summary>
         /// The allowance amount to approve

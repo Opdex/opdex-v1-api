@@ -5,7 +5,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
 {
     public class CreateWalletAddLiquidityTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletAddLiquidityTransactionCommand(Address walletAddress, Address pool, decimal amountCrs, FixedDecimal amountSrc,
+        public CreateWalletAddLiquidityTransactionCommand(Address walletAddress, Address pool, FixedDecimal amountCrs, FixedDecimal amountSrc,
                                                           decimal tolerance, Address recipient, Address market) : base(walletAddress)
         {
             if (pool == Address.Empty)
@@ -37,7 +37,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
         }
 
         public Address LiquidityPool { get; }
-        public decimal AmountCrs { get; }
+        public FixedDecimal AmountCrs { get; }
         public FixedDecimal AmountSrc { get; }
         public decimal Tolerance { get; }
         public Address Recipient { get; }

@@ -34,7 +34,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId), cancellationToken);
             var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(pool.MarketId, findOrThrow: true), cancellationToken);
 
-            var amountCrsMin = FixedDecimal.Parse(Math.Round(request.AmountCrs * request.Tolerance, TokenConstants.Cirrus.Decimals).ToString())
+            var amountCrsDecimal = decimal.Parse(request.AmountCrs.ToString());
+            var amountCrsMin = FixedDecimal.Parse(Math.Round(amountCrsDecimal * request.Tolerance, TokenConstants.Cirrus.Decimals).ToString())
                                            .ToSatoshis(TokenConstants.Cirrus.Decimals);
 
             var amountSrc = request.AmountSrc.ToSatoshis(srcToken.Decimals);
