@@ -1,4 +1,4 @@
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Queries;
 using System;
 
@@ -15,13 +15,13 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
         /// <param name="address">The wallet address to get the balance of.</param>
         /// <param name="findOrThrow">Flag to find or throw if not found.</param>
         /// <exception cref="ArgumentNullException">Thrown for invalid query arguments.</exception>
-        public CallCirrusGetAddressBalanceQuery(string address, bool findOrThrow = true) : base(findOrThrow)
+        public CallCirrusGetAddressBalanceQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
         {
-            Address = address.HasValue()
+            Address = address != Address.Empty
                 ? address
                 : throw new ArgumentNullException(nameof(address), "A wallet address must be provided.");
         }
 
-        public string Address { get; }
+        public Address Address { get; }
     }
 }

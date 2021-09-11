@@ -23,8 +23,8 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 
         public Task<string> Handle(MakeWalletSwapTransactionCommand request, CancellationToken cancellationToken)
         {
-            var isCrsOut = request.TokenOut == TokenConstants.Cirrus.Address;
-            var isCrsIn = request.TokenIn == TokenConstants.Cirrus.Address;
+            var isCrsOut = request.TokenOut == Address.Cirrus;
+            var isCrsIn = request.TokenIn == Address.Cirrus;
             string[] parameters;
             string methodName;
             var crsToSend = FixedDecimal.Zero;

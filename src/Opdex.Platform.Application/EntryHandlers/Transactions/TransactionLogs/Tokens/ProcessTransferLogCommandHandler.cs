@@ -36,7 +36,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract.ToString()));
+                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract));
 
                 // Update sender balance
                 await TryUpdateAddressBalance(token, request.Log.From, request.BlockHeight);
@@ -59,7 +59,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             try
             {
                 var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(address,
-                                                                                                         tokenAddress: token.Address.ToString(),
+                                                                                                         tokenAddress: token.Address,
                                                                                                          findOrThrow: false));
 
                 if (addressBalance != null && addressBalance.ModifiedBlock >= blockHeight)

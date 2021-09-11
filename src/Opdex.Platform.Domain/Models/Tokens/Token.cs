@@ -8,10 +8,10 @@ namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class Token : BlockAudit
     {
-        public Token(string address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply, ulong createdBlock)
+        public Token(Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply, ulong createdBlock)
             : base(createdBlock)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), "Token address must be set.");
             }
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
             TotalSupply = totalSupply;
         }
 
-        public Token(long id, string address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply, ulong createdBlock, ulong modifiedBlock)
+        public Token(long id, Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -59,7 +59,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
         }
 
         public long Id { get; }
-        public string Address { get; }
+        public Address Address { get; }
         public bool IsLpt { get; }
         public string Name { get; }
         public string Symbol { get; }

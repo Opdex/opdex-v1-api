@@ -35,7 +35,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
             var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.Transaction.BlockHeight));
             var blockTime = block.MedianTime;
 
-            var crsToken = await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address));
+            var crsToken = await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus));
 
             var crsSnapshotQuery = new RetrieveTokenSnapshotWithFilterQuery(crsToken.Id, 0, blockTime, SnapshotType.Minute);
             var crsSnapshot = await _mediator.Send(crsSnapshotQuery);

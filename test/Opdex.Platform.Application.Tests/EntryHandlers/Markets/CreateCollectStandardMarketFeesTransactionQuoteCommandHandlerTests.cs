@@ -75,7 +75,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             catch (Exception) { }
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(query => query.Address == token.ToString()
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(query => query.Address == token
                                                                                                 && !query.FindOrThrow), cancellationToken), Times.Once);
         }
 

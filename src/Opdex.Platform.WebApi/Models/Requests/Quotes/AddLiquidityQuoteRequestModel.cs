@@ -12,7 +12,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Quotes
         /// <summary>
         /// The smart contract address of the deposited token or "CRS" for Cirrus token.
         /// </summary>
-        public string TokenIn { get; set; }
+        public Address TokenIn { get; set; }
 
         /// <summary>
         /// The address of the liquidity pool to get a quote for.

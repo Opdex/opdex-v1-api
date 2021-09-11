@@ -12,7 +12,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         [Fact]
         public void CreatesNewToken_Success()
         {
-            string address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             const string name = "Opdex Token";
             const bool isLpt = true;
             const string symbol = "OPDX";
@@ -37,7 +37,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         {
             // Arrange
             // Act
-            static void Act() => new Token("", true, "name", "symbol", 8, 100_000_000, 100, 2);
+            static void Act() => new Token(Address.Empty, true, "name", "symbol", 8, 100_000_000, 100, 2);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Token address must be set.");
@@ -93,7 +93,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         public void CreatesExistingToken_Success()
         {
             const long id = 1;
-            string address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             const string name = "Opdex Token";
             const bool isLpt = true;
             const string symbol = "OPDX";

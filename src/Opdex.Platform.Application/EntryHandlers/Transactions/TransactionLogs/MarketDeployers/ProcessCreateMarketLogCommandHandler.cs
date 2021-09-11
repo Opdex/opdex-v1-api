@@ -45,7 +45,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 }
 
                 // Get potential market staking token
-                var stakingTokenQuery = new RetrieveTokenByAddressQuery(request.Log.StakingToken.ToString(), findOrThrow: false);
+                var stakingTokenQuery = new RetrieveTokenByAddressQuery(request.Log.StakingToken, findOrThrow: false);
                 var stakingToken = await _mediator.Send(stakingTokenQuery, CancellationToken.None);
                 var stakingTokenId = stakingToken?.Id ?? 0;
 

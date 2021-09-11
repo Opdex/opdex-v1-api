@@ -7,12 +7,12 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// <summary>
         /// The address of the token being deposited. Null if CRS
         /// </summary>
-        public string TokenIn { get; set; }
+        public Address TokenIn { get; set; }
 
         /// <summary>
         /// The address of the token being retrieved. Null if CRS
         /// </summary>
-        public string TokenOut { get; set; }
+        public Address TokenOut { get; set; }
 
         /// <summary>
         /// The amount of tokens to swap

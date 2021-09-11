@@ -31,13 +31,11 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Transaction hash must be set.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateNew_Transaction_InvalidFrom_ThrowArgumentNullException(string from)
+        [Fact]
+        public void CreateNew_Transaction_InvalidFrom_ThrowArgumentNullException()
         {
             // Arrange
+            Address from = Address.Empty;
             const string txHash = "TxHash";
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;
@@ -51,13 +49,11 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("From address must be set.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateNew_Transaction_InvalidTo_ThrowArgumentNullException(string to)
+        [Fact]
+        public void CreateNew_Transaction_InvalidTo_ThrowArgumentNullException()
         {
             // Arrange
+            Address to = Address.Empty;
             const string txHash = "TxHash";
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;

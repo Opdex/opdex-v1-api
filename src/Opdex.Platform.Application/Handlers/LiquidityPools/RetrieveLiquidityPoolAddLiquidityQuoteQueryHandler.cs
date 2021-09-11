@@ -1,6 +1,6 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
-using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.LiquidityQuotes;
@@ -25,8 +25,8 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
 
             var reservesCrs = reserves[0];
             var reservesSrc = reserves[1];
-            var reserveIn = request.TokenIn == TokenConstants.Cirrus.Address ? reservesCrs : reservesSrc;
-            var reserveOut = request.TokenIn == TokenConstants.Cirrus.Address ? reservesSrc : reservesCrs;
+            var reserveIn = request.TokenIn == Address.Cirrus ? reservesCrs : reservesSrc;
+            var reserveOut = request.TokenIn == Address.Cirrus ? reservesSrc : reservesCrs;
 
             return await _mediator.Send(new CallCirrusGetAddLiquidityQuoteQuery(request.AmountIn, reserveIn, reserveOut, request.Router), cancellationToken);
         }

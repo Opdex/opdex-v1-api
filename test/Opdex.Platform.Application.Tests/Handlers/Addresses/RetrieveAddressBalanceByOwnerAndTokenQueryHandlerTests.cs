@@ -182,7 +182,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-                .ReturnsAsync(new Token(tokenId, "CRS", false, "name", "symbol", 8, 100_000_000, 100, 1, 2));
+                .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, 100, 1, 2));
 
             // Act
             await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
@@ -207,7 +207,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-                .ReturnsAsync(new Token(tokenId, "CRS", false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
+                .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetAddressBalanceQuery>(), cancellationToken))

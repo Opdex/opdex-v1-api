@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets
             // ensure market exists, if not throw to return 404
             _ = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
 
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token.ToString(), findOrThrow: false), cancellationToken);
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: false), cancellationToken);
             if (token is null) throw new InvalidDataException(nameof(request.Token), "Token address is not known.");
 
             var amount = request.Amount.ToSatoshis(token.Decimals);

@@ -40,7 +40,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
             var cancellationToken = new CancellationTokenSource().Token;
 
-            _contextMock.Setup(get => get.Wallet).Returns(() => walletAddress.ToString());
+            _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
 
             // Act
             await _controller.StartMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
@@ -60,7 +60,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
             var cancellationToken = new CancellationTokenSource().Token;
 
-            _contextMock.Setup(get => get.Wallet).Returns(() => walletAddress.ToString());
+            _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateStartMiningTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
 
             // Act
@@ -80,7 +80,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
             var cancellationToken = new CancellationTokenSource().Token;
 
-            _contextMock.Setup(get => get.Wallet).Returns(() => walletAddress.ToString());
+            _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateStartMiningTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new TransactionQuoteDto());
             _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(quoteResponse);
 

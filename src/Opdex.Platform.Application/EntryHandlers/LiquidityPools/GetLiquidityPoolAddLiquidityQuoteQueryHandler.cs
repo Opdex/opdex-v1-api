@@ -23,7 +23,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
 
         public async Task<FixedDecimal> Handle(GetLiquidityPoolAddLiquidityQuoteQuery request, CancellationToken cancellationToken)
         {
-            var tokenInIsCrs = request.TokenIn.EqualsIgnoreCase(TokenConstants.Cirrus.Address);
+            var tokenInIsCrs = request.TokenIn == Address.Cirrus;
             var tokenIn = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenIn), cancellationToken);
             var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market), cancellationToken);
             var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(market.Id), cancellationToken);
@@ -31,7 +31,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
 
             var tokenOut = tokenInIsCrs
                 ? await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId), cancellationToken)
-                : await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address), cancellationToken);
+                : await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus), cancellationToken);
 
             var amountIn = request.AmountIn.ToSatoshis(tokenIn.Decimals);
 

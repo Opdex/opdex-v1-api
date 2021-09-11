@@ -1,5 +1,4 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using System;
 
@@ -7,9 +6,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
 {
     public class GetLiquidityPoolAddLiquidityQuoteQuery : IRequest<FixedDecimal>
     {
-        public GetLiquidityPoolAddLiquidityQuoteQuery(FixedDecimal amountIn, string tokenIn, Address pool, Address market)
+        public GetLiquidityPoolAddLiquidityQuoteQuery(FixedDecimal amountIn, Address tokenIn, Address pool, Address market)
         {
-            if (!tokenIn.HasValue())
+            if (tokenIn == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(tokenIn));
             }
@@ -31,7 +30,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
         }
 
         public FixedDecimal AmountIn { get; }
-        public string TokenIn { get; }
+        public Address TokenIn { get; }
         public Address Pool { get; }
         public Address Market { get; }
     }

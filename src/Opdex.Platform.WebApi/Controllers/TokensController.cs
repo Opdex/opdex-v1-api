@@ -69,9 +69,9 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}")]
         [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<TokenResponseModel>> Token(string address, CancellationToken cancellationToken)
+        public async Task<ActionResult<TokenResponseModel>> Token([FromRoute] Address address, CancellationToken cancellationToken)
         {
-            var query = new GetTokenByAddressQuery(address, _context.Market.ToString());
+            var query = new GetTokenByAddressQuery(address, _context.Market);
 
             var result = await _mediator.Send(query, cancellationToken);
 
@@ -94,7 +94,7 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                         [FromQuery] string timespan,
                                                                                         CancellationToken cancellationToken)
         {
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(address.ToString()), cancellationToken);
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(address), cancellationToken);
 
             var tokenSnapshotDtos = await _mediator.Send(new GetTokenSnapshotsWithFilterQuery(address,
                                                                                              _context.Market,

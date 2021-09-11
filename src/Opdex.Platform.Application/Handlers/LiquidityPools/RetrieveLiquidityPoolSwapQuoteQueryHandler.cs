@@ -1,6 +1,6 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
-using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.SwapQuotes;
@@ -23,8 +23,8 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
 
         public async Task<UInt256> Handle(RetrieveLiquidityPoolSwapQuoteQuery request, CancellationToken cancellationToken)
         {
-            var isCrsIn = request.TokenIn.Address == TokenConstants.Cirrus.Address;
-            var isCrsOut = request.TokenOut.Address == TokenConstants.Cirrus.Address;
+            var isCrsIn = request.TokenIn.Address == Address.Cirrus;
+            var isCrsOut = request.TokenOut.Address == Address.Cirrus;
             var isSrcToSrc = !isCrsIn && !isCrsOut;
 
             var market = await _mediator.Send(new SelectMarketByAddressQuery(request.Market, findOrThrow: true));

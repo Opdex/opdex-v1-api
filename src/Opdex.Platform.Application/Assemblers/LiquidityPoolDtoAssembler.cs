@@ -9,7 +9,6 @@ using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.LiquidityPools;
@@ -17,6 +16,7 @@ using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.Tokens;
 using System.Linq;
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Assemblers
 {
@@ -48,7 +48,7 @@ namespace Opdex.Platform.Application.Assemblers
             var market = await _mediator.Send(new RetrieveMarketByIdQuery(pool.MarketId));
 
             // Assemble CRS Token
-            poolDto.CrsToken = await AssembleToken(TokenConstants.Cirrus.Address, 0);
+            poolDto.CrsToken = await AssembleToken(Address.Cirrus, 0);
 
             // Assemble staking token details when required
             var stakingTokenDto = market.StakingTokenId > 0 ? await AssembleToken(market.StakingTokenId.Value, market.Id) : null;
@@ -123,7 +123,7 @@ namespace Opdex.Platform.Application.Assemblers
             return await AssembleTokenExecute(token, marketId);
         }
 
-        private async Task<TokenDto> AssembleToken(string tokenAddress, long marketId)
+        private async Task<TokenDto> AssembleToken(Address tokenAddress, long marketId)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress));
 

@@ -229,7 +229,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a start staking transaction.</returns>
         [HttpPost("{address}/staking/start")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> StartStakingQuote(string address, StartStakingRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> StartStakingQuote([FromRoute] Address address, StartStakingRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateStartStakingTransactionQuoteCommand(address, _context.Wallet, request.Amount), cancellationToken);
 

@@ -1,5 +1,4 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using System;
 
@@ -7,9 +6,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
 {
     public class GetLiquidityPoolSwapQuoteQuery : IRequest<FixedDecimal>
     {
-        public GetLiquidityPoolSwapQuoteQuery(string tokenIn, string tokenOut, FixedDecimal tokenInAmount, FixedDecimal tokenOutAmount, Address market)
+        public GetLiquidityPoolSwapQuoteQuery(Address tokenIn, Address tokenOut, FixedDecimal tokenInAmount, FixedDecimal tokenOutAmount, Address market)
         {
-            if (tokenIn == Address.Empty || !tokenOut.HasValue())
+            if (tokenIn == Address.Empty && tokenOut == Address.Empty)
             {
                 throw new ArgumentException("The token in or token out address must not be null.");
             }
@@ -32,8 +31,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
             Market = market;
         }
 
-        public string TokenIn { get; }
-        public string TokenOut { get; }
+        public Address TokenIn { get; }
+        public Address TokenOut { get; }
         public FixedDecimal TokenInAmount { get; }
         public FixedDecimal TokenOutAmount { get; }
         public Address Market { get; }

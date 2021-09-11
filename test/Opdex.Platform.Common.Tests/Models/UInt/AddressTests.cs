@@ -8,6 +8,7 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
     public class AddressTests
     {
         [Theory]
+        [InlineData("CRS")]
         [InlineData("PPQdeXdjWDBzVLUjgWwi4mFP4Y1mhuNcRu")]
         [InlineData("0x14F768657135D3DaAFB45D242157055f1C9143f3")]
         public void CreatesNew_Address(string value)

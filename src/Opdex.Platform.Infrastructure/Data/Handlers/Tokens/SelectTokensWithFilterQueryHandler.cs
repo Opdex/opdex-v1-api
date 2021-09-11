@@ -86,9 +86,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
                                 AND ts.{nameof(TokenSnapshotEntity.EndDate)} > UTC_TIMESTAMP()
                                 AND ts.{nameof(TokenSnapshotEntity.SnapshotTypeId)} = {(int)SnapshotType.Daily}
                                 AND (
-                                    (t.{nameof(TokenEntity.Address)} != '{TokenConstants.Cirrus.Address}' AND ts.{nameof(TokenSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)})
+                                    (t.{nameof(TokenEntity.Address)} != '{Address.Cirrus}' AND ts.{nameof(TokenSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)})
                                     OR
-                                    (t.{nameof(TokenEntity.Address)} = '{TokenConstants.Cirrus.Address}' AND ts.{nameof(TokenSnapshotEntity.MarketId)} = 0)
+                                    (t.{nameof(TokenEntity.Address)} = '{Address.Cirrus}' AND ts.{nameof(TokenSnapshotEntity.MarketId)} = 0)
                                 )";
             }
 

@@ -88,7 +88,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return transactionHash;
         }
 
-        public Task<ulong> GetWalletAddressCrsBalance(string walletAddress, CancellationToken cancellationToken)
+        public Task<ulong> GetWalletAddressCrsBalance(Address walletAddress, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.SmartContractWallet.AddressBalance, walletAddress);
             return GetAsync<ulong>(uri, cancellationToken);

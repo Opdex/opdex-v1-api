@@ -114,7 +114,7 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                               [FromRoute] Address token,
                                                                                               CancellationToken cancellationToken)
         {
-            var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(address, token.ToString()), cancellationToken);
+            var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(address, token), cancellationToken);
             var response = _mapper.Map<AddressBalanceResponseModel>(balance);
             return Ok(response);
         }

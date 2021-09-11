@@ -46,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
                 ModifiedBlock = 2
             };
 
-            var command = new SelectTokenByAddressQuery(address.ToString());
+            var command = new SelectTokenByAddressQuery(address);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
@@ -68,7 +68,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         {
             Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
-            var command = new SelectTokenByAddressQuery(address.ToString());
+            var command = new SelectTokenByAddressQuery(address);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<TokenEntity>(null));
@@ -85,7 +85,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
             Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             const bool findOrThrow = false;
 
-            var command = new SelectTokenByAddressQuery(address.ToString(), findOrThrow);
+            var command = new SelectTokenByAddressQuery(address, findOrThrow);
 
             _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<TokenEntity>(null));

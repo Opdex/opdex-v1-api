@@ -75,7 +75,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
         private async Task<long> MakeToken(Address tokenAddress, ulong blockHeight, bool isLpToken = false)
         {
-            var srcToken = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress.ToString(), findOrThrow: false));
+            var srcToken = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false));
 
             if (srcToken != null)
             {
@@ -84,7 +84,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
             var summary = await _mediator.Send(new CallCirrusGetSrcTokenSummaryByAddressQuery(tokenAddress));
 
-            srcToken = new Token(summary.Address.ToString(), isLpToken, summary.Name, summary.Symbol, (int)summary.Decimals, summary.Sats,
+            srcToken = new Token(summary.Address, isLpToken, summary.Name, summary.Symbol, (int)summary.Decimals, summary.Sats,
                                  summary.TotalSupply, blockHeight);
 
             return await _mediator.Send(new MakeTokenCommand(srcToken));

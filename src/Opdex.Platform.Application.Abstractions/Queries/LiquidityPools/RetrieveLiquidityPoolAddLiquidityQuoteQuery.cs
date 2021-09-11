@@ -1,5 +1,4 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using System;
@@ -8,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
 {
     public class RetrieveLiquidityPoolAddLiquidityQuoteQuery : IRequest<UInt256>
     {
-        public RetrieveLiquidityPoolAddLiquidityQuoteQuery(UInt256 amountIn, string tokenIn, Address pool, Address router)
+        public RetrieveLiquidityPoolAddLiquidityQuoteQuery(UInt256 amountIn, Address tokenIn, Address pool, Address router)
         {
             if (tokenIn == Address.Empty)
             {
@@ -32,7 +31,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
         }
 
         public UInt256 AmountIn { get; }
-        public string TokenIn { get; }
+        public Address TokenIn { get; }
         public Address Pool { get; }
         public Address Router { get; }
     }

@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Addresses;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,8 +31,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         public async Task Handle_RetrieveAddressBalanceByTokenAddressAndOwnerQuery_Send()
         {
             // Arrange
-            var address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            var token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act

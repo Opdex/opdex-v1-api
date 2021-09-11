@@ -9,11 +9,12 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Tokens
 {
-    public class GetTokenByAddressQueryHandler: IRequestHandler<GetTokenByAddressQuery, TokenDto>
+    public class GetTokenByAddressQueryHandler : IRequestHandler<GetTokenByAddressQuery, TokenDto>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -28,7 +29,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
 
         public async Task<TokenDto> Handle(GetTokenByAddressQuery request, CancellationToken cancellationToken)
         {
-            var market = request.Market.HasValue()
+            var market = request.Market != Address.Empty
                 ? await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, false), cancellationToken)
                 : null;
 

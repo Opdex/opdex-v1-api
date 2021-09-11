@@ -88,11 +88,11 @@ namespace Opdex.Platform.WebApi.Controllers
                 var validWallet = false;
                 var tokens = await _mediator.Send(new RetrieveTokensWithFilterQuery(marketId, false, 0, 5, "Name", "ASC", new Address[0]));
 
-                foreach (var token in tokens.Where(t => t.Address != TokenConstants.Cirrus.Address))
+                foreach (var token in tokens.Where(t => t.Address != Address.Cirrus))
                 {
                     try
                     {
-                        var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(wallet, token.Address.ToString()));
+                        var balance = await _mediator.Send(new GetAddressBalanceByTokenQuery(wallet, token.Address));
 
                         if (balance.Balance == FixedDecimal.Zero) continue;
 

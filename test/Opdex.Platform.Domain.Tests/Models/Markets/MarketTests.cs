@@ -21,13 +21,12 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Address must be set.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateMarket_InvalidOwner_ThrowArgumentNullException(string owner)
+        [Fact]
+        public void CreateMarket_InvalidOwner_ThrowArgumentNullException()
         {
             // Arrange
+            var owner = Address.Empty;
+
             // Act
             void Act() => new Market("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 5, 10, owner, true, true, true, 3, true, 100_000);
 
