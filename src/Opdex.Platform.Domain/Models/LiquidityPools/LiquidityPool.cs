@@ -8,7 +8,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
     {
         public LiquidityPool(Address address, long srcTokenId, long lptTokenId, long marketId, ulong createdBlock) : base(createdBlock)
         {
-            if (Address == Address.Empty)
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), $"{nameof(address)} must be provided");
             }

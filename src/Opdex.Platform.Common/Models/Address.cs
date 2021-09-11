@@ -9,7 +9,7 @@ namespace Opdex.Platform.Common.Models
 
         public static readonly Address Cirrus = new Address("CRS");
 
-        public static readonly Address Empty = new Address("");
+        public static readonly Address Empty = new Address(default);
 
         public Address(string value)
         {
@@ -19,7 +19,7 @@ namespace Opdex.Platform.Common.Models
                 throw new ArgumentException("Invalid address.");
             }
 
-            Value = value.HasValue() ? value : "";
+            Value = value.HasValue() ? value : default;
         }
 
         public static bool operator ==(Address a, Address b)
@@ -49,7 +49,7 @@ namespace Opdex.Platform.Common.Models
 
         public override string ToString()
         {
-            return Value;
+            return Value ?? "";
         }
 
         public override bool Equals(object obj)
