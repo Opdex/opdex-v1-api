@@ -65,11 +65,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
 
             var values = ToDictionary(raw);
 
-            TryGetCursorProperty<string>(values, "wallet", out var wallet);
+            TryGetCursorProperty<Address>(values, "wallet", out var wallet);
 
             TryGetCursorProperties<TransactionEventType>(values, "eventTypes", out var eventTypes);
 
-            TryGetCursorProperties<string>(values, "contracts", out var contracts);
+            TryGetCursorProperties<Address>(values, "contracts", out var contracts);
 
             if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
 
@@ -85,7 +85,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
 
             try
             {
-                cursor = new TransactionsCursor(wallet, eventTypes, contracts.Select(contract => new Address(contract)), direction, limit, paging, pointer);
+                cursor = new TransactionsCursor(wallet, eventTypes, contracts, direction, limit, paging, pointer);
             }
             catch (Exception)
             {

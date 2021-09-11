@@ -65,7 +65,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 
             var values = ToDictionary(raw);
 
-            TryGetCursorProperties<string>(values, "tokens", out var tokens);
+            TryGetCursorProperties<Address>(values, "tokens", out var tokens);
 
             if (!TryGetCursorProperty<bool>(values, "includeLpTokens", out var includeLpTokens)) return false;
 
@@ -85,7 +85,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 
             try
             {
-                cursor = new AddressBalancesCursor(tokens.Select(token => new Address(token)), includeLpTokens, includeZeroBalances, direction, limit, paging, pointer);
+                cursor = new AddressBalancesCursor(tokens, includeLpTokens, includeZeroBalances, direction, limit, paging, pointer);
             }
             catch (Exception)
             {

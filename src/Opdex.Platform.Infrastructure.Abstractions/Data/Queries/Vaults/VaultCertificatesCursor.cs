@@ -53,7 +53,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 
             var values = ToDictionary(raw);
 
-            TryGetCursorProperty<string>(values, "holder", out var holder);
+            TryGetCursorProperty<Address>(values, "holder", out var holder);
 
             if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
 

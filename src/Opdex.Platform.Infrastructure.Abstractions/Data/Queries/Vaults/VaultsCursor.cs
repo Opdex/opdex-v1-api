@@ -50,7 +50,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 
             var values = ToDictionary(raw);
 
-            TryGetCursorProperty<string>(values, "lockedToken", out var lockedToken);
+            TryGetCursorProperty<Address>(values, "lockedToken", out var lockedToken);
 
             if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
 

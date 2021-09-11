@@ -63,9 +63,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 
             var values = ToDictionary(raw);
 
-            TryGetCursorProperties<string>(values, "liquidityPools", out var liquidityPools);
+            TryGetCursorProperties<Address>(values, "liquidityPools", out var liquidityPools);
 
-            TryGetCursorProperties<string>(values, "miningPools", out var miningPools);
+            TryGetCursorProperties<Address>(values, "miningPools", out var miningPools);
 
             if (!TryGetCursorProperty<bool>(values, "includeZeroAmounts", out var includeZeroAmounts)) return false;
 
@@ -83,8 +83,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 
             try
             {
-                cursor = new MiningPositionsCursor(liquidityPools.Select(pool => new Address(pool)), miningPools.Select(pool => new Address(pool)),
-                                                   includeZeroAmounts, direction, limit, paging, pointer);
+                cursor = new MiningPositionsCursor(liquidityPools, miningPools, includeZeroAmounts, direction, limit, paging, pointer);
             }
             catch (Exception)
             {

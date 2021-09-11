@@ -68,7 +68,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningPools
 
             var values = ToDictionary(raw);
 
-            TryGetCursorProperties<string>(values, "liquidityPools", out var liquidityPools);
+            TryGetCursorProperties<Address>(values, "liquidityPools", out var liquidityPools);
 
             if (!TryGetCursorProperty<MiningStatusFilter>(values, "miningStatus", out var miningStatus)) return false;
 
@@ -86,7 +86,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningPools
 
             try
             {
-                cursor = new MiningPoolsCursor(liquidityPools.Select(address => new Address(address)), miningStatus, direction, limit, paging, pointer);
+                cursor = new MiningPoolsCursor(liquidityPools, miningStatus, direction, limit, paging, pointer);
             }
             catch (Exception)
             {
