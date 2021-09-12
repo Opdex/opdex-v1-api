@@ -15,9 +15,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers
+namespace Opdex.Platform.WebApi.Tests.Controllers.GovernancesControllerTests
 {
-    public class GovernancesControllerTests
+    public class GetGovernancesTests
     {
         private readonly Mock<IMediator> _mediatorMock;
         private readonly Mock<IMapper> _mapperMock;
@@ -25,7 +25,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
         private readonly GovernancesController _controller;
 
-        public GovernancesControllerTests()
+        public GetGovernancesTests()
         {
             _mediatorMock = new Mock<IMediator>();
             _mapperMock = new Mock<IMapper>();

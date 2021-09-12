@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Governances;
 using Opdex.Platform.Common.Configurations;
@@ -12,8 +13,10 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
 using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Governances;
+using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -91,33 +94,23 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Reward Mining Pools Quote</summary>
-        /// <remarks>Rewards nominated mining pools by distributing tokens to be mined when the nomination period has ended.</remarks>
+        /// <remarks>Quote a reward mining pools transaction where governance tokens are distributed to mining pools for liquidity mining.</remarks>
         /// <param name="address">The address of the governance contract.</param>
-        /// <returns>Transaction hash</returns>
-        [HttpPost("{address}/reward-mining-pools")]
-        public async Task<IActionResult> RewardMiningPools([FromRoute] Address address, CancellationToken cancellationToken)
-        {
-            if (_network == NetworkType.DEVNET)
-            {
-                var response = await _mediator.Send(new CreateWalletRewardMiningPoolsTransactionCommand(_context.Wallet, address));
-
-                return Ok(new { TxHash = response });
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>Reward Mining Pool Quote</summary>
-        /// <remarks>Quotes a reward nominated mining pools transaction.</remarks>
-        /// <param name="address">The address of the governance contract.</param>
+        /// <param name="request">The reward mining pool transaction quote request body.</param>
         /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns></returns>
-        [HttpPost("{address}/reward-mining-pools/quote")]
-        public Task<IActionResult> RewardMiningPoolsQuote([FromRoute] Address address, CancellationToken cancellationToken)
+        /// <returns>Quote a stop staking transaction.</returns>
+        [HttpPost("{address}/reward-mining-pools")]
+        public async Task<IActionResult> RewardMiningPools([FromRoute] Address address,
+                                                           [FromBody] RewardMiningPoolsRequest request,
+                                                           CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var response = await _mediator.Send(new CreateRewardMiningPoolsTransactionQuoteCommand(address,
+                                                                                                   _context.Wallet,
+                                                                                                   request.FullDistribution), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
         }
     }
 }
