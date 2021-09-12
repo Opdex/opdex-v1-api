@@ -97,6 +97,8 @@ using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.MiningPools;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Events;
+using Opdex.Platform.Infrastructure.Clients.SignalR.Handlers;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -118,6 +120,7 @@ namespace Opdex.Platform.Infrastructure
             // Client Services
             AddCirrusServices(services, cirrusConfiguration);
             AddCmcServices(services, cmcConfiguration);
+            AddSignalRServices(services);
 
             return services;
         }
@@ -304,6 +307,11 @@ namespace Opdex.Platform.Infrastructure
 
             // Queries
             services.AddTransient<IRequestHandler<CallCmcGetStraxQuotePriceQuery, decimal>, CallCmcGetStraxQuotePriceQueryHandler>();
+        }
+
+        private static void AddSignalRServices(IServiceCollection services)
+        {
+            services.AddTransient<INotificationHandler<TransactionBroadcastNotification>, NotifyClientOfBroadcastTransactionHandler>();
         }
     }
 }

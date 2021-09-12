@@ -173,6 +173,9 @@ namespace Opdex.Platform.WebApi
                     schema.Pattern = @"^\d*\.\d{1,18}$"; // matches a number which must contain a decimal point and precision of 1 to 18
                 }));
             });
+
+            services.AddSignalR()
+                    .AddAzureSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
