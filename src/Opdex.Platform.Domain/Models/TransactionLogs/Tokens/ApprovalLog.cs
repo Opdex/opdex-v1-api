@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
@@ -11,10 +10,10 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
         public ApprovalLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.ApprovalLog, address, sortOrder)
         {
-            Address owner = log?.owner;
-            Address spender = log?.spender;
-            UInt256 amount = UInt256.Parse(log?.amount);
-            UInt256 oldAmount = UInt256.Parse(log?.oldAmount);
+            Address owner = (string)log?.owner;
+            Address spender = (string)log?.spender;
+            UInt256 amount = UInt256.Parse((string)log?.amount);
+            UInt256 oldAmount = UInt256.Parse((string)log?.oldAmount);
 
             if (owner == Address.Empty)
             {

@@ -121,7 +121,6 @@ namespace Opdex.Platform.Domain.Models.Transactions
         public static SmartContractMethodParameter Deserialize(string value)
         {
             var values = value.Split('#', 2);
-            var stringified = values[1];
             return (SmartContractParameterType)int.Parse(values[0]) switch
             {
                 SmartContractParameterType.Boolean => new SmartContractMethodParameter(bool.Parse(values[1])),

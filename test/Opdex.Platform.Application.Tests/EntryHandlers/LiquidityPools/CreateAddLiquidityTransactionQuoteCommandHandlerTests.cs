@@ -43,7 +43,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
         }
 
         [Fact]
-        public void CreateAddLiquidityTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException()
+        public void CreateAddLiquidityTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentNullException()
         {
             // Arrange
             Address liquidityPool = Address.Empty;
@@ -58,11 +58,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
                                                                         amountSrcMin, walletAddress, 0ul);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
         }
 
         [Fact]
-        public void CreateAddLiquidityTransactionQuoteCommand_InvalidRecipient_ThrowArgumentException()
+        public void CreateAddLiquidityTransactionQuoteCommand_InvalidRecipient_ThrowArgumentNullException()
         {
             // Arrange
             Address recipient = Address.Empty;
@@ -78,7 +78,87 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
                                                                         amountSrcMin, recipient, 0ul);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Recipient must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Recipient must be provided.");
+        }
+
+        [Theory]
+        [InlineData("-1.01")]
+        [InlineData("0")]
+        public void CreateAddLiquidityTransactionQuoteCommand_InvalidAmountCrs_ThrowArgumentOutOfRangeException(string amountCrs)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            var amountSrc = FixedDecimal.Parse("2.00");
+            var amountCrsMin = FixedDecimal.Parse("0.9");
+            var amountSrcMin = FixedDecimal.Parse("1.8");
+
+            // Act
+            void Act() => new CreateAddLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, FixedDecimal.Parse(amountCrs), amountSrc, amountCrsMin,
+                                                                        amountSrcMin, walletAddress, 0ul);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Amount CRS must be greater than 0.");
+        }
+
+        [Theory]
+        [InlineData("-1.01")]
+        [InlineData("0")]
+        public void CreateAddLiquidityTransactionQuoteCommand_InvalidAmountSrc_ThrowArgumentOutOfRangeException(string amountSrc)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            var amountCrs = FixedDecimal.Parse("1.00");
+            var amountCrsMin = FixedDecimal.Parse("0.9");
+            var amountSrcMin = FixedDecimal.Parse("1.8");
+
+            // Act
+            void Act() => new CreateAddLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountCrs, FixedDecimal.Parse(amountSrc), amountCrsMin,
+                                                                        amountSrcMin, walletAddress, 0ul);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Amount SRC must be greater than 0.");
+        }
+
+        [Theory]
+        [InlineData("-1.01")]
+        [InlineData("0")]
+        public void CreateAddLiquidityTransactionQuoteCommand_InvalidAmountCrsMin_ThrowArgumentOutOfRangeException(string amountCrsMin)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            var amountCrs = FixedDecimal.Parse("1.00");
+            var amountSrc = FixedDecimal.Parse("2.00");
+            var amountSrcMin = FixedDecimal.Parse("1.8");
+
+            // Act
+            void Act() => new CreateAddLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountCrs, amountSrc, FixedDecimal.Parse(amountCrsMin),
+                                                                        amountSrcMin, walletAddress, 0ul);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Amount CRS minimum must be greater than 0.");
+        }
+
+        [Theory]
+        [InlineData("-1.01")]
+        [InlineData("0")]
+        public void CreateAddLiquidityTransactionQuoteCommand_InvalidAmountSrcMin_ThrowArgumentOutOfRangeException(string amountSrcMin)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            var amountCrs = FixedDecimal.Parse("1.00");
+            var amountSrc = FixedDecimal.Parse("2.00");
+            var amountCrsMin = FixedDecimal.Parse("0.9");
+
+            // Act
+            void Act() => new CreateAddLiquidityTransactionQuoteCommand(liquidityPool, walletAddress, amountCrs, amountSrc, amountCrsMin,
+                                                                        FixedDecimal.Parse(amountSrcMin), walletAddress, 0ul);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Amount SRC minimum must be greater than 0.");
         }
 
         [Fact]

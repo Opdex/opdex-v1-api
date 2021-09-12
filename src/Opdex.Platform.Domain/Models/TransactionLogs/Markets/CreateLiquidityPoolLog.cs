@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
@@ -10,8 +9,8 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
         public CreateLiquidityPoolLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.CreateLiquidityPoolLog, address, sortOrder)
         {
-            Address token = log?.token;
-            Address pool = log?.pool;
+            Address token = (string)log?.token;
+            Address pool = (string)log?.pool;
 
             if (token == Address.Empty)
             {

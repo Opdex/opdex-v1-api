@@ -22,7 +22,12 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         {
             if (liquidityPool == Address.Empty)
             {
-                throw new ArgumentException("Liquidity pool must be provided.", nameof(liquidityPool));
+                throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool must be provided.");
+            }
+
+            if (amount <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
             }
 
             LiquidityPool = liquidityPool;

@@ -19,8 +19,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools
         public CreateStartMiningTransactionQuoteCommand(Address miningPool, Address walletAddress, FixedDecimal amount)
             : base(walletAddress)
         {
-            MiningPool = miningPool != Address.Empty ? miningPool : throw new ArgumentException("Mining pool address must be set.", nameof(miningPool));
-            Amount = amount;
+            MiningPool = miningPool != Address.Empty ? miningPool : throw new ArgumentNullException(nameof(miningPool), "Mining pool address must be set.");
+            Amount = amount > FixedDecimal.Zero ? amount : throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
         }
 
         public Address MiningPool { get; }

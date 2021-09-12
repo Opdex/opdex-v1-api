@@ -33,6 +33,11 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
                 throw new ArgumentNullException(nameof(market));
             }
 
+            if (tokenInAmount <= FixedDecimal.Zero && tokenOutAmount <= FixedDecimal.Zero)
+            {
+                throw new ArgumentException("Token in amount or token out amount need to have a value.");
+            }
+
             TokenIn = tokenIn;
             TokenOut = tokenOut;
             TokenInAmount = tokenInAmount;

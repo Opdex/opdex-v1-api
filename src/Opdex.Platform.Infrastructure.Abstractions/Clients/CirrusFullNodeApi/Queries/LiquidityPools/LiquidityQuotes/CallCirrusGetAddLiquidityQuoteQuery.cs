@@ -14,6 +14,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
                 throw new ArgumentNullException(nameof(market));
             }
 
+            if (amountA == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountA), "Amount A must be greater than 0.");
+            }
+
             AmountA = amountA;
             ReserveA = reserveA;
             ReserveB = reserveB;

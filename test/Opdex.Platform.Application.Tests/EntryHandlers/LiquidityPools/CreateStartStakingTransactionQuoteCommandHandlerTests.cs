@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
         }
 
         [Fact]
-        public void CreateStartStakingTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException()
+        public void CreateStartStakingTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentNullException()
         {
             // Arrange
             Address liquidityPool = Address.Empty;
@@ -49,7 +49,24 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             void Act() => new CreateStartStakingTransactionQuoteCommand(liquidityPool, walletAddress, amount);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+        }
+
+        [Theory]
+        [InlineData("-1.01")]
+        [InlineData("0")]
+        public void CreateStartStakingTransactionQuoteCommand_InvalidAmount_ThrowArgumentOutOfRangeException(string amount)
+        {
+            // Arrange
+            Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+
+            // Act
+            void Act() => new CreateStartStakingTransactionQuoteCommand(liquidityPool, walletAddress, FixedDecimal.Parse(amount));
+
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Amount must be greater than 0.");
         }
 
         [Fact]

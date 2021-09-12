@@ -14,6 +14,11 @@ namespace Opdex.Platform.Domain.Models.Markets
                 throw new ArgumentOutOfRangeException(nameof(marketId), "Market id must be greater than 0.");
             }
 
+            if (!snapshotType.IsValid())
+            {
+                throw new ArgumentOutOfRangeException(nameof(snapshotType), "Snapshot type must be valid.");
+            }
+
             MarketId = marketId;
             Liquidity = 0.00m;
             Volume = 0.00m;

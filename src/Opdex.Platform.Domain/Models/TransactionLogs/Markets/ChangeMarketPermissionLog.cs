@@ -1,6 +1,6 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 
@@ -11,8 +11,8 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
         public ChangeMarketPermissionLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.ChangeMarketPermissionLog, address, sortOrder)
         {
-            Address fromAddress = log?.address;
-            Permissions permission = (Permissions)log?.permission;
+            Address fromAddress = (string)log?.address;
+            byte permission = log?.permission;
             bool isAuthorized = log?.isAuthorized;
 
             if (fromAddress == Address.Empty)
@@ -20,8 +20,14 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
                 throw new ArgumentNullException(nameof(fromAddress), "Address must be set.");
             }
 
+            var permissionCast = (Permissions)permission;
+            if (!permissionCast.IsValid())
+            {
+                throw new ArgumentOutOfRangeException(nameof(permission), "Permission must be valid.");
+            }
+
             Address = fromAddress;
-            Permission = permission;
+            Permission = permissionCast;
             IsAuthorized = isAuthorized;
         }
 

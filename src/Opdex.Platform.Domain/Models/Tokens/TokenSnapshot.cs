@@ -11,6 +11,16 @@ namespace Opdex.Platform.Domain.Models.Tokens
     {
         public TokenSnapshot(long tokenId, long marketId, SnapshotType snapshotType, DateTime dateTime)
         {
+            if (tokenId < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(marketId), "TOken id must be greater than 0.");
+            }
+
+            if (!snapshotType.IsValid())
+            {
+                throw new ArgumentOutOfRangeException(nameof(snapshotType), "Snapshot type must be valid.");
+            }
+
             TokenId = tokenId;
             MarketId = marketId;
             SnapshotType = snapshotType;

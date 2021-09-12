@@ -1,6 +1,4 @@
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using System;
@@ -12,9 +10,9 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Governances
         public RewardMiningPoolLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.RewardMiningPoolLog, address, sortOrder)
         {
-            Address stakingPool = log?.stakingPool;
-            Address miningPool = log?.miningPool;
-            UInt256 amount = UInt256.Parse(log?.amount);
+            Address stakingPool = (string)log?.stakingPool;
+            Address miningPool = (string)log?.miningPool;
+            UInt256 amount = UInt256.Parse((string)log?.amount);
 
             if (stakingPool == Address.Empty)
             {
@@ -24,6 +22,11 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Governances
             if (miningPool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(miningPool), "Mining pool address must be set.");
+            }
+
+            if (amount == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
             }
 
             StakingPool = stakingPool;

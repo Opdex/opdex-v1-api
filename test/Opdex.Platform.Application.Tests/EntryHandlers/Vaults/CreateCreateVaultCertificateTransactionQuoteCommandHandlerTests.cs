@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         }
 
         [Fact]
-        public void CreateCreateVaultCertificateTransactionQuoteCommand_InvalidVault_ThrowArgumentException()
+        public void CreateCreateVaultCertificateTransactionQuoteCommand_InvalidVault_ThrowArgumentNullException()
         {
             // Arrange
             Address vault = Address.Empty;
@@ -50,11 +50,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             void Act() => new CreateCreateVaultCertificateTransactionQuoteCommand(vault, walletAddress, holder, amount);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Vault address must be set.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Vault address must be set.");
         }
 
         [Fact]
-        public void CreateCreateVaultCertificateTransactionQuoteCommand_InvalidHolder_ThrowArgumentException()
+        public void CreateCreateVaultCertificateTransactionQuoteCommand_InvalidHolder_ThrowArgumentNullException()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
@@ -66,7 +66,24 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             void Act() => new CreateCreateVaultCertificateTransactionQuoteCommand(vault, walletAddress, holder, amount);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Holder address must be set.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Holder address must be set.");
+        }
+
+        [Theory]
+        [InlineData("-1.01")]
+        [InlineData("0")]
+        public void CreateCreateVaultCertificateTransactionQuoteCommand_InvalidAmount_ThrowArgumentOutOfRangeException(string amount)
+        {
+            // Arrange
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
+            Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+
+            // Act
+            void Act() => new CreateCreateVaultCertificateTransactionQuoteCommand(vault, walletAddress, holder, FixedDecimal.Parse(amount));
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Amount must be greater than 0.");
         }
 
         [Fact]

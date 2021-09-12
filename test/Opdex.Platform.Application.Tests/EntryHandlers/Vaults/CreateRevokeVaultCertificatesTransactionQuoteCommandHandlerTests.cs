@@ -36,7 +36,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         }
 
         [Fact]
-        public void CreateRevokeVaultCertificatesTransactionQuoteCommand_InvalidVault_ThrowArgumentException()
+        public void CreateRevokeVaultCertificatesTransactionQuoteCommand_InvalidVault_ThrowArgumentNullException()
         {
             // Arrange
             Address vault = Address.Empty;
@@ -47,11 +47,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             void Act() => new CreateRevokeVaultCertificatesTransactionQuoteCommand(vault, walletAddress, vault);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Vault address must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Vault address must be provided.");
         }
 
         [Fact]
-        public void CreateRevokeVaultCertificatesTransactionQuoteCommand_InvalidHolder_ThrowArgumentException()
+        public void CreateRevokeVaultCertificatesTransactionQuoteCommand_InvalidHolder_ThrowArgumentNullException()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
@@ -62,7 +62,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             void Act() => new CreateRevokeVaultCertificatesTransactionQuoteCommand(vault, walletAddress, holder);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Certificate holder address must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Certificate holder address must be provided.");
         }
 
         [Fact]

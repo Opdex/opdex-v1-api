@@ -28,6 +28,16 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
                 throw new ArgumentNullException(nameof(market));
             }
 
+            if (amountCrs <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountCrs));
+            }
+
+            if (amountSrc <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountSrc));
+            }
+
             LiquidityPool = pool;
             AmountCrs = amountCrs;
             AmountSrc = amountSrc;

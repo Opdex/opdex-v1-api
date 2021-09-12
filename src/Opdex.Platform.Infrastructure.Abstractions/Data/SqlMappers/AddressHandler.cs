@@ -8,7 +8,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.SqlMappers
     {
         public override void SetValue(IDbDataParameter parameter, Address value)
         {
-            parameter.Value = value.ToString();
+            parameter.Value = value == Address.Empty ? null : value.ToString();
         }
 
         public override Address Parse(object value)

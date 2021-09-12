@@ -1,7 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
@@ -12,9 +10,9 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
         public RevokeVaultCertificateLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.RevokeVaultCertificateLog, address, sortOrder)
         {
-            Address owner = log?.owner;
-            UInt256 oldAmount = UInt256.Parse(log?.oldAmount);
-            UInt256 newAmount = UInt256.Parse(log?.newAmount);
+            Address owner = (string)log?.owner;
+            UInt256 oldAmount = UInt256.Parse((string)log?.oldAmount);
+            UInt256 newAmount = UInt256.Parse((string)log?.newAmount);
             ulong vestedBlock = log?.vestedBlock;
 
             if (owner == Address.Empty)
@@ -25,6 +23,11 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
             if (vestedBlock < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(vestedBlock), "Vested block must be greater than 0.");
+            }
+
+            if (oldAmount == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(oldAmount), "Old amount must be greater than 0.");
             }
 
             Owner = owner;

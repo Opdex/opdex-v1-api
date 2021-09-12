@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
@@ -11,9 +10,9 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
         public TransferLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.TransferLog, address, sortOrder)
         {
-            Address from = log?.from;
-            Address to = log?.to;
-            UInt256 amount = UInt256.Parse(log?.amount);
+            Address from = (string)log?.from;
+            Address to = (string)log?.to;
+            UInt256 amount = UInt256.Parse((string)log?.amount);
 
             if (from == Address.Empty)
             {

@@ -37,7 +37,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
         }
 
         [Fact]
-        public void CreateCollectStakingRewardsTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException()
+        public void CreateCollectStakingRewardsTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentNullException()
         {
             // Arrange
             Address liquidityPool = Address.Empty;
@@ -48,7 +48,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             void Act() => new CreateCollectStakingRewardsTransactionQuoteCommand(liquidityPool, walletAddress, liquidate);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
         }
 
         [Fact]

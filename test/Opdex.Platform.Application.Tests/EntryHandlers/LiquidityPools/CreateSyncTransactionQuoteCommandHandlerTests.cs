@@ -35,7 +35,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
         }
 
         [Fact]
-        public void CreateSyncTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException()
+        public void CreateSyncTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentNullException()
         {
             // Arrange
             Address liquidityPool = Address.Empty;
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             void Act() => new CreateSyncTransactionQuoteCommand(liquidityPool, walletAddress);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
         }
 
         [Fact]

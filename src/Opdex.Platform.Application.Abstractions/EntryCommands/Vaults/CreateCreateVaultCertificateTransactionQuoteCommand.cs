@@ -19,9 +19,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
         /// <exception cref="ArgumentException">Invalid amount exception</exception>
         public CreateCreateVaultCertificateTransactionQuoteCommand(Address vault, Address owner, Address holder, FixedDecimal amount) : base(owner)
         {
-            Vault = vault != Address.Empty ? vault : throw new ArgumentException("Vault address must be set.", nameof(vault));
-            Holder = holder != Address.Empty ? holder : throw new ArgumentException("Holder address must be set.", nameof(holder));
-            Amount = amount;
+            Vault = vault != Address.Empty ? vault : throw new ArgumentNullException(nameof(vault), "Vault address must be set.");
+            Holder = holder != Address.Empty ? holder : throw new ArgumentNullException(nameof(holder), "Holder address must be set.");
+            Amount = amount > FixedDecimal.Zero ? amount : throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
         }
 
         public Address Vault { get; }

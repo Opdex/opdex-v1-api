@@ -10,15 +10,20 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
         public DistributionLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.DistributionLog, address, sortOrder)
         {
-            UInt256 vaultAmount = UInt256.Parse(log?.vaultAmount);
-            UInt256 miningAmount = UInt256.Parse(log?.miningAmount);
+            UInt256 vaultAmount = UInt256.Parse((string)log?.vaultAmount);
+            UInt256 miningAmount = UInt256.Parse((string)log?.miningAmount);
             uint periodIndex = log?.periodIndex;
-            UInt256 totalSupply = UInt256.Parse(log?.totalSupply);
+            UInt256 totalSupply = UInt256.Parse((string)log?.totalSupply);
             ulong nextDistributionBlock = log?.nextDistributionBlock;
 
             if (nextDistributionBlock == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(nextDistributionBlock), "Next distribution block must be greater than 0.");
+            }
+
+            if (totalSupply == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must be greater than 0.");
             }
 
             VaultAmount = vaultAmount;

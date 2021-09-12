@@ -36,7 +36,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         }
 
         [Fact]
-        public void CreateRedeemVaultCertificatesTransactionQuoteCommand_InvalidVault_ThrowArgumentException()
+        public void CreateRedeemVaultCertificatesTransactionQuoteCommand_InvalidVault_ThrowArgumentNullException()
         {
             // Arrange
             Address vault = Address.Empty;
@@ -46,7 +46,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             void Act() => new CreateRedeemVaultCertificatesTransactionQuoteCommand(vault, walletAddress);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Vault address must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Vault address must be provided.");
         }
 
         [Fact]

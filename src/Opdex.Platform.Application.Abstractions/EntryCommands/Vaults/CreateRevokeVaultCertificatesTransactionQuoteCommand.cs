@@ -17,8 +17,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
         /// <param name="holder">The address of the certificate holder.</param>
         public CreateRevokeVaultCertificatesTransactionQuoteCommand(Address vault, Address owner, Address holder) : base(owner)
         {
-            Vault = vault != Address.Empty ? vault : throw new ArgumentException("Vault address must be provided.", nameof(vault));
-            Holder = holder != Address.Empty ? holder : throw new ArgumentException("Certificate holder address must be provided.", nameof(holder));
+            Vault = vault != Address.Empty ? vault : throw new ArgumentNullException(nameof(vault), "Vault address must be provided.");
+            Holder = holder != Address.Empty ? holder : throw new ArgumentNullException(nameof(holder), "Certificate holder address must be provided.");
         }
 
         public Address Vault { get; }

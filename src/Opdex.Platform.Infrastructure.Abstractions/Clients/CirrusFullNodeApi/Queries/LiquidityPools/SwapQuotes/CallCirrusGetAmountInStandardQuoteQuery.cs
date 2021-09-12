@@ -15,6 +15,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
                 throw new ArgumentNullException(nameof(router));
             }
 
+            if (amountOut == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountOut), "Amount out must be greater than 0.");
+            }
+
             Router = router;
             AmountOut = amountOut;
             ReserveIn = reserveIn;

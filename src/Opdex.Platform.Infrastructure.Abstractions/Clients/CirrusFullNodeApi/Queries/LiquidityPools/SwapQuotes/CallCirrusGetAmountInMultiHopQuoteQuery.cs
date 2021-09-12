@@ -15,6 +15,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
                 throw new ArgumentNullException(nameof(router));
             }
 
+            if (tokenOutAmount == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(tokenOutAmount), "Token out amount must be greater than 0.");
+            }
+
             Router = router;
             TokenOutAmount = tokenOutAmount;
             TokenOutReserveCrs = tokenOutReserveCrs;

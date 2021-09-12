@@ -1,4 +1,3 @@
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
@@ -24,6 +23,11 @@ namespace Opdex.Platform.Domain.Models.Vaults
             if (vestedBlock < 1)
             {
                 throw new ArgumentNullException(nameof(vestedBlock), "Vested block must be greater than 0.");
+            }
+
+            if (amount == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
             }
 
             VaultId = vaultId;

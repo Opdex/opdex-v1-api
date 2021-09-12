@@ -131,7 +131,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
         {
             dynamic data = new ExpandoObject();
             data.address = address.ToString();
-            data.permission = permission;
+            data.permission = (byte)permission;
             data.isAuthorized = isAuthorized;
             return data;
         }

@@ -1,7 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
@@ -12,12 +10,12 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
         public SwapLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.SwapLog, address, sortOrder)
         {
-            Address sender = log?.sender;
-            Address to = log?.to;
+            Address sender =(string)log?.sender;
+            Address to = (string)log?.to;
             ulong amountCrsIn = log?.amountCrsIn;
             ulong amountCrsOut = log?.amountCrsOut;
-            UInt256 amountSrcIn = UInt256.Parse(log?.amountSrcIn);
-            UInt256 amountSrcOut = UInt256.Parse(log?.amountSrcOut);
+            UInt256 amountSrcIn = UInt256.Parse((string)log?.amountSrcIn);
+            UInt256 amountSrcOut = UInt256.Parse((string)log?.amountSrcOut);
 
             if (sender == Address.Empty)
             {
@@ -29,12 +27,15 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
                 throw new ArgumentNullException(nameof(to), "To address must be set.");
             }
 
-            if (amountCrsIn < 1 && amountCrsOut < 1)
+            if (amountCrsIn == 0 && amountCrsOut == 0)
             {
                 throw new ArgumentException($"{nameof(amountCrsIn)} or {nameof(amountCrsOut)} must be greater than 0.");
             }
 
-            // TODO: validate SRC amounts
+            if (amountSrcIn == UInt256.Zero && amountSrcOut == UInt256.Zero)
+            {
+                throw new ArgumentException($"{nameof(amountSrcIn)} or {nameof(amountSrcOut)} must be greater than 0.");
+            }
 
             Sender = sender;
             To = to;

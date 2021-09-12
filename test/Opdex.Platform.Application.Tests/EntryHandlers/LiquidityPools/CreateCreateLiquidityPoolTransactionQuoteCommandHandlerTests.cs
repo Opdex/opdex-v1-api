@@ -37,7 +37,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
         }
 
         [Fact]
-        public void CreateCreateLiquidityPoolTransactionQuoteCommand_InvalidMarket_ThrowArgumentException()
+        public void CreateCreateLiquidityPoolTransactionQuoteCommand_InvalidMarket_ThrowArgumentNullException()
         {
             // Arrange
             Address market = Address.Empty;
@@ -48,11 +48,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             void Act() => new CreateCreateLiquidityPoolTransactionQuoteCommand(market, walletAddress, token);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Market must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Market must be provided.");
         }
 
         [Fact]
-        public void CreateCreateLiquidityPoolTransactionQuoteCommand_InvalidToken_ThrowArgumentException()
+        public void CreateCreateLiquidityPoolTransactionQuoteCommand_InvalidToken_ThrowArgumentNullException()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
@@ -63,7 +63,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             void Act() => new CreateCreateLiquidityPoolTransactionQuoteCommand(market, walletAddress, token);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Token must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Token must be provided.");
         }
 
         [Fact]

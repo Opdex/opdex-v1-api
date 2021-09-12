@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
@@ -11,12 +10,12 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
         public MintLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.MintLog, address, sortOrder)
         {
-            Address sender = log?.sender;
-            Address to = log?.to;
+            Address sender = (string)log?.sender;
+            Address to = (string)log?.to;
             ulong amountCrs = log?.amountCrs;
-            UInt256 amountSrc = UInt256.Parse(log?.amountSrc);
-            UInt256 amountLpt = UInt256.Parse(log?.amountLpt);
-            UInt256 totalSupply = UInt256.Parse(log?.totalSupply);
+            UInt256 amountSrc = UInt256.Parse((string)log?.amountSrc);
+            UInt256 amountLpt = UInt256.Parse((string)log?.amountLpt);
+            UInt256 totalSupply = UInt256.Parse((string)log?.totalSupply);
 
             if (sender == Address.Empty)
             {
@@ -31,6 +30,26 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             if (amountCrs < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(amountCrs), "CRS amount must be greater than 0.");
+            }
+
+            if (amountCrs == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountCrs), "CRS amount must be greater than 0.");
+            }
+
+            if (amountSrc == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountSrc), "SRC amount must be greater than 0.");
+            }
+
+            if (amountLpt == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountLpt), "OLPT amount must be greater than 0.");
+            }
+
+            if (totalSupply == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must be greater than 0.");
             }
 
             Sender = sender;

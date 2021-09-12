@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using System;
@@ -11,9 +10,9 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Governances
         public NominationLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.NominationLog, address, sortOrder)
         {
-            Address stakingPool = log?.stakingPool;
-            Address miningPool = log?.miningPool;
-            UInt256 weight = UInt256.Parse(log?.weight);
+            Address stakingPool = (string)log?.stakingPool;
+            Address miningPool = (string)log?.miningPool;
+            UInt256 weight = UInt256.Parse((string)log?.weight);
 
             if (stakingPool == Address.Empty)
             {

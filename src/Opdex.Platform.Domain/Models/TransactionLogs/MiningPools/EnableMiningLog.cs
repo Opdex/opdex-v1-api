@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
@@ -11,13 +10,23 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
         public EnableMiningLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.EnableMiningLog, address, sortOrder)
         {
-            UInt256 amount = UInt256.Parse(log?.amount);
-            UInt256 rewardRate = UInt256.Parse(log?.rewardRate);
+            UInt256 amount = UInt256.Parse((string)log?.amount);
+            UInt256 rewardRate = UInt256.Parse((string)log?.rewardRate);
             ulong miningPeriodEndBlock = log?.miningPeriodEndBlock;
 
-            if (miningPeriodEndBlock < 1)
+            if (miningPeriodEndBlock == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(miningPeriodEndBlock), "Mining period end block must be greater than 0.");
+            }
+
+            if (amount == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
+            }
+
+            if (rewardRate == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(rewardRate), "Reward rate must be greater than 0.");
             }
 
             Amount = amount;

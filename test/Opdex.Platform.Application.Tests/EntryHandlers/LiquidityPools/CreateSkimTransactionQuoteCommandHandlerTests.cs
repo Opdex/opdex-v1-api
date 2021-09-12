@@ -37,7 +37,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
         }
 
         [Fact]
-        public void CreateSkimTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException()
+        public void CreateSkimTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentNullException()
         {
             // Arrange
             Address liquidityPool = Address.Empty;
@@ -48,11 +48,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             void Act() => new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
         }
 
         [Fact]
-        public void CreateSkimTransactionQuoteCommand_InvalidRecipient_ThrowArgumentException()
+        public void CreateSkimTransactionQuoteCommand_InvalidRecipient_ThrowArgumentNullException()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
@@ -63,7 +63,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             void Act() => new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Recipient must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Recipient must be provided.");
         }
 
         [Fact]

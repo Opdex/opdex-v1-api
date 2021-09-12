@@ -27,12 +27,32 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         {
             if (liquidityPool == Address.Empty)
             {
-                throw new ArgumentException("Liquidity pool must be provided.", nameof(liquidityPool));
+                throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool must be provided.");
             }
 
             if (recipient == Address.Empty)
             {
-                throw new ArgumentException("Recipient must be provided.", nameof(recipient));
+                throw new ArgumentNullException( nameof(recipient), "Recipient must be provided.");
+            }
+
+            if (amountCrs <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountCrs), "Amount CRS must be greater than 0.");
+            }
+
+            if (amountSrc <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountSrc), "Amount SRC must be greater than 0.");
+            }
+
+            if (amountCrsMin <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountCrsMin), "Amount CRS minimum must be greater than 0.");
+            }
+
+            if (amountSrcMin <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountSrcMin), "Amount SRC minimum must be greater than 0.");
             }
 
             LiquidityPool = liquidityPool;

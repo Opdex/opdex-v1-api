@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
@@ -14,6 +13,11 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             if (staker == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(staker), "Staker address must be set.");
+            }
+
+            if (amount == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
             }
 
             Staker = staker;

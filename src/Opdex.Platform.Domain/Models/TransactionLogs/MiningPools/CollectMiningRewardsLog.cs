@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
@@ -11,12 +10,17 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
         public CollectMiningRewardsLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.CollectMiningRewardsLog, address, sortOrder)
         {
-            Address miner = log?.miner;
-            UInt256 amount = UInt256.Parse(log?.amount);
+            Address miner = (string)log?.miner;
+            UInt256 amount = UInt256.Parse((string)log?.amount);
 
             if (miner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(miner), "Miner address must be set.");
+            }
+
+            if (amount == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
             }
 
             Miner = miner;

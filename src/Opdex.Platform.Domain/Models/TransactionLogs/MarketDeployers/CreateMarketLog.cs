@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
@@ -10,14 +9,14 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
         public CreateMarketLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.CreateMarketLog, address, sortOrder)
         {
-            Address market = log?.market;
-            Address owner = log?.owner;
-            Address router = log?.router;
+            Address market = (string)log?.market;
+            Address owner = (string)log?.owner;
+            Address router = (string)log?.router;
             bool authPoolCreators = log?.authPoolCreators;
             bool authProviders = log?.authProviders;
             bool authTraders = log?.authTraders;
             uint transactionFee = log?.transactionFee;
-            Address stakingToken = log?.stakingToken;
+            Address stakingToken = (string)log?.stakingToken;
             bool enableMarketFee = log?.marketFeeEnabled;
 
             if (market == Address.Empty)

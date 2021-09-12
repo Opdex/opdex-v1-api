@@ -35,7 +35,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
         }
 
         [Fact]
-        public void CreateCollectMiningRewardsTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentException()
+        public void CreateCollectMiningRewardsTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentNullException()
         {
             // Arrange
             Address miningPool = Address.Empty;
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             void Act() => new CreateCollectMiningRewardsTransactionQuoteCommand(miningPool, walletAddress);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Mining pool address must be set.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Mining pool address must be set.");
         }
 
         [Fact]

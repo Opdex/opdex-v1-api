@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
         }
 
         [Fact]
-        public void CreateStartMiningTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentException()
+        public void CreateStartMiningTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentNullException()
         {
             // Arrange
             Address miningPool = Address.Empty;
@@ -49,7 +49,23 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Mining pool address must be set.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Mining pool address must be set.");
+        }
+
+        [Theory]
+        [InlineData("-1.01")]
+        [InlineData("0")]
+        public void CreateStartMiningTransactionQuoteCommand_InvalidAmount_ThrowArgumentOutOfRangeException(string amount)
+        {
+            // Arrange
+            Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+
+            // Act
+            void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, FixedDecimal.Parse(amount));
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Amount must be greater than 0.");
         }
 
         [Fact]

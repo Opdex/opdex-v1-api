@@ -17,6 +17,11 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
                 throw new ArgumentNullException(nameof(spender));
             }
 
+            if (amount < FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than or equal to 0.");
+            }
+
             Token = token;
             Amount = amount;
             Spender = spender;

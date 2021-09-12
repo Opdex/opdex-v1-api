@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
@@ -12,11 +11,16 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             : base(TransactionLogType.ReservesLog, address, sortOrder)
         {
             ulong reserveCrs = log?.reserveCrs;
-            UInt256 reserveSrc = UInt256.Parse(log?.reserveSrc);
+            UInt256 reserveSrc = UInt256.Parse((string)log?.reserveSrc);
 
-            if (reserveCrs < 1)
+            if (reserveCrs == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(reserveCrs), "Reserve CRS must be greater than 0.");
+            }
+
+            if (reserveSrc == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(reserveSrc), "Reserve SRC must be greater than 0.");
             }
 
             ReserveCrs = reserveCrs;
