@@ -31,14 +31,14 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Admins
         [Theory]
         [InlineData("")]
         [InlineData(" ")]
-        public void SelectAdminByAddressQuery_InvalidAddress_ThrowsArgumentException(string address)
+        public void SelectAdminByAddressQuery_InvalidAddress_ThrowsArgumentNullException(string address)
         {
             // Arrange
             void Act() => new SelectAdminByAddressQuery(new Address(address));
 
             // Act
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Address must not be empty.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Address must not be empty.");
         }
 
         [Fact]

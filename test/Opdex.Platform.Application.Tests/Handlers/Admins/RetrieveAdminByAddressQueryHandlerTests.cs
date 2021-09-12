@@ -25,14 +25,14 @@ namespace Opdex.Platform.Application.Tests.Handlers.Admins
         }
 
         [Fact]
-        public void RetrieveAdminByAddressQuery_InvalidBlock_ThrowsArgumentException()
+        public void RetrieveAdminByAddressQuery_InvalidBlock_ThrowsArgumentNullException()
         {
             // Arrange
             // Act
             static void Act() => new RetrieveAdminByAddressQuery(null);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Contains("Address must not be empty.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Contains("Address must not be empty.");
         }
 
         [Fact]

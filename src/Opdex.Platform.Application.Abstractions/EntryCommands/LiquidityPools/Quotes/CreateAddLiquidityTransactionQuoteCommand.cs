@@ -32,7 +32,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
 
             if (recipient == Address.Empty)
             {
-                throw new ArgumentNullException( nameof(recipient), "Recipient must be provided.");
+                throw new ArgumentNullException(nameof(recipient), "Recipient must be provided.");
             }
 
             if (amountCrs <= FixedDecimal.Zero)

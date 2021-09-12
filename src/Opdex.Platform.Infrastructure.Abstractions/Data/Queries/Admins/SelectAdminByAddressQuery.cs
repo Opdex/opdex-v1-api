@@ -9,7 +9,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Admins
     {
         public SelectAdminByAddressQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
         {
-            Address = address != Address.Empty ? address : throw new ArgumentException("Address must not be empty.", nameof(address));
+            Address = address != Address.Empty ? address : throw new ArgumentNullException(nameof(address), "Address must not be empty.");
         }
 
         public Address Address { get; }
