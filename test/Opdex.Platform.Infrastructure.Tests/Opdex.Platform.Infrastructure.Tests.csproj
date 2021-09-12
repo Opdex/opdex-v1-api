@@ -23,10 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\Handlers\Blocks" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\src\Opdex.Platform.Infrastructure.Abstractions\Opdex.Platform.Infrastructure.Abstractions.csproj" />
       <ProjectReference Include="..\..\src\Opdex.Platform.Infrastructure\Opdex.Platform.Infrastructure.csproj" />
     </ItemGroup>

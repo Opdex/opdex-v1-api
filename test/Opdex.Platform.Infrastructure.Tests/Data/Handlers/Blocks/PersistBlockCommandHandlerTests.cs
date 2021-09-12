@@ -5,13 +5,11 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Blocks;
-using Opdex.Platform.Infrastructure.Data.Handlers;
 using Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
+using System.Data;
 using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
@@ -20,7 +18,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
     {
         private readonly Mock<IDbContext> _dbContext;
         private readonly PersistBlockCommandHandler _handler;
-        
+
         public PersistBlockCommandHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
@@ -31,30 +29,53 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
         }
 
         [Fact]
-        public async Task PersistsBlock_Success()
+        public async Task PersistsBlockCommand_Sends_PersistCommand()
         {
+            // Arrange
             var block = new Block(ulong.MaxValue, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
             var command = new PersistBlockCommand(block);
 
-            _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(1));
-            
+            // Act
+            try
+            {
+                await _handler.Handle(command, CancellationToken.None);
+            } catch { }
+
+            // Assert
+            _dbContext.Verify(callTo => callTo.ExecuteCommandAsync(It.Is<DatabaseQuery>(q => q.Parameters != null &&
+                                                                                             q.Type == CommandType.Text &&
+                                                                                             q.Sql.Contains("INSERT INTO block"))), Times.Once);
+        }
+
+        [Fact]
+        public async Task PersistsBlockCommand_Success()
+        {
+            // Arrange
+            var block = new Block(ulong.MaxValue, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
+            var command = new PersistBlockCommand(block);
+
+            _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>())).ReturnsAsync(1);
+
+            // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
+            // Assert
             result.Should().BeTrue();
         }
-        
+
         [Fact]
-        public async Task PersistsBlock_Fail()
+        public async Task PersistsBlockCommand_Fail()
         {
+            // Arrange
             var block = new Block(ulong.MaxValue, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
             var command = new PersistBlockCommand(block);
 
-            _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(0));
-            
+            _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>())).ReturnsAsync(0);
+
+            // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
+            // Assert
             result.Should().BeFalse();
         }
     }

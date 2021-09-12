@@ -1,26 +1,25 @@
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.WebApi.Controllers;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers
+namespace Opdex.Platform.WebApi.Tests.Controllers.IndexController
 {
-    public class IndexControllerTests
+    public class LastSyncedBlockTests
     {
         private readonly Mock<IMediator> _mediator;
-        private readonly IndexController _controller;
+        private readonly WebApi.Controllers.IndexController _controller;
 
-        public IndexControllerTests()
+        public LastSyncedBlockTests()
         {
             _mediator = new Mock<IMediator>();
             var opdexConfiguration = new OpdexConfiguration {Network = NetworkType.DEVNET};
 
-            _controller = new IndexController(_mediator.Object, opdexConfiguration);
+            _controller = new WebApi.Controllers.IndexController(_mediator.Object, opdexConfiguration);
         }
 
         [Fact]
