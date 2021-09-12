@@ -1,6 +1,5 @@
 using System;
-using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Tokens;
 
@@ -8,16 +7,16 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens
 {
     public class RetrieveTokenByAddressQuery : FindQuery<Token>
     {
-        public RetrieveTokenByAddressQuery(string address, bool findOrThrow = true) : base(findOrThrow)
+        public RetrieveTokenByAddressQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address));
             }
 
             Address = address;
         }
-        
-        public string Address { get; }
+
+        public Address Address { get; }
     }
 }

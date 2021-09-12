@@ -1,24 +1,24 @@
 using System;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Tokens
 {
     public class GetTokenByAddressQuery : IRequest<TokenDto>
     {
-        public GetTokenByAddressQuery(string address, string market = null)
+        public GetTokenByAddressQuery(Address address, Address? market = null)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address));
             }
 
             Address = address;
-            Market = market;
+            Market = market ?? Address.Empty;
         }
 
-        public string Address { get; }
-        public string Market { get; }
+        public Address Address { get; }
+        public Address Market { get; }
     }
 }

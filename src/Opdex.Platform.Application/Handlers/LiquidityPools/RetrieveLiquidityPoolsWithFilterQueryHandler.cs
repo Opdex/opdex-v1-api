@@ -13,12 +13,10 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
     public class RetrieveLiquidityPoolsWithFilterQueryHandler : IRequestHandler<RetrieveLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>
     {
         private readonly IMediator _mediator;
-        private readonly IMapper _mapper;
 
-        public RetrieveLiquidityPoolsWithFilterQueryHandler(IMediator mediator, IMapper mapper)
+        public RetrieveLiquidityPoolsWithFilterQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<IEnumerable<LiquidityPool>> Handle(RetrieveLiquidityPoolsWithFilterQuery request, CancellationToken cancellationToken)

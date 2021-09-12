@@ -9,6 +9,7 @@ using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -40,7 +41,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         public async Task Handle_RetrieveTransactionsWithFilterQuery_Send()
         {
             // Arrange
-            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var cursor = new TransactionsCursor(Address.Empty, Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<Address>(), SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
             var request = new GetTransactionsWithFilterQuery(cursor);
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -59,7 +60,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         public async Task Handle_TransactionsRetrieved_MapResults()
         {
             // Arrange
-            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var cursor = new TransactionsCursor(Address.Empty, Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<Address>(), SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
             var request = new GetTransactionsWithFilterQuery(cursor);
 
             var transaction = new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null);
@@ -77,7 +78,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
         {
             // Arrange
-            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
+            var cursor = new TransactionsCursor(Address.Empty, Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<Address>(), SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
             var request = new GetTransactionsWithFilterQuery(cursor);
 
             var transactions = new Transaction[]
@@ -100,7 +101,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
         {
             // Arrange
-            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
+            var cursor = new TransactionsCursor(Address.Empty, Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<Address>(), SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
             var request = new GetTransactionsWithFilterQuery(cursor);
 
             var transactions = new Transaction[]
@@ -124,7 +125,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
         {
             // Arrange
-            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
+            var cursor = new TransactionsCursor(Address.Empty, Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<Address>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
             var request = new GetTransactionsWithFilterQuery(cursor);
 
             var transactions = new Transaction[]
@@ -148,7 +149,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
+            var cursor = new TransactionsCursor(Address.Empty, Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<Address>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
             var request = new GetTransactionsWithFilterQuery(cursor);
 
             var transactions = new Transaction[]
@@ -172,7 +173,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var cursor = new TransactionsCursor(Address.Empty, Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<Address>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
             var request = new GetTransactionsWithFilterQuery(cursor);
 
             var transactions = new Transaction[]
@@ -196,7 +197,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var cursor = new TransactionsCursor(Address.Empty, Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<Address>(), SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
             var request = new GetTransactionsWithFilterQuery(cursor);
 
             var transactions = new Transaction[]
@@ -220,7 +221,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         public async Task Handle_PagingForwardLastPage_ReturnCursor()
         {
             // Arrange
-            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var cursor = new TransactionsCursor(Address.Empty, Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<Address>(), SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
             var request = new GetTransactionsWithFilterQuery(cursor);
 
             var transactions = new Transaction[]
@@ -243,7 +244,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         public async Task Handle_PagingBackwardLastPage_ReturnCursor()
         {
             // Arrange
-            var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<string>(), SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var cursor = new TransactionsCursor(Address.Empty, Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<Address>(), SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
             var request = new GetTransactionsWithFilterQuery(cursor);
 
             var transactions = new Transaction[]

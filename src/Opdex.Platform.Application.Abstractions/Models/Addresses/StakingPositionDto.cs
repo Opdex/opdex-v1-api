@@ -1,10 +1,12 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.Application.Abstractions.Models.Addresses
 {
     public class StakingPositionDto
     {
-        public string Address { get; set; }
-        public string Amount { get; set; }
-        public string LiquidityPool { get; set; }
-        public string StakingToken { get; set; }
+        public Address Address { get; set; }
+        public FixedDecimal Amount { get; set; }
+        public Address LiquidityPool { get; set; }
+        public Address StakingToken { get; set; }
     }
 }

@@ -51,7 +51,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
                 .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
                 .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
-                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply.InsertDecimal(src.Decimals)))
+                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply.ToDecimal(src.Decimals)))
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -111,9 +111,9 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool))
                 .ForMember(dest => dest.MiningPeriodEndBlock, opt => opt.MapFrom(src => src.MiningPeriodEndBlock))
-                .ForMember(dest => dest.RewardPerBlock, opt => opt.MapFrom(src => src.RewardPerBlock.InsertDecimal(TokenConstants.Opdex.Decimals)))
-                .ForMember(dest => dest.RewardPerLpt, opt => opt.MapFrom(src => src.RewardPerLpt.InsertDecimal(TokenConstants.Opdex.Decimals)))
-                .ForMember(dest => dest.TokensMining, opt => opt.MapFrom(src => src.TokensMining.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals)))
+                .ForMember(dest => dest.RewardPerBlock, opt => opt.MapFrom(src => src.RewardPerBlock.ToDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.RewardPerLpt, opt => opt.MapFrom(src => src.RewardPerLpt.ToDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.TokensMining, opt => opt.MapFrom(src => src.TokensMining.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals)))
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -448,8 +448,8 @@ namespace Opdex.Platform.WebApi.Mappers
 
             return new ReservesResponseModel
             {
-                Crs = reservesDto.Crs.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals),
-                Src = reservesDto.Src.InsertDecimal(srcTokenDecimals),
+                Crs = reservesDto.Crs.ToDecimal(TokenConstants.Cirrus.Decimals),
+                Src = reservesDto.Src.ToDecimal(srcTokenDecimals),
                 Usd = reservesDto.Usd,
                 UsdDailyChange = reservesDto.UsdDailyChange,
             };
@@ -476,8 +476,8 @@ namespace Opdex.Platform.WebApi.Mappers
 
             return new VolumeResponseModel
             {
-                Crs = volumeDto.Crs.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals),
-                Src = volumeDto.Src.InsertDecimal(srcTokenDecimals),
+                Crs = volumeDto.Crs.ToDecimal(TokenConstants.Cirrus.Decimals),
+                Src = volumeDto.Src.ToDecimal(srcTokenDecimals),
                 Usd = volumeDto.Usd
             };
         }
@@ -488,7 +488,7 @@ namespace Opdex.Platform.WebApi.Mappers
 
             return new StakingResponseModel
             {
-                Weight = stakingDto.Weight.InsertDecimal(TokenConstants.Opdex.Decimals),
+                Weight = stakingDto.Weight.ToDecimal(TokenConstants.Opdex.Decimals),
                 Usd = stakingDto.Usd,
                 WeightDailyChange = stakingDto.WeightDailyChange,
                 IsActive = stakingEnabled
@@ -512,10 +512,10 @@ namespace Opdex.Platform.WebApi.Mappers
 
             return new OhlcBigIntResponseModel
             {
-                Open = ohlcDto.Open.InsertDecimal(decimals),
-                High = ohlcDto.High.InsertDecimal(decimals),
-                Low = ohlcDto.Low.InsertDecimal(decimals),
-                Close = ohlcDto.Close.InsertDecimal(decimals),
+                Open = ohlcDto.Open.ToDecimal(decimals),
+                High = ohlcDto.High.ToDecimal(decimals),
+                Low = ohlcDto.Low.ToDecimal(decimals),
+                Close = ohlcDto.Close.ToDecimal(decimals),
             };
         }
     }

@@ -14,6 +14,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.Vaults
 
         /// <summary>Amount of staking tokens to assign.</summary>
         [Required]
-        public string Amount { get; set; }
+        public FixedDecimal Amount { get; set; }
     }
 }

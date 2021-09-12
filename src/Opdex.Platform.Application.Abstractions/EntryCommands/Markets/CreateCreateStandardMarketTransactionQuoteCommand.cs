@@ -22,12 +22,12 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets
         public CreateCreateStandardMarketTransactionQuoteCommand(Address deployerOwner, Address owner, uint transactionFee, bool authPoolCreators,
                                                                  bool authLiquidityProviders, bool authTraders, bool enableMarketFee) : base(deployerOwner)
         {
-            Owner = owner != Address.Empty ? owner : throw new ArgumentNullException("Owner address must be set.");
-            TransactionFee = transactionFee <= 10 ? transactionFee : throw new ArgumentOutOfRangeException("Transaction fee must be between 0 and 10.");
+            Owner = owner != Address.Empty ? owner : throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
+            TransactionFee = transactionFee <= 10 ? transactionFee : throw new ArgumentOutOfRangeException(nameof(transactionFee), "Transaction fee must be between 0 and 10.");
             AuthPoolCreators = authPoolCreators;
             AuthLiquidityProviders = authLiquidityProviders;
             AuthTraders = authTraders;
-            EnableMarketFee = transactionFee != 0 || !enableMarketFee ? enableMarketFee : throw new ArgumentException("Market fee must be disabled if transaction fee is 0.", nameof(enableMarketFee));
+            EnableMarketFee = (transactionFee != 0 || !enableMarketFee) ? enableMarketFee : throw new ArgumentException("Market fee must be disabled if transaction fee is 0.", nameof(enableMarketFee));
         }
 
         public Address Owner { get; }

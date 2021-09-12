@@ -2,6 +2,7 @@ using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Balances;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balances;
@@ -26,17 +27,15 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
         // Opting for a reusable method to create the handler during the arrangement of each test.
         private void SetupHandler(NetworkType networkType)
         {
-            var configuration = new OpdexConfiguration {Network = networkType};
+            var configuration = new OpdexConfiguration { Network = networkType };
             _handler = new CallCirrusGetAddressBalanceQueryHandler(configuration, _smartContractsModuleMock.Object);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void CallCirrusGetAddressBalance_ThrowsArgumentNullException_InvalidAddress(string address)
+        [Fact]
+        public void CallCirrusGetAddressBalance_ThrowsArgumentNullException_InvalidAddress()
         {
             // Arrange
+            var address = Address.Empty;
 
             // Act
             void Act() => new CallCirrusGetAddressBalanceQuery(address);
@@ -49,7 +48,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
         public async Task CallCirrusGetAddressBalance_Devnet_Sends_GetWalletAddressCrsBalance()
         {
             // Arrange
-            const string wallet = "P9F65J5Nk6AxVkbJSw9iohk8zniD3waiRf";
+            Address wallet = "P9F65J5Nk6AxVkbJSw9iohk8zniD3waiRf";
             var token = new CancellationTokenSource().Token;
             SetupHandler(NetworkType.DEVNET);
 
@@ -68,7 +67,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
         public async Task CallCirrusGetAddressBalance_Devnet_Returns()
         {
             // Arrange
-            const string wallet = "P9F65J5Nk6AxVkbJSw9iohk8zniD3waiRf";
+            Address wallet = "P9F65J5Nk6AxVkbJSw9iohk8zniD3waiRf";
             var token = new CancellationTokenSource().Token;
             const ulong balance = 10;
             SetupHandler(NetworkType.DEVNET);
@@ -87,7 +86,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
         public async Task CallCirrusGetAddressBalance_TestAndMainnet_ReturnsZero(NetworkType networkType)
         {
             // Arrange
-            const string wallet = "P9F65J5Nk6AxVkbJSw9iohk8zniD3waiRf";
+            Address wallet = "P9F65J5Nk6AxVkbJSw9iohk8zniD3waiRf";
             var token = new CancellationTokenSource().Token;
             SetupHandler(networkType);
 
@@ -102,7 +101,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
         public void CallCirrusGetAddressBalance_CaughtException_FindOrThrowTrue_Throws()
         {
             // Arrange
-            const string wallet = "P9F65J5Nk6AxVkbJSw9iohk8zniD3waiRf";
+            Address wallet = "P9F65J5Nk6AxVkbJSw9iohk8zniD3waiRf";
             var token = new CancellationTokenSource().Token;
             SetupHandler(NetworkType.DEVNET);
             _smartContractsModuleMock
@@ -121,7 +120,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
         public async Task CallCirrusGetAddressBalance_CaughtException_FindOrThrowFalse_ReturnsZero()
         {
             // Arrange
-            const string wallet = "P9F65J5Nk6AxVkbJSw9iohk8zniD3waiRf";
+            Address wallet = "P9F65J5Nk6AxVkbJSw9iohk8zniD3waiRf";
             var token = new CancellationTokenSource().Token;
             SetupHandler(NetworkType.DEVNET);
             _smartContractsModuleMock

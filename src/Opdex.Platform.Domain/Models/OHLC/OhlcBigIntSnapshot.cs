@@ -1,56 +1,33 @@
-using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Domain.Models.OHLC
 {
     public class OhlcBigIntSnapshot
     {
-        private const string DefaultValue = "0";
-
         public OhlcBigIntSnapshot()
         {
-            Open = DefaultValue;
-            High = DefaultValue;
-            Low = DefaultValue;
-            Close = DefaultValue;
+            Open = UInt256.Zero;
+            High = UInt256.Zero;
+            Low = UInt256.Zero;
+            Close = UInt256.Zero;
         }
 
-        public OhlcBigIntSnapshot(string open, string high, string low, string close)
+        public OhlcBigIntSnapshot(UInt256 open, UInt256 high, UInt256 low, UInt256 close)
         {
-            if (!open.IsNumeric())
-            {
-                throw new ArgumentNullException(nameof(open), $"{nameof(open)} must be a numeric value.");
-            }
-
-            if (!high.IsNumeric())
-            {
-                throw new ArgumentNullException(nameof(high), $"{nameof(high)} must be a numeric value.");
-            }
-
-            if (!low.IsNumeric())
-            {
-                throw new ArgumentNullException(nameof(low), $"{nameof(low)} must be a numeric value.");
-            }
-
-            if (!close.IsNumeric())
-            {
-                throw new ArgumentNullException(nameof(close), $"{nameof(close)} must be a numeric value.");
-            }
-
             Open = open;
             High = high;
             Low = low;
             Close = close;
         }
 
-        public string Open { get; private set; }
-        public string High { get; private set; }
-        public string Low { get; private set; }
-        public string Close { get; private set; }
+        public UInt256 Open { get; private set; }
+        public UInt256 High { get; private set; }
+        public UInt256 Low { get; private set; }
+        public UInt256 Close { get; private set; }
 
-        internal void Update(string value, bool reset = false)
+        internal void Update(UInt256 value, bool reset = false)
         {
-            if (Open == DefaultValue || reset)
+            if (Open == UInt256.Zero || reset)
             {
                 Open = value;
                 High = value;
@@ -60,13 +37,11 @@ namespace Opdex.Platform.Domain.Models.OHLC
                 return;
             }
 
-            var valueBigInt = value.ToBigInteger();
-
-            if (valueBigInt > High.ToBigInteger())
+            if (value > High)
             {
                 High = value;
             }
-            else if (valueBigInt < Low.ToBigInteger())
+            else if (value < Low)
             {
                 Low = value;
             }

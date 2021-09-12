@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
@@ -8,18 +9,18 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// The address of the token's smart contract.
         /// </summary>
         [Required]
-        public string Token { get; set; }
+        public Address Token { get; set; }
 
         /// <summary>
         /// The allowance amount to approve
         /// </summary>
         [Required]
-        public string Amount { get; set; }
+        public FixedDecimal Amount { get; set; }
 
         /// <summary>
         /// The spender of the allowance.
         /// </summary>
         [Required]
-        public string Spender { get; set; }
+        public Address Spender { get; set; }
     }
 }

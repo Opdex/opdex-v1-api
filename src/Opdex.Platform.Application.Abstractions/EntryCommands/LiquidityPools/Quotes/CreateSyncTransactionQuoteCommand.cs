@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         {
             if (liquidityPool == Address.Empty)
             {
-                throw new ArgumentException("Liquidity pool must be provided.", nameof(liquidityPool));
+                throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool must be provided.");
             }
 
             LiquidityPool = liquidityPool;

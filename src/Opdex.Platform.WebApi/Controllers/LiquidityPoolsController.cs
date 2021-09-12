@@ -17,6 +17,7 @@ using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System.Linq;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -62,7 +63,7 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                                 [FromQuery] uint? take,
                                                                                                 [FromQuery] string sortBy,
                                                                                                 [FromQuery] string orderBy,
-                                                                                                [FromQuery] IEnumerable<string> pools,
+                                                                                                [FromQuery] IEnumerable<Address> pools,
                                                                                                 CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetLiquidityPoolsWithFilterQuery(_context.Market,
@@ -104,7 +105,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}")]
         [ProducesResponseType(typeof(LiquidityPoolResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<LiquidityPoolResponseModel>> LiquidityPool(string address, CancellationToken cancellationToken)
+        public async Task<ActionResult<LiquidityPoolResponseModel>> LiquidityPool([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetLiquidityPoolByAddressQuery(address), cancellationToken);
 
@@ -124,7 +125,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns><see cref="LiquidityPoolSnapshotHistoryResponseModel"/> with a list of historical data points.</returns>
         [HttpGet("{address}/history")]
         [ProducesResponseType(typeof(LiquidityPoolSnapshotHistoryResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<LiquidityPoolSnapshotHistoryResponseModel>> LiquidityPoolHistory(string address,
+        public async Task<ActionResult<LiquidityPoolSnapshotHistoryResponseModel>> LiquidityPoolHistory([FromRoute] Address address,
                                                                                                         [FromQuery] string candleSpan,
                                                                                                         [FromQuery] string timespan,
                                                                                                         CancellationToken cancellationToken)
@@ -158,7 +159,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote an add liquidity transaction.</returns>
         [HttpPost("{address}/add")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> AddLiquidityQuote(string address, AddLiquidityRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> AddLiquidityQuote([FromRoute] Address address, AddLiquidityRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateAddLiquidityTransactionQuoteCommand(address, _context.Wallet, request.AmountCrs, request.AmountSrc,
                                                                                               request.AmountCrsMin, request.AmountSrcMin, request.Recipient,
@@ -177,7 +178,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a remove liquidity transaction.</returns>
         [HttpPost("{address}/remove")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> RemoveLiquidityQuote(string address, RemoveLiquidityRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> RemoveLiquidityQuote([FromRoute] Address address, RemoveLiquidityRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateRemoveLiquidityTransactionQuoteCommand(address, _context.Wallet, request.Liquidity, request.AmountCrsMin,
                                                                                                  request.AmountSrcMin, request.Recipient, request.Deadline), cancellationToken);
@@ -194,7 +195,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a sync transaction.</returns>
         [HttpPost("{address}/sync")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> SyncQuote(string address, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> SyncQuote([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateSyncTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
 
@@ -211,7 +212,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a skim transaction.</returns>
         [HttpPost("{address}/skim")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> SkimQuote(string address, SkimRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> SkimQuote([FromRoute] Address address, SkimRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateSkimTransactionQuoteCommand(address, _context.Wallet, request.Recipient), cancellationToken);
 
@@ -228,7 +229,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a start staking transaction.</returns>
         [HttpPost("{address}/staking/start")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> StartStakingQuote(string address, StartStakingRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> StartStakingQuote([FromRoute] Address address, StartStakingRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateStartStakingTransactionQuoteCommand(address, _context.Wallet, request.Amount), cancellationToken);
 
@@ -245,7 +246,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a stop staking transaction.</returns>
         [HttpPost("{address}/staking/stop")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> StopStakingQuote(string address, StopStakingRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> StopStakingQuote([FromRoute] Address address, StopStakingRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateStopStakingTransactionQuoteCommand(address, _context.Wallet, request.Amount, request.Liquidate), cancellationToken);
 
@@ -262,7 +263,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a collect staking rewards transaction.</returns>
         [HttpPost("{address}/staking/collect")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> CollectStakingRewardsQuote(string address, CollectStakingRewardsRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> CollectStakingRewardsQuote([FromRoute] Address address, CollectStakingRewardsRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateCollectStakingRewardsTransactionQuoteCommand(address, _context.Wallet, request.Liquidate), cancellationToken);
 

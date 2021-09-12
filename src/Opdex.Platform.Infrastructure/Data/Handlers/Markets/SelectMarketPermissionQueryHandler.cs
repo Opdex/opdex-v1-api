@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
@@ -25,8 +26,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 {nameof(MarketPermissionEntity.ModifiedBlock)}
             FROM market_permission
             WHERE {nameof(MarketPermissionEntity.MarketId)} = @{nameof(SqlParams.MarketId)}
-                AND {nameof(MarketPermissionEntity.User)} = @{nameof(SqlParams.User)} 
-                AND {nameof(MarketPermissionEntity.Permission)} = @{nameof(SqlParams.Permission)} 
+                AND {nameof(MarketPermissionEntity.User)} = @{nameof(SqlParams.User)}
+                AND {nameof(MarketPermissionEntity.Permission)} = @{nameof(SqlParams.Permission)}
             LIMIT 1;";
 
         private readonly IDbContext _context;
@@ -57,7 +58,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
         private sealed class SqlParams
         {
-            internal SqlParams(long marketId, string user, int permission)
+            internal SqlParams(long marketId, Address user, int permission)
             {
                 MarketId = marketId;
                 User = user;
@@ -65,7 +66,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
             }
 
             public long MarketId { get; }
-            public string User { get; }
+            public Address User { get; }
             public int Permission { get; }
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Xunit;
 
@@ -48,7 +49,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             void Act() => new StartStakingLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Theory]
@@ -71,7 +72,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             void Act() => new StartStakingLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Theory]
@@ -94,27 +95,31 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             void Act() => new StartStakingLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
         public void CreateStartStakingLog_ArgumentsValid_SetProperties()
         {
             // Arrange
+            UInt256 amount = 453443;
+            UInt256 totalStaked = 453443;
+            UInt256 stakerBalance = 453443;
+
             dynamic txLog = new ExpandoObject();
             txLog.staker = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
-            txLog.amount = "382";
-            txLog.totalStaked = "593592493";
-            txLog.stakerBalance = "100";
+            txLog.amount = amount.ToString();
+            txLog.totalStaked = totalStaked.ToString();
+            txLog.stakerBalance = stakerBalance.ToString();
 
             // Act
             var log = new StartStakingLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
             log.Staker.Should().Be(txLog.staker);
-            log.Amount.Should().Be(txLog.amount);
-            log.TotalStaked.Should().Be(txLog.totalStaked);
-            log.StakerBalance.Should().Be(txLog.stakerBalance);
+            log.Amount.Should().Be(amount);
+            log.TotalStaked.Should().Be(totalStaked);
+            log.StakerBalance.Should().Be(stakerBalance);
         }
     }
 }

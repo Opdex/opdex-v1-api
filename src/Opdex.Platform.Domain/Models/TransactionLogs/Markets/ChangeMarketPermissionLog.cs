@@ -1,30 +1,37 @@
 using System;
 using Newtonsoft.Json;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
 {
     public class ChangeMarketPermissionLog : TransactionLog
     {
-        public ChangeMarketPermissionLog(dynamic log, string address, int sortOrder)
+        public ChangeMarketPermissionLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.ChangeMarketPermissionLog, address, sortOrder)
         {
-            string fromAddress = log?.address;
-            Permissions permission = (Permissions)log?.permission;
+            Address fromAddress = (string)log?.address;
+            byte permission = log?.permission;
             bool isAuthorized = log?.isAuthorized;
 
-            if (!fromAddress.HasValue())
+            if (fromAddress == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(fromAddress), "Address must be set.");
             }
 
+            var permissionCast = (Permissions)permission;
+            if (!permissionCast.IsValid())
+            {
+                throw new ArgumentOutOfRangeException(nameof(permission), "Permission must be valid.");
+            }
+
             Address = fromAddress;
-            Permission = permission;
+            Permission = permissionCast;
             IsAuthorized = isAuthorized;
         }
 
-        public ChangeMarketPermissionLog(long id, long transactionId, string address, int sortOrder, string details)
+        public ChangeMarketPermissionLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.ChangeMarketPermissionLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -33,13 +40,13 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
             IsAuthorized = logDetails.IsAuthorized;
         }
 
-        public string Address { get; }
+        public Address Address { get; }
         public Permissions Permission { get; }
         public bool IsAuthorized { get; }
 
         public struct LogDetails
         {
-            public string Address { get; set; }
+            public Address Address { get; set; }
             public Permissions Permission { get; set; }
             public bool IsAuthorized { get; set; }
         }

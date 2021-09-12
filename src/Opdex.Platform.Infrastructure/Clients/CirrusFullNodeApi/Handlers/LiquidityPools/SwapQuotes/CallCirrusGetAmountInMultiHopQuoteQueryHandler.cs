@@ -1,7 +1,7 @@
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.SwapQuotes;
@@ -11,19 +11,16 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools.SwapQuotes
 {
-    public class CallCirrusGetAmountInMultiHopQuoteQueryHandler : IRequestHandler<CallCirrusGetAmountInMultiHopQuoteQuery, string>
+    public class CallCirrusGetAmountInMultiHopQuoteQueryHandler : IRequestHandler<CallCirrusGetAmountInMultiHopQuoteQuery, UInt256>
     {
         private readonly ISmartContractsModule _smartContractsModule;
-        private readonly ILogger<CallCirrusGetAmountInMultiHopQuoteQueryHandler> _logger;
 
-        public CallCirrusGetAmountInMultiHopQuoteQueryHandler(ISmartContractsModule smartContractsModule,
-            ILogger<CallCirrusGetAmountInMultiHopQuoteQueryHandler> logger)
+        public CallCirrusGetAmountInMultiHopQuoteQueryHandler(ISmartContractsModule smartContractsModule)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<string> Handle(CallCirrusGetAmountInMultiHopQuoteQuery request, CancellationToken cancellationToken)
+        public async Task<UInt256> Handle(CallCirrusGetAmountInMultiHopQuoteQuery request, CancellationToken cancellationToken)
         {
             var quoteParams = new[]
             {
@@ -34,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
                 request.TokenInReserveSrc.ToSmartContractParameter(SmartContractParameterType.UInt256)
             };
 
-            var localCall = new LocalCallRequestDto(request.Market, request.Market, "GetAmountIn", quoteParams);
+            var localCall = new LocalCallRequestDto(request.Router, request.Router, "GetAmountIn", quoteParams);
 
             var amountIn = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 
@@ -43,7 +40,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
                 throw new Exception($"Invalid request: {amountIn.ErrorMessage}");
             }
 
-            return amountIn.Return.ToString();
+            return amountIn.DeserializeValue<UInt256>();
         }
     }
 }

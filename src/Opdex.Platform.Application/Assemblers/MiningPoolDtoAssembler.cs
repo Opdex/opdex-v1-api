@@ -1,9 +1,9 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.MiningPools;
 using System;
 using System.Threading.Tasks;
@@ -32,7 +32,7 @@ namespace Opdex.Platform.Application.Assemblers
                 MiningPeriodEndBlock = miningPool.MiningPeriodEndBlock,
                 RewardPerBlock = miningPool.RewardPerBlock,
                 RewardPerLpt = miningPool.RewardPerLpt,
-                TokensMining = tokensMining?.Balance ?? "0",
+                TokensMining = tokensMining?.Balance ?? UInt256.Zero,
                 IsActive = miningPool.MiningPeriodEndBlock > latestBlock.Height
             };
         }

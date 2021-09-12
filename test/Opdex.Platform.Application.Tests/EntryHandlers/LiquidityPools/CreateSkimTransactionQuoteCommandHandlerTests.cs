@@ -36,13 +36,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             _handler = new CreateSkimTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateSkimTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException(string liquidityPool)
+        [Fact]
+        public void CreateSkimTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentNullException()
         {
             // Arrange
+            Address liquidityPool = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address recipient = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
 
@@ -50,11 +48,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             void Act() => new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
         }
 
         [Fact]
-        public void CreateSkimTransactionQuoteCommand_InvalidRecipient_ThrowArgumentException()
+        public void CreateSkimTransactionQuoteCommand_InvalidRecipient_ThrowArgumentNullException()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
@@ -65,7 +63,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             void Act() => new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Recipient must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Recipient must be provided.");
         }
 
         [Fact]
@@ -98,7 +96,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address recipient = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -135,7 +133,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address recipient = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGJcuwA";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateSkimTransactionQuoteCommand(liquidityPool, walletAddress, recipient);
             var cancellationToken = new CancellationTokenSource().Token;

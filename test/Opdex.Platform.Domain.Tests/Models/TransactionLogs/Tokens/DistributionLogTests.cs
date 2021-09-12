@@ -1,6 +1,7 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Xunit;
 
@@ -15,7 +16,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
         [InlineData("ABC")]
         [InlineData("100.005")]
         [InlineData("100_000")]
-        public void DistributionLog_VaultAmountNotValid_ThrowArgumentOutOfRangeException(string vaultAmount)
+        public void DistributionLog_VaultAmountNotValid_ThrowException(string vaultAmount)
         {
             // Arrange
             dynamic txLog = new ExpandoObject();
@@ -29,7 +30,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
             void Act() => new DistributionLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Theory]
@@ -39,7 +40,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
         [InlineData("ABC")]
         [InlineData("100.005")]
         [InlineData("100_000")]
-        public void DistributionLog_MiningAmountNotValid_ThrowArgumentOutOfRangeException(string miningAmount)
+        public void DistributionLog_MiningAmountNotValid_ThrowException(string miningAmount)
         {
             // Arrange
             dynamic txLog = new ExpandoObject();
@@ -53,7 +54,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
             void Act() => new DistributionLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Theory]
@@ -63,7 +64,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
         [InlineData("ABC")]
         [InlineData("100.005")]
         [InlineData("100_000")]
-        public void DistributionLog_TotalSupplyNotValid_ThrowArgumentOutOfRangeException(string totalSupply)
+        public void DistributionLog_TotalSupplyNotValid_ThrowException(string totalSupply)
         {
             // Arrange
             dynamic txLog = new ExpandoObject();
@@ -77,7 +78,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
             void Act() => new DistributionLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
@@ -102,19 +103,24 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
         public void DistributionLog_ValidArguments_PropertiesSet()
         {
             // Arrange
+            UInt256 vaultAmount = 43299992;
+            UInt256 miningAmount = 13295;
+            UInt256 totalSupply = 100;
+
             dynamic txLog = new ExpandoObject();
-            txLog.vaultAmount = "43299992";
-            txLog.miningAmount = "13295";
+            txLog.vaultAmount = vaultAmount.ToString();
+            txLog.miningAmount = miningAmount.ToString();
             txLog.periodIndex = 1u;
-            txLog.totalSupply = "100";
+            txLog.totalSupply = totalSupply.ToString();
             txLog.nextDistributionBlock = 100ul;
 
             // Act
             var log = new DistributionLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            log.VaultAmount.Should().Be(txLog.vaultAmount);
-            log.MiningAmount.Should().Be(txLog.miningAmount);
+            log.VaultAmount.Should().Be(vaultAmount);
+            log.MiningAmount.Should().Be(miningAmount);
+            log.TotalSupply.Should().Be(totalSupply);
             log.PeriodIndex.Should().Be(txLog.periodIndex);
         }
     }

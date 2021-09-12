@@ -1,32 +1,23 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
 {
     public abstract class MineLog : TransactionLog
     {
-        protected MineLog(TransactionLogType logType, string miner, string amount, string totalSupply, string minerBalance, string address, int sortOrder)
+        protected MineLog(TransactionLogType logType, Address miner, UInt256 amount, UInt256 totalSupply, UInt256 minerBalance, Address address, int sortOrder)
             : base(logType, address, sortOrder)
         {
-            if (!miner.HasValue())
+            if (miner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(miner), "Miner address must be set.");
             }
 
-            if (!amount.IsNumeric())
+            if (amount == UInt256.Zero)
             {
-                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
-            }
-
-            if (!totalSupply.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must only contain numeric digits.");
-            }
-
-            if (!minerBalance.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(minerBalance), "Miner balance amount must only contain numeric digits.");
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
             }
 
             Miner = miner;
@@ -35,7 +26,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             MinerBalance = minerBalance;
         }
 
-        protected MineLog(TransactionLogType logType, long id, long transactionId, string address, int sortOrder, string details)
+        protected MineLog(TransactionLogType logType, long id, long transactionId, Address address, int sortOrder, string details)
             : base(logType, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -45,17 +36,17 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             MinerBalance = logDetails.MinerBalance;
         }
 
-        public string Miner { get; }
-        public string Amount { get; }
-        public string TotalSupply { get; }
-        public string MinerBalance { get; }
+        public Address Miner { get; }
+        public UInt256 Amount { get; }
+        public UInt256 TotalSupply { get; }
+        public UInt256 MinerBalance { get; }
 
         private struct LogDetails
         {
-            public string Miner { get; set; }
-            public string Amount { get; set; }
-            public string TotalSupply { get; set; }
-            public string MinerBalance { get; set; }
+            public Address Miner { get; set; }
+            public UInt256 Amount { get; set; }
+            public UInt256 TotalSupply { get; set; }
+            public UInt256 MinerBalance { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)

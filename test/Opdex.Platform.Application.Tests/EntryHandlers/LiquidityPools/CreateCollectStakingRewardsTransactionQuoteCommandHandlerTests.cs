@@ -30,19 +30,17 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
 
         public CreateCollectStakingRewardsTransactionQuoteCommandHandlerTests()
         {
-            _config = new OpdexConfiguration {ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions"};
+            _config = new OpdexConfiguration { ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions" };
             _mediatorMock = new Mock<IMediator>();
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _handler = new CreateCollectStakingRewardsTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateCollectStakingRewardsTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException(string liquidityPool)
+        [Fact]
+        public void CreateCollectStakingRewardsTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentNullException()
         {
             // Arrange
+            Address liquidityPool = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             const bool liquidate = true;
 
@@ -50,7 +48,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             void Act() => new CreateCollectStakingRewardsTransactionQuoteCommand(liquidityPool, walletAddress, liquidate);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
         }
 
         [Fact]
@@ -72,7 +70,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             catch { }
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveLiquidityPoolByAddressQuery>(p => p.Address == liquidityPool.ToString()
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveLiquidityPoolByAddressQuery>(p => p.Address == liquidityPool
                                                                                                        && p.FindOrThrow == true), cancellationToken), Times.Once);
         }
 
@@ -82,7 +80,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
             const bool liquidate = true;
 
             var command = new CreateCollectStakingRewardsTransactionQuoteCommand(liquidityPool, walletAddress, liquidate);
@@ -120,7 +118,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
             const bool liquidate = true;
 
             var command = new CreateCollectStakingRewardsTransactionQuoteCommand(liquidityPool, walletAddress, liquidate);

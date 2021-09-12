@@ -1,32 +1,24 @@
 using System;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletSwapTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletSwapTransactionCommand(string walletAddress, string tokenIn, string tokenOut,
-            string tokenInAmount, string tokenOutAmount, bool tokenInExactAmount, decimal tolerance, string recipient, string router)
+        public MakeWalletSwapTransactionCommand(Address walletAddress, Address tokenIn, Address tokenOut,
+            UInt256 tokenInAmount, UInt256 tokenOutAmount, bool tokenInExactAmount, decimal tolerance, Address recipient, Address router)
             : base(walletAddress)
         {
-            if (!tokenIn.HasValue())
+            if (tokenIn == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(tokenIn));
             }
 
-            if (!tokenOut.HasValue())
+            if (tokenOut == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(tokenOut));
-            }
-
-            if (!tokenInAmount.IsNumeric())
-            {
-                throw new ArgumentException("Token in amount must only contain numeric digits.", nameof(tokenInAmount));
-            }
-
-            if (!tokenOutAmount.IsNumeric())
-            {
-                throw new ArgumentException("Token out amount must only contain numeric digits.", nameof(tokenOutAmount));
             }
 
             if (tolerance > .9999m || tolerance < .0001m)
@@ -34,12 +26,12 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
                 throw new ArgumentOutOfRangeException(nameof(tolerance));
             }
 
-            if (!recipient.HasValue())
+            if (recipient == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(recipient));
             }
 
-            if (!router.HasValue())
+            if (router == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(router));
             }
@@ -54,13 +46,13 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             Router = router;
         }
 
-        public string TokenIn { get; }
-        public string TokenOut { get; }
-        public string TokenInAmount { get; }
-        public string TokenOutAmount { get; }
+        public Address TokenIn { get; }
+        public Address TokenOut { get; }
+        public UInt256 TokenInAmount { get; }
+        public UInt256 TokenOutAmount { get; }
         public bool TokenInExactAmount { get; }
         public decimal Tolerance { get; }
-        public string Recipient { get; }
-        public string Router { get; }
+        public Address Recipient { get; }
+        public Address Router { get; }
     }
 }

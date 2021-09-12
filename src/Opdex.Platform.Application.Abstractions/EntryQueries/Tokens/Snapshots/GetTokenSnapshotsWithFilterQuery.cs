@@ -2,6 +2,7 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;
 
@@ -9,14 +10,14 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots
 {
     public class GetTokenSnapshotsWithFilterQuery : IRequest<IEnumerable<TokenSnapshotDto>>
     {
-        public GetTokenSnapshotsWithFilterQuery(string tokenAddress, string marketAddress, string candleSpan, string timeSpan)
+        public GetTokenSnapshotsWithFilterQuery(Address tokenAddress, Address marketAddress, string candleSpan, string timeSpan)
         {
-            if (!tokenAddress.HasValue())
+            if (tokenAddress == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(tokenAddress));
             }
 
-            if (!marketAddress.HasValue())
+            if (marketAddress == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(marketAddress));
             }
@@ -36,8 +37,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots
             MarketAddress = marketAddress;
         }
 
-        public string TokenAddress { get; }
-        public string MarketAddress { get; }
+        public Address TokenAddress { get; }
+        public Address MarketAddress { get; }
         public SnapshotType SnapshotType { get; }
         public string TimeSpan { get; }
     }

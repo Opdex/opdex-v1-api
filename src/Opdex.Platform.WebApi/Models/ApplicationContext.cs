@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Opdex.Platform.Common.Models;
 using System.Linq;
 
 namespace Opdex.Platform.WebApi.Models
@@ -12,24 +13,24 @@ namespace Opdex.Platform.WebApi.Models
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string Market => GetMarket();
+        public Address Market => GetMarket();
 
-        public string Wallet => GetWallet();
+        public Address Wallet => GetWallet();
 
-        private string GetMarket()
+        private Address GetMarket()
         {
             var subject = _httpContextAccessor.HttpContext
                 .User.Claims.FirstOrDefault(claim => claim.Type == "market");
 
-            return subject?.Value;
+            return new Address(subject?.Value);
         }
 
-        private string GetWallet()
+        private Address GetWallet()
         {
             var subject = _httpContextAccessor.HttpContext
                 .User.Claims.FirstOrDefault(claim => claim.Type == "wallet");
 
-            return subject?.Value;
+            return new Address(subject?.Value);
         }
     }
 }

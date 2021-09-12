@@ -1,45 +1,25 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
 {
     public class MakeWalletAddLiquidityTransactionCommand : MakeWalletTransactionCommand
     {
-        public MakeWalletAddLiquidityTransactionCommand(string walletAddress, string token, string amountCrs, string amountSrc, string amountCrsMin,
-                                                        string amountSrcMin, string recipient, string router) : base(walletAddress)
+        public MakeWalletAddLiquidityTransactionCommand(Address walletAddress, Address token, FixedDecimal amountCrs, UInt256 amountSrc,
+                                                        ulong amountCrsMin, UInt256 amountSrcMin, Address recipient, Address router) : base(walletAddress)
         {
-            if (!token.HasValue())
+            if (token == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(token));
             }
 
-            // Should passthrough with a decimal
-            if (!amountCrs.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Amount CRS must be formatted as a decimal number.", nameof(amountCrs));
-            }
-
-            if (!amountSrc.IsNumeric())
-            {
-                throw new ArgumentException("Amount SRC must only contain numeric digits.", nameof(amountSrc));
-            }
-
-            if (!amountCrsMin.IsNumeric())
-            {
-                throw new ArgumentException("Amount CRS min must only contain numeric digits.", nameof(amountCrsMin));
-            }
-
-            if (!amountSrcMin.IsNumeric())
-            {
-                throw new ArgumentException("Amount SRC min must only contain numeric digits.", nameof(amountSrcMin));
-            }
-
-            if (!recipient.HasValue())
+            if (recipient == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(recipient));
             }
 
-            if (!router.HasValue())
+            if (router == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(router));
             }
@@ -53,12 +33,12 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet
             Router = router;
         }
 
-        public string Token { get; }
-        public string AmountCrs { get; }
-        public string AmountSrc { get; }
-        public string AmountCrsMin { get; }
-        public string AmountSrcMin { get; }
-        public string Recipient { get; }
-        public string Router { get; }
+        public Address Token { get; }
+        public FixedDecimal AmountCrs { get; }
+        public UInt256 AmountSrc { get; }
+        public ulong AmountCrsMin { get; }
+        public UInt256 AmountSrcMin { get; }
+        public Address Recipient { get; }
+        public Address Router { get; }
     }
 }

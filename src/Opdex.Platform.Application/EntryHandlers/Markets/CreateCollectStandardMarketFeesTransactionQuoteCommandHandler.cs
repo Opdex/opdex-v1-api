@@ -10,6 +10,7 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
 using System.Threading;
@@ -20,7 +21,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets
     public class CreateCollectStandardMarketFeesTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateCollectStandardMarketFeesTransactionQuoteCommand>
     {
         private const string MethodName = StandardMarketConstants.Methods.CollectMarketFees;
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
 
         public CreateCollectStandardMarketFeesTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                              IMediator mediator, OpdexConfiguration config) : base(quoteAssembler, mediator, config)
@@ -32,7 +33,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets
             // ensure market exists, if not throw to return 404
             _ = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
 
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token.ToString(), findOrThrow: false), cancellationToken);
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: false), cancellationToken);
             if (token is null) throw new InvalidDataException(nameof(request.Token), "Token address is not known.");
 
             var amount = request.Amount.ToSatoshis(token.Decimals);

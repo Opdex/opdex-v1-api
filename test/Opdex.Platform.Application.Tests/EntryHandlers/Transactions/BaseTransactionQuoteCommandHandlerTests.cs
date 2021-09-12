@@ -31,13 +31,12 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
             _handler = new TransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void BaseTransactionQuoteCommand_InvalidWalletAddress_ThrowArgumentException(string walletAddress)
+        [Fact]
+        public void BaseTransactionQuoteCommand_InvalidWalletAddress_ThrowArgumentException()
         {
             // Arrange
+            Address walletAddress = Address.Empty;
+
             // Act
             void Act() => new TransactionQuoteCommand(walletAddress);
 
@@ -75,7 +74,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
             var command = new TransactionQuoteCommand(walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var expectedRequest = new TransactionQuoteRequest(walletAddress, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", "0", "MethodName", _config.WalletTransactionCallback);
+            var expectedRequest = new TransactionQuoteRequest(walletAddress, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", FixedDecimal.Zero, "MethodName", _config.WalletTransactionCallback);
 
             var returnedQuote = new TransactionQuote("1000", null, 23800, null, expectedRequest);
 
@@ -109,7 +108,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 
             public override async Task<TransactionQuoteDto> Handle(TransactionQuoteCommand request, CancellationToken cancellationToken)
             {
-                var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", "0", "MethodName", _callbackEndpoint);
+                var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", FixedDecimal.Zero, "MethodName", _callbackEndpoint);
 
                 return await ExecuteAsync(quoteRequest, cancellationToken);
             }

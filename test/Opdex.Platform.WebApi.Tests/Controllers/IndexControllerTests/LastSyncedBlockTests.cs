@@ -1,5 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
@@ -7,17 +5,19 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers
+namespace Opdex.Platform.WebApi.Tests.Controllers.IndexControllerTests
 {
-    public class IndexControllerTests
+    public class LastSyncedBlockTests
     {
         private readonly Mock<IMediator> _mediator;
         private readonly Mock<IApplicationContext> _context;
         private readonly IndexController _controller;
 
-        public IndexControllerTests()
+        public LastSyncedBlockTests()
         {
             _mediator = new Mock<IMediator>();
             _context = new Mock<IApplicationContext>();

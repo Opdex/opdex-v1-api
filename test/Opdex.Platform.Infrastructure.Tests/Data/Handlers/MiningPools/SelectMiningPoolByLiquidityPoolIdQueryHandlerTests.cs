@@ -35,10 +35,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
             {
                 Id = 123454,
                 LiquidityPoolId = lpId,
-                Address = "SomeAddress",
+                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
                 MiningPeriodEndBlock = 4,
-                RewardPerBlock = "10",
-                RewardPerLpt = "1",
+                RewardPerBlock = 10,
+                RewardPerLpt = 1,
                 CreatedBlock = 1,
                 ModifiedBlock = 2
             };

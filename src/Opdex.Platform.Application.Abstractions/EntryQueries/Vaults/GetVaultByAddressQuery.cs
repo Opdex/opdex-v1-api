@@ -1,17 +1,17 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Vaults
 {
     public class GetVaultByAddressQuery : IRequest<VaultDto>
     {
-        public GetVaultByAddressQuery(string address)
+        public GetVaultByAddressQuery(Address address)
         {
-            Address = address.HasValue() ? address : throw new ArgumentNullException(nameof(address), "Address must be set.");
+            Address = address != Address.Empty ? address : throw new ArgumentNullException(nameof(address), "Address must be set.");
         }
 
-        public string Address { get; }
+        public Address Address { get; }
     }
 }

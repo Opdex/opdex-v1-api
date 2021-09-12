@@ -1,6 +1,6 @@
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools;
@@ -11,25 +11,22 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools
 {
-    public class CallCirrusGetOpdexLiquidityPoolReservesQueryHandler : IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, string[]>
+    public class CallCirrusGetOpdexLiquidityPoolReservesQueryHandler : IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, UInt256[]>
     {
         private readonly ISmartContractsModule _smartContractsModule;
-        private readonly ILogger<CallCirrusGetOpdexLiquidityPoolReservesQueryHandler> _logger;
 
-        public CallCirrusGetOpdexLiquidityPoolReservesQueryHandler(ISmartContractsModule smartContractsModule,
-            ILogger<CallCirrusGetOpdexLiquidityPoolReservesQueryHandler> logger)
+        public CallCirrusGetOpdexLiquidityPoolReservesQueryHandler(ISmartContractsModule smartContractsModule)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<string[]> Handle(CallCirrusGetOpdexLiquidityPoolReservesQuery request, CancellationToken cancellationToken)
+        public async Task<UInt256[]> Handle(CallCirrusGetOpdexLiquidityPoolReservesQuery request, CancellationToken cancellationToken)
         {
             var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Reserves", new string[0]);
             var reservesResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
             var reserves = ((JArray)reservesResponse.Return).ToArray();
 
-            return reserves.Any() != true ? new string[0] : reserves.Select(r => r.ToString()).ToArray();
+            return reserves.Any() != true ? new UInt256[0] : reserves.Select(r => UInt256.Parse(r.ToString())).ToArray();
         }
     }
 }

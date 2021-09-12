@@ -1,13 +1,14 @@
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Domain.Models.Governances
 {
     public class MiningGovernanceContractSummary
     {
-        public MiningGovernanceContractSummary(string address, ulong nominationPeriodEnd, uint miningPoolsFunded, string miningPoolReward, ulong miningDuration)
+        public MiningGovernanceContractSummary(Address address, ulong nominationPeriodEnd, uint miningPoolsFunded, UInt256 miningPoolReward, ulong miningDuration)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), $"{nameof(address)} must not be null or empty.");
             }
@@ -24,10 +25,10 @@ namespace Opdex.Platform.Domain.Models.Governances
             MiningDuration = miningDuration;
         }
 
-        public string Address { get; }
+        public Address Address { get; }
         public ulong NominationPeriodEnd { get; }
         public uint MiningPoolsFunded { get; }
-        public string MiningPoolReward { get; }
+        public UInt256 MiningPoolReward { get; }
         public ulong MiningDuration { get; }
     }
 }

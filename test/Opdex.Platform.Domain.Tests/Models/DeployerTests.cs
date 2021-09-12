@@ -1,6 +1,7 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Xunit;
@@ -9,13 +10,11 @@ namespace Opdex.Platform.Domain.Tests.Models
 {
     public class DeployerTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateDeployer_InvalidAddress_ThrowArgumentNullException(string address)
+        [Fact]
+        public void CreateDeployer_InvalidAddress_ThrowArgumentNullException()
         {
             // Arrange
+            var address = Address.Empty;
             const bool isActive = true;
 
             // Act
@@ -25,13 +24,11 @@ namespace Opdex.Platform.Domain.Tests.Models
             Assert.Throws<ArgumentNullException>(Act);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateDeployer_InvalidOwner_ThrowArgumentNullException(string owner)
+        [Fact]
+        public void CreateDeployer_InvalidOwner_ThrowArgumentNullException()
         {
             // Arrange
+            var owner = Address.Empty;
             const bool isActive = true;
 
             // Act

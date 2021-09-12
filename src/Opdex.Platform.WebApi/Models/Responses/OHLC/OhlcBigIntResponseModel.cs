@@ -1,10 +1,12 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.WebApi.Models.Responses.OHLC
 {
     public class OhlcBigIntResponseModel
     {
-        public string Open { get; set; }
-        public string High { get; set; }
-        public string Low { get; set; }
-        public string Close { get; set; }
+        public FixedDecimal Open { get; set; }
+        public FixedDecimal High { get; set; }
+        public FixedDecimal Low { get; set; }
+        public FixedDecimal Close { get; set; }
     }
 }

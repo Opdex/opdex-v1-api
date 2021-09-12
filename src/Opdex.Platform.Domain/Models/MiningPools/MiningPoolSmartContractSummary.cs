@@ -1,36 +1,32 @@
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Domain.Models.MiningPools
 {
     public class MiningPoolSmartContractSummary
     {
-        public MiningPoolSmartContractSummary(string address, string miningTokenAddress, string rewardRate, ulong miningPeriodEnd)
+        public MiningPoolSmartContractSummary(Address address, Address miningToken, UInt256 rewardRate, ulong miningPeriodEnd)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), "Address must be set.");
             }
 
-            if (!miningTokenAddress.HasValue())
+            if (miningToken == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(miningTokenAddress), "Mining token address must be set.");
-            }
-
-            if (!rewardRate.IsNumeric())
-            {
-                throw new ArgumentNullException(nameof(rewardRate), "Reward rate must only contain numeric digits.");
+                throw new ArgumentNullException(nameof(miningToken), "Mining token address must be set.");
             }
 
             Address = address;
-            MiningTokenAddress = miningTokenAddress;
+            MiningToken = miningToken;
             RewardRate = rewardRate;
             MiningPeriodEnd = miningPeriodEnd;
         }
 
-        public string Address { get; }
-        public string MiningTokenAddress { get; }
-        public string RewardRate { get; }
+        public Address Address { get; }
+        public Address MiningToken { get; }
+        public UInt256 RewardRate { get; }
         public ulong MiningPeriodEnd { get; }
     }
 }

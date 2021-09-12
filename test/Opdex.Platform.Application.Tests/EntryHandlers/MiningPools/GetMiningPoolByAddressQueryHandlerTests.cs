@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.MiningPools;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.MiningPools;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,7 +47,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
         public async Task Handle_MiningPoolDto_Assemble()
         {
             // Arrange
-            var miningPool = new MiningPool(5, 10, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", "500201035", "4249200", 530039, 505, 510);
+            var miningPool = new MiningPool(5, 10, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", UInt256.Parse("500201035"), UInt256.Parse("4249200"), 530039, 505, 510);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
 
             // Act
@@ -62,7 +63,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             // Arrange
             var dto = new MiningPoolDto();
 
-            var miningPool = new MiningPool(5, 10, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", "500201035", "4249200", 530039, 505, 510);
+            var miningPool = new MiningPool(5, 10, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", UInt256.Parse("500201035"), UInt256.Parse("4249200"), 530039, 505, 510);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
             _miningPoolAssemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<MiningPool>())).ReturnsAsync(dto);
 

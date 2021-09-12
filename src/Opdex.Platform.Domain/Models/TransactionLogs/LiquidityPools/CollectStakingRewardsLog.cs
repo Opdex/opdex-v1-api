@@ -1,32 +1,33 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
 {
     public class CollectStakingRewardsLog : TransactionLog
     {
-        public CollectStakingRewardsLog(dynamic log, string address, int sortOrder)
+        public CollectStakingRewardsLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.CollectStakingRewardsLog, address, sortOrder)
         {
-            string staker = log?.staker;
-            string amount = log?.amount;
+            Address staker = (string)log?.staker;
+            UInt256 amount = UInt256.Parse((string)log?.amount);
 
-            if (!staker.HasValue())
+            if (staker == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(staker), "Staker address must be set.");
             }
 
-            if (!amount.IsNumeric())
+            if (amount == UInt256.Zero)
             {
-                throw new ArgumentOutOfRangeException(nameof(amount), "Reward must only contain numeric digits.");
+                throw new ArgumentOutOfRangeException(nameof(amount), "Reward amount must be greater than 0.");
             }
 
             Staker = staker;
             Amount = amount;
         }
 
-        public CollectStakingRewardsLog(long id, long transactionId, string address, int sortOrder, string details)
+        public CollectStakingRewardsLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.CollectStakingRewardsLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -34,13 +35,13 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             Amount = logDetails.Amount;
         }
 
-        public string Staker { get; }
-        public string Amount { get; }
+        public Address Staker { get; }
+        public UInt256 Amount { get; }
 
         private struct LogDetails
         {
-            public string Staker { get; set; }
-            public string Amount { get; set; }
+            public Address Staker { get; set; }
+            public UInt256 Amount { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)

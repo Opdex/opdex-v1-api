@@ -8,6 +8,8 @@ using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
@@ -52,7 +54,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
         }
 
-        private async Task TryUpdateAddressBalance(Token token, string address, ulong blockHeight)
+        private async Task TryUpdateAddressBalance(Token token, Address address, ulong blockHeight)
         {
             try
             {
@@ -65,7 +67,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return;
                 }
 
-                addressBalance ??= new AddressBalance(token.Id, address, "0", blockHeight);
+                addressBalance ??= new AddressBalance(token.Id, address, UInt256.Zero, blockHeight);
 
                 var balance = await _mediator.Send(new CallCirrusGetSrcTokenBalanceQuery(token.Address, address));
 

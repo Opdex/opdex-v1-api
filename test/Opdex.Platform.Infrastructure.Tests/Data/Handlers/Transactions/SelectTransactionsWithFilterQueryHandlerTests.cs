@@ -1,6 +1,7 @@
 using AutoMapper;
 using Moq;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -30,12 +31,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         public async Task SelectTransactionWithFilter_ByWallet()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType direction = SortDirectionType.ASC;
             const uint limit = 10;
 
             var cursor = new TransactionsCursor(wallet, Enumerable.Empty<TransactionEventType>(),
-                                                Enumerable.Empty<string>(), direction, limit, PagingDirection.Forward, 0);
+                                                Enumerable.Empty<Address>(), direction, limit, PagingDirection.Forward, 0);
 
             var command = new SelectTransactionsWithFilterQuery(cursor);
 
@@ -53,7 +54,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         public async Task SelectTransactionsWithFilter_ByContracts()
         {
             // Arrange
-            var contracts = new[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
+            var contracts = new Address[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
             const SortDirectionType direction = SortDirectionType.ASC;
             const uint limit = 10;
 
@@ -81,7 +82,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             const SortDirectionType direction = SortDirectionType.ASC;
             const uint limit = 10;
 
-            var cursor = new TransactionsCursor("", eventTypes, Enumerable.Empty<string>(), direction, limit, PagingDirection.Forward, 0);
+            var cursor = new TransactionsCursor("", eventTypes, Enumerable.Empty<Address>(), direction, limit, PagingDirection.Forward, 0);
 
             var command = new SelectTransactionsWithFilterQuery(cursor);
 
@@ -105,7 +106,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             const uint limit = 10;
 
             var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(),
-                                                Enumerable.Empty<string>(), direction, limit, pagingDirection, 50);
+                                                Enumerable.Empty<Address>(), direction, limit, pagingDirection, 50);
 
             var command = new SelectTransactionsWithFilterQuery(cursor);
 
@@ -128,7 +129,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             const uint limit = 10;
 
             var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(),
-                                                Enumerable.Empty<string>(), direction, limit, pagingDirection, 50);
+                                                Enumerable.Empty<Address>(), direction, limit, pagingDirection, 50);
 
             var command = new SelectTransactionsWithFilterQuery(cursor);
 
@@ -151,7 +152,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             const uint limit = 10;
 
             var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(),
-                                                Enumerable.Empty<string>(), direction, limit, pagingDirection, 50);
+                                                Enumerable.Empty<Address>(), direction, limit, pagingDirection, 50);
 
             var command = new SelectTransactionsWithFilterQuery(cursor);
 
@@ -174,7 +175,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             const uint limit = 10;
 
             var cursor = new TransactionsCursor("", Enumerable.Empty<TransactionEventType>(),
-                                                Enumerable.Empty<string>(), direction, limit, pagingDirection, 50);
+                                                Enumerable.Empty<Address>(), direction, limit, pagingDirection, 50);
 
             var command = new SelectTransactionsWithFilterQuery(cursor);
 

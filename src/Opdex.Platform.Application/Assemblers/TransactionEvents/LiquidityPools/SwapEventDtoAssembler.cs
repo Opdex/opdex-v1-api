@@ -1,5 +1,4 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
@@ -27,10 +26,10 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.LiquidityPools
 
             return new SwapEventDto
             {
-                AmountCrsIn = log.AmountCrsIn.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals),
-                AmountSrcIn = log.AmountSrcIn.InsertDecimal(srcToken.Decimals),
-                AmountCrsOut = log.AmountCrsOut.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals),
-                AmountSrcOut = log.AmountSrcOut.InsertDecimal(srcToken.Decimals),
+                AmountCrsIn = log.AmountCrsIn.ToDecimal(TokenConstants.Cirrus.Decimals),
+                AmountSrcIn = log.AmountSrcIn.ToDecimal(srcToken.Decimals),
+                AmountCrsOut = log.AmountCrsOut.ToDecimal(TokenConstants.Cirrus.Decimals),
+                AmountSrcOut = log.AmountSrcOut.ToDecimal(srcToken.Decimals),
                 SrcToken = srcToken.Address,
                 Sender = log.Sender,
                 To = log.To,

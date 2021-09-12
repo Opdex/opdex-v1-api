@@ -1,4 +1,6 @@
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 using System;
 
@@ -6,8 +8,8 @@ namespace Opdex.Platform.Domain.Models.Governances
 {
     public class MiningGovernance : BlockAudit
     {
-        public MiningGovernance(long id, string address, long tokenId, ulong nominationPeriodEnd, ulong miningDuration, uint miningPoolsFunded,
-            string miningPoolReward, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+        public MiningGovernance(long id, Address address, long tokenId, ulong nominationPeriodEnd, ulong miningDuration, uint miningPoolsFunded,
+            UInt256 miningPoolReward, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
@@ -18,10 +20,10 @@ namespace Opdex.Platform.Domain.Models.Governances
             MiningPoolReward = miningPoolReward;
         }
 
-        public MiningGovernance(string address, long tokenId, ulong nominationPeriodEnd, ulong miningDuration, uint miningPoolsFunded,
-            string miningPoolReward, ulong createdBlock) : base(createdBlock)
+        public MiningGovernance(Address address, long tokenId, ulong nominationPeriodEnd, ulong miningDuration, uint miningPoolsFunded,
+            UInt256 miningPoolReward, ulong createdBlock) : base(createdBlock)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), $"{nameof(address)} must not be null or empty.");
             }
@@ -45,12 +47,12 @@ namespace Opdex.Platform.Domain.Models.Governances
         }
 
         public long Id { get; }
-        public string Address { get; }
+        public Address Address { get; }
         public long TokenId { get; }
         public ulong NominationPeriodEnd { get; private set; }
         public ulong MiningDuration { get; private set; }
         public uint MiningPoolsFunded { get; private set; }
-        public string MiningPoolReward { get; private set; }
+        public UInt256 MiningPoolReward { get; private set; }
 
         public void Update(MiningGovernanceContractSummary summary, ulong block)
         {

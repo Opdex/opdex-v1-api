@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.MiningPools;
 using System;
 
@@ -7,9 +7,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
 {
     public class CallCirrusGetOpdexMiningPoolByAddressQuery : IRequest<MiningPoolSmartContractSummary>
     {
-        public CallCirrusGetOpdexMiningPoolByAddressQuery(string address)
+        public CallCirrusGetOpdexMiningPoolByAddressQuery(Address address)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address));
             }
@@ -17,6 +17,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
             Address = address;
         }
 
-        public string Address { get; }
+        public Address Address { get; }
     }
 }

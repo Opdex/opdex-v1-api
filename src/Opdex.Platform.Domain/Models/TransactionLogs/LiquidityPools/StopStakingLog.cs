@@ -1,14 +1,17 @@
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
+
 namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
 {
     public class StopStakingLog : StakeLog
     {
-        public StopStakingLog(dynamic log, string address, int sortOrder)
-            : base(TransactionLogType.StopStakingLog, (string)log?.staker, (string)log?.amount, (string)log?.totalStaked,
-                   (string)log?.stakerBalance, address, sortOrder)
+        public StopStakingLog(dynamic log, Address address, int sortOrder)
+            : base(TransactionLogType.StopStakingLog, (string)log?.staker, UInt256.Parse((string)log?.amount),
+                   UInt256.Parse((string)log?.totalStaked), UInt256.Parse((string)log?.stakerBalance), address, sortOrder)
         {
         }
 
-        public StopStakingLog(long id, long transactionId, string address, int sortOrder, string details)
+        public StopStakingLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.StopStakingLog, id, transactionId, address, sortOrder, details)
         {
         }

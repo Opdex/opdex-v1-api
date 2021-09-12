@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Dynamic;
@@ -12,7 +13,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Vaults
         public void SetOwner_Owner_Updated()
         {
             // Arrange
-            var vault = new Vault(5, "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5, "100000", 500, 505);
+            var vault = new Vault(5, "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5, 100000, 500, 505);
             var owner = "PTdjXpRFWXrUK7FCHcAjbsPWXaCSefipxh";
 
             dynamic log = new ExpandoObject();
@@ -30,7 +31,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Vaults
         public void SetOwner_ModifiedBlock_Updated()
         {
             // Arrange
-            var vault = new Vault(5, "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5, "100000", 500, 505);
+            var vault = new Vault(5, "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5, 100000, 500, 505);
             var blockHeight = 510UL;
 
             dynamic log = new ExpandoObject();
@@ -48,8 +49,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Vaults
         public void SetUnassignedSupply_UnassignedSupply_Updated()
         {
             // Arrange
-            var vault = new Vault(5, "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5, "100000", 500, 505);
-            var updatedSupply = "100001";
+            var vault = new Vault(5, "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5, 100000, 500, 505);
+            UInt256 updatedSupply = 100001;
 
             // Act
             vault.SetUnassignedSupply(updatedSupply, 510);
@@ -62,11 +63,11 @@ namespace Opdex.Platform.Domain.Tests.Models.Vaults
         public void SetUnassignedSupply_ModifiedBlock_Updated()
         {
             // Arrange
-            var vault = new Vault(5, "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5, "100000", 500, 505);
+            var vault = new Vault(5, "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5, 100000, 500, 505);
             var blockHeight = 510UL;
 
             // Act
-            vault.SetUnassignedSupply("100001", blockHeight);
+            vault.SetUnassignedSupply(100001, blockHeight);
 
             // Assert
             vault.ModifiedBlock.Should().Be(blockHeight);

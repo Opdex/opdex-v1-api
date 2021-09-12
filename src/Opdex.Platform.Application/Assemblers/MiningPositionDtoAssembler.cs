@@ -28,7 +28,7 @@ namespace Opdex.Platform.Application.Assemblers
             return new MiningPositionDto
             {
                 Address = source.Owner,
-                Amount = source.Balance.InsertDecimal(token.Decimals),
+                Amount = source.Balance.ToDecimal(token.Decimals),
                 MiningPool = miningPool.Address,
                 MiningToken = token.Address
             };

@@ -1,5 +1,6 @@
 using System;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Xunit;
 
@@ -18,13 +19,12 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             Assert.Throws<ArgumentOutOfRangeException>(Act);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateTransactionLog_InvalidContract_ThrowArgumentNullException(string contract)
+        [Fact]
+        public void CreateTransactionLog_InvalidContract_ThrowArgumentNullException()
         {
             // Arrange
+            var contract = Address.Empty;
+
             // Act
             void Act() => new FakeTransactionLog(TransactionLogType.ApprovalLog, contract, 1);
 
@@ -103,7 +103,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
 
         class FakeTransactionLog : TransactionLog
         {
-            public FakeTransactionLog(TransactionLogType logType, string contract, int sortOrder) : base(logType, contract, sortOrder)
+            public FakeTransactionLog(TransactionLogType logType, Address contract, int sortOrder) : base(logType, contract, sortOrder)
             {
             }
 

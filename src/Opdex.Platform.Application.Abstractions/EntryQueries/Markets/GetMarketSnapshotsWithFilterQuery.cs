@@ -1,6 +1,7 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;
 
@@ -8,9 +9,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Markets
 {
     public class GetMarketSnapshotsWithFilterQuery : IRequest<IEnumerable<MarketSnapshotDto>>
     {
-        public GetMarketSnapshotsWithFilterQuery(string marketAddress, DateTime? from, DateTime? to)
+        public GetMarketSnapshotsWithFilterQuery(Address marketAddress, DateTime? from, DateTime? to)
         {
-            if (!marketAddress.HasValue())
+            if (marketAddress == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(marketAddress), $"{nameof(marketAddress)} must be provided.");
             }
@@ -20,7 +21,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Markets
             To = to;
         }
 
-        public string MarketAddress { get; }
+        public Address MarketAddress { get; }
         public DateTime? From { get; }
         public DateTime? To { get; }
     }

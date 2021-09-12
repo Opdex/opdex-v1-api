@@ -1,14 +1,14 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens
 {
-    public class CallCirrusGetMiningPoolByTokenQuery : IRequest<string>
+    public class CallCirrusGetMiningPoolByTokenQuery : IRequest<Address>
     {
-        public CallCirrusGetMiningPoolByTokenQuery(string liquidityPoolAddress, ulong blockHeight)
+        public CallCirrusGetMiningPoolByTokenQuery(Address liquidityPoolAddress, ulong blockHeight)
         {
-            if (!liquidityPoolAddress.HasValue())
+            if (liquidityPoolAddress == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(liquidityPoolAddress), "Liquidity pool address must be set.");
             }
@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
             BlockHeight = blockHeight;
         }
 
-        public string LiquidityPoolAddress { get; }
+        public Address LiquidityPoolAddress { get; }
         public ulong BlockHeight { get; }
     }
 }

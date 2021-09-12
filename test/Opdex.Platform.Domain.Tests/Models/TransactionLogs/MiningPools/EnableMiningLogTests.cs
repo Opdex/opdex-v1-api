@@ -1,6 +1,7 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Xunit;
 
@@ -27,7 +28,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MiningPools
             void Act() => new EnableMiningLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Theory]
@@ -49,7 +50,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MiningPools
             void Act() => new EnableMiningLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
@@ -72,17 +73,20 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MiningPools
         public void EnableMiningLog_ArgumentsValid_PropertiesSet()
         {
             // Arrange
+            UInt256 amount = 332432;
+            UInt256 rewardRate = 26;
+
             dynamic txLog = new ExpandoObject();
-            txLog.amount = "43822";
-            txLog.rewardRate = "26";
+            txLog.amount = amount.ToString();
+            txLog.rewardRate = rewardRate.ToString();
             txLog.miningPeriodEndBlock = 50ul;
 
             // Act
             var log = new EnableMiningLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            log.Amount.Should().Be(txLog.amount);
-            log.RewardRate.Should().Be(txLog.rewardRate);
+            log.Amount.Should().Be(amount);
+            log.RewardRate.Should().Be(rewardRate);
             log.MiningPeriodEndBlock.Should().Be(txLog.miningPeriodEndBlock);
         }
     }

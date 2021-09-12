@@ -39,7 +39,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var request = new CreateStandardMarketQuoteRequest
             {
@@ -72,7 +72,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var quote = new TransactionQuoteDto();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStandardMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
@@ -104,7 +104,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var responseModel = new TransactionQuoteResponseModel();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStandardMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
@@ -134,7 +134,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             Address market = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
             var request = new SetMarketOwnerQuoteRequest
@@ -159,7 +159,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var quote = new TransactionQuoteDto();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateSetStandardMarketOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
@@ -186,7 +186,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var responseModel = new TransactionQuoteResponseModel();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateSetStandardMarketOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
@@ -211,7 +211,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             Address market = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
             var cancellationToken = new CancellationTokenSource().Token;
@@ -231,7 +231,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var quote = new TransactionQuoteDto();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateClaimStandardMarketOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
@@ -253,7 +253,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var responseModel = new TransactionQuoteResponseModel();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateClaimStandardMarketOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
@@ -274,7 +274,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             Address market = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
             Address user = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
@@ -304,7 +304,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var quote = new TransactionQuoteDto();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateSetStandardMarketPermissionsTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
@@ -333,7 +333,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var responseModel = new TransactionQuoteResponseModel();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateSetStandardMarketPermissionsTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
@@ -362,7 +362,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             Address market = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
 
@@ -390,7 +390,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var quote = new TransactionQuoteDto();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCollectStandardMarketFeesTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
@@ -418,7 +418,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var responseModel = new TransactionQuoteResponseModel();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCollectStandardMarketFeesTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
@@ -444,7 +444,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var request = new CreateStakingMarketQuoteRequest
             {
@@ -467,7 +467,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var quote = new TransactionQuoteDto();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStakingMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
@@ -494,7 +494,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress.ToString());
+            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
             var responseModel = new TransactionQuoteResponseModel();
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStakingMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))

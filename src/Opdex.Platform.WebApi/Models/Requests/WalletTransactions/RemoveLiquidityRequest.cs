@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
@@ -8,25 +9,25 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// Decimal as a string of the amount of liquidity pool tokens to remove.
         /// </summary>
         [Required]
-        public string Liquidity { get; set; }
+        public FixedDecimal Liquidity { get; set; }
 
         /// <summary>
         /// Decimal as a string of the minimum amount of CRS to receive or fail the transaction.
         /// </summary>
         [Required]
-        public string AmountCrsMin { get; set; }
+        public FixedDecimal AmountCrsMin { get; set; }
 
         /// <summary>
         /// Decimal as a string of the minimum amount of SRC to receive or fail the transaction.
         /// </summary>
         [Required]
-        public string AmountSrcMin { get; set; }
+        public FixedDecimal AmountSrcMin { get; set; }
 
         /// <summary>
         /// The recipient of the removed liquidity.
         /// </summary>
         [Required]
-        public string Recipient { get; set; }
+        public Address Recipient { get; set; }
 
         /// <summary>
         /// The block number limit that the transaction is valid through.

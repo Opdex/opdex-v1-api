@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents;
 using System.Collections.Generic;
@@ -14,11 +15,11 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
 
         public bool Success { get; set; }
         public string Hash { get; set; }
-        public string NewContractAddress { get; set; }
+        public Address NewContractAddress { get; set; }
         public BlockResponseModel Block { get; set; }
         public int GasUsed { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
+        public Address From { get; set; }
+        public Address To { get; set; }
         public IEnumerable<TransactionEventResponseModel> Events { get; set; }
     }
 }

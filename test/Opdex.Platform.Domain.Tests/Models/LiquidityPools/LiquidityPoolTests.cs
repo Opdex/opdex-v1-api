@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
         [Fact]
         public void CreatePool_Success()
         {
-            const string address = "Address";
+            Address address = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
             const long srcId = 2;
             const long lptId = 4;
             const long marketId = 1;

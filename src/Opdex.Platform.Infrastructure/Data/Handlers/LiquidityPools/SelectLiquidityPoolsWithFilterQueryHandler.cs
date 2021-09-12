@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
@@ -54,7 +55,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
         {
             var command = DatabaseQuery.Create(QueryBuilder(request), new SqlParams(request.MarketId, request.Pools), cancellationToken);
 
-            var tokenEntities =  await _context.ExecuteQueryAsync<LiquidityPoolEntity>(command);
+            var tokenEntities = await _context.ExecuteQueryAsync<LiquidityPoolEntity>(command);
 
             return _mapper.Map<IEnumerable<LiquidityPool>>(tokenEntities);
         }
@@ -65,7 +66,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
             var tableJoins = string.Empty;
 
             // Pools filter
-            if (request.Pools?.Any() == true)
+            if (request.Pools.Any())
             {
                 whereFilter += $" AND pl.{nameof(LiquidityPoolEntity.Address)} IN @{nameof(SqlParams.Pools)}";
             }
@@ -161,10 +162,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
 
         private sealed class SqlParams
         {
-            internal SqlParams(long marketId, IEnumerable<string> pools)
+            internal SqlParams(long marketId, IEnumerable<Address> pools)
             {
                 MarketId = marketId;
-                Pools = pools;
+                Pools = pools.Select(pool => pool.ToString());
             }
 
             public long MarketId { get; }

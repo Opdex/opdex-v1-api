@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -124,27 +125,25 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
             // Get results return if none found
             if (!dictionary.TryGetValue(key, out var results)) return false;
 
-            // If it's not an emum type, convert and return
-            if (!typeof(TK).IsEnum)
-            {
-                try
-                {
-                    values = results.Select(result => (TK)Convert.ChangeType(result, typeof(TK))).ToList().AsReadOnly();
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-                return true;
-            }
-
-            // Assert all types that are enum, are valid values
-            if (results.Any(result => !typeof(TK).IsEnumDefined(result))) return false;
-
-            // Return list of TK enum values
             try
             {
-                values = results.Select(result => (TK)Enum.Parse(typeof(TK), result)).ToList().AsReadOnly();
+                if (typeof(TK) == typeof(Address))
+                {
+                    values = Parse(results, result => new Address(result));
+                }
+                else if (typeof(TK).IsEnum)
+                {
+                    // Assert all types that are enum, are valid values
+                    if (results.Any(result => !typeof(TK).IsEnumDefined(result))) return false;
+
+                    // Return list of TK enum values
+                    values = Parse(results, result => Enum.Parse(typeof(TK), result));
+                }
+                else
+                {
+                    // If it's not an enum type, convert and return
+                    values = Parse(results, result => Convert.ChangeType(result, typeof(TK)));
+                }
             }
             catch (Exception)
             {
@@ -152,6 +151,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
             }
 
             return true;
+
+            static IReadOnlyList<TK> Parse(IEnumerable<string> results, Func<string, object> parseExpression)
+            {
+                return results.Select(parseExpression).Cast<TK>().ToList().AsReadOnly();
+            }
         }
     }
 }

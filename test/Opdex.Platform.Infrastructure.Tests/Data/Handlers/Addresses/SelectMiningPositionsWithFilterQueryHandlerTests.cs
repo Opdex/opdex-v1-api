@@ -1,6 +1,7 @@
 using AutoMapper;
 using Moq;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -30,11 +31,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task SelectMiningPositionsWithFilter_ByWallet()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType direction = SortDirectionType.ASC;
             const uint limit = 10;
 
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, direction, limit, PagingDirection.Backward, 50);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, direction, limit, PagingDirection.Backward, 50);
 
             var command = new SelectMiningPositionsWithFilterQuery(wallet, cursor);
 
@@ -51,11 +52,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         {
             // Arrange
             const SortDirectionType direction = SortDirectionType.ASC;
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var liquidityPools = new[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            var liquidityPools = new Address[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
             const uint limit = 10;
 
-            var cursor = new MiningPositionsCursor(liquidityPools, Enumerable.Empty<string>(), false, direction, limit, PagingDirection.Backward, 50);
+            var cursor = new MiningPositionsCursor(liquidityPools, Enumerable.Empty<Address>(), false, direction, limit, PagingDirection.Backward, 50);
 
             var command = new SelectMiningPositionsWithFilterQuery(wallet, cursor);
 
@@ -74,11 +75,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         {
             // Arrange
             const SortDirectionType direction = SortDirectionType.ASC;
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var miningPools = new[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            var miningPools = new Address[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
             const uint limit = 10;
 
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), miningPools, false, direction, limit, PagingDirection.Backward, 50);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), miningPools, false, direction, limit, PagingDirection.Backward, 50);
 
             var command = new SelectMiningPositionsWithFilterQuery(wallet, cursor);
 
@@ -97,11 +98,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         {
             // Arrange
             const SortDirectionType direction = SortDirectionType.ASC;
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const bool includeZeroAmounts = false;
             const uint limit = 10;
 
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), includeZeroAmounts, direction, limit, PagingDirection.Backward, 50);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), includeZeroAmounts, direction, limit, PagingDirection.Backward, 50);
 
             var command = new SelectMiningPositionsWithFilterQuery(wallet, cursor);
 
@@ -118,11 +119,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task SelectMiningPositionsWithFilter_ByCursor_NextASC()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType direction = SortDirectionType.ASC;
             const uint limit = 10;
 
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, direction, limit, PagingDirection.Forward, 50);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, direction, limit, PagingDirection.Forward, 50);
 
             var command = new SelectMiningPositionsWithFilterQuery(wallet, cursor);
 
@@ -141,11 +142,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task SelectMiningPositionsWithFilter_ByCursor_NextDESC()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType direction = SortDirectionType.DESC;
             const uint limit = 10;
 
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, direction, limit, PagingDirection.Forward, 50);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, direction, limit, PagingDirection.Forward, 50);
 
             var command = new SelectMiningPositionsWithFilterQuery(wallet, cursor);
 
@@ -164,11 +165,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task SelectMiningPositionsWithFilter_ByCursor_PreviousDESC()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType requestDirection = SortDirectionType.DESC;
             const uint limit = 10;
 
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, requestDirection, limit, PagingDirection.Backward, 50);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, requestDirection, limit, PagingDirection.Backward, 50);
 
             var command = new SelectMiningPositionsWithFilterQuery(wallet, cursor);
 
@@ -187,11 +188,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task SelectMiningPositionsWithFilter_ByCursor_PreviousASC()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType requestDirection = SortDirectionType.ASC;
             const uint limit = 10;
 
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, requestDirection, limit, PagingDirection.Backward, 50);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, requestDirection, limit, PagingDirection.Backward, 50);
 
             var command = new SelectMiningPositionsWithFilterQuery(wallet, cursor);
 

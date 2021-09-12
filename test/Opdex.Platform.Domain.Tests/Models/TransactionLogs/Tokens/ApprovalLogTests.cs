@@ -1,6 +1,8 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Xunit;
@@ -52,14 +54,17 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
         [Fact]
         public void CreateApprovalLog_Success()
         {
-            const string address = "Address";
+            Address address = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
             const int sortOrder = 1;
 
+            UInt256 amount = 1;
+            UInt256 oldAmount = 0;
+
             dynamic txLog = new ExpandoObject();
-            txLog.owner = "Owner";
-            txLog.spender = "Spender";
-            txLog.amount = "1";
-            txLog.oldAmount = "0";
+            txLog.owner = "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN";
+            txLog.spender = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";
+            txLog.amount = amount.ToString();
+            txLog.oldAmount = oldAmount.ToString();
 
             var log = new ApprovalLog(txLog, address, sortOrder);
 
@@ -68,8 +73,8 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
             log.LogType.Should().Be(TransactionLogType.ApprovalLog);
             log.Contract.Should().Be(address);
             log.SortOrder.Should().Be(sortOrder);
-            log.Amount.Should().Be(txLog.amount);
-            log.OldAmount.Should().Be(txLog.oldAmount);
+            log.Amount.Should().Be(amount);
+            log.OldAmount.Should().Be(oldAmount);
             log.Spender.Should().Be(txLog.spender);
             log.Owner.Should().Be(txLog.owner);
         }

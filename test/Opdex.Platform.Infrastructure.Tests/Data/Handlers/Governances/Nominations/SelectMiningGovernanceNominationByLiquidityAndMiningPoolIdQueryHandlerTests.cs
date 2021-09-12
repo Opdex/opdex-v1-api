@@ -41,7 +41,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
                 LiquidityPoolId = liquidityPoolId,
                 MiningPoolId = miningPoolId,
                 IsNominated = true,
-                Weight = "10000000",
+                Weight = 10000000,
                 CreatedBlock = 1,
                 ModifiedBlock = 2,
             };

@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
@@ -22,9 +23,9 @@ namespace Opdex.Platform.Application.Tests.Mappers
         [Fact]
         public void From_TransactionQuote_To_TransactionQuoteDto()
         {
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "0";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Parse("1.1");
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 
@@ -45,9 +46,9 @@ namespace Opdex.Platform.Application.Tests.Mappers
         public void From_TransactionQuoteRequest_To_TransactionQuoteRequestDto()
         {
             // Arrange
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.1";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Parse("1.1");
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 
@@ -104,9 +105,9 @@ namespace Opdex.Platform.Application.Tests.Mappers
             response.SortOrder.Should().Be(log.SortOrder);
             response.EventType.Should().Be(TransactionEventType.StartMiningEvent);
             response.Miner.Should().Be(log.Miner);
-            response.MinerBalance.Should().Be(log.MinerBalance.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals));
-            response.TotalSupply.Should().Be(log.TotalSupply.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals));
-            response.Amount.Should().Be(log.Amount.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals));
+            response.MinerBalance.Should().Be(log.MinerBalance.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals));
+            response.TotalSupply.Should().Be(log.TotalSupply.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals));
+            response.Amount.Should().Be(log.Amount.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals));
         }
 
         [Fact]
@@ -132,9 +133,9 @@ namespace Opdex.Platform.Application.Tests.Mappers
             response.SortOrder.Should().Be(log.SortOrder);
             response.EventType.Should().Be(TransactionEventType.StopMiningEvent);
             response.Miner.Should().Be(log.Miner);
-            response.MinerBalance.Should().Be(log.MinerBalance.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals));
-            response.TotalSupply.Should().Be(log.TotalSupply.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals));
-            response.Amount.Should().Be(log.Amount.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals));
+            response.MinerBalance.Should().Be(log.MinerBalance.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals));
+            response.TotalSupply.Should().Be(log.TotalSupply.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals));
+            response.Amount.Should().Be(log.Amount.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals));
         }
 
         [Fact]
@@ -160,9 +161,9 @@ namespace Opdex.Platform.Application.Tests.Mappers
             response.SortOrder.Should().Be(log.SortOrder);
             response.EventType.Should().Be(TransactionEventType.StartStakingEvent);
             response.Staker.Should().Be(log.Staker);
-            response.StakerBalance.Should().Be(log.StakerBalance.InsertDecimal(TokenConstants.Opdex.Decimals));
-            response.TotalStaked.Should().Be(log.TotalStaked.InsertDecimal(TokenConstants.Opdex.Decimals));
-            response.Amount.Should().Be(log.Amount.InsertDecimal(TokenConstants.Opdex.Decimals));
+            response.StakerBalance.Should().Be(log.StakerBalance.ToDecimal(TokenConstants.Opdex.Decimals));
+            response.TotalStaked.Should().Be(log.TotalStaked.ToDecimal(TokenConstants.Opdex.Decimals));
+            response.Amount.Should().Be(log.Amount.ToDecimal(TokenConstants.Opdex.Decimals));
         }
 
         [Fact]
@@ -188,9 +189,9 @@ namespace Opdex.Platform.Application.Tests.Mappers
             response.SortOrder.Should().Be(log.SortOrder);
             response.EventType.Should().Be(TransactionEventType.StopStakingEvent);
             response.Staker.Should().Be(log.Staker);
-            response.StakerBalance.Should().Be(log.StakerBalance.InsertDecimal(TokenConstants.Opdex.Decimals));
-            response.TotalStaked.Should().Be(log.TotalStaked.InsertDecimal(TokenConstants.Opdex.Decimals));
-            response.Amount.Should().Be(log.Amount.InsertDecimal(TokenConstants.Opdex.Decimals));
+            response.StakerBalance.Should().Be(log.StakerBalance.ToDecimal(TokenConstants.Opdex.Decimals));
+            response.TotalStaked.Should().Be(log.TotalStaked.ToDecimal(TokenConstants.Opdex.Decimals));
+            response.Amount.Should().Be(log.Amount.ToDecimal(TokenConstants.Opdex.Decimals));
         }
     }
 }

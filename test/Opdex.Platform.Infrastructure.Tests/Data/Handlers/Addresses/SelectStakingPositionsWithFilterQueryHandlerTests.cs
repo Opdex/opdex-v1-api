@@ -1,6 +1,7 @@
 using AutoMapper;
 using Moq;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -30,11 +31,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task SelectStakingPositionsWithFilter_ByWallet()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType direction = SortDirectionType.ASC;
             const uint limit = 10;
 
-            var cursor = new StakingPositionsCursor(Enumerable.Empty<string>(), false, direction, limit, PagingDirection.Backward, 50);
+            var cursor = new StakingPositionsCursor(Enumerable.Empty<Address>(), false, direction, limit, PagingDirection.Backward, 50);
 
             var command = new SelectStakingPositionsWithFilterQuery(wallet, cursor);
 
@@ -51,8 +52,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         {
             // Arrange
             const SortDirectionType direction = SortDirectionType.ASC;
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var liquidityPools = new[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            var liquidityPools = new Address[] { "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj" };
             const uint limit = 10;
 
             var cursor = new StakingPositionsCursor(liquidityPools, false, direction, limit, PagingDirection.Backward, 50);
@@ -74,11 +75,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         {
             // Arrange
             const SortDirectionType direction = SortDirectionType.ASC;
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const bool includeZeroAmounts = false;
             const uint limit = 10;
 
-            var cursor = new StakingPositionsCursor(Enumerable.Empty<string>(), includeZeroAmounts, direction, limit, PagingDirection.Backward, 50);
+            var cursor = new StakingPositionsCursor(Enumerable.Empty<Address>(), includeZeroAmounts, direction, limit, PagingDirection.Backward, 50);
 
             var command = new SelectStakingPositionsWithFilterQuery(wallet, cursor);
 
@@ -95,11 +96,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task SelectStakingPositionsWithFilter_ByCursor_NextASC()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType direction = SortDirectionType.ASC;
             const uint limit = 10;
 
-            var cursor = new StakingPositionsCursor(Enumerable.Empty<string>(), false, direction, limit, PagingDirection.Forward, 50);
+            var cursor = new StakingPositionsCursor(Enumerable.Empty<Address>(), false, direction, limit, PagingDirection.Forward, 50);
 
             var command = new SelectStakingPositionsWithFilterQuery(wallet, cursor);
 
@@ -118,11 +119,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task SelectStakingPositionsWithFilter_ByCursor_NextDESC()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType direction = SortDirectionType.DESC;
             const uint limit = 10;
 
-            var cursor = new StakingPositionsCursor(Enumerable.Empty<string>(), false, direction, limit, PagingDirection.Forward, 50);
+            var cursor = new StakingPositionsCursor(Enumerable.Empty<Address>(), false, direction, limit, PagingDirection.Forward, 50);
 
             var command = new SelectStakingPositionsWithFilterQuery(wallet, cursor);
 
@@ -141,11 +142,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task SelectStakingPositionsWithFilter_ByCursor_PreviousDESC()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType requestDirection = SortDirectionType.DESC;
             const uint limit = 10;
 
-            var cursor = new StakingPositionsCursor(Enumerable.Empty<string>(), false, requestDirection, limit, PagingDirection.Backward, 50);
+            var cursor = new StakingPositionsCursor(Enumerable.Empty<Address>(), false, requestDirection, limit, PagingDirection.Backward, 50);
 
             var command = new SelectStakingPositionsWithFilterQuery(wallet, cursor);
 
@@ -164,11 +165,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
         public async Task SelectStakingPositionsWithFilter_ByCursor_PreviousASC()
         {
             // Arrange
-            const string wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address wallet = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const SortDirectionType requestDirection = SortDirectionType.ASC;
             const uint limit = 10;
 
-            var cursor = new StakingPositionsCursor(Enumerable.Empty<string>(), false, requestDirection, limit, PagingDirection.Backward, 50);
+            var cursor = new StakingPositionsCursor(Enumerable.Empty<Address>(), false, requestDirection, limit, PagingDirection.Backward, 50);
 
             var command = new SelectStakingPositionsWithFilterQuery(wallet, cursor);
 

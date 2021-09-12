@@ -1,6 +1,8 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Xunit;
@@ -54,7 +56,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
         [InlineData("ABC")]
         [InlineData("100.005")]
         [InlineData("100_000")]
-        public void CreateTransferLog_AmountInvalid_ThrowArgumentOutOfRangeException(string amount)
+        public void CreateTransferLog_AmountInvalid_ThrowException(string amount)
         {
             // Arrange
             dynamic txLog = new ExpandoObject();
@@ -66,19 +68,20 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
             void Act() => new TransferLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
         public void CreatesTransferLog_Success()
         {
-            const string address = "Address";
+            Address address = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
             const int sortOrder = 1;
+            UInt256 amount = 87654345678;
 
             dynamic tx = new ExpandoObject();
             tx.from = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj3";
             tx.to = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj7";
-            tx.amount = "87654345678";
+            tx.amount = amount.ToString();
 
             var txLog = new TransferLog(tx, address, sortOrder);
 
@@ -89,7 +92,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
             txLog.SortOrder.Should().Be(sortOrder);
             txLog.From.Should().Be(tx.from);
             txLog.To.Should().Be(tx.to);
-            txLog.Amount.Should().Be(tx.amount);
+            txLog.Amount.Should().Be(amount);
         }
     }
 }

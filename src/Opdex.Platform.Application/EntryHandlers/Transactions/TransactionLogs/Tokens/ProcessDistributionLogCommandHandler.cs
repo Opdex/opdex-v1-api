@@ -20,6 +20,8 @@ using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System.Linq;
+using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens
 {
@@ -119,7 +121,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
         }
 
-        private async Task<bool> UpdateAddressBalance(string address, Token token, string distributionAmount, ulong blockHeight)
+        private async Task<bool> UpdateAddressBalance(Address address, Token token, UInt256 distributionAmount, ulong blockHeight)
         {
             var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, token.Id, findOrThrow: false));
 
@@ -145,7 +147,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             return true;
         }
 
-        private async Task InitializeNominations(long governanceId, string miningGovernance, ulong blockHeight)
+        private async Task InitializeNominations(long governanceId, Address miningGovernance, ulong blockHeight)
         {
             var nominatedPools = await _mediator.Send(new RetrieveCirrusMiningGovernanceNominationsQuery(miningGovernance, blockHeight));
 
@@ -159,7 +161,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                                                                                                        miningPool.LiquidityPoolId,
                                                                                                        miningPool.Id,
                                                                                                        true,
-                                                                                                       "1",
+                                                                                                       1,
                                                                                                        blockHeight));
 
             await Task.WhenAll(

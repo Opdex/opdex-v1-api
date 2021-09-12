@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.Tokens;
@@ -72,7 +73,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             }
         }
 
-        private async Task<long> MakeToken(string tokenAddress, ulong blockHeight, bool isLpToken = false)
+        private async Task<long> MakeToken(Address tokenAddress, ulong blockHeight, bool isLpToken = false)
         {
             var srcToken = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false));
 

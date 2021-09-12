@@ -8,6 +8,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 {
@@ -16,7 +17,8 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
     {
         private readonly IMediator _mediator;
         private const string MethodName = "Approve";
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+
         public MakeWalletApproveAllowanceTransactionCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -27,7 +29,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             var currentAllowanceRequest = new CallCirrusGetSrcTokenAllowanceQuery(request.Token, request.WalletAddress, request.Spender);
             var currentAllowance = await _mediator.Send(currentAllowanceRequest, cancellationToken);
 
-            var parameters = new []
+            var parameters = new[]
             {
                 request.Spender.ToSmartContractParameter(SmartContractParameterType.Address),
                 currentAllowance.ToSmartContractParameter(SmartContractParameterType.UInt256),
@@ -35,7 +37,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             };
 
             var callDto = new SmartContractCallRequestDto(request.Token, request.WalletName, request.WalletAddress,
-                request.WalletPassword, CrsToSend, MethodName, parameters);
+                                                          request.WalletPassword, CrsToSend, MethodName, parameters);
 
             return await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }

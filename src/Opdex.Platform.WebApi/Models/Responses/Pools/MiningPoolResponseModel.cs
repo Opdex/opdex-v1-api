@@ -18,13 +18,13 @@ namespace Opdex.Platform.WebApi.Models.Responses.Pools
         public ulong MiningPeriodEndBlock { get; set; }
 
         [NotNull]
-        public string RewardPerBlock { get; set; }
+        public FixedDecimal RewardPerBlock { get; set; }
 
         [NotNull]
-        public string RewardPerLpt { get; set; }
+        public FixedDecimal RewardPerLpt { get; set; }
 
         [NotNull]
-        public string TokensMining { get; set; }
+        public FixedDecimal TokensMining { get; set; }
 
         [NotNull]
         public bool IsActive { get; set; }

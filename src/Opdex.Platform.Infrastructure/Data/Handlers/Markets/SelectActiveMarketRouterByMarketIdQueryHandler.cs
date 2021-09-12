@@ -28,19 +28,19 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
-        
+
         public SelectActiveMarketRouterByMarketIdQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-        
+
         public async Task<MarketRouter> Handle(SelectActiveMarketRouterByMarketIdQuery request, CancellationToken cancellationToken)
         {
             var queryParams = new SqlParams(request.MarketId);
-            
-            var command = DatabaseQuery.Create(SqlCommand,  queryParams, cancellationToken);
-            
+
+            var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
+
             var result =  await _context.ExecuteFindAsync<MarketRouterEntity>(command);
 
             if (request.FindOrThrow && result == null)
@@ -50,7 +50,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
             return result == null ? null : _mapper.Map<MarketRouter>(result);
         }
-        
+
         private sealed class SqlParams
         {
             internal SqlParams(long marketId)

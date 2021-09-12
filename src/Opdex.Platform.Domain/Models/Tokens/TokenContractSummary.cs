@@ -1,14 +1,15 @@
-using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class TokenContractSummary
     {
-        public TokenContractSummary(string address, string name, string symbol, uint decimals, string totalSupply)
+        public TokenContractSummary(Address address, string name, string symbol, uint decimals, UInt256 totalSupply)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), "Token address must be set.");
             }
@@ -28,11 +29,6 @@ namespace Opdex.Platform.Domain.Models.Tokens
                 throw new ArgumentOutOfRangeException(nameof(decimals), "Token must have between 0 and 18 decimal denominations.");
             }
 
-            if (!totalSupply.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must only contain numeric digits.");
-            }
-
             Address = address;
             Name = name;
             Symbol = symbol;
@@ -40,11 +36,11 @@ namespace Opdex.Platform.Domain.Models.Tokens
             TotalSupply = totalSupply;
         }
 
-        public string Address { get; }
+        public Address Address { get; }
         public string Name { get; }
         public string Symbol { get; private set; }
         public uint Decimals { get; }
-        public ulong Sats => Decimals.DecimalsToSatoshis();
-        public string TotalSupply { get; }
+        public ulong Sats => SatoshiConverterExtension.SatsFromPrecision((int)Decimals);
+        public UInt256 TotalSupply { get; }
     }
 }

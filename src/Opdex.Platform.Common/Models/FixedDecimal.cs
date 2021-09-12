@@ -72,21 +72,24 @@ namespace Opdex.Platform.Common.Models
             return result;
         }
 
-        /// <summary>Resizes the precision of the <see cref="FixedDecimal" /> to another value.</summary>
+        /// <summary>Resizes the precision of the <see cref="FixedDecimal" /> to another value. A lower precision results in a loss of accuracy.</summary>
         /// <param name="precision">The desired number of decimal places.</param>
         /// <returns>A <see cref="FixedDecimal" /> with the desired precision.</returns>
         /// <exception cref="OutOfMemoryException">Thrown if the underlying value is too large.</exception>
         public FixedDecimal Resize(byte precision)
         {
             if (Precision == precision) return this;
-            if (Precision > precision) throw new NotImplementedException("Reducing precision requires support for division.");
 
             var factor = precision - Precision;
             return new FixedDecimal(Scale(ScaledValue, factor), precision);
         }
 
         /// <exception cref="OutOfMemoryException">Thrown if the underlying value is too large.</exception>
-        private static BigInteger Scale(BigInteger value, int factor) => value * BigInteger.Pow(10, factor);
+        private static BigInteger Scale(BigInteger value, int factor)
+        {
+            if (factor >= 0) return value * BigInteger.Pow(10, factor);
+            return value / BigInteger.Pow(10, -factor);
+        }
 
         public static bool operator ==(FixedDecimal a, FixedDecimal b) => a.Equals(b);
         public static bool operator !=(FixedDecimal a, FixedDecimal b) => !a.Equals(b);
@@ -100,6 +103,7 @@ namespace Opdex.Platform.Common.Models
         public static implicit operator FixedDecimal(long value) => new FixedDecimal(value, 0);
         public static implicit operator FixedDecimal(ulong value) => new FixedDecimal(value, 0);
         public static implicit operator FixedDecimal(BigInteger value) => new FixedDecimal(value, 0);
+        public static implicit operator FixedDecimal(decimal value) => Parse(value.ToString());
 
         /// <summary>Converts the string representation of a number to its <see cref="FixedDecimal" /> equivalent.</summary>
         /// <param name="value">The stringified decimal value</param>

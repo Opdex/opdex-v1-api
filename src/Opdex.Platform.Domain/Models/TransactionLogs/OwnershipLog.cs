@@ -1,20 +1,21 @@
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common;
+using Opdex.Platform.Common.Models;
 using System;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs
 {
     public abstract class OwnershipLog : TransactionLog
     {
-        protected OwnershipLog(TransactionLogType logType, string from, string to, string address, int sortOrder)
+        protected OwnershipLog(TransactionLogType logType, Address from, Address to, Address address, int sortOrder)
             : base(logType, address, sortOrder)
         {
-            if (!from.HasValue())
+            if (from == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(from), "From address must be set.");
             }
 
-            if (!to.HasValue())
+            if (to == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(to), "To address must be set.");
             }
@@ -23,7 +24,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             To = to;
         }
 
-        protected OwnershipLog(TransactionLogType logType, long id, long transactionId, string address, int sortOrder, string details)
+        protected OwnershipLog(TransactionLogType logType, long id, long transactionId, Address address, int sortOrder, string details)
             : base(logType, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -31,13 +32,13 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             To = logDetails.To;
         }
 
-        public string From { get; }
-        public string To { get; }
+        public Address From { get; }
+        public Address To { get; }
 
         private struct LogDetails
         {
-            public string From { get; set; }
-            public string To { get; set; }
+            public Address From { get; set; }
+            public Address To { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)

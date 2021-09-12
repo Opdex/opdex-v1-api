@@ -68,7 +68,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
         {
             // Arrange
             var request = new GetTransactionByHashQuery("hash");
-            var transaction = new Transaction(1, "txHash", 2, 3, "from", "to", true, "newContractAddress");
+            var transaction = new Transaction(1, "txHash", 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionByHashQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(transaction);

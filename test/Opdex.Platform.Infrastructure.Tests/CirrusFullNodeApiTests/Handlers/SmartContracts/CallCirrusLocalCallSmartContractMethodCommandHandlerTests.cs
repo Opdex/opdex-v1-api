@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
@@ -46,9 +47,9 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
         public async Task CallCirrusLocalCallSmartContractMethodCommandHandler_Sends_LocalCallAsync()
         {
             // Arrange
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.1";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Parse("1.1");
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 
@@ -81,9 +82,9 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
         public async Task CallCirrusLocalCallSmartContractMethodCommandHandler_Returns_TransactionQuote_Success()
         {
             // Arrange
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.1";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Parse("1.1");
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 
@@ -104,7 +105,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
                 GasConsumed = new GasConsumed { Value = 10000 },
                 Logs = new List<TransactionLogDto>
                 {
-                    new TransactionLogDto { Address = "Address", Data = "Data", Log = txLog, SortOrder = 0, Topics = new [] { "52657365727665734C6F67" }}
+                    new TransactionLogDto { Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", Data = "Data", Log = txLog, SortOrder = 0, Topics = new [] { "52657365727665734C6F67" }}
                 }
             };
 
@@ -126,9 +127,9 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
         public async Task CallCirrusLocalCallSmartContractMethodCommandHandler_Returns_TransactionQuote_Fail()
         {
             // Arrange
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.1";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Parse("1.1");
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 

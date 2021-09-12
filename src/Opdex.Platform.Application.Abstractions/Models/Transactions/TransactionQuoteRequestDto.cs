@@ -12,7 +12,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.Transactions
 
         public Address Sender { get; set; }
         public Address To { get; set; }
-        public string Amount { get; set; }
+        public FixedDecimal Amount { get; set; }
         public string Method { get; set; }
         public IReadOnlyCollection<TransactionQuoteRequestParameterDto> Parameters { get; set; }
         public string Callback { get; set; }

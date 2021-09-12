@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Moq.Contrib.HttpClient;
-using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules;
 using Xunit;
 
@@ -19,7 +19,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Modules
         {
             // arrange
             const string baseAddress = "https://cirrus.node/";
-            const string contract = "tDrNbZKsbYPvike4RfddzESXZoPwUMm5pL";
+            Address contract = "tDrNbZKsbYPvike4RfddzESXZoPwUMm5pL";
             const string logName = "SwapLog";
             const int fromBlock = 10;
 
@@ -43,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Modules
         {
             // arrange
             const string baseAddress = "https://cirrus.node/";
-            const string contract = "tDrNbZKsbYPvike4RfddzESXZoPwUMm5pL";
+            Address contract = "tDrNbZKsbYPvike4RfddzESXZoPwUMm5pL";
             const string logName = "SwapLog";
             const int fromBlock = 10;
             const int toBlock = 10000;

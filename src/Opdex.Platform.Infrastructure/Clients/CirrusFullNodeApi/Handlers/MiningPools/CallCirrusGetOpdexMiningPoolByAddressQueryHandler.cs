@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
@@ -28,17 +30,15 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Minin
         {
             var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_StakingToken", new string[0]);
             var stakingTokenResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-            var stakingToken = (string)stakingTokenResponse.Return;
-            if (!stakingToken.HasValue()) return null;
+            var stakingToken = stakingTokenResponse.DeserializeValue<Address>();
 
             localCall.MethodName = "get_RewardRate";
             var rewardRateResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-            var rewardRate = (string)rewardRateResponse.Return;
-            if (!rewardRate.HasValue()) return null;
+            var rewardRate = rewardRateResponse.DeserializeValue<UInt256>();
 
             localCall.MethodName = "get_MiningPeriodEndBlock";
             var miningPeriodEndResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-            ulong.TryParse(miningPeriodEndResponse.Return.ToString(), out var miningPeriodEnd);
+            var miningPeriodEnd = miningPeriodEndResponse.DeserializeValue<ulong>();
 
             return new MiningPoolSmartContractSummary(request.Address, stakingToken, rewardRate, miningPeriodEnd);
         }

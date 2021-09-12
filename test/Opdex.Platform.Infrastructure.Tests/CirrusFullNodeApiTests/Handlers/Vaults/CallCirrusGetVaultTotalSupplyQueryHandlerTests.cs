@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Moq;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
@@ -62,7 +63,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Va
             var response = await _handler.Handle(new CallCirrusGetVaultTotalSupplyQuery("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500000), CancellationToken.None);
 
             // Assert
-            response.Should().Be(returnValue);
+            response.Should().Be(UInt256.Parse(returnValue));
         }
     }
 }

@@ -1,26 +1,16 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet
 {
     public class CreateWalletAddLiquidityTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletAddLiquidityTransactionCommand(string walletAddress, string pool, string amountCrs, string amountSrc, decimal tolerance,
-                                                          string recipient, string market) : base(walletAddress)
+        public CreateWalletAddLiquidityTransactionCommand(Address walletAddress, Address pool, FixedDecimal amountCrs, FixedDecimal amountSrc,
+                                                          decimal tolerance, Address recipient, Address market) : base(walletAddress)
         {
-            if (!pool.HasValue())
+            if (pool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(pool));
-            }
-
-            if (!amountCrs.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Amount CRS be a valid decimal number.", nameof(amountCrs));
-            }
-
-            if (!amountSrc.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Amount SRC be a valid decimal number.", nameof(amountSrc));
             }
 
             if (tolerance > .9999m || tolerance < .0001m)
@@ -28,14 +18,24 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
                 throw new ArgumentOutOfRangeException(nameof(tolerance));
             }
 
-            if (!recipient.HasValue())
+            if (recipient == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(recipient));
             }
 
-            if (!market.HasValue())
+            if (market == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(market));
+            }
+
+            if (amountCrs <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountCrs));
+            }
+
+            if (amountSrc <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountSrc));
             }
 
             LiquidityPool = pool;
@@ -46,11 +46,11 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             Market = market;
         }
 
-        public string LiquidityPool { get; }
-        public string AmountCrs { get; }
-        public string AmountSrc { get; }
+        public Address LiquidityPool { get; }
+        public FixedDecimal AmountCrs { get; }
+        public FixedDecimal AmountSrc { get; }
         public decimal Tolerance { get; }
-        public string Recipient { get; }
-        public string Market { get; }
+        public Address Recipient { get; }
+        public Address Market { get; }
     }
 }

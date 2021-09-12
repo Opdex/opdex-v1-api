@@ -37,40 +37,35 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             _handler = new CreateStartMiningTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateStartMiningTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentException(string miningPool)
+        [Fact]
+        public void CreateStartMiningTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentNullException()
         {
             // Arrange
+            Address miningPool = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string amount = "1.00";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
 
             // Act
             void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Mining pool address must be set.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Mining pool address must be set.");
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        [InlineData("123")]
-        [InlineData("asdf")]
-        public void CreateStartMiningTransactionQuoteCommand_InvalidAmount_ThrowArgumentException(string amount)
+        [InlineData("-1.01")]
+        [InlineData("0")]
+        public void CreateStartMiningTransactionQuoteCommand_InvalidAmount_ThrowArgumentOutOfRangeException(string amount)
         {
             // Arrange
-            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
 
             // Act
-            void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
+            void Act() => new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, FixedDecimal.Parse(amount));
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount must be a valid decimal number.");
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Amount must be greater than 0.");
         }
 
         [Fact]
@@ -79,7 +74,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.00";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
 
             var command = new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -102,8 +97,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.00";
-            const string crsToSend = "0";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -137,8 +132,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.00";
-            const string crsToSend = "0";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateStartMiningTransactionQuoteCommand(miningPool, walletAddress, amount);
             var cancellationToken = new CancellationTokenSource().Token;

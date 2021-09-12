@@ -27,7 +27,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Cost = new CostSnapshot();
             SnapshotType = snapshotType;
             StartDate = blockTime.ToStartOf(snapshotType);
-            EndDate = blockTime.ToEndOf(snapshotType);;
+            EndDate = blockTime.ToEndOf(snapshotType);
         }
 
         public LiquidityPoolSnapshot(long id, long liquidityPoolId, long transactionCount, ReservesSnapshot reserves, RewardsSnapshot rewards,
