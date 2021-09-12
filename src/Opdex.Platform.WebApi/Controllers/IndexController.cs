@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Index;
 using Opdex.Platform.WebApi.Models.Responses.Indexer;
 using System.Linq;
@@ -25,12 +27,14 @@ namespace Opdex.Platform.WebApi.Controllers
         private readonly IMediator _mediator;
         private readonly NetworkType _network;
         private readonly string _instanceId;
+        private readonly IApplicationContext _context;
 
-        public IndexController(IMediator mediator, OpdexConfiguration opdexConfiguration)
+        public IndexController(IMediator mediator, OpdexConfiguration opdexConfiguration, IApplicationContext context)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
             _instanceId = opdexConfiguration?.InstanceId ?? throw new ArgumentNullException(nameof(opdexConfiguration));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <summary>Get Latest Block</summary>
@@ -68,8 +72,14 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>No Content</returns>
         [HttpPost("resync-from-deployment")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
         {
+            // Todo: Spike and implement separate market vs wallet in JWT. Markets are currently required, they should not be.
+            // If a new session starts, with no markets, a user cannot get authorized to hit this endpoint.
+            // var admin = await _mediator.Send(new GetAdminByAddressQuery(_context.Wallet, findOrThrow: false), cancellationToken);
+            // if (admin == null) return Unauthorized();
+
             var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
             if (markets.Any())
             {
@@ -99,8 +109,12 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("rewind")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
         {
+            var admin = await _mediator.Send(new GetAdminByAddressQuery(_context.Wallet, findOrThrow: false), cancellationToken);
+            if (admin == null) return Unauthorized();
+
             await _mediator.Send(new MakeIndexerLockCommand());
 
             try

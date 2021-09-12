@@ -84,6 +84,7 @@ using Opdex.Platform.Application.EntryHandlers.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Governances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
@@ -101,25 +102,30 @@ using Opdex.Platform.Application.Handlers.Indexer;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
+using Opdex.Platform.Application.Abstractions.Models.Admins;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
+using Opdex.Platform.Application.Abstractions.Queries.Admins;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Assemblers.TransactionEvents;
 using Opdex.Platform.Application.Assemblers.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens;
+using Opdex.Platform.Application.EntryHandlers.Admins;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.EntryHandlers.MiningPools;
+using Opdex.Platform.Application.Handlers.Admins;
 using Opdex.Platform.Application.Handlers.LiquidityPools;
 using Opdex.Platform.Application.Handlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Handlers.MiningPools;
+using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.MiningPools;
@@ -150,6 +156,9 @@ namespace Opdex.Platform.Application
 
         private static IServiceCollection AddEntryQueries(this IServiceCollection services)
         {
+            // Admins
+            services.AddTransient<IRequestHandler<GetAdminByAddressQuery, AdminDto>, GetAdminByAddressQueryHandler>();
+
             // Markets
             services.AddTransient<IRequestHandler<GetMarketByAddressQuery, MarketDto>, GetMarketByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshotDto>>, GetMarketSnapshotsWithFilterQueryHandler>();
@@ -297,6 +306,9 @@ namespace Opdex.Platform.Application
 
         private static IServiceCollection AddQueries(this IServiceCollection services)
         {
+            // Admins
+            services.AddTransient<IRequestHandler<RetrieveAdminByAddressQuery, Admin>, RetrieveAdminByAddressQueryHandler>();
+
             // Blocks
             services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusCurrentBlockQuery, BlockReceipt>, RetrieveCirrusCurrentBlockQueryHandler>();

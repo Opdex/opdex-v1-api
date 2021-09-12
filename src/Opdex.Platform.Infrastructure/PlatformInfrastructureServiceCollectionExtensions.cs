@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
+using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.LiquidityPools;
@@ -81,6 +82,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MiningPools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Admins;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Summaries;
@@ -92,6 +94,7 @@ using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liquidity
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools.SwapQuotes;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.MiningPools;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
+using Opdex.Platform.Infrastructure.Data.Handlers.Admins;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries;
@@ -175,6 +178,9 @@ namespace Opdex.Platform.Infrastructure
         private static void AddDataQueries(IServiceCollection services)
         {
             services.AddScoped<IDbContext, DbContext>();
+
+            // Admins
+            services.AddTransient<IRequestHandler<SelectAdminByAddressQuery, Admin>, SelectAdminByAddressQueryHandler>();
 
             // Deployer
             services.AddTransient<IRequestHandler<SelectActiveDeployerQuery, Deployer>, SelectActiveDeployerQueryHandler>();

@@ -8,15 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
-using Opdex.Platform.Application.Abstractions.Queries.Addresses;
-using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
-using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.WebApi.Models.Responses;
@@ -234,39 +228,6 @@ namespace Opdex.Platform.WebApi.Controllers
             var position = await _mediator.Send(new GetStakingPositionByPoolQuery(address, liquidityPool), cancellationToken);
             var response = _mapper.Map<StakingPositionResponseModel>(position);
             return Ok(response);
-        }
-
-        // Todo: WIll be removed as part of WAPP-17
-        [HttpGet("summary/pool/{poolAddress}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<string>> GetWalletSummaryByPool([FromRoute] Address poolAddress,
-                                                                       Address walletAddress,
-                                                                       CancellationToken cancellationToken)
-        {
-            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(poolAddress, findOrThrow: true), cancellationToken);
-            var token = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId, findOrThrow: true), cancellationToken);
-            var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(walletAddress, token.Id, findOrThrow: false), cancellationToken);
-            var crsBalance = 0;
-            var lpTokens = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(walletAddress, pool.LpTokenId, findOrThrow: false), cancellationToken);
-            var staking = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(pool.Id, walletAddress, findOrThrow: false), cancellationToken);
-
-            var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id, findOrThrow: false), cancellationToken);
-
-            AddressMining mining = null;
-
-            if (miningPool != null)
-            {
-                mining = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, walletAddress, findOrThrow: false), cancellationToken);
-            }
-
-            return Ok(new
-            {
-                SrcBalance = addressBalance?.Balance.ToDecimal(token.Decimals),
-                CrsBalance = crsBalance,
-                Providing = lpTokens?.Balance.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals),
-                Staking = staking?.Weight.ToDecimal(TokenConstants.Opdex.Decimals),
-                Mining = mining?.Balance.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals)
-            });
         }
     }
 }
