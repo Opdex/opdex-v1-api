@@ -28,23 +28,6 @@ namespace Opdex.Platform.WebApi.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        [HttpPost("approve-allowance")]
-        public async Task<IActionResult> ApproveAllowance(ApproveAllowanceRequest request, CancellationToken cancellationToken)
-        {
-            if (_network == NetworkType.DEVNET)
-            {
-                var command = new CreateWalletApproveAllowanceTransactionCommand(_context.Wallet, request.Token, request.Amount, request.Spender);
-
-                var response = await _mediator.Send(command, cancellationToken);
-
-                return Ok(new { TxHash = response });
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         // Transactions that include CRS have a bug at the FN that doesn't allow quotes to work
         // Keeping this around until we can safely remove it.
         [Obsolete]

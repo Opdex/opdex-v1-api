@@ -100,6 +100,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Quote a stop staking transaction.</returns>
         [HttpPost("{address}/reward-mining-pools")]
+        [ProducesResponseType(typeof(ActionResult<TransactionQuoteResponseModel>), StatusCodes.Status200OK)]
         public async Task<IActionResult> RewardMiningPools([FromRoute] Address address,
                                                            [FromBody] RewardMiningPoolsRequest request,
                                                            CancellationToken cancellationToken)
