@@ -26,7 +26,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
         }
 
         [Fact]
-        public async Task  SelectActiveMiningGovernanceNominations_Success()
+        public async Task SelectActiveMiningGovernanceNominations_Success()
         {
             // Arrange
             var expected = new[]
@@ -38,7 +38,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
                     LiquidityPoolId = 4,
                     MiningPoolId = 5,
                     IsNominated = true,
-                    Weight = "10000000",
+                    Weight = 10000000,
                     CreatedBlock = 1,
                     ModifiedBlock = 2
                 }
@@ -57,7 +57,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
         }
 
         [Fact]
-        public async Task  SelectActiveMiningGovernanceNominations_ReturnsEmpty()
+        public async Task SelectActiveMiningGovernanceNominations_ReturnsEmpty()
         {
             // Arrange
             var command = new SelectActiveMiningGovernanceNominationsQuery();

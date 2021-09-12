@@ -1,8 +1,10 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class StakingTokenContractSummary
     {
-        public StakingTokenContractSummary(string address, string miningGovernance, uint periodIndex, string vault,
+        public StakingTokenContractSummary(Address address, Address miningGovernance, uint periodIndex, Address vault,
             ulong genesis, ulong periodDuration)
         {
             Address = address;
@@ -13,10 +15,10 @@ namespace Opdex.Platform.Domain.Models.Tokens
             PeriodDuration = periodDuration;
         }
 
-        public string Address { get; }
-        public string MiningGovernance { get; }
+        public Address Address { get; }
+        public Address MiningGovernance { get; }
         public uint PeriodIndex { get; }
-        public string Vault { get; }
+        public Address Vault { get; }
         public ulong Genesis { get; }
         public ulong PeriodDuration { get; }
     }

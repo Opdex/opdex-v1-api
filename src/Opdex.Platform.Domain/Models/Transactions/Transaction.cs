@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using System;
 using System.Collections.Generic;
@@ -8,8 +9,8 @@ namespace Opdex.Platform.Domain.Models.Transactions
 {
     public class Transaction
     {
-        public Transaction(string txHash, ulong blockHeight, int gasUsed, string from, string to, bool success,
-                           string newContractAddress, IList<TransactionLog> logs)
+        public Transaction(string txHash, ulong blockHeight, int gasUsed, Address from, Address to, bool success,
+                           Address newContractAddress, IList<TransactionLog> logs)
         {
             if (!txHash.HasValue())
             {
@@ -26,12 +27,12 @@ namespace Opdex.Platform.Domain.Models.Transactions
                 throw new ArgumentOutOfRangeException(nameof(gasUsed), "Transaction gas must be set.");
             }
 
-            if (!from.HasValue())
+            if (from == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(from), "From address must be set.");
             }
 
-            if (!to.HasValue() && !newContractAddress.HasValue())
+            if (to == Address.Empty && newContractAddress == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(to), "To address must be set.");
             }
@@ -46,8 +47,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
             Logs = logs ?? new List<TransactionLog>();
         }
 
-        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, string from, string to, bool success,
-                           string newContractAddress)
+        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, Address from, Address to, bool success, Address newContractAddress)
         {
             Id = id;
             Hash = txHash;
@@ -64,10 +64,10 @@ namespace Opdex.Platform.Domain.Models.Transactions
         public string Hash { get; }
         public ulong BlockHeight { get; }
         public int GasUsed { get; }
-        public string From { get; }
-        public string To { get; }
+        public Address From { get; }
+        public Address To { get; }
         public bool Success { get; }
-        public string NewContractAddress { get; }
+        public Address NewContractAddress { get; }
 
         public IList<TransactionLog> Logs { get; }
 
@@ -84,11 +84,11 @@ namespace Opdex.Platform.Domain.Models.Transactions
             return Logs.Where(log => logTypes.Contains(log.LogType)).ToList();
         }
 
-        public IDictionary<string, List<TransactionLog>> GroupedLogsOfTypes(IEnumerable<TransactionLogType> logTypes)
+        public IDictionary<Address, List<TransactionLog>> GroupedLogsOfTypes(IEnumerable<TransactionLogType> logTypes)
         {
             return LogsOfTypes(logTypes)
                 .GroupBy(log => log.Contract)
-                .ToDictionary(k => k.FirstOrDefault()?.Contract, logs => logs.ToList());
+                .ToDictionary(k => k.First().Contract, logs => logs.ToList());
         }
 
         public void SetId(long id)

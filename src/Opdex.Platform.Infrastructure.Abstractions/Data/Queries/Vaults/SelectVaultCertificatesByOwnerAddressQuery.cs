@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Vaults;
 using System;
 using System.Collections.Generic;
@@ -8,16 +8,16 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 {
     public class SelectVaultCertificatesByOwnerAddressQuery : IRequest<IEnumerable<VaultCertificate>>
     {
-        public SelectVaultCertificatesByOwnerAddressQuery(string ownerAddress)
+        public SelectVaultCertificatesByOwnerAddressQuery(Address ownerAddress)
         {
-            if (!ownerAddress.HasValue())
+            if (ownerAddress == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(ownerAddress));
             }
-            
+
             OwnerAddress = ownerAddress;
         }
-        
-        public string OwnerAddress { get; }
+
+        public Address OwnerAddress { get; }
     }
 }

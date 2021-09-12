@@ -1,5 +1,4 @@
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using System;
 
@@ -22,32 +21,32 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         /// <param name="deadline">The block deadline that the transaction is valid before.</param>
         /// <exception cref="ArgumentException">Invalid liquidity pool, amounts, or recipient command parameters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Invalid deadline</exception>
-        public CreateRemoveLiquidityTransactionQuoteCommand(Address liquidityPool, Address wallet, string amountLpt, string amountCrsMin,
-                                                            string amountSrcMin, Address recipient, ulong deadline) : base(wallet)
+        public CreateRemoveLiquidityTransactionQuoteCommand(Address liquidityPool, Address wallet, FixedDecimal amountLpt, FixedDecimal amountCrsMin,
+                                                            FixedDecimal amountSrcMin, Address recipient, ulong deadline) : base(wallet)
         {
             if (liquidityPool == Address.Empty)
             {
-                throw new ArgumentException("Liquidity pool must be provided.", nameof(liquidityPool));
-            }
-
-            if (!amountLpt.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Amount LPT burned must be formatted as a decimal number.", nameof(amountLpt));
-            }
-
-            if (!amountCrsMin.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Amount CRS minimum must be formatted as a decimal number.", nameof(amountCrsMin));
-            }
-
-            if (!amountSrcMin.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Amount SRC minimum must be formatted as a decimal number.", nameof(amountSrcMin));
+                throw new ArgumentNullException( nameof(liquidityPool), "Liquidity pool must be provided.");
             }
 
             if (recipient == Address.Empty)
             {
-                throw new ArgumentException("Recipient must be provided.", nameof(recipient));
+                throw new ArgumentNullException(nameof(recipient), "Recipient must be provided.");
+            }
+
+            if (amountLpt <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountLpt), "Amount LPT burned must be greater than 0.");
+            }
+
+            if (amountCrsMin <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountCrsMin), "Amount CRS minimum must be greater than 0.");
+            }
+
+            if (amountSrcMin <= FixedDecimal.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amountSrcMin), "Amount SRC minimum must be greater than 0.");
             }
 
             LiquidityPool = liquidityPool;
@@ -59,9 +58,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         }
 
         public Address LiquidityPool { get; }
-        public string AmountLpt { get; }
-        public string AmountCrsMin { get; }
-        public string AmountSrcMin { get; }
+        public FixedDecimal AmountLpt { get; }
+        public FixedDecimal AmountCrsMin { get; }
+        public FixedDecimal AmountSrcMin { get; }
         public Address Recipient { get; }
         public ulong Deadline { get; }
     }

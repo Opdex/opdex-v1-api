@@ -1,18 +1,20 @@
 using System;
+using Newtonsoft.Json;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs
 {
     public abstract class TransactionLog
     {
-        protected internal TransactionLog(TransactionLogType logType, string contract, int sortOrder)
+        protected internal TransactionLog(TransactionLogType logType, Address contract, int sortOrder)
         {
             if (!logType.IsValid())
             {
                 throw new ArgumentOutOfRangeException(nameof(logType));
             }
 
-            if (!contract.HasValue())
+            if (contract == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(contract));
             }
@@ -27,7 +29,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             SortOrder = sortOrder;
         }
 
-        protected internal TransactionLog(TransactionLogType logType, long id, long transactionId, string contract, int sortOrder)
+        protected internal TransactionLog(TransactionLogType logType, long id, long transactionId, Address contract, int sortOrder)
         {
             LogType = logType;
             Id = id;
@@ -39,7 +41,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         public long Id { get; }
         public TransactionLogType LogType { get; }
         public long TransactionId { get; private set; }
-        public string Contract { get; }
+        public Address Contract { get; }
         public int SortOrder { get; }
 
         protected internal void SetTransactionId(long txId)

@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using System;
@@ -6,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Tra
 {
     public class ProcessSetPendingMarketOwnershipLogCommand : ProcessTransactionLogCommand
     {
-        public ProcessSetPendingMarketOwnershipLogCommand(TransactionLog log, string sender, ulong blockHeight) : base(sender, blockHeight)
+        public ProcessSetPendingMarketOwnershipLogCommand(TransactionLog log, Address sender, ulong blockHeight) : base(sender, blockHeight)
         {
             Log = log as SetPendingMarketOwnershipLog ?? throw new ArgumentNullException(nameof(log));
         }

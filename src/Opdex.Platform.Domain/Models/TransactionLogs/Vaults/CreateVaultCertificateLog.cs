@@ -1,26 +1,22 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
 {
     public class CreateVaultCertificateLog : TransactionLog
     {
-        public CreateVaultCertificateLog(dynamic log, string address, int sortOrder)
+        public CreateVaultCertificateLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.CreateVaultCertificateLog, address, sortOrder)
         {
-            string owner = log?.owner;
-            string amount = log?.amount;
+            Address owner = (string)log?.owner;
+            UInt256 amount = UInt256.Parse((string)log?.amount);
             ulong vestedBlock = log?.vestedBlock;
 
-            if (!owner.HasValue())
+            if (owner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(owner), "Owner must be set.");
-            }
-
-            if (!amount.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
             }
 
             if (vestedBlock < 1)
@@ -28,12 +24,17 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
                 throw new ArgumentOutOfRangeException(nameof(vestedBlock), "Vested block must be greater than 0.");
             }
 
+            if (amount == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
+            }
+
             Owner = owner;
             Amount = amount;
             VestedBlock = vestedBlock;
         }
 
-        public CreateVaultCertificateLog(long id, long transactionId, string address, int sortOrder, string details)
+        public CreateVaultCertificateLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.CreateVaultCertificateLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -42,14 +43,14 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
             VestedBlock = logDetails.VestedBlock;
         }
 
-        public string Owner { get; }
-        public string Amount { get; }
+        public Address Owner { get; }
+        public UInt256 Amount { get; }
         public ulong VestedBlock { get; }
 
         private struct LogDetails
         {
-            public string Owner { get; set; }
-            public string Amount { get; set; }
+            public Address Owner { get; set; }
+            public UInt256 Amount { get; set; }
             public ulong VestedBlock { get; set; }
         }
 

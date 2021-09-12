@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
@@ -40,7 +41,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
             var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
 
-            var result =  await _context.ExecuteFindAsync<MarketRouterEntity>(command);
+            var result = await _context.ExecuteFindAsync<MarketRouterEntity>(command);
 
             if (request.FindOrThrow && result == null)
             {
@@ -52,12 +53,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
         private sealed class SqlParams
         {
-            internal SqlParams(string address)
+            internal SqlParams(Address address)
             {
                 Address = address;
             }
 
-            public string Address { get; }
+            public Address Address { get; }
         }
     }
 }

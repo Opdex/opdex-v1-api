@@ -1,31 +1,21 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet
 {
     public class CreateWalletSwapTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletSwapTransactionCommand(string walletAddress, string tokenIn, string tokenOut, string tokenInAmount, string tokenOutAmount,
-                                                  bool tokenInExactAmount, decimal tolerance, string recipient, string market) : base(walletAddress)
+        public CreateWalletSwapTransactionCommand(Address walletAddress, Address tokenIn, Address tokenOut, FixedDecimal tokenInAmount, FixedDecimal tokenOutAmount,
+                                                  bool tokenInExactAmount, decimal tolerance, Address recipient, Address market) : base(walletAddress)
         {
-            if (!tokenIn.HasValue())
+            if (tokenIn == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(tokenIn));
             }
 
-            if (!tokenOut.HasValue())
+            if (tokenOut == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(tokenOut));
-            }
-
-            if (!tokenInAmount.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Token in amount must be a valid decimal number.", nameof(tokenInAmount));
-            }
-
-            if (!tokenOutAmount.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Token out amount must be a valid decimal number.", nameof(tokenInAmount));
             }
 
             if (tolerance > .9999m || tolerance < .0001m)
@@ -33,14 +23,19 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
                 throw new ArgumentOutOfRangeException(nameof(tolerance));
             }
 
-            if (!recipient.HasValue())
+            if (recipient == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(recipient));
             }
 
-            if (!market.HasValue())
+            if (market == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(market));
+            }
+
+            if (tokenInAmount <= FixedDecimal.Zero && tokenOutAmount <= FixedDecimal.Zero)
+            {
+                throw new ArgumentException("Token in amount or token out amount need to have a value.");
             }
 
             TokenIn = tokenIn;
@@ -53,13 +48,13 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             Market = market;
         }
 
-        public string TokenIn { get; }
-        public string TokenOut { get; }
-        public string TokenInAmount { get; }
-        public string TokenOutAmount { get; }
+        public Address TokenIn { get; }
+        public Address TokenOut { get; }
+        public FixedDecimal TokenInAmount { get; }
+        public FixedDecimal TokenOutAmount { get; }
         public bool TokenInExactAmount { get; }
         public decimal Tolerance { get; }
-        public string Recipient { get; }
-        public string Market { get; }
+        public Address Recipient { get; }
+        public Address Market { get; }
     }
 }

@@ -31,7 +31,7 @@ namespace Opdex.Platform.Application.Assemblers
                 ? governance.NominationPeriodEnd - currentBlock.Height
                 : 0;
 
-            var totalRewardsPerPeriod = governance.MiningPoolReward.ToBigInteger() * maxNominations;
+            var totalRewardsPerPeriod = governance.MiningPoolReward * maxNominations;
 
             return new MiningGovernanceDto
             {
@@ -40,9 +40,9 @@ namespace Opdex.Platform.Application.Assemblers
                 PeriodEndBlock = governance.NominationPeriodEnd,
                 PeriodRemainingBlocks = remainingNominationPeriodBlocks,
                 PeriodBlockDuration = governance.MiningDuration,
-                MiningPoolRewardPerPeriod = governance.MiningPoolReward.InsertDecimal(token.Decimals),
+                MiningPoolRewardPerPeriod = governance.MiningPoolReward.ToDecimal(token.Decimals),
                 PeriodsUntilRewardReset = (miningPoolsPerYear - governance.MiningPoolsFunded) / maxNominations,
-                TotalRewardsPerPeriod = totalRewardsPerPeriod.ToString().InsertDecimal(token.Decimals)
+                TotalRewardsPerPeriod = totalRewardsPerPeriod.ToDecimal(token.Decimals)
             };
         }
     }

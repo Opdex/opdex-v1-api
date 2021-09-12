@@ -32,7 +32,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses
             return new MiningPositionDto
             {
                 Address = request.Address,
-                Amount = addressMining.Balance.InsertDecimal(token.Decimals),
+                Amount = addressMining.Balance.ToDecimal(token.Decimals),
                 MiningPool = miningPool.Address,
                 MiningToken = token.Address
             };

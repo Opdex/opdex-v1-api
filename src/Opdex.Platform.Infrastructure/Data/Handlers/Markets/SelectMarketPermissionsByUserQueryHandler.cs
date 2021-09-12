@@ -1,4 +1,5 @@
 using MediatR;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
@@ -39,14 +40,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
         private sealed class SqlParams
         {
-            internal SqlParams(long marketId, string user)
+            internal SqlParams(long marketId, Address user)
             {
                 MarketId = marketId;
                 User = user;
             }
 
             public long MarketId { get; }
-            public string User { get; }
+            public Address User { get; }
         }
     }
 }

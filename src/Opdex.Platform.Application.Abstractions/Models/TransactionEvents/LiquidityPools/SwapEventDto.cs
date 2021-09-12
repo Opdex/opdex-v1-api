@@ -1,16 +1,17 @@
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools
 {
     public class SwapEventDto : TransactionEventDto
     {
-        public string Sender { get; set; }
-        public string To { get; set; }
-        public string AmountCrsIn { get; set; }
-        public string AmountSrcIn { get; set; }
-        public string AmountCrsOut { get; set; }
-        public string AmountSrcOut { get; set; }
-        public string SrcToken { get; set; }
+        public Address Sender { get; set; }
+        public Address To { get; set; }
+        public FixedDecimal AmountCrsIn { get; set; }
+        public FixedDecimal AmountSrcIn { get; set; }
+        public FixedDecimal AmountCrsOut { get; set; }
+        public FixedDecimal AmountSrcOut { get; set; }
+        public Address SrcToken { get; set; }
         public override TransactionEventType EventType => TransactionEventType.SwapEvent;
     }
 }

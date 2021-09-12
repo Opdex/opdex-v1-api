@@ -9,6 +9,8 @@ using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.EntryHandlers.Vaults;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
@@ -40,7 +42,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_RetrieveVaultByAddressQuery_Send()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("", SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -60,11 +62,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_RetrieveVaultCertificatesWithFilterQuery_Send()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("", SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, "10000000000", 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
             // Act
@@ -83,10 +85,10 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_CertificatesRetrieved_MapResults()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("", SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, "10000000000", 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[0];
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -102,15 +104,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("", SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
+            var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, "10000000000", 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
-                new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "1000000000", 10500, false, false, 500, 505)
+                new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -128,15 +130,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("", SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
+            var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, "10000000000", 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
-                new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(15, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "1000000000", 10500, false, false, 500, 505)
+                new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(15, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -157,15 +159,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("", SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
+            var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, "10000000000", 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
-                new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(15, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "1000000000", 10500, false, false, 500, 505)
+                new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(15, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -186,15 +188,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("", SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
+            var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, "10000000000", 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
-                new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(15, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "1000000000", 10500, false, false, 500, 505)
+                new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(15, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -213,15 +215,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("", SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, "10000000000", 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
-                new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(65, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "1000000000", 10500, false, false, 500, 505)
+                new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(65, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -240,15 +242,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("", SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, "10000000000", 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
-                new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(65, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", "1000000000", 10500, false, false, 500, 505)
+                new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(65, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -267,14 +269,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_PagingForwardLastPage_ReturnCursor()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("", SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, "10000000000", 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
-                new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "1000000000", 10500, false, false, 500, 505)
+                new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -293,14 +295,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_PagingBackwardLastPage_ReturnCursor()
         {
             // Arrange
-            var cursor = new VaultCertificatesCursor("", SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, "10000000000", 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
-                new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", "1000000000", 10500, false, false, 500, 505),
-                new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "1000000000", 10500, false, false, 500, 505)
+                new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+                new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);

@@ -4,8 +4,6 @@ namespace Opdex.Platform.Common.Constants
     {
         public static class Cirrus
         {
-            public const string Symbol = "CRS";
-            public const string Address = "CRS";
             public const int Decimals = 8;
             public const ulong Sats = 100_000_000;
         }

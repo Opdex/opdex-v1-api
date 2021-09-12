@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace Opdex.Platform.Application.EntryHandlers.MiningPools
     public class CreateCollectMiningRewardsTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateCollectMiningRewardsTransactionQuoteCommand>
     {
         private const string MethodName = MiningPoolConstants.Methods.CollectRewards;
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
 
         public CreateCollectMiningRewardsTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                         IMediator mediator, OpdexConfiguration config) : base(quoteAssembler, mediator, config)
@@ -25,7 +26,7 @@ namespace Opdex.Platform.Application.EntryHandlers.MiningPools
         public override async Task<TransactionQuoteDto> Handle(CreateCollectMiningRewardsTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
             // ensure the mining pool exists, else throw 404 not found
-            _ = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.MiningPool.ToString()), cancellationToken);
+            _ = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.MiningPool), cancellationToken);
 
             var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.MiningPool, CrsToSend, MethodName, _callbackEndpoint);
 

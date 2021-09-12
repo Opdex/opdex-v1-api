@@ -20,13 +20,12 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Token id must be greater than 0.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void Constructor_OwnerNotValid_ThrowArgumentNullException(string owner)
+        [Fact]
+        public void Constructor_OwnerNotValid_ThrowArgumentNullException()
         {
             // Arrange
+            var owner = Address.Empty;
+
             // Act
             void Act() => new AddressAllowance(1, owner, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", new UInt256("50000000"), 10_001);
 
@@ -34,13 +33,12 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner must be set.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void Constructor_SpenderNotValid_ThrowArgumentNullException(string spender)
+        [Fact]
+        public void Constructor_SpenderNotValid_ThrowArgumentNullException()
         {
             // Arrange
+            var spender = Address.Empty;
+
             // Act
             void Act() => new AddressAllowance(1, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", spender, new UInt256("50000000"), 10_001);
 

@@ -1,4 +1,6 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
 using Xunit;
@@ -10,13 +12,13 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         [Fact]
         public void CreatesNewToken_Success()
         {
-            const string address = "Address";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             const string name = "Opdex Token";
             const bool isLpt = true;
             const string symbol = "OPDX";
             const int decimals = 18;
             const long sats = 10000000000000000;
-            const string totalSupply = "987654321";
+            UInt256 totalSupply = 987654321;
             const ulong createdBlock = 3;
 
             var token = new Token(address, isLpt, name, symbol, decimals, sats, totalSupply, createdBlock);
@@ -35,7 +37,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         {
             // Arrange
             // Act
-            static void Act() => new Token("", true, "name", "symbol", 8, 100_000_000, "100", 2);
+            static void Act() => new Token(Address.Empty, true, "name", "symbol", 8, 100_000_000, 100, 2);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Token address must be set.");
@@ -46,7 +48,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         {
             // Arrange
             // Act
-            static void Act() => new Token("address", true, "", "symbol", 8, 100_000_000, "100", 2);
+            static void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "", "symbol", 8, 100_000_000, 100, 2);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Token name must be set.");
@@ -57,7 +59,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         {
             // Arrange
             // Act
-            static void Act() => new Token("address", true, "name", "", 8, 100_000_000, "100", 2);
+            static void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "name", "", 8, 100_000_000, 100, 2);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Token symbol must be set.");
@@ -70,7 +72,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         {
             // Arrange
             // Act
-            void Act() => new Token("address", true, "name", "symbol", decimals, 100_000_000, "100", 2);
+            void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "name", "symbol", decimals, 100_000_000, 100, 2);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Token must have between 0 and 18 decimal denominations.");
@@ -81,34 +83,23 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         {
             // Arrange
             // Act
-            void Act() => new Token("address", true, "name", "symbol", 8, 0, "100", 2);
+            void Act() => new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "name", "symbol", 8, 0, 100, 2);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Sats must be greater than zero.");
         }
 
         [Fact]
-        public static void Constructor_TotalSupplyInvalid_ThrowArgumentOutOfRangeException()
-        {
-            // Arrange
-            // Act
-            void Act() => new Token("address", true, "name", "symbol", 8, 100_000_000, "", 2);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Total supply must only contain numeric digits.");
-        }
-
-        [Fact]
         public void CreatesExistingToken_Success()
         {
             const long id = 1;
-            const string address = "Address";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             const string name = "Opdex Token";
             const bool isLpt = true;
             const string symbol = "OPDX";
             const int decimals = 18;
             const long sats = 10000000000000000;
-            const string totalSupply = "987654321";
+            UInt256 totalSupply = 987654321;
             const ulong createdBlock = 3;
             const ulong modifiedBlock = 4;
 
@@ -130,7 +121,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         {
             const long marketId = 10;
 
-            var token = new Token("address", true, "name", "symbol", 8, 100_000_000, "100", 2);
+            var token = new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "name", "symbol", 8, 100_000_000, 100, 2);
 
             token.SetMarket(marketId);
 
@@ -140,28 +131,15 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         [Fact]
         public void Token_UpdateTotalSupply_Success()
         {
-            const string totalSupply = "200";
+            UInt256 totalSupply = 200;
             const ulong updateBlock = 10;
 
-            var token = new Token("address", true, "name", "symbol", 8, 100_000_000, "100", 2);
+            var token = new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "name", "symbol", 8, 100_000_000, 100, 2);
 
             token.UpdateTotalSupply(totalSupply, updateBlock);
 
             token.TotalSupply.Should().Be(totalSupply);
             token.ModifiedBlock.Should().Be(updateBlock);
-        }
-
-        [Fact]
-        public void Token_UpdateTotalSupply_ThrowsArgumentOutOfRangeException()
-        {
-            // Arrange
-            var token = new Token("address", true, "name", "symbol", 8, 100_000_000, "100", 2);
-
-            // Act
-            void Act() => token.UpdateTotalSupply("1.25", 10);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Total supply must be a numeric value.");
         }
     }
 }

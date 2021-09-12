@@ -34,13 +34,13 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
             var expectedEntity = new TokenEntity
             {
                 Id = id,
-                Address = "SomeAddress",
+                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
                 IsLpt = true,
                 Name = "SomeName",
                 Symbol = "SomeSymbol",
                 Sats = 987689076,
                 Decimals = 18,
-                TotalSupply = "98765434567898765",
+                TotalSupply = 98765434567898765,
                 CreatedBlock = 1,
                 ModifiedBlock = 2
             };

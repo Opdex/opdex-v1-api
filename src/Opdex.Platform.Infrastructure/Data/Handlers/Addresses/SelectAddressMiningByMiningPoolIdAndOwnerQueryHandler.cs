@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
@@ -53,14 +54,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 
         private sealed class SqlParams
         {
-            internal SqlParams(long miningPoolId, string owner)
+            internal SqlParams(long miningPoolId, Address owner)
             {
                 MiningPoolId = miningPoolId;
                 Owner = owner;
             }
 
             public long MiningPoolId { get; }
-            public string Owner { get; }
+            public Address Owner { get; }
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.Tokens
                 Contract = log.Contract,
                 Owner = log.Owner,
                 Spender = log.Spender,
-                Amount = log.Amount.InsertDecimal(token.Decimals)
+                Amount = log.Amount.ToDecimal(token.Decimals)
             };
         }
     }

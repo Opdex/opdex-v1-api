@@ -14,6 +14,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Vaults;
@@ -85,7 +86,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                 if (vault == null)
                 {
-                    vault = new Vault(tokenSummary.Vault, stakingTokenId, transaction.From, transaction.BlockHeight, "0", transaction.BlockHeight);
+                    vault = new Vault(tokenSummary.Vault, stakingTokenId, transaction.From, transaction.BlockHeight, UInt256.Zero, transaction.BlockHeight);
                     await _mediator.Send(new MakeVaultCommand(vault));
                 }
 

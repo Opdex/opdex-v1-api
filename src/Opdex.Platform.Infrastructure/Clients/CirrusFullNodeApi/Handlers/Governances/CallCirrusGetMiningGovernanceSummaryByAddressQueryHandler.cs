@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
@@ -27,7 +28,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Gover
         {
             var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_MiningPoolReward", new string[0]);
             var miningPoolRewardResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-            var miningPoolReward = miningPoolRewardResponse.DeserializeValue<string>();
+            var miningPoolReward = miningPoolRewardResponse.DeserializeValue<UInt256>();
 
             localCall.MethodName = "get_MiningDuration";
             var miningDurationResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);

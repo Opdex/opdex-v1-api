@@ -1,5 +1,4 @@
 using System;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
@@ -13,6 +12,11 @@ namespace Opdex.Platform.Domain.Models.Markets
             if (marketId < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(marketId), "Market id must be greater than 0.");
+            }
+
+            if (!snapshotType.IsValid())
+            {
+                throw new ArgumentOutOfRangeException(nameof(snapshotType), "Snapshot type must be valid.");
             }
 
             MarketId = marketId;
@@ -71,9 +75,9 @@ namespace Opdex.Platform.Domain.Models.Markets
             Volume += lpSnapshot.Volume.Usd;
 
             var stakingUsd = Staking.Usd + lpSnapshot.Staking.Usd;
-            var stakingWeight = Staking.Weight.ToBigInteger() + lpSnapshot.Staking.Weight.ToBigInteger();
+            var stakingWeight = Staking.Weight + lpSnapshot.Staking.Weight;
 
-            Staking = new StakingSnapshot(stakingWeight.ToString(), stakingUsd);
+            Staking = new StakingSnapshot(stakingWeight, stakingUsd);
 
             var rewardsMarketUsd = Rewards.MarketUsd + lpSnapshot.Rewards.MarketUsd;
             var rewardsProviderUsd = Rewards.ProviderUsd + lpSnapshot.Rewards.ProviderUsd;

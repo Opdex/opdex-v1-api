@@ -1,33 +1,33 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
 {
     public class ReservesLog : TransactionLog
     {
-        public ReservesLog(dynamic log, string address, int sortOrder)
+        public ReservesLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.ReservesLog, address, sortOrder)
         {
             ulong reserveCrs = log?.reserveCrs;
-            string reserveSrc = log?.reserveSrc;
+            UInt256 reserveSrc = UInt256.Parse((string)log?.reserveSrc);
 
-            if (reserveCrs < 1)
+            if (reserveCrs == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(reserveCrs), "Reserve CRS must be greater than 0.");
             }
 
-            if (!reserveSrc.IsNumeric())
+            if (reserveSrc == UInt256.Zero)
             {
-                throw new ArgumentOutOfRangeException(nameof(reserveSrc), "Reserve SRC must only contain numeric digits.");
+                throw new ArgumentOutOfRangeException(nameof(reserveSrc), "Reserve SRC must be greater than 0.");
             }
 
             ReserveCrs = reserveCrs;
             ReserveSrc = reserveSrc;
         }
 
-        public ReservesLog(long id, long transactionId, string address, int sortOrder, string details)
+        public ReservesLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.ReservesLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -36,12 +36,12 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
         }
 
         public ulong ReserveCrs { get; }
-        public string ReserveSrc { get; }
+        public UInt256 ReserveSrc { get; }
 
         private struct LogDetails
         {
             public ulong ReserveCrs { get; set; }
-            public string ReserveSrc { get; set; }
+            public UInt256 ReserveSrc { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)

@@ -4,15 +4,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Opdex.Platform.Application;
 using Opdex.Platform.Infrastructure;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi;
 using Opdex.Platform.WebApi.Mappers;
 using Serilog;
-using System.Collections.Generic;
 using Hellang.Middleware.ProblemDetails;
 using System;
 using Microsoft.AspNetCore.Http;
@@ -39,7 +36,9 @@ using System.ComponentModel;
 using Opdex.Platform.Common.Models;
 using NJsonSchema.Generation.TypeMappers;
 using NJsonSchema;
+using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.WebApi.Models.Binders;
+using Opdex.Platform.Common;
 using Opdex.Platform.WebApi.Models.Responses;
 
 namespace Opdex.Platform.WebApi
@@ -78,20 +77,7 @@ namespace Opdex.Platform.WebApi
                 };
             });
 
-            var serializerSettings = new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Converters = new List<JsonConverter>
-                {
-                    new StringEnumConverter(),
-                    new UInt128Converter(),
-                    new UInt256Converter(),
-                    new AddressConverter(),
-                    new FixedDecimalConverter(),
-                    new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
-                }
-            };
+            var serializerSettings = Serialization.DefaultJsonSettings;
 
             services
                 .AddControllers(options =>
@@ -106,7 +92,7 @@ namespace Opdex.Platform.WebApi
                     options.SerializerSettings.Converters = serializerSettings.Converters;
                 });
 
-            JsonConvert.DefaultSettings = (() => serializerSettings);
+            JsonConvert.DefaultSettings = () => serializerSettings;
 
             services.AddProblemDetailTelemetryInitializer();
 
@@ -130,6 +116,10 @@ namespace Opdex.Platform.WebApi
             // Opdex Configurations
             var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
             services.SetupConfiguration<OpdexConfiguration>(opdexConfig);
+
+            // Database Configurations
+            var databaseConfig = Configuration.GetSection(nameof(DatabaseConfiguration));
+            services.SetupConfiguration<DatabaseConfiguration>(databaseConfig);
 
             // Coin Market Cap Configurations
             var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));

@@ -18,8 +18,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         /// <exception cref="ArgumentException">Invalid market, wallet or token address.</exception>
         public CreateCreateLiquidityPoolTransactionQuoteCommand(Address market, Address wallet, Address token) : base(wallet)
         {
-            Market = market != Address.Empty ? market : throw new ArgumentException("Market must be provided.", nameof(market));
-            Token = token != Address.Empty ? token : throw new ArgumentException("Token must be provided.", nameof(token));
+            Market = market != Address.Empty ? market : throw new ArgumentNullException(nameof(market), "Market must be provided.");
+            Token = token != Address.Empty ? token : throw new ArgumentNullException(nameof(token), "Token must be provided.");
         }
 
         public Address Market { get; }

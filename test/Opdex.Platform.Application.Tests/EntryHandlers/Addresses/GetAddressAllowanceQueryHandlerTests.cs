@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Addresses;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using System;
@@ -28,15 +29,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             _handler = new GetAddressAllowanceQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void GetAddressAllowance_ThrowsArgumentNullException_InvalidOwner(string owner)
+        [Fact]
+        public void GetAddressAllowance_ThrowsArgumentNullException_InvalidOwner()
         {
             // Arrange
             const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address owner = Address.Empty;
 
             // Act
             void Act() => new GetAddressAllowanceQuery(owner, spender, token);
@@ -45,13 +44,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner must be provided.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void GetAddressAllowance_ThrowsArgumentNullException_InvalidSpender(string spender)
+        [Fact]
+        public void GetAddressAllowance_ThrowsArgumentNullException_InvalidSpender()
         {
             // Arrange
+            Address spender = Address.Empty;
             const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
@@ -62,15 +59,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Spender must be provided.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void GetAddressAllowance_ThrowsArgumentNullException_InvalidToken(string token)
+        [Fact]
+        public void GetAddressAllowance_ThrowsArgumentNullException_InvalidToken()
         {
             // Arrange
             const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address token = Address.Empty;
 
             // Act
             void Act() => new GetAddressAllowanceQuery(owner, spender, token);
@@ -93,7 +88,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             try
             {
                 await _handler.Handle(request, token);
-            } catch { }
+            }
+            catch { }
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveAddressAllowanceQuery>(q => q.Owner == request.Owner &&
@@ -140,7 +136,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
             var cancellationToken = new CancellationTokenSource().Token;
 
             var allowance = new AddressAllowance(1, 2, owner, spender, new UInt256("1000000000"), 1, 1);
-            var allowanceDto = new AddressAllowanceDto {Allowance = "10.00000000", Owner = owner, Spender = spender, Token = token};
+            var allowanceDto = new AddressAllowanceDto { Allowance = FixedDecimal.Parse("10.00000000"), Owner = owner, Spender = spender, Token = token };
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressAllowanceQuery>(), cancellationToken))

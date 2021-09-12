@@ -2,6 +2,7 @@ using System;
 using MediatR;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
@@ -9,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
     public class ProcessSrcTokenSnapshotCommand : IRequest<decimal>
     {
         public ProcessSrcTokenSnapshotCommand(long marketId, Token srcToken, SnapshotType snapshotType, DateTime blockTime,
-                                              decimal crsUsd, ulong reserveCrs, string reserveSrc)
+                                              decimal crsUsd, ulong reserveCrs, UInt256 reserveSrc)
         {
             if (marketId < 1)
             {
@@ -36,11 +37,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
                 throw new ArgumentOutOfRangeException(nameof(crsUsd), $"{nameof(crsUsd)} must be greater than 0.");
             }
 
-            if (!reserveSrc.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(reserveSrc), $"{nameof(reserveSrc)} must be numeric.");
-            }
-
             MarketId = marketId;
             SrcToken = srcToken;
             SnapshotType = snapshotType;
@@ -56,6 +52,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
         public DateTime BlockTime { get; }
         public decimal CrsUsd { get; }
         public ulong ReserveCrs { get; }
-        public string ReserveSrc { get; }
+        public UInt256 ReserveSrc { get; }
     }
 }

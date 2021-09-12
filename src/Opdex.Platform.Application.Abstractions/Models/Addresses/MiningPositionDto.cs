@@ -1,10 +1,12 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.Application.Abstractions.Models.Addresses
 {
     public class MiningPositionDto
     {
-        public string Address { get; set; }
-        public string Amount { get; set; }
-        public string MiningPool { get; set; }
-        public string MiningToken { get; set; }
+        public Address Address { get; set; }
+        public FixedDecimal Amount { get; set; }
+        public Address MiningPool { get; set; }
+        public Address MiningToken { get; set; }
     }
 }

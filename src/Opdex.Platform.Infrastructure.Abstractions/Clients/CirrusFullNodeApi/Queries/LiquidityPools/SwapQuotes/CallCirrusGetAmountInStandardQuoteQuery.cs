@@ -1,42 +1,34 @@
 using MediatR;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.SwapQuotes
 {
-    public class CallCirrusGetAmountInStandardQuoteQuery : IRequest<string>
+    public class CallCirrusGetAmountInStandardQuoteQuery : IRequest<UInt256>
     {
-        public CallCirrusGetAmountInStandardQuoteQuery(string market, string amountOut, string  reserveIn, string reserveOut)
+        public CallCirrusGetAmountInStandardQuoteQuery(Address router, UInt256 amountOut, UInt256 reserveIn, UInt256 reserveOut)
         {
-            if (!market.HasValue())
+            if (router == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(market));
+                throw new ArgumentNullException(nameof(router));
             }
 
-            if (!amountOut.HasValue())
+            if (amountOut == 0)
             {
-                throw new ArgumentNullException(nameof(amountOut));
+                throw new ArgumentOutOfRangeException(nameof(amountOut), "Amount out must be greater than 0.");
             }
 
-            if (!reserveIn.HasValue())
-            {
-                throw new ArgumentNullException(nameof(reserveIn));
-            }
-
-            if (!reserveOut.HasValue())
-            {
-                throw new ArgumentNullException(nameof(reserveOut));
-            }
-
-            Market = market;
+            Router = router;
             AmountOut = amountOut;
             ReserveIn = reserveIn;
             ReserveOut = reserveOut;
         }
 
-        public string Market { get; }
-        public string AmountOut { get; }
-        public string ReserveIn { get; }
-        public string ReserveOut { get; }
+        public Address Router { get; }
+        public UInt256 AmountOut { get; }
+        public UInt256 ReserveIn { get; }
+        public UInt256 ReserveOut { get; }
     }
 }

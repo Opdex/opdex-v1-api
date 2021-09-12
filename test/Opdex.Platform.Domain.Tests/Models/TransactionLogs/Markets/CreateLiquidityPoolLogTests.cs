@@ -1,6 +1,7 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Xunit;
@@ -48,12 +49,12 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Markets
         [Fact]
         public void CreatesCreateLiquidityPoolLog_Success()
         {
-            const string address = "Address";
+            Address address = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
             const int sortOrder = 1;
 
             dynamic txLog = new ExpandoObject();
-            txLog.pool = "Pool";
-            txLog.token = "Token";
+            txLog.pool = "PPGBccfFS1cKedqY5ZzJY7iaeEwpXHKzNb";
+            txLog.token = "PXVmcSebfJwMY4HKm8TAiRLmi7fjYQgCwY";
 
             var log = new CreateLiquidityPoolLog(txLog, address, sortOrder);
 

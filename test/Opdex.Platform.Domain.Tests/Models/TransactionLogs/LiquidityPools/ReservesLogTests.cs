@@ -1,6 +1,8 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Xunit;
@@ -42,18 +44,19 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             void Act() => new ReservesLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
         public void CreatesReservesLog_Success()
         {
-            const string address = "Address";
+            UInt256 reserveSrc = 53485049;
+            Address address = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
             const int sortOrder = 1;
 
             dynamic txLog = new ExpandoObject();
             txLog.reserveCrs = 876543456789ul;
-            txLog.reserveSrc = "87654345678";
+            txLog.reserveSrc = reserveSrc.ToString();
 
             var log = new ReservesLog(txLog, address, sortOrder);
 
@@ -63,7 +66,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             log.Contract.Should().Be(address);
             log.SortOrder.Should().Be(sortOrder);
             log.ReserveCrs.Should().Be(txLog.reserveCrs);
-            log.ReserveSrc.Should().Be(txLog.reserveSrc);
+            log.ReserveSrc.Should().Be(reserveSrc);
         }
     }
 }

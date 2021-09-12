@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using System;
@@ -103,7 +104,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
 
             // Assert
             canParse.Should().Be(true);
-            cursor.Holder.Should().Be("");
+            cursor.Holder.Should().Be(Address.Empty);
             cursor.SortDirection.Should().Be(SortDirectionType.ASC);
             cursor.Limit.Should().Be(50);
             cursor.PagingDirection.Should().Be(PagingDirection.Forward);

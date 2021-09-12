@@ -6,6 +6,8 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
@@ -70,7 +72,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             // Act
-            await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<string>(), Enumerable.Empty<string>(), null, SortDirectionType.DESC, 10, null, CancellationToken.None);
+            await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), null, SortDirectionType.DESC, 10, null, CancellationToken.None);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetMiningPositionsWithFilterQuery>(query => query.Cursor.IncludeZeroAmounts == false), It.IsAny<CancellationToken>()), Times.Once);
@@ -102,8 +104,8 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         public async Task GetMiningPositions_GetMiningPositionsWithFilterQuery_Send()
         {
             // Arrange
-            var liquidityPools = Enumerable.Empty<string>();
-            var miningPools = new string[] { "PB5gG1wRsTpST5mFLkgxwauamhW28i1LRe", "PXRNXAEYkCjMJpqdgdRG4FzbguG4GcdZuN" };
+            var liquidityPools = Enumerable.Empty<Address>();
+            var miningPools = new Address[] { "PB5gG1wRsTpST5mFLkgxwauamhW28i1LRe", "PXRNXAEYkCjMJpqdgdRG4FzbguG4GcdZuN" };
             var includeZeroBalances = true;
             var sortDirection = SortDirectionType.ASC;
             var limit = 10U;
@@ -133,7 +135,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             _mapperMock.Setup(callTo => callTo.Map<MiningPositionsResponseModel>(It.IsAny<MiningPositionsDto>())).Returns(miningPositions);
 
             // Act
-            var response = await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 10, null, CancellationToken.None);
+            var response = await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 10, null, CancellationToken.None);
 
             // Assert
             response.Result.Should().BeOfType<OkObjectResult>();
@@ -145,7 +147,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             // Act
-            await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<string>(), null, SortDirectionType.DESC, 10, null, CancellationToken.None);
+            await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<Address>(), null, SortDirectionType.DESC, 10, null, CancellationToken.None);
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetStakingPositionsWithFilterQuery>(query => query.Cursor.IncludeZeroAmounts == false), It.IsAny<CancellationToken>()), Times.Once);
@@ -177,7 +179,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         public async Task GetStakingPositions_GetStakingPositionsWithFilterQuery_Send()
         {
             // Arrange
-            var liquidityPools = Enumerable.Empty<string>();
+            var liquidityPools = Enumerable.Empty<Address>();
             var includeZeroBalances = true;
             var sortDirection = SortDirectionType.ASC;
             var limit = 10U;
@@ -206,7 +208,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             _mapperMock.Setup(callTo => callTo.Map<StakingPositionsResponseModel>(It.IsAny<StakingPositionsDto>())).Returns(stakingPositions);
 
             // Act
-            var response = await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<string>(), false, SortDirectionType.ASC, 10, null, CancellationToken.None);
+            var response = await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 10, null, CancellationToken.None);
 
             // Assert
             response.Result.Should().BeOfType<OkObjectResult>();
@@ -308,8 +310,8 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
             const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var addressAllowanceDto = new AddressAllowanceDto { Allowance = "500000", Owner = owner, Spender = spender, Token = token };
-            var approvedAllowanceResponseModel = new ApprovedAllowanceResponseModel { Allowance = "500000", Owner = owner, Spender = spender, Token = token };
+            var addressAllowanceDto = new AddressAllowanceDto { Allowance = FixedDecimal.Parse("500000"), Owner = owner, Spender = spender, Token = token };
+            var approvedAllowanceResponseModel = new ApprovedAllowanceResponseModel { Allowance = FixedDecimal.Parse("500000"), Owner = owner, Spender = spender, Token = token };
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAddressAllowanceQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(addressAllowanceDto);

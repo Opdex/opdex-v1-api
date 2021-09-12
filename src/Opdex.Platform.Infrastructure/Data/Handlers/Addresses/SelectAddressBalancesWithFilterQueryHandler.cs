@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
@@ -138,16 +139,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 
         private sealed class SqlParams
         {
-            internal SqlParams(long balanceId, string wallet, IEnumerable<string> tokens, bool includeLpTokens)
+            internal SqlParams(long balanceId, Address wallet, IEnumerable<Address> tokens, bool includeLpTokens)
             {
                 BalanceId = balanceId;
                 Wallet = wallet;
-                Tokens = tokens;
+                Tokens = tokens.Select(token => token.ToString());
                 IncludeLpTokens = includeLpTokens;
             }
 
             public long BalanceId { get; }
-            public string Wallet { get; }
+            public Address Wallet { get; }
             public IEnumerable<string> Tokens { get; }
             public bool IncludeLpTokens { get; }
         }

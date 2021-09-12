@@ -18,8 +18,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         /// <exception cref="ArgumentException">Invalid recipient address.</exception>
         public CreateSkimTransactionQuoteCommand(Address liquidityPool, Address wallet, Address recipient) : base(wallet)
         {
-            LiquidityPool = liquidityPool != Address.Empty ? liquidityPool : throw new ArgumentException("Liquidity pool must be provided.", nameof(liquidityPool));
-            Recipient = recipient != Address.Empty ? recipient : throw new ArgumentException("Recipient must be provided.", nameof(recipient));
+            LiquidityPool = liquidityPool != Address.Empty ? liquidityPool : throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool must be provided.");
+            Recipient = recipient != Address.Empty ? recipient : throw new ArgumentNullException(nameof(recipient), "Recipient must be provided.");
         }
 
         public Address Recipient { get; }

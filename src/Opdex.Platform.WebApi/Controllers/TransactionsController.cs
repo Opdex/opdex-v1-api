@@ -18,6 +18,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -56,9 +57,9 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(TransactionsResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<TransactionsResponseModel>> Transactions([FromQuery] IEnumerable<string> contracts,
+        public async Task<ActionResult<TransactionsResponseModel>> Transactions([FromQuery] IEnumerable<Address> contracts,
                                                                                 [FromQuery] IEnumerable<TransactionEventType> eventTypes,
-                                                                                [FromQuery] string wallet,
+                                                                                [FromQuery] Address wallet,
                                                                                 [FromQuery] uint limit,
                                                                                 [FromQuery] SortDirectionType direction,
                                                                                 [FromQuery] string cursor,

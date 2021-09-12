@@ -39,7 +39,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public async Task AssembleTransactionDto_Sends_RetrieveTransactionLogsByTransactionIdQuery()
         {
             // Arrange
-            var transaction = new Transaction(1, "txHash", 2, 3, "from", "to", true, "newContractAddress");
+            var transaction = new Transaction(1, "txHash", 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
 
             // Act
             await _handler.Assemble(transaction);
@@ -53,7 +53,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public async Task AssembleTransactionDto_Sends_RetrieveBlockByHeightQuery()
         {
             // Arrange
-            var transaction = new Transaction(1, "txHash", 2, 3, "from", "to", true, "newContractAddress");
+            var transaction = new Transaction(1, "txHash", 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
 
             // Act
             await _handler.Assemble(transaction);
@@ -69,20 +69,20 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             // Arrange
             dynamic approval = new ExpandoObject();
             approval.owner = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj3";
-            approval.spender = "spender";
+            approval.spender = "PMGLf8N8QEnKoncvGxcDZYoTNG5ysnxXpX";
             approval.amount = "1";
             approval.oldAmount = "0";
             var approvalLog = new ApprovalLog(approval, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             dynamic transfer = new ExpandoObject();
             transfer.from = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
-            transfer.to = "to";
+            transfer.to = "PFKJjVZJn4Fs9KwYzYTBMv6Cvykw6u3T7R";
             transfer.amount = "32981";
             var transferLog = new TransferLog(transfer, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             dynamic swap = new ExpandoObject();
             swap.sender = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
-            swap.to = "to";
+            swap.to = "PFKJjVZJn4Fs9KwYzYTBMv6Cvykw6u3T7R";
             swap.amountCrsIn = 0ul;
             swap.amountSrcIn = "12";
             swap.amountCrsOut = 1234ul;
@@ -90,7 +90,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             swap.totalSupply = "100";
             var swapLog = new SwapLog(swap, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
-            var transaction = new Transaction(1, "txHash", 2, 3, "from", "to", true, "newContractAddress");
+            var transaction = new Transaction(1, "txHash", 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
             var transactionLogs = new List<TransactionLog> { approvalLog, transferLog, swapLog };
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionLogsByTransactionIdQuery>(), It.IsAny<CancellationToken>()))

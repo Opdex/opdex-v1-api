@@ -22,7 +22,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
 
         public Task<string> Handle(MakeWalletAddLiquidityTransactionCommand request, CancellationToken cancellationToken)
         {
-            var parameters = new []
+            var parameters = new[]
             {
                 request.Token.ToSmartContractParameter(SmartContractParameterType.Address),
                 request.AmountSrc.ToSmartContractParameter(SmartContractParameterType.UInt256),
@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.Handlers.Transactions.Wallet
             };
 
             var callDto = new SmartContractCallRequestDto(request.Router, request.WalletName, request.WalletAddress, request.WalletPassword,
-                request.AmountCrs, MethodName, parameters);
+                                                          request.AmountCrs, MethodName, parameters);
 
             return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: callDto), cancellationToken);
         }

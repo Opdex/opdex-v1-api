@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
 
         public async Task<Unit> Handle(CreateCrsTokenSnapshotsCommand request, CancellationToken cancellationToken)
         {
-            var crs = await _mediator.Send(new GetTokenByAddressQuery(TokenConstants.Cirrus.Address), CancellationToken.None);
+            var crs = await _mediator.Send(new GetTokenByAddressQuery(Address.Cirrus), CancellationToken.None);
 
             var latestSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id,
                                                                                          CrsMarketId,

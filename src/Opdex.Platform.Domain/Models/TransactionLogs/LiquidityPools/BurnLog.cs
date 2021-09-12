@@ -1,49 +1,45 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
 {
     public class BurnLog : TransactionLog
     {
-        public BurnLog(dynamic log, string address, int sortOrder)
+        public BurnLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.BurnLog, address, sortOrder)
         {
-            string sender = log?.sender;
-            string to = log?.to;
+            Address sender = (string)log?.sender;
+            Address to = (string)log?.to;
             ulong amountCrs = log?.amountCrs;
-            string amountSrc = log?.amountSrc;
-            string amountLpt = log?.amountLpt;
-            string totalSupply = log?.totalSupply;
+            UInt256 amountSrc = UInt256.Parse((string)log?.amountSrc);
+            UInt256 amountLpt = UInt256.Parse((string)log?.amountLpt);
+            UInt256 totalSupply = UInt256.Parse((string)log?.totalSupply);
 
-            if (!sender.HasValue())
+            if (sender == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(sender), "Sender address must be set.");
             }
 
-            if (!to.HasValue())
+            if (to == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(to), "To address must be set.");
             }
 
-            if (amountCrs < 1)
+            if (amountCrs == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(amountCrs), "CRS amount must be greater than 0.");
             }
 
-            if (!amountSrc.IsNumeric())
+            if (amountSrc == UInt256.Zero)
             {
-                throw new ArgumentOutOfRangeException(nameof(amountSrc), "SRC amount must only contain numeric digits.");
+                throw new ArgumentOutOfRangeException(nameof(amountSrc), "SRC amount must be greater than 0.");
             }
 
-            if (!amountLpt.IsNumeric())
+            if (amountLpt == UInt256.Zero)
             {
-                throw new ArgumentOutOfRangeException(nameof(amountLpt), "LPT amount must only contain numeric digits.");
-            }
-
-            if (!totalSupply.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must only contain numeric digits.");
+                throw new ArgumentOutOfRangeException(nameof(amountLpt), "OLPT amount must be greater than 0.");
             }
 
             Sender = sender;
@@ -54,7 +50,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             TotalSupply = totalSupply;
         }
 
-        public BurnLog(long id, long transactionId, string address, int sortOrder, string details)
+        public BurnLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.BurnLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -66,21 +62,21 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             TotalSupply = logDetails.TotalSupply;
         }
 
-        public string Sender { get; }
-        public string To { get; }
+        public Address Sender { get; }
+        public Address To { get; }
         public ulong AmountCrs { get; }
-        public string AmountSrc { get; }
-        public string AmountLpt { get; }
-        public string TotalSupply { get; }
+        public UInt256 AmountSrc { get; }
+        public UInt256 AmountLpt { get; }
+        public UInt256 TotalSupply { get; }
 
         private struct LogDetails
         {
-            public string Sender { get; set; }
-            public string To { get; set; }
+            public Address Sender { get; set; }
+            public Address To { get; set; }
             public ulong AmountCrs { get; set; }
-            public string AmountSrc { get; set; }
-            public string AmountLpt { get; set; }
-            public string TotalSupply { get; set; }
+            public UInt256 AmountSrc { get; set; }
+            public UInt256 AmountLpt { get; set; }
+            public UInt256 TotalSupply { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)

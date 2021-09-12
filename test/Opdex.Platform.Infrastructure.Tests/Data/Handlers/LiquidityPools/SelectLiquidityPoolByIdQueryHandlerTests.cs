@@ -37,7 +37,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
                 SrcTokenId = 1235,
                 LpTokenId = 8765,
                 MarketId = 1,
-                Address = "SomeAddress",
+                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
                 CreatedBlock = 1,
                 ModifiedBlock = 1
             };

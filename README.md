@@ -12,13 +12,21 @@ Add a bearer token signing key to your configuration, by running `dotnet user-se
 
 ### Create DB
 
-Using [Opdex DB Scripts](https://github.com/Opdex/opdex-db-scripts), create the Maria DB database then set the connection string in your configuration using `dotnet user-secrets set OpdexConfiguration:ConnectionString "Server=; Port=; Database=; Uid=; Pwd=; ConvertZeroDateTime=True;"`, providing the correct credentials.
+Using [Opdex DB Scripts](https://github.com/Opdex/opdex-db-scripts), create the MYSQL database then set the connection string in your configuration using `dotnet user-secrets set DatabaseConfiguration:ConnectionString "Server=; Port=; Database=; Uid=; Pwd=; ConvertZeroDateTime=True;"`, providing the correct credentials.
 
 
 ### CMC API KEY
 
 Generate your own Coin Market Cap API Key then set this in your configuration using `dotnet user-secrets set CoinMarketCapConfiguration:ApiKey [your-API-key]`.
 
+### Opdex Configuration
+
+Set the environment you want to run using `dotnet user-secrets set OpdexConfiguration:Network [network]`. Network types include:
+- DEVNET
+- TESTNET
+- MAINNET
+
+Set the API URL being used with `dotnet user-secrete set OpdexConfiguration:ApiUrl [ApiUrl]`. _(e.g `https://dev-api.opdex.com` or `http://localhost:44391`)_
 
 ### Cirrus Dev
 

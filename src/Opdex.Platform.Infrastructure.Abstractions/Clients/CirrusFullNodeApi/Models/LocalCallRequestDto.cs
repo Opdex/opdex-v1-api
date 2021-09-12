@@ -17,9 +17,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public LocalCallRequestDto(Address address, Address sender, string methodName, ulong? blockHeight = null)
             : this(address, sender, methodName, Array.Empty<string>(), blockHeight) { }
 
-        public LocalCallRequestDto(Address address, Address sender, string methodName, string[] parameters, ulong? blockHeight = null, string amount = null)
+        public LocalCallRequestDto(Address address, Address sender, string methodName, string[] parameters, ulong? blockHeight = null, FixedDecimal? amount = null)
         {
-            Amount = amount ?? "0.00";
+            Amount = amount ?? FixedDecimal.Zero;
             GasPrice = 100;
             GasLimit = 250_000;
             ContractAddress = address;
@@ -40,11 +40,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public string MethodName { get; set; }
 
         /// <summary>
-        /// The amount of STRAT (or sidechain coin) to send to the smart contract address.
+        /// The amount of STRAX (or sidechain coin) to send to the smart contract address.
         /// No funds are actually sent, but the Amount field allows
         /// certain scenarios, where the funds sent dictates the result, to be checked.
         /// </summary>
-        public string Amount { get; set; }
+        public FixedDecimal Amount { get; set; }
 
         /// <summary>
         /// The gas price to use. This is used to calculate the expected expenditure

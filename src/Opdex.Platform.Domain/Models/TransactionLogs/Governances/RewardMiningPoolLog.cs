@@ -1,31 +1,32 @@
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.Governances
 {
     public class RewardMiningPoolLog : TransactionLog
     {
-        public RewardMiningPoolLog(dynamic log, string address, int sortOrder)
+        public RewardMiningPoolLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.RewardMiningPoolLog, address, sortOrder)
         {
-            string stakingPool = log?.stakingPool;
-            string miningPool = log?.miningPool;
-            string amount = log?.amount;
+            Address stakingPool = (string)log?.stakingPool;
+            Address miningPool = (string)log?.miningPool;
+            UInt256 amount = UInt256.Parse((string)log?.amount);
 
-            if (!stakingPool.HasValue())
+            if (stakingPool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(stakingPool), "Staking pool address must be set.");
             }
 
-            if (!miningPool.HasValue())
+            if (miningPool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(miningPool), "Mining pool address must be set.");
             }
 
-            if (!amount.IsNumeric())
+            if (amount == UInt256.Zero)
             {
-                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
             }
 
             StakingPool = stakingPool;
@@ -33,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Governances
             Amount = amount;
         }
 
-        public RewardMiningPoolLog(long id, long transactionId, string address, int sortOrder, string details)
+        public RewardMiningPoolLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.RewardMiningPoolLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -42,15 +43,15 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Governances
             Amount = logDetails.Amount;
         }
 
-        public string StakingPool { get; }
-        public string MiningPool { get; }
-        public string Amount { get; }
+        public Address StakingPool { get; }
+        public Address MiningPool { get; }
+        public UInt256 Amount { get; }
 
         private struct LogDetails
         {
-            public string StakingPool { get; set; }
-            public string MiningPool { get; set; }
-            public string Amount { get; set; }
+            public Address StakingPool { get; set; }
+            public Address MiningPool { get; set; }
+            public UInt256 Amount { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)

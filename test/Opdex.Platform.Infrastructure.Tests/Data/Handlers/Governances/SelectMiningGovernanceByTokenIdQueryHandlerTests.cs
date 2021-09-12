@@ -34,19 +34,18 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
             var expectedEntity = new MiningGovernanceEntity
             {
                 Id = 123454,
-                Address = "Address",
+                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
                 TokenId = tokenId,
                 NominationPeriodEnd = 999,
                 MiningDuration = 1444,
                 MiningPoolsFunded = 10,
-                MiningPoolReward = "876543456789",
+                MiningPoolReward = 876543456789,
                 CreatedBlock = 1
             };
 
             var command = new SelectMiningGovernanceByTokenIdQuery(tokenId);
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedEntity));
+            _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedEntity);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -64,8 +63,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
         {
             var command = new SelectMiningGovernanceByTokenIdQuery(10);
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<MiningGovernanceEntity>(null));
+            _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>())).ReturnsAsync((MiningGovernanceEntity)null);
 
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
@@ -81,8 +79,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
 
             var command = new SelectMiningGovernanceByTokenIdQuery(tokenId, findOrThrow);
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<MiningGovernanceEntity>(null));
+            _dbContext.Setup(db => db.ExecuteFindAsync<MiningGovernanceEntity>(It.IsAny<DatabaseQuery>())).ReturnsAsync((MiningGovernanceEntity)null);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 

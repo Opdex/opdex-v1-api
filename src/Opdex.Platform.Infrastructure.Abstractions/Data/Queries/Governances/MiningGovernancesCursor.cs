@@ -53,7 +53,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances
 
             var values = ToDictionary(raw);
 
-            TryGetCursorProperty<string>(values, "minedToken", out var minedToken);
+            TryGetCursorProperty<Address>(values, "minedToken", out var minedToken);
 
             if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
 

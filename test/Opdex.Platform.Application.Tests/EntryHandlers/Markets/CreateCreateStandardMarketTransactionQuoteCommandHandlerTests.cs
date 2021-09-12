@@ -24,17 +24,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
     {
         private readonly Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>> _assemblerMock;
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly string _callbackEndpoint;
+        private readonly OpdexConfiguration _config;
         private readonly CreateCreateStandardMarketTransactionQuoteCommandHandler _handler;
 
         public CreateCreateStandardMarketTransactionQuoteCommandHandlerTests()
         {
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _mediatorMock = new Mock<IMediator>();
-            _callbackEndpoint = "https://dev-api.opdex.com/transactions";
-            var configuration = new OpdexConfiguration();
-
-            _handler = new CreateCreateStandardMarketTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, configuration);
+            _config = new OpdexConfiguration { ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions" };
+            _handler = new CreateCreateStandardMarketTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
         [Fact]
@@ -67,7 +65,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             bool authProviders = true;
             bool authTraders = false;
             bool enableMarketFee = true;
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateCreateStandardMarketTransactionQuoteCommand(deployerOwner, marketOwner, fee, authPoolCreators, authProviders, authTraders, enableMarketFee);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -112,7 +110,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             var command = new CreateCreateStandardMarketTransactionQuoteCommand(deployerOwner, marketOwner, 5, false, false, false, false);
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var expectedRequest = new TransactionQuoteRequest(deployerOwner, marketOwner, "0", MarketDeployerConstants.Methods.CreateStandardMarket, _callbackEndpoint);
+            var expectedRequest = new TransactionQuoteRequest(deployerOwner, marketOwner, FixedDecimal.Zero, MarketDeployerConstants.Methods.CreateStandardMarket, _config.WalletTransactionCallback);
 
             var deployer = new Deployer(5, "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw", "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveDeployerQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(deployer);

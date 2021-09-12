@@ -24,7 +24,7 @@ namespace Opdex.Platform.Application.Assemblers
             var addressAllowanceDto = _mapper.Map<AddressAllowanceDto>(source);
 
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(source.TokenId));
-            addressAllowanceDto.Allowance = source.Allowance.InsertDecimal(token.Decimals);
+            addressAllowanceDto.Allowance = source.Allowance.ToDecimal(token.Decimals);
             addressAllowanceDto.Token = token.Address;
 
             return addressAllowanceDto;

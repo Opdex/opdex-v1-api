@@ -8,6 +8,8 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Liquidity
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.WebApi.Mappers;
 using Opdex.Platform.WebApi.Models.Responses.Governances;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
@@ -35,7 +37,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             // Arrange
             var dto = new AddressAllowanceDto
             {
-                Allowance = "500000",
+                Allowance = FixedDecimal.Parse("500000"),
                 Owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                 Spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
                 Token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXM",
@@ -62,11 +64,11 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
                 Id = 1,
                 TransactionId = 2,
                 SortOrder = 1,
-                Amount = "100.00000000",
+                Amount = FixedDecimal.Parse("100.00000000"),
                 Contract = " PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                 Miner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
-                MinerBalance = "100.00000000",
-                TotalSupply = "234.00000000"
+                MinerBalance = FixedDecimal.Parse("100.00000000"),
+                TotalSupply = FixedDecimal.Parse("234.00000000")
             };
 
             // Act
@@ -91,11 +93,11 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
                 Id = 1,
                 TransactionId = 2,
                 SortOrder = 1,
-                Amount = "100.00000000",
+                Amount = FixedDecimal.Parse("100.00000000"),
                 Contract = " PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                 Miner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
-                MinerBalance = "100.00000000",
-                TotalSupply = "234.00000000"
+                MinerBalance = FixedDecimal.Parse("100.00000000"),
+                TotalSupply = FixedDecimal.Parse("234.00000000")
             };
 
             // Act
@@ -120,11 +122,11 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
                 Id = 1,
                 TransactionId = 2,
                 SortOrder = 1,
-                Amount = "100.00000000",
+                Amount = FixedDecimal.Parse("100.00000000"),
                 Contract = " PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                 Staker = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
-                StakerBalance = "100.00000000",
-                TotalStaked = "234.00000000"
+                StakerBalance = FixedDecimal.Parse("100.00000000"),
+                TotalStaked = FixedDecimal.Parse("234.00000000")
             };
 
             // Act
@@ -149,11 +151,11 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
                 Id = 1,
                 TransactionId = 2,
                 SortOrder = 1,
-                Amount = "100.00000000",
+                Amount = FixedDecimal.Parse("100.00000000"),
                 Contract = " PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                 Staker = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
-                StakerBalance = "100.00000000",
-                TotalStaked = "234.00000000"
+                StakerBalance = FixedDecimal.Parse("100.00000000"),
+                TotalStaked = FixedDecimal.Parse("234.00000000")
             };
 
             // Act
@@ -179,12 +181,12 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
                 TransactionId = 2,
                 SortOrder = 1,
                 Contract = " PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
-                AmountCrs = "100.00000000",
-                AmountSrc = "200.00000000",
-                AmountLpt = "300.00000000",
+                AmountCrs = FixedDecimal.Parse("100.00000000"),
+                AmountSrc = FixedDecimal.Parse("200.00000000"),
+                AmountLpt = FixedDecimal.Parse("300.00000000"),
                 TokenSrc = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
                 TokenLp = "PVguEK5irNcbk7ZfvJtSJgyGvV5JqMgWVr",
-                TokenLpTotalSupply = "400.00000000",
+                TokenLpTotalSupply = FixedDecimal.Parse("400.00000000"),
             };
 
             // Act
@@ -212,12 +214,12 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
                 TransactionId = 2,
                 SortOrder = 1,
                 Contract = " PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
-                AmountCrs = "100.00000000",
-                AmountSrc = "200.00000000",
-                AmountLpt = "300.00000000",
+                AmountCrs = FixedDecimal.Parse("100.00000000"),
+                AmountSrc = FixedDecimal.Parse("200.00000000"),
+                AmountLpt = FixedDecimal.Parse("300.00000000"),
                 TokenSrc = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl",
                 TokenLp = "PVguEK5irNcbk7ZfvJtSJgyGvV5JqMgWVr",
-                TokenLpTotalSupply = "400.00000000",
+                TokenLpTotalSupply = FixedDecimal.Parse("400.00000000"),
             };
 
             // Act
@@ -244,7 +246,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             var dto = new VaultCertificateDto
             {
                 Owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXM",
-                Amount = "5021.24920000",
+                Amount = FixedDecimal.Parse("5021.24920000"),
                 VestingStartBlock = 10002,
                 VestingEndBlock = 141842,
                 Redeemed = false,
@@ -289,7 +291,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             var dto = new MiningPositionDto
             {
                 Address = "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK",
-                Amount = "200.00000000",
+                Amount = FixedDecimal.Parse("200.00000000"),
                 MiningPool = "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX",
                 MiningToken = "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L"
             };
@@ -314,9 +316,9 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
                 LiquidityPool = "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                 IsActive = true,
                 MiningPeriodEndBlock = 500_000,
-                RewardPerBlock = "1666666666",
-                RewardPerLpt = "028882888",
-                TokensMining = "50038209382219139"
+                RewardPerBlock = UInt256.Parse("1666666666"),
+                RewardPerLpt = UInt256.Parse("028882888"),
+                TokensMining = UInt256.Parse("50038209382219139")
             };
 
             // Act
@@ -327,9 +329,9 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             response.LiquidityPool.Should().Be(dto.LiquidityPool);
             response.IsActive.Should().Be(dto.IsActive);
             response.MiningPeriodEndBlock.Should().Be(dto.MiningPeriodEndBlock);
-            response.RewardPerBlock.Should().Be("16.66666666");
-            response.RewardPerLpt.Should().Be("0.28882888");
-            response.TokensMining.Should().Be("500382093.82219139");
+            response.RewardPerBlock.Should().Be(FixedDecimal.Parse("16.66666666"));
+            response.RewardPerLpt.Should().Be(FixedDecimal.Parse("0.28882888"));
+            response.TokensMining.Should().Be(FixedDecimal.Parse("500382093.82219139"));
         }
 
         [Fact]
@@ -340,12 +342,12 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             {
                 Address = "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK",
                 MinedToken = "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
-                MiningPoolRewardPerPeriod = "1500.00000000",
+                MiningPoolRewardPerPeriod = FixedDecimal.Parse("1500.00000000"),
                 PeriodBlockDuration = 10,
                 PeriodEndBlock = 500_000,
                 PeriodRemainingBlocks = 10_000,
                 PeriodsUntilRewardReset = 20,
-                TotalRewardsPerPeriod = "3000.00000000"
+                TotalRewardsPerPeriod = FixedDecimal.Parse("3000.00000000")
             };
 
             // Act

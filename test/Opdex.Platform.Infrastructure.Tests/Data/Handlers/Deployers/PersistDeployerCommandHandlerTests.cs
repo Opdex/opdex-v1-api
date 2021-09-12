@@ -33,7 +33,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Deployers
             const long expectedId = 10;
             const bool isActive = true;
 
-            var deployer = new Deployer("DeployerAddress", "Owner", isActive, 1);
+            var deployer = new Deployer("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", isActive, 1);
             var command = new PersistDeployerCommand(deployer);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -50,7 +50,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Deployers
             const long expectedId = 10;
             const bool isActive = true;
 
-            var deployer = new Deployer(expectedId, "DeployerAddress", "Owner", isActive, 1, 2);
+            var deployer = new Deployer(expectedId, "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", isActive, 1, 2);
             var command = new PersistDeployerCommand(deployer);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
@@ -67,7 +67,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Deployers
             const long expectedId = 0;
             const bool isActive = true;
 
-            var deployer = new Deployer(expectedId, "DeployerAddress", "Owner", isActive, 1, 2);
+            var deployer = new Deployer(expectedId, "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", isActive, 1, 2);
             var command = new PersistDeployerCommand(deployer);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

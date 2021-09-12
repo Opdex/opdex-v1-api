@@ -34,8 +34,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
             var expectedEntity = new MarketEntity
             {
                 Id = 123454,
-                Address = "SomeAddress",
-                Owner = "Owner",
+                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
+                Owner = "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN",
                 AuthPoolCreators = false,
                 AuthProviders = true,
                 AuthTraders = true,

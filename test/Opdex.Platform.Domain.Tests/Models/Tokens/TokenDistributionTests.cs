@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
 using Xunit;
@@ -14,42 +15,10 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
             const long tokenId = 0;
 
             // Act
-            static void Act() => new TokenDistribution(tokenId, "10", "20", 2, 3, 4, 5);
+            static void Act() => new TokenDistribution(tokenId, 10, 20, 2, 3, 4, 5);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Token Id must be greater than 0.");
-        }
-
-        [Theory]
-        [InlineData("asdf")]
-        [InlineData("1.11")]
-        [InlineData("")]
-        [InlineData("  ")]
-        [InlineData(null)]
-        public void CreateTokenDistribution_InvalidVaultDistribution_ThrowsArgumentException(string vaultDistribution)
-        {
-            // Arrange
-            // Act
-            void Act() => new TokenDistribution(1, vaultDistribution, "20", 2, 3, 4, 5);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Vault distribution must only contain numeric digits.");
-        }
-
-        [Theory]
-        [InlineData("asdf")]
-        [InlineData("1.11")]
-        [InlineData("")]
-        [InlineData("  ")]
-        [InlineData(null)]
-        public void CreateTokenDistribution_InvalidMiningGovernanceDistribution_ThrowsArgumentException(string miningGovernanceDistribution)
-        {
-            // Arrange
-            // Act
-            void Act() => new TokenDistribution(1, "10", miningGovernanceDistribution, 2, 3, 4, 5);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Mining governance distribution must only contain numeric digits.");
         }
 
         [Fact]
@@ -59,7 +28,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
             const ulong distributionBlock = 0;
 
             // Act
-            static void Act() => new TokenDistribution(1, "10", "20", 2, distributionBlock, 4, 5);
+            static void Act() => new TokenDistribution(1, 10, 20, 2, distributionBlock, 4, 5);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Distribution block must be greater than 0.");
@@ -72,7 +41,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
             const ulong nextDistributionBlock = 0;
 
             // Act
-            static void Act() => new TokenDistribution(1, "10", "20", 2, 3, nextDistributionBlock, 5);
+            static void Act() => new TokenDistribution(1, 10, 20, 2, 3, nextDistributionBlock, 5);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Next distribution block must be greater than 0.");
@@ -83,8 +52,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         {
             // Arrange
             const long tokenId = 1;
-            const string vaultDistribution = "10000000";
-            const string governanceDistribution = "3000000";
+            UInt256 vaultDistribution = 10000000;
+            UInt256 governanceDistribution = 3000000;
             const int periodIndex = 2;
             const ulong distributionBlock = 3;
             const ulong nextDistributionBlock = 4;
@@ -112,8 +81,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
             // Arrange
             const long id = 999;
             const long tokenId = 1;
-            const string vaultDistribution = "10000000";
-            const string governanceDistribution = "3000000";
+            UInt256 vaultDistribution = 10000000;
+            UInt256 governanceDistribution = 3000000;
             const int periodIndex = 2;
             const ulong distributionBlock = 3;
             const ulong nextDistributionBlock = 4;

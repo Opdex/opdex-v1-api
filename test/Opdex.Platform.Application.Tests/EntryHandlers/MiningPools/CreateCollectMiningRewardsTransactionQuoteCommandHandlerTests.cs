@@ -28,26 +28,24 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
 
         public CreateCollectMiningRewardsTransactionQuoteCommandHandlerTests()
         {
-            _config = new OpdexConfiguration();
+            _config = new OpdexConfiguration {ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions"};
             _mediatorMock = new Mock<IMediator>();
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _handler = new CreateCollectMiningRewardsTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateCollectMiningRewardsTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentException(string miningPool)
+        [Fact]
+        public void CreateCollectMiningRewardsTransactionQuoteCommand_InvalidMiningPool_ThrowArgumentNullException()
         {
             // Arrange
+            Address miningPool = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
 
             // Act
             void Act() => new CreateCollectMiningRewardsTransactionQuoteCommand(miningPool, walletAddress);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Mining pool address must be set.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Mining pool address must be set.");
         }
 
         [Fact]
@@ -78,7 +76,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateCollectMiningRewardsTransactionQuoteCommand(miningPool, walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -106,7 +104,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address miningPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateCollectMiningRewardsTransactionQuoteCommand(miningPool, walletAddress);
             var cancellationToken = new CancellationTokenSource().Token;

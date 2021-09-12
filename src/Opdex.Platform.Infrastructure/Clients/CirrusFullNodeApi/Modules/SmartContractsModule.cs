@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Http;
@@ -17,19 +18,19 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
         {
         }
 
-        public Task<ContractCodeDto> GetContractCodeAsync(string address, CancellationToken cancellationToken)
+        public Task<ContractCodeDto> GetContractCodeAsync(Address address, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractCode, address);
             return GetAsync<ContractCodeDto>(uri, cancellationToken);
         }
 
-        public Task<string> GetContractStorageAsync(string address, string storageKey, string dataType, CancellationToken cancellationToken)
+        public Task<string> GetContractStorageAsync(Address address, string storageKey, string dataType, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractStorageItem, address, storageKey, dataType);
             return GetAsync<string>(uri, cancellationToken);
         }
 
-        public Task<string> GetContractBalanceAsync(string address, CancellationToken cancellationToken)
+        public Task<string> GetContractBalanceAsync(Address address, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractBalance, address);
             return GetAsync<string>(uri, cancellationToken);
@@ -41,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return GetAsync<TransactionReceiptDto>(uri, cancellationToken);
         }
 
-        public Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(string contractAddress, string logName, ulong fromBlock, ulong? toBlock, CancellationToken cancellationToken)
+        public Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(Address contractAddress, string logName, ulong fromBlock, ulong? toBlock, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractReceiptSearch, contractAddress, logName, fromBlock);
 
@@ -87,7 +88,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return transactionHash;
         }
 
-        public Task<ulong> GetWalletAddressCrsBalance(string walletAddress, CancellationToken cancellationToken)
+        public Task<ulong> GetWalletAddressCrsBalance(Address walletAddress, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.SmartContractWallet.AddressBalance, walletAddress);
             return GetAsync<ulong>(uri, cancellationToken);

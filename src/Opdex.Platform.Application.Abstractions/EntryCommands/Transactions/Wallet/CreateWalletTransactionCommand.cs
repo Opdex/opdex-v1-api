@@ -1,14 +1,14 @@
 using System;
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet
 {
     public abstract class CreateWalletTransactionCommand : IRequest<string>
     {
-        protected CreateWalletTransactionCommand(string walletAddress)
+        protected CreateWalletTransactionCommand(Address walletAddress)
         {
-            if (!walletAddress.HasValue())
+            if (walletAddress == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(walletAddress));
             }
@@ -16,6 +16,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             WalletAddress = walletAddress;
         }
 
-        public string WalletAddress { get; }
+        public Address WalletAddress { get; }
     }
 }

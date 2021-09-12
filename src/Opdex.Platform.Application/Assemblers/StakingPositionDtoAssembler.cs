@@ -28,7 +28,7 @@ namespace Opdex.Platform.Application.Assemblers
             return new StakingPositionDto
             {
                 Address = source.Owner,
-                Amount = source.Weight.InsertDecimal(token.Decimals),
+                Amount = source.Weight.ToDecimal(token.Decimals),
                 LiquidityPool = liquidityPool.Address,
                 StakingToken = token.Address
             };

@@ -1,6 +1,6 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;
 
@@ -8,10 +8,10 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
 {
     public class GetLiquidityPoolsWithFilterQuery : IRequest<IEnumerable<LiquidityPoolDto>>
     {
-        public GetLiquidityPoolsWithFilterQuery(string marketAddress, bool? stakingEnabled, bool? miningEnabled, bool? nominated,
-                                               uint skip, uint take, string sortBy, string orderBy, IEnumerable<string> pools)
+        public GetLiquidityPoolsWithFilterQuery(Address marketAddress, bool? stakingEnabled, bool? miningEnabled, bool? nominated,
+                                               uint skip, uint take, string sortBy, string orderBy, IEnumerable<Address> pools)
         {
-            if (!marketAddress.HasValue())
+            if (marketAddress == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(marketAddress));
             }
@@ -27,7 +27,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
             Pools = pools;
         }
 
-        public string MarketAddress { get; }
+        public Address MarketAddress { get; }
         public bool? Staking { get; }
         public bool? Mining { get; }
         public bool? Nominated { get; }
@@ -35,6 +35,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
         public uint Take { get; }
         public string SortBy { get; }
         public string OrderBy { get; }
-        public IEnumerable<string> Pools { get; }
+        public IEnumerable<Address> Pools { get; }
     }
 }

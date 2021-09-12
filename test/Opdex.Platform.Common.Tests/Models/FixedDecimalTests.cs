@@ -275,16 +275,29 @@ namespace Opdex.Platform.Common.Tests.Models
         }
 
         [Fact]
-        public void Resize_ReducePrecision_ThrowNotImplementedException()
+        public void Resize_ReducePrecisionNoLossOfAccuracy_Expected()
         {
             // Arrange
             var value = new FixedDecimal(100_000_000_000_000, 9);
 
             // Act
-            void Act() => value.Resize(8);
+            var result = value.Resize(8);
 
             // Assert
-            Assert.Throws<NotImplementedException>(Act);
+            result.ScaledValue.Should().Be(10_000_000_000_000);
+        }
+
+        [Fact]
+        public void Resize_ReducePrecisionWithLossOfAccuracy_Expected()
+        {
+            // Arrange
+            var value = new FixedDecimal(100_000_000_000_006, 9);
+
+            // Act
+            var result = value.Resize(8);
+
+            // Assert
+            result.ScaledValue.Should().Be(10_000_000_000_000);
         }
 
         [Fact]

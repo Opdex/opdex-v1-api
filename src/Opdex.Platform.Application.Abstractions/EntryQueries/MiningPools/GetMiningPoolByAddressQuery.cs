@@ -1,7 +1,6 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools
@@ -11,11 +10,11 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools
     /// </summary>
     public class GetMiningPoolByAddressQuery : IRequest<MiningPoolDto>
     {
-        public GetMiningPoolByAddressQuery(string miningPool)
+        public GetMiningPoolByAddressQuery(Address miningPool)
         {
-            MiningPool = miningPool.HasValue() ? miningPool : throw new ArgumentNullException(nameof(miningPool), "Mining pool address must be set.");
+            MiningPool = miningPool != Address.Empty ? miningPool : throw new ArgumentNullException(nameof(miningPool), "Mining pool address must be set.");
         }
 
-        public string MiningPool { get; }
+        public Address MiningPool { get; }
     }
 }

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
@@ -9,15 +10,13 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
 {
     public class TransactionQuoteRequestTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateNew_TransactionQuoteRequest_InvalidSender_ThrowArgumentNullException(string sender)
+        [Fact]
+        public void CreateNew_TransactionQuoteRequest_InvalidSender_ThrowArgumentNullException()
         {
             // Arrange
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "0";
+            Address sender = Address.Empty;
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Zero;
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 
@@ -28,15 +27,13 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain($"{nameof(sender)} must not be null or empty.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateNew_TransactionQuoteRequest_InvalidTo_ThrowArgumentNullException(string to)
+        [Fact]
+        public void CreateNew_TransactionQuoteRequest_InvalidTo_ThrowArgumentNullException()
         {
             // Arrange
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string amount = "0";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = Address.Empty;
+            FixedDecimal amount = FixedDecimal.Zero;
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 
@@ -54,9 +51,9 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         public void CreateNew_TransactionQuoteRequest_InvalidMethod_ThrowArgumentNullException(string method)
         {
             // Arrange
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "0";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Zero;
             const string callback = "https://dev-api.opdex.com/transactions";
 
             // Act
@@ -73,9 +70,9 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         public void CreateNew_TransactionQuoteRequest_InvalidCallback_ThrowArgumentNullException(string callback)
         {
             // Arrange
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "0";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Zero;
             const string method = "Swap";
 
             // Act
@@ -85,34 +82,13 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain($"{nameof(callback)} must not be null or empty.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        [InlineData("1")]
-        [InlineData("asdf")]
-        public void CreateNew_TransactionQuoteRequest_InvalidAmount_ThrowArgumentException(string amount)
-        {
-            // Arrange
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string method = "Swap";
-            const string callback = "https://dev-api.opdex.com/transactions";
-
-            // Act
-            void Act() => new TransactionQuoteRequest(sender, to, amount, method, callback);
-
-            // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain($"{nameof(amount)} must be a valid decimal number");
-        }
-
         [Fact]
         public void CreateNew_TransactionQuoteRequest()
         {
             // Arrange
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.1";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Parse("1.1");
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 

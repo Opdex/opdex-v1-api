@@ -9,6 +9,8 @@ using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Addresses;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
@@ -39,7 +41,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         public async Task Handle_GetMiningPositionsWithFilterQuery_Send()
         {
             // Arrange
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
             var request = new GetMiningPositionsWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -59,10 +61,10 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         public async Task Handle_PositionsRetrieved_MapResults()
         {
             // Arrange
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
             var request = new GetMiningPositionsWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var position = new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505);
+            var position = new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", UInt256.Parse("10000000000"), 500, 505);
             var positions = new AddressMining[] { position };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(positions);
 
@@ -77,14 +79,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
         {
             // Arrange
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
             var request = new GetMiningPositionsWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var positions = new AddressMining[]
             {
-                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
-                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
-                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(positions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressMining>())).ReturnsAsync(new MiningPositionDto());
@@ -100,14 +102,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
         {
             // Arrange
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
             var request = new GetMiningPositionsWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var positions = new AddressMining[]
             {
-                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
-                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
-                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(positions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressMining>())).ReturnsAsync(new MiningPositionDto());
@@ -124,14 +126,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
         {
             // Arrange
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
             var request = new GetMiningPositionsWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var positions = new AddressMining[]
             {
-                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
-                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
-                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(positions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressMining>())).ReturnsAsync(new MiningPositionDto());
@@ -148,14 +150,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
             var request = new GetMiningPositionsWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var positions = new AddressMining[]
             {
-                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
-                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
-                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(positions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressMining>())).ReturnsAsync(new MiningPositionDto());
@@ -172,14 +174,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
             var request = new GetMiningPositionsWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var positions = new AddressMining[]
             {
-                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
-                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
-                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(positions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressMining>())).ReturnsAsync(new MiningPositionDto());
@@ -196,14 +198,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
             var request = new GetMiningPositionsWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var positions = new AddressMining[]
             {
-                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
-                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505),
-                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "10000000000", 500, 505)
+                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(positions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressMining>())).ReturnsAsync(new MiningPositionDto());
@@ -220,13 +222,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         public async Task Handle_PagingForwardLastPage_ReturnCursor()
         {
             // Arrange
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
             var request = new GetMiningPositionsWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var positions = new AddressMining[]
             {
-                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
-                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505)
+                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(positions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressMining>())).ReturnsAsync(new MiningPositionDto());
@@ -243,13 +245,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
         public async Task Handle_PagingBackwardLastPage_ReturnCursor()
         {
             // Arrange
-            var cursor = new MiningPositionsCursor(Enumerable.Empty<string>(), Enumerable.Empty<string>(), false, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var cursor = new MiningPositionsCursor(Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
             var request = new GetMiningPositionsWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var positions = new AddressMining[]
             {
-                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "10000000000", 500, 505),
-                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "10000000000", 500, 505)
+                new AddressMining(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", UInt256.Parse("10000000000"), 500, 505),
+                new AddressMining(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(positions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<AddressMining>())).ReturnsAsync(new MiningPositionDto());

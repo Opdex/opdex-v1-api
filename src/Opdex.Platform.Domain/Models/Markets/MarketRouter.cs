@@ -1,14 +1,14 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 
 namespace Opdex.Platform.Domain.Models.Markets
 {
     public class MarketRouter : BlockAudit
     {
-        public MarketRouter(string address, long marketId, bool isActive, ulong createdBlock) : base(createdBlock)
+        public MarketRouter(Address address, long marketId, bool isActive, ulong createdBlock) : base(createdBlock)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), "Router address must be set.");
             }
@@ -23,7 +23,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             IsActive = isActive;
         }
 
-        public MarketRouter(long id, string address, long marketId, bool isActive, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+        public MarketRouter(long id, Address address, long marketId, bool isActive, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
@@ -32,7 +32,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         }
 
         public long Id { get; }
-        public string Address { get; }
+        public Address Address { get; }
         public long MarketId { get; }
         public bool IsActive { get; }
     }

@@ -1,5 +1,5 @@
 using MediatR;
-using Microsoft.Extensions.Logging;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.LiquidityQuotes;
@@ -9,19 +9,16 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools.LiquidityQuotes
 {
-    public class CallCirrusGetAddLiquidityQuoteQueryHandler : IRequestHandler<CallCirrusGetAddLiquidityQuoteQuery, string>
+    public class CallCirrusGetAddLiquidityQuoteQueryHandler : IRequestHandler<CallCirrusGetAddLiquidityQuoteQuery, UInt256>
     {
         private readonly ISmartContractsModule _smartContractsModule;
-        private readonly ILogger<CallCirrusGetAddLiquidityQuoteQueryHandler> _logger;
 
-        public CallCirrusGetAddLiquidityQuoteQueryHandler(ISmartContractsModule smartContractsModule,
-            ILogger<CallCirrusGetAddLiquidityQuoteQueryHandler> logger)
+        public CallCirrusGetAddLiquidityQuoteQueryHandler(ISmartContractsModule smartContractsModule)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<string> Handle(CallCirrusGetAddLiquidityQuoteQuery request, CancellationToken cancellationToken)
+        public async Task<UInt256> Handle(CallCirrusGetAddLiquidityQuoteQuery request, CancellationToken cancellationToken)
         {
             var quoteParams = new[] { $"12#{request.AmountA}", $"12#{request.ReserveA}", $"12#{request.ReserveB}" };
             var localCall = new LocalCallRequestDto(request.Market, request.Market, "GetLiquidityQuote", quoteParams);
@@ -32,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
                 throw new Exception($"Invalid request: {amountIn.ErrorMessage}");
             }
 
-            return amountIn.Return.ToString();
+            return amountIn.DeserializeValue<UInt256>();
         }
     }
 }

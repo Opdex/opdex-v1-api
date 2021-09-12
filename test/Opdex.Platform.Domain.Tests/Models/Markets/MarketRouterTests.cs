@@ -1,5 +1,6 @@
 using System;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Xunit;
 
@@ -7,13 +8,12 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
 {
     public class MarketRouterTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateMarketRouter_InvalidAddress_ThrowArgumentNullException(string address)
+        [Fact]
+        public void CreateMarketRouter_InvalidAddress_ThrowArgumentNullException()
         {
             // Arrange
+            var address = Address.Empty;
+
             // Act
             void Act() => new MarketRouter(address, 2, true, 1);
 

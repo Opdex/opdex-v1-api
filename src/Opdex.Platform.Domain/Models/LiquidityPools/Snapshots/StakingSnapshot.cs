@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
 
@@ -9,17 +10,12 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
     {
         public StakingSnapshot()
         {
-            Weight = "0";
+            Weight = 0;
             Usd = 0.00m;
         }
 
-        public StakingSnapshot(string stakingWeight, decimal stakingUsd)
+        public StakingSnapshot(UInt256 stakingWeight, decimal stakingUsd)
         {
-            if (!stakingWeight.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(stakingWeight), $"{nameof(stakingWeight)} must be a numeric value.");
-            }
-
             if (stakingUsd < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(stakingUsd), $"{nameof(stakingUsd)} must be greater or equal to 0.");
@@ -29,7 +25,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Usd = stakingUsd;
         }
 
-        public string Weight { get; private set; }
+        public UInt256 Weight { get; private set; }
         public decimal Usd { get; private set; }
 
         internal void SetStaking(StakeLog log, decimal stakingTokenUsd)

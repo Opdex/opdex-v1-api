@@ -7,6 +7,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
@@ -31,12 +32,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var liquidityPool = await _mediator.Send( new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 var stakingBalance = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liquidityPool.Id,
                                                                                                                    request.Log.Staker,
                                                                                                                    findOrThrow: false))
-                                     ?? new AddressStaking(liquidityPool.Id, request.Log.Staker, "0", request.BlockHeight);
+                                     ?? new AddressStaking(liquidityPool.Id, request.Log.Staker, UInt256.Zero, request.BlockHeight);
 
                 var balanceIsNewer = request.BlockHeight < stakingBalance.ModifiedBlock;
                 if (balanceIsNewer && stakingBalance.Id != 0)

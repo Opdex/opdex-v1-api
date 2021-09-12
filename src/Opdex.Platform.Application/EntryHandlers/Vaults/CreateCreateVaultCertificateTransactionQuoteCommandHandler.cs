@@ -8,7 +8,7 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
 using System.Threading;
@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
     public class CreateCreateVaultCertificateTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateCreateVaultCertificateTransactionQuoteCommand>
     {
         private const string MethodName = VaultConstants.Methods.CreateCertificate;
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
 
         public CreateCreateVaultCertificateTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                           IMediator mediator, OpdexConfiguration config)
@@ -32,7 +32,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
             // ensure the vault exists, else throw 404 not found
             _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault), cancellationToken);
 
-            var amount = UInt256.Parse(request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals));
+            var amount = request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals);
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {

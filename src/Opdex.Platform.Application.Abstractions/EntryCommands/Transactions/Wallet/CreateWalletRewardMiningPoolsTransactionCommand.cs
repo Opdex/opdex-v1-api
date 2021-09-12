@@ -1,13 +1,13 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wallet
 {
     public class CreateWalletRewardMiningPoolsTransactionCommand : CreateWalletTransactionCommand
     {
-        public CreateWalletRewardMiningPoolsTransactionCommand(string walletAddress, string governance) : base(walletAddress)
+        public CreateWalletRewardMiningPoolsTransactionCommand(Address walletAddress, Address governance) : base(walletAddress)
         {
-            if (!governance.HasValue())
+            if (governance == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(governance));
             }
@@ -15,6 +15,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Wal
             Governance = governance;
         }
 
-        public string Governance { get; }
+        public Address Governance { get; }
     }
 }

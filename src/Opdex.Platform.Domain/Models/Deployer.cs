@@ -1,5 +1,5 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
@@ -7,14 +7,14 @@ namespace Opdex.Platform.Domain.Models
 {
     public class Deployer : BlockAudit
     {
-        public Deployer(string address, string owner, bool isActive, ulong createdBlock) : base(createdBlock)
+        public Deployer(Address address, Address owner, bool isActive, ulong createdBlock) : base(createdBlock)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), "Address must be set.");
             }
 
-            if (!owner.HasValue())
+            if (owner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
             }
@@ -24,7 +24,7 @@ namespace Opdex.Platform.Domain.Models
             IsActive = isActive;
         }
 
-        public Deployer(long id, string address, string owner, bool isActive, ulong createdBlock, ulong modifiedBlock)
+        public Deployer(long id, Address address, Address owner, bool isActive, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -34,9 +34,9 @@ namespace Opdex.Platform.Domain.Models
         }
 
         public long Id { get; }
-        public string Address { get; }
-        public string Owner { get; private set; }
-        public bool IsActive { get; private set; }
+        public Address Address { get; }
+        public Address Owner { get; private set; }
+        public bool IsActive { get; }
 
         public void SetOwner(ClaimPendingDeployerOwnershipLog log, ulong blockHeight)
         {

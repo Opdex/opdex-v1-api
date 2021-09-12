@@ -29,19 +29,17 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
         public CreateRevokeVaultCertificatesTransactionQuoteCommandHandlerTests()
         {
-            _config = new OpdexConfiguration();
+            _config = new OpdexConfiguration {ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions"};
             _mediatorMock = new Mock<IMediator>();
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _handler = new CreateRevokeVaultCertificatesTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateRevokeVaultCertificatesTransactionQuoteCommand_InvalidVault_ThrowArgumentException(string vault)
+        [Fact]
+        public void CreateRevokeVaultCertificatesTransactionQuoteCommand_InvalidVault_ThrowArgumentNullException()
         {
             // Arrange
+            Address vault = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
 
@@ -49,24 +47,22 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             void Act() => new CreateRevokeVaultCertificatesTransactionQuoteCommand(vault, walletAddress, vault);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Vault address must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Vault address must be provided.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateRevokeVaultCertificatesTransactionQuoteCommand_InvalidHolder_ThrowArgumentException(string holder)
+        [Fact]
+        public void CreateRevokeVaultCertificatesTransactionQuoteCommand_InvalidHolder_ThrowArgumentNullException()
         {
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address vault = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
+            Address holder = Address.Empty;
 
             // Act
             void Act() => new CreateRevokeVaultCertificatesTransactionQuoteCommand(vault, walletAddress, holder);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Certificate holder address must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Certificate holder address must be provided.");
         }
 
         [Fact]
@@ -76,7 +72,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateRevokeVaultCertificatesTransactionQuoteCommand(vault, walletAddress, holder);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -113,7 +109,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address holder = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm";
             Address vault = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateRevokeVaultCertificatesTransactionQuoteCommand(vault, walletAddress, holder);
             var cancellationToken = new CancellationTokenSource().Token;

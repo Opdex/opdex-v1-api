@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 }
 
                 // Get deployer
-                var deployer = await _mediator.Send( new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 // Check if market exists, skip if so
                 var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Market, findOrThrow: false));

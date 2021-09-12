@@ -6,6 +6,5 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances
 {
     public class SelectActiveMiningGovernanceNominationsQuery : IRequest<IEnumerable<MiningGovernanceNomination>>
     {
-
     }
 }
