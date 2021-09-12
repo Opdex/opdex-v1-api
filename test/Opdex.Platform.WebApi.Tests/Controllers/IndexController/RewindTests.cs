@@ -72,13 +72,14 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.IndexController
                 .ThrowsAsync(new InvalidDataException("block", "Exception message."));
 
             // Act
-            var response = await _controller.Rewind(request, CancellationToken.None);
+            try
+            {
+                await _controller.Rewind(request, CancellationToken.None);
+            } catch { }
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<CreateRewindToBlockCommand>(q => q.Block == request.Block), CancellationToken.None), Times.Once);
             _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), CancellationToken.None), Times.Once);
-
-            response.Should().BeOfType<NoContentResult>();
         }
     }
 }
