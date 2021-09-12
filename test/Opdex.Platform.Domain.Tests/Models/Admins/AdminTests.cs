@@ -13,7 +13,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Admins
         {
             // Arrange
             // Act
-            static void Act() => new Admin(0, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj");
+            static void Act() => new Admin(0, new Address("PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj"));
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Id must be greater than 0.");
@@ -22,11 +22,11 @@ namespace Opdex.Platform.Domain.Tests.Models.Admins
         [Theory]
         [InlineData("")]
         [InlineData("   ")]
-        public void CreateAdmin_InvalidAddress_ThrowsArgumentException(Address address)
+        public void CreateAdmin_InvalidAddress_ThrowsArgumentException(string address)
         {
             // Arrange
             // Act
-            void Act() => new Admin(1, address);
+            void Act() => new Admin(1, new Address(address));
 
             // Assert
             Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Address must be provided.");

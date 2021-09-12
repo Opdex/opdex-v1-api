@@ -31,10 +31,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Admins
         [Theory]
         [InlineData("")]
         [InlineData(" ")]
-        public void SelectAdminByAddressQuery_InvalidAddress_ThrowsArgumentException(Address address)
+        public void SelectAdminByAddressQuery_InvalidAddress_ThrowsArgumentException(string address)
         {
             // Arrange
-            void Act() => new SelectAdminByAddressQuery(address);
+            void Act() => new SelectAdminByAddressQuery(new Address(address));
 
             // Act
             // Assert
