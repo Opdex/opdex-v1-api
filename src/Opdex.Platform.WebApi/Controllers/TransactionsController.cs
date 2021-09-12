@@ -19,6 +19,7 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -85,6 +86,18 @@ namespace Opdex.Platform.WebApi.Controllers
             var response = _mapper.Map<TransactionsResponseModel>(transactionsDto);
 
             return Ok(response);
+        }
+
+        /// <summary>Notify Broadcast</summary>
+        /// <remarks>Sends notifications to a user about broadcast transactions.</remarks>
+        /// <param name="request">The broadcasted transaction details.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> NotifyBroadcasted(TransactionBroadcastNotificationRequest request, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new NotifyUserOfBroadcastTransactionCommand(request.WalletAddress, request.TransactionHash), cancellationToken);
+            return NoContent();
         }
 
         /// <summary>Get Transaction</summary>

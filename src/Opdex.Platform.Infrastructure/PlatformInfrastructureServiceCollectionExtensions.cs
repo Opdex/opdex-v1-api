@@ -97,8 +97,8 @@ using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.MiningPools;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Events;
 using Opdex.Platform.Infrastructure.Clients.SignalR.Handlers;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -311,7 +311,7 @@ namespace Opdex.Platform.Infrastructure
 
         private static void AddSignalRServices(IServiceCollection services)
         {
-            services.AddTransient<INotificationHandler<TransactionBroadcastNotification>, NotifyClientOfBroadcastTransactionHandler>();
+            services.AddTransient<IRequestHandler<NotifyUserOfBroadcastTransactionCommand, Unit>, NotifyUserOfBroadcastTransactionCommandHandler>();
         }
     }
 }
