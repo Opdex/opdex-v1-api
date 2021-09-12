@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Text;
 
@@ -7,7 +8,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 {
     public class VaultCertificatesCursor : Cursor<long>
     {
-        public VaultCertificatesCursor(string holder, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
+        public VaultCertificatesCursor(Address holder, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
             Holder = holder;
@@ -16,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
         /// <summary>
         /// Filter for a particular certificate holder
         /// </summary>
-        public string Holder { get; }
+        public Address Holder { get; }
 
         /// <inheritdoc />
         public override string ToString()
@@ -52,7 +53,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 
             var values = ToDictionary(raw);
 
-            TryGetCursorProperty<string>(values, "holder", out var holder);
+            TryGetCursorProperty<Address>(values, "holder", out var holder);
 
             if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
 

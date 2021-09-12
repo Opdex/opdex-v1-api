@@ -4,7 +4,8 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Handlers.Addresses;
-using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Balances;
@@ -27,13 +28,11 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
             _handler = new RetrieveAddressBalanceByOwnerAndTokenQueryHandler(_mediatorMock.Object);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentNullException_InvalidOwner(string owner)
+        [Fact]
+        public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentNullException_InvalidOwner()
         {
             // Arrange
+            Address owner = Address.Empty;
             const long tokenId = 2;
 
             void Act() => new RetrieveAddressBalanceByOwnerAndTokenQuery(owner, tokenId);
@@ -64,7 +63,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_RetrieveTokenByAddressQuery()
         {
             // Arrange
-            const string address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -85,7 +84,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_RetrieveTokenByIdQuery()
         {
             // Arrange
-            const string address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             const long tokenId = 2;
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -106,7 +105,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         public async Task SelectAddressBalanceByOwnerAndTokenId_TokenNotFound_FindOrThrowFalse_ReturnsNull()
         {
             // Arrange
-            const string address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             const long tokenId = 2;
             const bool findOrThrow = false;
             var cancellationToken = new CancellationTokenSource().Token;
@@ -127,14 +126,14 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_SelectAddressBalanceByOwnerAndTokenIdQuery()
         {
             // Arrange
-            const string address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             const long tokenId = 2;
             const bool findOrThrow = false;
             var cancellationToken = new CancellationTokenSource().Token;
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-                .ReturnsAsync(new Token(tokenId, "tokenAddress", false, "name", "symbol", 8, 100_000_000, "100", 1, 2));
+                .ReturnsAsync(new Token(tokenId, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
 
             // Act
             await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
@@ -150,16 +149,16 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         public async Task SelectAddressBalanceByOwnerAndTokenId_ReturnsSrcTokenAddressBalance()
         {
             // Arrange
-            const string address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             const long tokenId = 2;
             const bool findOrThrow = false;
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var expectedResult = new AddressBalance(tokenId, address, "100", 1);
+            var expectedResult = new AddressBalance(tokenId, address, 100, 1);
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-                .ReturnsAsync(new Token(tokenId, "tokenAddress", false, "name", "symbol", 8, 100_000_000, "100", 1, 2));
+                .ReturnsAsync(new Token(tokenId, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<SelectAddressBalanceByOwnerAndTokenIdQuery>(), cancellationToken))
@@ -176,14 +175,14 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_CallCirrusGetAddressBalanceQuery()
         {
             // Arrange
-            const string address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             const long tokenId = 2;
             const bool findOrThrow = true;
             var cancellationToken = new CancellationTokenSource().Token;
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-                .ReturnsAsync(new Token(tokenId, "CRS", false, "name", "symbol", 8, 100_000_000, "100", 1, 2));
+                .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, 100, 1, 2));
 
             // Act
             await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
@@ -198,17 +197,17 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses
         public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_ReturnsCrsTokenAddressBalance()
         {
             // Arrange
-            const string address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             const long tokenId = 2;
             const bool findOrThrow = true;
             var cancellationToken = new CancellationTokenSource().Token;
 
             const ulong expectedBalance = 20;
-            var expectedResult = new AddressBalance(tokenId, address, expectedBalance.ToString(), 1);
+            var expectedResult = new AddressBalance(tokenId, address, expectedBalance, 1);
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-                .ReturnsAsync(new Token(tokenId, "CRS", false, "name", "symbol", 8, 100_000_000, "100", 1, 2));
+                .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
 
             _mediatorMock
                 .Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetAddressBalanceQuery>(), cancellationToken))

@@ -8,9 +8,9 @@ using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Domain.Models.Tokens;
 using System.Linq;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Tokens
 {
@@ -39,7 +39,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
 
             return await Task.WhenAll(tokens.Select(token =>
             {
-                var marketId = token.Address == TokenConstants.Cirrus.Address ? 0 : market.Id;
+                var marketId = token.Address == Address.Cirrus ? 0 : market.Id;
 
                 token.SetMarket(marketId);
 

@@ -1,26 +1,22 @@
 using System;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 
 namespace Opdex.Platform.Domain.Models.Addresses
 {
     public class AddressBalance : BlockAudit
     {
-        public AddressBalance(long tokenId, string owner, string balance, ulong createdBlock) : base(createdBlock)
+        public AddressBalance(long tokenId, Address owner, UInt256 balance, ulong createdBlock) : base(createdBlock)
         {
             if (tokenId < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(tokenId), "Token id must be greater than 0.");
             }
 
-            if (!owner.HasValue())
+            if (owner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(owner), "Owner must be set.");
-            }
-
-            if (!balance.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(balance), "Balance must only contain numeric digits.");
             }
 
             TokenId = tokenId;
@@ -28,7 +24,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Balance = balance;
         }
 
-        public AddressBalance(long id, long tokenId, string owner, string balance, ulong createdBlock, ulong modifiedBlock)
+        public AddressBalance(long id, long tokenId, Address owner, UInt256 balance, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -39,16 +35,11 @@ namespace Opdex.Platform.Domain.Models.Addresses
 
         public long Id { get; }
         public long TokenId { get; }
-        public string Owner { get; }
-        public string Balance { get; private set; }
+        public Address Owner { get; }
+        public UInt256 Balance { get; private set; }
 
-        public void SetBalance(string balance, ulong blockHeight)
+        public void SetBalance(UInt256 balance, ulong blockHeight)
         {
-            if (!balance.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(balance), "Balance must only contain numeric digits.");
-            }
-
             Balance = balance;
             SetModifiedBlock(blockHeight);
         }

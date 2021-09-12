@@ -1,6 +1,5 @@
 using System;
-using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Addresses;
 
@@ -8,14 +7,14 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Addresses
 {
     public class RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery : FindQuery<AddressStaking>
     {
-        public RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(long liquidityPoolId, string owner, bool findOrThrow = true) : base(findOrThrow)
+        public RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(long liquidityPoolId, Address owner, bool findOrThrow = true) : base(findOrThrow)
         {
             if (liquidityPoolId < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
             }
 
-            if (!owner.HasValue())
+            if (owner == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(owner));
             }
@@ -25,6 +24,6 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Addresses
         }
 
         public long LiquidityPoolId { get; }
-        public string Owner { get; }
+        public Address Owner { get; }
     }
 }

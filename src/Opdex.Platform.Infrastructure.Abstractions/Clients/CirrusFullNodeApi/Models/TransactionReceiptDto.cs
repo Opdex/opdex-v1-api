@@ -1,5 +1,6 @@
 using System.Linq;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
@@ -9,14 +10,14 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public string BlockHash { get; set; }
         public string PostState { get; set; }
         public int GasUsed { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
-        public string NewContractAddress { get; set; }
+        public Address From { get; set; }
+        public Address To { get; set; }
+        public Address NewContractAddress { get; set; }
         public bool Success { get; set; }
         public string ReturnValue { get; set; }
         public string Bloom { get; set; }
         public string Error { get; set; }
-        
+
         public ulong BlockHeight { get; private set; }
         public TransactionLogDto[] Logs { get; set; }
 

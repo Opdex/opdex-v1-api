@@ -1,11 +1,13 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.Application.Abstractions.Models.Addresses
 {
     public class AddressBalanceDto
     {
-        public string Balance { get; set; }
+        public FixedDecimal Balance { get; set; }
 
-        public string Address { get; set; }
+        public Address Address { get; set; }
 
-        public string Token { get; set; }
+        public Address Token { get; set; }
     }
 }

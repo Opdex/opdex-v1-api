@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
@@ -14,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
     public class SelectTokenByAddressQueryHandler : IRequestHandler<SelectTokenByAddressQuery, Token>
     {
         private static readonly string SqlQuery =
-            @$"Select 
+            @$"Select
                 {nameof(TokenEntity.Id)},
                 {nameof(TokenEntity.Address)},
                 {nameof(TokenEntity.IsLpt)},
@@ -55,12 +56,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
         private sealed class SqlParams
         {
-            internal SqlParams(string address)
+            internal SqlParams(Address address)
             {
                 Address = address;
             }
 
-            public string Address { get; }
+            public Address Address { get; }
         }
     }
 }

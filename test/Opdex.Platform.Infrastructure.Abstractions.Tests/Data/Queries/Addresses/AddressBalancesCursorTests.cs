@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using System;
@@ -15,7 +16,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         {
             // Arrange
             // Act
-            static void Act() => new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
+            static void Act() => new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>("limit", Act);
@@ -27,7 +28,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         {
             // Arrange
             // Act
-            void Act() => new AddressBalancesCursor(Enumerable.Empty<string>(), false, false, SortDirectionType.ASC, 25, pagingDirection, pointer);
+            void Act() => new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 25, pagingDirection, pointer);
 
             // Assert
             Assert.Throws<ArgumentException>("pointer", Act);
@@ -48,7 +49,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         public void ToString_StringifiesCursor_FormatCorrectly()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(new string[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", "P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8" }, true, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+            var cursor = new AddressBalancesCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", "P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8" }, true, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
             // Act
             var result = cursor.ToString();
@@ -68,7 +69,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         public void Turn_NonIdenticalPointer_ReturnAnotherCursor()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(new string[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L" }, true, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+            var cursor = new AddressBalancesCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L" }, true, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
             // Act
             var result = cursor.Turn(PagingDirection.Backward, 567);

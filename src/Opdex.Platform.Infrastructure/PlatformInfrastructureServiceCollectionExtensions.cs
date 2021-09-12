@@ -96,6 +96,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.MiningPools;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -272,21 +273,21 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolByAddressQuery, LiquidityPool>, CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetOpdexMiningPoolByAddressQuery, MiningPoolSmartContractSummary>, CallCirrusGetOpdexMiningPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenAllowanceQuery, UInt256>, CallCirrusGetSrcTokenAllowanceQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, string[]>, CallCirrusGetOpdexLiquidityPoolReservesQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetAmountOutStandardQuoteQuery, string>, CallCirrusGetAmountOutStandardQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetAmountInStandardQuoteQuery, string>, CallCirrusGetAmountInStandardQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetAmountOutMultiHopQuoteQuery, string>, CallCirrusGetAmountOutMultiHopQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetAmountInMultiHopQuoteQuery, string>, CallCirrusGetAmountInMultiHopQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetAddLiquidityQuoteQuery, string>, CallCirrusGetAddLiquidityQuoteQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, UInt256[]>, CallCirrusGetOpdexLiquidityPoolReservesQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetAmountOutStandardQuoteQuery, UInt256>, CallCirrusGetAmountOutStandardQuoteQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetAmountInStandardQuoteQuery, UInt256>, CallCirrusGetAmountInStandardQuoteQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetAmountOutMultiHopQuoteQuery, UInt256>, CallCirrusGetAmountOutMultiHopQuoteQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetAmountInMultiHopQuoteQuery, UInt256>, CallCirrusGetAmountInMultiHopQuoteQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetAddLiquidityQuoteQuery, UInt256>, CallCirrusGetAddLiquidityQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetStakingTokenSummaryByAddressQuery, StakingTokenContractSummary>, CallCirrusGetStakingTokenSummaryByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetMiningGovernanceSummaryByAddressQuery, MiningGovernanceContractSummary>, CallCirrusGetMiningGovernanceSummaryByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetBlockHashByHeightQuery, string>, CallCirrusGetBlockHashByHeightQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, string>, CallCirrusGetSrcTokenBalanceQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, UInt256>, CallCirrusGetSrcTokenBalanceQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetMiningGovernanceSummaryNominationsQuery, IEnumerable<MiningGovernanceNominationCirrusDto>>, CallCirrusGetMiningGovernanceSummaryNominationsQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetVaultTotalSupplyQuery, string>, CallCirrusGetVaultTotalSupplyQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetVaultTotalSupplyQuery, UInt256>, CallCirrusGetVaultTotalSupplyQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>, CallCirrusLocalCallSmartContractMethodCommandHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAddressBalanceQuery, ulong>, CallCirrusGetAddressBalanceQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetMiningPoolByTokenQuery, string>, CallCirrusGetMiningPoolByTokenQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetMiningPoolByTokenQuery, Address>, CallCirrusGetMiningPoolByTokenQueryHandler>();
 
             // Commands
             services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, string>, CallCirrusCallSmartContractMethodCommandHandler>();

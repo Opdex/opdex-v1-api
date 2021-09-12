@@ -5,6 +5,8 @@ using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.Markets;
@@ -33,7 +35,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public async Task Assemble_RetrieveLiquidityPoolByIdQuery_Send()
         {
             // Arrange
-            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "50000000", 500, 505);
+            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("50000000"), 500, 505);
 
             // Act
             try
@@ -50,7 +52,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public async Task Assemble_RetrieveMarketByIdQuery_Send()
         {
             // Arrange
-            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "50000000", 500, 505);
+            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("50000000"), 500, 505);
 
             var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", 5, 15, 25, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
@@ -70,7 +72,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public async Task Assemble_RetrieveTokenByIdQuery_Send()
         {
             // Arrange
-            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "50000000", 500, 505);
+            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("50000000"), 500, 505);
 
             var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", 5, 15, 25, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
@@ -93,7 +95,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public async Task Assemble_HappyPath_Map()
         {
             // Arrange
-            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "5000000000", 500, 505);
+            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("5000000000"), 500, 505);
 
             var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", 5, 15, 25, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
@@ -101,7 +103,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             var market = new Market(5, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", 10, 50, "PCiNwuLQemjMk63A6r5mS2Ma9Kskki6HZK", false, false, false, 1, true, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
 
-            var token = new Token(50, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, "Governance Token", "GOV", 8, 8, "10000000000000000000", 500, 505);
+            var token = new Token(50, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, "Governance Token", "GOV", 8, 8, UInt256.Parse("10000000000000000000"), 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
             // Act
@@ -109,7 +111,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
 
             // Assert
             response.Address.Should().Be(addressStaking.Owner);
-            response.Amount.Should().Be("50.00000000");
+            response.Amount.Should().Be(FixedDecimal.Parse("50.00000000"));
             response.LiquidityPool.Should().Be(liquidityPool.Address);
             response.StakingToken.Should().Be(token.Address);
         }

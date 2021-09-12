@@ -37,42 +37,37 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             _handler = new CreateStopStakingTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateStopStakingTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentException(string liquidityPool)
+        [Fact]
+        public void CreateStopStakingTransactionQuoteCommand_InvalidLiquidityPool_ThrowArgumentNullException()
         {
             // Arrange
+            Address liquidityPool = Address.Empty;
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string amount = "1.00";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
             const bool liquidate = true;
 
             // Act
             void Act() => new CreateStopStakingTransactionQuoteCommand(liquidityPool, walletAddress, amount, liquidate);
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Liquidity pool must be provided.");
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        [InlineData("123")]
-        [InlineData("asdf")]
-        public void CreateStopStakingTransactionQuoteCommand_InvalidAmount_ThrowArgumentException(string amount)
+        [InlineData("-1.01")]
+        [InlineData("0")]
+        public void CreateStopStakingTransactionQuoteCommand_InvalidAmount_ThrowArgumentOutOfRangeException(string amount)
         {
             // Arrange
-            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const bool liquidate = true;
+            Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
 
             // Act
-            void Act() => new CreateStopStakingTransactionQuoteCommand(liquidityPool, walletAddress, amount, liquidate);
+            void Act() => new CreateStopStakingTransactionQuoteCommand(liquidityPool, walletAddress, FixedDecimal.Parse(amount), true);
+
 
             // Assert
-            Assert.Throws<ArgumentException>(Act).Message.Should().Contain("Amount must be a valid decimal number.");
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Amount must be greater than 0.");
         }
 
         [Fact]
@@ -81,7 +76,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.00";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
             const bool liquidate = true;
 
             var command = new CreateStopStakingTransactionQuoteCommand(liquidityPool, walletAddress, amount, liquidate);
@@ -105,8 +100,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.00";
-            const string crsToSend = "0";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
+            FixedDecimal crsToSend = FixedDecimal.Zero;
             const bool liquidate = true;
 
             var command = new CreateStopStakingTransactionQuoteCommand(liquidityPool, walletAddress, amount, liquidate);
@@ -144,8 +139,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             // Arrange
             Address walletAddress = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address liquidityPool = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.00";
-            const string crsToSend = "0";
+            FixedDecimal amount = FixedDecimal.Parse("1.00");
+            FixedDecimal crsToSend = FixedDecimal.Zero;
             const bool liquidate = true;
 
             var command = new CreateStopStakingTransactionQuoteCommand(liquidityPool, walletAddress, amount, liquidate);

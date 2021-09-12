@@ -61,9 +61,9 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
         {
             LiquidityUsd = snapshot.Reserves.Usd;
             VolumeUsd = snapshot.Volume.Usd;
-            StakingWeight = ulong.Parse(snapshot.Staking.Weight);
+            StakingWeight = (ulong)snapshot.Staking.Weight;
             LockedCrs = snapshot.Reserves.Crs;
-            LockedSrc = UInt256.Parse(snapshot.Reserves.Src);
+            LockedSrc = snapshot.Reserves.Src;
             SetModifiedBlock(blockHeight);
         }
     }

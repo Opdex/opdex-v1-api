@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools
         /// <param name="walletAddress">The transaction sender's wallet address.</param>
         public CreateCollectMiningRewardsTransactionQuoteCommand(Address miningPool, Address walletAddress) : base (walletAddress)
         {
-            MiningPool = miningPool != Address.Empty ? miningPool : throw new ArgumentException("Mining pool address must be set.", nameof(miningPool));
+            MiningPool = miningPool != Address.Empty ? miningPool : throw new ArgumentNullException(nameof(miningPool), "Mining pool address must be set.");
         }
 
         public Address MiningPool { get; }

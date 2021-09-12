@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
@@ -27,13 +28,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
             _handler = new SelectAddressBalanceByOwnerAndTokenIdQueryHandler(_dbContext.Object, mapper);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentNullException_InvalidOwner(string owner)
+        [Fact]
+        public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentNullException_InvalidOwner()
         {
             // Arrange
+            Address owner = Address.Empty;
             const long tokenId = 2;
 
             void Act() => new SelectAddressBalanceByOwnerAndTokenIdQuery(owner, tokenId);
@@ -68,7 +67,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
                 Id = 1,
                 Owner = owner,
                 TokenId = tokenId,
-                Balance = "100",
+                Balance = 100,
                 CreatedBlock = 1,
                 ModifiedBlock = 2
             };

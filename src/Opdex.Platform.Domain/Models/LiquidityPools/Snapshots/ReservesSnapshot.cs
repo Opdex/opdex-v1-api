@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
 
@@ -10,17 +11,12 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         public ReservesSnapshot()
         {
             Crs = 0;
-            Src = "0";
+            Src = UInt256.Zero;
             Usd = 0.00m;
         }
 
-        public ReservesSnapshot(ulong reserveCrs, string reserveSrc, decimal reserveUsd)
+        public ReservesSnapshot(ulong reserveCrs, UInt256 reserveSrc, decimal reserveUsd)
         {
-            if (!reserveSrc.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(reserveSrc), $"{nameof(reserveSrc)} must be a numeric value.");
-            }
-
             if (reserveUsd < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(reserveUsd), $"{nameof(reserveUsd)} must be greater or equal to 0.");
@@ -32,7 +28,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         }
 
         public ulong Crs { get; private set; }
-        public string Src { get; private set; }
+        public UInt256 Src { get; private set; }
         public decimal Usd { get; private set; }
 
         internal void SetReserves(ReservesLog log, decimal crsUsd, decimal srcUsd, ulong srcSats)
@@ -42,7 +38,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Usd = CalculateReservesUsd(crsUsd, srcUsd, srcSats);
         }
 
-        internal void RefreshReserves(decimal crsUsd,  decimal srcUsd, ulong srcSats)
+        internal void RefreshReserves(decimal crsUsd, decimal srcUsd, ulong srcSats)
         {
             Usd = CalculateReservesUsd(crsUsd, srcUsd, srcSats);
         }

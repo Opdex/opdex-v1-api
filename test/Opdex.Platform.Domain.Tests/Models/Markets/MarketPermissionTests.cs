@@ -1,5 +1,6 @@
 using System;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Xunit;
 
@@ -7,13 +8,12 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
 {
     public class MarketPermissionTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateMarketPermission_InvalidUserAddress_ThrowArgumentNullException(string user)
+        [Fact]
+        public void CreateMarketPermission_InvalidUserAddress_ThrowArgumentNullException()
         {
             // Arrange
+            var user = Address.Empty;
+
             // Act
             void Act() => new MarketPermission(5, user, Permissions.Trade, true, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 500);
 
@@ -37,13 +37,12 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Permission must be valid.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateMarketPermission_InvalidBlameAddress_ThrowArgumentNullException(string blame)
+        [Fact]
+        public void CreateMarketPermission_InvalidBlameAddress_ThrowArgumentNullException()
         {
             // Arrange
+            var blame = Address.Empty;
+
             // Act
             void Act() => new MarketPermission(5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", Permissions.Trade, true, blame, 500);
 
@@ -75,12 +74,11 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             marketPermission.ModifiedBlock.Should().Be(createdBlock);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void Authorize_InvalidBlameAddress_ThrowArgumentNullException(string blame)
+        [Fact]
+        public void Authorize_InvalidBlameAddress_ThrowArgumentNullException()
         {
+            var blame = Address.Empty;
+
             // Arrange
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
@@ -121,12 +119,11 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             marketPermission.ModifiedBlock.Should().Be(modifiedBlock);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void Revoke_InvalidBlameAddress_ThrowArgumentNullException(string blame)
+        [Fact]
+        public void Revoke_InvalidBlameAddress_ThrowArgumentNullException()
         {
+            var blame = Address.Empty;
+
             // Arrange
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",

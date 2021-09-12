@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Governances;
 using System;
 using Xunit;
@@ -14,7 +15,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const long governanceId = 0;
 
             // Act
-            void Act() => new MiningGovernanceNomination(governanceId, 1, 2, true, "100", 100);
+            void Act() => new MiningGovernanceNomination(governanceId, 1, 2, true, 100, 100);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Governance id must be greater than 0.");
@@ -27,7 +28,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const long liquidityPoolId = 0;
 
             // Act
-            void Act() => new MiningGovernanceNomination(1, liquidityPoolId, 2, true, "100", 100);
+            void Act() => new MiningGovernanceNomination(1, liquidityPoolId, 2, true, 100, 100);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Liquidity pool id must be greater than 0.");
@@ -40,23 +41,10 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const long miningPoolId = 0;
 
             // Act
-            void Act() => new MiningGovernanceNomination(2, 1, miningPoolId, true, "100", 100);
+            void Act() => new MiningGovernanceNomination(2, 1, miningPoolId, true, 100, 100);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Mining pool id must be greater than 0.");
-        }
-
-        [Fact]
-        public void CreateNew_MiningGovernanceNomination_InvalidWeight_ThrowArgumentOutOfRangeException()
-        {
-            // Arrange
-            const string weight = "1.25";
-
-            // Act
-            void Act() => new MiningGovernanceNomination(1, 1, 2, true, weight, 100);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Weight must only contain numeric digits.");
         }
 
         [Fact]
@@ -67,7 +55,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const long liquidityPoolId = 1;
             const long miningPoolId = 2;
             const bool isNominated = true;
-            const string weight = "125";
+            UInt256 weight = 125;
             const ulong createdBlock = 100;
 
             // Act
@@ -91,7 +79,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const long liquidityPoolId = 1;
             const long miningPoolId = 2;
             const bool isNominated = true;
-            const string weight = "125";
+            UInt256 weight = 125;
             const ulong createdBlock = 100;
             const ulong modifiedBlock = 150;
 
@@ -117,7 +105,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const long liquidityPoolId = 1;
             const long miningPoolId = 2;
             const bool isNominated = true;
-            const string weight = "125";
+            UInt256 weight = 125;
             const ulong createdBlock = 100;
 
             var nomination = new MiningGovernanceNomination(governanceId, liquidityPoolId, miningPoolId, isNominated, weight, createdBlock);
@@ -140,9 +128,9 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const long liquidityPoolId = 1;
             const long miningPoolId = 2;
             const bool isNominated = true;
-            const string weight = "125";
+            UInt256 weight = 125;
             const ulong createdBlock = 100;
-            const string newWeight = "150";
+            UInt256 newWeight = 150;
 
             var nomination = new MiningGovernanceNomination(governanceId, liquidityPoolId, miningPoolId, isNominated, weight, createdBlock);
 

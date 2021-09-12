@@ -1,8 +1,11 @@
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
+
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     public class MiningGovernanceNominationCirrusDto
     {
-        public string StakingPool { get; set; }
-        public string Weight { get; set; }
+        public Address StakingPool { get; set; }
+        public UInt256 Weight { get; set; }
     }
 }

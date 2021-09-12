@@ -31,7 +31,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.Wallet
             var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(market.Id), cancellationToken);
 
             var command = new MakeWalletSwapTransactionCommand(request.WalletAddress, request.TokenIn, request.TokenOut, tokenInAmount,
-                                                               tokenOutAmount, request.TokenInExactAmount,  request.Tolerance, request.Recipient,
+                                                               tokenOutAmount, request.TokenInExactAmount, request.Tolerance, request.Recipient,
                                                                router.Address);
 
             return await _mediator.Send(command, cancellationToken);

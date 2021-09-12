@@ -1,12 +1,12 @@
-using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools
 {
     public abstract class StakeEventDto : TransactionEventDto
     {
-        public string Staker { get; set; }
-        public string Amount { get; set; }
-        public string TotalStaked { get; set; }
-        public string StakerBalance { get; set; }
+        public Address Staker { get; set; }
+        public FixedDecimal Amount { get; set; }
+        public FixedDecimal TotalStaked { get; set; }
+        public FixedDecimal StakerBalance { get; set; }
     }
 }

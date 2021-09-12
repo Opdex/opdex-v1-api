@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
 
@@ -48,7 +49,7 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                 [FromQuery] uint? take,
                                                                                 [FromQuery] string sortBy,
                                                                                 [FromQuery] string orderBy,
-                                                                                [FromQuery] IEnumerable<string> tokens,
+                                                                                [FromQuery] IEnumerable<Address> tokens,
                                                                                 CancellationToken cancellationToken)
         {
             var query = new GetTokensWithFilterQuery(_context.Market, lpToken, skip ?? 0, take ?? 10, sortBy, orderBy, tokens);
@@ -68,7 +69,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}")]
         [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<TokenResponseModel>> Token(string address, CancellationToken cancellationToken)
+        public async Task<ActionResult<TokenResponseModel>> Token([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var query = new GetTokenByAddressQuery(address, _context.Market);
 
@@ -88,7 +89,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns><see cref="TokenSnapshotHistoryResponseModel"/> with a list of historical data points.</returns>
         [HttpGet("{address}/history")]
         [ProducesResponseType(typeof(TokenSnapshotHistoryResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TokenSnapshotHistoryResponseModel>> TokenHistory(string address,
+        public async Task<ActionResult<TokenSnapshotHistoryResponseModel>> TokenHistory([FromRoute] Address address,
                                                                                         [FromQuery] string candleSpan,
                                                                                         [FromQuery] string timespan,
                                                                                         CancellationToken cancellationToken)

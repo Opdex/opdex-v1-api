@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
         /// <param name="pendingOwner">The address of the pending owner.</param>
         public CreateClaimPendingVaultOwnershipTransactionQuoteCommand(Address vault, Address pendingOwner) : base(pendingOwner)
         {
-            Vault = vault != Address.Empty ? vault : throw new ArgumentException("Vault address must be provided.", nameof(vault));
+            Vault = vault != Address.Empty ? vault : throw new ArgumentNullException("Vault address must be provided.", nameof(vault));
         }
 
         public Address Vault { get; }

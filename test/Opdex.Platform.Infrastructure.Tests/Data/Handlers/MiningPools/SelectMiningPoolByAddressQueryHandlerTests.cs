@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningPools;
@@ -29,7 +30,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
         [Fact]
         public async Task SelectMiningPoolByAddress_Success()
         {
-            const string address = "SomeAddress";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
             var expectedEntity = new MiningPoolEntity
             {
@@ -37,8 +38,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
                 LiquidityPoolId = 99,
                 Address = address,
                 MiningPeriodEndBlock = 4,
-                RewardPerBlock = "10",
-                RewardPerLpt = "1",
+                RewardPerBlock = 10,
+                RewardPerLpt = 1,
                 CreatedBlock = 1,
                 ModifiedBlock = 2
             };
@@ -63,7 +64,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
         [Fact]
         public void SelectMiningPoolByAddress_Throws_NotFoundException()
         {
-            const string address = "someAddress";
+            Address address = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";
 
             var command = new SelectMiningPoolByAddressQuery(address);
 
@@ -79,7 +80,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
         [Fact]
         public async Task SelectMiningPoolByAddress_ReturnsNull()
         {
-            const string address = "someAddress";
+            Address address = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";
             const bool findOrThrow = false;
 
             var command = new SelectMiningPoolByAddressQuery(address, findOrThrow);

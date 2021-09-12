@@ -3,6 +3,7 @@ using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Handlers.Transactions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
@@ -43,9 +44,9 @@ namespace Opdex.Platform.Application.Tests.Handlers.Transactions
         public async Task MakeTransactionQuoteCommandHandler_Sends_CallCirrusLocalCallSmartContractMethodCommand()
         {
             // Arrange
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "1.1";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Parse("1.1");
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 
@@ -77,17 +78,17 @@ namespace Opdex.Platform.Application.Tests.Handlers.Transactions
             const string result = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             const uint gasUsed = 10000;
 
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "0";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Zero;
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 
             var quoteRequest = new TransactionQuoteRequest(sender, to, amount, method, callback);
 
             dynamic txLog = new ExpandoObject();
-            txLog.owner = "Owner";
-            txLog.spender = "Spender";
+            txLog.owner = "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN";
+            txLog.spender = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";
             txLog.amount = "1";
             txLog.oldAmount = "0";
 

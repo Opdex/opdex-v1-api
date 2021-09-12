@@ -141,20 +141,20 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
             // Assert
             summary.LiquidityUsd.Should().Be(snapshot.Reserves.Usd);
             summary.VolumeUsd.Should().Be(snapshot.Volume.Usd);
-            summary.StakingWeight.Should().Be(ulong.Parse(snapshot.Staking.Weight));
+            summary.StakingWeight.Should().Be((ulong)snapshot.Staking.Weight);
             summary.LockedCrs.Should().Be(snapshot.Reserves.Crs);
-            summary.LockedSrc.Should().Be(UInt256.Parse(snapshot.Reserves.Src));
+            summary.LockedSrc.Should().Be(snapshot.Reserves.Src);
         }
 
         private static LiquidityPoolSnapshot GetLiquidityPoolSnapshot(long liquidityPoolId)
         {
             const long id = 12345;
             const long transactionCount = 1;
-            var reserves = new ReservesSnapshot(100_000_000, "200000000", 3.00m); // 1 crs, 2 src,
+            var reserves = new ReservesSnapshot(100_000_000, 200000000, 3.00m); // 1 crs, 2 src,
             var rewards = new RewardsSnapshot(5.00m, 1.00m);
-            var staking = new StakingSnapshot("50000000", 10.00m);
-            var volume = new VolumeSnapshot(100, "300", 515.23m);
-            var cost = new CostSnapshot(new OhlcBigIntSnapshot("10", "100", "9", "50"), new OhlcBigIntSnapshot("50", "125", "50", "100"));
+            var staking = new StakingSnapshot(50000000, 10.00m);
+            var volume = new VolumeSnapshot(100, 300, 515.23m);
+            var cost = new CostSnapshot(new OhlcBigIntSnapshot(10, 100, 9, 50), new OhlcBigIntSnapshot(50, 125, 50, 100));
             const SnapshotType snapshotType = SnapshotType.Daily;
             var startDate = new DateTime(2021, 6, 21);
             var endDate = new DateTime(2021, 6, 21, 23, 59, 59);

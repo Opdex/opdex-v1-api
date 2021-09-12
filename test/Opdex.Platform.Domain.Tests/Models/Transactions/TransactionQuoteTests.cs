@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.Transactions;
@@ -15,7 +16,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         public void CreateNew_TransactionQuote_InvalidGasUsed_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            const string result = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            Address result = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             const uint gasUsed = 0;
             var request = GetTransactionQuoteRequest();
 
@@ -30,7 +31,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         public void CreateNew_TransactionQuote_InvalidRequest_ThrowArgumentNullException()
         {
             // Arrange
-            const string result = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            Address result = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             const uint gasUsed = 10000;
             TransactionQuoteRequest request = null;
 
@@ -50,11 +51,11 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             const uint gasUsed = 10000;
             var request = GetTransactionQuoteRequest();
 
-            const string address = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address address = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             const int sortOrder = 1;
             dynamic txLog = new ExpandoObject();
-            txLog.owner = "Owner";
-            txLog.spender = "Spender";
+            txLog.owner = "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN";
+            txLog.spender = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";
             txLog.amount = "1";
             txLog.oldAmount = "0";
 
@@ -90,9 +91,9 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
 
         private static TransactionQuoteRequest GetTransactionQuoteRequest()
         {
-            const string sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            const string to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const string amount = "0";
+            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+            FixedDecimal amount = FixedDecimal.Zero;
             const string method = "Swap";
             const string callback = "https://dev-api.opdex.com/transactions";
 

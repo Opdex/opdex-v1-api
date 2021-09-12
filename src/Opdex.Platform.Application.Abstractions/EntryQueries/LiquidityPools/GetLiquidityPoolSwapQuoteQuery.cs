@@ -1,39 +1,27 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
 {
-    public class GetLiquidityPoolSwapQuoteQuery : IRequest<string>
+    public class GetLiquidityPoolSwapQuoteQuery : IRequest<FixedDecimal>
     {
-        public GetLiquidityPoolSwapQuoteQuery(string tokenIn, string tokenOut, string tokenInAmount, string tokenOutAmount, string market)
+        public GetLiquidityPoolSwapQuoteQuery(Address tokenIn, Address tokenOut, FixedDecimal tokenInAmount, FixedDecimal tokenOutAmount, Address market)
         {
-            if (!tokenIn.HasValue() || !tokenOut.HasValue())
+            if (tokenIn == Address.Empty && tokenOut == Address.Empty)
             {
                 throw new ArgumentException("The token in or token out address must not be null.");
             }
 
-            if (!market.HasValue())
+            if (market == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(market));
             }
 
             // Expected either or, not both
-            if (!(tokenInAmount.HasValue() ^ tokenOutAmount.HasValue()))
+            if (!(tokenInAmount > FixedDecimal.Zero ^ tokenOutAmount > FixedDecimal.Zero))
             {
                 throw new ArgumentException("Only token in amount or token out amount can have a value.");
-            }
-
-            // Check hasValue in addition to isValidDecimalNumber enforcing we only check and throw when necessary
-            if (tokenInAmount.HasValue() && !tokenInAmount.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Token in amount must be a valid decimal number.", nameof(tokenInAmount));
-            }
-
-            // Check hasValue in addition to isValidDecimalNumber enforcing we only check and throw when necessary
-            if (tokenOutAmount.HasValue() && !tokenOutAmount.IsValidDecimalNumber())
-            {
-                throw new ArgumentException("Token out amount must be a valid decimal number.", nameof(tokenOutAmount));
             }
 
             TokenIn = tokenIn;
@@ -43,10 +31,10 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
             Market = market;
         }
 
-        public string TokenIn { get; }
-        public string TokenOut { get; }
-        public string TokenInAmount { get; }
-        public string TokenOutAmount { get; }
-        public string Market { get; }
+        public Address TokenIn { get; }
+        public Address TokenOut { get; }
+        public FixedDecimal TokenInAmount { get; }
+        public FixedDecimal TokenOutAmount { get; }
+        public Address Market { get; }
     }
 }

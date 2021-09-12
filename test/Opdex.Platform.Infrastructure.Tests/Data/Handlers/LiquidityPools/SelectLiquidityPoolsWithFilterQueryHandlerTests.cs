@@ -36,17 +36,16 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
                 SrcTokenId = 2,
                 LpTokenId = 5,
                 MarketId = marketId,
-                Address = "SomeAddress",
+                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
                 CreatedBlock = 1,
                 ModifiedBlock = 1
             };
 
-            var responseList = new [] { expectedEntity }.AsEnumerable();
+            var responseList = new[] { expectedEntity }.AsEnumerable();
 
             var command = new SelectLiquidityPoolsWithFilterQuery(marketId);
 
-            _dbContext.Setup(db => db.ExecuteQueryAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(responseList));
+            _dbContext.Setup(db => db.ExecuteQueryAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>())).ReturnsAsync(responseList);
 
             var results = await _handler.Handle(command, CancellationToken.None);
 

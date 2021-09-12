@@ -34,18 +34,18 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
             var expectedEntity = new TokenEntity
             {
                 Id = 123454,
-                Address = "SomeAddress",
+                Address = "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK",
                 IsLpt = true,
-                Name = "SomeAddress",
+                Name = "SomeName",
                 Symbol = "SomeSymbol",
                 Decimals = 8,
                 Sats = 1000000000,
-                TotalSupply = "987656789098765",
+                TotalSupply = 987656789098765,
                 CreatedBlock = 1,
                 ModifiedBlock = 1
             };
 
-            var responseList = new List<TokenEntity> {expectedEntity}.AsEnumerable();
+            var responseList = new List<TokenEntity> { expectedEntity }.AsEnumerable();
 
             var command = new SelectTokensWithFilterQuery(marketId);
 

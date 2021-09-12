@@ -29,7 +29,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
         {
             _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
             _mediatorMock = new Mock<IMediator>();
-            _config = new OpdexConfiguration {ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions"};
+            _config = new OpdexConfiguration { ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions" };
             _handler = new CreateSetStandardMarketOwnershipTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);
         }
 
@@ -57,8 +57,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             Address currentOwner = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address newOwner = "PNEPCzpKSXns3jWtVfkF7WJeZKdNeEZTBK";
             FixedDecimal amount = 50;
-
-            const string crsToSend = "0";
+            FixedDecimal crsToSend = FixedDecimal.Zero;
 
             var command = new CreateSetStandardMarketOwnershipTransactionQuoteCommand(market, currentOwner, newOwner);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -97,7 +96,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             var command = new CreateSetStandardMarketOwnershipTransactionQuoteCommand(market, currentOwner, newOwner);
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var expectedRequest = new TransactionQuoteRequest(market, currentOwner, "0", StandardMarketConstants.Methods.SetPendingOwnership, _config.WalletTransactionCallback);
+            var expectedRequest = new TransactionQuoteRequest(market, currentOwner, FixedDecimal.Zero, StandardMarketConstants.Methods.SetPendingOwnership, _config.WalletTransactionCallback);
 
             var expectedQuote = new TransactionQuote("PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjQf", null, 23800, null, expectedRequest);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedQuote);

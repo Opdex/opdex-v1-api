@@ -1,14 +1,16 @@
 using MediatR;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
 {
     public class RetrieveLiquidityPoolsWithFilterQuery : IRequest<IEnumerable<LiquidityPool>>
     {
         public RetrieveLiquidityPoolsWithFilterQuery(long marketId, bool? stakingEnabled = null, bool? miningEnabled = null, bool? nominated = null,
-                                                     uint skip = 0, uint take = 0, string sortBy = null, string orderBy = null, IEnumerable<string> pools = null)
+                                                     uint skip = 0, uint take = 0, string sortBy = null, string orderBy = null, IEnumerable<Address> pools = null)
         {
             if (marketId < 1)
             {
@@ -23,7 +25,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
             Take = take;
             SortBy = sortBy;
             OrderBy = orderBy;
-            Pools = pools;
+            Pools = pools ?? Enumerable.Empty<Address>();
         }
 
         public long MarketId { get; }
@@ -34,6 +36,6 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
         public uint Take { get; }
         public string SortBy { get; }
         public string OrderBy { get; }
-        public IEnumerable<string> Pools { get; }
+        public IEnumerable<Address> Pools { get; }
     }
 }

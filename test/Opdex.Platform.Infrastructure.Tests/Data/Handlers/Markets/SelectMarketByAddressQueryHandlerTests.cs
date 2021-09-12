@@ -30,13 +30,13 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public async Task SelectMarketByAddress_Success()
         {
-            Address address = "PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
             var expectedEntity = new MarketEntity
             {
                 Id = 123454,
-                Address = "PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3",
-                Owner = "Owner",
+                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
+                Owner = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT",
                 AuthPoolCreators = false,
                 AuthProviders = true,
                 AuthTraders = true,
@@ -68,7 +68,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public void SelectMarketByAddress_Throws_NotFoundException()
         {
-            Address address = "PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
             var command = new SelectMarketByAddressQuery(address);
 
@@ -84,7 +84,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public async Task SelectMarketByAddress_ReturnsNull()
         {
-            Address address = "PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3";
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             const bool findOrThrow = false;
 
             var command = new SelectMarketByAddressQuery(address, findOrThrow);

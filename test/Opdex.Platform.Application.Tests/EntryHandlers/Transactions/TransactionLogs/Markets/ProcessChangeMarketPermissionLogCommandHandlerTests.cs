@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
@@ -126,11 +127,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
                                                   500,
                                                   505));
 
-        private ExpandoObject SetupChangeMarketPermissionData(string address, Permissions permission, bool isAuthorized)
+        private ExpandoObject SetupChangeMarketPermissionData(Address address, Permissions permission, bool isAuthorized)
         {
             dynamic data = new ExpandoObject();
-            data.address = address;
-            data.permission = permission;
+            data.address = address.ToString();
+            data.permission = (byte)permission;
             data.isAuthorized = isAuthorized;
             return data;
         }

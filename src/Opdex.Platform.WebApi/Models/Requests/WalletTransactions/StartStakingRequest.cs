@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
@@ -8,6 +9,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// The amount of tokens to stake.
         /// </summary>
         [Required]
-        public string Amount { get; set; }
+        public FixedDecimal Amount { get; set; }
     }
 }

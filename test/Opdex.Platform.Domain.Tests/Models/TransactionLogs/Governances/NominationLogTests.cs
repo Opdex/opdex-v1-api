@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
 using System;
 using System.Dynamic;
@@ -65,17 +66,18 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Governances
             void Act() => new NominationLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
         public void NominationLog_ValidArguments_SetProperties()
         {
             // Arrange
+            UInt256 weight = 32853464;
             dynamic txLog = new ExpandoObject();
             txLog.stakingPool = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj3";
             txLog.miningPool = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj8";
-            txLog.weight = "32853464";
+            txLog.weight = weight.ToString();
 
             // Act
             var log = new NominationLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
@@ -83,7 +85,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Governances
             // Assert
             log.StakingPool.Should().Be(txLog.stakingPool);
             log.MiningPool.Should().Be(txLog.miningPool);
-            log.Weight.Should().Be(txLog.weight);
+            log.Weight.Should().Be(weight);
         }
     }
 }

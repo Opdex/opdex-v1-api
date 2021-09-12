@@ -1,31 +1,32 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
 {
     public class EnableMiningLog : TransactionLog
     {
-        public EnableMiningLog(dynamic log, string address, int sortOrder)
+        public EnableMiningLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.EnableMiningLog, address, sortOrder)
         {
-            string amount = log?.amount;
-            string rewardRate = log?.rewardRate;
+            UInt256 amount = UInt256.Parse((string)log?.amount);
+            UInt256 rewardRate = UInt256.Parse((string)log?.rewardRate);
             ulong miningPeriodEndBlock = log?.miningPeriodEndBlock;
 
-            if (!amount.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must only contain numeric digits.");
-            }
-
-            if (!rewardRate.IsNumeric())
-            {
-                throw new ArgumentOutOfRangeException(nameof(rewardRate), "Reward rate must only contain numeric digits.");
-            }
-
-            if (miningPeriodEndBlock < 1)
+            if (miningPeriodEndBlock == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(miningPeriodEndBlock), "Mining period end block must be greater than 0.");
+            }
+
+            if (amount == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
+            }
+
+            if (rewardRate == UInt256.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(rewardRate), "Reward rate must be greater than 0.");
             }
 
             Amount = amount;
@@ -33,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             MiningPeriodEndBlock = miningPeriodEndBlock;
         }
 
-        public EnableMiningLog(long id, long transactionId, string address, int sortOrder, string details)
+        public EnableMiningLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.EnableMiningLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -42,14 +43,14 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             MiningPeriodEndBlock = logDetails.MiningPeriodEndBlock;
         }
 
-        public string Amount { get; }
-        public string RewardRate { get; }
+        public UInt256 Amount { get; }
+        public UInt256 RewardRate { get; }
         public ulong MiningPeriodEndBlock { get; }
 
         private struct LogDetails
         {
-            public string Amount { get; set; }
-            public string RewardRate { get; set; }
+            public UInt256 Amount { get; set; }
+            public UInt256 RewardRate { get; set; }
             public ulong MiningPeriodEndBlock { get; set; }
         }
 

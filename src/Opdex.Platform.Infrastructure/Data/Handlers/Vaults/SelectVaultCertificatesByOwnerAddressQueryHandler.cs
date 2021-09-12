@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
@@ -48,12 +49,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
         private sealed class SqlParams
         {
-            internal SqlParams(string owner)
+            internal SqlParams(Address owner)
             {
                 Owner = owner;
             }
 
-            public string Owner { get; }
+            public Address Owner { get; }
         }
     }
 }

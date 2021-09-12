@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,7 +17,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
     public class CreateCreateLiquidityPoolTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateCreateLiquidityPoolTransactionQuoteCommand>
     {
         private const string MethodName = MarketConstants.Methods.CreateLiquidityPool;
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
 
         public CreateCreateLiquidityPoolTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                        IMediator mediator, OpdexConfiguration config)
@@ -27,7 +28,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
         public override async Task<TransactionQuoteDto> Handle(CreateCreateLiquidityPoolTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
             // ensure market exists, if not throw to return 404
-            _ = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market.ToString()), cancellationToken);
+            _ = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market), cancellationToken);
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {

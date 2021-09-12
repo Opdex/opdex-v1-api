@@ -11,7 +11,6 @@ using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
 using System.Threading;
@@ -22,7 +21,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
     public class CreateRemoveLiquidityTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateRemoveLiquidityTransactionQuoteCommand>
     {
         private const string MethodName = RouterConstants.Methods.RemoveLiquidity;
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
 
         public CreateRemoveLiquidityTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                    IMediator mediator, OpdexConfiguration config)
@@ -32,19 +31,19 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
 
         public override async Task<TransactionQuoteDto> Handle(CreateRemoveLiquidityTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
-            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool.ToString()), cancellationToken);
+            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool), cancellationToken);
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId), cancellationToken);
             var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(pool.MarketId), cancellationToken);
 
-            var amountCrsMin = ulong.Parse(request.AmountCrsMin.ToSatoshis(TokenConstants.Cirrus.Decimals));
-            var amountSrcMin = UInt256.Parse(request.AmountSrcMin.ToSatoshis(token.Decimals));
-            var amountLpt = UInt256.Parse(request.AmountLpt.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals));
+            var amountCrsMin = request.AmountCrsMin.ToSatoshis(TokenConstants.Cirrus.Decimals);
+            var amountSrcMin = request.AmountSrcMin.ToSatoshis(token.Decimals);
+            var amountLpt = request.AmountLpt.ToSatoshis(TokenConstants.LiquidityPoolToken.Decimals);
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Token", new Address(token.Address)),
+                new TransactionQuoteRequestParameter("Token", token.Address),
                 new TransactionQuoteRequestParameter("OLPT Amount", amountLpt),
-                new TransactionQuoteRequestParameter("Minimum CRS Amount", amountCrsMin),
+                new TransactionQuoteRequestParameter("Minimum CRS Amount", (ulong)amountCrsMin),
                 new TransactionQuoteRequestParameter("Minimum SRC Amount", amountSrcMin),
                 new TransactionQuoteRequestParameter("Recipient", request.Recipient),
                 new TransactionQuoteRequestParameter("Deadline", request.Deadline)

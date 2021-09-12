@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
@@ -27,20 +28,20 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
-        
+
         public SelectMarketRouterByAddressQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
-        
+
         public async Task<MarketRouter> Handle(SelectMarketRouterByAddressQuery request, CancellationToken cancellationToken)
         {
             var queryParams = new SqlParams(request.RouterAddress);
-            
-            var command = DatabaseQuery.Create(SqlCommand,  queryParams, cancellationToken);
-            
-            var result =  await _context.ExecuteFindAsync<MarketRouterEntity>(command);
+
+            var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
+
+            var result = await _context.ExecuteFindAsync<MarketRouterEntity>(command);
 
             if (request.FindOrThrow && result == null)
             {
@@ -49,15 +50,15 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
             return result == null ? null : _mapper.Map<MarketRouter>(result);
         }
-        
+
         private sealed class SqlParams
         {
-            internal SqlParams(string address)
+            internal SqlParams(Address address)
             {
                 Address = address;
             }
 
-            public string Address { get; }
+            public Address Address { get; }
         }
     }
 }

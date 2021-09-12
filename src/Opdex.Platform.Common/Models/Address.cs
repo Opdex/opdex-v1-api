@@ -7,17 +7,19 @@ namespace Opdex.Platform.Common.Models
     {
         private string Value { get; }
 
-        public static Address Empty => new Address("");
+        public static readonly Address Cirrus = new Address("CRS");
+
+        public static readonly Address Empty = new Address(default);
 
         public Address(string value)
         {
             // If provided, should be > 30 but < 42 characters. 42 for potential ETH addresses if ever necessary.
-            if (value.HasValue() && (value.Length < 30 || value.Length > 42))
+            if (value.HasValue() & value != "CRS" && (value.Length < 30 || value.Length > 42))
             {
                 throw new ArgumentException("Invalid address.");
             }
 
-            Value = value.HasValue() ? value : "";
+            Value = value.HasValue() ? value : default;
         }
 
         public static bool operator ==(Address a, Address b)
@@ -47,7 +49,7 @@ namespace Opdex.Platform.Common.Models
 
         public override string ToString()
         {
-            return Value;
+            return Value ?? "";
         }
 
         public override bool Equals(object obj)

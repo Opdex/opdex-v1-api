@@ -1,6 +1,5 @@
 using MediatR;
-using Microsoft.Extensions.Logging;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
@@ -15,13 +14,10 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
         : IRequestHandler<CallCirrusGetOpdexLiquidityPoolByAddressQuery, LiquidityPool>
     {
         private readonly ISmartContractsModule _smartContractsModule;
-        private readonly ILogger<CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler> _logger;
 
-        public CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler(ISmartContractsModule smartContractsModule,
-            ILogger<CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler> logger)
+        public CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler(ISmartContractsModule smartContractsModule)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<LiquidityPool> Handle(CallCirrusGetOpdexLiquidityPoolByAddressQuery request, CancellationToken cancellationToken)
@@ -31,7 +27,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
             var token = (string)tokenResponse.Return;
 
             // Todo: Should return a LiquidityPoolContractSummary response
-            return !token.HasValue() ? null : new LiquidityPool(request.Address, token, 1);
+            return token == Address.Empty ? null : new LiquidityPool(request.Address, token, 1);
         }
     }
 }

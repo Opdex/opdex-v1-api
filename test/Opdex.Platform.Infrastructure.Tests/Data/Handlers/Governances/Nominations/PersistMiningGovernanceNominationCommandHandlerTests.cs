@@ -32,7 +32,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
             // Arrange
             const long expectedId = 1234567;
 
-            var miningGovernance = new MiningGovernanceNomination(3, 4, 5, true, "1000000", 1);
+            var miningGovernance = new MiningGovernanceNomination(3, 4, 5, true, 1000000, 1);
             var command = new PersistMiningGovernanceNominationCommand(miningGovernance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.Is<DatabaseQuery>(q => q.Sql.Contains("INSERT"))))
@@ -51,7 +51,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
             // Arrange
             const long expectedId = 1234567;
 
-            var miningGovernance = new MiningGovernanceNomination(expectedId, 3, 4, 5, true, "1000000", 1, 2);
+            var miningGovernance = new MiningGovernanceNomination(expectedId, 3, 4, 5, true, 1000000, 1, 2);
             var command = new PersistMiningGovernanceNominationCommand(miningGovernance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.Is<DatabaseQuery>(q => q.Sql.Contains("UPDATE"))))
@@ -68,7 +68,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
         public async Task PersistMiningGovernanceNomination_Fail()
         {
             // Arrange
-            var miningGovernance = new MiningGovernanceNomination(3, 4, 5, true, "1000000", 1);
+            var miningGovernance = new MiningGovernanceNomination(3, 4, 5, true, 1000000, 1);
             var command = new PersistMiningGovernanceNominationCommand(miningGovernance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))

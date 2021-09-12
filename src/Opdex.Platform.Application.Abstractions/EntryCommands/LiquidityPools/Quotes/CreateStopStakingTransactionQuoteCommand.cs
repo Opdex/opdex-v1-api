@@ -18,16 +18,16 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         /// <param name="amount">The amount of tokens to stop staking with.</param>
         /// <param name="liquidate">Flag indicating if rewarded OLPT tokens should be liquidated into the pool's underlying reserve tokens.</param>
         /// <exception cref="ArgumentException">Invalid amount as a decimal string.</exception>
-        public CreateStopStakingTransactionQuoteCommand(Address liquidityPool, Address wallet, string amount, bool liquidate) : base(wallet)
+        public CreateStopStakingTransactionQuoteCommand(Address liquidityPool, Address wallet, FixedDecimal amount, bool liquidate) : base(wallet)
         {
             if (liquidityPool == Address.Empty)
             {
-                throw new ArgumentException("Liquidity pool must be provided.", nameof(liquidityPool));
+                throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool must be provided.");
             }
 
-            if (!amount.IsValidDecimalNumber())
+            if (amount <= FixedDecimal.Zero)
             {
-                throw new ArgumentException("Amount must be a valid decimal number.", nameof(amount));
+                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
             }
 
             LiquidityPool = liquidityPool;
@@ -36,7 +36,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         }
 
         public Address LiquidityPool { get; }
-        public string Amount { get; }
+        public FixedDecimal Amount { get; }
         public bool Liquidate { get; }
     }
 }

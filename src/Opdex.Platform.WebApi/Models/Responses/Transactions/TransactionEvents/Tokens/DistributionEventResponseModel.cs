@@ -1,11 +1,13 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Tokens
 {
     public class DistributionEventResponseModel : TransactionEventResponseModel
     {
-        public string VaultAmount { get; set; }
-        public string GovernanceAmount { get; set; }
+        public FixedDecimal VaultAmount { get; set; }
+        public FixedDecimal GovernanceAmount { get; set; }
         public uint PeriodIndex { get; set; }
-        public string TotalSupply { get; set; }
+        public FixedDecimal TotalSupply { get; set; }
         public ulong NextDistributionBlock { get; set; }
     }
 }

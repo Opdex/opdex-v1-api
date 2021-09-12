@@ -1,10 +1,12 @@
+using Opdex.Platform.Common.Models.UInt;
+
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC
 {
     public class OhlcBigIntEntity
     {
-        public string Open { get; set; }
-        public string High { get; set; }
-        public string Low { get; set; }
-        public string Close { get; set; }
+        public UInt256 Open { get; set; }
+        public UInt256 High { get; set; }
+        public UInt256 Low { get; set; }
+        public UInt256 Close { get; set; }
     }
 }

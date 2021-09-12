@@ -7,6 +7,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
 
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenAddress), cancellationToken);
 
-            var market = token.Address == TokenConstants.Cirrus.Address
+            var market = token.Address == Address.Cirrus
                     ? null
                     : await _mediator.Send(new RetrieveMarketByAddressQuery(request.MarketAddress), cancellationToken);
 

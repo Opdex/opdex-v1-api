@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,7 +17,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
     public class CreateRevokeVaultCertificatesTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateRevokeVaultCertificatesTransactionQuoteCommand>
     {
         private const string MethodName = VaultConstants.Methods.RevokeCertificates;
-        private const string CrsToSend = "0";
+        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
 
         public CreateRevokeVaultCertificatesTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                                            IMediator mediator,

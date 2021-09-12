@@ -1,6 +1,8 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Xunit;
@@ -94,7 +96,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             void Act() => new SwapLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Theory]
@@ -119,22 +121,24 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             void Act() => new SwapLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
         public void CreatesSwapLog_Success()
         {
-            const string address = "Address";
+            UInt256 amountSrcIn = 876543;
+            UInt256 amountSrcOut = 0;
+            Address address = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
             const int sortOrder = 1;
 
             dynamic txLog = new ExpandoObject();
-            txLog.sender = "Sender";
-            txLog.to = "To";
+            txLog.sender = "PV82zusMGuAQCmv3fbibN18s3kd6YALBTx";
+            txLog.to = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW";
             txLog.amountCrsIn = 0ul;
-            txLog.amountSrcIn = "876543";
+            txLog.amountSrcIn = amountSrcIn.ToString();
             txLog.amountCrsOut = 2342323ul;
-            txLog.amountSrcOut = "0";
+            txLog.amountSrcOut = amountSrcOut.ToString();
 
             var log = new SwapLog(txLog, address, sortOrder);
 
@@ -146,9 +150,9 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.LiquidityPools
             log.Sender.Should().Be(txLog.sender);
             log.To.Should().Be(txLog.to);
             log.AmountCrsIn.Should().Be(txLog.amountCrsIn);
-            log.AmountSrcIn.Should().Be(txLog.amountSrcIn);
+            log.AmountSrcIn.Should().Be(amountSrcIn);
             log.AmountCrsOut.Should().Be(txLog.amountCrsOut);
-            log.AmountSrcOut.Should().Be(txLog.amountSrcOut);
+            log.AmountSrcOut.Should().Be(amountSrcOut);
         }
     }
 }

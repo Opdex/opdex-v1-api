@@ -1,6 +1,7 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Xunit;
 
@@ -44,23 +45,25 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.MiningPools
             void Act() => new CollectMiningRewardsLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act);
+            Assert.ThrowsAny<Exception>(Act);
         }
 
         [Fact]
         public void CollectMiningRewardsLog_ValidArguments_SetProperties()
         {
             // Arrange
+            UInt256 amount = 332432;
+
             dynamic txLog = new ExpandoObject();
             txLog.miner = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj3";
-            txLog.amount = "234091833";
+            txLog.amount = amount.ToString();
 
             // Act
             var log = new CollectMiningRewardsLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Assert
             log.Miner.Should().Be(txLog.miner);
-            log.Amount.Should().Be(txLog.amount);
+            log.Amount.Should().Be(amount);
         }
     }
 }

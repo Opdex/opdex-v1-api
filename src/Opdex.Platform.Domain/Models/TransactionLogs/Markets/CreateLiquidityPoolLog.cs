@@ -1,23 +1,23 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
 {
     public class CreateLiquidityPoolLog : TransactionLog
     {
-        public CreateLiquidityPoolLog(dynamic log, string address, int sortOrder)
+        public CreateLiquidityPoolLog(dynamic log, Address address, int sortOrder)
             : base(TransactionLogType.CreateLiquidityPoolLog, address, sortOrder)
         {
-            string token = log?.token;
-            string pool = log?.pool;
+            Address token = (string)log?.token;
+            Address pool = (string)log?.pool;
 
-            if (!token.HasValue())
+            if (token == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(token), "Token address must be set.");
             }
 
-            if (!pool.HasValue())
+            if (pool == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(pool), "Pool address must be set.");
             }
@@ -26,7 +26,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
             Pool = pool;
         }
 
-        public CreateLiquidityPoolLog(long id, long transactionId, string address, int sortOrder, string details)
+        public CreateLiquidityPoolLog(long id, long transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.CreateLiquidityPoolLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
@@ -34,13 +34,13 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
             Pool = logDetails.Pool;
         }
 
-        public string Token { get; }
-        public string Pool { get; }
+        public Address Token { get; }
+        public Address Pool { get; }
 
         private struct LogDetails
         {
-            public string Token { get; set; }
-            public string Pool { get; set; }
+            public Address Token { get; set; }
+            public Address Pool { get; set; }
         }
 
         private static LogDetails DeserializeLogDetails(string details)

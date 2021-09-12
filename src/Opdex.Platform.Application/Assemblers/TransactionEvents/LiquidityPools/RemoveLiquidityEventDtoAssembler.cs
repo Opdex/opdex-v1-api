@@ -30,12 +30,12 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents.LiquidityPools
                 TransactionId = log.TransactionId,
                 SortOrder = log.SortOrder,
                 Contract = log.Contract,
-                AmountCrs = log.AmountCrs.ToString().InsertDecimal(TokenConstants.Cirrus.Decimals),
-                AmountSrc = log.AmountSrc.InsertDecimal(srcToken.Decimals),
-                AmountLpt = log.AmountLpt.InsertDecimal(TokenConstants.LiquidityPoolToken.Decimals),
+                AmountCrs = log.AmountCrs.ToDecimal(TokenConstants.Cirrus.Decimals),
+                AmountSrc = log.AmountSrc.ToDecimal(srcToken.Decimals),
+                AmountLpt = log.AmountLpt.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals),
                 TokenLp = log.Contract,
                 TokenSrc = srcToken.Address,
-                TokenLpTotalSupply = log.TotalSupply
+                TokenLpTotalSupply = log.TotalSupply.ToDecimal(TokenConstants.LiquidityPoolToken.Decimals)
             };
         }
     }

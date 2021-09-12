@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.Transactions;
@@ -19,8 +20,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             // Arrange
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;
-            const string from = "From";
-            const string to = "To";
+            Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";
+            Address to = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW";
             const bool success = true;
 
             // Act
@@ -30,17 +31,15 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Transaction hash must be set.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateNew_Transaction_InvalidFrom_ThrowArgumentNullException(string from)
+        [Fact]
+        public void CreateNew_Transaction_InvalidFrom_ThrowArgumentNullException()
         {
             // Arrange
+            Address from = Address.Empty;
             const string txHash = "TxHash";
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;
-            const string to = "To";
+            Address to = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW";
             const bool success = true;
 
             // Act
@@ -50,17 +49,15 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("From address must be set.");
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateNew_Transaction_InvalidTo_ThrowArgumentNullException(string to)
+        [Fact]
+        public void CreateNew_Transaction_InvalidTo_ThrowArgumentNullException()
         {
             // Arrange
+            Address to = Address.Empty;
             const string txHash = "TxHash";
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;
-            const string from = "From";
+            Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";
             const bool success = true;
 
             // Act
@@ -77,8 +74,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             const string txHash = "TxHash";
             const ulong blockHeight = 0;
             const int gasUsed = 90000;
-            const string from = "From";
-            const string to = "To";
+            Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";
+            Address to = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW";
             const bool success = true;
 
             // Act
@@ -95,8 +92,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             const string txHash = "TxHash";
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 0;
-            const string from = "From";
-            const string to = "To";
+            Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";
+            Address to = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW";
             const bool success = true;
 
             // Act
@@ -112,8 +109,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             const string txHash = "TxHash";
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;
-            const string from = "From";
-            const string to = "To";
+            Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";
+            Address to = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW";
             const bool success = true;
 
             dynamic reservesLog = new System.Dynamic.ExpandoObject();
@@ -122,7 +119,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
 
             var logs = new List<TransactionLog>
             {
-                new ReservesLog(reservesLog, "Address", 0)
+                new ReservesLog(reservesLog, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 0)
             };
 
             var receipt = new Transaction(txHash, blockHeight, gasUsed, from, to, success, null, logs);
@@ -132,7 +129,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             receipt.GasUsed.Should().Be(gasUsed);
             receipt.From.Should().Be(from);
             receipt.To.Should().Be(to);
-            receipt.NewContractAddress.Should().BeNull();
+            receipt.NewContractAddress.Should().Be(Address.Empty);
             receipt.Success.Should().Be(success);
             receipt.Logs.Should().BeEquivalentTo(logs);
         }
@@ -144,10 +141,10 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             const string txHash = "TxHash";
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;
-            const string from = "From";
-            const string to = null;
+            Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";
+            Address to = null;
             const bool success = true;
-            const string newContractAddress = "newContractAddress";
+            Address newContractAddress = "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM";
 
             var receipt = new Transaction(id, txHash, blockHeight, gasUsed, from, to, success, newContractAddress);
 

@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
 using System;
@@ -6,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Tra
 {
     public class ProcessRewardMiningPoolLogCommand : ProcessTransactionLogCommand
     {
-        public ProcessRewardMiningPoolLogCommand(TransactionLog log, string sender, ulong blockHeight) : base(sender, blockHeight)
+        public ProcessRewardMiningPoolLogCommand(TransactionLog log, Address sender, ulong blockHeight) : base(sender, blockHeight)
         {
             Log = log as RewardMiningPoolLog ?? throw new ArgumentNullException(nameof(log));
         }

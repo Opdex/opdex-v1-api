@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
@@ -46,8 +47,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Token
 
             localCall.MethodName = "get_TotalSupply";
             var totalSupplyResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-            var totalSupply = totalSupplyResponse.DeserializeValue<string>();
-            if (!totalSupply.HasValue()) return null;
+            var totalSupply = totalSupplyResponse.DeserializeValue<UInt256>();
 
             var isLpt = symbol == TokenConstants.LiquidityPoolToken.Symbol && name == TokenConstants.LiquidityPoolToken.Name;
 

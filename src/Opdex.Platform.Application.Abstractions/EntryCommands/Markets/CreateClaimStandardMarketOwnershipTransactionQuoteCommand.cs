@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets
         /// <param name="pendingOwner">The address of the pending owner.</param>
         public CreateClaimStandardMarketOwnershipTransactionQuoteCommand(Address market, Address pendingOwner) : base(pendingOwner)
         {
-            Market = market != Address.Empty ? market : throw new ArgumentNullException("Market address must be set.");
+            Market = market != Address.Empty ? market : throw new ArgumentNullException(nameof(market), "Market address must be set.");
         }
 
         public Address Market { get; }

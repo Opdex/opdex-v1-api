@@ -1,15 +1,15 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.Governances;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Governances
 {
     public class GetMiningGovernanceByAddressQuery : IRequest<MiningGovernanceDto>
     {
-        public GetMiningGovernanceByAddressQuery(string address)
+        public GetMiningGovernanceByAddressQuery(Address address)
         {
-            if (!address.HasValue())
+            if (address == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(address), $"{nameof(address)} must not be null or empty.");
             }
@@ -17,6 +17,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Governances
             Address = address;
         }
 
-        public string Address { get; }
+        public Address Address { get; }
     }
 }

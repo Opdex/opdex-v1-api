@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
@@ -147,16 +148,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses
 
         private sealed class SqlParams
         {
-            public SqlParams(long positionId, string address, IEnumerable<string> liquidityPools, IEnumerable<string> miningPools)
+            public SqlParams(long positionId, Address address, IEnumerable<Address> liquidityPools, IEnumerable<Address> miningPools)
             {
                 PositionId = positionId;
                 Address = address;
-                LiquidityPools = liquidityPools;
-                MiningPools = miningPools;
+                LiquidityPools = liquidityPools.Select(pool => pool.ToString());
+                MiningPools = miningPools.Select(pool => pool.ToString());
             }
 
             public long PositionId { get; }
-            public string Address { get; }
+            public Address Address { get; }
             public IEnumerable<string> LiquidityPools { get; }
             public IEnumerable<string> MiningPools { get; }
         }

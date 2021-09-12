@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +10,16 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 {
     public class MiningPositionsCursor : Cursor<long>
     {
-        public MiningPositionsCursor(IEnumerable<string> liquidityPools, IEnumerable<string> miningPools, bool includeZeroAmounts, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
+        public MiningPositionsCursor(IEnumerable<Address> liquidityPools, IEnumerable<Address> miningPools, bool includeZeroAmounts, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
-            LiquidityPools = liquidityPools ?? Enumerable.Empty<string>();
-            MiningPools = miningPools ?? Enumerable.Empty<string>();
+            LiquidityPools = liquidityPools ?? Enumerable.Empty<Address>();
+            MiningPools = miningPools ?? Enumerable.Empty<Address>();
             IncludeZeroAmounts = includeZeroAmounts;
         }
 
-        public IEnumerable<string> LiquidityPools { get; }
-        public IEnumerable<string> MiningPools { get; }
+        public IEnumerable<Address> LiquidityPools { get; }
+        public IEnumerable<Address> MiningPools { get; }
         public bool IncludeZeroAmounts { get; }
 
         /// <inheritdoc />
@@ -62,9 +63,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses
 
             var values = ToDictionary(raw);
 
-            TryGetCursorProperties<string>(values, "liquidityPools", out var liquidityPools);
+            TryGetCursorProperties<Address>(values, "liquidityPools", out var liquidityPools);
 
-            TryGetCursorProperties<string>(values, "miningPools", out var miningPools);
+            TryGetCursorProperties<Address>(values, "miningPools", out var miningPools);
 
             if (!TryGetCursorProperty<bool>(values, "includeZeroAmounts", out var includeZeroAmounts)) return false;
 

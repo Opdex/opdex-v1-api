@@ -1,6 +1,7 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Addresses
@@ -10,13 +11,13 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Addresses
     /// </summary>
     public class GetStakingPositionByPoolQuery : IRequest<StakingPositionDto>
     {
-        public GetStakingPositionByPoolQuery(string staker, string liquidityPool)
+        public GetStakingPositionByPoolQuery(Address staker, Address liquidityPool)
         {
-            Address = staker.HasValue() ? staker : throw new ArgumentNullException(nameof(staker), "Staker address must be set.");
-            LiquidityPoolAddress = liquidityPool.HasValue() ? liquidityPool : throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool address must be set.");
+            Address = staker != Address.Empty ? staker : throw new ArgumentNullException(nameof(staker), "Staker address must be set.");
+            LiquidityPoolAddress = liquidityPool != Address.Empty ? liquidityPool : throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool address must be set.");
         }
 
-        public string Address { get; }
-        public string LiquidityPoolAddress { get; }
+        public Address Address { get; }
+        public Address LiquidityPoolAddress { get; }
     }
 }

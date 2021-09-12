@@ -34,12 +34,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
             {
                 Id = 23423,
                 Block = 123432,
-                From = "From",
-                To = "To",
+                From = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT",
+                To = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW",
                 GasUsed = 60923,
                 Hash = hash,
                 Success = true,
-                NewContractAddress = "NewAddress"
+                NewContractAddress = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh"
             };
 
             var command = new SelectTransactionByHashQuery(hash);

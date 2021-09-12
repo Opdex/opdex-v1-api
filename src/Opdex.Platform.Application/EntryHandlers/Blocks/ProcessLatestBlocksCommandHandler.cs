@@ -16,6 +16,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Blocks
 {
@@ -59,7 +60,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                         }
                     }
 
-                    var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address));
+                    var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus));
 
                     var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, 0, currentBlock.MedianTime, SnapshotType.Minute));
 

@@ -33,8 +33,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
             {
                 Id = 123454,
                 TokenId = 99999,
-                VaultDistribution = "10000",
-                MiningGovernanceDistribution = "10000000",
+                VaultDistribution = 10000,
+                MiningGovernanceDistribution = 10000000,
                 DistributionBlock = 87654,
                 NextDistributionBlock = 19876543,
                 PeriodIndex = 1,

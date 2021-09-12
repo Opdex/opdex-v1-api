@@ -8,6 +8,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
 using System.Linq;
@@ -43,7 +44,7 @@ namespace Opdex.Platform.Application.Assemblers
             }
 
             var marketId = token.MarketId.Value;
-            var tokenIsCrs = token.Address == TokenConstants.Cirrus.Address;
+            var tokenIsCrs = token.Address == Address.Cirrus;
             var tokenSnapshots = await _mediator.Send(new RetrieveTokenSnapshotsWithFilterQuery(token.Id, marketId, yesterday, now, SnapshotType));
             var snapshotsList = tokenSnapshots.ToList();
 
@@ -59,7 +60,7 @@ namespace Opdex.Platform.Application.Assemblers
                 if (currentTokenSnapshot.EndDate < now && !tokenIsCrs)
                 {
                     // Get crs and snapshot
-                    var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(TokenConstants.Cirrus.Address));
+                    var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus));
                     var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, 0, now, SnapshotType));
 
                     if (token.IsLpt)
