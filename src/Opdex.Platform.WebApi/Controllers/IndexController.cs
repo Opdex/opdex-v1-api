@@ -76,9 +76,7 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
         {
             // Todo: Spike and implement separate market vs wallet in JWT. Markets are currently required, they should not be.
-            // The following should be uncommented after, this endpoint should be locked, cannot be locked currently because
-            // retrieving JWT requires a market, we need _context to authorize here but we also expect there to be no markets.
-            // TLDR; if a new session starts, with no markets, a user cannot get authorized to hit this endpoint.
+            // If a new session starts, with no markets, a user cannot get authorized to hit this endpoint.
             // var admin = await _mediator.Send(new GetAdminByAddressQuery(_context.Wallet, findOrThrow: false), cancellationToken);
             // if (admin == null) return Unauthorized();
 
@@ -111,8 +109,12 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("rewind")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
         {
+            var admin = await _mediator.Send(new GetAdminByAddressQuery(_context.Wallet, findOrThrow: false), cancellationToken);
+            if (admin == null) return Unauthorized();
+
             await _mediator.Send(new MakeIndexerLockCommand());
 
             try
