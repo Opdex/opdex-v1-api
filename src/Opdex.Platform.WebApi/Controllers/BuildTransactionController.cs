@@ -67,22 +67,5 @@ namespace Opdex.Platform.WebApi.Controllers
                 throw new NotImplementedException();
             }
         }
-
-        [HttpPost("distribute")]
-        public async Task<IActionResult> DistributeGovernanceTokens(DistributeTokensRequest request, CancellationToken cancellationToken)
-        {
-            if (_network == NetworkType.DEVNET)
-            {
-                var command = new CreateWalletDistributeTokensTransactionCommand(_context.Wallet, request.Token);
-
-                var response = await _mediator.Send(command, cancellationToken);
-
-                return Ok(new { TxHash = response });
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
     }
 }
