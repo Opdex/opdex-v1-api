@@ -43,7 +43,7 @@ namespace Opdex.Platform.WebApi
                         var builtConfig = config.Build();
                         var manager = new KeyVaultSecretManager();
                         var secretClient = new SecretClient(
-                            new Uri($"https://{builtConfig["KeyVaultName"]}.vault.azure.net/"),
+                            new Uri($"https://{builtConfig["Azure:KeyVault:Name"]}.vault.azure.net/"),
                             new DefaultAzureCredential());
 
                         config.AddAzureKeyVault(secretClient, new AzureKeyVaultConfigurationOptions
