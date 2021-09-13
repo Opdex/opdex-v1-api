@@ -221,7 +221,7 @@ namespace Opdex.Platform.WebApi
             app.UseSwaggerUi3();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<PlatformHub>("/transactions");
+                endpoints.MapHub<PlatformHub>("/transactions/socket");
                 endpoints.MapControllers();
             });
         }
