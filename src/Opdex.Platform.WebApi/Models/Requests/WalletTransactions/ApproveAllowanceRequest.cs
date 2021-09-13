@@ -6,12 +6,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
     public class ApproveAllowanceRequest
     {
         /// <summary>
-        /// The address of the token's smart contract.
-        /// </summary>
-        [Required]
-        public Address Token { get; set; }
-
-        /// <summary>
         /// The allowance amount to approve
         /// </summary>
         [Required]

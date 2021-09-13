@@ -28,23 +28,6 @@ namespace Opdex.Platform.WebApi.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        [HttpPost("approve-allowance")]
-        public async Task<IActionResult> ApproveAllowance(ApproveAllowanceRequest request, CancellationToken cancellationToken)
-        {
-            if (_network == NetworkType.DEVNET)
-            {
-                var command = new CreateWalletApproveAllowanceTransactionCommand(_context.Wallet, request.Token, request.Amount, request.Spender);
-
-                var response = await _mediator.Send(command, cancellationToken);
-
-                return Ok(new { TxHash = response });
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         // Transactions that include CRS have a bug at the FN that doesn't allow quotes to work
         // Keeping this around until we can safely remove it.
         [Obsolete]
@@ -74,23 +57,6 @@ namespace Opdex.Platform.WebApi.Controllers
                 var command = new CreateWalletSwapTransactionCommand(_context.Wallet, request.TokenIn, request.TokenOut, request.TokenInAmount,
                                                                      request.TokenOutAmount, request.TokenInExactAmount, request.Tolerance,
                                                                      request.Recipient, _context.Market);
-
-                var response = await _mediator.Send(command, cancellationToken);
-
-                return Ok(new { TxHash = response });
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        [HttpPost("distribute")]
-        public async Task<IActionResult> DistributeGovernanceTokens(DistributeTokensRequest request, CancellationToken cancellationToken)
-        {
-            if (_network == NetworkType.DEVNET)
-            {
-                var command = new CreateWalletDistributeTokensTransactionCommand(_context.Wallet, request.Token);
 
                 var response = await _mediator.Send(command, cancellationToken);
 

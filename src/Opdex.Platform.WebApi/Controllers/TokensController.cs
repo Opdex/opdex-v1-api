@@ -7,12 +7,15 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
+using Opdex.Platform.WebApi.Models.Responses.Transactions;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -108,6 +111,47 @@ namespace Opdex.Platform.WebApi.Controllers
             };
 
             return Ok(response);
+        }
+
+        /// <summary>Approve Allowance Quote</summary>
+        /// <remarks>Quotes a transaction to approve an SRC token allowance for a spender.</remarks>
+        /// <param name="address">The token address to approve an allowance of.</param>
+        /// <param name="request">The allowance approval request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Transaction quote of an approve allowance transaction.</returns>
+        [HttpPost("{address}/approve")]
+        [ProducesResponseType(typeof(ActionResult<TransactionQuoteResponseModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ApproveAllowance([FromRoute] Address address,
+                                                          [FromBody] ApproveAllowanceRequest request,
+                                                          CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateApproveAllowanceTransactionQuoteCommand(address,
+                                                                                                  _context.Wallet,
+                                                                                                  request.Spender,
+                                                                                                  request.Amount), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+
+        /// <summary>Distribute Tokens Quote</summary>
+        /// <remarks>Quotes a transaction to distribute SRC tokens on eligible token types.</remarks>
+        /// <param name="address">The address of the token smart contract.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Token distribute transaction quote.</returns>
+        [HttpPost("{address}/distribute")]
+        [ProducesResponseType(typeof(ActionResult<TransactionQuoteResponseModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Distribute([FromRoute] Address address,
+                                                    CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateDistributeTokensTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
         }
     }
 }
