@@ -16,14 +16,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
     {
         private static readonly string SqlQuery =
             @$"Select
-                {nameof(AddressMiningEntity.Id)},
-                {nameof(AddressMiningEntity.MiningPoolId)},
-                {nameof(AddressMiningEntity.Owner)},
-                {nameof(AddressMiningEntity.Balance)},
-                {nameof(AddressMiningEntity.CreatedBlock)},
-                {nameof(AddressMiningEntity.ModifiedBlock)}
+                {nameof(AddressBalanceEntity.Id)},
+                {nameof(AddressBalanceEntity.TokenId)},
+                {nameof(AddressBalanceEntity.Owner)},
+                {nameof(AddressBalanceEntity.Balance)},
+                {nameof(AddressBalanceEntity.CreatedBlock)},
+                {nameof(AddressBalanceEntity.ModifiedBlock)}
             FROM address_balance
-            WHERE {nameof(AddressMiningEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
+            WHERE {nameof(AddressBalanceEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -38,7 +38,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
         {
             var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.BlockHeight), cancellationToken);
 
-            var result = await _context.ExecuteQueryAsync<AddressMiningEntity>(query);
+            var result = await _context.ExecuteQueryAsync<AddressBalanceEntity>(query);
 
             return _mapper.Map<IEnumerable<AddressBalance>>(result);
         }

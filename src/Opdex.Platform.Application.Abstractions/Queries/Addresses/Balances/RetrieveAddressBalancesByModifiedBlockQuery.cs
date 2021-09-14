@@ -11,7 +11,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances
         {
             if (blockHeight < 1)
             {
-                throw new ArgumentNullException(nameof(blockHeight), "Block height must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
             }
 
             BlockHeight = blockHeight;

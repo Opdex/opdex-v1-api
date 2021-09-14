@@ -20,8 +20,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Token
 
         private const string MethodName = StandardTokenConstants.Methods.GetBalance;
 
-        public CallCirrusGetSrcTokenBalanceQueryHandler(ISmartContractsModule smartContractsModule,
-                                                        ILogger<CallCirrusGetSrcTokenBalanceQueryHandler> logger)
+        public CallCirrusGetSrcTokenBalanceQueryHandler(ISmartContractsModule smartContractsModule, ILogger<CallCirrusGetSrcTokenBalanceQueryHandler> logger)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

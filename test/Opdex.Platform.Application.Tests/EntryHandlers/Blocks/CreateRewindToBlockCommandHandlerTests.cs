@@ -2,6 +2,7 @@ using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.EntryHandlers.Blocks;
@@ -84,6 +85,26 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<MakeRewindToBlockCommand>(q => q.Block == block.Height), CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task CreateRewindToBlockCommand_Sends_CreateRewindAddressBalancesCommand()
+        {
+            // Arrange
+            var block = new Block(10, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
+
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(block);
+            _mediator.Setup(m => m.Send(It.IsAny<MakeRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            // Act
+            try
+            {
+                await _handler.Handle(new CreateRewindToBlockCommand(block.Height), CancellationToken.None);
+            }
+            catch { }
+
+            // Assert
+            _mediator.Verify(callTo => callTo.Send(It.Is<CreateRewindAddressBalancesCommand>(q => q.RewindHeight == block.Height), CancellationToken.None), Times.Once);
         }
 
         [Fact]

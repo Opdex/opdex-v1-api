@@ -1,13 +1,10 @@
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
-using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Application.EntryHandlers.Addresses;
 using Opdex.Platform.Application.EntryHandlers.Addresses.Balances;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
@@ -15,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
+namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
 {
     public class GetAddressBalanceByTokenQueryHandlerTests
     {

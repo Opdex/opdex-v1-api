@@ -1,14 +1,11 @@
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
-using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Mining;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Application.EntryHandlers.Addresses;
 using Opdex.Platform.Application.EntryHandlers.Addresses.Mining;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
@@ -16,7 +13,6 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Mining;
 using System;
 using System.Linq;
@@ -24,7 +20,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
+namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Mining
 {
     public class GetMiningPositionsWithFilterQueryHandlerTests
     {

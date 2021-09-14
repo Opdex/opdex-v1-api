@@ -3,9 +3,9 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances
 {
-    public class RewindAddressBalancesCommand : IRequest<bool>
+    public class CreateRewindAddressBalancesCommand : IRequest<bool>
     {
-        public RewindAddressBalancesCommand(ulong rewindHeight)
+        public CreateRewindAddressBalancesCommand(ulong rewindHeight)
         {
             if (rewindHeight < 1)
             {

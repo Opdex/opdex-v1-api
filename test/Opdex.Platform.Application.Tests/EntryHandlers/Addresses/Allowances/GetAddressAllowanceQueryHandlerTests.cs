@@ -1,13 +1,10 @@
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
-using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Allowances;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Application.EntryHandlers.Addresses;
 using Opdex.Platform.Application.EntryHandlers.Addresses.Allowances;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
@@ -17,7 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
+namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Allowances
 {
     public class GetAddressAllowanceQueryHandlerTests
     {

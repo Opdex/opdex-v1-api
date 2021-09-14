@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Addresses.Balances
 {
-    public class RewindAddressBalancesCommandHandler : IRequestHandler<RewindAddressBalancesCommand, bool>
+    public class CreateRewindAddressBalancesCommandHandler : IRequestHandler<CreateRewindAddressBalancesCommand, bool>
     {
         private readonly IMediator _mediator;
 
-        public RewindAddressBalancesCommandHandler(IMediator mediator)
+        public CreateRewindAddressBalancesCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Handle(RewindAddressBalancesCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(CreateRewindAddressBalancesCommand request, CancellationToken cancellationToken)
         {
             var balances = await _mediator.Send(new RetrieveAddressBalancesByModifiedBlockQuery(request.RewindHeight), cancellationToken);
 

@@ -287,7 +287,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessLpTokenSnapshotCommand, decimal>, ProcessLpTokenSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<CreateApproveAllowanceTransactionQuoteCommand, TransactionQuoteDto>, CreateApproveAllowanceTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateDistributeTokensTransactionQuoteCommand, TransactionQuoteDto>, CreateDistributeTokensTransactionQuoteCommandHandler>();
-            services.AddTransient<IRequestHandler<RewindAddressBalancesCommand, bool>, RewindAddressBalancesCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindAddressBalancesCommand, bool>, CreateRewindAddressBalancesCommandHandler>();
             services.AddTransient<IRequestHandler<CreateAddressBalanceCommand, long>, CreateAddressBalanceCommandHandler>();
 
             // Transaction Log Processors

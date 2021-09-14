@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
             if (!rewound) return false;
 
             // Refresh stale records
-            await _mediator.Send(new RewindAddressBalancesCommand(request.Block));
+            await _mediator.Send(new CreateRewindAddressBalancesCommand(request.Block));
 
             return rewound;
         }

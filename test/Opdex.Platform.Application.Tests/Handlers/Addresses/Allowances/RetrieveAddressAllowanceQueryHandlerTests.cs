@@ -1,10 +1,8 @@
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Application.Handlers.Addresses;
 using Opdex.Platform.Application.Handlers.Addresses.Allowances;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
@@ -15,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Addresses
+namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Allowances
 {
     public class RetrieveAddressAllowanceQueryHandlerTests
     {

@@ -1,14 +1,11 @@
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
-using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Application.EntryHandlers.Addresses;
 using Opdex.Platform.Application.EntryHandlers.Addresses.Mining;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
@@ -21,7 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
+namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Mining
 {
     public class GetMiningPositionByPoolQueryHandlerTests
     {

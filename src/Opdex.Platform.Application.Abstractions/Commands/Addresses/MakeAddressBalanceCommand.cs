@@ -9,9 +9,9 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Addresses
     {
         public MakeAddressBalanceCommand(AddressBalance addressBalance, Address token, ulong blockHeight)
         {
-            AddressBalance = addressBalance ?? throw new ArgumentNullException(nameof(addressBalance));
-            Token = token != Address.Empty ? token : throw new ArgumentNullException(nameof(token));
-            BlockHeight = blockHeight > 0 ? blockHeight : throw new ArgumentOutOfRangeException(nameof(blockHeight));
+            AddressBalance = addressBalance ?? throw new ArgumentNullException(nameof(addressBalance), "Address balance must be provided.");
+            Token = token != Address.Empty ? token : throw new ArgumentNullException(nameof(token), "Token address must be provided.");
+            BlockHeight = blockHeight > 0 ? blockHeight : throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
         }
 
         public AddressBalance AddressBalance { get; }

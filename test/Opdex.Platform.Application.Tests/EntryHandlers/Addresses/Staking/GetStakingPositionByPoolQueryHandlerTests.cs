@@ -1,14 +1,11 @@
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
-using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Application.EntryHandlers.Addresses;
 using Opdex.Platform.Application.EntryHandlers.Addresses.Staking;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
@@ -21,7 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
+namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Staking
 {
     public class GetStakingPositionByPoolQueryHandlerTests
     {

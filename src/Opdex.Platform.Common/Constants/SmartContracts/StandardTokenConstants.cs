@@ -1,6 +1,6 @@
 namespace Opdex.Platform.Common.Constants.SmartContracts
 {
-    public class StandardTokenConstants
+    public static class StandardTokenConstants
     {
         public static class Methods
         {
