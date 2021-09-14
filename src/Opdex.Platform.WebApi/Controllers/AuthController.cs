@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Configurations;

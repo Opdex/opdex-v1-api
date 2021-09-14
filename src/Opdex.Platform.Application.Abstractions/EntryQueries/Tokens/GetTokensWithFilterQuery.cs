@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
+using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using System;
 using Opdex.Platform.Common.Models;
 

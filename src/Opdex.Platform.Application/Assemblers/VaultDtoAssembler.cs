@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
+using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Vaults;

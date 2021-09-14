@@ -21,18 +21,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
-                
-                return true;
+                return await MakeTransactionLog(request.Log);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(CollectStakingRewardsLog)}");
-               
+
                 return false;
             }
         }

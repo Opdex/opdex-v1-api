@@ -15,9 +15,13 @@ using System;
 using Opdex.Platform.Common.Enums;
 using System.Linq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
+using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
+using Opdex.Platform.Application.EntryHandlers.Addresses.Balances;
 using System.Threading;
 using System.Threading.Tasks;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Balances;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses
 {

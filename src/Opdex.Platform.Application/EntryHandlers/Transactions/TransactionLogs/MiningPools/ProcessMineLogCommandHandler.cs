@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
+using Opdex.Platform.Application.Abstractions.Queries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;

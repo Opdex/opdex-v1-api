@@ -6,6 +6,7 @@ namespace Opdex.Platform.Common.Constants.SmartContracts
         {
             public const string Approve = "Approve";
             public const string Distribute = "Distribute";
+            public const string GetBalance = "GetBalance";
         }
     }
 }

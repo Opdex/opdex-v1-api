@@ -3,24 +3,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
-using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
-using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 using System.Linq;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens
@@ -49,12 +45,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id, findOrThrow: true));
 
                 // process vault balances
-                var vaultResult = await UpdateAddressBalance(vault.Address, token, request.Log.VaultAmount, request.BlockHeight);
-                if (!vaultResult) return false;
+                var vaultResult = await _mediator.Send(new CreateAddressBalanceCommand(vault.Address, token.Address, request.BlockHeight));
+                if (vaultResult <= 0) return false;
 
                 // process governance balances
-                var governanceResult = await UpdateAddressBalance(governance.Address, token, request.Log.MiningAmount, request.BlockHeight);
-                if (!governanceResult) return false;
+                var governanceResult = await _mediator.Send(new CreateAddressBalanceCommand(governance.Address, token.Address, request.BlockHeight));
+                if (governanceResult <= 0) return false;
 
                 // Process vault unassigned supply updates. (The vault's TotalSupply property in contract represents the amount of tokens
                 // available to the vault to distribute. The vault's balance could be 100 tokens but the TotalSupply could have only 50 tokens
@@ -119,32 +115,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 return false;
             }
-        }
-
-        private async Task<bool> UpdateAddressBalance(Address address, Token token, UInt256 distributionAmount, ulong blockHeight)
-        {
-            var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, token.Id, findOrThrow: false));
-
-            if (addressBalance is null || blockHeight >= addressBalance.ModifiedBlock)
-            {
-                if (addressBalance == null)
-                {
-                    addressBalance = new AddressBalance(token.Id, address, distributionAmount, blockHeight);
-                }
-                else
-                {
-                    var currentBalance = await _mediator.Send(new CallCirrusGetSrcTokenBalanceQuery(token.Address, address));
-
-                    addressBalance.SetBalance(currentBalance, blockHeight);
-                }
-
-                var result = await _mediator.Send(new MakeAddressBalanceCommand(addressBalance));
-
-                return result > 0;
-            }
-
-            // Nothing to do, exit happily
-            return true;
         }
 
         private async Task InitializeNominations(long governanceId, Address miningGovernance, ulong blockHeight)

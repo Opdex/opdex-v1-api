@@ -1,6 +1,7 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses;
+using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Common.Models.UInt;

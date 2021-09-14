@@ -9,6 +9,7 @@ using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Addresses;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses;
+using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances;
 using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
