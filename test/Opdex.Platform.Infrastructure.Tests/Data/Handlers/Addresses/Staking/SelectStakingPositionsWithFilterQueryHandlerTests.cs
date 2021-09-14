@@ -5,16 +5,14 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Staking;
-using Opdex.Platform.Infrastructure.Data.Handlers.Addresses;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Staking
 {
     public class SelectStakingPositionsWithFilterQueryHandlerTests
     {

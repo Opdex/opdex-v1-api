@@ -3,6 +3,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Extensions;
 using System;
 using System.Linq;
 using System.Threading;
@@ -32,10 +33,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Balances
                 var token = await _mediator.Send(new RetrieveTokenByIdQuery(group.Key));
 
                 // Split the address balances by token into chunks of 10
-                var balanceChunks = group
-                    .Select((balance, i) => new { Value = balance, Index = i })
-                    .GroupBy(x => x.Index / 10)
-                    .Select(g => g.Select(x => x.Value));
+                var balanceChunks = group.Chunk(10);
 
                 foreach (var chunk in balanceChunks)
                 {

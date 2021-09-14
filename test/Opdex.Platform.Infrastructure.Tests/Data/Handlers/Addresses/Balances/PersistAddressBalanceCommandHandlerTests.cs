@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -8,11 +5,13 @@ using Moq;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Addresses;
-using Opdex.Platform.Infrastructure.Data.Handlers.Addresses;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Balances
 {
     public class PersistAddressBalanceCommandHandlerTests
     {
