@@ -4,14 +4,12 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
-using Opdex.Platform.Application.Abstractions.Commands.Deployers;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
-using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
-using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
@@ -30,7 +28,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
         {
             try
             {
-                // Hosted environments would have indexed transaction already, local would need to reach out to Cirrus to get receipt
                 var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.TxHash, findOrThrow: false), cancellationToken) ??
                                   await _mediator.Send(new RetrieveCirrusTransactionByHashQuery(request.TxHash), CancellationToken.None);
 
@@ -59,18 +56,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                 await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime.Value));
 
-                // No duplicate attempts to create the same deployer
-                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(transaction.NewContractAddress, findOrThrow: false))
-                               ?? new Deployer(transaction.NewContractAddress, transaction.From, isActive: true, transaction.BlockHeight);
+                var deployerId = await _mediator.Send(new CreateDeployerCommand(transaction.NewContractAddress, transaction.From, transaction.BlockHeight, isUpdate: false));
 
-                var deployerId = deployer.Id;
-                if (deployerId == 0)
-                {
-                    var deployerCommand = new MakeDeployerCommand(deployer);
-                    deployerId = await _mediator.Send(deployerCommand, CancellationToken.None);
-                }
-
-                // In hosted environments, transaction would've already been inserted. Local environments need to persist
                 if (transaction.Id == 0)
                 {
                     await _mediator.Send(new MakeTransactionCommand(transaction), CancellationToken.None);

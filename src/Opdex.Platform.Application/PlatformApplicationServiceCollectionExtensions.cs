@@ -22,6 +22,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
@@ -127,6 +128,7 @@ using Opdex.Platform.Application.EntryHandlers.Addresses.Balances;
 using Opdex.Platform.Application.EntryHandlers.Addresses.Mining;
 using Opdex.Platform.Application.EntryHandlers.Addresses.Staking;
 using Opdex.Platform.Application.EntryHandlers.Admins;
+using Opdex.Platform.Application.EntryHandlers.Deployers;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots;
@@ -230,6 +232,10 @@ namespace Opdex.Platform.Application
             // Deployments
             services.AddTransient<IRequestHandler<ProcessCoreDeploymentTransactionCommand, Unit>, ProcessCoreDeploymentTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<ProcessGovernanceDeploymentTransactionCommand, Unit>, ProcessGovernanceDeploymentTransactionCommandHandler>();
+
+            // Deployers
+            services.AddTransient<IRequestHandler<CreateDeployerCommand, long>, CreateDeployerCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindDeployersCommand, bool>, CreateRewindDeployersCommandHandler>();
 
             // Wallet Transactions - most to be removed with new quote flow
             services.AddTransient<IRequestHandler<CreateWalletSwapTransactionCommand, string>, CreateWalletSwapTransactionCommandHandler>();
@@ -335,6 +341,7 @@ namespace Opdex.Platform.Application
             // Deployers
             services.AddTransient<IRequestHandler<RetrieveActiveDeployerQuery, Deployer>, RetrieveActiveDeployerQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveDeployerByAddressQuery, Deployer>, RetrieveDeployerByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveDeployersByModifiedBlockQuery, IEnumerable<Deployer>>, RetrieveDeployersByModifiedBlockQueryHandler>();
 
             // Markets
             services.AddTransient<IRequestHandler<RetrieveMarketSnapshotWithFilterQuery, MarketSnapshot>, RetrieveMarketSnapshotWithFilterQueryHandler>();

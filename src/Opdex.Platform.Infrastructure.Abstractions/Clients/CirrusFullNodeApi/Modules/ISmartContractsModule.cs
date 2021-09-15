@@ -9,7 +9,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
     public interface ISmartContractsModule
     {
         Task<ContractCodeDto> GetContractCodeAsync(Address address, CancellationToken cancellationToken);
-        Task<string> GetContractStorageAsync(Address address, string storageKey, string dataType, CancellationToken cancellationToken);
+        Task<string> GetContractStorageAsync(Address address, string storageKey, string dataType, ulong blockHeight, CancellationToken cancellationToken);
         Task<string> GetContractBalanceAsync(Address address, CancellationToken cancellationToken);
         Task<TransactionReceiptDto> GetReceiptAsync(string txHash, CancellationToken cancellationToken);
         Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(Address contractAddress, string logName, ulong fromBlock, ulong? toBlock, CancellationToken cancellationToken);

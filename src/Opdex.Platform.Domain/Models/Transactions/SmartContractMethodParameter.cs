@@ -104,8 +104,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
         public SmartContractParameterType Type
         {
             get => _parameterType;
-            private set => _parameterType = value != SmartContractParameterType.Unknown && value.IsValid()
-                                                ? value : throw new ArgumentOutOfRangeException("Smart contract parameter type must be known and valid.");
+            private set => _parameterType = value.IsValid() ? value : throw new ArgumentOutOfRangeException("Smart contract parameter type must be known and valid.");
         }
 
         public string Serialize() => $"{(uint)Type}#{Value}";

@@ -2,7 +2,6 @@ namespace Opdex.Platform.Common.Enums
 {
     public enum SmartContractParameterType : uint
     {
-        Unknown = 0,
         Boolean = 1,
         Byte = 2,
         Char = 3,

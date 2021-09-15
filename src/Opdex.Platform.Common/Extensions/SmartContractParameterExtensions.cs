@@ -7,7 +7,7 @@ namespace Opdex.Platform.Common.Extensions
     {
         public static string ToSmartContractParameter(this object parameter, SmartContractParameterType type)
         {
-            if (!type.IsValid() || type == SmartContractParameterType.Unknown)
+            if (!type.IsValid())
             {
                 throw new ArgumentOutOfRangeException(nameof(type), "Parameter type must be set.");
             }

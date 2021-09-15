@@ -43,7 +43,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
@@ -66,7 +65,6 @@ using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi;
 using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi.Handlers;
 using Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi.Modules;
 using Opdex.Platform.Infrastructure.Data;
-using Opdex.Platform.Infrastructure.Data.Handlers.Addresses;
 using Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
 using Opdex.Platform.Infrastructure.Data.Handlers.Deployers;
 using Opdex.Platform.Infrastructure.Data.Handlers.Governances;
@@ -191,6 +189,7 @@ namespace Opdex.Platform.Infrastructure
             // Deployer
             services.AddTransient<IRequestHandler<SelectActiveDeployerQuery, Deployer>, SelectActiveDeployerQueryHandler>();
             services.AddTransient<IRequestHandler<SelectDeployerByAddressQuery, Deployer>, SelectDeployerByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectDeployersByModifiedBlockQuery, IEnumerable<Deployer>>, SelectDeployersByModifiedBlockQueryHandler>();
 
             // Market
             services.AddTransient<IRequestHandler<SelectMarketSnapshotWithFilterQuery, MarketSnapshot>, SelectMarketSnapshotWithFilterQueryHandler>();
@@ -302,6 +301,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>, CallCirrusLocalCallSmartContractMethodCommandHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAddressBalanceQuery, ulong>, CallCirrusGetAddressBalanceQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetMiningPoolByTokenQuery, Address>, CallCirrusGetMiningPoolByTokenQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetSmartContractPropertyQuery, SmartContractMethodParameter>, CallCirrusGetSmartContractPropertyQueryHandler>();
 
             // Commands
             services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, string>, CallCirrusCallSmartContractMethodCommandHandler>();

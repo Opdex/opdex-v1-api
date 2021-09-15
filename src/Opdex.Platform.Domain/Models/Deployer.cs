@@ -37,11 +37,23 @@ namespace Opdex.Platform.Domain.Models
         public Address Address { get; }
         public Address Owner { get; private set; }
         public bool IsActive { get; }
+        public bool Rewind { get; private set; }
 
         public void SetOwner(ClaimPendingDeployerOwnershipLog log, ulong blockHeight)
         {
             Owner = log.To;
             SetModifiedBlock(blockHeight);
+        }
+
+        public void SetOwner(Address owner, ulong blockHeight)
+        {
+            Owner = owner;
+            SetModifiedBlock(blockHeight);
+        }
+
+        public void RequireRewind()
+        {
+            Rewind = true;
         }
     }
 }

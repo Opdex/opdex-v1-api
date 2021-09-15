@@ -24,9 +24,12 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return GetAsync<ContractCodeDto>(uri, cancellationToken);
         }
 
-        public Task<string> GetContractStorageAsync(Address address, string storageKey, string dataType, CancellationToken cancellationToken)
+        public Task<string> GetContractStorageAsync(Address address, string storageKey, string dataType, ulong blockHeight, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractStorageItem, address, storageKey, dataType);
+
+            if (blockHeight > 0) uri += $"&BlockHeight={blockHeight}";
+
             return GetAsync<string>(uri, cancellationToken);
         }
 
