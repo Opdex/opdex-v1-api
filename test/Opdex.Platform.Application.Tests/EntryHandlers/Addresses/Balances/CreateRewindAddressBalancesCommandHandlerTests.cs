@@ -5,7 +5,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.EntryHandlers.Addresses.Balances;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
@@ -41,7 +40,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         }
 
         [Fact]
-        public async Task CreateRewindAddressBalances_Sends_RetrieveAddressBalanceByOwnerAndTokenQuery()
+        public async Task CreateRewindAddressBalances_Sends_RetrieveAddressBalancesByModifiedBlockQuery()
         {
             // Arrange
             const ulong rewindHeight = 10;

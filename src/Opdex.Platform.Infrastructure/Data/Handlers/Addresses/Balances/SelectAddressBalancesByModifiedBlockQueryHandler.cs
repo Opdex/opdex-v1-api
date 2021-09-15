@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
     public class SelectAddressBalancesByModifiedBlockQueryHandler : IRequestHandler<SelectAddressBalancesByModifiedBlockQuery, IEnumerable<AddressBalance>>
     {
         private static readonly string SqlQuery =
-            @$"Select
+            @$"SELECT
                 {nameof(AddressBalanceEntity.Id)},
                 {nameof(AddressBalanceEntity.TokenId)},
                 {nameof(AddressBalanceEntity.Owner)},

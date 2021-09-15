@@ -106,6 +106,8 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Staking;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking;
+using Opdex.Platform.Infrastructure.Clients.SignalR.Handlers;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -127,6 +129,7 @@ namespace Opdex.Platform.Infrastructure
             // Client Services
             AddCirrusServices(services, cirrusConfiguration);
             AddCmcServices(services, cmcConfiguration);
+            AddSignalRServices(services);
 
             return services;
         }
@@ -317,6 +320,11 @@ namespace Opdex.Platform.Infrastructure
 
             // Queries
             services.AddTransient<IRequestHandler<CallCmcGetStraxQuotePriceQuery, decimal>, CallCmcGetStraxQuotePriceQueryHandler>();
+        }
+
+        private static void AddSignalRServices(IServiceCollection services)
+        {
+            services.AddTransient<IRequestHandler<NotifyUserOfBroadcastTransactionCommand, Unit>, NotifyUserOfBroadcastTransactionCommandHandler>();
         }
     }
 }

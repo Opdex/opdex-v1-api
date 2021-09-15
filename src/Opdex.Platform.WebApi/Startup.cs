@@ -40,6 +40,9 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.WebApi.Models.Binders;
 using Opdex.Platform.Common;
 using Opdex.Platform.WebApi.Models.Responses;
+using Opdex.Platform.Infrastructure.Clients.SignalR;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Opdex.Platform.WebApi
 {
@@ -148,6 +151,22 @@ namespace Opdex.Platform.WebApi
                         // temp solution, OAuth will prefer assymmetric key
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
                     };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            // signalR sends bearer token in the query string
+                            var accessToken = context.Request.Query["access_token"];
+
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                            {
+                                // assigns the bearer token from signalR connection
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             services.AddOpenApiDocument(settings =>
@@ -173,6 +192,11 @@ namespace Opdex.Platform.WebApi
                     schema.Pattern = @"^\d*\.\d{1,18}$"; // matches a number which must contain a decimal point and precision of 1 to 18
                 }));
             });
+
+            services.AddSignalR()
+                    .AddAzureSignalR();
+
+            services.AddSingleton<IUserIdProvider, WalletAddressUserIdProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -195,7 +219,11 @@ namespace Opdex.Platform.WebApi
             app.UseAuthorization();
             app.UseOpenApi();
             app.UseSwaggerUi3();
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<PlatformHub>("/transactions/socket");
+                endpoints.MapControllers();
+            });
         }
 
         /// <summary>
