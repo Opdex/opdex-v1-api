@@ -34,5 +34,10 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi
         {
             public const string Status = "Node/status";
         }
+
+        public static class Mempool
+        {
+            public const string GetRawMempool = "Mempool/getrawmempool";
+        }
     }
 }
