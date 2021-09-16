@@ -78,10 +78,10 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
             foreach (var deployer in deployers)
             {
                 _mediator.Verify(callTo => callTo.Send(It.Is<MakeDeployerCommand>(q => q.BlockHeight == rewindHeight &&
+                                                                                       q.Rewind == true &&
                                                                                        q.Deployer.Id == deployer.Id &&
                                                                                        q.Deployer.Address == deployer.Address &&
                                                                                        q.Deployer.Owner == deployer.Owner &&
-                                                                                       q.Deployer.Rewind == true &&
                                                                                        q.Deployer.ModifiedBlock == deployer.ModifiedBlock),
                                                        It.IsAny<CancellationToken>()), Times.Once);
             }

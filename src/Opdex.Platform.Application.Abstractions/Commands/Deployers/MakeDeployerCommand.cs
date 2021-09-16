@@ -14,7 +14,8 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Deployers
         /// </summary>
         /// <param name="deployer">The Deployer domain model being made.</param>
         /// <param name="blockHeight">The block height of the update being made.</param>
-        public MakeDeployerCommand(Deployer deployer, ulong blockHeight)
+        /// <param name="rewind">Flag to signal a rewind to the specified block height.</param>
+        public MakeDeployerCommand(Deployer deployer, ulong blockHeight, bool rewind = false)
         {
             if (blockHeight == 0)
             {
@@ -23,9 +24,11 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Deployers
 
             Deployer = deployer ?? throw new ArgumentNullException(nameof(deployer), "Deployer must be provided.");
             BlockHeight = blockHeight;
+            Rewind = rewind;
         }
 
         public Deployer Deployer { get; }
         public ulong BlockHeight { get; }
+        public bool Rewind { get; }
     }
 }
