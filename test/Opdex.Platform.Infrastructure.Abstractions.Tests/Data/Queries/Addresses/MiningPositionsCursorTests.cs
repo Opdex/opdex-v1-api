@@ -3,6 +3,7 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Mining;
 using System;
 using System.Linq;
 using Xunit;

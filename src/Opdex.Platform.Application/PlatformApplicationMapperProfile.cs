@@ -7,7 +7,7 @@ using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Application.Abstractions.Models.OHLC;
-using Opdex.Platform.Application.Abstractions.Models.TokenDtos;
+using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Deployers;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Governances;
@@ -36,7 +36,6 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Linq;
-using TokenDto = Opdex.Platform.Application.Abstractions.Models.TokenDtos.TokenDto;
 
 namespace Opdex.Platform.Application
 {

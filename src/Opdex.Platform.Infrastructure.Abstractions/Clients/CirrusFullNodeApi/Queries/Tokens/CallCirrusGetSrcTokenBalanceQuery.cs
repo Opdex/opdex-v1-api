@@ -7,13 +7,30 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
 {
     public class CallCirrusGetSrcTokenBalanceQuery : IRequest<UInt256>
     {
-        public CallCirrusGetSrcTokenBalanceQuery(Address token, Address owner)
+        public CallCirrusGetSrcTokenBalanceQuery(Address token, Address owner, ulong blockHeight)
         {
-            Token = token != Address.Empty ? token : throw new ArgumentNullException(nameof(token));
-            Owner = owner != Address.Empty ? owner : throw new ArgumentNullException(nameof(owner));
+            if (token == Address.Empty)
+            {
+                throw new ArgumentNullException(nameof(token), "Token address must be provided.");
+            }
+
+            if (owner == Address.Empty)
+            {
+                throw new ArgumentNullException(nameof(owner), "Owner address must be provided.");
+            }
+
+            if (blockHeight == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than 0");
+            }
+
+            Token = token;
+            Owner = owner;
+            BlockHeight = blockHeight;
         }
 
         public Address Token { get; }
         public Address Owner { get; }
+        public ulong BlockHeight { get; }
     }
 }

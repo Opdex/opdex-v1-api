@@ -8,11 +8,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Balances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Mining;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Staking;
 using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
