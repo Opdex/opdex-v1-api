@@ -29,14 +29,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Deployers
             foreach (var chunk in balanceChunks)
             {
                 // Each chunk runs in parallel
-                var tasks = chunk.Select(deployer =>
-                {
-                    // Set the flag that signals a rewind to refresh select properties
-                    deployer.RequireRewind();
-
-                    // Rewind and persist the deployer
-                    return _mediator.Send(new MakeDeployerCommand(deployer, request.RewindHeight));
-                });
+                var tasks = chunk.Select(deployer => _mediator.Send(new MakeDeployerCommand(deployer, request.RewindHeight, rewind: true)));
 
                 await Task.WhenAll(tasks);
             }

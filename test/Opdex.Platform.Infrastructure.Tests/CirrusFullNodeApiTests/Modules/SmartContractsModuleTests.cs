@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Moq.Contrib.HttpClient;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules;
 using Xunit;
@@ -70,7 +71,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Modules
             const string baseAddress = "https://cirrus.node/";
             Address contract = "tDrNbZKsbYPvike4RfddzESXZoPwUMm5pL";
             const string key = "A";
-            const string type = "9";
+            const SmartContractParameterType type = SmartContractParameterType.Address;
             const ulong blockHeight = 0;
 
             var handler = new Mock<HttpMessageHandler>();
@@ -95,7 +96,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Modules
             const string baseAddress = "https://cirrus.node/";
             Address contract = "tDrNbZKsbYPvike4RfddzESXZoPwUMm5pL";
             const string key = "A";
-            const string type = "9";
+            const SmartContractParameterType type = SmartContractParameterType.Address;
             const ulong blockHeight = 10000;
 
             var handler = new Mock<HttpMessageHandler>();

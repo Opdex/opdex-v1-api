@@ -307,7 +307,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>, CallCirrusLocalCallSmartContractMethodCommandHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAddressBalanceQuery, ulong>, CallCirrusGetAddressBalanceQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetMiningPoolByTokenQuery, Address>, CallCirrusGetMiningPoolByTokenQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetSmartContractPropertyQuery, string>, CallCirrusGetSmartContractPropertyQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetSmartContractPropertyQuery, SmartContractMethodParameter>, CallCirrusGetSmartContractPropertyQueryHandler>();
 
             // Commands
             services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, string>, CallCirrusCallSmartContractMethodCommandHandler>();

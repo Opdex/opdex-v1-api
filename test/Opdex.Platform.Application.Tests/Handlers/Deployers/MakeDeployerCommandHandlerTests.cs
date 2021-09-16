@@ -6,6 +6,7 @@ using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers;
 using System;
@@ -60,12 +61,11 @@ namespace Opdex.Platform.Application.Tests.Handlers.Deployers
             const string stateKey = MarketDeployerConstants.StateKeys.Owner;
             const SmartContractParameterType propertyType = SmartContractParameterType.Address;
             var deployer = new Deployer(1, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMUARwmH1iT1GLsMroh6zXXN9EjmivLgqq", true, 3, 4);
-            deployer.RequireRewind();
 
             // Act
             try
             {
-                await _handler.Handle(new MakeDeployerCommand(deployer, blockHeight), CancellationToken.None);
+                await _handler.Handle(new MakeDeployerCommand(deployer, blockHeight, rewind: true), CancellationToken.None);
             } catch { }
 
             // Assert
@@ -81,20 +81,15 @@ namespace Opdex.Platform.Application.Tests.Handlers.Deployers
         {
             // Arrange
             const ulong blockHeight = 10;
-            const SmartContractParameterType propertyType = SmartContractParameterType.Address;
             Address newOwner = "PMU9EjmGLsMroh6zXXNivLgqqARwmH1iT1";
 
             var deployer = new Deployer(1, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMUARwmH1iT1GLsMroh6zXXN9EjmivLgqq", true, 3, 4);
-            deployer.RequireRewind();
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetSmartContractPropertyQuery>(), CancellationToken.None))
-                .ReturnsAsync(newOwner.ToString());
+                .ReturnsAsync(() => new SmartContractMethodParameter(newOwner.ToString(), SmartContractParameterType.Address));
 
             // Act
-            try
-            {
-                await _handler.Handle(new MakeDeployerCommand(deployer, blockHeight), CancellationToken.None);
-            } catch { }
+            await _handler.Handle(new MakeDeployerCommand(deployer, blockHeight, rewind: true), CancellationToken.None);
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<PersistDeployerCommand>(q => q.Deployer.Id == deployer.Id &&
@@ -113,7 +108,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Deployers
             // Act
             try
             {
-                await _handler.Handle(new MakeDeployerCommand(deployer, blockHeight), CancellationToken.None);
+                await _handler.Handle(new MakeDeployerCommand(deployer, blockHeight, rewind: false), CancellationToken.None);
             } catch { }
 
             // Assert

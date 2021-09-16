@@ -59,41 +59,50 @@ namespace Opdex.Platform.Domain.Tests.Models
         }
 
         [Fact]
+        public void SetOwner_InvalidADdress_ThrowArgumentNullException()
+        {
+            // Arrange
+            var deployer = new Deployer("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, 100_000);
+
+            // Act
+            void Act() => deployer.SetOwner(Address.Empty, 99_999);
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(Act).Message.Contains("Owner address must be provided.");
+        }
+
+        [Fact]
         public void SetOwner_PreviousModifiedBlock_ThrowArgumentOutOfRangeException()
         {
             // Arrange
             const bool isActive = true;
-            var deployer = new Deployer("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", isActive, 100_000);
-
-            dynamic log = new ExpandoObject();
-            log.from = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            log.to = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+            Address currentOwner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address newOwner = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+            var deployer = new Deployer("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", currentOwner, isActive, 100_000);
 
             // Act
-            void Act() => deployer.SetOwner(new ClaimPendingDeployerOwnershipLog(log, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 0), 99_999);
+            void Act() => deployer.SetOwner(newOwner, 99_999);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act);
         }
 
-        [Fact]
-        public void SetOwner_ValidArguments_SetProperties()
+        [Theory]
+        [InlineData(100_000)]
+        [InlineData(100_001)]
+        public void SetOwner_ValidArguments_SetProperties(ulong currentBlock)
         {
             // Arrange
             const bool isActive = true;
-            var deployer = new Deployer("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", isActive, 100_000);
-
-            var updatedOwner = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
-
-            dynamic log = new ExpandoObject();
-            log.from = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            log.to = updatedOwner;
+            Address currentOwner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            Address newOwner = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+            var deployer = new Deployer("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", currentOwner, isActive, 100_000);
 
             // Act
-            deployer.SetOwner(new ClaimPendingDeployerOwnershipLog(log, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 0), 100_001);
+            deployer.SetOwner(newOwner, currentBlock);
 
             // Assert
-            deployer.Owner.Should().Be(updatedOwner);
+            deployer.Owner.Should().Be(newOwner);
         }
     }
 }

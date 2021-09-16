@@ -7,7 +7,7 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts
 {
-    public class CallCirrusGetSmartContractPropertyQuery : IRequest<string>
+    public class CallCirrusGetSmartContractPropertyQuery : IRequest<SmartContractMethodParameter>
     {
         public CallCirrusGetSmartContractPropertyQuery(Address contract, string propertyStateKey, SmartContractParameterType propertyType, ulong blockHeight)
         {

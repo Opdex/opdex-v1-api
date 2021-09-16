@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Enums;
@@ -21,7 +22,8 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
         public CallCirrusGetSmartContractPropertyQueryHandlerTests()
         {
             _smartContractsModuleMock = new Mock<ISmartContractsModule>();
-            _handler = new CallCirrusGetSmartContractPropertyQueryHandler(_smartContractsModuleMock.Object);
+            _handler = new CallCirrusGetSmartContractPropertyQueryHandler(_smartContractsModuleMock.Object,
+                                                                          NullLogger<CallCirrusGetSmartContractPropertyQueryHandler>.Instance);
         }
 
         [Fact]
@@ -103,7 +105,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
             } catch { }
 
             // Assert
-            _smartContractsModuleMock.Verify(callTo => callTo.GetContractStorageAsync(contract, stateKey, ((uint)propertyType).ToString(),
+            _smartContractsModuleMock.Verify(callTo => callTo.GetContractStorageAsync(contract, stateKey, propertyType,
                                                                                       blockHeight, It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -118,14 +120,15 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
 
             Address expectedResponse = "PsMroh6zXXNMU9EjmivLgqqARwmH1iT1GL";
 
-            _smartContractsModuleMock.Setup(callTo => callTo.GetContractStorageAsync(contract, stateKey, ((uint)propertyType).ToString(), blockHeight, It.IsAny<CancellationToken>()))
+            _smartContractsModuleMock.Setup(callTo => callTo.GetContractStorageAsync(contract, stateKey, propertyType, blockHeight, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedResponse.ToString());
 
             // Act
             var response = await _handler.Handle(new CallCirrusGetSmartContractPropertyQuery(contract, stateKey, propertyType, blockHeight), CancellationToken.None);
 
             // Assert
-            response.Should().Be(expectedResponse.ToString());
+            response.Value.Should().Be(expectedResponse.ToString());
+            response.Type.Should().Be(propertyType);
         }
     }
 }
