@@ -117,6 +117,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.Queries.Admins;
+using Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
@@ -139,6 +140,7 @@ using Opdex.Platform.Application.Handlers.Addresses.Balances;
 using Opdex.Platform.Application.Handlers.Addresses.Mining;
 using Opdex.Platform.Application.Handlers.Addresses.Staking;
 using Opdex.Platform.Application.Handlers.Admins;
+using Opdex.Platform.Application.Handlers.Governances.Nominations;
 using Opdex.Platform.Application.Handlers.LiquidityPools;
 using Opdex.Platform.Application.Handlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Handlers.MiningPools;
@@ -286,6 +288,8 @@ namespace Opdex.Platform.Application
 
             // Governances
             services.AddTransient<IRequestHandler<CreateRewardMiningPoolsTransactionQuoteCommand, TransactionQuoteDto>, CreateRewardMiningPoolsTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateMiningGovernanceCommand, long>, CreateMiningGovernanceCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindMiningGovernancesCommand, bool>, CreateRewindMiningGovernancesCommandHandler>();
 
             // Tokens
             services.AddTransient<IRequestHandler<CreateCrsTokenSnapshotsCommand, Unit>, CreateCrsTokenSnapshotsCommandHandler>();
@@ -390,6 +394,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceByAddressQuery, MiningGovernance>, RetrieveMiningGovernanceByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceByTokenIdQuery, MiningGovernance>, RetrieveMiningGovernanceByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery, MiningGovernanceNomination>, RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMiningGovernancesByModifiedBlockQuery, IEnumerable<MiningGovernance>>, RetrieveMiningGovernancesByModifiedBlockQueryHandler>();
 
             // Vaults
             services.AddTransient<IRequestHandler<RetrieveVaultsWithFilterQuery, IEnumerable<Vault>>, RetrieveVaultsWithFilterQueryHandler>();

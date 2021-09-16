@@ -1,17 +1,16 @@
 using AutoMapper;
 using MediatR;
-using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.Nominations;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations
 {
     public class SelectActiveMiningGovernanceNominationsQueryHandler
         : IRequestHandler<SelectActiveMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceNomination>>

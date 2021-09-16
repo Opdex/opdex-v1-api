@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
@@ -42,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Gover
             var nominationPeriodEndResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
             var nominationPeriodEnd = nominationPeriodEndResponse.DeserializeValue<ulong>();
 
-            return new MiningGovernanceContractSummary(request.Address, nominationPeriodEnd, miningPoolsFunded, miningPoolReward, miningDuration);
+            return new MiningGovernanceContractSummary(request.Address, nominationPeriodEnd, miningPoolsFunded, miningPoolReward, miningDuration, Address.Empty);
         }
     }
 }

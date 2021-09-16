@@ -8,7 +8,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations
 {
     public class PersistMiningGovernanceNominationCommandHandler : IRequestHandler<PersistMiningGovernanceNominationCommand, long>
     {

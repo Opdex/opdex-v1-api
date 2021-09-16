@@ -106,6 +106,8 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking;
 using Opdex.Platform.Infrastructure.Clients.SignalR.Handlers;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.Nominations;
+using Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -239,6 +241,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectMiningGovernanceByAddressQuery, MiningGovernance>, SelectMiningGovernanceByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningGovernanceByTokenIdQuery, MiningGovernance>, SelectMiningGovernanceByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery, MiningGovernanceNomination>, SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMiningGovernancesByModifiedBlockQuery, IEnumerable<MiningGovernance>>, SelectMiningGovernancesByModifiedBlockQueryHandler>();
 
             // Transactions
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();

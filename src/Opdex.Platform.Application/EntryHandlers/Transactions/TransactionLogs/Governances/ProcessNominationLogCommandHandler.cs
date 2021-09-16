@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
+using Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Domain.Models.Governances;

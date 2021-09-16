@@ -6,6 +6,7 @@ using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Governances;
 using Opdex.Platform.Infrastructure.Data.Handlers.Governances;
+using Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;

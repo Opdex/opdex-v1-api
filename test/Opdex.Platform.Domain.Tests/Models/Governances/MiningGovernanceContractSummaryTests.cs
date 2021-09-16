@@ -16,7 +16,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             var address = Address.Empty;
 
             // Act
-            void Act() => new MiningGovernanceContractSummary(address, 10, 12, 500, 1_000);
+            void Act() => new MiningGovernanceContractSummary(address, 10, 12, 500, 1_000, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8");
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain($"{nameof(address)} must not be null or empty.");
@@ -29,7 +29,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const ulong miningDuration = 0;
 
             // Act
-            void Act() => new MiningGovernanceContractSummary("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", 10, 12, 500, miningDuration);
+            void Act() => new MiningGovernanceContractSummary("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", 10, 12, 500, miningDuration, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8");
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(miningDuration)} must not be greater than 0.");
@@ -44,9 +44,10 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const uint miningPoolsFunded = 4;
             UInt256 miningPoolReward = 500;
             const ulong miningDuration = 100;
+            Address governanceToken = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
 
             // Act
-            var summary = new MiningGovernanceContractSummary(address, nominationPeriodEnd, miningPoolsFunded, miningPoolReward, miningDuration);
+            var summary = new MiningGovernanceContractSummary(address, nominationPeriodEnd, miningPoolsFunded, miningPoolReward, miningDuration, governanceToken);
 
             // Assert
             summary.Address.Should().Be(address);

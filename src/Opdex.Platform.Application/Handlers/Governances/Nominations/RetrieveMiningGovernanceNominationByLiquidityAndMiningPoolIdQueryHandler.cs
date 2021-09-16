@@ -1,12 +1,12 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Queries.Governances;
+using Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations;
 using Opdex.Platform.Domain.Models.Governances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.Nominations;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Governances
+namespace Opdex.Platform.Application.Handlers.Governances.Nominations
 {
     public class RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHandler
         : IRequestHandler<RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery, MiningGovernanceNomination>

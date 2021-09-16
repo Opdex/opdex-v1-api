@@ -4,7 +4,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Governances
+namespace Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations
 {
     public class RetrieveCirrusMiningGovernanceNominationsQuery : IRequest<IEnumerable<MiningGovernanceNominationCirrusDto>>
     {
