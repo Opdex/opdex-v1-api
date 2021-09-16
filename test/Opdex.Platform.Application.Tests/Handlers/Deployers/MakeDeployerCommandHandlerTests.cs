@@ -1,13 +1,11 @@
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Deployers;
-using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Handlers.Deployers;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models;
-using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers;
 using System;
@@ -90,7 +88,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Deployers
             deployer.RequireRewind();
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetSmartContractPropertyQuery>(), CancellationToken.None))
-                .ReturnsAsync(new SmartContractMethodParameter(newOwner.ToString(), propertyType));
+                .ReturnsAsync(newOwner.ToString());
 
             // Act
             try

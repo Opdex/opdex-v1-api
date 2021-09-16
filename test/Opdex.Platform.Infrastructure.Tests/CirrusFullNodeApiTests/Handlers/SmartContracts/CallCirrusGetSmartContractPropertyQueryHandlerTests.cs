@@ -1,4 +1,3 @@
-using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Constants.SmartContracts;
@@ -119,16 +118,14 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
 
             Address expectedResponse = "PsMroh6zXXNMU9EjmivLgqqARwmH1iT1GL";
 
-            _smartContractsModuleMock.Setup(callTo => callTo.GetContractStorageAsync(contract, stateKey, ((uint)propertyType).ToString(), blockHeight,
-                                                                                      It.IsAny<CancellationToken>()))
+            _smartContractsModuleMock.Setup(callTo => callTo.GetContractStorageAsync(contract, stateKey, ((uint)propertyType).ToString(), blockHeight, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedResponse.ToString());
 
             // Act
             var response = await _handler.Handle(new CallCirrusGetSmartContractPropertyQuery(contract, stateKey, propertyType, blockHeight), CancellationToken.None);
 
             // Assert
-            response.Type.Should().Be(propertyType);
-            response.Value.Should().Be(expectedResponse.ToString());
+            response.Should().Be(expectedResponse.ToString());
         }
     }
 }

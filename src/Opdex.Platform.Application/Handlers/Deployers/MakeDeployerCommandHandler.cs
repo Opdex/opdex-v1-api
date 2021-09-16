@@ -24,12 +24,12 @@ namespace Opdex.Platform.Application.Handlers.Deployers
         {
             if (request.Deployer.Rewind)
             {
-                var ownerProperty = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Deployer.Address,
-                                                                                                     MarketDeployerConstants.StateKeys.Owner,
-                                                                                                     SmartContractParameterType.Address,
-                                                                                                     request.BlockHeight));
+                var owner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Deployer.Address,
+                                                                                             MarketDeployerConstants.StateKeys.Owner,
+                                                                                             SmartContractParameterType.Address,
+                                                                                             request.BlockHeight));
 
-                request.Deployer.SetOwner(new Address(ownerProperty.Value), request.BlockHeight);
+                request.Deployer.SetOwner(new Address(owner), request.BlockHeight);
             }
 
             return await _mediator.Send(new PersistDeployerCommand(request.Deployer), cancellationToken);

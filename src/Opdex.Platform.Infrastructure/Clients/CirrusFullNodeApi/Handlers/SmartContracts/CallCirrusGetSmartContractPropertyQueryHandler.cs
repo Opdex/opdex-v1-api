@@ -1,5 +1,4 @@
 using MediatR;
-using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using System;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
 {
-    public class CallCirrusGetSmartContractPropertyQueryHandler : IRequestHandler<CallCirrusGetSmartContractPropertyQuery, SmartContractMethodParameter>
+    public class CallCirrusGetSmartContractPropertyQueryHandler : IRequestHandler<CallCirrusGetSmartContractPropertyQuery, string>
     {
         private readonly ISmartContractsModule _smartContractsModule;
 
@@ -17,12 +16,12 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
         }
 
-        public async Task<SmartContractMethodParameter> Handle(CallCirrusGetSmartContractPropertyQuery request, CancellationToken cancellationToken)
+        public async Task<string> Handle(CallCirrusGetSmartContractPropertyQuery request, CancellationToken cancellationToken)
         {
-            var value = await _smartContractsModule.GetContractStorageAsync(request.Contract, request.PropertyStateKey, ((uint)request.PropertyType).ToString(),
-                                                                            request.BlockHeight, cancellationToken);
+            var propertyType = ((uint)request.PropertyType).ToString();
 
-            return new SmartContractMethodParameter(value, request.PropertyType);
+            return await _smartContractsModule.GetContractStorageAsync(request.Contract, request.PropertyStateKey,
+                                                                       propertyType, request.BlockHeight, cancellationToken);
         }
     }
 }

@@ -62,5 +62,55 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Modules
             handler.VerifyRequest(HttpMethod.Get,
                                   "https://cirrus.node/SmartContracts/receipt-search?contractAddress=tDrNbZKsbYPvike4RfddzESXZoPwUMm5pL&eventName=SwapLog&fromBlock=10&to=10000");
         }
+
+        [Fact]
+        public async Task GetContractStorageAsync_WithoutToBlock_SendRequest()
+        {
+            // arrange
+            const string baseAddress = "https://cirrus.node/";
+            Address contract = "tDrNbZKsbYPvike4RfddzESXZoPwUMm5pL";
+            const string key = "A";
+            const string type = "9";
+            const ulong blockHeight = 0;
+
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "");
+            var httpClient = handler.CreateClient();
+            httpClient.BaseAddress = new Uri(baseAddress);
+
+            var smartContractsModule = new SmartContractsModule(httpClient, NullLogger<SmartContractsModule>.Instance);
+
+            // act
+            await smartContractsModule.GetContractStorageAsync(contract, key, type, blockHeight, CancellationToken.None);
+
+            // assert
+            handler.VerifyRequest(HttpMethod.Get,
+                                  "https://cirrus.node/SmartContracts/storage?ContractAddress=tDrNbZKsbYPvike4RfddzESXZoPwUMm5pL&StorageKey=A&DataType=9");
+        }
+
+        [Fact]
+        public async Task GetContractStorageAsync_WithToBlock_SendRequest()
+        {
+            // arrange
+            const string baseAddress = "https://cirrus.node/";
+            Address contract = "tDrNbZKsbYPvike4RfddzESXZoPwUMm5pL";
+            const string key = "A";
+            const string type = "9";
+            const ulong blockHeight = 10000;
+
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "");
+            var httpClient = handler.CreateClient();
+            httpClient.BaseAddress = new Uri(baseAddress);
+
+            var smartContractsModule = new SmartContractsModule(httpClient, NullLogger<SmartContractsModule>.Instance);
+
+            // act
+            await smartContractsModule.GetContractStorageAsync(contract, key, type, blockHeight, CancellationToken.None);
+
+            // assert
+            handler.VerifyRequest(HttpMethod.Get,
+                                  "https://cirrus.node/SmartContracts/storage?ContractAddress=tDrNbZKsbYPvike4RfddzESXZoPwUMm5pL&StorageKey=A&DataType=9&BlockHeight=10000");
+        }
     }
 }
