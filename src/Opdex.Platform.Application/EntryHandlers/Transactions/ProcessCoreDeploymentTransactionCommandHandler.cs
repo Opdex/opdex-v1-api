@@ -56,7 +56,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                 await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime.Value));
 
-                var deployerId = await _mediator.Send(new CreateDeployerCommand(transaction.NewContractAddress, transaction.From, transaction.BlockHeight, isUpdate: false));
+                var deployerId = await _mediator.Send(new CreateDeployerCommand(transaction.NewContractAddress, transaction.From,
+                                                                                transaction.BlockHeight, isUpdate: false));
 
                 if (transaction.Id == 0)
                 {

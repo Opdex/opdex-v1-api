@@ -22,6 +22,7 @@ namespace Opdex.Platform.Application.Handlers.Deployers
 
         public async Task<long> Handle(MakeDeployerCommand request, CancellationToken cancellationToken)
         {
+            // When rewind is true, force the update of updatable properties prior to persistence
             if (request.Deployer.Rewind)
             {
                 var owner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Deployer.Address,
@@ -32,6 +33,7 @@ namespace Opdex.Platform.Application.Handlers.Deployers
                 request.Deployer.SetOwner(new Address(owner), request.BlockHeight);
             }
 
+            // Persist the deployer
             return await _mediator.Send(new PersistDeployerCommand(request.Deployer), cancellationToken);
         }
     }

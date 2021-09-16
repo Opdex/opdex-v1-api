@@ -5,8 +5,17 @@ using Opdex.Platform.Domain.Models.Addresses;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Addresses
 {
+    /// <summary>
+    /// Create the make address balance command where address' SRC balances are refreshed by calling full node.
+    /// </summary>
     public class MakeAddressBalanceCommand : IRequest<long>
     {
+        /// <summary>
+        /// Create the make address balance command.
+        /// </summary>
+        /// <param name="addressBalance">The address balance domain model being made.</param>
+        /// <param name="token">The address of the token that the balance represents.</param>
+        /// <param name="blockHeight">The block height of the balance record modification.</param>
         public MakeAddressBalanceCommand(AddressBalance addressBalance, Address token, ulong blockHeight)
         {
             AddressBalance = addressBalance ?? throw new ArgumentNullException(nameof(addressBalance), "Address balance must be provided.");

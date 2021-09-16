@@ -32,7 +32,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
             const ulong blockHeight = 10;
 
             // Act
-            void Act() => new CreateDeployerCommand(null, owner, blockHeight);
+            void Act() => new CreateDeployerCommand(null, owner, blockHeight, false);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Contains("Deployer address must be provided.");
@@ -46,7 +46,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
             const ulong blockHeight = 10;
 
             // Act
-            void Act() => new CreateDeployerCommand(deployer, null, blockHeight);
+            void Act() => new CreateDeployerCommand(deployer, null, blockHeight, true);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Contains("Owner address must be provided.");
@@ -60,7 +60,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
             Address deployer = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
 
             // Act
-            void Act() => new CreateDeployerCommand(deployer, owner, 0);
+            void Act() => new CreateDeployerCommand(deployer, owner, 0, false);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
@@ -120,7 +120,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
             const ulong blockHeight = 10;
 
             // Act
-            await _handler.Handle(new CreateDeployerCommand(deployer, owner, blockHeight), CancellationToken.None);
+            await _handler.Handle(new CreateDeployerCommand(deployer, owner, blockHeight, false), CancellationToken.None);
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<MakeDeployerCommand>(q => q.Deployer.Address == deployer &&

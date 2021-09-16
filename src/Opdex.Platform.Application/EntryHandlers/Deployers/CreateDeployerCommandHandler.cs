@@ -24,7 +24,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Deployers
             var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Deployer, findOrThrow: request.IsUpdate)) ??
                            new Deployer(request.Deployer, request.Owner, isActive: true, request.BlockHeight);
 
-            var hasApplicableUpdates = request.IsUpdate && deployer.Owner != request.Owner;
+            // Only update when owners are different and request block is higher than deployer modified block
+            var hasApplicableUpdates = request.IsUpdate &&
+                                       deployer.Owner != request.Owner &&
+                                       deployer.ModifiedBlock < request.BlockHeight;
 
             if (hasApplicableUpdates)
             {
