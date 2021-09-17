@@ -49,8 +49,8 @@ namespace Opdex.Platform.Application.Handlers.Governances
                                                                                               SmartContractParameterType.Address,
                                                                                               request.BlockHeight));
 
-            return new MiningGovernanceContractSummary(request.Governance, nominationPeriodEnd.Parse<ulong>(), poolsFunded.Parse<uint>(),
-                                                       miningPoolReward.Parse<UInt256>(), miningDuration.Parse<ulong>(), minedToken.Parse<Address>());
+            return new MiningGovernanceContractSummary(request.Governance, minedToken.Parse<Address>(), nominationPeriodEnd.Parse<ulong>(),
+                                                       poolsFunded.Parse<uint>(), miningPoolReward.Parse<UInt256>(), miningDuration.Parse<ulong>());
         }
     }
 }

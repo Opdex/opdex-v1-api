@@ -19,7 +19,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Governances
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        // Todo: This assumes the record is an update, make it idempotent w/ creates
         public async Task<long> Handle(CreateMiningGovernanceCommand request, CancellationToken cancellationToken)
         {
             // Throw if this is an expected update and the record is not found
@@ -27,26 +26,26 @@ namespace Opdex.Platform.Application.EntryHandlers.Governances
 
             var hasApplicableUpdates = request.IsUpdate && miningGovernance.ModifiedBlock < request.BlockHeight;
 
-            if (miningGovernance == null || hasApplicableUpdates)
+            if (miningGovernance != null && !hasApplicableUpdates)
             {
-                var summary = await _mediator.Send(new RetrieveMiningGovernanceContractSummaryByAddressQuery(request.Governance, request.BlockHeight));
-
-                if (hasApplicableUpdates)
-                {
-                    miningGovernance.Update(summary, request.BlockHeight);
-                }
-                else
-                {
-                    var token = await _mediator.Send(new RetrieveTokenByAddressQuery(summary.MinedToken));
-
-                    miningGovernance = new MiningGovernance(request.Governance, token.Id, summary.NominationPeriodEnd, summary.MiningDuration,
-                                                            summary.MiningPoolsFunded, summary.MiningPoolReward, request.BlockHeight);
-                }
+                return miningGovernance.Id;
             }
 
-            return hasApplicableUpdates || miningGovernance.Id == 0
-                ? await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance, request.BlockHeight, rewind: false))
-                : miningGovernance.Id;
+            var summary = await _mediator.Send(new RetrieveMiningGovernanceContractSummaryByAddressQuery(request.Governance, request.BlockHeight));
+
+            if (hasApplicableUpdates)
+            {
+                miningGovernance.Update(summary, request.BlockHeight);
+            }
+            else
+            {
+                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(summary.MinedToken));
+
+                miningGovernance = new MiningGovernance(request.Governance, token.Id, summary.NominationPeriodEnd, summary.MiningDuration,
+                                                        summary.MiningPoolsFunded, summary.MiningPoolReward, request.BlockHeight);
+            }
+
+            return await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance, request.BlockHeight, rewind: false));
         }
     }
 }

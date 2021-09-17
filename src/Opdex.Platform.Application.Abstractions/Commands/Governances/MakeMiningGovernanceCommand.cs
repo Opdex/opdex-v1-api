@@ -13,7 +13,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Governances
                 throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
             }
 
-            MiningGovernance = miningGovernance ?? throw new ArgumentNullException(nameof(miningGovernance));
+            MiningGovernance = miningGovernance ?? throw new ArgumentNullException(nameof(miningGovernance), "Mining governance must be provided.");
             BlockHeight = blockHeight;
             Rewind = rewind;
         }

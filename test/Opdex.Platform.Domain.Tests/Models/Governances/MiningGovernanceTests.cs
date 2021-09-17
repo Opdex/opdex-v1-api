@@ -121,7 +121,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             var governance = new MiningGovernance(id, address, tokenId, nominationPeriodEnd, miningDuration, miningPoolsFunded,
                                                   miningPoolReward, createdBlock, createdBlock);
 
-            var summary = new MiningGovernanceContractSummary(address, nominationPeriodEnd + 10, miningPoolsFunded + 4, 1000, 1000, governanceToken);
+            var summary = new MiningGovernanceContractSummary(address, governanceToken, nominationPeriodEnd + 10, miningPoolsFunded + 4, 1000, 1000);
 
             const ulong modifiedBlock = 150;
 
