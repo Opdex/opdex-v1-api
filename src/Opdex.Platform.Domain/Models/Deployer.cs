@@ -1,7 +1,6 @@
 using System;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
-using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
 namespace Opdex.Platform.Domain.Models
 {
@@ -38,9 +37,14 @@ namespace Opdex.Platform.Domain.Models
         public Address Owner { get; private set; }
         public bool IsActive { get; }
 
-        public void SetOwner(ClaimPendingDeployerOwnershipLog log, ulong blockHeight)
+        public void SetOwner(Address owner, ulong blockHeight)
         {
-            Owner = log.To;
+            if (owner == Address.Empty)
+            {
+                throw new ArgumentNullException(nameof(owner), "Owner address must be provided.");
+            }
+
+            Owner = owner;
             SetModifiedBlock(blockHeight);
         }
     }

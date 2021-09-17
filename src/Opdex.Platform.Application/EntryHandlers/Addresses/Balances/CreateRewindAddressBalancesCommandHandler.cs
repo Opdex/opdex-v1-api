@@ -37,7 +37,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Balances
 
                 foreach (var chunk in balanceChunks)
                 {
-                    // Each chunk runs in parallel
+                    // Each chunk runs in parallel where the address balance will be updated by rewind height
                     var tasks = chunk.Select(balance => _mediator.Send(new MakeAddressBalanceCommand(balance, token.Address, request.RewindHeight)));
 
                     await Task.WhenAll(tasks);

@@ -2,6 +2,7 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Exceptions;
 using System;
@@ -34,6 +35,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
             // Refresh stale records
             await _mediator.Send(new CreateRewindAddressBalancesCommand(request.Block));
+            await _mediator.Send(new CreateRewindDeployersCommand(request.Block));
 
             return rewound;
         }
