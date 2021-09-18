@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
@@ -24,9 +25,13 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return GetAsync<ContractCodeDto>(uri, cancellationToken);
         }
 
-        public Task<string> GetContractStorageAsync(Address address, string storageKey, string dataType, CancellationToken cancellationToken)
+        public Task<string> GetContractStorageAsync(Address address, string storageKey, SmartContractParameterType dataType,
+                                                    ulong blockHeight, CancellationToken cancellationToken)
         {
-            var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractStorageItem, address, storageKey, dataType);
+            var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractStorageItem, address, storageKey, ((uint)dataType).ToString());
+
+            if (blockHeight > 0) uri += $"&BlockHeight={blockHeight}";
+
             return GetAsync<string>(uri, cancellationToken);
         }
 
@@ -42,7 +47,8 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return GetAsync<TransactionReceiptDto>(uri, cancellationToken);
         }
 
-        public Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(Address contractAddress, string logName, ulong fromBlock, ulong? toBlock, CancellationToken cancellationToken)
+        public Task<IEnumerable<TransactionReceiptDto>> ReceiptSearchAsync(Address contractAddress, string logName, ulong fromBlock,
+                                                                           ulong? toBlock, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractReceiptSearch, contractAddress, logName, fromBlock);
 

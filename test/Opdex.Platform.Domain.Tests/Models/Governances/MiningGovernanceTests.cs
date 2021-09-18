@@ -116,10 +116,12 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const uint miningPoolsFunded = 12;
             UInt256 miningPoolReward = 500;
             const ulong createdBlock = 150;
+            Address governanceToken = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
+
             var governance = new MiningGovernance(id, address, tokenId, nominationPeriodEnd, miningDuration, miningPoolsFunded,
                                                   miningPoolReward, createdBlock, createdBlock);
 
-            var summary = new MiningGovernanceContractSummary(address, nominationPeriodEnd + 10, miningPoolsFunded + 4, 1000, 1000);
+            var summary = new MiningGovernanceContractSummary(address, governanceToken, nominationPeriodEnd + 10, miningPoolsFunded + 4, 1000, 1000);
 
             const ulong modifiedBlock = 150;
 

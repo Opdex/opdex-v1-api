@@ -4,18 +4,16 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
-using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
-using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Common.Models.UInt;
-using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
@@ -91,21 +89,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 }
 
                 // Get and/or create mining governance
-                var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(stakingTokenId, findOrThrow: false));
-
-                if (miningGovernance == null)
-                {
-                    // Get governance contract summary
-                    var governanceSummary = await _mediator.Send(new RetrieveMiningGovernanceContractSummaryByAddressQuery(tokenSummary.MiningGovernance));
-
-                    // Create
-                    miningGovernance = new MiningGovernance(tokenSummary.MiningGovernance, stakingTokenId, governanceSummary.NominationPeriodEnd,
-                                                            governanceSummary.MiningDuration, governanceSummary.MiningPoolsFunded,
-                                                            governanceSummary.MiningPoolReward, transaction.BlockHeight);
-
-                    // Persist
-                    await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance));
-                }
+                var governanceId = await _mediator.Send(new CreateMiningGovernanceCommand(tokenSummary.MiningGovernance, transaction.BlockHeight, isUpdate: false));
 
                 if (transaction.Id == 0)
                 {

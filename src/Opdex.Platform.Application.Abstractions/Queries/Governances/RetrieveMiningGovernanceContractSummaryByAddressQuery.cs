@@ -7,16 +7,23 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Governances
 {
     public class RetrieveMiningGovernanceContractSummaryByAddressQuery : IRequest<MiningGovernanceContractSummary>
     {
-        public RetrieveMiningGovernanceContractSummaryByAddressQuery(Address address)
+        public RetrieveMiningGovernanceContractSummaryByAddressQuery(Address governance, ulong blockHeight)
         {
-            if (address == Address.Empty)
+            if (governance == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(governance), "Governance address must be provided.");
             }
 
-            Address = address;
+            if (blockHeight == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
+            }
+
+            Governance = governance;
+            BlockHeight = blockHeight;
         }
 
-        public Address Address { get; }
+        public Address Governance { get; }
+        public ulong BlockHeight { get; }
     }
 }

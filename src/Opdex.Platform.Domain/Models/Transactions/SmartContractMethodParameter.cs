@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
@@ -104,8 +106,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
         public SmartContractParameterType Type
         {
             get => _parameterType;
-            private set => _parameterType = value != SmartContractParameterType.Unknown && value.IsValid()
-                                                ? value : throw new ArgumentOutOfRangeException("Smart contract parameter type must be known and valid.");
+            private set => _parameterType = value.IsValid() ? value : throw new ArgumentOutOfRangeException("Smart contract parameter type must be known and valid.");
         }
 
         public string Serialize() => $"{(uint)Type}#{Value}";
@@ -137,6 +138,15 @@ namespace Opdex.Platform.Domain.Models.Transactions
                 SmartContractParameterType.UInt256 => new SmartContractMethodParameter(UInt256.Parse(values[1])),
                 _ => throw new ArgumentException("Serialized parameter is not a recognized type."),
             };
+        }
+
+        public T Parse<T>()
+        {
+            // Todo: probably should do some checks on what T is vs what our known Type is.
+            var value = JsonConvert.SerializeObject(Value);
+
+            // Extra safe, add our serialization settings in here so we can test each type in unit tests
+            return JsonConvert.DeserializeObject<T>(value, Serialization.DefaultJsonSettings);
         }
     }
 }

@@ -3,9 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Commands.Deployers;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
-using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers
@@ -24,18 +23,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             try
             {
                 var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
 
-                var marketDeployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true));
+                if (!persisted) return false;
 
-                marketDeployer.SetOwner(request.Log, request.BlockHeight);
+                var deployer = await _mediator.Send(new CreateDeployerCommand(request.Log.Contract, request.Log.To, request.BlockHeight, isUpdate: true));
 
-                var deployed = await _mediator.Send(new MakeDeployerCommand(marketDeployer));
-
-                return deployed > 1;
+                return deployer > 0;
             }
             catch (Exception ex)
             {

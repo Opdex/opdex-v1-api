@@ -244,5 +244,159 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             parameter.Type.Should().Be(SmartContractParameterType.Address);
             parameter.Value.Should().Be(address.ToString());
         }
+
+        [Fact]
+        public void Parse_Boolean()
+        {
+            // Arrange
+            const bool value = true;
+            var parameter = new SmartContractMethodParameter(value);
+
+            // Act
+            var parsed = parameter.Parse<bool>();
+
+            // Assert
+            parsed.Should().Be(value);
+        }
+
+        [Fact]
+        public void Parse_Byte()
+        {
+            // Arrange
+            const byte value = 1;
+            var parameter = new SmartContractMethodParameter(value);
+
+            // Act
+            var parsed = parameter.Parse<byte>();
+
+            // Assert
+            parsed.Should().Be(value);
+        }
+
+        [Fact]
+        public void Parse_Char()
+        {
+            // Arrange
+            const char value = 't';
+            var parameter = new SmartContractMethodParameter(value);
+
+            // Act
+            var parsed = parameter.Parse<char>();
+
+            // Assert
+            parsed.Should().Be(value);
+        }
+
+        [Fact]
+        public void Parse_String()
+        {
+            // Arrange
+            const string value = "Test";
+            var parameter = new SmartContractMethodParameter(value);
+
+            // Act
+            var parsed = parameter.Parse<string>();
+
+            // Assert
+            parsed.Should().Be(value);
+        }
+
+        [Fact]
+        public void Parse_UInt32()
+        {
+            // Arrange
+            const uint value = 10;
+            var parameter = new SmartContractMethodParameter(value);
+
+            // Act
+            var parsed = parameter.Parse<uint>();
+
+            // Assert
+            parsed.Should().Be(value);
+        }
+
+        [Fact]
+        public void Parse_Int32()
+        {
+            // Arrange
+            const int value = 10;
+            var parameter = new SmartContractMethodParameter(value);
+
+            // Act
+            var parsed = parameter.Parse<int>();
+
+            // Assert
+            parsed.Should().Be(value);
+        }
+
+        [Fact]
+        public void Parse_UInt64()
+        {
+            // Arrange
+            const ulong value = 10;
+            var parameter = new SmartContractMethodParameter(value);
+
+            // Act
+            var parsed = parameter.Parse<ulong>();
+
+            // Assert
+            parsed.Should().Be(value);
+        }
+
+        [Fact]
+        public void Parse_Int64()
+        {
+            // Arrange
+            const long value = 10;
+            var parameter = new SmartContractMethodParameter(value);
+
+            // Act
+            var parsed = parameter.Parse<long>();
+
+            // Assert
+            parsed.Should().Be(value);
+        }
+
+        [Fact]
+        public void Parse_UInt128()
+        {
+            // Arrange
+            UInt128 value = new UInt128("10");
+            var parameter = new SmartContractMethodParameter(value);
+
+            // Act
+            var parsed = parameter.Parse<UInt128>();
+
+            // Assert
+            parsed.Should().Be(value);
+        }
+
+        [Fact]
+        public void Parse_UInt256()
+        {
+            // Arrange
+            UInt256 value = new UInt256("10");
+            var parameter = new SmartContractMethodParameter(value);
+
+            // Act
+            var parsed = parameter.Parse<UInt256>();
+
+            // Assert
+            parsed.Should().Be(value);
+        }
+
+        [Fact]
+        public void Parse_Address()
+        {
+            // Arrange
+            var value = new Address("PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy");
+            var parameter = new SmartContractMethodParameter(value);
+
+            // Act
+            var parsed = parameter.Parse<Address>();
+
+            // Assert
+            parsed.Should().Be(value);
+        }
     }
 }
