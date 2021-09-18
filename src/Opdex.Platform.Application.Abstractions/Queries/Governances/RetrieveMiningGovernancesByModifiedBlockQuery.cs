@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Governances
 {
-    public class RetrieveMiningGovernancesByModifiedBlockQuery  : IRequest<IEnumerable<MiningGovernance>>
+    public class RetrieveMiningGovernancesByModifiedBlockQuery : IRequest<IEnumerable<MiningGovernance>>
     {
         public RetrieveMiningGovernancesByModifiedBlockQuery(ulong blockHeight)
         {

@@ -80,7 +80,6 @@ using Opdex.Platform.Application.Handlers.Transactions.Wallet;
 using Opdex.Platform.Application.Handlers.Vaults;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
@@ -290,6 +289,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateRewardMiningPoolsTransactionQuoteCommand, TransactionQuoteDto>, CreateRewardMiningPoolsTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateMiningGovernanceCommand, long>, CreateMiningGovernanceCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindMiningGovernancesCommand, bool>, CreateRewindMiningGovernancesCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateGovernanceNominationsCommand, bool>, CreateGovernanceNominationsCommandHandler>();
 
             // Tokens
             services.AddTransient<IRequestHandler<CreateCrsTokenSnapshotsCommand, Unit>, CreateCrsTokenSnapshotsCommandHandler>();
@@ -388,8 +388,8 @@ namespace Opdex.Platform.Application
 
             // Governances
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceContractSummaryByAddressQuery, MiningGovernanceContractSummary>, RetrieveMiningGovernanceContractSummaryByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveActiveMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceNomination>>, RetrieveActiveMiningGovernanceNominationsQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveCirrusMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceNominationCirrusDto>>, RetrieveCirrusMiningGovernanceNominationsQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveActiveGovernanceNominationsByGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>, RetrieveActiveGovernanceNominationsByGovernanceIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveCirrusMiningGovernanceNominationsQuery, IEnumerable<GovernanceContractNominationSummary>>, RetrieveCirrusMiningGovernanceNominationsQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernancesWithFilterQuery, IEnumerable<MiningGovernance>>, RetrieveMiningGovernancesWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceByAddressQuery, MiningGovernance>, RetrieveMiningGovernanceByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceByTokenIdQuery, MiningGovernance>, RetrieveMiningGovernanceByTokenIdQueryHandler>();
@@ -470,6 +470,7 @@ namespace Opdex.Platform.Application
             // Governances
             services.AddTransient<IRequestHandler<MakeMiningGovernanceCommand, long>, MakeMiningGovernanceCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMiningGovernanceNominationCommand, long>, MakeMiningGovernanceNominationCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeGovernanceNominationsCommand, bool>, MakeGovernanceNominationsCommandHandler>();
 
             // Vaults
             services.AddTransient<IRequestHandler<MakeVaultCommand, long>, MakeVaultCommandHandler>();

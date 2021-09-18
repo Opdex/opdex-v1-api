@@ -114,7 +114,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             var nominatedPools = await _mediator.Send(new RetrieveCirrusMiningGovernanceNominationsQuery(miningGovernance, blockHeight));
 
             var nominatedLiquidityPools = await Task.WhenAll(
-                nominatedPools.Select(nomination => _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(nomination.StakingPool))));
+                nominatedPools.Select(nomination => _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(nomination.LiquidityPool))));
 
             var nominatedMiningPools = await Task.WhenAll(
                 nominatedLiquidityPools.Select(pool => _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id))));

@@ -1,12 +1,13 @@
 using MediatR;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using System;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations
 {
-    public class RetrieveCirrusMiningGovernanceNominationsQuery : IRequest<IEnumerable<MiningGovernanceNominationCirrusDto>>
+    public class RetrieveCirrusMiningGovernanceNominationsQuery : IRequest<IEnumerable<GovernanceContractNominationSummary>>
     {
         public RetrieveCirrusMiningGovernanceNominationsQuery(Address address, ulong blockHeight)
         {

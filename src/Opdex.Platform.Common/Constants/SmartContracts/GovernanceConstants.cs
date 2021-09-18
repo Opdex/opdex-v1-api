@@ -20,8 +20,15 @@ namespace Opdex.Platform.Common.Constants.SmartContracts
 
         public static class Properties
         {
-            // Insert properties as we would need them for a local call
-            // (e.g. get_PropertyName)
+            public const string MinedToken = nameof(StateKeys.MinedToken);
+            public const string Notified = nameof(StateKeys.Notified);
+            public const string Nominations = nameof(StateKeys.Nominations);
+            public const string MiningDuration = nameof(StateKeys.MiningDuration);
+            public const string NominationPeriodEnd = nameof(StateKeys.NominationPeriodEnd);
+            public const string MiningPoolsFunded = nameof(StateKeys.MiningPoolsFunded);
+            public const string MiningPoolReward = nameof(StateKeys.MiningPoolReward);
+            public const string Locked = nameof(StateKeys.Locked);
+            public const string MiningPool = nameof(StateKeys.MiningPool);
         }
 
         public static class Methods
