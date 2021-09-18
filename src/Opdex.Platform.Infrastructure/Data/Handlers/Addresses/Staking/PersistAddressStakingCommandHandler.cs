@@ -5,6 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -66,7 +67,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failure persisting address staking for owner: {request.AddressStaking.Owner}");
+                using (_logger.BeginScope(new Dictionary<string, object>
+                {
+                    ["LiquidityPoolId"] = request.AddressStaking.LiquidityPoolId,
+                    ["Owner"] = request.AddressStaking.Owner,
+                    ["Weight"] = request.AddressStaking.Weight,
+                    ["BlockHeight"] = request.AddressStaking.ModifiedBlock
+                }))
+                {
+                    _logger.LogError(ex, $"Failure persisting staking position.");
+                }
 
                 return 0;
             }

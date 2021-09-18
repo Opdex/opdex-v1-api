@@ -1,8 +1,11 @@
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
@@ -24,7 +27,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public CreateRewindToBlockCommandHandlerTests()
         {
             _mediator = new Mock<IMediator>();
-            _handler = new CreateRewindToBlockCommandHandler(_mediator.Object);
+            _handler = new CreateRewindToBlockCommandHandler(_mediator.Object, Mock.Of<ILogger<CreateRewindToBlockCommandHandler>>());
         }
 
         [Fact]
@@ -139,6 +142,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(block);
             _mediator.Setup(m => m.Send(It.IsAny<MakeRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindAddressBalancesCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMiningPositionsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            _mediator.Setup(m => m.Send(It.IsAny<CreateRewindStakingPositionsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindDeployersCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             // Act

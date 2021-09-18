@@ -152,6 +152,8 @@ using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
 
 namespace Opdex.Platform.Application
 {
@@ -294,6 +296,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateApproveAllowanceTransactionQuoteCommand, TransactionQuoteDto>, CreateApproveAllowanceTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateDistributeTokensTransactionQuoteCommand, TransactionQuoteDto>, CreateDistributeTokensTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindAddressBalancesCommand, bool>, CreateRewindAddressBalancesCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindMiningPositionsCommand, bool>, CreateRewindMiningPositionsCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindStakingPositionsCommand, bool>, CreateRewindStakingPositionsCommandHandler>();
             services.AddTransient<IRequestHandler<CreateAddressBalanceCommand, long>, CreateAddressBalanceCommandHandler>();
 
             // Transaction Log Processors
@@ -415,6 +419,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveMiningPositionsWithFilterQuery, IEnumerable<AddressMining>>, RetrieveMiningPositionsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveStakingPositionsWithFilterQuery, IEnumerable<AddressStaking>>, RetrieveStakingPositionsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAddressBalancesByModifiedBlockQuery, IEnumerable<AddressBalance>>, RetrieveAddressBalancesByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMiningPositionsByModifiedBlockQuery, IEnumerable<AddressMining>>, RetrieveMiningPositionsByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveStakingPositionsByModifiedBlockQuery, IEnumerable<AddressStaking>>, RetrieveStakingPositionsByModifiedBlockQueryHandler>();
 
             // CMC
             services.AddTransient<IRequestHandler<RetrieveCmcStraxPriceQuery, decimal>, RetrieveCmcStraxPriceQueryHandler>();

@@ -260,6 +260,8 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectMiningPositionsWithFilterQuery, IEnumerable<AddressMining>>, SelectMiningPositionsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectStakingPositionsWithFilterQuery, IEnumerable<AddressStaking>>, SelectStakingPositionsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectAddressBalancesByModifiedBlockQuery, IEnumerable<AddressBalance>>, SelectAddressBalancesByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMiningPositionsByModifiedBlockQuery, IEnumerable<AddressMining>>, SelectMiningPositionsByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectStakingPositionsByModifiedBlockQuery, IEnumerable<AddressStaking>>, SelectStakingPositionsByModifiedBlockQueryHandler>();
 
             // Indexer
             services.AddTransient<IRequestHandler<SelectIndexerLockQuery, IndexLock>, SelectIndexerLockQueryHandler>();
@@ -303,6 +305,8 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetVaultTotalSupplyQuery, UInt256>, CallCirrusGetVaultTotalSupplyQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>, CallCirrusLocalCallSmartContractMethodCommandHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAddressBalanceQuery, ulong>, CallCirrusGetAddressBalanceQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetMiningBalanceForAddressQuery, UInt256>, CallCirrusGetMiningBalanceForAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetStakingWeightForAddressQuery, UInt256>, CallCirrusGetStakingWeightForAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetMiningPoolByTokenQuery, Address>, CallCirrusGetMiningPoolByTokenQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSmartContractPropertyQuery, SmartContractMethodParameter>, CallCirrusGetSmartContractPropertyQueryHandler>();
 
