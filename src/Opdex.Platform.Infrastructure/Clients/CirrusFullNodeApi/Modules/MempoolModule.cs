@@ -10,7 +10,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 {
     public class MempoolModule : ApiClientBase, IMempoolModule
     {
-        public MempoolModule(HttpClient httpClient, ILogger logger) : base(httpClient, logger)
+        public MempoolModule(HttpClient httpClient, ILogger<MempoolModule> logger) : base(httpClient, logger)
         {
         }
 

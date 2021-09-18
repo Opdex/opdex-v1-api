@@ -239,6 +239,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateTransactionCommand, bool>, CreateTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateTransactionBroadcastCommand, string>, CreateTransactionBroadcastCommandHandler>();
             services.AddTransient<IRequestHandler<CreateTransactionQuoteCommand, TransactionQuoteDto>, CreateTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateNotifyUserOfTransactionBroadcastCommand, bool>, CreateNotifyUserOfTransactionBroadcastCommandHandler>();
 
             // Markets
             services.AddTransient<IRequestHandler<ProcessMarketSnapshotsCommand, Unit>, ProcessMarketSnapshotsCommandHandler>();
@@ -436,6 +437,7 @@ namespace Opdex.Platform.Application
             // Transactions
             services.AddTransient<IRequestHandler<MakeTransactionCommand, long>, MakeTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTransactionQuoteCommand, TransactionQuote>, MakeTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeNotifyUserOfTransactionBroadcastCommand, bool>, MakeNotifyUserOfTransactionBroadcastCommandHandler>();
 
             // Liquidity Pools
             services.AddTransient<IRequestHandler<MakeLiquidityPoolCommand, long>, MakeLiquidityPoolCommandHandler>();
