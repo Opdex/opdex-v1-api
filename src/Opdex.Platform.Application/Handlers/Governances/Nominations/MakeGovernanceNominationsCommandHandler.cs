@@ -34,9 +34,8 @@ namespace Opdex.Platform.Application.Handlers.Governances.Nominations
 
                 var nomination = dbNominations.SingleOrDefault(nom => nom.LiquidityPoolId == liquidityPool.Id && nom.MiningPoolId == miningPool.Id);
 
-                nomination ??= await _mediator.Send(new RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(request.Governance.Id,
-                                                                                                                          liquidityPool.Id,
-                                                                                                                          miningPool.Id));
+                nomination ??= await _mediator.Send(new RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(request.Governance.Id, liquidityPool.Id,
+                                                                                                                          miningPool.Id, findOrThrow: false));
 
                 nomination ??= new MiningGovernanceNomination(request.Governance.Id, liquidityPool.Id, miningPool.Id, true,
                                                               summary.StakingWeight, request.BlockHeight);
@@ -48,11 +47,13 @@ namespace Opdex.Platform.Application.Handlers.Governances.Nominations
             }));
 
             // Each db nomination that is not a current nomination, set is nominated to false.
-            foreach (var dbNomination in dbNominations.Where(nom => currentNominationIds.All(currentId => currentId != nom.Id)))
+            var disabledNominations = dbNominations.Where(nom => currentNominationIds.All(currentId => currentId != nom.Id));
+
+            await Task.WhenAll(disabledNominations.Select(nomination =>
             {
-                dbNomination.SetStatus(false, request.BlockHeight);
-                await _mediator.Send(new MakeMiningGovernanceNominationCommand(dbNomination));
-            }
+                nomination.SetStatus(false, request.BlockHeight);
+                return _mediator.Send(new MakeMiningGovernanceNominationCommand(nomination));
+            }));
 
             return true;
         }
