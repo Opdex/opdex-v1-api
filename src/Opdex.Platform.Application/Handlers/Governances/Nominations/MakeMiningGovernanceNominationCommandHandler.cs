@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Governances
+namespace Opdex.Platform.Application.Handlers.Governances.Nominations
 {
     public class MakeMiningGovernanceNominationCommandHandler : IRequestHandler<MakeMiningGovernanceNominationCommand, long>
     {

@@ -9,19 +9,19 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Governances
 {
-    public class RetrieveActiveMiningGovernanceNominationsQueryHandler
-        : IRequestHandler<RetrieveActiveMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceNomination>>
+    public class RetrieveMiningGovernancesByModifiedBlockQueryHandler
+        : IRequestHandler<RetrieveMiningGovernancesByModifiedBlockQuery, IEnumerable<MiningGovernance>>
     {
         private readonly IMediator _mediator;
 
-        public RetrieveActiveMiningGovernanceNominationsQueryHandler(IMediator mediator)
+        public RetrieveMiningGovernancesByModifiedBlockQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<IEnumerable<MiningGovernanceNomination>> Handle(RetrieveActiveMiningGovernanceNominationsQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<MiningGovernance>> Handle(RetrieveMiningGovernancesByModifiedBlockQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectActiveMiningGovernanceNominationsQuery(), cancellationToken);
+            return _mediator.Send(new SelectMiningGovernancesByModifiedBlockQuery(request.BlockHeight), cancellationToken);
         }
     }
 }

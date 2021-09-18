@@ -1,13 +1,12 @@
 using MediatR;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.Governances;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Governances
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.Governances
 {
-    public class RetrieveMiningGovernanceContractSummaryByAddressQuery : IRequest<MiningGovernanceContractSummary>
+    public class CreateMiningGovernanceCommand : IRequest<long>
     {
-        public RetrieveMiningGovernanceContractSummaryByAddressQuery(Address governance, ulong blockHeight)
+        public CreateMiningGovernanceCommand(Address governance, ulong blockHeight, bool isUpdate)
         {
             if (governance == Address.Empty)
             {
@@ -21,9 +20,11 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Governances
 
             Governance = governance;
             BlockHeight = blockHeight;
+            IsUpdate = isUpdate;
         }
 
         public Address Governance { get; }
         public ulong BlockHeight { get; }
+        public bool IsUpdate { get; }
     }
 }

@@ -7,10 +7,12 @@ using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
+using Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Domain.Models.Governances;
@@ -70,18 +72,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     if (vaultUpdates == 0) return false;
                 }
 
-                // Modify mining governance if applicable
-                if (request.BlockHeight >= governance.ModifiedBlock)
-                {
-                    if (request.Log.PeriodIndex == 0)
-                    {
-                        var summary = await _mediator.Send(new RetrieveMiningGovernanceContractSummaryByAddressQuery(governance.Address));
-
-                        governance.Update(summary, request.BlockHeight);
-
-                        await _mediator.Send(new MakeMiningGovernanceCommand(governance));
-                    }
-                }
+                // Update mining governance if applicable
+                await _mediator.Send(new CreateMiningGovernanceCommand(governance.Address, request.BlockHeight, true));
 
                 // Process the distributed token total supply updates
                 if (request.BlockHeight >= token.ModifiedBlock)
@@ -122,7 +114,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             var nominatedPools = await _mediator.Send(new RetrieveCirrusMiningGovernanceNominationsQuery(miningGovernance, blockHeight));
 
             var nominatedLiquidityPools = await Task.WhenAll(
-                nominatedPools.Select(nomination => _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(nomination.StakingPool))));
+                nominatedPools.Select(nomination => _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(nomination.LiquidityPool))));
 
             var nominatedMiningPools = await Task.WhenAll(
                 nominatedLiquidityPools.Select(pool => _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id))));

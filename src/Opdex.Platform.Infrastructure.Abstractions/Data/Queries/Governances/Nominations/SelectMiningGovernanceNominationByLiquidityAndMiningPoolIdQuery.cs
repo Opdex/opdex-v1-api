@@ -2,7 +2,7 @@ using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Governances;
 using System;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.Nominations
 {
     public class SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery : FindQuery<MiningGovernanceNomination>
     {

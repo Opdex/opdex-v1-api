@@ -1,14 +1,15 @@
 using MediatR;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Governances
+namespace Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations
 {
-    public class CallCirrusGetMiningGovernanceSummaryNominationsQuery : IRequest<IEnumerable<MiningGovernanceNominationCirrusDto>>
+    public class RetrieveCirrusMiningGovernanceNominationsQuery : IRequest<IEnumerable<GovernanceContractNominationSummary>>
     {
-        public CallCirrusGetMiningGovernanceSummaryNominationsQuery(Address address, ulong blockHeight)
+        public RetrieveCirrusMiningGovernanceNominationsQuery(Address address, ulong blockHeight)
         {
             if (address == Address.Empty)
             {
@@ -17,7 +18,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
 
             if (blockHeight < 1)
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentOutOfRangeException(nameof(blockHeight));
             }
 
             Address = address;
