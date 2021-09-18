@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
@@ -23,7 +24,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         public CreateRewindAddressBalancesCommandHandlerTests()
         {
             _mediator = new Mock<IMediator>();
-            _handler = new CreateRewindAddressBalancesCommandHandler(_mediator.Object);
+            _handler = new CreateRewindAddressBalancesCommandHandler(_mediator.Object, Mock.Of<ILogger<CreateRewindAddressBalancesCommandHandler>>());
         }
 
         [Fact]
@@ -49,7 +50,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
             try
             {
                 await _handler.Handle(new CreateRewindAddressBalancesCommand(rewindHeight), CancellationToken.None);
-            } catch { }
+            }
+            catch { }
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveAddressBalancesByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),
@@ -70,7 +72,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
             try
             {
                 await _handler.Handle(new CreateRewindAddressBalancesCommand(rewindHeight), CancellationToken.None);
-            } catch { }
+            }
+            catch { }
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByIdQuery>(q => q.TokenId == balance.TokenId),
@@ -100,7 +103,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
             try
             {
                 await _handler.Handle(new CreateRewindAddressBalancesCommand(rewindHeight), CancellationToken.None);
-            } catch { }
+            }
+            catch { }
 
             // Assert
             foreach (var balance in balances)

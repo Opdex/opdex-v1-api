@@ -55,7 +55,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Balances
 
             _logger.LogDebug($"Refreshed {staleCount - refreshFailureCount} address balances.");
 
-            if (refreshFailureCount > 0) _logger.LogWarning($"Failed to refresh {refreshFailureCount} stale address balances.");
+            if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale address balances.");
 
             return refreshFailureCount == 0;
 

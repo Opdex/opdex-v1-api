@@ -52,7 +52,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Mining
 
             _logger.LogDebug($"Refreshed {staleCount - refreshFailureCount} mining positions.");
 
-            if (refreshFailureCount > 0) _logger.LogWarning($"Failed to refresh {refreshFailureCount} stale mining positions.");
+            if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale mining positions.");
 
             return refreshFailureCount == 0;
 

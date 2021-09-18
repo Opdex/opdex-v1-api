@@ -52,7 +52,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Staking
 
             _logger.LogDebug($"Refreshed {staleCount - refreshFailureCount} staking positions.");
 
-            if (refreshFailureCount > 0) _logger.LogWarning($"Failed to refresh {refreshFailureCount} stale staking positions.");
+            if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale staking positions.");
 
             return refreshFailureCount == 0;
 

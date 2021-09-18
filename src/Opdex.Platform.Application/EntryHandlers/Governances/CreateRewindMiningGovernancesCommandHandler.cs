@@ -41,7 +41,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Governances
 
             _logger.LogDebug($"Refreshed {staleCount - refreshFailureCount} mining governances.");
 
-            if (refreshFailureCount > 0) _logger.LogWarning($"Failed to refresh {refreshFailureCount} stale mining governances.");
+            if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale mining governances.");
 
             return refreshFailureCount == 0;
         }

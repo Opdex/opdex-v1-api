@@ -44,7 +44,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Deployers
 
             _logger.LogDebug($"Refreshed {staleCount - refreshFailureCount} deployers.");
 
-            if (refreshFailureCount > 0) _logger.LogWarning($"Failed to refresh {refreshFailureCount} stale deployers.");
+            if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale deployers.");
 
             return refreshFailureCount == 0;
 
