@@ -6,11 +6,20 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Governances
 {
     public class MakeMiningGovernanceCommand : IRequest<long>
     {
-        public MakeMiningGovernanceCommand(MiningGovernance miningGovernance)
+        public MakeMiningGovernanceCommand(MiningGovernance miningGovernance, ulong blockHeight, bool rewind = false)
         {
-            MiningGovernance = miningGovernance ?? throw new ArgumentNullException(nameof(miningGovernance));
+            if (blockHeight == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
+            }
+
+            MiningGovernance = miningGovernance ?? throw new ArgumentNullException(nameof(miningGovernance), "Mining governance must be provided.");
+            BlockHeight = blockHeight;
+            Rewind = rewind;
         }
 
         public MiningGovernance MiningGovernance { get; }
+        public ulong BlockHeight { get; }
+        public bool Rewind { get; }
     }
 }

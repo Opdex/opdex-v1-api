@@ -13,13 +13,22 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void CreateNew_MiningGovernanceContractSummary_InvalidAddress_ThrowArgumentNullException()
         {
             // Arrange
-            var address = Address.Empty;
-
             // Act
-            void Act() => new MiningGovernanceContractSummary(address, 10, 12, 500, 1_000);
+            void Act() => new MiningGovernanceContractSummary(null, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", 10, 12, 500, 1_000);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain($"{nameof(address)} must not be null or empty.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain($"Governance address must be provided.");
+        }
+
+        [Fact]
+        public void CreateNew_MiningGovernanceContractSummary_InvalidMinedToken_ThrowArgumentNullException()
+        {
+            // Arrange
+            // Act
+            void Act() => new MiningGovernanceContractSummary("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", null, 10, 12, 500, 1_000);
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Governance mined token address must be provided.");
         }
 
         [Fact]
@@ -29,10 +38,10 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const ulong miningDuration = 0;
 
             // Act
-            void Act() => new MiningGovernanceContractSummary("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", 10, 12, 500, miningDuration);
+            void Act() => new MiningGovernanceContractSummary("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", 10, 12, 500, miningDuration);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(miningDuration)} must not be greater than 0.");
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Mining duration must be greater than zero.");
         }
 
         [Fact]
@@ -40,16 +49,18 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         {
             // Arrange
             Address address = "PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD";
+            Address governanceToken = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
             const ulong nominationPeriodEnd = 1;
             const uint miningPoolsFunded = 4;
             UInt256 miningPoolReward = 500;
             const ulong miningDuration = 100;
 
             // Act
-            var summary = new MiningGovernanceContractSummary(address, nominationPeriodEnd, miningPoolsFunded, miningPoolReward, miningDuration);
+            var summary = new MiningGovernanceContractSummary(address, governanceToken, nominationPeriodEnd, miningPoolsFunded, miningPoolReward, miningDuration);
 
             // Assert
             summary.Address.Should().Be(address);
+            summary.MinedToken.Should().Be(governanceToken);
             summary.NominationPeriodEnd.Should().Be(nominationPeriodEnd);
             summary.MiningPoolsFunded.Should().Be(miningPoolsFunded);
             summary.MiningPoolReward.Should().Be(miningPoolReward);

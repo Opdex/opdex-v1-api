@@ -2,19 +2,20 @@ using MediatR;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Governances;
 using System;
+using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Governances
+namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Governances
 {
-    public class RetrieveMiningGovernanceContractSummaryByAddressQuery : IRequest<MiningGovernanceContractSummary>
+    public class CallCirrusGetGovernanceNominationsSummaryQuery : IRequest<IEnumerable<GovernanceContractNominationSummary>>
     {
-        public RetrieveMiningGovernanceContractSummaryByAddressQuery(Address governance, ulong blockHeight)
+        public CallCirrusGetGovernanceNominationsSummaryQuery(Address governance, ulong blockHeight)
         {
             if (governance == Address.Empty)
             {
                 throw new ArgumentNullException(nameof(governance), "Governance address must be provided.");
             }
 
-            if (blockHeight == 0)
+            if (blockHeight < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
             }

@@ -1,7 +1,11 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
+using Opdex.Platform.Common.Constants.SmartContracts;
+using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Governances;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Governances;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,9 +22,35 @@ namespace Opdex.Platform.Application.Handlers.Governances
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<MiningGovernanceContractSummary> Handle(RetrieveMiningGovernanceContractSummaryByAddressQuery request, CancellationToken cancellationToken)
+        public async Task<MiningGovernanceContractSummary> Handle(RetrieveMiningGovernanceContractSummaryByAddressQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new CallCirrusGetMiningGovernanceSummaryByAddressQuery(request.Address), cancellationToken);
+            var miningPoolReward = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
+                                                                                                    GovernanceConstants.StateKeys.MiningPoolReward,
+                                                                                                    SmartContractParameterType.UInt256,
+                                                                                                    request.BlockHeight));
+
+            var miningDuration = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
+                                                                                                    GovernanceConstants.StateKeys.MiningDuration,
+                                                                                                    SmartContractParameterType.UInt64,
+                                                                                                    request.BlockHeight));
+
+            var poolsFunded = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
+                                                                                               GovernanceConstants.StateKeys.MiningPoolsFunded,
+                                                                                               SmartContractParameterType.UInt32,
+                                                                                               request.BlockHeight));
+
+            var nominationPeriodEnd = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
+                                                                                                       GovernanceConstants.StateKeys.NominationPeriodEnd,
+                                                                                                       SmartContractParameterType.UInt64,
+                                                                                                       request.BlockHeight));
+
+            var minedToken = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
+                                                                                              GovernanceConstants.StateKeys.MinedToken,
+                                                                                              SmartContractParameterType.Address,
+                                                                                              request.BlockHeight));
+
+            return new MiningGovernanceContractSummary(request.Governance, minedToken.Parse<Address>(), nominationPeriodEnd.Parse<ulong>(),
+                                                       poolsFunded.Parse<uint>(), miningPoolReward.Parse<UInt256>(), miningDuration.Parse<ulong>());
         }
     }
 }

@@ -18,7 +18,6 @@ using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Balances;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore;
@@ -106,6 +105,10 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking;
 using Opdex.Platform.Infrastructure.Clients.SignalR.Handlers;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Mempool;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Mempool;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.Nominations;
+using Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -234,11 +237,12 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>, SelectLatestTokenDistributionQueryHandler>();
 
             // Governances
-            services.AddTransient<IRequestHandler<SelectActiveMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveMiningGovernanceNominationsQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectActiveGovernanceNominationsByGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveGovernanceNominationsByGovernanceIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningGovernancesWithFilterQuery, IEnumerable<MiningGovernance>>, SelectMiningGovernancesWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningGovernanceByAddressQuery, MiningGovernance>, SelectMiningGovernanceByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningGovernanceByTokenIdQuery, MiningGovernance>, SelectMiningGovernanceByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery, MiningGovernanceNomination>, SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectMiningGovernancesByModifiedBlockQuery, IEnumerable<MiningGovernance>>, SelectMiningGovernancesByModifiedBlockQueryHandler>();
 
             // Transactions
             services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
@@ -278,6 +282,10 @@ namespace Opdex.Platform.Infrastructure
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
+            services.AddHttpClient<IMempoolModule, MempoolModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
+
             services.AddHttpClient<INodeModule, NodeModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
@@ -286,6 +294,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetCurrentBlockQuery, BlockReceipt>, CallCirrusGetCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetBlockByHashQuery, BlockReceipt>, CallCirrusGetBlockByHashQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetTransactionByHashQuery, Transaction>, CallCirrusGetTransactionByHashQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetExistsInMempoolQuery, bool>, CallCirrusGetExistsInMempoolQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusSearchContractTransactionsQuery, List<Transaction>>, CallCirrusSearchContractTransactionsQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenSummaryByAddressQuery, TokenContractSummary>, CallCirrusGetSrcTokenSummaryByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolByAddressQuery, LiquidityPool>, CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler>();
@@ -298,10 +307,9 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetAmountInMultiHopQuoteQuery, UInt256>, CallCirrusGetAmountInMultiHopQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAddLiquidityQuoteQuery, UInt256>, CallCirrusGetAddLiquidityQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetStakingTokenSummaryByAddressQuery, StakingTokenContractSummary>, CallCirrusGetStakingTokenSummaryByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetMiningGovernanceSummaryByAddressQuery, MiningGovernanceContractSummary>, CallCirrusGetMiningGovernanceSummaryByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetBlockHashByHeightQuery, string>, CallCirrusGetBlockHashByHeightQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, UInt256>, CallCirrusGetSrcTokenBalanceQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetMiningGovernanceSummaryNominationsQuery, IEnumerable<MiningGovernanceNominationCirrusDto>>, CallCirrusGetMiningGovernanceSummaryNominationsQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetGovernanceNominationsSummaryQuery, IEnumerable<GovernanceContractNominationSummary>>, CallCirrusGetGovernanceNominationsSummaryQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetVaultTotalSupplyQuery, UInt256>, CallCirrusGetVaultTotalSupplyQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>, CallCirrusLocalCallSmartContractMethodCommandHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAddressBalanceQuery, ulong>, CallCirrusGetAddressBalanceQueryHandler>();

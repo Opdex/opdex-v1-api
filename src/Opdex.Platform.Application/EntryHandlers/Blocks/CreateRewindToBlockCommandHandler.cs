@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Exceptions;
 using System;
@@ -46,6 +47,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
             rewound = await _mediator.Send(new CreateRewindMiningPositionsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindStakingPositionsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindDeployersCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMiningGovernancesCommand(request.Block)) && rewound;
 
             _logger.LogTrace("Refreshing of stale records finished.");
 

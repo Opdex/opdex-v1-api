@@ -5,12 +5,12 @@ using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.Nominations;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations
 {
     public class SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHandler
         : IRequestHandler<SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery, MiningGovernanceNomination>
