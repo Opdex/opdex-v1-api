@@ -19,7 +19,7 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
+using Opdex.Platform.Common.Exceptions;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -94,9 +94,11 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> NotifyBroadcasted(TransactionBroadcastNotificationRequest request, CancellationToken cancellationToken)
         {
-            await _mediator.Send(new NotifyUserOfBroadcastTransactionCommand(request.WalletAddress, request.TransactionHash), cancellationToken);
+            var notified = await _mediator.Send(new CreateNotifyUserOfTransactionBroadcastCommand(request.WalletAddress, request.TransactionHash), cancellationToken);
+            if (!notified) throw new InvalidDataException(nameof(request.TransactionHash), "Transaction could not be found in the mempool.");
             return NoContent();
         }
 

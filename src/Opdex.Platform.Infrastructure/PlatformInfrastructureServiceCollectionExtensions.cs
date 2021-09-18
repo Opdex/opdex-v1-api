@@ -105,6 +105,8 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining;
 using Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking;
 using Opdex.Platform.Infrastructure.Clients.SignalR.Handlers;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Mempool;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Mempool;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.Nominations;
 using Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations;
 
@@ -278,6 +280,10 @@ namespace Opdex.Platform.Infrastructure
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
+            services.AddHttpClient<IMempoolModule, MempoolModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
+
             services.AddHttpClient<INodeModule, NodeModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
@@ -286,6 +292,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetCurrentBlockQuery, BlockReceipt>, CallCirrusGetCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetBlockByHashQuery, BlockReceipt>, CallCirrusGetBlockByHashQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetTransactionByHashQuery, Transaction>, CallCirrusGetTransactionByHashQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetExistsInMempoolQuery, bool>, CallCirrusGetExistsInMempoolQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusSearchContractTransactionsQuery, List<Transaction>>, CallCirrusSearchContractTransactionsQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenSummaryByAddressQuery, TokenContractSummary>, CallCirrusGetSrcTokenSummaryByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolByAddressQuery, LiquidityPool>, CallCirrusGetOpdexLiquidityPoolByAddressQueryHandler>();
