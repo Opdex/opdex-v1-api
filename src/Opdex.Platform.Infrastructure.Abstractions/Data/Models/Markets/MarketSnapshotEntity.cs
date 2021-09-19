@@ -1,9 +1,8 @@
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
+using Newtonsoft.Json;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets
 {
-    using Newtonsoft.Json;
-
     public class MarketSnapshotEntity : SnapshotEntity
     {
         public long Id { get; set; }

@@ -13,6 +13,7 @@ namespace Opdex.Platform.Common.Constants.SmartContracts
             public const string StartMining = "StartMining";
             public const string StopMining = "StopMining";
             public const string CollectRewards = "CollectMiningRewards";
+            public const string GetBalance = "GetBalance";
         }
     }
 }

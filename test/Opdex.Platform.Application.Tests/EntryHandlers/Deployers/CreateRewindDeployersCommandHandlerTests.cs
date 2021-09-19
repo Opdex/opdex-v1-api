@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
@@ -21,7 +22,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
         public CreateRewindDeployersCommandHandlerTests()
         {
             _mediator = new Mock<IMediator>();
-            _handler = new CreateRewindDeployersCommandHandler(_mediator.Object);
+            _handler = new CreateRewindDeployersCommandHandler(_mediator.Object, Mock.Of<ILogger<CreateRewindDeployersCommandHandler>>());
         }
 
         [Fact]
@@ -47,7 +48,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
             try
             {
                 await _handler.Handle(new CreateRewindDeployersCommand(rewindHeight), CancellationToken.None);
-            } catch { }
+            }
+            catch { }
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveDeployersByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),

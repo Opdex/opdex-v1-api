@@ -119,7 +119,8 @@ namespace Opdex.Platform.WebApi.Controllers
 
             try
             {
-                await _mediator.Send(new CreateRewindToBlockCommand(request.Block));
+                var rewound = await _mediator.Send(new CreateRewindToBlockCommand(request.Block));
+                if (!rewound) throw new Exception("Indexer rewind unexpectedly failed.");
             }
             finally
             {

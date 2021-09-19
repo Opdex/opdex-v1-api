@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
@@ -22,7 +23,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
         public CreateRewindMiningGovernancesCommandHandlerTests()
         {
             _mediator = new Mock<IMediator>();
-            _handler = new CreateRewindMiningGovernancesCommandHandler(_mediator.Object);
+            _handler = new CreateRewindMiningGovernancesCommandHandler(_mediator.Object, Mock.Of<ILogger<CreateRewindMiningGovernancesCommandHandler>>());
         }
 
         [Fact]
@@ -48,7 +49,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
             try
             {
                 await _handler.Handle(new CreateRewindMiningGovernancesCommand(rewindHeight), CancellationToken.None);
-            } catch { }
+            }
+            catch { }
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveMiningGovernancesByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),
