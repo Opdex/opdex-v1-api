@@ -30,22 +30,20 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
-                var certificatesQuery = new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner);
-                var certificates = await _mediator.Send(certificatesQuery, CancellationToken.None);
-                
-                // Todo: Maybe create a specific query for this and a unique index on (owner, vestedBlock) 
+
+                var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
+
+                // Todo: Maybe create a specific query for this and a unique index on (owner, vestedBlock)
                 var certificateToUpdate = certificates.Single(c => c.VestedBlock == request.Log.VestedBlock);
-                
+
                 certificateToUpdate.Redeem(request.Log, request.BlockHeight);
 
-                var certificateCommand = new MakeVaultCertificateCommand(certificateToUpdate);
-                return await _mediator.Send(certificateCommand, CancellationToken.None);
+                return await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(RedeemVaultCertificateLog)}");
-               
+
                 return false;
             }
         }

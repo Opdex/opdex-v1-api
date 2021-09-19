@@ -40,7 +40,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                     vault.SetUnassignedSupply(totalSupply, request.BlockHeight);
 
-                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault));
+                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight));
                     if (vaultUpdates == 0) return false;
                 }
 

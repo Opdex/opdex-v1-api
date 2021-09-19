@@ -2,7 +2,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Common.Models;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults.Quotes
 {
     /// <summary>
     /// Quote a transaction to for a certificate holder to redeem vault certificates.
