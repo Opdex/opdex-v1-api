@@ -32,14 +32,15 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
         public async Task PersistsBlockCommand_Sends_PersistCommand()
         {
             // Arrange
-            var block = new Block(ulong.MaxValue, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
+            var block = new Block(ulong.MaxValue, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
             var command = new PersistBlockCommand(block);
 
             // Act
             try
             {
                 await _handler.Handle(command, CancellationToken.None);
-            } catch { }
+            }
+            catch { }
 
             // Assert
             _dbContext.Verify(callTo => callTo.ExecuteCommandAsync(It.Is<DatabaseQuery>(q => q.Parameters != null &&
@@ -51,7 +52,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
         public async Task PersistsBlockCommand_Success()
         {
             // Arrange
-            var block = new Block(ulong.MaxValue, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
+            var block = new Block(ulong.MaxValue, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
             var command = new PersistBlockCommand(block);
 
             _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>())).ReturnsAsync(1);
@@ -67,7 +68,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
         public async Task PersistsBlockCommand_Fail()
         {
             // Arrange
-            var block = new Block(ulong.MaxValue, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
+            var block = new Block(ulong.MaxValue, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
             var command = new PersistBlockCommand(block);
 
             _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>())).ReturnsAsync(0);

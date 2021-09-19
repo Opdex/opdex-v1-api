@@ -77,7 +77,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public async Task CreateRewindToBlockCommand_Sends_MakeRewindToBlockCommand()
         {
             // Arrange
-            var block = new Block(10, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
+            var block = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(block);
 
@@ -96,7 +96,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public async Task CreateRewindToBlockCommand_Sends_CreateRewindAddressBalancesCommand()
         {
             // Arrange
-            var block = new Block(10, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
+            var block = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(block);
             _mediator.Setup(m => m.Send(It.IsAny<MakeRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
@@ -116,7 +116,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public async Task CreateRewindToBlockCommand_Sends_CreateRewindDeployersCommand()
         {
             // Arrange
-            var block = new Block(10, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
+            var block = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(block);
             _mediator.Setup(m => m.Send(It.IsAny<MakeRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
@@ -134,10 +134,47 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         }
 
         [Fact]
+        public async Task Handle_MakeRewindToBlockCommandFailure_DoNotRefreshStaleRecords()
+        {
+            // Arrange
+            var block = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
+            var command = new CreateRewindToBlockCommand(10);
+
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(block);
+            _mediator.Setup(m => m.Send(It.IsAny<MakeRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
+
+            // Act
+            var response = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            _mediator.Verify(callTo => callTo.Send(It.IsAny<CreateRewindAddressBalancesCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+            response.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task Handle_RefreshStaleRecordsFailure_IgnoreAndContinue()
+        {
+            // Arrange
+            var block = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
+            var command = new CreateRewindToBlockCommand(10);
+
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(block);
+            _mediator.Setup(m => m.Send(It.IsAny<MakeRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindAddressBalancesCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
+
+            // Act
+            await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            _mediator.Verify(callTo => callTo.Send(It.Is<CreateRewindStakingPositionsCommand>(c => c.RewindHeight == command.Block), CancellationToken.None), Times.Once);
+        }
+
+        [Fact]
         public async Task CreateRewindToBlockCommand_Success()
         {
             // Arrange
-            var block = new Block(10, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
+            var block = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
             var command = new CreateRewindToBlockCommand(10);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(block);
@@ -153,23 +190,6 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
 
             // Assert
             response.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task CreateRewindToBlockCommand_Fail()
-        {
-            // Arrange
-            var block = new Block(10, "BlockHash", DateTime.UtcNow, DateTime.UtcNow);
-            var command = new CreateRewindToBlockCommand(10);
-
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(block);
-            _mediator.Setup(m => m.Send(It.IsAny<MakeRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
-
-            // Act
-            var response = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            response.Should().BeFalse();
         }
     }
 }
