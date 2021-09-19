@@ -9,7 +9,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
     public class CallCirrusGetStakingWeightForAddressQuery : IRequest<UInt256>
     {
         /// <summary>Creates a query to retrieve the staking weight of an address. </summary>
-        /// <param name="miner">The address of the miner.</param>
+        /// <param name="stakingPool">The address of the staking pool.</param>
+        /// <param name="staker">The address of the staker.</param>
+        /// <param name="blockHeight">Block height to query at.</param>
         public CallCirrusGetStakingWeightForAddressQuery(Address stakingPool, Address staker, ulong blockHeight)
         {
             if (stakingPool == Address.Empty) throw new ArgumentNullException(nameof(stakingPool), "Staking pool address must be set.");
