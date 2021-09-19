@@ -38,7 +38,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Deployers
             foreach (var chunk in deployersChunks)
             {
                 // Each chunk runs in parallel
-                var callResults = await Task.WhenAll(chunk.Select(deployer => RefreshDeployer(deployer, request.RewindHeight)));
+                var callResults = await Task.WhenAll(chunk.Select(async deployer =>
+                {
+                    var id = await _mediator.Send(new MakeDeployerCommand(deployer, request.RewindHeight, rewind: true));
+                    return id != 0;
+                }));
                 refreshFailureCount += callResults.Count(succeeded => !succeeded);
             }
 
@@ -47,12 +51,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Deployers
             if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale deployers.");
 
             return refreshFailureCount == 0;
-
-            async Task<bool> RefreshDeployer(Deployer deployer, ulong rewindHeight)
-            {
-                var id = await _mediator.Send(new MakeDeployerCommand(deployer, rewindHeight, rewind: true));
-                return id != 0;
-            }
         }
     }
 }

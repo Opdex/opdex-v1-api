@@ -45,7 +45,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Mining
 
                 foreach (var chunk in miningPositionChunks)
                 {
-                    var callResults = await Task.WhenAll(chunk.Select(miningPosition => RefreshPosition(pool.Address, miningPosition, request.RewindHeight)));
+                    var callResults = await Task.WhenAll(chunk.Select(async miningPosition =>
+                    {
+                        var balance = await _mediator.Send(new CallCirrusGetMiningBalanceForAddressQuery(pool.Address, miningPosition.Owner, request.RewindHeight));
+                        miningPosition.SetBalance(balance, request.RewindHeight);
+                        var id = await _mediator.Send(new MakeAddressMiningCommand(miningPosition));
+                        return id != 0;
+                    }));
                     refreshFailureCount += callResults.Count(succeeded => !succeeded);
                 }
             }
@@ -55,14 +61,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Mining
             if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale mining positions.");
 
             return refreshFailureCount == 0;
-
-            async Task<bool> RefreshPosition(Address miningPool, AddressMining miningPosition, ulong rewindHeight)
-            {
-                var balance = await _mediator.Send(new CallCirrusGetMiningBalanceForAddressQuery(miningPool, miningPosition.Owner, request.RewindHeight));
-                miningPosition.SetBalance(balance, request.RewindHeight);
-                var id = await _mediator.Send(new MakeAddressMiningCommand(miningPosition));
-                return id != 0;
-            }
         }
     }
 }

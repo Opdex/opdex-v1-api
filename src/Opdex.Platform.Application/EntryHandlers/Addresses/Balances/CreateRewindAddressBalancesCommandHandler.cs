@@ -48,7 +48,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Balances
                 foreach (var chunk in balanceChunks)
                 {
                     // Each chunk runs in parallel where the address balance will be updated by rewind height
-                    var callResults = await Task.WhenAll(chunk.Select(balance => RefreshAddressBalance(balance, token.Address, request.RewindHeight)));
+                    var callResults = await Task.WhenAll(chunk.Select(async balance =>
+                    {
+                        var id = await _mediator.Send(new MakeAddressBalanceCommand(balance, token.Address, request.RewindHeight));
+                        return id != 0;
+                    }));
                     refreshFailureCount += callResults.Count(succeeded => !succeeded);
                 }
             }
@@ -58,12 +62,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Balances
             if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale address balances.");
 
             return refreshFailureCount == 0;
-
-            async Task<bool> RefreshAddressBalance(AddressBalance balance, Address token, ulong rewindHeight)
-            {
-                var id = await _mediator.Send(new MakeAddressBalanceCommand(balance, token, request.RewindHeight));
-                return id != 0;
-            }
         }
     }
 }

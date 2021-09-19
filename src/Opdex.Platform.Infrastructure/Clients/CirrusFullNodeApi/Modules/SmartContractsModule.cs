@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,14 +25,14 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return GetAsync<ContractCodeDto>(uri, cancellationToken);
         }
 
-        public Task<string> GetContractStorageAsync(Address address, string storageKey, SmartContractParameterType dataType,
+        public async Task<string> GetContractStorageAsync(Address address, string storageKey, SmartContractParameterType dataType,
                                                     ulong blockHeight, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.SmartContracts.GetContractStorageItem, address, storageKey, ((uint)dataType).ToString());
 
             if (blockHeight > 0) uri += $"&BlockHeight={blockHeight}";
 
-            return GetAsync<string>(uri, cancellationToken);
+            return await GetAsync<string>(uri, cancellationToken);
         }
 
         public Task<string> GetContractBalanceAsync(Address address, CancellationToken cancellationToken)
@@ -61,36 +61,52 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
         {
             const string uri = CirrusUriHelper.SmartContracts.LocalCall;
             var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(request, uri, HttpMethod.Post);
-            var response = await PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken);
 
-            // Todo: Should be done in localCallResponseDto
-            if (response?.Logs?.Any() == true)
+            var logDetails = new Dictionary<string, object>
             {
-                response.Logs = response.Logs.Select((log, i) =>
-                {
-                    log.SortOrder = i;
-                    return log;
-                }).ToList();
-            }
+                ["Contract"] = request.ContractAddress,
+                ["Method"] = request.MethodName,
+                ["Sender"] = request.Sender,
+                ["Amount"] = request.Amount,
+                ["Parameters"] = request.Parameters
+            };
 
-            return response;
+            if (request.BlockHeight.HasValue) logDetails.Add("BlockHeight", request.BlockHeight.Value);
+
+            using (_logger.BeginScope(logDetails))
+            {
+                return await PostAsync<LocalCallResponseDto>(uri, httpRequest.Content, cancellationToken);
+            }
         }
 
         public async Task<string> CallSmartContractAsync(SmartContractCallRequestDto call, CancellationToken cancellationToken)
         {
             const string uri = CirrusUriHelper.SmartContractWallet.Call;
             var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(call, uri, HttpMethod.Post);
-            var response = await PostAsync<SmartContractCallResponseDto>(uri, httpRequest.Content, cancellationToken);
 
-            return response.TransactionId;
+            var logDetails = new Dictionary<string, object>
+            {
+                ["Contract"] = call.ContractAddress,
+                ["Method"] = call.MethodName,
+                ["Sender"] = call.Sender,
+                ["Amount"] = call.Amount,
+                ["Parameters"] = call.Parameters,
+                ["WalletName"] = call.WalletName
+            };
+
+            using (_logger.BeginScope(logDetails))
+            {
+                var response = await PostAsync<SmartContractCallResponseDto>(uri, httpRequest.Content, cancellationToken);
+                return response.TransactionId;
+            }
         }
 
         public async Task<string> CreateSmartContractAsync(SmartContractCreateRequestDto call, CancellationToken cancellationToken)
         {
             const string uri = CirrusUriHelper.SmartContractWallet.Create;
             var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(call, uri, HttpMethod.Post);
-            var transactionHash = await PostAsync<string>(uri, httpRequest.Content, cancellationToken);
 
+            var transactionHash = await PostAsync<string>(uri, httpRequest.Content, cancellationToken);
             return transactionHash;
         }
 

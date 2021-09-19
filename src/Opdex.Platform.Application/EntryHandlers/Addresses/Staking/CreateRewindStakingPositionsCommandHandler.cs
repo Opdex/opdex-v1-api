@@ -45,7 +45,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Staking
 
                 foreach (var chunk in stakingPositionChunks)
                 {
-                    var callResults = await Task.WhenAll(chunk.Select(stakingPosition => RefreshPosition(pool.Address, stakingPosition, request.RewindHeight)));
+                    var callResults = await Task.WhenAll(chunk.Select(async stakingPosition =>
+                    {
+                        var balance = await _mediator.Send(new CallCirrusGetStakingWeightForAddressQuery(pool.Address, stakingPosition.Owner, request.RewindHeight));
+                        stakingPosition.SetWeight(balance, request.RewindHeight);
+                        var id = await _mediator.Send(new MakeAddressStakingCommand(stakingPosition));
+                        return id != 0;
+                    }));
                     refreshFailureCount += callResults.Count(succeeded => !succeeded);
                 }
             }
@@ -55,14 +61,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Staking
             if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale staking positions.");
 
             return refreshFailureCount == 0;
-
-            async Task<bool> RefreshPosition(Address stakingPool, AddressStaking stakingPosition, ulong rewindHeight)
-            {
-                var balance = await _mediator.Send(new CallCirrusGetStakingWeightForAddressQuery(stakingPool, stakingPosition.Owner, request.RewindHeight));
-                stakingPosition.SetWeight(balance, request.RewindHeight);
-                var id = await _mediator.Send(new MakeAddressStakingCommand(stakingPosition));
-                return id != 0;
-            }
         }
     }
 }

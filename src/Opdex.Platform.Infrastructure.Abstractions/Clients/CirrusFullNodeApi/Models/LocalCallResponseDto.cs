@@ -1,16 +1,28 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Extensions;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     public class LocalCallResponseDto
     {
+        private IList<TransactionLogDto> _logs = new List<TransactionLogDto>();
+
         public IList<InternalTransfer> InternalTransfers { get; set; } = new List<InternalTransfer>();
 
-        public IList<TransactionLogDto> Logs { get; set; } = new List<TransactionLogDto>();
+        public IList<TransactionLogDto> Logs
+        {
+            get
+            {
+                return _logs;
+            }
+            set
+            {
+                for (int i = 0; i < value?.Count; i++) value[i].SortOrder = i;
+                _logs = value;
+            }
+        }
 
         public GasConsumed GasConsumed { get; set; }
         public bool Revert { get; set; }
