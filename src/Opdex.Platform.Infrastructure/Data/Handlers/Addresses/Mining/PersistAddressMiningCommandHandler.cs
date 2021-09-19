@@ -5,6 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -66,7 +67,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failure persisting address mining for owner: {request.AddressMining.Owner}");
+                using (_logger.BeginScope(new Dictionary<string, object>
+                {
+                    ["MiningPoolId"] = request.AddressMining.MiningPoolId,
+                    ["Owner"] = request.AddressMining.Owner,
+                    ["Balance"] = request.AddressMining.Balance,
+                    ["BlockHeight"] = request.AddressMining.ModifiedBlock
+                }))
+                {
+                    _logger.LogError(ex, $"Failure persisting mining position.");
+                }
 
                 return 0;
             }

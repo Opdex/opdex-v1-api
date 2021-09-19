@@ -25,7 +25,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.To
         {
             _smartContractsModuleMock = new Mock<ISmartContractsModule>();
 
-            _handler = new CallCirrusGetSrcTokenBalanceQueryHandler(_smartContractsModuleMock.Object, NullLogger<CallCirrusGetSrcTokenBalanceQueryHandler>.Instance);
+            _handler = new CallCirrusGetSrcTokenBalanceQueryHandler(_smartContractsModuleMock.Object);
         }
 
         [Fact]

@@ -155,6 +155,8 @@ using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
 
 namespace Opdex.Platform.Application
 {
@@ -248,6 +250,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateTransactionCommand, bool>, CreateTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<CreateTransactionBroadcastCommand, string>, CreateTransactionBroadcastCommandHandler>();
             services.AddTransient<IRequestHandler<CreateTransactionQuoteCommand, TransactionQuoteDto>, CreateTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateNotifyUserOfTransactionBroadcastCommand, bool>, CreateNotifyUserOfTransactionBroadcastCommandHandler>();
 
             // Markets
             services.AddTransient<IRequestHandler<ProcessMarketSnapshotsCommand, Unit>, ProcessMarketSnapshotsCommandHandler>();
@@ -304,6 +307,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateApproveAllowanceTransactionQuoteCommand, TransactionQuoteDto>, CreateApproveAllowanceTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateDistributeTokensTransactionQuoteCommand, TransactionQuoteDto>, CreateDistributeTokensTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindAddressBalancesCommand, bool>, CreateRewindAddressBalancesCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindMiningPositionsCommand, bool>, CreateRewindMiningPositionsCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindStakingPositionsCommand, bool>, CreateRewindStakingPositionsCommandHandler>();
             services.AddTransient<IRequestHandler<CreateAddressBalanceCommand, long>, CreateAddressBalanceCommandHandler>();
 
             // Transaction Log Processors
@@ -427,6 +432,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveMiningPositionsWithFilterQuery, IEnumerable<AddressMining>>, RetrieveMiningPositionsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveStakingPositionsWithFilterQuery, IEnumerable<AddressStaking>>, RetrieveStakingPositionsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAddressBalancesByModifiedBlockQuery, IEnumerable<AddressBalance>>, RetrieveAddressBalancesByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMiningPositionsByModifiedBlockQuery, IEnumerable<AddressMining>>, RetrieveMiningPositionsByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveStakingPositionsByModifiedBlockQuery, IEnumerable<AddressStaking>>, RetrieveStakingPositionsByModifiedBlockQueryHandler>();
 
             // CMC
             services.AddTransient<IRequestHandler<RetrieveCmcStraxPriceQuery, decimal>, RetrieveCmcStraxPriceQueryHandler>();
@@ -455,6 +462,7 @@ namespace Opdex.Platform.Application
             // Transactions
             services.AddTransient<IRequestHandler<MakeTransactionCommand, long>, MakeTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTransactionQuoteCommand, TransactionQuote>, MakeTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeNotifyUserOfTransactionBroadcastCommand, bool>, MakeNotifyUserOfTransactionBroadcastCommandHandler>();
 
             // Liquidity Pools
             services.AddTransient<IRequestHandler<MakeLiquidityPoolCommand, long>, MakeLiquidityPoolCommandHandler>();

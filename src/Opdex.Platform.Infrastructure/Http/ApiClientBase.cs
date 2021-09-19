@@ -7,10 +7,10 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Opdex.Platform.Infrastructure.Http
-{ 
+{
     public abstract class ApiClientBase
     {
-        private readonly ILogger _logger;
+        protected readonly ILogger _logger;
         private readonly HttpClient _httpClient;
 
         protected ApiClientBase(HttpClient httpClient, ILogger logger)
@@ -43,7 +43,7 @@ namespace Opdex.Platform.Infrastructure.Http
         {
             return ExecuteCallAsync<TReturn>(() => _httpClient.DeleteAsync(uri, cancellationToken), uri);
         }
-        
+
         private async Task<TReturn> ExecuteCallAsync<TReturn>(Func<Task<HttpResponseMessage>> call, string uri)
         {
             try
@@ -71,7 +71,7 @@ namespace Opdex.Platform.Infrastructure.Http
         private static async Task<TReturn> HandleClientResponse<TReturn>(HttpResponseMessage httpResponse)
         {
             httpResponse.EnsureSuccessStatusCode();
-            
+
             if (httpResponse.StatusCode != HttpStatusCode.NoContent)
             {
                 var jsonString = await httpResponse.Content.ReadAsStringAsync();

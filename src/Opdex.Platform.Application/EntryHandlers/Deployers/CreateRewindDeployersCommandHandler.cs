@@ -1,8 +1,10 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models;
 using System;
 using System.Linq;
 using System.Threading;
@@ -13,28 +15,42 @@ namespace Opdex.Platform.Application.EntryHandlers.Deployers
     public class CreateRewindDeployersCommandHandler : IRequestHandler<CreateRewindDeployersCommand, bool>
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<CreateRewindDeployersCommandHandler> _logger;
 
-        public CreateRewindDeployersCommandHandler(IMediator mediator)
+        public CreateRewindDeployersCommandHandler(IMediator mediator, ILogger<CreateRewindDeployersCommandHandler> logger)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<bool> Handle(CreateRewindDeployersCommand request, CancellationToken cancellationToken)
         {
             var deployers = await _mediator.Send(new RetrieveDeployersByModifiedBlockQuery(request.RewindHeight));
+            var staleCount = deployers.Count();
 
-            // Split the address balances by token into chunks of 10
-            var balanceChunks = deployers.Chunk(10);
+            _logger.LogDebug($"Found {staleCount} stale deployers.");
 
-            foreach (var chunk in balanceChunks)
+            // Split the deployers into chunks of 10
+            var deployersChunks = deployers.Chunk(10);
+
+            int refreshFailureCount = 0;
+
+            foreach (var chunk in deployersChunks)
             {
                 // Each chunk runs in parallel
-                var tasks = chunk.Select(deployer => _mediator.Send(new MakeDeployerCommand(deployer, request.RewindHeight, rewind: true)));
-
-                await Task.WhenAll(tasks);
+                var callResults = await Task.WhenAll(chunk.Select(async deployer =>
+                {
+                    var id = await _mediator.Send(new MakeDeployerCommand(deployer, request.RewindHeight, rewind: true));
+                    return id != 0;
+                }));
+                refreshFailureCount += callResults.Count(succeeded => !succeeded);
             }
 
-            return true;
+            _logger.LogDebug($"Refreshed {staleCount - refreshFailureCount} deployers.");
+
+            if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale deployers.");
+
+            return refreshFailureCount == 0;
         }
     }
 }
