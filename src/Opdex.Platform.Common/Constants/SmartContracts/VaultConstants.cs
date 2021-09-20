@@ -27,6 +27,7 @@ namespace Opdex.Platform.Common.Constants.SmartContracts
             public const string RevokeCertificates = "RevokeCertificates";
             public const string SetPendingOwnership = "SetPendingOwnership";
             public const string ClaimPendingOwnership = "ClaimPendingOwnership";
+            public const string GetCertificates = "GetCertificates";
         }
     }
 }

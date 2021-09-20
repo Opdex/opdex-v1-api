@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.Handlers.Vaults.Certificates
 
         public Task<bool> Handle(MakeVaultCertificateCommand request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new PersistVaultCertificateCommand(request.VaultCertificate), cancellationToken);
+            return _mediator.Send(new PersistVaultCertificateCommand(request.VaultCertificate));
         }
     }
 }

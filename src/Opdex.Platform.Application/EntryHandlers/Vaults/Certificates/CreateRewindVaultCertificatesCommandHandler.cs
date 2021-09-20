@@ -2,10 +2,9 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
-using Opdex.Platform.Domain.Models.Vaults;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,22 +31,36 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults.Certificates
 
             int refreshFailureCount = 0;
 
-            var certsByOwner = certificates.GroupBy(cert => cert.Owner).ToList();
+            var certsByVault = certificates.GroupBy(cert => cert.VaultId);
 
-            foreach (var ownersCerts in certsByOwner)
+            // Refresh each vaults certificates separately to reduce trips to the database
+            foreach (var vaultCerts in certsByVault)
             {
-                // Todo: Retrieve Certificates for owner
-                var summaries = new List<VaultContractCertificateSummary>();
+                var vault = await _mediator.Send(new RetrieveVaultByIdQuery(vaultCerts.Key));
 
-                foreach (var cert in ownersCerts)
+                var certsByOwner = vaultCerts.GroupBy(cert => cert.Owner);
+
+                foreach (var ownersCerts in certsByOwner)
                 {
-                    var summary = summaries.Single(summary => summary.VestedBlock == cert.VestedBlock);
+                    // Get all certificates for the owner in this vault
+                    var summaries = await _mediator.Send(new RetrieveVaultContractCertificateSummariesByOwnerQuery(vault.Address,
+                                                                                                                   ownersCerts.Key,
+                                                                                                                   request.RewindHeight));
 
-                    cert.Update(summary, request.RewindHeight);
+                    // Update each of the owners certificates, max certs per address is 10
+                    await Task.WhenAll(ownersCerts.Select(async cert =>
+                    {
+                        var summary = summaries.SingleOrDefault(summary => summary.VestedBlock == cert.VestedBlock);
 
-                    var certRefreshed = await _mediator.Send(new MakeVaultCertificateCommand(cert));
+                        if (summary != null)
+                        {
+                            cert.Update(summary, request.RewindHeight);
 
-                    if (!certRefreshed) refreshFailureCount++;
+                            var certRefreshed = await _mediator.Send(new MakeVaultCertificateCommand(cert));
+
+                            if (!certRefreshed) refreshFailureCount++;
+                        }
+                    }));
                 }
             }
 
