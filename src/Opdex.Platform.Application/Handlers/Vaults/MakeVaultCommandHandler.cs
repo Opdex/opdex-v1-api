@@ -20,15 +20,18 @@ namespace Opdex.Platform.Application.Handlers.Vaults
 
         public async Task<long> Handle(MakeVaultCommand request, CancellationToken cancellationToken)
         {
-            if (request.Rewind)
+            if (request.Refresh)
             {
-                var summary = await _mediator.Send(new RetrieveVaultContractSummaryCommand(request.Vault.Address, request.BlockHeight));
+                var summary = await _mediator.Send(new RetrieveVaultContractSummaryCommand(request.Vault.Address,
+                                                                                           request.BlockHeight,
+                                                                                           includeOwner: request.RefreshOwner,
+                                                                                           includeSupply: request.RefreshSupply,
+                                                                                           includeGenesis: request.RefreshGenesis));
 
-                // update vault
-                // request.Vault.Update(summary, request.BlockHeight);
+                request.Vault.Update(summary);
             }
 
-            return await _mediator.Send(new PersistVaultCommand(request.Vault), cancellationToken);
+            return await _mediator.Send(new PersistVaultCommand(request.Vault));
         }
     }
 }

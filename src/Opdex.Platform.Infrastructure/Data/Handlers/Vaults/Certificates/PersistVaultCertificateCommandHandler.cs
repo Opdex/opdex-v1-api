@@ -8,7 +8,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates
 {
     public class PersistVaultCertificateCommandHandler : IRequestHandler<PersistVaultCertificateCommand, bool>
     {

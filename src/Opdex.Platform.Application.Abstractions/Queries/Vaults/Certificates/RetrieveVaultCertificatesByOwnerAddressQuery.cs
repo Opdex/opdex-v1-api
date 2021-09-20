@@ -4,11 +4,11 @@ using Opdex.Platform.Domain.Models.Vaults;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
+namespace Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates
 {
-    public class SelectVaultCertificatesByOwnerAddressQuery : IRequest<IEnumerable<VaultCertificate>>
+    public class RetrieveVaultCertificatesByOwnerAddressQuery : IRequest<IEnumerable<VaultCertificate>>
     {
-        public SelectVaultCertificatesByOwnerAddressQuery(Address ownerAddress)
+        public RetrieveVaultCertificatesByOwnerAddressQuery(Address ownerAddress)
         {
             if (ownerAddress == Address.Empty)
             {

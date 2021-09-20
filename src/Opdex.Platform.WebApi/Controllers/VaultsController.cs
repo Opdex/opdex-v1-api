@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 
 namespace Opdex.Platform.WebApi.Controllers
 {

@@ -3,6 +3,7 @@ using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using System;
+using System.Reflection;
 
 namespace Opdex.Platform.Domain.Models.Vaults
 {
@@ -55,7 +56,7 @@ namespace Opdex.Platform.Domain.Models.Vaults
         public Address Owner { get; }
         public UInt256 Amount { get; private set; }
         public bool Revoked { get; private set; }
-        public ulong VestedBlock { get; }
+        public ulong VestedBlock { get;}
         public bool Redeemed { get; private set; }
 
         public void Revoke(RevokeVaultCertificateLog log, ulong block)
@@ -69,6 +70,15 @@ namespace Opdex.Platform.Domain.Models.Vaults
         {
             Redeemed = true;
             SetModifiedBlock(block);
+        }
+
+        public void Update(VaultContractCertificateSummary summary, ulong blockHeight)
+        {
+            // Summaries are only returned for non-redeemed certs
+            Redeemed = false;
+            Amount = summary.Amount;
+            Revoked = summary.Revoked;
+            SetModifiedBlock(blockHeight);
         }
     }
 }

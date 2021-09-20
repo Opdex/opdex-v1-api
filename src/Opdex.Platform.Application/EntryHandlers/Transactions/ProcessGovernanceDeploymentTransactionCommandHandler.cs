@@ -6,16 +6,13 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
-using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
-using Opdex.Platform.Application.Abstractions.Queries.Vaults;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
@@ -80,13 +77,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 var tokenSummary = await _mediator.Send(new RetrieveStakingTokenContractSummaryByAddressQuery(tokenAddress));
 
                 // Get and/or create vault
-                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(tokenSummary.Vault, findOrThrow: false));
-
-                if (vault == null)
-                {
-                    vault = new Vault(tokenSummary.Vault, stakingTokenId, transaction.From, transaction.BlockHeight, UInt256.Zero, transaction.BlockHeight);
-                    await _mediator.Send(new MakeVaultCommand(vault, transaction.BlockHeight));
-                }
+                var vault = await _mediator.Send(new CreateVaultCommand(tokenSummary.Vault, stakingToken.Id, transaction.From, transaction.BlockHeight));
 
                 // Get and/or create mining governance
                 var governanceId = await _mediator.Send(new CreateMiningGovernanceCommand(tokenSummary.MiningGovernance, transaction.BlockHeight, isUpdate: false));

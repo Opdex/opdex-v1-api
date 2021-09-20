@@ -1,10 +1,10 @@
 using MediatR;
 using Opdex.Platform.Domain.Models.Vaults;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Vaults
+namespace Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates
 {
     public class RetrieveVaultCertificatesWithFilterQuery : IRequest<IEnumerable<VaultCertificate>>
     {

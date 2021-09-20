@@ -35,6 +35,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
+                var initialDistribution = request.Log.PeriodIndex == 0;
+
                 var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true));
                 var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(token.Id, findOrThrow: true));
                 var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id, findOrThrow: true));
@@ -47,26 +49,16 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var governanceResult = await _mediator.Send(new CreateAddressBalanceCommand(governance.Address, token.Address, request.BlockHeight));
                 if (governanceResult <= 0) return false;
 
-                // Process vault unassigned supply updates. (The vault's TotalSupply property in contract represents the amount of tokens
-                // available to the vault to distribute. The vault's balance could be 100 tokens but the TotalSupply could have only 50 tokens
-                // left that have not been distributed).
+                // Refresh the vault
                 if (request.BlockHeight >= vault.ModifiedBlock)
                 {
-                    var unassignedSupply = await _mediator.Send(new RetrieveCirrusVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
-
-                    vault.SetUnassignedSupply(unassignedSupply, request.BlockHeight);
-
-                    if (request.Log.PeriodIndex == 0)
-                    {
-                        vault.SetGenesis(request.BlockHeight, request.BlockHeight);
-                    }
-
-                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight));
-                    if (vaultUpdates == 0) return false;
+                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true,
+                                                                                 refreshGenesis: initialDistribution));
+                    if (vaultUpdates <= 0) return false;
                 }
 
                 // Initial distribution only, update governance and create initial nominated liquidity pools
-                if (request.Log.PeriodIndex == 0)
+                if (initialDistribution)
                 {
                     await _mediator.Send(new CreateMiningGovernanceCommand(governance.Address, request.BlockHeight, true));
                     await _mediator.Send(new CreateGovernanceNominationsCommand(governance.Address, request.BlockHeight));

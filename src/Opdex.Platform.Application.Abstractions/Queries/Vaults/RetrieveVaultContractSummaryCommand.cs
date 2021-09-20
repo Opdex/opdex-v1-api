@@ -7,7 +7,8 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Vaults
 {
     public class RetrieveVaultContractSummaryCommand : IRequest<VaultContractSummary>
     {
-        public RetrieveVaultContractSummaryCommand(Address vault, ulong blockHeight)
+        public RetrieveVaultContractSummaryCommand(Address vault, ulong blockHeight, bool includeGenesis = false, bool includeLockedToken = false,
+                                                   bool includeOwner = false, bool includeSupply = false)
         {
             if (vault == Address.Empty)
             {
@@ -21,9 +22,17 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Vaults
 
             Vault = vault;
             BlockHeight = blockHeight;
+            IncludeGenesis = includeGenesis;
+            IncludeLockedToken = includeLockedToken;
+            IncludeOwner = includeOwner;
+            IncludeSupply = includeSupply;
         }
 
         public Address Vault { get; }
         public ulong BlockHeight { get; }
+        public bool IncludeGenesis { get; }
+        public bool IncludeLockedToken { get; }
+        public bool IncludeOwner { get; }
+        public bool IncludeSupply { get; }
     }
 }

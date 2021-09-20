@@ -1,16 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates
 {
     public class SelectVaultCertificatesByOwnerAddressQueryHandler : IRequestHandler<SelectVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>
     {

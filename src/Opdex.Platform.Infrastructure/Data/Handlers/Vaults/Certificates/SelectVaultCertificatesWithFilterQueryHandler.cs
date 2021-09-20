@@ -8,13 +8,13 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates
 {
     public class SelectVaultCertificatesWithFilterQueryHandler : IRequestHandler<SelectVaultCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>
     {

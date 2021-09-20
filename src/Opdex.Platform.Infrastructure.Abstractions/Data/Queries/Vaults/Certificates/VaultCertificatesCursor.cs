@@ -4,7 +4,7 @@ using Opdex.Platform.Common.Models;
 using System;
 using System.Text;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates
 {
     public class VaultCertificatesCursor : Cursor<long>
     {

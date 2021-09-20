@@ -3,13 +3,14 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Vaults
+namespace Opdex.Platform.Application.EntryHandlers.Vaults.Certificates
 {
     public class GetVaultCertificatesWithFilterQueryHandler : EntryFilterQueryHandler<GetVaultCertificatesWithFilterQuery, VaultCertificatesDto>
     {

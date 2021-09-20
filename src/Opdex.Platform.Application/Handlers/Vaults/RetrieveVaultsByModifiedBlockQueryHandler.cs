@@ -9,18 +9,18 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults
 {
-    public class RetrieveVaultCertificatesWithFilterQueryHandler : IRequestHandler<RetrieveVaultCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>
+    public class RetrieveVaultsByModifiedBlockQueryHandler : IRequestHandler<RetrieveVaultsByModifiedBlockQuery, IEnumerable<Vault>>
     {
         private readonly IMediator _mediator;
 
-        public RetrieveVaultCertificatesWithFilterQueryHandler(IMediator mediator)
+        public RetrieveVaultsByModifiedBlockQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<VaultCertificate>> Handle(RetrieveVaultCertificatesWithFilterQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Vault>> Handle(RetrieveVaultsByModifiedBlockQuery request, CancellationToken cancellationToken)
         {
-            return await _mediator.Send(new SelectVaultCertificatesWithFilterQuery(request.VaultId, request.Cursor), cancellationToken);
+            return await _mediator.Send(new SelectVaultsByModifiedBlockQuery(request.BlockHeight), cancellationToken);
         }
     }
 }
