@@ -48,13 +48,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
             rewound = await _mediator.Send(new CreateRewindMiningPositionsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindStakingPositionsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindDeployersCommand(request.Block)) && rewound;
-            // Todo: Rename with "AndNominations".
-            rewound = await _mediator.Send(new CreateRewindMiningGovernancesCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMiningGovernancesAndNominationsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindVaultsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindVaultCertificatesCommand(request.Block)) && rewound;
 
             // Todos
-            // rewind vault certificates
             // rewind tokens
             // rewind token snapshots - depend on lp reserve ratios
             // rewind liquidity pools - core reserves ratios needed

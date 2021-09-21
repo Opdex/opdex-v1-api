@@ -16,6 +16,7 @@ namespace Opdex.Platform.Domain.Models.Vaults
             VestedBlock = vestedBlock;
             Revoked = revoked;
         }
+
         public UInt256 Amount { get; }
         public ulong VestedBlock { get; }
         public bool Revoked { get; }

@@ -8,7 +8,8 @@ namespace Opdex.Platform.Domain.Models.Governances
     public class MiningGovernance : BlockAudit
     {
         public MiningGovernance(long id, Address address, long tokenId, ulong nominationPeriodEnd, ulong miningDuration, uint miningPoolsFunded,
-            UInt256 miningPoolReward, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+                                UInt256 miningPoolReward, ulong createdBlock, ulong modifiedBlock)
+            : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
@@ -19,8 +20,7 @@ namespace Opdex.Platform.Domain.Models.Governances
             MiningPoolReward = miningPoolReward;
         }
 
-        public MiningGovernance(Address address, long tokenId, ulong nominationPeriodEnd, ulong miningDuration, uint miningPoolsFunded,
-            UInt256 miningPoolReward, ulong createdBlock) : base(createdBlock)
+        public MiningGovernance(Address address, long tokenId, ulong miningDuration, ulong createdBlock) : base(createdBlock)
         {
             if (address == Address.Empty)
             {
@@ -39,10 +39,7 @@ namespace Opdex.Platform.Domain.Models.Governances
 
             Address = address;
             TokenId = tokenId;
-            NominationPeriodEnd = nominationPeriodEnd;
             MiningDuration = miningDuration;
-            MiningPoolsFunded = miningPoolsFunded;
-            MiningPoolReward = miningPoolReward;
         }
 
         public long Id { get; }
@@ -53,14 +50,14 @@ namespace Opdex.Platform.Domain.Models.Governances
         public uint MiningPoolsFunded { get; private set; }
         public UInt256 MiningPoolReward { get; private set; }
 
-        public void Update(MiningGovernanceContractSummary summary, ulong block)
+        public void Update(MiningGovernanceContractSummary summary)
         {
-            NominationPeriodEnd = summary.NominationPeriodEnd;
-            MiningPoolsFunded = summary.MiningPoolsFunded;
-            MiningPoolReward = summary.MiningPoolReward;
-            MiningDuration = summary.MiningDuration;
+            if(summary.NominationPeriodEnd.HasValue) NominationPeriodEnd = summary.NominationPeriodEnd.Value;
+            if(summary.MiningPoolsFunded.HasValue) MiningPoolsFunded = summary.MiningPoolsFunded.Value;
+            if(summary.MiningPoolReward.HasValue) MiningPoolReward = summary.MiningPoolReward.Value;
+            if(summary.MiningDuration.HasValue) MiningDuration = summary.MiningDuration.Value;
 
-            SetModifiedBlock(block);
+            SetModifiedBlock(summary.BlockHeight);
         }
     }
 }

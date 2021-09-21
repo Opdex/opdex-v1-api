@@ -2,6 +2,7 @@ using FluentAssertions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Governances;
+using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using Xunit;
 
@@ -10,61 +11,140 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
     public class MiningGovernanceContractSummaryTests
     {
         [Fact]
-        public void CreateNew_MiningGovernanceContractSummary_InvalidAddress_ThrowArgumentNullException()
+        public void CreateNew_MiningGovernanceContractSummary_InvalidBlockHeight_ThrowArgumentOutOfRangeException()
         {
             // Arrange
             // Act
-            void Act() => new MiningGovernanceContractSummary(null, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", 10, 12, 500, 1_000);
+            void Act() => new MiningGovernanceContractSummary(0);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain($"Governance address must be provided.");
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Block height must be greater than zero.");
         }
 
         [Fact]
-        public void CreateNew_MiningGovernanceContractSummary_InvalidMinedToken_ThrowArgumentNullException()
+        public void Create_MiningGovernanceContractSummary_Success()
         {
             // Arrange
+            const ulong blockHeight = 10;
+
             // Act
-            void Act() => new MiningGovernanceContractSummary("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", null, 10, 12, 500, 1_000);
+            var summary = new MiningGovernanceContractSummary(blockHeight);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Governance mined token address must be provided.");
+            summary.BlockHeight.Should().Be(blockHeight);
         }
 
         [Fact]
-        public void CreateNew_MiningGovernanceContractSummary_InvalidMiningDuration_ThrowArgumentOutOfRangeException()
+        public void MiningGovernanceContractSummary_InvalidMiningDuration_ThrowsArgumentOutOfRangeException()
         {
             // Arrange
+            const ulong blockHeight = 10;
+            var summary = new MiningGovernanceContractSummary(blockHeight);
+
             const ulong miningDuration = 0;
 
             // Act
-            void Act() => new MiningGovernanceContractSummary("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", 10, 12, 500, miningDuration);
+            void Act() => summary.SetMiningDuration(new SmartContractMethodParameter(miningDuration));
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Mining duration must be greater than zero.");
         }
 
         [Fact]
-        public void Create_MiningGovernanceNomination_Success()
+        public void MiningGovernanceContractSummary_SetMiningDuration_Success()
         {
             // Arrange
-            Address address = "PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD";
-            Address governanceToken = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const ulong nominationPeriodEnd = 1;
-            const uint miningPoolsFunded = 4;
-            UInt256 miningPoolReward = 500;
-            const ulong miningDuration = 100;
+            const ulong blockHeight = 10;
+            var summary = new MiningGovernanceContractSummary(blockHeight);
+
+            const ulong miningDuration = 100ul;
 
             // Act
-            var summary = new MiningGovernanceContractSummary(address, governanceToken, nominationPeriodEnd, miningPoolsFunded, miningPoolReward, miningDuration);
+            summary.SetMiningDuration(new SmartContractMethodParameter(miningDuration));
 
             // Assert
-            summary.Address.Should().Be(address);
-            summary.MinedToken.Should().Be(governanceToken);
-            summary.NominationPeriodEnd.Should().Be(nominationPeriodEnd);
-            summary.MiningPoolsFunded.Should().Be(miningPoolsFunded);
-            summary.MiningPoolReward.Should().Be(miningPoolReward);
             summary.MiningDuration.Should().Be(miningDuration);
+        }
+
+        [Fact]
+        public void MiningGovernanceContractSummary_SetMiningPoolReward_Success()
+        {
+            // Arrange
+            const ulong blockHeight = 10;
+            var summary = new MiningGovernanceContractSummary(blockHeight);
+
+            UInt256 reward = 500 ;
+
+            // Act
+            summary.SetMiningPoolReward(new SmartContractMethodParameter(reward));
+
+            // Assert
+            summary.MiningPoolReward.Should().Be(reward);
+        }
+
+        [Fact]
+        public void MiningGovernanceContractSummary_SetMiningPoolsFunded_Success()
+        {
+            // Arrange
+            const ulong blockHeight = 10;
+            var summary = new MiningGovernanceContractSummary(blockHeight);
+
+            const uint funded = 4;
+
+            // Act
+            summary.SetMiningPoolsFunded(new SmartContractMethodParameter(funded));
+
+            // Assert
+            summary.MiningPoolsFunded.Should().Be(funded);
+        }
+
+        [Fact]
+        public void MiningGovernanceContractSummary_SetNominationPeriodEnd_Success()
+        {
+            // Arrange
+            const ulong blockHeight = 10;
+            var summary = new MiningGovernanceContractSummary(blockHeight);
+
+            const ulong periodEnd = 100ul;
+
+            // Act
+            summary.SetNominationPeriodEnd(new SmartContractMethodParameter(periodEnd));
+
+            // Assert
+            summary.NominationPeriodEnd.Should().Be(periodEnd);
+        }
+
+        [Fact]
+        public void MiningGovernanceContractSummary_InvalidMinedToken_ThrowsArgumentNullException()
+        {
+            // Arrange
+            const ulong blockHeight = 10;
+            var summary = new MiningGovernanceContractSummary(blockHeight);
+
+            Address token = Address.Empty;
+
+            // Act
+            void Act() => summary.SetMinedToken(new SmartContractMethodParameter(token));
+
+            // Assert
+            // TODO/NOTE: This is the exception thrown in SmartContractMethodParameter when setting a null or empty address
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Address value must be set");
+        }
+
+        [Fact]
+        public void MiningGovernanceContractSummary_SetMinedToken_Success()
+        {
+            // Arrange
+            const ulong blockHeight = 10;
+            var summary = new MiningGovernanceContractSummary(blockHeight);
+
+            Address token = "PARwm9EjmivLgqqH1Mroh6zXXNMUiT1GLs";
+
+            // Act
+            summary.SetMinedToken(new SmartContractMethodParameter(token));
+
+            // Assert
+            summary.MinedToken.Should().Be(token);
         }
     }
 }

@@ -11,18 +11,19 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Governances
 {
-    public class CreateRewindMiningGovernancesCommandHandler : IRequestHandler<CreateRewindMiningGovernancesCommand, bool>
+    public class CreateRewindMiningGovernancesAndNominationsCommandHandler
+        : IRequestHandler<CreateRewindMiningGovernancesAndNominationsCommand, bool>
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<CreateRewindMiningGovernancesCommandHandler> _logger;
+        private readonly ILogger<CreateRewindMiningGovernancesAndNominationsCommandHandler> _logger;
 
-        public CreateRewindMiningGovernancesCommandHandler(IMediator mediator, ILogger<CreateRewindMiningGovernancesCommandHandler> logger)
+        public CreateRewindMiningGovernancesAndNominationsCommandHandler(IMediator mediator, ILogger<CreateRewindMiningGovernancesAndNominationsCommandHandler> logger)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<bool> Handle(CreateRewindMiningGovernancesCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(CreateRewindMiningGovernancesAndNominationsCommand request, CancellationToken cancellationToken)
         {
             var governances = await _mediator.Send(new RetrieveMiningGovernancesByModifiedBlockQuery(request.RewindHeight));
             var staleCount = governances.Count();
@@ -33,9 +34,16 @@ namespace Opdex.Platform.Application.EntryHandlers.Governances
 
             foreach (var governance in governances)
             {
-                var governanceId = await _mediator.Send(new MakeMiningGovernanceCommand(governance, request.RewindHeight, rewind: true));
+                var governanceId = await _mediator.Send(new MakeMiningGovernanceCommand(governance,
+                                                                                        request.RewindHeight,
+                                                                                        refreshNominationPeriodEnd: true,
+                                                                                        refreshMiningPoolsFunded: true,
+                                                                                        refreshMiningPoolReward: true));
+
                 var governanceRefreshed = governanceId != 0;
+
                 var nominationsRefreshed = await _mediator.Send(new MakeGovernanceNominationsCommand(governance, request.RewindHeight));
+
                 if (!governanceRefreshed || !nominationsRefreshed) refreshFailureCount++;
             }
 

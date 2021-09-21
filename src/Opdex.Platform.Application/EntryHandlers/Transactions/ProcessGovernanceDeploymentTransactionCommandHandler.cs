@@ -80,7 +80,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 var vault = await _mediator.Send(new CreateVaultCommand(tokenSummary.Vault, stakingToken.Id, transaction.From, transaction.BlockHeight));
 
                 // Get and/or create mining governance
-                var governanceId = await _mediator.Send(new CreateMiningGovernanceCommand(tokenSummary.MiningGovernance, transaction.BlockHeight, isUpdate: false));
+                var governanceId = await _mediator.Send(new CreateMiningGovernanceCommand(tokenSummary.MiningGovernance, stakingToken.Id,
+                                                                                          transaction.BlockHeight));
 
                 if (transaction.Id == 0)
                 {

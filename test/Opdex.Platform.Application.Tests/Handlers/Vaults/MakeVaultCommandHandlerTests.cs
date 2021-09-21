@@ -60,7 +60,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
         [InlineData(true, false, true, true)]
         [InlineData(true, true, true, true)]
         [InlineData(false, false, false, false)]
-        public async Task MakeVaultCommand_Sends_RetrieveVaultContractSummaryCommand(bool refreshOwner, bool refreshSupply, bool refreshGenesis, bool expected)
+        public async Task MakeVaultCommand_Sends_RetrieveVaultContractSummaryQuery(bool refreshOwner, bool refreshSupply, bool refreshGenesis, bool expected)
         {
             // Arrange
             var vault = new Vault(1, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 3ul, 4, 5, 6);
@@ -79,7 +79,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
             // Assert
             var times = expected ? Times.Once() : Times.Never();
 
-            _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultContractSummaryCommand>(q => q.Vault == vault.Address &&
+            _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultContractSummaryQuery>(q => q.Vault == vault.Address &&
                                                                                                    q.BlockHeight == blockHeight &&
                                                                                                    q.IncludeGenesis == refreshGenesis &&
                                                                                                    q.IncludeOwner == refreshOwner &&
@@ -111,7 +111,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
             var vault = new Vault(1, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, currentOwner, genesis, currentSupply, 5, 6);
             const ulong blockHeight = 10;
 
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultContractSummaryCommand>(), It.IsAny<CancellationToken>()))
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultContractSummaryQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() =>
                 {
                     var summary = new VaultContractSummary(blockHeight);

@@ -184,7 +184,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMiningPositionsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindStakingPositionsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindDeployersCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-            _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMiningGovernancesCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMiningGovernancesAndNominationsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindVaultsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindVaultCertificatesCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 

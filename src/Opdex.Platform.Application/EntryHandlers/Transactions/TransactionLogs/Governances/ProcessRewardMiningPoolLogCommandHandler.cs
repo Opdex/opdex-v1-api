@@ -1,7 +1,8 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
+using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Governances;
+using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
 using System;
 using System.Threading;
@@ -28,9 +29,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var governanceId = await _mediator.Send(new CreateMiningGovernanceCommand(request.Log.Contract, request.BlockHeight, isUpdate: true));
+                var governance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.Log.Contract, findOrThrow: true));
 
-                return governanceId > 0;
+                var updateId = await _mediator.Send(new MakeMiningGovernanceCommand(governance, request.BlockHeight,
+                                                                                    refreshMiningPoolReward: true,
+                                                                                    refreshNominationPeriodEnd: true,
+                                                                                    refreshMiningPoolsFunded: true));
+
+                return updateId > 0;
             }
             catch (Exception ex)
             {

@@ -1,42 +1,69 @@
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models.Transactions;
 using System;
 
 namespace Opdex.Platform.Domain.Models.Governances
 {
     public class MiningGovernanceContractSummary
     {
-        public MiningGovernanceContractSummary(Address address, Address minedToken, ulong nominationPeriodEnd, uint miningPoolsFunded,
-                                               UInt256 miningPoolReward, ulong miningDuration)
+        public MiningGovernanceContractSummary(ulong blockHeight)
         {
-            if (address == Address.Empty)
+            if (blockHeight == 0)
             {
-                throw new ArgumentNullException(nameof(address), "Governance address must be provided.");
+                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
             }
 
-            if (minedToken == Address.Empty)
+            BlockHeight = blockHeight;
+        }
+
+        public ulong BlockHeight { get; }
+        public Address? MinedToken { get; private set; }
+        public ulong? NominationPeriodEnd { get; private set; }
+        public uint? MiningPoolsFunded { get; private set; }
+        public UInt256? MiningPoolReward { get; private set; }
+        public ulong? MiningDuration { get; private set; }
+
+        public void SetMinedToken(SmartContractMethodParameter value)
+        {
+            var token = value.Parse<Address>();
+
+            if (token == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(minedToken), "Governance mined token address must be provided.");
+                throw new ArgumentNullException(nameof(token), "Mined token address must be provided.");
             }
+
+            MinedToken = token;
+        }
+
+        public void SetNominationPeriodEnd(SmartContractMethodParameter value)
+        {
+            // Zero is valid, nothing to check
+            NominationPeriodEnd = value.Parse<ulong>();
+        }
+
+        public void SetMiningPoolsFunded(SmartContractMethodParameter value)
+        {
+            // Zero is valid, nothing to check
+            MiningPoolsFunded = value.Parse<uint>();
+        }
+
+        public void SetMiningPoolReward(SmartContractMethodParameter value)
+        {
+            // Zero is valid, nothing to check
+            MiningPoolReward = value.Parse<UInt256>();
+        }
+
+        public void SetMiningDuration(SmartContractMethodParameter value)
+        {
+            var miningDuration = value.Parse<ulong>();
 
             if (miningDuration < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(miningDuration), "Mining duration must be greater than zero.");
             }
 
-            Address = address;
-            NominationPeriodEnd = nominationPeriodEnd;
-            MiningPoolsFunded = miningPoolsFunded;
-            MiningPoolReward = miningPoolReward;
             MiningDuration = miningDuration;
-            MinedToken = minedToken;
         }
-
-        public Address Address { get; }
-        public Address MinedToken { get; }
-        public ulong NominationPeriodEnd { get; }
-        public uint MiningPoolsFunded { get; }
-        public UInt256 MiningPoolReward { get; }
-        public ulong MiningDuration { get; }
     }
 }

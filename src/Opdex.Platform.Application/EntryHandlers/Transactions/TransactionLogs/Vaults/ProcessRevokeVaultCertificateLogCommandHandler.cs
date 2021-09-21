@@ -36,21 +36,20 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 if (request.BlockHeight >= vault.ModifiedBlock)
                 {
-                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
-                    if (vaultUpdates <= 0) return false;
+                    var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
+                    if (vaultId <= 0) _logger.LogError($"Unexpected error updating vault supply by address: {vault.Address}");
                 }
 
                 var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
 
-                // Todo: Maybe create a specific query for this and a unique index on (owner, vestedBlock)
+                // Select certificates using the vestedBlock as an Id
                 var certificateToUpdate = certificates.Single(c => c.VestedBlock == request.Log.VestedBlock);
 
                 if (request.BlockHeight >= certificateToUpdate.ModifiedBlock)
                 {
                     certificateToUpdate.Revoke(request.Log, request.BlockHeight);
 
-                    var certificateUpdated = await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate));
-                    return certificateUpdated;
+                    return await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate));
                 }
 
                 return true;

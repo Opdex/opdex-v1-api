@@ -15,32 +15,32 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
 {
-    public class CreateRewindMiningGovernancesCommandHandlerTests
+    public class CreateRewindMiningGovernancesAndNominationsCommandHandlerTests
     {
         private readonly Mock<IMediator> _mediator;
-        private readonly CreateRewindMiningGovernancesCommandHandler _handler;
+        private readonly CreateRewindMiningGovernancesAndNominationsCommandHandler _handler;
 
-        public CreateRewindMiningGovernancesCommandHandlerTests()
+        public CreateRewindMiningGovernancesAndNominationsCommandHandlerTests()
         {
             _mediator = new Mock<IMediator>();
-            _handler = new CreateRewindMiningGovernancesCommandHandler(_mediator.Object, Mock.Of<ILogger<CreateRewindMiningGovernancesCommandHandler>>());
+            _handler = new CreateRewindMiningGovernancesAndNominationsCommandHandler(_mediator.Object, Mock.Of<ILogger<CreateRewindMiningGovernancesAndNominationsCommandHandler>>());
         }
 
         [Fact]
-        public void CreateRewindMiningGovernancesCommand_InvalidRewindHeight_ThrowsArgumentOutOfRangeException()
+        public void CreateRewindMiningGovernancesAndNominationsCommand_InvalidRewindHeight_ThrowsArgumentOutOfRangeException()
         {
             // Arrange
             const ulong rewindHeight = 0;
 
             // Act
-            void Act() => new CreateRewindMiningGovernancesCommand(rewindHeight);
+            void Act() => new CreateRewindMiningGovernancesAndNominationsCommand(rewindHeight);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Rewind height must be greater than zero.");
         }
 
         [Fact]
-        public async Task CreateRewindMiningGovernancesCommand_Sends_RetrieveMiningGovernancesByModifiedBlockQuery()
+        public async Task CreateRewindMiningGovernancesAndNominationsCommand_Sends_RetrieveMiningGovernancesByModifiedBlockQuery()
         {
             // Arrange
             const ulong rewindHeight = 10;
@@ -48,7 +48,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
             // Act
             try
             {
-                await _handler.Handle(new CreateRewindMiningGovernancesCommand(rewindHeight), CancellationToken.None);
+                await _handler.Handle(new CreateRewindMiningGovernancesAndNominationsCommand(rewindHeight), CancellationToken.None);
             }
             catch { }
 
@@ -58,7 +58,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
         }
 
         [Fact]
-        public async Task CreateRewindMiningGovernancesCommand_Sends_MakeMiningGovernanceCommand()
+        public async Task CreateRewindMiningGovernancesAndNominationsCommand_Sends_MakeMiningGovernanceCommand()
         {
             // Arrange
             const ulong rewindHeight = 10;
@@ -75,27 +75,22 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
                                                   It.IsAny<CancellationToken>())).ReturnsAsync(governances);
 
             // Act
-            await _handler.Handle(new CreateRewindMiningGovernancesCommand(rewindHeight), CancellationToken.None);
+            await _handler.Handle(new CreateRewindMiningGovernancesAndNominationsCommand(rewindHeight), CancellationToken.None);
 
             // Assert
             foreach (var governance in governances)
             {
                 _mediator.Verify(callTo => callTo.Send(It.Is<MakeMiningGovernanceCommand>(q => q.BlockHeight == rewindHeight &&
-                                                                                       q.Rewind == true &&
-                                                                                       q.MiningGovernance.Id == governance.Id &&
-                                                                                       q.MiningGovernance.Address == governance.Address &&
-                                                                                       q.MiningGovernance.TokenId == governance.TokenId &&
-                                                                                       q.MiningGovernance.NominationPeriodEnd == governance.NominationPeriodEnd &&
-                                                                                       q.MiningGovernance.MiningDuration == governance.MiningDuration &&
-                                                                                       q.MiningGovernance.MiningPoolsFunded == governance.MiningPoolsFunded &&
-                                                                                       q.MiningGovernance.MiningPoolReward == governance.MiningPoolReward &&
-                                                                                       q.MiningGovernance.ModifiedBlock == governance.ModifiedBlock),
+                                                                                               q.MiningGovernance == governance &&
+                                                                                               q.RefreshMiningPoolReward == true &&
+                                                                                               q.RefreshMiningPoolsFunded == true &&
+                                                                                               q.RefreshNominationPeriodEnd == true),
                                                        It.IsAny<CancellationToken>()), Times.Once);
             }
         }
 
         [Fact]
-        public async Task CreateRewindMiningGovernancesCommand_Sends_MakeGovernanceNominationsCommand()
+        public async Task CreateRewindMiningGovernancesAndNominationsCommand_Sends_MakeGovernanceNominationsCommand()
         {
             // Arrange
             const ulong rewindHeight = 10;
@@ -118,21 +113,13 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
             }
 
             // Act
-            await _handler.Handle(new CreateRewindMiningGovernancesCommand(rewindHeight), CancellationToken.None);
+            await _handler.Handle(new CreateRewindMiningGovernancesAndNominationsCommand(rewindHeight), CancellationToken.None);
 
             // Assert
             foreach (var governance in governances)
             {
                 _mediator.Verify(callTo => callTo.Send(It.Is<MakeGovernanceNominationsCommand>(q => q.BlockHeight == rewindHeight &&
-                                                                                                    q.Governance.Id == governance.Id &&
-                                                                                                    q.Governance.Id == governance.Id &&
-                                                                                                    q.Governance.Address == governance.Address &&
-                                                                                                    q.Governance.TokenId == governance.TokenId &&
-                                                                                                    q.Governance.NominationPeriodEnd == governance.NominationPeriodEnd &&
-                                                                                                    q.Governance.MiningDuration == governance.MiningDuration &&
-                                                                                                    q.Governance.MiningPoolsFunded == governance.MiningPoolsFunded &&
-                                                                                                    q.Governance.MiningPoolReward == governance.MiningPoolReward &&
-                                                                                                    q.Governance.ModifiedBlock == governance.ModifiedBlock),
+                                                                                                    q.Governance == governance),
                                                        It.IsAny<CancellationToken>()), Times.Once);
             }
         }

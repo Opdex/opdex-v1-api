@@ -22,11 +22,11 @@ namespace Opdex.Platform.Application.Handlers.Vaults
         {
             if (request.Refresh)
             {
-                var summary = await _mediator.Send(new RetrieveVaultContractSummaryCommand(request.Vault.Address,
-                                                                                           request.BlockHeight,
-                                                                                           includeOwner: request.RefreshOwner,
-                                                                                           includeSupply: request.RefreshSupply,
-                                                                                           includeGenesis: request.RefreshGenesis));
+                var summary = await _mediator.Send(new RetrieveVaultContractSummaryQuery(request.Vault.Address,
+                                                                                         request.BlockHeight,
+                                                                                         includeOwner: request.RefreshOwner,
+                                                                                         includeSupply: request.RefreshSupply,
+                                                                                         includeGenesis: request.RefreshGenesis));
 
                 request.Vault.Update(summary);
             }

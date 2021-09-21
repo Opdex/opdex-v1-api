@@ -2,6 +2,7 @@ using FluentAssertions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Governances;
+using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using Xunit;
 
@@ -13,10 +14,13 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void CreateNew_MiningGovernance_InvalidAddress_ThrowArgumentNullException()
         {
             // Arrange
-            var address = Address.Empty;
+            Address address = Address.Empty;
+            const long tokenId = 1;
+            const ulong miningDuration = 2;
+            const ulong createdBlock = 3;
 
             // Act
-            void Act() => new MiningGovernance(address, 10, 100, 1000, 12, 500, 100_000);
+            void Act() => new MiningGovernance(address, tokenId, miningDuration, createdBlock);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain($"{nameof(address)} must not be null or empty.");
@@ -26,10 +30,13 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void CreateNew_MiningGovernance_InvalidMiningDuration_ThrowArgumentOutOfRangeException()
         {
             // Arrange
+            Address address ="PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD";
+            const long tokenId = 1;
             const ulong miningDuration = 0;
+            const ulong createdBlock = 3;
 
             // Act
-            void Act() => new MiningGovernance("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", 10, 100, miningDuration, 12, 500, 100_000);
+            void Act() => new MiningGovernance(address, tokenId, miningDuration, createdBlock);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(miningDuration)} must be greater than 0.");
@@ -39,10 +46,13 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void CreateNew_MiningGovernance_InvalidTokenId_ThrowArgumentOutOfRangeException()
         {
             // Arrange
+            Address address ="PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD";
             const long tokenId = 0;
+            const ulong miningDuration = 2;
+            const ulong createdBlock = 3;
 
             // Act
-            void Act() => new MiningGovernance("PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD", tokenId, 100, 1000, 12, 500, 100_000);
+            void Act() => new MiningGovernance(address, tokenId, miningDuration, createdBlock);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(tokenId)} must be greater than 0.");
@@ -54,23 +64,16 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             // Arrange
             Address address = "PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD";
             const long tokenId = 1;
-            const ulong nominationPeriodEnd = 10;
             const ulong miningDuration = 100;
-            const uint miningPoolsFunded = 12;
-            UInt256 miningPoolReward = 500;
             const ulong createdBlock = 150;
 
             // Act
-            var governance = new MiningGovernance(address, tokenId, nominationPeriodEnd, miningDuration,
-                                                  miningPoolsFunded, miningPoolReward, createdBlock);
+            var governance = new MiningGovernance(address, tokenId, miningDuration, createdBlock);
 
             // Assert
             governance.Address.Should().Be(address);
             governance.TokenId.Should().Be(tokenId);
-            governance.NominationPeriodEnd.Should().Be(nominationPeriodEnd);
             governance.MiningDuration.Should().Be(miningDuration);
-            governance.MiningPoolsFunded.Should().Be(miningPoolsFunded);
-            governance.MiningPoolReward.Should().Be(miningPoolReward);
             governance.CreatedBlock.Should().Be(createdBlock);
         }
 
@@ -116,17 +119,21 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             const uint miningPoolsFunded = 12;
             UInt256 miningPoolReward = 500;
             const ulong createdBlock = 150;
-            Address governanceToken = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
 
             var governance = new MiningGovernance(id, address, tokenId, nominationPeriodEnd, miningDuration, miningPoolsFunded,
                                                   miningPoolReward, createdBlock, createdBlock);
 
-            var summary = new MiningGovernanceContractSummary(address, governanceToken, nominationPeriodEnd + 10, miningPoolsFunded + 4, 1000, 1000);
-
             const ulong modifiedBlock = 150;
+            var summary = new MiningGovernanceContractSummary(modifiedBlock);
+            summary.SetMiningDuration(new SmartContractMethodParameter(200ul));
+            summary.SetMiningPoolReward(new SmartContractMethodParameter(new UInt256("500")));
+            summary.SetMiningPoolsFunded(new SmartContractMethodParameter((uint)20));
+            summary.SetMinedToken(new SmartContractMethodParameter(new Address("Pq2KGFTtoSPNG9Xh2WU8q87nBDE7FiEUa8")));
+            summary.SetNominationPeriodEnd(new SmartContractMethodParameter(1000ul));
+
 
             // Act
-            governance.Update(summary, modifiedBlock);
+            governance.Update(summary);
 
             // Assert
             governance.NominationPeriodEnd.Should().Be(summary.NominationPeriodEnd);

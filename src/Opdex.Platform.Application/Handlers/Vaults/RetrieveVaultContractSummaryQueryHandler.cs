@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults
 {
-    public class RetrieveVaultContractSummaryCommandHandler : IRequestHandler<RetrieveVaultContractSummaryCommand, VaultContractSummary>
+    public class RetrieveVaultContractSummaryQueryHandler : IRequestHandler<RetrieveVaultContractSummaryQuery, VaultContractSummary>
     {
         private readonly IMediator _mediator;
 
-        public RetrieveVaultContractSummaryCommandHandler(IMediator mediator)
+        public RetrieveVaultContractSummaryQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<VaultContractSummary> Handle(RetrieveVaultContractSummaryCommand request, CancellationToken cancellationToken)
+        public async Task<VaultContractSummary> Handle(RetrieveVaultContractSummaryQuery request, CancellationToken cancellationToken)
         {
             var summary = new VaultContractSummary(request.BlockHeight);
 

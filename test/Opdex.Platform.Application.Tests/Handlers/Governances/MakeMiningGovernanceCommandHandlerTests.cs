@@ -3,7 +3,9 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Application.Handlers.Governances;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Governances;
+using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Governances;
 using System;
 using System.Threading;
@@ -30,7 +32,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Governances
             const ulong blockHeight = 10;
 
             // Act
-            void Act() => new MakeMiningGovernanceCommand(null, blockHeight, false);
+            void Act() => new MakeMiningGovernanceCommand(null, blockHeight);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Contains("Mining governance address must be provided.");
@@ -43,16 +45,26 @@ namespace Opdex.Platform.Application.Tests.Handlers.Governances
             var governance = new MiningGovernance(1, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", 2, 100, 200, 4, 300, 3, 4);
 
             // Act
-            void Act() => new MakeMiningGovernanceCommand(governance, 0, true);
+            void Act() => new MakeMiningGovernanceCommand(governance, 0);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
         }
 
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task MakeMiningGovernanceCommand_Sends_RetrieveMiningGovernanceContractSummaryByAddressQuery(bool rewind)
+        [InlineData(false, false, true, true, false, true)]
+        [InlineData(false, true, false, true, true, true)]
+        [InlineData(true, false, false, true, false, true)]
+        [InlineData(true, true, false, true, false, true)]
+        [InlineData(true, false, true, true, false, true)]
+        [InlineData(true, true, true, true, false, true)]
+        [InlineData(false, false, false, false, false, false)]
+        public async Task MakeMiningGovernanceCommand_Sends_RetrieveMiningGovernanceContractSummaryByAddressQuery(bool refreshNominationPeriodEnd,
+                                                                                                                  bool refreshMiningPoolsFunded,
+                                                                                                                  bool refreshMiningPoolReward,
+                                                                                                                  bool refreshMiningDuration,
+                                                                                                                  bool refreshMinedToken,
+                                                                                                                  bool expected)
         {
             // Arrange
             var governance = new MiningGovernance(1, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", 2, 100, 200, 4, 300, 3, 4);
@@ -61,60 +73,90 @@ namespace Opdex.Platform.Application.Tests.Handlers.Governances
             // Act
             try
             {
-                await _handler.Handle(new MakeMiningGovernanceCommand(governance, blockHeight, rewind), CancellationToken.None);
+                await _handler.Handle(new MakeMiningGovernanceCommand(governance, blockHeight,
+                                                                      refreshMinedToken: refreshMinedToken,
+                                                                      refreshMiningPoolReward: refreshMiningPoolReward,
+                                                                      refreshNominationPeriodEnd: refreshNominationPeriodEnd,
+                                                                      refreshMiningPoolsFunded: refreshMiningPoolsFunded,
+                                                                      refreshMiningDuration: refreshMiningDuration), CancellationToken.None);
             } catch { }
 
             // Assert
-            Times times = rewind ? Times.Once() : Times.Never();
+            var times = expected ? Times.Once() : Times.Never();
 
             _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveMiningGovernanceContractSummaryByAddressQuery>(q => q.Governance == governance.Address &&
-                                                                                                                q.BlockHeight == blockHeight),
+                                                                                                                q.BlockHeight == blockHeight &&
+                                                                                                                q.IncludeNominationPeriodEnd == refreshNominationPeriodEnd &&
+                                                                                                                q.IncludeMiningPoolsFunded == refreshMiningPoolsFunded &&
+                                                                                                                q.IncludeMiningPoolReward == refreshMiningPoolReward &&
+                                                                                                                q.IncludeMiningDuration == refreshMiningDuration &&
+                                                                                                                q.IncludeMinedToken == refreshMinedToken),
                                                    It.IsAny<CancellationToken>()), times);
         }
 
-        [Fact]
-        public async Task MakeMiningGovernanceCommand_Sends_PersistMiningGovernanceCommand_Rewind()
+        [Theory]
+        [InlineData(false, false, true, true)]
+        [InlineData(false, true, false, true)]
+        [InlineData(true, false, false, true)]
+        [InlineData(true, true, false, true)]
+        [InlineData(true, false, true, true)]
+        [InlineData(true, true, true, true)]
+        [InlineData(false, false, false, false)]
+        public async Task MakeMiningGovernanceCommand_Sends_PersistMiningGovernanceCommand_Rewind(bool refreshNominationPeriodEnd,
+                                                                                                  bool refreshMiningPoolsFunded,
+                                                                                                  bool refreshMiningPoolReward,
+                                                                                                  bool refreshMiningDuration)
         {
-            // Arrange
-            var governance = new MiningGovernance(1, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", 2, 100, 200, 4, 300, 3, 4);
-            const ulong blockHeight = 10;
+            const ulong currentNominationPeriodEnd = 100ul;
+            const ulong updatedNominationPeriodEnd = 200ul;
 
-            var expectedSummary = new MiningGovernanceContractSummary(governance.Address, "PoARwmh6zXXH1iT1GLsMrNMU9EjmivLgqq", 1, 2, 3, 4);
+            const ulong currentMiningDuration = 0ul;
+            const ulong updatedMiningDuration = 100ul;
+
+            UInt256 currentReward = 150;
+            UInt256 updatedReward = 100;
+
+            const uint currentPoolsFunded = 4;
+            const uint updatedPoolsFunded = 8;
+
+            const ulong blockHeight = 10;
+            const ulong createdBlock = 10;
+            const ulong modifiedBlock = blockHeight;
+
+            // Arrange
+            var governance = new MiningGovernance(1, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", 2, currentNominationPeriodEnd,
+                                                  currentMiningDuration, currentPoolsFunded, currentReward, createdBlock, createdBlock);
+
+
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningGovernanceContractSummaryByAddressQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedSummary);
+                .ReturnsAsync(() =>
+                {
+                    var summary = new MiningGovernanceContractSummary(blockHeight);
+
+                    if (refreshNominationPeriodEnd) summary.SetNominationPeriodEnd(new SmartContractMethodParameter((updatedNominationPeriodEnd)));
+                    if (refreshMiningPoolsFunded) summary.SetMiningPoolsFunded(new SmartContractMethodParameter((updatedPoolsFunded)));
+                    if (refreshMiningPoolReward) summary.SetMiningPoolReward(new SmartContractMethodParameter((updatedReward)));
+                    if (refreshMiningDuration) summary.SetMiningDuration(new SmartContractMethodParameter((updatedMiningDuration)));
+
+                    return summary;
+                });
 
             // Act
-            await _handler.Handle(new MakeMiningGovernanceCommand(governance, blockHeight, rewind: true), CancellationToken.None);
+            await _handler.Handle(new MakeMiningGovernanceCommand(governance, blockHeight,
+                                                                  refreshMiningPoolReward: refreshMiningPoolReward,
+                                                                  refreshNominationPeriodEnd: refreshNominationPeriodEnd,
+                                                                  refreshMiningPoolsFunded: refreshMiningPoolsFunded,
+                                                                  refreshMiningDuration: refreshMiningDuration), CancellationToken.None);
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<PersistMiningGovernanceCommand>(q => q.MiningGovernance.Id == governance.Id &&
                                                                                               q.MiningGovernance.Address == governance.Address &&
-                                                                                              q.MiningGovernance.MiningDuration == expectedSummary.MiningDuration &&
-                                                                                              q.MiningGovernance.MiningPoolsFunded == expectedSummary.MiningPoolsFunded &&
-                                                                                              q.MiningGovernance.NominationPeriodEnd == expectedSummary.NominationPeriodEnd &&
-                                                                                              q.MiningGovernance.MiningPoolReward == expectedSummary.MiningPoolReward),
-                                                   It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task MakeMiningGovernanceCommand_Sends_PersistMiningGovernanceCommand_NoRewind()
-        {
-            // Arrange
-            var governance = new MiningGovernance(1, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", 2, 100, 200, 4, 300, 3, 4);
-            const ulong blockHeight = 10;
-
-            // Act
-            await _handler.Handle(new MakeMiningGovernanceCommand(governance, blockHeight, rewind: false), CancellationToken.None);
-
-            // Assert
-
-            _mediator.Verify(callTo => callTo.Send(It.Is<PersistMiningGovernanceCommand>(q => q.MiningGovernance.Id == governance.Id &&
-                                                                                              q.MiningGovernance.Address == governance.Address &&
-                                                                                              q.MiningGovernance.MiningDuration == governance.MiningDuration &&
-                                                                                              q.MiningGovernance.MiningPoolsFunded == governance.MiningPoolsFunded &&
-                                                                                              q.MiningGovernance.NominationPeriodEnd == governance.NominationPeriodEnd &&
-                                                                                              q.MiningGovernance.MiningPoolReward == governance.MiningPoolReward),
+                                                                                              q.MiningGovernance.MiningDuration == (refreshMiningDuration ? updatedMiningDuration : currentMiningDuration) &&
+                                                                                              q.MiningGovernance.MiningPoolsFunded == (refreshMiningPoolsFunded ? updatedPoolsFunded : currentPoolsFunded) &&
+                                                                                              q.MiningGovernance.NominationPeriodEnd == (refreshNominationPeriodEnd ? updatedNominationPeriodEnd : currentNominationPeriodEnd) &&
+                                                                                              q.MiningGovernance.MiningPoolReward == (refreshMiningPoolReward ? updatedReward : currentReward) &&
+                                                                                              q.MiningGovernance.ModifiedBlock == modifiedBlock),
                                                    It.IsAny<CancellationToken>()), Times.Once);
         }
     }

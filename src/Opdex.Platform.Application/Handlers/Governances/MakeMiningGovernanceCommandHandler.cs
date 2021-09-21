@@ -19,13 +19,17 @@ namespace Opdex.Platform.Application.Handlers.Governances
 
         public async Task<long> Handle(MakeMiningGovernanceCommand request, CancellationToken cancellationToken)
         {
-            // Rewind when applicable
-            if (request.Rewind)
+            if (request.Refresh)
             {
                 var summary = await _mediator.Send(new RetrieveMiningGovernanceContractSummaryByAddressQuery(request.MiningGovernance.Address,
-                                                                                                             request.BlockHeight));
+                                                                                                             request.BlockHeight,
+                                                                                                             includeMiningPoolsFunded: request.RefreshMiningPoolsFunded,
+                                                                                                             includeNominationPeriodEnd: request.RefreshNominationPeriodEnd,
+                                                                                                             includeMiningPoolReward: request.RefreshMiningPoolReward,
+                                                                                                             includeMiningDuration: request.RefreshMiningDuration,
+                                                                                                             includeMinedToken: request.RefreshMinedToken));
 
-                request.MiningGovernance.Update(summary, request.BlockHeight);
+                request.MiningGovernance.Update(summary);
             }
 
             return await _mediator.Send(new PersistMiningGovernanceCommand(request.MiningGovernance), cancellationToken);
