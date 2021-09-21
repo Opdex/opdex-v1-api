@@ -1,6 +1,4 @@
 using MediatR;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
@@ -33,9 +31,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Gover
             // we would have to add a Stratis Serialization dependency, currently only available in netcoreapp projects.
             var nominationsResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 
-            var serialized = JsonConvert.SerializeObject(nominationsResponse.Return);
-
-            return JsonConvert.DeserializeObject<IEnumerable<GovernanceContractNominationSummary>>(serialized);
+            return nominationsResponse.DeserializeValue<IEnumerable<GovernanceContractNominationSummary>>();
         }
     }
 }

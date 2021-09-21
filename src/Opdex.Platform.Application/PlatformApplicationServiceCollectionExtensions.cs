@@ -82,6 +82,7 @@ using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
@@ -134,6 +135,7 @@ using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.EntryHandlers.MiningPools;
 using Opdex.Platform.Application.EntryHandlers.Tokens.Quotes;
+using Opdex.Platform.Application.EntryHandlers.Vaults.Quotes;
 using Opdex.Platform.Application.Handlers.Addresses.Allowances;
 using Opdex.Platform.Application.Handlers.Addresses.Balances;
 using Opdex.Platform.Application.Handlers.Addresses.Mining;
@@ -155,6 +157,9 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
+using Opdex.Platform.Application.EntryHandlers.Vaults.Certificates;
+using Opdex.Platform.Application.Handlers.Vaults.Certificates;
 
 namespace Opdex.Platform.Application
 {
@@ -291,8 +296,13 @@ namespace Opdex.Platform.Application
             // Governances
             services.AddTransient<IRequestHandler<CreateRewardMiningPoolsTransactionQuoteCommand, TransactionQuoteDto>, CreateRewardMiningPoolsTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateMiningGovernanceCommand, long>, CreateMiningGovernanceCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateRewindMiningGovernancesCommand, bool>, CreateRewindMiningGovernancesCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindMiningGovernancesAndNominationsCommand, bool>, CreateRewindMiningGovernancesAndNominationsCommandHandler>();
             services.AddTransient<IRequestHandler<CreateGovernanceNominationsCommand, bool>, CreateGovernanceNominationsCommandHandler>();
+
+            // Vaults
+            services.AddTransient<IRequestHandler<CreateRewindVaultsCommand, bool>, CreateRewindVaultsCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateVaultCommand, long>, CreateVaultCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindVaultCertificatesCommand, bool>, CreateRewindVaultCertificatesCommandHandler>();
 
             // Tokens
             services.AddTransient<IRequestHandler<CreateCrsTokenSnapshotsCommand, Unit>, CreateCrsTokenSnapshotsCommandHandler>();
@@ -346,6 +356,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveCirrusCurrentBlockQuery, BlockReceipt>, RetrieveCirrusCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusBlockByHashQuery, BlockReceipt>, RetrieveCirrusBlockByHashQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveBlockByHeightQuery, Block>, RetrieveBlockByHeightQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveCirrusBlockHashByHeightQuery, string>, RetrieveCirrusBlockHashByHeightQueryHandler>();
 
             // Deployers
             services.AddTransient<IRequestHandler<RetrieveActiveDeployerQuery, Deployer>, RetrieveActiveDeployerQueryHandler>();
@@ -407,8 +418,11 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveVaultByTokenIdQuery, Vault>, RetrieveVaultByTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, RetrieveVaultCertificatesByOwnerAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveVaultCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>, RetrieveVaultCertificatesWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveCirrusVaultTotalSupplyQuery, UInt256>, RetrieveCirrusVaultTotalSupplyQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveCirrusBlockHashByHeightQuery, string>, RetrieveCirrusBlockHashByHeightQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveVaultContractSummaryQuery, VaultContractSummary>, RetrieveVaultContractSummaryQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveVaultsByModifiedBlockQuery, IEnumerable<Vault>>, RetrieveVaultsByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveVaultCertificatesByModifiedBlockQuery, IEnumerable<VaultCertificate>>, RetrieveVaultCertificatesByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveVaultByIdQuery, Vault>, RetrieveVaultByIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveVaultContractCertificateSummariesByOwnerQuery, IEnumerable<VaultContractCertificateSummary>>, RetrieveVaultContractCertificateSummariesByOwnerQueryHandler>();
 
             // Transactions
             services.AddTransient<IRequestHandler<RetrieveCirrusTransactionByHashQuery, Transaction>, RetrieveCirrusTransactionByHashQueryHandler>();

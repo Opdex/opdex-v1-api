@@ -1,6 +1,8 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
+using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Dynamic;
 using Xunit;
@@ -50,27 +52,26 @@ namespace Opdex.Platform.Domain.Tests.Models.Vaults
         {
             // Arrange
             var vault = new Vault(5, "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5, 100000, 500, 505);
+
+            const ulong block = 99999999;
             UInt256 updatedSupply = 100001;
+            Address updatedOwner = "Pf7LXaWgRKCvMJL7JK7skDpACVauUvuqjB";
+            const ulong updatedGenesis = 10;
+
+            var summary = new VaultContractSummary(block);
+            summary.SetOwner(new SmartContractMethodParameter(updatedOwner));
+            summary.SetGenesis(new SmartContractMethodParameter(updatedGenesis));
+            summary.SetUnassignedSupply(new SmartContractMethodParameter(updatedSupply));
+
 
             // Act
-            vault.SetUnassignedSupply(updatedSupply, 510);
+            vault.Update(summary);
 
             // Assert
             vault.UnassignedSupply.Should().Be(updatedSupply);
-        }
-
-        [Fact]
-        public void SetUnassignedSupply_ModifiedBlock_Updated()
-        {
-            // Arrange
-            var vault = new Vault(5, "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", 5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5, 100000, 500, 505);
-            var blockHeight = 510UL;
-
-            // Act
-            vault.SetUnassignedSupply(100001, blockHeight);
-
-            // Assert
-            vault.ModifiedBlock.Should().Be(blockHeight);
+            vault.Owner.Should().Be(updatedOwner);
+            vault.Genesis.Should().Be(updatedGenesis);
+            vault.ModifiedBlock.Should().Be(block);
         }
     }
 }

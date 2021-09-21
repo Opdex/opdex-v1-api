@@ -2,8 +2,6 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Models;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using System;
@@ -24,33 +22,60 @@ namespace Opdex.Platform.Application.Handlers.Governances
 
         public async Task<MiningGovernanceContractSummary> Handle(RetrieveMiningGovernanceContractSummaryByAddressQuery request, CancellationToken cancellationToken)
         {
-            var miningPoolReward = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
-                                                                                                    GovernanceConstants.StateKeys.MiningPoolReward,
-                                                                                                    SmartContractParameterType.UInt256,
-                                                                                                    request.BlockHeight));
+            var summary = new MiningGovernanceContractSummary(request.BlockHeight);
 
-            var miningDuration = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
-                                                                                                    GovernanceConstants.StateKeys.MiningDuration,
-                                                                                                    SmartContractParameterType.UInt64,
-                                                                                                    request.BlockHeight));
+            if (request.IncludeMiningPoolReward)
+            {
+                var miningPoolReward = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
+                                                                                                        GovernanceConstants.StateKeys.MiningPoolReward,
+                                                                                                        SmartContractParameterType.UInt256,
+                                                                                                        request.BlockHeight));
 
-            var poolsFunded = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
-                                                                                               GovernanceConstants.StateKeys.MiningPoolsFunded,
-                                                                                               SmartContractParameterType.UInt32,
-                                                                                               request.BlockHeight));
+                summary.SetMiningPoolReward(miningPoolReward);
+            }
 
-            var nominationPeriodEnd = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
-                                                                                                       GovernanceConstants.StateKeys.NominationPeriodEnd,
-                                                                                                       SmartContractParameterType.UInt64,
-                                                                                                       request.BlockHeight));
 
-            var minedToken = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
-                                                                                              GovernanceConstants.StateKeys.MinedToken,
-                                                                                              SmartContractParameterType.Address,
-                                                                                              request.BlockHeight));
+            if (request.IncludeMiningPoolsFunded)
+            {
+                var poolsFunded = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
+                                                                                                   GovernanceConstants.StateKeys.MiningPoolsFunded,
+                                                                                                   SmartContractParameterType.UInt32,
+                                                                                                   request.BlockHeight));
 
-            return new MiningGovernanceContractSummary(request.Governance, minedToken.Parse<Address>(), nominationPeriodEnd.Parse<ulong>(),
-                                                       poolsFunded.Parse<uint>(), miningPoolReward.Parse<UInt256>(), miningDuration.Parse<ulong>());
+                summary.SetMiningPoolsFunded(poolsFunded);
+            }
+
+            if (request.IncludeMinedToken)
+            {
+                var minedToken = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
+                                                                                                  GovernanceConstants.StateKeys.MinedToken,
+                                                                                                  SmartContractParameterType.Address,
+                                                                                                  request.BlockHeight));
+
+                summary.SetMinedToken(minedToken);
+            }
+
+            if (request.IncludeMiningDuration)
+            {
+                var miningDuration = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
+                                                                                                      GovernanceConstants.StateKeys.MiningDuration,
+                                                                                                      SmartContractParameterType.UInt64,
+                                                                                                      request.BlockHeight));
+
+                summary.SetMiningDuration(miningDuration);
+            }
+
+            if (request.IncludeNominationPeriodEnd)
+            {
+                var nominationPeriodEnd = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Governance,
+                                                                                                           GovernanceConstants.StateKeys.NominationPeriodEnd,
+                                                                                                           SmartContractParameterType.UInt64,
+                                                                                                           request.BlockHeight));
+
+                summary.SetNominationPeriodEnd(nominationPeriodEnd);
+            }
+
+            return summary;
         }
     }
 }

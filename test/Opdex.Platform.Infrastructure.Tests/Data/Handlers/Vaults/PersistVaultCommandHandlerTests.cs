@@ -31,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults
         public async Task Insert_Vault_Success()
         {
             const long expectedId = 10;
-            var allowance = new Vault("PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1, "PPGBccfFS1cKedqY5ZzJY7iaeEwpXHKzNb", 2, 500000000, 4);
+            var allowance = new Vault("PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1, "PPGBccfFS1cKedqY5ZzJY7iaeEwpXHKzNb", 4);
             var command = new PersistVaultCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedId);
@@ -59,7 +59,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults
         public async Task PersistsVault_Fail()
         {
             const long expectedId = 0;
-            var allowance = new Vault("PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1, "PPGBccfFS1cKedqY5ZzJY7iaeEwpXHKzNb", 2, 500000000, 4);
+            var allowance = new Vault("PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1, "PPGBccfFS1cKedqY5ZzJY7iaeEwpXHKzNb", 4);
             var command = new PersistVaultCommand(allowance);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).Throws(new Exception("Some SQL Exception"));

@@ -6,6 +6,7 @@ using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
+using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
