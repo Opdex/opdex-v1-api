@@ -56,7 +56,7 @@ namespace Opdex.Platform.Domain.Models.Vaults
         public Address Owner { get; }
         public UInt256 Amount { get; private set; }
         public bool Revoked { get; private set; }
-        public ulong VestedBlock { get;}
+        public ulong VestedBlock { get; }
         public bool Redeemed { get; private set; }
 
         public void Revoke(RevokeVaultCertificateLog log, ulong block)

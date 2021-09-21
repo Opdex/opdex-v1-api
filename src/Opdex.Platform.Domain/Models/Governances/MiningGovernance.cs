@@ -45,8 +45,8 @@ namespace Opdex.Platform.Domain.Models.Governances
         public long Id { get; }
         public Address Address { get; }
         public long TokenId { get; }
+        public ulong MiningDuration { get; }
         public ulong NominationPeriodEnd { get; private set; }
-        public ulong MiningDuration { get; private set; }
         public uint MiningPoolsFunded { get; private set; }
         public UInt256 MiningPoolReward { get; private set; }
 
@@ -55,7 +55,6 @@ namespace Opdex.Platform.Domain.Models.Governances
             if(summary.NominationPeriodEnd.HasValue) NominationPeriodEnd = summary.NominationPeriodEnd.Value;
             if(summary.MiningPoolsFunded.HasValue) MiningPoolsFunded = summary.MiningPoolsFunded.Value;
             if(summary.MiningPoolReward.HasValue) MiningPoolReward = summary.MiningPoolReward.Value;
-            if(summary.MiningDuration.HasValue) MiningDuration = summary.MiningDuration.Value;
 
             SetModifiedBlock(summary.BlockHeight);
         }

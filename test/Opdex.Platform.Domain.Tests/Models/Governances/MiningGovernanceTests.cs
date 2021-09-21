@@ -131,7 +131,6 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             summary.SetMinedToken(new SmartContractMethodParameter(new Address("Pq2KGFTtoSPNG9Xh2WU8q87nBDE7FiEUa8")));
             summary.SetNominationPeriodEnd(new SmartContractMethodParameter(1000ul));
 
-
             // Act
             governance.Update(summary);
 
@@ -139,7 +138,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             governance.NominationPeriodEnd.Should().Be(summary.NominationPeriodEnd);
             governance.MiningPoolsFunded.Should().Be(summary.MiningPoolsFunded);
             governance.MiningPoolReward.Should().Be(summary.MiningPoolReward);
-            governance.MiningDuration.Should().Be(summary.MiningDuration);
+            governance.MiningDuration.Should().Be(miningDuration);
             governance.ModifiedBlock.Should().Be(modifiedBlock);
         }
     }

@@ -52,18 +52,16 @@ namespace Opdex.Platform.Application.Tests.Handlers.Governances
         }
 
         [Theory]
-        [InlineData(false, false, true, true, false, true)]
-        [InlineData(false, true, false, true, true, true)]
-        [InlineData(true, false, false, true, false, true)]
-        [InlineData(true, true, false, true, false, true)]
-        [InlineData(true, false, true, true, false, true)]
-        [InlineData(true, true, true, true, false, true)]
-        [InlineData(false, false, false, false, false, false)]
+        [InlineData(false, false, true, true)]
+        [InlineData(false, true, false, true)]
+        [InlineData(true, false, false, true)]
+        [InlineData(true, true, false, true)]
+        [InlineData(true, false, true, true)]
+        [InlineData(true, true, true, true)]
+        [InlineData(false, false, false, false)]
         public async Task MakeMiningGovernanceCommand_Sends_RetrieveMiningGovernanceContractSummaryByAddressQuery(bool refreshNominationPeriodEnd,
                                                                                                                   bool refreshMiningPoolsFunded,
                                                                                                                   bool refreshMiningPoolReward,
-                                                                                                                  bool refreshMiningDuration,
-                                                                                                                  bool refreshMinedToken,
                                                                                                                   bool expected)
         {
             // Arrange
@@ -74,11 +72,9 @@ namespace Opdex.Platform.Application.Tests.Handlers.Governances
             try
             {
                 await _handler.Handle(new MakeMiningGovernanceCommand(governance, blockHeight,
-                                                                      refreshMinedToken: refreshMinedToken,
                                                                       refreshMiningPoolReward: refreshMiningPoolReward,
                                                                       refreshNominationPeriodEnd: refreshNominationPeriodEnd,
-                                                                      refreshMiningPoolsFunded: refreshMiningPoolsFunded,
-                                                                      refreshMiningDuration: refreshMiningDuration), CancellationToken.None);
+                                                                      refreshMiningPoolsFunded: refreshMiningPoolsFunded), CancellationToken.None);
             } catch { }
 
             // Assert
@@ -88,30 +84,26 @@ namespace Opdex.Platform.Application.Tests.Handlers.Governances
                                                                                                                 q.BlockHeight == blockHeight &&
                                                                                                                 q.IncludeNominationPeriodEnd == refreshNominationPeriodEnd &&
                                                                                                                 q.IncludeMiningPoolsFunded == refreshMiningPoolsFunded &&
-                                                                                                                q.IncludeMiningPoolReward == refreshMiningPoolReward &&
-                                                                                                                q.IncludeMiningDuration == refreshMiningDuration &&
-                                                                                                                q.IncludeMinedToken == refreshMinedToken),
+                                                                                                                q.IncludeMiningPoolReward == refreshMiningPoolReward),
                                                    It.IsAny<CancellationToken>()), times);
         }
 
         [Theory]
-        [InlineData(false, false, true, true)]
-        [InlineData(false, true, false, true)]
-        [InlineData(true, false, false, true)]
-        [InlineData(true, true, false, true)]
-        [InlineData(true, false, true, true)]
-        [InlineData(true, true, true, true)]
-        [InlineData(false, false, false, false)]
+        [InlineData(false, false, true)]
+        [InlineData(false, true, false)]
+        [InlineData(true, false, false)]
+        [InlineData(true, true, false)]
+        [InlineData(true, false, true)]
+        [InlineData(true, true, true)]
+        [InlineData(false, false, false)]
         public async Task MakeMiningGovernanceCommand_Sends_PersistMiningGovernanceCommand_Rewind(bool refreshNominationPeriodEnd,
                                                                                                   bool refreshMiningPoolsFunded,
-                                                                                                  bool refreshMiningPoolReward,
-                                                                                                  bool refreshMiningDuration)
+                                                                                                  bool refreshMiningPoolReward)
         {
             const ulong currentNominationPeriodEnd = 100ul;
             const ulong updatedNominationPeriodEnd = 200ul;
 
-            const ulong currentMiningDuration = 0ul;
-            const ulong updatedMiningDuration = 100ul;
+            const ulong currentMiningDuration = 100ul;
 
             UInt256 currentReward = 150;
             UInt256 updatedReward = 100;
@@ -137,7 +129,6 @@ namespace Opdex.Platform.Application.Tests.Handlers.Governances
                     if (refreshNominationPeriodEnd) summary.SetNominationPeriodEnd(new SmartContractMethodParameter((updatedNominationPeriodEnd)));
                     if (refreshMiningPoolsFunded) summary.SetMiningPoolsFunded(new SmartContractMethodParameter((updatedPoolsFunded)));
                     if (refreshMiningPoolReward) summary.SetMiningPoolReward(new SmartContractMethodParameter((updatedReward)));
-                    if (refreshMiningDuration) summary.SetMiningDuration(new SmartContractMethodParameter((updatedMiningDuration)));
 
                     return summary;
                 });
@@ -146,13 +137,12 @@ namespace Opdex.Platform.Application.Tests.Handlers.Governances
             await _handler.Handle(new MakeMiningGovernanceCommand(governance, blockHeight,
                                                                   refreshMiningPoolReward: refreshMiningPoolReward,
                                                                   refreshNominationPeriodEnd: refreshNominationPeriodEnd,
-                                                                  refreshMiningPoolsFunded: refreshMiningPoolsFunded,
-                                                                  refreshMiningDuration: refreshMiningDuration), CancellationToken.None);
+                                                                  refreshMiningPoolsFunded: refreshMiningPoolsFunded), CancellationToken.None);
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<PersistMiningGovernanceCommand>(q => q.MiningGovernance.Id == governance.Id &&
                                                                                               q.MiningGovernance.Address == governance.Address &&
-                                                                                              q.MiningGovernance.MiningDuration == (refreshMiningDuration ? updatedMiningDuration : currentMiningDuration) &&
+                                                                                              q.MiningGovernance.MiningDuration == currentMiningDuration &&
                                                                                               q.MiningGovernance.MiningPoolsFunded == (refreshMiningPoolsFunded ? updatedPoolsFunded : currentPoolsFunded) &&
                                                                                               q.MiningGovernance.NominationPeriodEnd == (refreshNominationPeriodEnd ? updatedNominationPeriodEnd : currentNominationPeriodEnd) &&
                                                                                               q.MiningGovernance.MiningPoolReward == (refreshMiningPoolReward ? updatedReward : currentReward) &&

@@ -25,9 +25,7 @@ namespace Opdex.Platform.Application.Handlers.Governances
                                                                                                              request.BlockHeight,
                                                                                                              includeMiningPoolsFunded: request.RefreshMiningPoolsFunded,
                                                                                                              includeNominationPeriodEnd: request.RefreshNominationPeriodEnd,
-                                                                                                             includeMiningPoolReward: request.RefreshMiningPoolReward,
-                                                                                                             includeMiningDuration: request.RefreshMiningDuration,
-                                                                                                             includeMinedToken: request.RefreshMinedToken));
+                                                                                                             includeMiningPoolReward: request.RefreshMiningPoolReward));
 
                 request.MiningGovernance.Update(summary);
             }

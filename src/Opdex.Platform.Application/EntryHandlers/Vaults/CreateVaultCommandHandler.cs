@@ -20,12 +20,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
 
         public async Task<long> Handle(CreateVaultCommand request, CancellationToken cancellationToken)
         {
-            var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: false)) ??
-                        new Vault(request.Vault, request.TokenId, request.Owner, request.BlockHeight);
+            var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: false));
 
-            return vault.Id == 0
-                ? await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight))
-                : vault.Id;
+            if (vault != null) return vault.Id;
+
+            vault = new Vault(request.Vault, request.TokenId, request.Owner, request.BlockHeight);
+
+            return await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight));
         }
     }
 }
