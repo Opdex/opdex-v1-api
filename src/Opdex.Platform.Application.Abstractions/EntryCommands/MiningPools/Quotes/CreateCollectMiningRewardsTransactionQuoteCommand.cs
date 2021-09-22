@@ -2,7 +2,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Common.Models;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes
 {
     /// <summary>
     /// Quote a transaction to collect rewards from mining in a pool.

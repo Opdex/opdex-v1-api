@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
+using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Assemblers;
@@ -9,13 +10,12 @@ using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.MiningPools
+namespace Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes
 {
     public class CreateStartMiningTransactionQuoteCommandHandler
         : BaseTransactionQuoteCommandHandler<CreateStartMiningTransactionQuoteCommand>

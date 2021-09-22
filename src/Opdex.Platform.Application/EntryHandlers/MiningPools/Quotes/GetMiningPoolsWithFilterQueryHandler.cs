@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.MiningPools
+namespace Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes
 {
     public class GetMiningPoolsWithFilterQueryHandler : EntryFilterQueryHandler<GetMiningPoolsWithFilterQuery, MiningPoolsDto>
     {

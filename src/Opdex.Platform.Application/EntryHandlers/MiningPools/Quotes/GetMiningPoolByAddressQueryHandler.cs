@@ -1,6 +1,5 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Assemblers;
@@ -9,7 +8,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.MiningPools
+namespace Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes
 {
     public class GetMiningPoolByAddressQueryHandler : IRequestHandler<GetMiningPoolByAddressQuery, MiningPoolDto>
     {

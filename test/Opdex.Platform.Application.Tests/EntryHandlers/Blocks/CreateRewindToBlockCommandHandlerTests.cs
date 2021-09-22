@@ -9,6 +9,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.EntryHandlers.Blocks;
@@ -187,6 +188,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMiningGovernancesAndNominationsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindVaultsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindVaultCertificatesCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMiningPoolsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             // Act
             var response = await _handler.Handle(command, CancellationToken.None);

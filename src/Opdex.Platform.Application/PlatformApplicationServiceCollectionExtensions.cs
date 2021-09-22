@@ -157,7 +157,9 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
+using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
+using Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes;
 using Opdex.Platform.Application.EntryHandlers.Vaults.Certificates;
 using Opdex.Platform.Application.Handlers.Vaults.Certificates;
 
@@ -285,6 +287,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateStartMiningTransactionQuoteCommand, TransactionQuoteDto>, CreateStartMiningTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateStopMiningTransactionQuoteCommand, TransactionQuoteDto>, CreateStopMiningTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateCollectMiningRewardsTransactionQuoteCommand, TransactionQuoteDto>, CreateCollectMiningRewardsTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindMiningPoolsCommand, bool>, CreateRewindMiningPoolsCommandHandler>();
 
             // Vaults
             services.AddTransient<IRequestHandler<CreateSetPendingVaultOwnershipTransactionQuoteCommand, TransactionQuoteDto>, CreateSetPendingVaultOwnershipTransactionQuoteCommandHandler>();
@@ -392,6 +395,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveMiningPoolByIdQuery, MiningPool>, RetrieveMiningPoolByIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningPoolByLiquidityPoolIdQuery, MiningPool>, RetrieveMiningPoolByLiquidityPoolIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningPoolByAddressQuery, MiningPool>, RetrieveMiningPoolByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMiningPoolsByModifiedBlockQuery, IEnumerable<MiningPool>>, RetrieveMiningPoolsByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMiningPoolContractSummaryQuery, MiningPoolContractSummary>, RetrieveMiningPoolContractSummaryQueryHandler>();
 
             // Tokens
             services.AddTransient<IRequestHandler<RetrieveTokensWithFilterQuery, IEnumerable<Token>>, RetrieveTokensWithFilterQueryHandler>();

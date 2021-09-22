@@ -65,9 +65,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             var vaults = new List<Vault>
             {
                 new Vault(1, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 3ul, 4, 5, 6),
-                new Vault(2, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 3, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 4ul, 5, 6, 7),
-                new Vault(3, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 4, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 5ul, 6, 7, 8),
-                new Vault(4, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 5, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 6ul, 7, 8, 9)
+                new Vault(2, "PXXNsMroh6zwmH1iU9EjmMivLgqqART1GL", 3, "PivLgqqARwmH1iT1GLsMroh6zXXNMU9Ejm", 4ul, 5, 6, 7),
+                new Vault(3, "PXXroh6zwmH1iU9NMivLgqqART1GLsMEjm", 4, "P6zXXNMU9EjmivLgqqARwmH1iT1GLsMroh", 5ul, 6, 7, 8),
+                new Vault(4, "Proh6zwmH1iU9EjmXXNMivLgqqART1GLsM", 5, "PTivLgqqARwmH1i1GLsMroh6zXXNMU9Ejm", 6ul, 7, 8, 9)
             };
 
             _mediator.Setup(callTo => callTo.Send(It.Is<RetrieveVaultsByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),

@@ -44,14 +44,19 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var lpTokenId = await MakeToken(request.Log.Pool, request.BlockHeight, true);
 
+                // Todo: When working on rewinding liquidity pools / CreateLiquidityPool command handlers, see todo below.
                 var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false));
-                long liquidityPoolId = 0;
+                long liquidityPoolId = liquidityPool?.Id ?? 0;
 
                 if (liquidityPool == null)
                 {
                     liquidityPool = new LiquidityPool(request.Log.Pool, srcTokenId, lpTokenId, market.Id, request.BlockHeight);
                     liquidityPoolId = await _mediator.Send(new MakeLiquidityPoolCommand(liquidityPool));
                 }
+
+                // Todo: When working on rewinding liquidity pools / CreateLiquidityPool command handlers, also create this
+                // "CreateMiningPoolCommand" for new mining pools only. Waiting on creating LPs so we can use a
+                // "RetrieveStakingPoolSummaryQuery" to request the associated mining pool and delete the below call cirrus command.
 
                 // If it's the staking market, a new liquidity pool, and the pool src token isn't the markets staking token
                 if (market.StakingTokenId > 0 && liquidityPool.Id == 0 && srcTokenId != market.StakingTokenId)
@@ -60,7 +65,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                     var miningPool = new MiningPool(liquidityPoolId, miningPoolAddress, request.BlockHeight);
 
-                    var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPool));
+                    var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPool, request.BlockHeight));
                 }
 
                 return liquidityPoolId > 0;
