@@ -8,6 +8,7 @@ using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
+using Opdex.Platform.Common.Constants.SmartContracts.Markets;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;

@@ -44,7 +44,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
             _logger.LogTrace("Beginning to refresh stale records.");
 
-            // refresh stale address balances
+            // refresh stale records
             rewound = await _mediator.Send(new CreateRewindAddressBalancesCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindMiningPositionsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindStakingPositionsCommand(request.Block)) && rewound;

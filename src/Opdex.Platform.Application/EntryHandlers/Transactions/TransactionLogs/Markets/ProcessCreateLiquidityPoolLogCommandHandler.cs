@@ -4,15 +4,14 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
-using Opdex.Platform.Application.Abstractions.Commands.MiningPools;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
-using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
@@ -44,7 +43,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var lpTokenId = await MakeToken(request.Log.Pool, request.BlockHeight, true);
 
-                // Todo: When working on rewinding liquidity pools / CreateLiquidityPool command handlers, see todo below.
                 var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false));
                 long liquidityPoolId = liquidityPool?.Id ?? 0;
 
@@ -54,18 +52,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     liquidityPoolId = await _mediator.Send(new MakeLiquidityPoolCommand(liquidityPool));
                 }
 
-                // Todo: When working on rewinding liquidity pools / CreateLiquidityPool command handlers, also create this
-                // "CreateMiningPoolCommand" for new mining pools only. Waiting on creating LPs so we can use a
-                // "RetrieveStakingPoolSummaryQuery" to request the associated mining pool and delete the below call cirrus command.
-
                 // If it's the staking market, a new liquidity pool, and the pool src token isn't the markets staking token
                 if (market.StakingTokenId > 0 && liquidityPool.Id == 0 && srcTokenId != market.StakingTokenId)
                 {
-                    var miningPoolAddress = await _mediator.Send(new CallCirrusGetMiningPoolByTokenQuery(request.Log.Pool, request.BlockHeight));
-
-                    var miningPool = new MiningPool(liquidityPoolId, miningPoolAddress, request.BlockHeight);
-
-                    var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPool, request.BlockHeight));
+                    await _mediator.Send(new CreateMiningPoolCommand(liquidityPool.Address, liquidityPool.Id, request.BlockHeight));
                 }
 
                 return liquidityPoolId > 0;

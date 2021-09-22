@@ -15,9 +15,9 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Vaults
         /// </summary>
         /// <param name="vault">The vault domain model to update and/or persist.</param>
         /// <param name="blockHeight">The block height used to refresh select properties when applicable based on associated refresh parameters.</param>
-        /// <param name="refreshOwner">Flag to refresh the owner's value from contract state.</param>
-        /// <param name="refreshSupply">Flag to refresh the supply value from contract state.</param>
-        /// <param name="refreshGenesis">Flag to refresh the genesis block value from contract state.</param>
+        /// <param name="refreshOwner">Flag to refresh the owner's value from contract state, default is false.</param>
+        /// <param name="refreshSupply">Flag to refresh the supply value from contract state, default is false.</param>
+        /// <param name="refreshGenesis">Flag to refresh the genesis block value from contract state, default is false.</param>
         public MakeVaultCommand(Vault vault, ulong blockHeight, bool refreshOwner = false, bool refreshSupply = false, bool refreshGenesis = false)
         {
             if (blockHeight == 0)

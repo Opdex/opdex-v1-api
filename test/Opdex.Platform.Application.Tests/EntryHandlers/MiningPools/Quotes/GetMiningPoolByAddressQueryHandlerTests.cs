@@ -5,7 +5,6 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Application.EntryHandlers.MiningPools;
 using Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.MiningPools;
@@ -13,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
+namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools.Quotes
 {
     public class GetMiningPoolByAddressQueryHandlerTests
     {

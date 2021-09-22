@@ -14,12 +14,12 @@ namespace Opdex.Platform.Common.Constants.SmartContracts
 
         public static class Properties
         {
-            public const string MiningGovernance = nameof(MiningGovernance);
-            public const string MinedToken = nameof(MinedToken);
-            public const string MiningPeriodEndBlock = nameof(MiningPeriodEndBlock);
-            public const string RewardRate = nameof(RewardRate);
-            public const string MiningDuration = nameof(MiningDuration);
-            public const string LastUpdateBlock = nameof(LastUpdateBlock);
+            public const string MiningGovernance = nameof(StateKeys.MiningGovernance);
+            public const string MinedToken = nameof(StateKeys.MinedToken);
+            public const string MiningPeriodEndBlock = nameof(StateKeys.MiningPeriodEndBlock);
+            public const string RewardRate = nameof(StateKeys.RewardRate);
+            public const string MiningDuration = nameof(StateKeys.MiningDuration);
+            public const string LastUpdateBlock = nameof(StateKeys.LastUpdateBlock);
         }
 
         public static class Methods

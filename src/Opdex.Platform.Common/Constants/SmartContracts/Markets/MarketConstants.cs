@@ -1,6 +1,6 @@
-namespace Opdex.Platform.Common.Constants.SmartContracts
+namespace Opdex.Platform.Common.Constants.SmartContracts.Markets
 {
-    public class MarketConstants
+    public static class MarketConstants
     {
         public static class Properties
         {
