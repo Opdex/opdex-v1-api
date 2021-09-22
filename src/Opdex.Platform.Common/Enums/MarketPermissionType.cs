@@ -1,6 +1,6 @@
-namespace Opdex.Platform.Domain.Models.Markets
+namespace Opdex.Platform.Common.Enums
 {
-    public enum Permissions : byte
+    public enum MarketPermissionType : byte
     {
         CreatePool = 1,
         Trade = 2,

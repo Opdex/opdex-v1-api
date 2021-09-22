@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Enums;
 using System;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
@@ -9,7 +10,7 @@ namespace Opdex.Platform.Domain.Models.Markets
     {
         private Address _blame;
 
-        public MarketPermission(long marketId, Address user, Permissions permission, bool isAuthorized, Address blame, ulong createdBlock) : base(createdBlock)
+        public MarketPermission(long marketId, Address user, MarketPermissionType permission, bool isAuthorized, Address blame, ulong createdBlock) : base(createdBlock)
         {
             if (user == Address.Empty)
             {
@@ -28,7 +29,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             Blame = blame;
         }
 
-        public MarketPermission(long id, long marketId, Address user, Permissions permission, bool isAuthorized, Address blame,
+        public MarketPermission(long id, long marketId, Address user, MarketPermissionType permission, bool isAuthorized, Address blame,
                                 ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -42,7 +43,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         public long Id { get; }
         public long MarketId { get; }
         public Address User { get; }
-        public Permissions Permission { get; }
+        public MarketPermissionType Permission { get; }
         public bool IsAuthorized { get; private set; }
         public Address Blame
         {

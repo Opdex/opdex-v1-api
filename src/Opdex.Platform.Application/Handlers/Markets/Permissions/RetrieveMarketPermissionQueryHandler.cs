@@ -1,11 +1,11 @@
+using MediatR;
+using Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions;
+using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permissions;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Opdex.Platform.Application.Abstractions.Queries.Markets;
-using Opdex.Platform.Domain.Models.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
-namespace Opdex.Platform.Application.Handlers.Markets
+namespace Opdex.Platform.Application.Handlers.Markets.Permissions
 {
     public class RetrieveMarketPermissionQueryHandler : IRequestHandler<RetrieveMarketPermissionQuery, MarketPermission>
     {

@@ -1,14 +1,14 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions
 {
     public class PersistMarketPermissionCommandHandler : IRequestHandler<PersistMarketPermissionCommand, long>
     {
@@ -33,8 +33,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
               SELECT LAST_INSERT_ID();";
 
         private static readonly string UpdateSqlCommand =
-            $@"UPDATE market_permission 
-                SET 
+            $@"UPDATE market_permission
+                SET
                     {nameof(MarketPermissionEntity.IsAuthorized)} = @{nameof(MarketPermissionEntity.IsAuthorized)},
                     {nameof(MarketPermissionEntity.Blame)} = @{nameof(MarketPermissionEntity.Blame)},
                     {nameof(MarketPermissionEntity.ModifiedBlock)} = @{nameof(MarketPermissionEntity.ModifiedBlock)}

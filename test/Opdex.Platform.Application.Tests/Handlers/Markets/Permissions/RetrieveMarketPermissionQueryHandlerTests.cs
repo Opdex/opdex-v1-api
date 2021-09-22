@@ -1,15 +1,16 @@
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.Queries.Markets;
-using Opdex.Platform.Application.Handlers.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions;
+using Opdex.Platform.Application.Handlers.Markets.Permissions;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permissions;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Markets
+namespace Opdex.Platform.Application.Tests.Handlers.Markets.Permissions
 {
     public class RetrieveMarketPermissionQueryHandlerTests
     {
@@ -28,7 +29,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Markets
             // Arrange
             var marketId = 10L;
             var address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var permission = Permissions.Provide;
+            var permission = MarketPermissionType.Provide;
             var findOrThrow = false;
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -51,7 +52,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Markets
             // Arrange
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        Permissions.Trade,
+                                                        MarketPermissionType.Trade,
                                                         true,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                         500);
@@ -62,7 +63,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Markets
             // Act
             var response = await _handler.Handle(new RetrieveMarketPermissionQuery(10,
                                                                                    "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                                                   Permissions.Provide,
+                                                                                   MarketPermissionType.Provide,
                                                                                    false), default);
 
             // Assert

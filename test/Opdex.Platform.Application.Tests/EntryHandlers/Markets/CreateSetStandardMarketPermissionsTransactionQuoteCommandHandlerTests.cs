@@ -9,6 +9,7 @@ using Opdex.Platform.Application.EntryHandlers.Markets;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Constants.SmartContracts.Markets;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.Transactions;
@@ -41,7 +42,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             // Arrange
             Address market = "PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3";
             var command = new CreateSetStandardMarketPermissionsTransactionQuoteCommand(market, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
-                                                                                        "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", Permissions.Provide, true);
+                                                                                        "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", MarketPermissionType.Provide, true);
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
@@ -59,7 +60,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             Address market = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address authority = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address user = "PNEPCzpKSXns3jWtVfkF7WJeZKdNeEZTBK";
-            Permissions permission = Permissions.Provide;
+            MarketPermissionType permission = MarketPermissionType.Provide;
             bool authorize = true;
             FixedDecimal amount = 50;
 
@@ -99,7 +100,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             Address market = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
             Address authority = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
             Address user = "PNEPCzpKSXns3jWtVfkF7WJeZKdNeEZTBK";
-            Permissions permission = Permissions.Provide;
+            MarketPermissionType permission = MarketPermissionType.Provide;
             bool authorize = true;
             FixedDecimal amount = 50;
 

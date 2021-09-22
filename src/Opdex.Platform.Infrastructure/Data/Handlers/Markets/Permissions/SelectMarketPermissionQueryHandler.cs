@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
@@ -8,9 +5,12 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permissions;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions
 {
     public class SelectMarketPermissionQueryHandler : IRequestHandler<SelectMarketPermissionQuery, MarketPermission>
     {

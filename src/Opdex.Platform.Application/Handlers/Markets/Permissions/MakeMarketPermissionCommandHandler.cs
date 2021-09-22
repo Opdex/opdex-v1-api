@@ -1,10 +1,10 @@
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Markets
+namespace Opdex.Platform.Application.Handlers.Markets.Permissions
 {
     public class MakeMarketPermissionCommandHandler : IRequestHandler<MakeMarketPermissionCommand, long>
     {

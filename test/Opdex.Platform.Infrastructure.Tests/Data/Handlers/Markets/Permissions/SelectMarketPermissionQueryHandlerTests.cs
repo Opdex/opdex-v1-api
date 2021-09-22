@@ -1,16 +1,16 @@
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
 using Moq;
-using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
-using Opdex.Platform.Infrastructure.Data.Handlers.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permissions;
+using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets.Permissions
 {
     public class SelectMarketPermissionQueryHandlerTests
     {
@@ -33,7 +33,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
 
             // Act
             var result = await _handler.Handle(
-                new SelectMarketPermissionQuery(5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", Permissions.Provide, false),
+                new SelectMarketPermissionQuery(5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", MarketPermissionType.Provide, false),
                 cancellationToken);
 
             // Assert
@@ -50,7 +50,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
 
             // Act
             var result = await _handler.Handle(
-                new SelectMarketPermissionQuery(5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", Permissions.Provide, false),
+                new SelectMarketPermissionQuery(5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", MarketPermissionType.Provide, false),
                 default);
 
             // Assert
@@ -61,7 +61,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         public async Task Handle_FoundEntity_ReturnMapped()
         {
             // Arrange
-            var permission = Permissions.Trade;
+            var permission = MarketPermissionType.Trade;
             var entity = new MarketPermissionEntity
             {
                 Id = 5,
@@ -78,7 +78,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
 
             // Act
             var result = await _handler.Handle(
-                new SelectMarketPermissionQuery(5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", Permissions.Provide, false),
+                new SelectMarketPermissionQuery(5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", MarketPermissionType.Provide, false),
                 default);
 
             // Assert

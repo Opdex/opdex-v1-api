@@ -1,4 +1,5 @@
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
@@ -20,7 +21,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets
         /// <param name="permission">The permission to update.</param>
         /// <param name="authorize">Whether to authorize the user this market permission.</param>
         /// <returns></returns>
-        public CreateSetStandardMarketPermissionsTransactionQuoteCommand(Address market, Address authority, Address user, Permissions permission, bool authorize) : base(authority)
+        public CreateSetStandardMarketPermissionsTransactionQuoteCommand(Address market, Address authority, Address user, MarketPermissionType permission, bool authorize) : base(authority)
         {
             Market = market != Address.Empty ? market : throw new ArgumentNullException(nameof(market), "Market address must be set.");
             User = user != Address.Empty ? user : throw new ArgumentNullException(nameof(user), "User address must be set.");
@@ -30,7 +31,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets
 
         public Address Market { get; }
         public Address User { get; }
-        public Permissions Permission { get; }
+        public MarketPermissionType Permission { get; }
         public bool Authorize { get; }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.WebApi.Controllers;
@@ -281,7 +282,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
             var request = new SetMarketPermissionsQuoteRequest
             {
-                Permission = Permissions.Provide,
+                Permission = MarketPermissionType.Provide,
                 Authorize = true
             };
             var cancellationToken = new CancellationTokenSource().Token;
@@ -312,7 +313,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
             var request = new SetMarketPermissionsQuoteRequest
             {
-                Permission = Permissions.Provide,
+                Permission = MarketPermissionType.Provide,
                 Authorize = true
             };
 
@@ -342,7 +343,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
 
             var request = new SetMarketPermissionsQuoteRequest
             {
-                Permission = Permissions.Provide,
+                Permission = MarketPermissionType.Provide,
                 Authorize = true
             };
 

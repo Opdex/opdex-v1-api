@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Markets;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,7 +10,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Markets
     public class SetMarketPermissionsQuoteRequest
     {
         [Required]
-        public Permissions Permission { get; set; }
+        public MarketPermissionType Permission { get; set; }
 
         [Required]
         public bool Authorize { get; set; }

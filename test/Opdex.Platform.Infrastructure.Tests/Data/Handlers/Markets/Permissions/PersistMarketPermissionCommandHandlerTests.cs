@@ -1,17 +1,18 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
-using Opdex.Platform.Infrastructure.Data.Handlers.Markets;
+using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets.Permissions
 {
     public class PersistMarketPermissionCommandHandlerTests
     {
@@ -34,7 +35,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
             var cancellationToken = new CancellationTokenSource().Token;
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        Permissions.Trade,
+                                                        MarketPermissionType.Trade,
                                                         true,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                         500);
@@ -55,7 +56,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
             var id = 5L;
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        Permissions.Trade,
+                                                        MarketPermissionType.Trade,
                                                         true,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                         500);
@@ -78,7 +79,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
             var marketPermission = new MarketPermission(id,
                                                         5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        Permissions.Trade,
+                                                        MarketPermissionType.Trade,
                                                         true,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                         500,
@@ -100,7 +101,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
             // Arrange
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        Permissions.Trade,
+                                                        MarketPermissionType.Trade,
                                                         true,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                         500);

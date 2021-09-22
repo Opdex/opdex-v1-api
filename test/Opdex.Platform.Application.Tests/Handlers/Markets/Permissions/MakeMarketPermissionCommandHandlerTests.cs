@@ -1,15 +1,16 @@
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Markets;
-using Opdex.Platform.Application.Handlers.Markets;
+using Opdex.Platform.Application.Handlers.Markets.Permissions;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Markets
+namespace Opdex.Platform.Application.Tests.Handlers.Markets.Permissions
 {
     public class MakeMarketPermissionCommandHandlerTests
     {
@@ -28,7 +29,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Markets
             // Arrange
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        Permissions.Trade,
+                                                        MarketPermissionType.Trade,
                                                         true,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                         500);
@@ -51,7 +52,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Markets
             var id = 5L;
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        Permissions.Trade,
+                                                        MarketPermissionType.Trade,
                                                         true,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                         500);

@@ -124,7 +124,7 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(quote);
         }
 
-        /// <summary>Set Permissions Quote</summary>
+        /// <summary>Set MarketPermissionType Quote</summary>
         /// <remarks>Quote a transaction to set permissions within a standard market.</remarks>
         /// <param name="address">The address of the standard market.</param>
         /// <param name="walletAddress">The address to assign permissions.</param>

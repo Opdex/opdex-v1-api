@@ -1,15 +1,15 @@
 using FluentAssertions;
 using Moq;
-using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
-using Opdex.Platform.Infrastructure.Data.Handlers.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permissions;
+using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets.Permissions
 {
     public class SelectMarketPermissionsByUserQueryHandlerTests
     {
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
                 cancellationToken);
 
             // Assert
-            _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<Permissions>(
+            _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<MarketPermissionType>(
                 It.Is<DatabaseQuery>(query => query.Token == cancellationToken)), Times.Once);
         }
 
@@ -42,8 +42,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         public async Task Handle_NoResult_ReturnEmpty()
         {
             // Arrange
-            _dbContext.Setup(callTo => callTo.ExecuteQueryAsync<Permissions>(It.IsAny<DatabaseQuery>()))
-                      .ReturnsAsync(Enumerable.Empty<Permissions>());
+            _dbContext.Setup(callTo => callTo.ExecuteQueryAsync<MarketPermissionType>(It.IsAny<DatabaseQuery>()))
+                      .ReturnsAsync(Enumerable.Empty<MarketPermissionType>());
 
             // Act
             var result = await _handler.Handle(
@@ -51,15 +51,15 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
                 default);
 
             // Assert
-            result.Should().BeEquivalentTo(Enumerable.Empty<Permissions>());
+            result.Should().BeEquivalentTo(Enumerable.Empty<MarketPermissionType>());
         }
 
         [Fact]
         public async Task Handle_FoundPermissions_ReturnUnmodified()
         {
             // Arrange
-            var permissions = new Permissions[] { Permissions.Provide, Permissions.SetPermissions, Permissions.CreatePool };
-            _dbContext.Setup(callTo => callTo.ExecuteQueryAsync<Permissions>(It.IsAny<DatabaseQuery>()))
+            var permissions = new MarketPermissionType[] { MarketPermissionType.Provide, MarketPermissionType.SetPermissions, MarketPermissionType.CreatePool };
+            _dbContext.Setup(callTo => callTo.ExecuteQueryAsync<MarketPermissionType>(It.IsAny<DatabaseQuery>()))
                       .ReturnsAsync(permissions);
 
             // Act

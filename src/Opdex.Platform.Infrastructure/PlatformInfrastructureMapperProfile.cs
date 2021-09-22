@@ -124,7 +124,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketPermissionEntity, MarketPermission>()
-                .ConstructUsing(src => new MarketPermission(src.Id, src.MarketId, src.User, (Permissions)src.Permission, src.IsAuthorized, src.Blame,
+                .ConstructUsing(src => new MarketPermission(src.Id, src.MarketId, src.User, (MarketPermissionType)src.Permission, src.IsAuthorized, src.Blame,
                     src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
