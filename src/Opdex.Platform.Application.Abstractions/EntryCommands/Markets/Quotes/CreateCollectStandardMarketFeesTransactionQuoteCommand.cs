@@ -2,7 +2,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Common.Models;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes
 {
     /// <summary>
     /// Quote a transaction to collect fees from a pool in a standard market.

@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;

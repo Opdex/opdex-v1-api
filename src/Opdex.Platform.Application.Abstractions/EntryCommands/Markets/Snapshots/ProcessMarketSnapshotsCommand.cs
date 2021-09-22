@@ -1,7 +1,7 @@
-using System;
 using MediatR;
+using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshots
 {
     public class ProcessMarketSnapshotsCommand : IRequest<Unit>
     {

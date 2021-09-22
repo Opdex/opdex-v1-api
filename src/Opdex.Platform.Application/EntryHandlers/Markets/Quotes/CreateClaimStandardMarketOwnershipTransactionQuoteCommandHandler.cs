@@ -1,18 +1,17 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Constants.SmartContracts.Markets;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Markets
+namespace Opdex.Platform.Application.EntryHandlers.Markets.Quotes
 {
     public class CreateClaimStandardMarketOwnershipTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateClaimStandardMarketOwnershipTransactionQuoteCommand>
     {

@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Assemblers;
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Markets
+namespace Opdex.Platform.Application.EntryHandlers.Markets.Quotes
 {
     public class CreateCreateStandardMarketTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateCreateStandardMarketTransactionQuoteCommand>
     {

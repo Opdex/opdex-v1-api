@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Requests.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Controllers

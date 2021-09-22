@@ -2,14 +2,13 @@ using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Application.EntryHandlers.Markets;
+using Opdex.Platform.Application.EntryHandlers.Markets.Quotes;
 using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Constants.SmartContracts.Markets;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Extensions;
@@ -23,7 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
+namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Quotes
 {
     public class CreateCollectStandardMarketFeesTransactionQuoteCommandHandlerTests
     {

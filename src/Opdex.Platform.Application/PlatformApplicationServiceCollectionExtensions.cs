@@ -157,9 +157,14 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Permissions;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
+using Opdex.Platform.Application.EntryHandlers.Markets.Permissions;
+using Opdex.Platform.Application.EntryHandlers.Markets.Quotes;
 using Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes;
 using Opdex.Platform.Application.EntryHandlers.Vaults.Certificates;
 using Opdex.Platform.Application.Handlers.Markets.Permissions;
@@ -268,6 +273,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateCreateStandardMarketTransactionQuoteCommand, TransactionQuoteDto>, CreateCreateStandardMarketTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateSetStandardMarketOwnershipTransactionQuoteCommand, TransactionQuoteDto>, CreateSetStandardMarketOwnershipTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateSetStandardMarketPermissionsTransactionQuoteCommand, TransactionQuoteDto>, CreateSetStandardMarketPermissionsTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindMarketPermissionsCommand, bool>, CreateRewindMarketPermissionsCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindMarketsCommand, bool>, CreateRewindMarketsCommandHandler>();
 
             // Blocks
             services.AddTransient<IRequestHandler<CreateBlockCommand, bool>, CreateBlockCommandHandler>();

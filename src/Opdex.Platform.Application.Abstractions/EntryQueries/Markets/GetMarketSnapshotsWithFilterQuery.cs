@@ -1,6 +1,5 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using System;
 using System.Collections.Generic;

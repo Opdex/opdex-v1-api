@@ -1,17 +1,16 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Markets;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
-using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Markets
+namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
 {
     public class ProcessMarketSnapshotsCommandHandler : IRequestHandler<ProcessMarketSnapshotsCommand, Unit>
     {
