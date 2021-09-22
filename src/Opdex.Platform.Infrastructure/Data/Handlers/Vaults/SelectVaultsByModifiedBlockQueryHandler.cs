@@ -25,7 +25,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
                 {nameof(VaultEntity.CreatedBlock)},
                 {nameof(VaultEntity.ModifiedBlock)}
             FROM vault
-            WHERE {nameof(VaultEntity.ModifiedBlock)} = @{nameof(VaultEntity.ModifiedBlock)};".RemoveExcessWhitespace();
+            WHERE {nameof(VaultEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;

@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
+using Opdex.Platform.Application.Abstractions.Commands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
-using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Common.Models.UInt;
@@ -35,13 +35,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
 
-                var miningBalance = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id,
-                                                                                                              request.Log.Miner,
-                                                                                                              findOrThrow: false))
+                var miningBalance = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, request.Log.Miner, findOrThrow: false))
                                     ?? new AddressMining(miningPool.Id, request.Log.Miner, UInt256.Zero, request.BlockHeight);
 
-                var isNewer = request.BlockHeight < miningBalance.ModifiedBlock;
-                if (isNewer && miningBalance.Id != 0)
+                if (request.BlockHeight < miningBalance.ModifiedBlock)
                 {
                     return false;
                 }
@@ -50,7 +47,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var miningBalanceId = await _mediator.Send(new MakeAddressMiningCommand(miningBalance));
 
-                return miningBalanceId > 0;
+                if (miningBalanceId <= 0)
+                {
+                    return false;
+                }
+
+                var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPool, request.BlockHeight, refreshRewardPerLpt: true));
+
+                return miningPoolId > 0;
             }
             catch (Exception ex)
             {

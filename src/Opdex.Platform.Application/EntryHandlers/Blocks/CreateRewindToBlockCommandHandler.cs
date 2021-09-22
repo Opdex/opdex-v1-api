@@ -7,6 +7,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Exceptions;
@@ -43,7 +44,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
             _logger.LogTrace("Beginning to refresh stale records.");
 
-            // refresh stale address balances
+            // refresh stale records
             rewound = await _mediator.Send(new CreateRewindAddressBalancesCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindMiningPositionsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindStakingPositionsCommand(request.Block)) && rewound;
@@ -51,17 +52,18 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
             rewound = await _mediator.Send(new CreateRewindMiningGovernancesAndNominationsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindVaultsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindVaultCertificatesCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMiningPoolsCommand(request.Block)) && rewound;
 
             // Todos
-            // rewind tokens
+            // rewind tokens - total supply | useless if we don't ever update it
+            // rewind markets - only the owner to update
+            // rewind market permissions - authorized or not flag
+
             // rewind token snapshots - depend on lp reserve ratios
             // rewind liquidity pools - core reserves ratios needed
             // rewind liquidity pool snapshots - depend on token prices
             // rewind liquidity pool summaries - depend on latest snapshot
-            // rewind mining pools
-            // rewind markets - only the owner to update
             // rewind market snapshots - depend on lp and token snapshots
-            // rewind market permissions
 
             _logger.LogTrace("Refreshing of stale records finished.");
 

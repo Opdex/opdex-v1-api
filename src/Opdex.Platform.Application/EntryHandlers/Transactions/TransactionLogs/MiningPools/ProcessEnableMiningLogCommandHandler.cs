@@ -28,27 +28,24 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 {
                     return false;
                 }
-                
-                var miningPoolQuery = new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: true);
-                var miningPool = await _mediator.Send(miningPoolQuery, CancellationToken.None);
 
-                var isNewer = request.BlockHeight < miningPool.ModifiedBlock;
-                if (isNewer && miningPool.Id != 0)
+                var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
+
+                if (request.BlockHeight < miningPool.ModifiedBlock)
                 {
                     return false;
                 }
 
-                miningPool.EnableMiningPool(request.Log, request.BlockHeight);
-                
-                var miningPoolCommand = new MakeMiningPoolCommand(miningPool);
-                var miningPoolId = await _mediator.Send(miningPoolCommand, CancellationToken.None);
-                
+                miningPool.EnableMining(request.Log, request.BlockHeight);
+
+                var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPool, request.BlockHeight, refreshRewardPerLpt: true));
+
                 return miningPoolId > 0;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failure processing {nameof(EnableMiningLog)}");
-               
+
                 return false;
             }
         }

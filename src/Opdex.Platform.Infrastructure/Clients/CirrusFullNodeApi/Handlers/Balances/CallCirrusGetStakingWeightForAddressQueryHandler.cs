@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Constants.SmartContracts;
+using Opdex.Platform.Common.Constants.SmartContracts.LiquidityPools;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
