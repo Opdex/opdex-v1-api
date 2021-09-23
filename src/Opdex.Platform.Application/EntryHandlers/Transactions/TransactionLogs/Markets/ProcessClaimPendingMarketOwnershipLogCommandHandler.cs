@@ -29,11 +29,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var market = await _mediator.Send( new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 market.SetOwner(request.Log, request.BlockHeight);
 
-                var marketId = await _mediator.Send(new MakeMarketCommand(market));
+                var marketId = await _mediator.Send(new MakeMarketCommand(market, request.BlockHeight));
 
                 return marketId > 0;
             }

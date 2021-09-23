@@ -1,5 +1,6 @@
 using System;
 using FluentAssertions;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Xunit;
@@ -15,7 +16,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             var user = Address.Empty;
 
             // Act
-            void Act() => new MarketPermission(5, user, Permissions.Trade, true, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 500);
+            void Act() => new MarketPermission(5, user, MarketPermissionType.Trade, true, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 500);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("User address must be set.");
@@ -44,7 +45,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             var blame = Address.Empty;
 
             // Act
-            void Act() => new MarketPermission(5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", Permissions.Trade, true, blame, 500);
+            void Act() => new MarketPermission(5, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", MarketPermissionType.Trade, true, blame, 500);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Blame address must be set.");
@@ -56,7 +57,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             // Arrange
             var marketId = 5L;
             var user = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var permission = Permissions.Trade;
+            var permission = MarketPermissionType.Trade;
             var isAuthorized = true;
             var blame = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
             var createdBlock = 500UL;
@@ -82,7 +83,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             // Arrange
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        Permissions.Trade,
+                                                        MarketPermissionType.Trade,
                                                         true,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                         500);
@@ -102,7 +103,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             // Arrange
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        Permissions.Trade,
+                                                        MarketPermissionType.Trade,
                                                         alreadyAuthorized,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                         500);
@@ -127,7 +128,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             // Arrange
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        Permissions.Trade,
+                                                        MarketPermissionType.Trade,
                                                         true,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                         500);
@@ -147,7 +148,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             // Arrange
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        Permissions.Trade,
+                                                        MarketPermissionType.Trade,
                                                         alreadyAuthorized,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                         500);

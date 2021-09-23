@@ -11,15 +11,24 @@ namespace Opdex.Platform.Application.Handlers.Markets
     public class MakeMarketCommandHandler : IRequestHandler<MakeMarketCommand, long>
     {
         private readonly IMediator _mediator;
-        
+
         public MakeMarketCommandHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        
-        public Task<long> Handle(MakeMarketCommand request, CancellationToken cancellationToken)
+
+        public async Task<long> Handle(MakeMarketCommand request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new PersistMarketCommand(request.Market), CancellationToken.None);
+            if (request.Refresh)
+            {
+                var summary = await _mediator.Send(new RetrieveMarketContractSummaryQuery(request.Market.Address,
+                                                                                          request.BlockHeight,
+                                                                                          includeOwner: request.RefreshOwner));
+
+                request.Market.Update(summary);
+            }
+
+            return await _mediator.Send(new PersistMarketCommand(request.Market));
         }
     }
 }

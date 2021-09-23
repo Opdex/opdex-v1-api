@@ -45,8 +45,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 }
 
                 // Get potential market staking token
-                var stakingTokenQuery = new RetrieveTokenByAddressQuery(request.Log.StakingToken, findOrThrow: false);
-                var stakingToken = await _mediator.Send(stakingTokenQuery, CancellationToken.None);
+                var stakingToken = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.StakingToken, findOrThrow: false));
                 var stakingTokenId = stakingToken?.Id ?? 0;
 
                 // Create market
@@ -54,11 +53,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                                     request.Log.AuthProviders, request.Log.AuthTraders, request.Log.TransactionFee,
                                     request.Log.EnableMarketFee, request.BlockHeight);
 
-                var marketId = await _mediator.Send(new MakeMarketCommand(market), CancellationToken.None);
+                var marketId = await _mediator.Send(new MakeMarketCommand(market, request.BlockHeight));
 
                 // Create Router
                 var router = await _mediator.Send(new RetrieveMarketRouterByAddressQuery(request.Log.Router, findOrThrow: false));
-
                 if (router == null)
                 {
                     router = new MarketRouter(request.Log.Router, marketId, true, request.BlockHeight);

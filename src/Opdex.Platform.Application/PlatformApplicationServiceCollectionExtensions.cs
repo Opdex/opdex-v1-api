@@ -157,11 +157,19 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Permissions;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes;
+using Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
+using Opdex.Platform.Application.EntryHandlers.Markets.Permissions;
+using Opdex.Platform.Application.EntryHandlers.Markets.Quotes;
 using Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes;
 using Opdex.Platform.Application.EntryHandlers.Vaults.Certificates;
+using Opdex.Platform.Application.Handlers.Markets.Permissions;
 using Opdex.Platform.Application.Handlers.Vaults.Certificates;
+using Opdex.Platform.Common.Enums;
 
 namespace Opdex.Platform.Application
 {
@@ -265,6 +273,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateCreateStandardMarketTransactionQuoteCommand, TransactionQuoteDto>, CreateCreateStandardMarketTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateSetStandardMarketOwnershipTransactionQuoteCommand, TransactionQuoteDto>, CreateSetStandardMarketOwnershipTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateSetStandardMarketPermissionsTransactionQuoteCommand, TransactionQuoteDto>, CreateSetStandardMarketPermissionsTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindMarketPermissionsCommand, bool>, CreateRewindMarketPermissionsCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindMarketsCommand, bool>, CreateRewindMarketsCommandHandler>();
 
             // Blocks
             services.AddTransient<IRequestHandler<CreateBlockCommand, bool>, CreateBlockCommandHandler>();
@@ -372,12 +382,16 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshot>>, RetrieveMarketSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketByAddressQuery, Market>, RetrieveMarketByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketPermissionQuery, MarketPermission>, RetrieveMarketPermissionQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveMarketPermissionsByUserQuery, IEnumerable<Permissions>>, RetrieveMarketPermissionsByUserQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMarketPermissionsByUserQuery, IEnumerable<MarketPermissionType>>, RetrieveMarketPermissionsByUserQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketByIdQuery, Market>, RetrieveMarketByIdQueryHandler>();
             // Todo: Why are the two below named so differently?
             services.AddTransient<IRequestHandler<RetrieveActiveMarketRouterByMarketIdQuery, MarketRouter>, RetrieveActiveMarketRouterByMarketIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketRouterByAddressQuery, MarketRouter>, RetrieveMarketRouterByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAllMarketsQuery, IEnumerable<Market>>, RetrieveAllMarketsQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMarketsByModifiedBlockQuery, IEnumerable<Market>>, RetrieveMarketsByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMarketPermissionsByModifiedBlockQuery, IEnumerable<MarketPermission>>, RetrieveMarketPermissionsByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMarketContractSummaryQuery, MarketContractSummary>, RetrieveMarketContractSummaryQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMarketContractPermissionSummaryQuery, MarketContractPermissionSummary>, RetrieveMarketContractPermissionSummaryQueryHandler>();
 
             // Liquidity Pools
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>, RetrieveLiquidityPoolsWithFilterQueryHandler>();

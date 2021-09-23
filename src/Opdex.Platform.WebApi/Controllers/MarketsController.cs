@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Requests.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -124,7 +125,7 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(quote);
         }
 
-        /// <summary>Set Permissions Quote</summary>
+        /// <summary>Set MarketPermissionType Quote</summary>
         /// <remarks>Quote a transaction to set permissions within a standard market.</remarks>
         /// <param name="address">The address of the standard market.</param>
         /// <param name="walletAddress">The address to assign permissions.</param>

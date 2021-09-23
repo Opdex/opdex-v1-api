@@ -36,7 +36,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults.Certificates
             // Refresh each vaults certificates separately to reduce trips to the database
             foreach (var vaultCerts in certsByVault)
             {
-                var vault = await _mediator.Send(new RetrieveVaultByIdQuery(vaultCerts.Key));
+                var vault = await _mediator.Send(new RetrieveVaultByIdQuery(vaultCerts.Key, findOrThrow: false));
+
+                if (vault == null)
+                {
+                    refreshFailureCount += vaultCerts.Count();
+                    _logger.LogError($"Cannot find vault with id {vaultCerts.Key}.");
+                    continue;
+                }
 
                 var certsByOwner = vaultCerts.GroupBy(cert => cert.Owner);
 
