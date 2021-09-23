@@ -45,6 +45,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         public Address User { get; }
         public MarketPermissionType Permission { get; }
         public bool IsAuthorized { get; private set; }
+
         public Address Blame
         {
             get => _blame;
@@ -63,6 +64,13 @@ namespace Opdex.Platform.Domain.Models.Markets
             Blame = blame;
             IsAuthorized = false;
             SetModifiedBlock(block);
+        }
+
+        public void Update(MarketContractPermissionSummary summary)
+        {
+            // Todo: This should also include Blame but its low priority and requires querying transaction logs.
+            if (summary.Authorization.HasValue) IsAuthorized = summary.Authorization.Value;
+            SetModifiedBlock(summary.BlockHeight);
         }
     }
 }

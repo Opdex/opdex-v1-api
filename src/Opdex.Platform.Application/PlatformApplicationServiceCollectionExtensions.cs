@@ -390,6 +390,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveAllMarketsQuery, IEnumerable<Market>>, RetrieveAllMarketsQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketsByModifiedBlockQuery, IEnumerable<Market>>, RetrieveMarketsByModifiedBlockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketPermissionsByModifiedBlockQuery, IEnumerable<MarketPermission>>, RetrieveMarketPermissionsByModifiedBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMarketContractSummaryQuery, MarketContractSummary>, RetrieveMarketContractSummaryQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveMarketContractPermissionSummaryQuery, MarketContractPermissionSummary>, RetrieveMarketContractPermissionSummaryQueryHandler>();
 
             // Liquidity Pools
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>, RetrieveLiquidityPoolsWithFilterQueryHandler>();

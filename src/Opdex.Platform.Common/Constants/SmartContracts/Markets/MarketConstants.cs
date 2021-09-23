@@ -2,10 +2,14 @@ namespace Opdex.Platform.Common.Constants.SmartContracts.Markets
 {
     public static class MarketConstants
     {
+        public static class StateKeys
+        {
+            public const string TransactionFee = "MA";
+        }
+
         public static class Properties
         {
-            // Insert properties as we would need them for a local call
-            // (e.g. get_PropertyName)
+            public const string TransactionFee = nameof(StateKeys.TransactionFee);
         }
 
         public static class Methods

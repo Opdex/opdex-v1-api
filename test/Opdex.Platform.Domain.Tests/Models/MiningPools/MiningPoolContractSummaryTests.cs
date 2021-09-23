@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Opdex.Platform.Domain.Tests.Models.MiningPools
 {
-    public class MiningPoolSummaryTests
+    public class MiningPoolContractSummaryTests
     {
         [Fact]
         public void CreateNew_MiningPoolContractSummary_InvalidBlockHeight_ThrowArgumentOutOfRangeException()

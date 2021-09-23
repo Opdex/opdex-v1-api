@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Common.Extensions;
@@ -36,15 +37,21 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets
             {
                 await Task.WhenAll(chunk.Select(async market =>
                 {
-                    // var marketId = await _mediator.Send(new MakeMarketCommand(market,
-                    //                                                                   request.RewindHeight,
-                    //                                                                   refreshRewardPerBlock: true,
-                    //                                                                   refreshRewardPerLpt: true,
-                    //                                                                   refreshMiningPeriodEndBlock: true));
-                    //
-                    // var marketRefreshed = marketId > 0;
-                    //
-                    // if (!marketRefreshed) refreshFailureCount++;
+                    bool marketRefreshed = false;
+
+                    // Note: Currently, there is nothing that changes for staking markets so there is nothing to rewind.
+                    // Only update non-staking markets and check the owner. In the future if staking markets have updates to
+                    // apply (they shouldn't), just make refreshOwner: !market.IsStakingMarket and only refresh the owner in standard markets.
+                    if (!market.IsStakingMarket)
+                    {
+                        var marketId = await _mediator.Send(new MakeMarketCommand(market,
+                                                                                  request.RewindHeight,
+                                                                                  refreshOwner: true));
+
+                        marketRefreshed = marketId > 0;
+                    }
+
+                    if (!marketRefreshed) refreshFailureCount++;
                 }));
             }
 

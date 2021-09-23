@@ -96,6 +96,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.MiningPools;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Balances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Mining;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Staking;
@@ -110,6 +111,7 @@ using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Mempool;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.Nominations;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permissions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Markets;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
@@ -326,6 +328,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetStakingWeightForAddressQuery, UInt256>, CallCirrusGetStakingWeightForAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSmartContractPropertyQuery, SmartContractMethodParameter>, CallCirrusGetSmartContractPropertyQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetVaultContractCertificateSummariesByOwnerQuery, IEnumerable<VaultContractCertificateSummary>>, CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>, CallCirrusGetMarketPermissionAuthorizationQueryHandler>();
 
             // Commands
             services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, string>, CallCirrusCallSmartContractMethodCommandHandler>();

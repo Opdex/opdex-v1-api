@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Permissions;
+using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions;
 using Opdex.Platform.Common.Extensions;
 using System;
@@ -30,22 +32,41 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Permissions
 
             int refreshFailureCount = 0;
 
-            var marketPermissionChunks = marketPermissions.Chunk(10);
+            var permissionsByMarket = marketPermissions.GroupBy(cert => cert.MarketId);
 
-            foreach (var chunk in marketPermissionChunks)
+            foreach (var marketGroup in permissionsByMarket)
             {
-                await Task.WhenAll(chunk.Select(async marketPermission =>
+                var market = await _mediator.Send(new RetrieveMarketByIdQuery(marketGroup.Key, findOrThrow: false));
+
+                if (market == null)
                 {
-                    // var marketPermissionId = await _mediator.Send(new MakeMarketPermissionCommand(marketPermission,
-                    //                                                                   request.RewindHeight,
-                    //                                                                   refreshRewardPerBlock: true,
-                    //                                                                   refreshRewardPerLpt: true,
-                    //                                                                   refreshMiningPeriodEndBlock: true));
-                    //
-                    // var marketPermissionRefreshed = marketPermissionId > 0;
-                    //
-                    // if (!marketPermissionRefreshed) refreshFailureCount++;
-                }));
+                    refreshFailureCount += marketGroup.Count();
+                    _logger.LogError($"Cannot find market with id {marketGroup.Key}.");
+                    continue;
+                }
+
+                var marketPermissionChunks = marketGroup.Chunk(10);
+
+                foreach (var chunk in marketPermissionChunks)
+                {
+                    await Task.WhenAll(chunk.Select(async marketPermission =>
+                    {
+                        // Todo: This should have IncludeBlame however to retrieve this value, we have to search transaction receipts and logs.
+                        var summary = await _mediator.Send(new RetrieveMarketContractPermissionSummaryQuery(market.Address,
+                                                                                                            marketPermission.User,
+                                                                                                            marketPermission.Permission,
+                                                                                                            request.RewindHeight,
+                                                                                                            includeAuthorization: true));
+
+                        marketPermission.Update(summary);
+
+                        var marketPermissionId = await _mediator.Send(new MakeMarketPermissionCommand(marketPermission));
+
+                        var marketPermissionRefreshed = marketPermissionId > 0;
+
+                        if (!marketPermissionRefreshed) refreshFailureCount++;
+                    }));
+                }
             }
 
             _logger.LogDebug($"Refreshed {staleCount - refreshFailureCount} market permissions.");
