@@ -1,24 +1,16 @@
 using MediatR;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
+using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs
 {
     public class PersistTransactionLogCommand : IRequest<bool>
     {
-        public PersistTransactionLogCommand(TransactionLog txLog)
+        public PersistTransactionLogCommand(TransactionLog transactionLog)
         {
-            LogTypeId = (int)txLog.LogType;
-            TransactionId = txLog.TransactionId;
-            Contract = txLog.Contract;
-            SortOrder = txLog.SortOrder;
-            Details = txLog.SerializeLogDetails();
+            TransactionLog = transactionLog ?? throw new ArgumentNullException(nameof(transactionLog), "Transaction log must be provided.");
         }
 
-        public long TransactionId { get; }
-        public int LogTypeId { get; }
-        public Address Contract { get; }
-        public long SortOrder { get; }
-        public string Details { get; }
+        public TransactionLog TransactionLog { get; }
     }
 }
