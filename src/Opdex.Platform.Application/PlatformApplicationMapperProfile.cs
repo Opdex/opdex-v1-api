@@ -311,7 +311,7 @@ namespace Opdex.Platform.Application
             CreateMap<DistributionLog, DistributionEventDto>()
                 .IncludeBase<TransactionLog, TransactionEventDto>()
                 .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex))
-                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
+                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply.ToDecimal(TokenConstants.Opdex.Decimals)))
                 .ForMember(dest => dest.NextDistributionBlock, opt => opt.MapFrom(src => src.NextDistributionBlock))
                 .ForMember(dest => dest.GovernanceAmount, opt => opt.MapFrom(src => src.MiningAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
                 .ForMember(dest => dest.VaultAmount, opt => opt.MapFrom(src => src.VaultAmount.ToDecimal(TokenConstants.Opdex.Decimals)));
