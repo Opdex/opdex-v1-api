@@ -4,16 +4,14 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
-using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
-using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
@@ -59,28 +57,21 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 }
 
                 // Insert Staking Token
-                var tokenAddress = transaction.NewContractAddress;
-                var stakingToken = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false));
-
-                var stakingTokenId = stakingToken?.Id ?? 0L;
-                if (stakingToken == null)
-                {
-                    var summary = await _mediator.Send(new CallCirrusGetSrcTokenSummaryByAddressQuery(tokenAddress));
-
-                    stakingToken = new Token(summary.Address, false, summary.Name, summary.Symbol, (int)summary.Decimals, summary.Sats,
-                                             summary.TotalSupply, transaction.BlockHeight);
-
-                    stakingTokenId = await _mediator.Send(new MakeTokenCommand(stakingToken));
-                }
+                var stakingTokenId = await _mediator.Send(new CreateTokenCommand(transaction.NewContractAddress, transaction.BlockHeight));
 
                 // Get token summary
-                var tokenSummary = await _mediator.Send(new RetrieveStakingTokenContractSummaryByAddressQuery(tokenAddress));
+                var stakingTokenSummary = await _mediator.Send(new RetrieveStakingTokenContractSummaryQuery(transaction.NewContractAddress,
+                                                                                                            transaction.BlockHeight,
+                                                                                                            includeVault: true,
+                                                                                                            includeMiningGovernance: true));
 
                 // Get and/or create vault
-                var vault = await _mediator.Send(new CreateVaultCommand(tokenSummary.Vault, stakingToken.Id, transaction.From, transaction.BlockHeight));
+                var vault = await _mediator.Send(new CreateVaultCommand(stakingTokenSummary.Vault.GetValueOrDefault(),
+                                                                        stakingTokenId, transaction.From, transaction.BlockHeight));
 
                 // Get and/or create mining governance
-                var governanceId = await _mediator.Send(new CreateMiningGovernanceCommand(tokenSummary.MiningGovernance, stakingToken.Id, transaction.BlockHeight));
+                var governanceId = await _mediator.Send(new CreateMiningGovernanceCommand(stakingTokenSummary.MiningGovernance.GetValueOrDefault(),
+                                                                                          stakingTokenId, transaction.BlockHeight));
 
                 if (transaction.Id == 0)
                 {

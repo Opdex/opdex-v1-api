@@ -8,7 +8,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.LiquidityPools
     {
         public MakeLiquidityPoolCommand(LiquidityPool liquidityPool)
         {
-            LiquidityPool = liquidityPool ?? throw new ArgumentNullException(nameof(liquidityPool), $"{nameof(liquidityPool)} must be set.");
+            LiquidityPool = liquidityPool ?? throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool must be set.");
         }
 
         public LiquidityPool LiquidityPool { get; }

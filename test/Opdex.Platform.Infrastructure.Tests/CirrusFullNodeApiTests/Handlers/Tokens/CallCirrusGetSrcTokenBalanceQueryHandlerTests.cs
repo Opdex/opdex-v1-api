@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Moq;
-using Opdex.Platform.Common.Constants.SmartContracts;
+using Opdex.Platform.Common.Constants.SmartContracts.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
@@ -51,7 +51,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.To
             void Act() => new CallCirrusGetSrcTokenBalanceQuery(token, null, blockHeight);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Contains("Token address must be provided.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Contains("Owner address must be provided.");
         }
 
         [Fact]

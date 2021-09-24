@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.Commands.MiningPools;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
+using Opdex.Platform.Application.Abstractions.Commands.Tokens.Distribution;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Assemblers;
@@ -161,13 +162,16 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Permissions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens.Distribution;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
 using Opdex.Platform.Application.EntryHandlers.Markets.Permissions;
 using Opdex.Platform.Application.EntryHandlers.Markets.Quotes;
 using Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes;
 using Opdex.Platform.Application.EntryHandlers.Vaults.Certificates;
 using Opdex.Platform.Application.Handlers.Markets.Permissions;
+using Opdex.Platform.Application.Handlers.Tokens.Distribution;
 using Opdex.Platform.Application.Handlers.Vaults.Certificates;
 using Opdex.Platform.Common.Enums;
 
@@ -328,6 +332,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateRewindMiningPositionsCommand, bool>, CreateRewindMiningPositionsCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindStakingPositionsCommand, bool>, CreateRewindStakingPositionsCommandHandler>();
             services.AddTransient<IRequestHandler<CreateAddressBalanceCommand, long>, CreateAddressBalanceCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateTokenCommand, long>, CreateTokenCommandHandler>();
 
             // Transaction Log Processors
             services.AddTransient<IRequestHandler<ProcessCreateLiquidityPoolLogCommand, bool>, ProcessCreateLiquidityPoolLogCommandHandler>();
@@ -384,7 +389,6 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveMarketPermissionQuery, MarketPermission>, RetrieveMarketPermissionQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketPermissionsByUserQuery, IEnumerable<MarketPermissionType>>, RetrieveMarketPermissionsByUserQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketByIdQuery, Market>, RetrieveMarketByIdQueryHandler>();
-            // Todo: Why are the two below named so differently?
             services.AddTransient<IRequestHandler<RetrieveActiveMarketRouterByMarketIdQuery, MarketRouter>, RetrieveActiveMarketRouterByMarketIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMarketRouterByAddressQuery, MarketRouter>, RetrieveMarketRouterByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveAllMarketsQuery, IEnumerable<Market>>, RetrieveAllMarketsQueryHandler>();
@@ -418,7 +422,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshot>>, RetrieveTokenSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTokenSnapshotWithFilterQuery, TokenSnapshot>, RetrieveTokenSnapshotWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLatestTokenDistributionQuery, TokenDistribution>, RetrieveLatestTokenDistributionQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveStakingTokenContractSummaryByAddressQuery, StakingTokenContractSummary>, RetrieveStakingTokenContractSummaryByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveStakingTokenContractSummaryQuery, StakingTokenContractSummary>, RetrieveStakingTokenContractSummaryQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTokenByIdQuery, Token>, RetrieveTokenByIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTokenByAddressQuery, Token>, RetrieveTokenByAddressQueryHandler>();
 

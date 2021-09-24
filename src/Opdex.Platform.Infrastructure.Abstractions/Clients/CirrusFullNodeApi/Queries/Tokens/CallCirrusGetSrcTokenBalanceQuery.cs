@@ -21,7 +21,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
 
             if (blockHeight == 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than 0");
+                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
             }
 
             Token = token;

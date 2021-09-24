@@ -45,7 +45,8 @@ namespace Opdex.Platform.Domain.Models.Tokens
             TotalSupply = totalSupply;
         }
 
-        public Token(long id, Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply, ulong createdBlock, ulong modifiedBlock)
+        public Token(long id, Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply,
+                     ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -66,6 +67,8 @@ namespace Opdex.Platform.Domain.Models.Tokens
         public int Decimals { get; }
         public ulong Sats { get; }
         public UInt256 TotalSupply { get; private set; }
+
+        // Todo: Look into and fix or document fix with future task for market_tokens
         public long? MarketId { get; private set; }
 
         public void UpdateTotalSupply(UInt256 value, ulong blockHeight)

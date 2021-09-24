@@ -8,7 +8,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Tokens
     {
         public MakeTokenCommand(Token token)
         {
-            Token = token ?? throw new ArgumentNullException(nameof(token));
+            Token = token ?? throw new ArgumentNullException(nameof(token), "Token must be provided.");
         }
 
         public Token Token { get; }

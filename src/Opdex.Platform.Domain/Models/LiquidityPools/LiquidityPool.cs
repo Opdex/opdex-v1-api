@@ -6,58 +6,41 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
 {
     public class LiquidityPool : BlockAudit
     {
-        public LiquidityPool(Address address, long srcTokenId, long lptTokenId, long marketId, ulong createdBlock) : base(createdBlock)
+        public LiquidityPool(Address address, long srcTokenId, long lpTokenId, long marketId, ulong createdBlock) : base(createdBlock)
         {
             if (address == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(address), $"{nameof(address)} must be provided");
+                throw new ArgumentNullException(nameof(address), "Liquidity pool address must be provided");
             }
 
             if (srcTokenId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(srcTokenId), $"{nameof(srcTokenId)} must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(srcTokenId), "SRC token id must be greater than zero.");
             }
 
-            if (lptTokenId < 1)
+            if (lpTokenId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(lptTokenId), $"{nameof(lptTokenId)} must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(lpTokenId), "Liquidity pool token id must be greater than zero.");
             }
 
             if (marketId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(marketId), $"{nameof(marketId)} must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(marketId), "Market id must be greater than zero.");
             }
 
             Address = address;
             SrcTokenId = srcTokenId;
-            LpTokenId = lptTokenId;
+            LpTokenId = lpTokenId;
             MarketId = marketId;
         }
 
-        // Todo: This shouldn't exist
-        public LiquidityPool(Address address, Address tokenAddress, ulong createdBlock) : base(createdBlock)
-        {
-            if (address == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(address), $"{nameof(address)} must be provided");
-            }
-
-            if (tokenAddress == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(tokenAddress), $"{nameof(tokenAddress)} must be provided");
-            }
-
-            Address = address;
-            TokenAddress = tokenAddress;
-        }
-
-        public LiquidityPool(long id, Address address, long srcTokenId, long lptTokenId, long marketId, ulong createdBlock, ulong modifiedBlock)
+        public LiquidityPool(long id, Address address, long srcTokenId, long lpTokenId, long marketId, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
             SrcTokenId = srcTokenId;
-            LpTokenId = lptTokenId;
+            LpTokenId = lpTokenId;
             MarketId = marketId;
         }
 
@@ -66,8 +49,5 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
         public long SrcTokenId { get; }
         public long LpTokenId { get; }
         public long MarketId { get; }
-
-        // Todo: Rip this out
-        public Address TokenAddress { get; }
     }
 }

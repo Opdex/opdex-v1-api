@@ -10,7 +10,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Tokens.Quotes;
 using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Constants.SmartContracts;
+using Opdex.Platform.Common.Constants.SmartContracts.Tokens;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
