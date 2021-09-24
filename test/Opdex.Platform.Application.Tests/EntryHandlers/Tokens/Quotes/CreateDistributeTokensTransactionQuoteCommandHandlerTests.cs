@@ -8,7 +8,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Tokens.Quotes;
 using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Constants.SmartContracts;
+using Opdex.Platform.Common.Constants.SmartContracts.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Transactions;
@@ -96,7 +96,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Quotes
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<MakeTransactionQuoteCommand>(c => c.QuoteRequest.Sender == walletAddress
                                                                                                && c.QuoteRequest.To == token
                                                                                                && c.QuoteRequest.Amount == FixedDecimal.Zero
-                                                                                               && c.QuoteRequest.Method == StandardTokenConstants.Methods.Distribute
+                                                                                               && c.QuoteRequest.Method == StakingTokenConstants.Methods.Distribute
                                                                                                && c.QuoteRequest.Callback == _config.WalletTransactionCallback
                                                                                                && !c.QuoteRequest.Parameters.Any()),
                                                        It.IsAny<CancellationToken>()), Times.Once);

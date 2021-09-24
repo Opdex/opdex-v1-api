@@ -11,7 +11,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.MiningPools
     public class RetrieveMiningPoolContractSummaryQuery : IRequest<MiningPoolContractSummary>
     {
         /// <summary>
-        /// Constructor to create a retrieve mining pool contract summary by address query.
+        /// Constructor to create a retrieve mining pool contract summary query.
         /// </summary>
         /// <param name="miningPool">The address of the mining pool contract.</param>
         /// <param name="blockHeight">The block height to query the contract's state at.</param>

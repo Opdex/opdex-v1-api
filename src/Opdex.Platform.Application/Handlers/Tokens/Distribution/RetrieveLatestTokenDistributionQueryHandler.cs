@@ -1,12 +1,12 @@
+using MediatR;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens.Distribution;
+using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distribution;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distribution;
 
-namespace Opdex.Platform.Application.Handlers.Tokens
+namespace Opdex.Platform.Application.Handlers.Tokens.Distribution
 {
     public class RetrieveLatestTokenDistributionQueryHandler : IRequestHandler<RetrieveLatestTokenDistributionQuery, TokenDistribution>
     {

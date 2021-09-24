@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
+using Opdex.Platform.Application.Abstractions.Commands.Tokens.Distribution;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
@@ -12,6 +13,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens.Distribution;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 
@@ -53,15 +55,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 // Refresh the vault
                 if (request.BlockHeight >= vault.ModifiedBlock)
                 {
-                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true, refreshGenesis: initialDistribution));
+                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true,
+                                                                                 refreshGenesis: initialDistribution));
                     if (vaultUpdates <= 0) return false;
                 }
 
                 // Initial distribution only, update governance and create initial nominated liquidity pools
                 if (initialDistribution)
                 {
-                    await _mediator.Send(new MakeMiningGovernanceCommand(governance, request.BlockHeight,
-                                                                         refreshMiningPoolReward: true,
+                    await _mediator.Send(new MakeMiningGovernanceCommand(governance, request.BlockHeight, refreshMiningPoolReward: true,
                                                                          refreshNominationPeriodEnd: true));
 
                     await _mediator.Send(new MakeGovernanceNominationsCommand(governance, request.BlockHeight));
@@ -71,7 +73,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 if (request.BlockHeight >= token.ModifiedBlock)
                 {
                     token.UpdateTotalSupply(request.Log.TotalSupply, request.BlockHeight);
-                    await _mediator.Send(new MakeTokenCommand(token));
+                    await _mediator.Send(new MakeTokenCommand(token, request.BlockHeight));
                 }
 
                 var latestDistribution = await _mediator.Send(new RetrieveLatestTokenDistributionQuery(findOrThrow: false));
