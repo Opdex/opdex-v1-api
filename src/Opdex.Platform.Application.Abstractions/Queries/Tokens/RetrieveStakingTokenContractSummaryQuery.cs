@@ -5,8 +5,21 @@ using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Tokens
 {
+    /// <summary>
+    /// Retrieve select properties from a staking token smart contract based on the provided block height.
+    /// </summary>
     public class RetrieveStakingTokenContractSummaryQuery : IRequest<StakingTokenContractSummary>
     {
+        /// <summary>
+        /// Constructor to create a retrieve staking token contract summary query.
+        /// </summary>
+        /// <param name="token">The address of the token contract.</param>
+        /// <param name="blockHeight">The block height to query the contract's state at.</param>
+        /// <param name="includeGenesis">Flag to include the token's genesis block property, default is false.</param>
+        /// <param name="includePeriodIndex">Flag to include the token's period index property, default is false.</param>
+        /// <param name="includeVault">Flag to include the token's vault address property, default is false.</param>
+        /// <param name="includeMiningGovernance">Flag to include the token's mining governance address property, default is false.</param>
+        /// <param name="includePeriodDuration">Flag to include the token's period duration property, default is false.</param>
         public RetrieveStakingTokenContractSummaryQuery(Address token, ulong blockHeight, bool includeGenesis = false,
                                                         bool includePeriodIndex = false, bool includeVault = false,
                                                         bool includeMiningGovernance = false, bool includePeriodDuration = false)

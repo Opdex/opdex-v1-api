@@ -9,7 +9,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
     {
         public StakingTokenContractSummary(ulong blockHeight)
         {
-            if (blockHeight < 1)
+            if (blockHeight == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
             }

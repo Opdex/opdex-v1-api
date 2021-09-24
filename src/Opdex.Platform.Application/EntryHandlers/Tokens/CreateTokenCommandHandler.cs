@@ -42,7 +42,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
                               summary.TotalSupply.GetValueOrDefault(),
                               request.BlockHeight);
 
-            return await _mediator.Send(new MakeTokenCommand(token));
+            return await _mediator.Send(new MakeTokenCommand(token, request.BlockHeight));
         }
     }
 }

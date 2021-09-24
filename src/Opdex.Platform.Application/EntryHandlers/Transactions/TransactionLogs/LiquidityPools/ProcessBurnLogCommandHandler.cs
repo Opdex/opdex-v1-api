@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 lpToken.UpdateTotalSupply(request.Log.TotalSupply, request.BlockHeight);
 
-                var response = await _mediator.Send(new MakeTokenCommand(lpToken));
+                var response = await _mediator.Send(new MakeTokenCommand(lpToken, request.BlockHeight));
 
                 return response > 0;
             }

@@ -22,10 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Handlers\Tokens" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\src\Opdex.Platform.Application\Opdex.Platform.Application.csproj" />
     </ItemGroup>
 
