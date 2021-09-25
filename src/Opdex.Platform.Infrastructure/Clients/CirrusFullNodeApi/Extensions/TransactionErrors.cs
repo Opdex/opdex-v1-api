@@ -5,7 +5,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions
 {
     public static class TransactionErrors
     {
-        private static readonly Regex MethodDefinitionRegex = new Regex(@"(?<=at\s).+?(\(.+?\))", RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
+        private static readonly Regex MethodDefinitionRegex = new Regex(@"(?<=at\s).+?(\(.+?\))", RegexOptions.Compiled, TimeSpan.FromMilliseconds(500));
 
         /// <summary>
         /// Attempts to match the last method definition in a transaction error.
@@ -187,7 +187,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions
 
 
             // compiled Regex is much faster, should be initialize on startup
-            private static readonly Regex OpdexErrorRegex = new Regex(@"(?<=OPDEX:\s).+?(?=\\r\\n)", RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
+            private static readonly Regex OpdexErrorRegex = new Regex(@"(?<=OPDEX:\s).+?(?=\r\n)", RegexOptions.Compiled, TimeSpan.FromMilliseconds(500));
 
             /// <summary>
             /// Attempts to parse known errors that can occur during Opdex smart contract method calls.
