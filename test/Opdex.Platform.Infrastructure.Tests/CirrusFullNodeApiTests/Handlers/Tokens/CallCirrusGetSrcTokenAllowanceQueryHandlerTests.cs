@@ -48,9 +48,8 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.To
         {
             // Arrange
             Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            Address owner = Address.Empty;;
+            Address owner = Address.Empty;
             Address spender = "PN28FQf5uJYUcmAsqAEgUXkBJPuCXfcNKd";
-            const ulong blockHeight = 10;
 
             // Act
             void Act() => new CallCirrusGetSrcTokenAllowanceQuery(token, owner, spender);
@@ -65,7 +64,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.To
             // Arrange
             Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             Address owner = "PuJYUcmAsqAEgUXkBJPuCXfcNKdN28FQf5";
-            Address spender = Address.Empty;;
+            Address spender = Address.Empty;
 
             // Act
             void Act() => new CallCirrusGetSrcTokenAllowanceQuery(token, owner, spender);

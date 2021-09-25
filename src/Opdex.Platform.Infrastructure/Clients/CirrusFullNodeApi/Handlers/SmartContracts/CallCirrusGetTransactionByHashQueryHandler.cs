@@ -19,16 +19,15 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
         private readonly ISmartContractsModule _smartContractsModule;
         private readonly IBlockStoreModule _blockStoreModule;
         private readonly IMapper _mapper;
-        private readonly ILogger<CallCirrusGetTransactionByHashQueryHandler> _logger;
+        private readonly ILoggerFactory _loggerFactory;
 
         public CallCirrusGetTransactionByHashQueryHandler(ISmartContractsModule smartContractsModule,
-            IBlockStoreModule blockStoreModule, IMapper mapper,
-            ILogger<CallCirrusGetTransactionByHashQueryHandler> logger)
+            IBlockStoreModule blockStoreModule, IMapper mapper, ILoggerFactory loggerFactory)
         {
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
             _blockStoreModule = blockStoreModule ?? throw new ArgumentNullException(nameof(blockStoreModule));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         // Todo: try catch with retry external from polly for 400 Bad Requests based on flag
@@ -41,6 +40,13 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
             transaction.SetBlockHeight(block.Height);
 
             var transactionLogs = transaction.Logs.Select(t => _mapper.Map<TransactionLog>(t)).ToList();
+
+            if (!string.IsNullOrEmpty(transaction.Error))
+            {
+                var errorProcessor = new TransactionErrorProcessor(_loggerFactory.CreateLogger<TransactionErrorProcessor>());
+                // Todo: Capture and store errors
+                _ = errorProcessor.ProcessOpdexTransactionError(transaction.Error);
+            }
 
             return new Transaction(transaction.TransactionHash, transaction.BlockHeight, transaction.GasUsed, transaction.From,
                                    transaction.To, transaction.Success, transaction.NewContractAddress, transactionLogs);

@@ -3,6 +3,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using System.Threading;

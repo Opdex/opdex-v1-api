@@ -1,5 +1,7 @@
 using AutoMapper;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
@@ -29,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
 
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-            _handler = new CallCirrusLocalCallSmartContractMethodCommandHandler(_smartContractsModuleMock.Object, mapper);
+            _handler = new CallCirrusLocalCallSmartContractMethodCommandHandler(_smartContractsModuleMock.Object, mapper, new NullLoggerFactory());
         }
 
         [Fact]
@@ -157,7 +159,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
             var response = await _handler.Handle(new CallCirrusLocalCallSmartContractMethodCommand(request), CancellationToken.None);
 
             // Assert
-            response.Error.Should().Be(error);
+            response.Error.Should().NotBe(error);
             response.Request.Should().BeEquivalentTo(request);
             response.Result.Should().BeNull();
             response.Logs.Should().BeEmpty();
