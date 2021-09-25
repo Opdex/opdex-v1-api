@@ -4,18 +4,13 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
-using Opdex.Platform.Application.Abstractions.Commands.MiningPools;
-using Opdex.Platform.Application.Abstractions.Commands.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
-using Opdex.Platform.Domain.Models.MiningPools;
-using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets
 {
@@ -38,29 +33,24 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract), CancellationToken.None);
+                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var srcTokenId = await _mediator.Send(new CreateTokenCommand(request.Log.Token, request.BlockHeight));
+                var lpTokenId = await _mediator.Send(new CreateTokenCommand(request.Log.Pool, request.BlockHeight));
 
-                var srcTokenId = await MakeToken(request.Log.Token, request.BlockHeight);
+                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false)) ??
+                                    new LiquidityPool(request.Log.Pool, srcTokenId, lpTokenId, market.Id, request.BlockHeight);
 
-                var lpTokenId = await MakeToken(request.Log.Pool, request.BlockHeight, true);
-
-                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false));
-                long liquidityPoolId = 0;
-
-                if (liquidityPool == null)
+                long liquidityPoolId = liquidityPool.Id;
+                var isNewLiquidityPool = liquidityPoolId == 0;
+                if (isNewLiquidityPool)
                 {
-                    liquidityPool = new LiquidityPool(request.Log.Pool, srcTokenId, lpTokenId, market.Id, request.BlockHeight);
                     liquidityPoolId = await _mediator.Send(new MakeLiquidityPoolCommand(liquidityPool));
                 }
 
                 // If it's the staking market, a new liquidity pool, and the pool src token isn't the markets staking token
-                if (market.StakingTokenId > 0 && liquidityPool.Id == 0 && srcTokenId != market.StakingTokenId)
+                if (market.IsStakingMarket && isNewLiquidityPool && srcTokenId != market.StakingTokenId)
                 {
-                    var miningPoolAddress = await _mediator.Send(new CallCirrusGetMiningPoolByTokenQuery(request.Log.Pool, request.BlockHeight));
-
-                    var miningPool = new MiningPool(liquidityPoolId, miningPoolAddress, request.BlockHeight);
-
-                    var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPool));
+                    await _mediator.Send(new CreateMiningPoolCommand(liquidityPool.Address, liquidityPoolId, request.BlockHeight));
                 }
 
                 return liquidityPoolId > 0;
@@ -71,23 +61,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 return false;
             }
-        }
-
-        private async Task<long> MakeToken(Address tokenAddress, ulong blockHeight, bool isLpToken = false)
-        {
-            var srcToken = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress, findOrThrow: false));
-
-            if (srcToken != null)
-            {
-                return srcToken.Id;
-            }
-
-            var summary = await _mediator.Send(new CallCirrusGetSrcTokenSummaryByAddressQuery(tokenAddress));
-
-            srcToken = new Token(summary.Address, isLpToken, summary.Name, summary.Symbol, (int)summary.Decimals, summary.Sats,
-                                 summary.TotalSupply, blockHeight);
-
-            return await _mediator.Send(new MakeTokenCommand(srcToken));
         }
     }
 }

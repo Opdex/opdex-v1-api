@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
@@ -20,7 +21,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
                 throw new ArgumentNullException(nameof(fromAddress), "Address must be set.");
             }
 
-            var permissionCast = (Permissions)permission;
+            var permissionCast = (MarketPermissionType)permission;
             if (!permissionCast.IsValid())
             {
                 throw new ArgumentOutOfRangeException(nameof(permission), "Permission must be valid.");
@@ -41,13 +42,13 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
         }
 
         public Address Address { get; }
-        public Permissions Permission { get; }
+        public MarketPermissionType Permission { get; }
         public bool IsAuthorized { get; }
 
         public struct LogDetails
         {
             public Address Address { get; set; }
-            public Permissions Permission { get; set; }
+            public MarketPermissionType Permission { get; set; }
             public bool IsAuthorized { get; set; }
         }
 

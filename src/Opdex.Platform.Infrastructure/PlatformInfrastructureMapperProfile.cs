@@ -22,7 +22,6 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Admins;
@@ -124,7 +123,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketPermissionEntity, MarketPermission>()
-                .ConstructUsing(src => new MarketPermission(src.Id, src.MarketId, src.User, (Permissions)src.Permission, src.IsAuthorized, src.Blame,
+                .ConstructUsing(src => new MarketPermission(src.Id, src.MarketId, src.User, (MarketPermissionType)src.Permission, src.IsAuthorized, src.Blame,
                     src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -504,12 +503,12 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.NewContractAddress, opt => opt.MapFrom(src => src.NewContractAddress))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<PersistTransactionLogCommand, TransactionLogEntity>()
+            CreateMap<TransactionLog, TransactionLogEntity>()
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
                 .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
-                .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details))
-                .ForMember(dest => dest.LogTypeId, opt => opt.MapFrom(src => src.LogTypeId))
+                .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.SerializeLogDetails()))
+                .ForMember(dest => dest.LogTypeId, opt => opt.MapFrom(src => (int)src.LogType))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<Vault, VaultEntity>()

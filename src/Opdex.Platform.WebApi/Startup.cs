@@ -210,9 +210,10 @@ namespace Opdex.Platform.WebApi
 
             app.UseProblemDetails();
             app.UseCors(options => options
-                            .AllowAnyOrigin()
+                            .SetIsOriginAllowed(host => true)
                             .AllowAnyHeader()
-                            .AllowAnyMethod());
+                            .AllowAnyMethod()
+                            .AllowCredentials());
             app.UseSerilogRequestLogging();
             app.UseRouting();
             app.UseAuthentication();

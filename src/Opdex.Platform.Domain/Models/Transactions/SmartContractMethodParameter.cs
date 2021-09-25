@@ -142,11 +142,18 @@ namespace Opdex.Platform.Domain.Models.Transactions
 
         public T Parse<T>()
         {
-            // Todo: probably should do some checks on what T is vs what our known Type is.
-            var value = JsonConvert.SerializeObject(Value);
+            try
+            {
+                // Todo: probably should do some checks on what T is vs what our known Type is.
+                var value = JsonConvert.SerializeObject(Value);
 
-            // Extra safe, add our serialization settings in here so we can test each type in unit tests
-            return JsonConvert.DeserializeObject<T>(value, Serialization.DefaultJsonSettings);
+                // Extra safe, add our serialization settings in here so we can test each type in unit tests
+                return JsonConvert.DeserializeObject<T>(value, Serialization.DefaultJsonSettings);
+            }
+            catch
+            {
+                return default;
+            }
         }
     }
 }

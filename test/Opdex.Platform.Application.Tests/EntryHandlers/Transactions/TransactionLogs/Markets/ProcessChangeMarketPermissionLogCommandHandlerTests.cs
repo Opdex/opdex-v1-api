@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
@@ -37,7 +38,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistTransactionLogCommand>(), It.IsAny<CancellationToken>()))
                          .ThrowsAsync(new Exception("Something went wrong."));
 
-            dynamic logData = SetupChangeMarketPermissionData("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", Permissions.Trade, true);
+            dynamic logData = SetupChangeMarketPermissionData("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", MarketPermissionType.Trade, true);
             var log = new ChangeMarketPermissionLog(logData, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5);
 
             // Act
@@ -56,7 +57,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistTransactionLogCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(false);
 
-            dynamic logData = SetupChangeMarketPermissionData("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", Permissions.Trade, true);
+            dynamic logData = SetupChangeMarketPermissionData("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", MarketPermissionType.Trade, true);
             var log = new ChangeMarketPermissionLog(logData, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5);
 
             // Act
@@ -75,7 +76,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistTransactionLogCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(true);
 
-            dynamic logData = SetupChangeMarketPermissionData("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", Permissions.Trade, true);
+            dynamic logData = SetupChangeMarketPermissionData("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", MarketPermissionType.Trade, true);
             var log = new ChangeMarketPermissionLog(logData, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5);
             var block = 10_000UL;
             var cancellationToken = new CancellationTokenSource().Token;
@@ -98,7 +99,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistTransactionLogCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(true);
 
-            dynamic logData = SetupChangeMarketPermissionData("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", Permissions.Trade, true);
+            dynamic logData = SetupChangeMarketPermissionData("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", MarketPermissionType.Trade, true);
             var log = new ChangeMarketPermissionLog(logData, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeMarketPermissionCommand>(), It.IsAny<CancellationToken>()))
@@ -127,7 +128,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
                                                   500,
                                                   505));
 
-        private ExpandoObject SetupChangeMarketPermissionData(Address address, Permissions permission, bool isAuthorized)
+        private ExpandoObject SetupChangeMarketPermissionData(Address address, MarketPermissionType permission, bool isAuthorized)
         {
             dynamic data = new ExpandoObject();
             data.address = address.ToString();

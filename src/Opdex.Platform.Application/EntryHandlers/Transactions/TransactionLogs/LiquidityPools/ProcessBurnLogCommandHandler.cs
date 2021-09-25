@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools;
-using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
@@ -30,14 +29,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return false;
                 }
 
-                var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
-                var lpToken = await _mediator.Send(new RetrieveTokenByIdQuery(pool.LpTokenId, findOrThrow: true));
+                var lpToken = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 lpToken.UpdateTotalSupply(request.Log.TotalSupply, request.BlockHeight);
 
-                var response = await _mediator.Send(new MakeTokenCommand(lpToken));
+                var response = await _mediator.Send(new MakeTokenCommand(lpToken, request.BlockHeight));
 
-                return response > 1;
+                return response > 0;
             }
             catch (Exception ex)
             {

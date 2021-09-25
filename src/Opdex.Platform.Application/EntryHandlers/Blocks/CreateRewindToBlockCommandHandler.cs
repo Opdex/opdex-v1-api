@@ -1,9 +1,16 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Permissions;
+using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Exceptions;
 using System;
@@ -15,10 +22,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
     public class CreateRewindToBlockCommandHandler : IRequestHandler<CreateRewindToBlockCommand, bool>
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<CreateRewindToBlockCommandHandler> _logger;
 
-        public CreateRewindToBlockCommandHandler(IMediator mediator)
+        public CreateRewindToBlockCommandHandler(IMediator mediator, ILogger<CreateRewindToBlockCommandHandler> logger)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<bool> Handle(CreateRewindToBlockCommand request, CancellationToken cancellationToken)
@@ -32,12 +41,32 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
             if (block == null) throw new InvalidDataException(nameof(block), "Unable to find a block by the provided block number.");
 
             var rewound = await _mediator.Send(new MakeRewindToBlockCommand(request.Block));
+            // If delete fails, return immediately
             if (!rewound) return false;
 
-            // Refresh stale records
-            await _mediator.Send(new CreateRewindAddressBalancesCommand(request.Block));
-            await _mediator.Send(new CreateRewindDeployersCommand(request.Block));
-            await _mediator.Send(new CreateRewindMiningGovernancesCommand(request.Block));
+            _logger.LogTrace("Beginning to refresh stale records.");
+
+            // refresh stale records
+            rewound = await _mediator.Send(new CreateRewindAddressBalancesCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMiningPositionsCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindStakingPositionsCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindDeployersCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMiningGovernancesAndNominationsCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindVaultsCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindVaultCertificatesCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMiningPoolsCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMarketsCommand(request.Block)) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMarketPermissionsCommand(request.Block)) && rewound;
+
+            // Todos
+            // rewind tokens - total supply | useless if we don't ever update it
+            // rewind token snapshots - depend on lp reserve ratios
+            // rewind liquidity pools - core reserves ratios needed
+            // rewind liquidity pool snapshots - depend on token prices
+            // rewind liquidity pool summaries - depend on latest snapshot
+            // rewind market snapshots - depend on lp and token snapshots
+
+            _logger.LogTrace("Refreshing of stale records finished.");
 
             return rewound;
         }

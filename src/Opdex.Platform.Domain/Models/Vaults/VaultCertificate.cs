@@ -3,6 +3,7 @@ using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using System;
+using System.Reflection;
 
 namespace Opdex.Platform.Domain.Models.Vaults
 {
@@ -69,6 +70,15 @@ namespace Opdex.Platform.Domain.Models.Vaults
         {
             Redeemed = true;
             SetModifiedBlock(block);
+        }
+
+        public void Update(VaultContractCertificateSummary summary, ulong blockHeight)
+        {
+            // Summaries are only returned for non-redeemed certs
+            Redeemed = false;
+            Amount = summary.Amount;
+            Revoked = summary.Revoked;
+            SetModifiedBlock(blockHeight);
         }
     }
 }

@@ -23,9 +23,8 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Go
 
         public CallCirrusGetGovernanceNominationsSummaryQueryHandlerTests()
         {
-            var logger = NullLogger<CallCirrusGetGovernanceNominationsSummaryQueryHandler>.Instance;
             _smartContractsModuleMock = new Mock<ISmartContractsModule>();
-            _handler = new CallCirrusGetGovernanceNominationsSummaryQueryHandler(_smartContractsModuleMock.Object, logger);
+            _handler = new CallCirrusGetGovernanceNominationsSummaryQueryHandler(_smartContractsModuleMock.Object);
         }
 
         [Fact]
@@ -67,7 +66,8 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Go
             try
             {
                 await _handler.Handle(new CallCirrusGetGovernanceNominationsSummaryQuery(governance, blockHeight), CancellationToken.None);
-            } catch {}
+            }
+            catch { }
 
             // Assert
             _smartContractsModuleMock.Verify(callTo => callTo.LocalCallAsync(It.Is<LocalCallRequestDto>(q => q.Amount == FixedDecimal.Zero &&

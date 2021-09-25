@@ -4,10 +4,10 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Governances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.EntryHandlers.Governances;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Governances;
+using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,12 +31,29 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
         {
             // Arrange
             const ulong blockHeight = 10;
+            const long stakingTokenId = 2;
 
             // Act
-            void Act() => new CreateMiningGovernanceCommand(null, blockHeight, false);
+            void Act() => new CreateMiningGovernanceCommand(null, stakingTokenId, blockHeight);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Contains("Governance address must be provided.");
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        public void CreateMiningGovernanceCommand_InvalidStakingTokenId_ThrowsArgumentOutOfRangeException(long stakingTokenId)
+        {
+            // Arrange
+            Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
+            const ulong blockHeight = 10;
+
+            // Act
+            void Act() => new CreateMiningGovernanceCommand(governance, stakingTokenId, blockHeight);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Staking token id must be greater than zero.");
         }
 
         [Fact]
@@ -44,32 +61,33 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
         {
             // Arrange
             Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
+            const long stakingTokenId = 2;
+            const ulong blockHeight = 0;
 
             // Act
-            void Act() => new CreateMiningGovernanceCommand(governance, 0, true);
+            void Act() => new CreateMiningGovernanceCommand(governance, stakingTokenId, blockHeight);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task CreateMiningGovernanceCommand_Sends_RetrieveMiningGovernanceByAddressQuery(bool isUpdate)
+        [Fact]
+        public async Task CreateMiningGovernanceCommand_Sends_RetrieveMiningGovernanceByAddressQuery()
         {
             // Arrange
             Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
             const ulong blockHeight = 10;
+            const long stakingTokenId = 2;
 
             // Act
             try
             {
-                await _handler.Handle(new CreateMiningGovernanceCommand(governance, blockHeight, isUpdate), CancellationToken.None);
+                await _handler.Handle(new CreateMiningGovernanceCommand(governance, stakingTokenId, blockHeight), CancellationToken.None);
             } catch { }
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveMiningGovernanceByAddressQuery>(q => q.Address == governance &&
-                                                                                                      q.FindOrThrow == isUpdate),
+                                                                                                      q.FindOrThrow == false),
                                                    It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -79,7 +97,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
             // Arrange
             Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
             const ulong blockHeight = 10;
-            const bool isUpdate = true;
+            const long stakingTokenId = 2;
 
             var expectedGovernance = new MiningGovernance(1, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 2, 100, 200, 4, 300, 3, 11);
 
@@ -87,7 +105,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
                 .ReturnsAsync(expectedGovernance);
 
             // Act
-            var result = await _handler.Handle(new CreateMiningGovernanceCommand(governance, blockHeight, isUpdate), CancellationToken.None);
+            var result = await _handler.Handle(new CreateMiningGovernanceCommand(governance, stakingTokenId, blockHeight), CancellationToken.None);
 
             // Assert
             result.Should().Be(expectedGovernance.Id);
@@ -101,45 +119,22 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
             // Arrange
             Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
             const ulong blockHeight = 10;
-            const bool isUpdate = true;
-
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningGovernanceByAddressQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new MiningGovernance(1, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 2, 100, 200, 4, 300, 3, 4));
+            const long stakingTokenId = 2;
 
             // Act
             try
             {
-                await _handler.Handle(new CreateMiningGovernanceCommand(governance, blockHeight, isUpdate), CancellationToken.None);
+                await _handler.Handle(new CreateMiningGovernanceCommand(governance, stakingTokenId, blockHeight), CancellationToken.None);
             } catch { }
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveMiningGovernanceContractSummaryByAddressQuery>(q => q.Governance == governance &&
-                                                                                                                     q.BlockHeight == blockHeight),
-                                                   It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task CreateMiningGovernanceCommand_Sends_RetrieveTokenByAddressQuery()
-        {
-            // Arrange
-            Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
-            Address governanceToken = "PoARwmh6zXXH1iT1GLsMrNMU9EjmivLgqq";
-            const ulong blockHeight = 10;
-            const bool isUpdate = false;
-
-            var expectedSummary = new MiningGovernanceContractSummary(governance, governanceToken, 1, 2, 3, 4);
-
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningGovernanceContractSummaryByAddressQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedSummary);
-
-            // Act
-            try
-            {
-                await _handler.Handle(new CreateMiningGovernanceCommand(governance, blockHeight, isUpdate), CancellationToken.None);
-            } catch { }
-
-            // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(q => q.Address == governanceToken),
+                                                                                                                     q.BlockHeight == blockHeight &&
+                                                                                                                     q.IncludeMiningDuration == true &&
+                                                                                                                     q.IncludeMinedToken == false &&
+                                                                                                                     q.IncludeMiningPoolReward == false &&
+                                                                                                                     q.IncludeMiningPoolsFunded == false &&
+                                                                                                                     q.IncludeNominationPeriodEnd == false),
                                                    It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -149,32 +144,29 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
             // Arrange
             Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
             const ulong blockHeight = 10;
-            const bool isUpdate = true;
+            const long stakingTokenId = 2;
+            const ulong miningDuration = 5;
 
-            var existingGovernance = new MiningGovernance(1, governance, 2, 100, 200, 4, 300, 3, 4);
-            var expectedSummary = new MiningGovernanceContractSummary(governance, "PoARwmh6zXXH1iT1GLsMrNMU9EjmivLgqq", 1, 2, 3, 4);
-
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningGovernanceByAddressQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(existingGovernance);
+            var expectedSummary = new MiningGovernanceContractSummary(blockHeight);
+            expectedSummary.SetMiningDuration(new SmartContractMethodParameter(miningDuration));
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningGovernanceContractSummaryByAddressQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedSummary);
 
             // Act
-            try
-            {
-                await _handler.Handle(new CreateMiningGovernanceCommand(governance, blockHeight, isUpdate), CancellationToken.None);
-            } catch { }
+            await _handler.Handle(new CreateMiningGovernanceCommand(governance, stakingTokenId, blockHeight), CancellationToken.None);
 
             // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<MakeMiningGovernanceCommand>(q => q.MiningGovernance.Id == existingGovernance.Id &&
+            _mediator.Verify(callTo => callTo.Send(It.Is<MakeMiningGovernanceCommand>(q => q.MiningGovernance.Id == 0 &&
                                                                                            q.MiningGovernance.Address == governance &&
-                                                                                           q.MiningGovernance.MiningDuration == expectedSummary.MiningDuration &&
-                                                                                           q.MiningGovernance.MiningPoolsFunded == expectedSummary.MiningPoolsFunded &&
-                                                                                           q.MiningGovernance.NominationPeriodEnd == expectedSummary.NominationPeriodEnd &&
-                                                                                           q.MiningGovernance.MiningPoolReward == expectedSummary.MiningPoolReward &&
+                                                                                           q.MiningGovernance.MiningDuration == miningDuration &&
+                                                                                           q.MiningGovernance.TokenId == stakingTokenId &&
                                                                                            q.BlockHeight == blockHeight &&
-                                                                                           q.Rewind == false),
+                                                                                           q.RefreshMiningPoolReward == false &&
+                                                                                           q.RefreshMiningPoolsFunded == false &&
+                                                                                           q.RefreshNominationPeriodEnd == false &&
+                                                                                           q.RefreshMinedToken == false &&
+                                                                                           q.RefreshMiningDuration == false),
                                                    It.IsAny<CancellationToken>()), Times.Once);
         }
     }

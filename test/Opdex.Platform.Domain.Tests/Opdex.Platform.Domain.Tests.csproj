@@ -24,8 +24,4 @@
       <ProjectReference Include="..\..\src\Opdex.Platform.Domain\Opdex.Platform.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Models\MiningPools" />
-    </ItemGroup>
-
 </Project>

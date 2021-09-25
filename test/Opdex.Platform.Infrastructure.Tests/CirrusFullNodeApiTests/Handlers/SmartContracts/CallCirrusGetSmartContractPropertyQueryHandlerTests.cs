@@ -46,7 +46,6 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
         {
             // Arrange
             Address contract = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
-            const string stateKey = MarketDeployerConstants.StateKeys.Owner;
             const SmartContractParameterType propertyType = SmartContractParameterType.Address;
             const ulong blockHeight = 10;
 
@@ -102,7 +101,8 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
             try
             {
                 await _handler.Handle(new CallCirrusGetSmartContractPropertyQuery(contract, stateKey, propertyType, blockHeight), CancellationToken.None);
-            } catch { }
+            }
+            catch { }
 
             // Assert
             _smartContractsModuleMock.Verify(callTo => callTo.GetContractStorageAsync(contract, stateKey, propertyType,

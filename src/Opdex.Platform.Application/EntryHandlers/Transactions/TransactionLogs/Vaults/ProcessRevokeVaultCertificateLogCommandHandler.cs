@@ -7,8 +7,8 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
 {
@@ -36,25 +36,20 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 if (request.BlockHeight >= vault.ModifiedBlock)
                 {
-                    var totalSupply = await _mediator.Send(new RetrieveCirrusVaultTotalSupplyQuery(vault.Address, request.BlockHeight));
-
-                    vault.SetUnassignedSupply(totalSupply, request.BlockHeight);
-
-                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault));
-                    if (vaultUpdates == 0) return false;
+                    var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
+                    if (vaultId <= 0) _logger.LogError($"Unexpected error updating vault supply by address: {vault.Address}");
                 }
 
                 var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
 
-                // Todo: Maybe create a specific query for this and a unique index on (owner, vestedBlock)
+                // Select certificates using the vestedBlock as an Id
                 var certificateToUpdate = certificates.Single(c => c.VestedBlock == request.Log.VestedBlock);
 
                 if (request.BlockHeight >= certificateToUpdate.ModifiedBlock)
                 {
                     certificateToUpdate.Revoke(request.Log, request.BlockHeight);
 
-                    var certificateUpdated = await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate));
-                    return certificateUpdated;
+                    return await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate));
                 }
 
                 return true;

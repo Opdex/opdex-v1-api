@@ -66,12 +66,18 @@ namespace Opdex.Platform.Domain.Models.Markets
         public bool AuthTraders { get; }
         public uint TransactionFee { get; }
         public bool MarketFeeEnabled { get; }
-        public bool IsStakingMarket => StakingTokenId > 0;
+        public bool IsStakingMarket => StakingTokenId.GetValueOrDefault() > 0;
 
         public void SetOwner(ClaimPendingMarketOwnershipLog log, ulong blockHeight)
         {
             SetModifiedBlock(blockHeight);
             Owner = log.To;
+        }
+
+        public void Update(MarketContractSummary summary)
+        {
+            if (summary.Owner.HasValue) Owner = summary.Owner.Value;
+            SetModifiedBlock(summary.BlockHeight);
         }
     }
 }

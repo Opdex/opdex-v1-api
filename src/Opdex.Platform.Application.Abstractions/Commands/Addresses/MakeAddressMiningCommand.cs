@@ -10,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Addresses
         {
             AddressMining = addressMining ?? throw new ArgumentNullException(nameof(addressMining));
         }
-        
+
         public AddressMining AddressMining { get; }
     }
 }

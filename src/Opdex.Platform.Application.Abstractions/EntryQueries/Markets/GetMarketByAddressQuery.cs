@@ -1,5 +1,3 @@
-// unset
-
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Common.Models;
