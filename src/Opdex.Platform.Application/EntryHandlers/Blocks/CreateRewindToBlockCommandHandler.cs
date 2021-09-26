@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
+using Opdex.Platform.Application.Abstractions.EntryCommands;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
@@ -57,14 +58,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
             rewound = await _mediator.Send(new CreateRewindMiningPoolsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindMarketsCommand(request.Block)) && rewound;
             rewound = await _mediator.Send(new CreateRewindMarketPermissionsCommand(request.Block)) && rewound;
-
-            // Todos
-            // rewind tokens - total supply | useless if we don't ever update it
-            // rewind token snapshots - depend on lp reserve ratios
-            // rewind liquidity pools - core reserves ratios needed
-            // rewind liquidity pool snapshots - depend on token prices
-            // rewind liquidity pool summaries - depend on latest snapshot
-            // rewind market snapshots - depend on lp and token snapshots
+            rewound = await _mediator.Send(new CreateRewindSnapshotsCommand(request.Block)) && rewound; // markets/pools/tokens combined
 
             _logger.LogTrace("Refreshing of stale records finished.");
 

@@ -1,4 +1,6 @@
 using Opdex.Platform.Common.Models.UInt;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Opdex.Platform.Domain.Models.OHLC
 {
@@ -10,6 +12,14 @@ namespace Opdex.Platform.Domain.Models.OHLC
             High = UInt256.Zero;
             Low = UInt256.Zero;
             Close = UInt256.Zero;
+        }
+
+        public OhlcBigIntSnapshot(IList<OhlcBigIntSnapshot> snapshots)
+        {
+            Open = snapshots.FirstOrDefault()?.Open ?? UInt256.Zero;
+            High = snapshots.OrderByDescending(snapshot => snapshot.High).FirstOrDefault()?.High ?? UInt256.Zero;
+            Low = snapshots.OrderBy(snapshot => snapshot.Low).FirstOrDefault()?.Low ?? UInt256.Zero;
+            Close = snapshots.LastOrDefault()?.Close ?? UInt256.Zero;
         }
 
         public OhlcBigIntSnapshot(UInt256 open, UInt256 high, UInt256 low, UInt256 close)

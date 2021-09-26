@@ -4,6 +4,8 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.OHLC;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Opdex.Platform.Domain.Models.Tokens
 {
@@ -45,11 +47,20 @@ namespace Opdex.Platform.Domain.Models.Tokens
         public long Id { get; private set; }
         public long TokenId { get; }
         public long MarketId { get; }
-        public OhlcDecimalSnapshot Price { get; }
+        public OhlcDecimalSnapshot Price { get; private set; }
         public SnapshotType SnapshotType { get; }
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
         public DateTime ModifiedDate { get; private set; }
+
+        /// <summary>
+        /// Rewinds a snapshot by resetting everything then using
+        /// existing, lower level snapshot to rebuild this instance.
+        /// </summary>
+        public void RewindSnapshot(IList<TokenSnapshot> snapshots)
+        {
+            Price = new OhlcDecimalSnapshot(snapshots.Select(snapshot => snapshot.Price).ToList());
+        }
 
         public void UpdatePrice(decimal price, bool reset = false)
         {

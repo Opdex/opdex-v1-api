@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Opdex.Platform.Domain.Models.OHLC
 {
     public class OhlcDecimalSnapshot
     {
-        private const decimal DefaultValue = 0.00m;
+        private const decimal DefaultValue = 0.00000000m;
 
         public OhlcDecimalSnapshot()
         {
@@ -10,6 +13,14 @@ namespace Opdex.Platform.Domain.Models.OHLC
             High = DefaultValue;
             Low = DefaultValue;
             Close = DefaultValue;
+        }
+
+        public OhlcDecimalSnapshot(IList<OhlcDecimalSnapshot> snapshots)
+        {
+            Open = snapshots.FirstOrDefault()?.Open ?? DefaultValue;
+            High = snapshots.OrderByDescending(snapshot => snapshot.High).FirstOrDefault()?.High ?? DefaultValue;
+            Low = snapshots.OrderBy(snapshot => snapshot.Low).FirstOrDefault()?.Low ?? DefaultValue;
+            Close = snapshots.LastOrDefault()?.Close ?? DefaultValue;
         }
 
         public OhlcDecimalSnapshot(decimal open, decimal high, decimal low, decimal close)

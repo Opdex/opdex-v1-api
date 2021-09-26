@@ -2,6 +2,7 @@ using System;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.Domain.Models.Markets
 {
@@ -52,6 +53,15 @@ namespace Opdex.Platform.Domain.Models.Markets
         public SnapshotType SnapshotType { get; }
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
+
+        public void RewindSnapshot(IList<LiquidityPoolSnapshot> poolSnapshots)
+        {
+            foreach (LiquidityPoolSnapshot liquidityPoolSnapshot in poolSnapshots)
+            {
+                ResetCurrentSnapshot();
+                Update(liquidityPoolSnapshot);
+            }
+        }
 
         public void ResetStaleSnapshot(DateTime blockTime)
         {

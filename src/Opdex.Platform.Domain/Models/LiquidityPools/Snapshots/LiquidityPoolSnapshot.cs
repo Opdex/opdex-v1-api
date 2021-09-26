@@ -2,6 +2,8 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 {
@@ -50,11 +52,11 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         public long Id { get; private set; }
         public long LiquidityPoolId { get; }
         public long TransactionCount { get; private set; }
-        public ReservesSnapshot Reserves { get; }
+        public ReservesSnapshot Reserves { get; private set; }
         public RewardsSnapshot Rewards { get; private set; }
-        public StakingSnapshot Staking { get; }
+        public StakingSnapshot Staking { get; private set; }
         public VolumeSnapshot Volume { get; private set; }
-        public CostSnapshot Cost { get; }
+        public CostSnapshot Cost { get; private set; }
         public SnapshotType SnapshotType { get; }
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
@@ -84,6 +86,20 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 
             StartDate = blockTime.ToStartOf(SnapshotType);
             EndDate = blockTime.ToEndOf(SnapshotType);
+        }
+
+        /// <summary>
+        /// Rewinds a snapshot by resetting everything then using
+        /// existing, lower level snapshot to rebuild this instance.
+        /// </summary>
+        public void RewindSnapshot(IList<LiquidityPoolSnapshot> snapshots)
+        {
+            Volume = new VolumeSnapshot(snapshots.Select(snapshot => snapshot.Volume).ToList());
+            Rewards = new RewardsSnapshot(snapshots.Select(snapshot => snapshot.Rewards).ToList());
+            Staking = new StakingSnapshot(snapshots.Select(snapshot => snapshot.Staking).ToList());
+            Reserves = new ReservesSnapshot(snapshots.Select(snapshot => snapshot.Reserves).ToList());
+            Cost = new CostSnapshot(snapshots.Select(snapshot => snapshot.Cost).ToList());
+            TransactionCount = snapshots.Sum(snapshot => snapshot.TransactionCount);
         }
 
         public void RefreshSnapshot(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, ulong srcSats)

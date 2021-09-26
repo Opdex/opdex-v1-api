@@ -3,6 +3,8 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.OHLC;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 {
@@ -12,6 +14,12 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         {
             CrsPerSrc = new OhlcBigIntSnapshot();
             SrcPerCrs = new OhlcBigIntSnapshot();
+        }
+
+        public CostSnapshot(IList<CostSnapshot> snapshots)
+        {
+            CrsPerSrc = new OhlcBigIntSnapshot(snapshots.Select(snapshot => snapshot.CrsPerSrc).ToList());
+            SrcPerCrs = new OhlcBigIntSnapshot(snapshots.Select(snapshot => snapshot.SrcPerCrs).ToList());
         }
 
         public CostSnapshot(OhlcBigIntSnapshot crsPerSrc, OhlcBigIntSnapshot srcPerCrs)

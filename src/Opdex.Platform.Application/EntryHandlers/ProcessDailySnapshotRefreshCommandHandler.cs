@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryCommands;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;

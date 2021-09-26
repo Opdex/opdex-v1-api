@@ -250,6 +250,7 @@ namespace Opdex.Platform.Application
         {
             // Indexer
             services.AddTransient<IRequestHandler<ProcessDailySnapshotRefreshCommand, Unit>, ProcessDailySnapshotRefreshCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindSnapshotsCommand, bool>, CreateRewindSnapshotsCommandHandler>();
 
             // Deployments
             services.AddTransient<IRequestHandler<ProcessCoreDeploymentTransactionCommand, Unit>, ProcessCoreDeploymentTransactionCommandHandler>();
