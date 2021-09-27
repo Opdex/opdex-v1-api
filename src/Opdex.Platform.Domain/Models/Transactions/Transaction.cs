@@ -91,6 +91,21 @@ namespace Opdex.Platform.Domain.Models.Transactions
                 .ToDictionary(k => k.First().Contract, logs => logs.ToList());
         }
 
+        public void SetLog(TransactionLog log)
+        {
+            if (log.Id == 0)
+            {
+                throw new Exception("Invalid transaction log.");
+            }
+
+            if (Logs.Any(l => l.Id == log.Id))
+            {
+                return;
+            }
+
+            Logs.Add(log);
+        }
+
         public void SetId(long id)
         {
             if (Id != 0)

@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
+using Opdex.Platform.Application.Abstractions.EntryCommands;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
@@ -193,6 +194,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMiningPoolsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMarketsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMarketPermissionsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            _mediator.Setup(m => m.Send(It.IsAny<CreateRewindSnapshotsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             // Act
             var response = await _handler.Handle(command, CancellationToken.None);

@@ -2,7 +2,9 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
+using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
+using Opdex.Platform.Domain.Models.LiquidityPools;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,6 +60,14 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                                                                                 lpSnapshot.Reserves.Usd,
                                                                                 request.SnapshotType,
                                                                                 request.BlockTime));
+
+            var summary = await _mediator.Send(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(request.LiquidityPoolId, false));
+
+            summary ??= new LiquidityPoolSummary(request.LiquidityPoolId, request.BlockHeight);
+
+            summary.Update(lpSnapshot, request.BlockHeight);
+
+            await _mediator.Send(new MakeLiquidityPoolSummaryCommand(summary));
 
             return Unit.Value;
         }

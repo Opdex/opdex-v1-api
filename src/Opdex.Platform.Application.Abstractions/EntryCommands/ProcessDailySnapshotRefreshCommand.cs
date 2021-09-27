@@ -12,10 +12,16 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands
         /// <summary>
         /// Constructor creating new process daily snapshot refresh command.
         /// </summary>
+        /// <param name="blockHeight">Current block height</param>
         /// <param name="blockTime">Current block time</param>
         /// <param name="crsUsd">Current CRS USd price</param>
-        public ProcessDailySnapshotRefreshCommand(DateTime blockTime, decimal crsUsd)
+        public ProcessDailySnapshotRefreshCommand(ulong blockHeight, DateTime blockTime, decimal crsUsd)
         {
+            if (blockHeight == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockHeight));
+            }
+
             if (blockTime.Equals(default))
             {
                 throw new ArgumentOutOfRangeException(nameof(blockTime), $"{nameof(blockTime)} must be valid.");
@@ -26,11 +32,13 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands
                 throw new ArgumentOutOfRangeException(nameof(crsUsd), $"{nameof(crsUsd)} must be greater than 0.");
             }
 
-            Blocktime = blockTime;
+            BlockHeight = blockHeight;
+            BlockTime = blockTime;
             CrsUsd = crsUsd;
         }
 
-        public DateTime Blocktime { get; }
+        public ulong BlockHeight { get; }
+        public DateTime BlockTime { get; }
         public decimal CrsUsd { get; }
     }
 }

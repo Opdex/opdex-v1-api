@@ -66,7 +66,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                     // If it's a new day from the previous block, refresh all daily snapshots. (Tokens, Liquidity Pools, Markets)
                     if (currentBlock.IsNewDayFromPrevious(previousBlock.MedianTime))
                     {
-                        await _mediator.Send(new ProcessDailySnapshotRefreshCommand(currentBlock.MedianTime, crsSnapshot.Price.Close));
+                        await _mediator.Send(new ProcessDailySnapshotRefreshCommand(currentBlock.Height, currentBlock.MedianTime, crsSnapshot.Price.Close));
                     }
 
                     // Process all transactions in the block
