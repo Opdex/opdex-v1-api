@@ -1,10 +1,11 @@
 using System;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Queries;
+using Opdex.Platform.Domain.Models.Deployers;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Deployers
 {
-    public class SelectDeployerByAddressQuery : FindQuery<Domain.Models.Deployer>
+    public class SelectDeployerByAddressQuery : FindQuery<Deployer>
     {
         public SelectDeployerByAddressQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
         {

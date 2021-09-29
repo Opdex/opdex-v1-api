@@ -16,6 +16,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
             $@"INSERT INTO vault (
                 {nameof(VaultEntity.Address)},
                 {nameof(VaultEntity.TokenId)},
+                {nameof(VaultEntity.PendingOwner)},
                 {nameof(VaultEntity.Owner)},
                 {nameof(VaultEntity.Genesis)},
                 {nameof(VaultEntity.UnassignedSupply)},
@@ -24,6 +25,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
               ) VALUES (
                 @{nameof(VaultEntity.Address)},
                 @{nameof(VaultEntity.TokenId)},
+                @{nameof(VaultEntity.PendingOwner)},
                 @{nameof(VaultEntity.Owner)},
                 @{nameof(VaultEntity.Genesis)},
                 @{nameof(VaultEntity.UnassignedSupply)},
@@ -35,6 +37,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
         private static readonly string UpdateSqlCommand =
             $@"UPDATE vault
                 SET
+                    {nameof(VaultEntity.PendingOwner)} = @{nameof(VaultEntity.PendingOwner)},
                     {nameof(VaultEntity.Owner)} = @{nameof(VaultEntity.Owner)},
                     {nameof(VaultEntity.UnassignedSupply)} = @{nameof(VaultEntity.UnassignedSupply)},
                     {nameof(VaultEntity.ModifiedBlock)} = @{nameof(VaultEntity.ModifiedBlock)}

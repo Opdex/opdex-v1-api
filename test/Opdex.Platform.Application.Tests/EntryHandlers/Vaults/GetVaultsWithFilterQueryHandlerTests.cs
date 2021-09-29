@@ -65,9 +65,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             var vaults = new Vault[]
             {
-                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
+                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
 
@@ -87,9 +87,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             var vaults = new Vault[]
             {
-                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
+                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
@@ -110,9 +110,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             var vaults = new Vault[]
             {
-                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
+                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
@@ -134,9 +134,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             var vaults = new Vault[]
             {
-                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
+                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
@@ -158,9 +158,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             var vaults = new Vault[]
             {
-                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
+                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
@@ -182,9 +182,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             var vaults = new Vault[]
             {
-                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
+                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
@@ -206,9 +206,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             var vaults = new Vault[]
             {
-                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
+                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(15, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
@@ -230,8 +230,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             var vaults = new Vault[]
             {
-                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
+                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());
@@ -253,8 +253,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
 
             var vaults = new Vault[]
             {
-                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
-                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
+                new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505),
+                new Vault(10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaults);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(new VaultDto());

@@ -40,7 +40,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Deployers
                 // Each chunk runs in parallel
                 var callResults = await Task.WhenAll(chunk.Select(async deployer =>
                 {
-                    var id = await _mediator.Send(new MakeDeployerCommand(deployer, request.RewindHeight, rewind: true));
+                    var id = await _mediator.Send(new MakeDeployerCommand(deployer, request.RewindHeight, refreshPendingOwner: true, refreshOwner: true));
                     return id != 0;
                 }));
                 refreshFailureCount += callResults.Count(succeeded => !succeeded);

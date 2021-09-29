@@ -20,6 +20,7 @@ namespace Opdex.Platform.Domain.Models.Vaults
         public ulong BlockHeight { get; }
         public Address? LockedToken { get; private set; }
         public ulong? Genesis { get; private set; }
+        public Address? PendingOwner { get; private set; }
         public Address? Owner { get; private set; }
         public UInt256? UnassignedSupply { get; private set; }
 
@@ -41,6 +42,18 @@ namespace Opdex.Platform.Domain.Models.Vaults
 
             // Zero is valid, nothing to check
             Genesis = genesis;
+        }
+
+        public void SetPendingOwner(SmartContractMethodParameter value)
+        {
+            var pendingOwner = value.Parse<Address>();
+
+            if (pendingOwner == Address.Empty)
+            {
+                throw new ArgumentNullException(nameof(pendingOwner), "Pending owner address must be provided.");
+            }
+
+            PendingOwner = pendingOwner;
         }
 
         public void SetOwner(SmartContractMethodParameter value)

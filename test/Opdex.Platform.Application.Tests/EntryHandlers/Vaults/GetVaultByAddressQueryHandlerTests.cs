@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Vaults;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Threading;
@@ -47,7 +48,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public async Task Handle_VaultDto_Assemble()
         {
             // Arrange
-            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 5, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, UInt256.Parse("100000000"), 505, 510);
+            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 5, Address.Empty, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, UInt256.Parse("100000000"), 505, 510);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
             // Act
@@ -63,7 +64,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             // Arrange
             var vaultDto = new VaultDto();
 
-            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 5, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, UInt256.Parse("100000000"), 505, 510);
+            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 5, Address.Empty, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, UInt256.Parse("100000000"), 505, 510);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
             _vaultAssemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Vault>())).ReturnsAsync(vaultDto);
 

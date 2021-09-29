@@ -41,13 +41,14 @@ namespace Opdex.Platform.Domain.Models.Markets
             MarketFeeEnabled = marketFeeEnabled;
         }
 
-        public Market(long id, Address address, long deployerId, long? stakingTokenId, Address owner, bool authPoolCreators, bool authProviders,
+        public Market(long id, Address address, long deployerId, long? stakingTokenId, Address pendingOwner, Address owner, bool authPoolCreators, bool authProviders,
             bool authTraders, uint transactionFee, bool marketFeeEnabled, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
             DeployerId = deployerId;
             StakingTokenId = stakingTokenId;
+            PendingOwner = pendingOwner;
             Owner = owner;
             AuthPoolCreators = authPoolCreators;
             AuthProviders = authProviders;
@@ -60,6 +61,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         public Address Address { get; }
         public long DeployerId { get; }
         public long? StakingTokenId { get; }
+        public Address PendingOwner { get; private set; }
         public Address Owner { get; private set; }
         public bool AuthPoolCreators { get; }
         public bool AuthProviders { get; }
@@ -68,14 +70,28 @@ namespace Opdex.Platform.Domain.Models.Markets
         public bool MarketFeeEnabled { get; }
         public bool IsStakingMarket => StakingTokenId.GetValueOrDefault() > 0;
 
-        public void SetOwner(ClaimPendingMarketOwnershipLog log, ulong blockHeight)
+        public void SetPendingOwnership(SetPendingMarketOwnershipLog log, ulong block)
         {
-            SetModifiedBlock(blockHeight);
+            if (log is null) throw new ArgumentNullException(nameof(log));
+
+            PendingOwner = log.To;
+            SetModifiedBlock(block);
+        }
+
+        public void SetOwnershipClaimed(ClaimPendingMarketOwnershipLog log, ulong blockHeight)
+        {
+            if (log is null) throw new ArgumentNullException(nameof(log));
+
+            PendingOwner = Address.Empty;
             Owner = log.To;
+            SetModifiedBlock(blockHeight);
         }
 
         public void Update(MarketContractSummary summary)
         {
+            if (summary is null) throw new ArgumentNullException(nameof(summary));
+
+            if (summary.PendingOwner.HasValue) PendingOwner = summary.PendingOwner.Value;
             if (summary.Owner.HasValue) Owner = summary.Owner.Value;
             SetModifiedBlock(summary.BlockHeight);
         }

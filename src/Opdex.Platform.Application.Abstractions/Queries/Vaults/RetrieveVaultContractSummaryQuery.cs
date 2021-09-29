@@ -17,10 +17,11 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Vaults
         /// <param name="blockHeight">The block height to get properties value at.</param>
         /// <param name="includeGenesis">Flag to include the genesis block property, default is false.</param>
         /// <param name="includeLockedToken">Flag to include the locked token property, default is false.</param>
+        /// <param name="includePendingOwner">Flag to include the pending owner property, default is false.</param>
         /// <param name="includeOwner">Flag to include the owner property, default is false.</param>
         /// <param name="includeSupply">Flag to include the unassigned supply property, default is false.</param>
         public RetrieveVaultContractSummaryQuery(Address vault, ulong blockHeight, bool includeGenesis = false, bool includeLockedToken = false,
-                                                 bool includeOwner = false, bool includeSupply = false)
+                                                 bool includePendingOwner = false, bool includeOwner = false, bool includeSupply = false)
         {
             if (vault == Address.Empty)
             {
@@ -36,6 +37,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Vaults
             BlockHeight = blockHeight;
             IncludeGenesis = includeGenesis;
             IncludeLockedToken = includeLockedToken;
+            IncludePendingOwner = includePendingOwner;
             IncludeOwner = includeOwner;
             IncludeSupply = includeSupply;
         }
@@ -44,6 +46,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Vaults
         public ulong BlockHeight { get; }
         public bool IncludeGenesis { get; }
         public bool IncludeLockedToken { get; }
+        public bool IncludePendingOwner { get; }
         public bool IncludeOwner { get; }
         public bool IncludeSupply { get; }
     }

@@ -119,6 +119,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
                                                   "PR71udY85pAcNcitdDfzQevp6Zar9DizHM",
                                                   5,
                                                   5,
+                                                  Address.Empty,
                                                   "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                   true,
                                                   true,

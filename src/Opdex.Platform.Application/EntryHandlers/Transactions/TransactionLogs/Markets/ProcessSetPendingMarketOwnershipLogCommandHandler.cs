@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using System;
 using System.Threading;
@@ -21,7 +23,16 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                return await MakeTransactionLog(request.Log);
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted) return false;
+
+                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: true));
+
+                market.SetPendingOwnership(request.Log, request.BlockHeight);
+
+                var marketId = await _mediator.Send(new MakeMarketCommand(market, request.BlockHeight));
+
+                return marketId > 0;
             }
             catch (Exception ex)
             {

@@ -1,6 +1,6 @@
 using AutoMapper;
 using MediatR;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
@@ -18,6 +18,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
             $@"SELECT
                 {nameof(DeployerEntity.Id)},
                 {nameof(DeployerEntity.Address)},
+                {nameof(DeployerEntity.PendingOwner)},
                 {nameof(DeployerEntity.Owner)},
                 {nameof(DeployerEntity.CreatedBlock)},
                 {nameof(DeployerEntity.ModifiedBlock)}

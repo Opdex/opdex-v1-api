@@ -15,8 +15,9 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets
         /// </summary>
         /// <param name="market">The address of the market contract.</param>
         /// <param name="blockHeight">The block height to query the contract's state at.</param>
-        /// <param name="includeOwner">Flag to include the market's owner property, default is false.</param>
-        public RetrieveMarketContractSummaryQuery(Address market, ulong blockHeight, bool includeOwner = false)
+        /// <param name="includeOwner">Flag to include the market pending owner property, default is false.</param>
+        /// <param name="includeOwner">Flag to include the market owner property, default is false.</param>
+        public RetrieveMarketContractSummaryQuery(Address market, ulong blockHeight, bool includePendingOwner = false, bool includeOwner = false)
         {
             if (market == Address.Empty)
             {
@@ -30,11 +31,13 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets
 
             Market = market;
             BlockHeight = blockHeight;
+            IncludePendingOwner = includePendingOwner;
             IncludeOwner = includeOwner;
         }
 
         public Address Market { get; }
         public ulong BlockHeight { get; }
+        public bool IncludePendingOwner { get; }
         public bool IncludeOwner { get; }
     }
 }

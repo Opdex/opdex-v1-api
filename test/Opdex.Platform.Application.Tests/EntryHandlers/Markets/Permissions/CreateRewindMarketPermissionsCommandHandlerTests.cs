@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions;
 using Opdex.Platform.Application.EntryHandlers.Markets.Permissions;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using System;
 using System.Collections.Generic;
@@ -91,7 +92,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Permissions
             // Arrange
             const ulong rewindHeight = 10;
             const long marketId = 3;
-            var market = new Market(marketId, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", 2, 3, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", false, false, false, 3, true, 10, 11);
+            var market = new Market(marketId, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", 2, 3, Address.Empty, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", false, false, false, 3, true, 10, 11);
 
             var certificates = new List<MarketPermission>
             {

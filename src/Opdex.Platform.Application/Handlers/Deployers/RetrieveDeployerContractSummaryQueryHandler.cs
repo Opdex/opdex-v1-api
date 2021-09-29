@@ -1,33 +1,32 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Queries.Markets;
-using Opdex.Platform.Common.Constants.SmartContracts.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Deployers;
+using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Markets
+namespace Opdex.Platform.Application.Handlers.Deployers
 {
-    public class RetrieveMarketContractSummaryQueryHandler
-        : IRequestHandler<RetrieveMarketContractSummaryQuery, MarketContractSummary>
+    public class RetrieveDeployerContractSummaryQueryHandler : IRequestHandler<RetrieveDeployerContractSummaryQuery, DeployerContractSummary>
     {
         private readonly IMediator _mediator;
 
-        public RetrieveMarketContractSummaryQueryHandler(IMediator mediator)
+        public RetrieveDeployerContractSummaryQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<MarketContractSummary> Handle(RetrieveMarketContractSummaryQuery request, CancellationToken cancellationToken)
+        public async Task<DeployerContractSummary> Handle(RetrieveDeployerContractSummaryQuery request, CancellationToken cancellationToken)
         {
-            var summary = new MarketContractSummary(request.BlockHeight);
+            var summary = new DeployerContractSummary(request.BlockHeight);
 
             if (request.IncludePendingOwner)
             {
-                var pendingOwner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Market,
-                                                                                                    StandardMarketConstants.StateKeys.PendingOwner,
+                var pendingOwner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Deployer,
+                                                                                                    MarketDeployerConstants.StateKeys.PendingOwner,
                                                                                                     SmartContractParameterType.Address,
                                                                                                     request.BlockHeight));
 
@@ -36,8 +35,8 @@ namespace Opdex.Platform.Application.Handlers.Markets
 
             if (request.IncludeOwner)
             {
-                var owner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Market,
-                                                                                             StandardMarketConstants.StateKeys.Owner,
+                var owner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Deployer,
+                                                                                             MarketDeployerConstants.StateKeys.Owner,
                                                                                              SmartContractParameterType.Address,
                                                                                              request.BlockHeight));
 

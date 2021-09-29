@@ -1,9 +1,9 @@
 using AutoMapper;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.Blocks;
+using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
@@ -118,7 +118,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketEntity, Market>()
-                .ConstructUsing(src => new Market(src.Id, src.Address, src.DeployerId, src.StakingTokenId, src.Owner, src.AuthPoolCreators,
+                .ConstructUsing(src => new Market(src.Id, src.Address, src.DeployerId, src.StakingTokenId, src.PendingOwner, src.Owner, src.AuthPoolCreators,
                     src.AuthProviders, src.AuthTraders, src.TransactionFee, src.MarketFeeEnabled, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -141,7 +141,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<DeployerEntity, Deployer>()
-                .ConstructUsing(src => new Deployer(src.Id, src.Address, src.Owner, src.IsActive, src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new Deployer(src.Id, src.Address, src.PendingOwner, src.Owner, src.IsActive, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketSnapshotEntity, MarketSnapshot>()
@@ -152,7 +152,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<VaultEntity, Vault>()
-                .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.Owner, src.Genesis, src.UnassignedSupply, src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.PendingOwner, src.Owner, src.Genesis, src.UnassignedSupply, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<VaultCertificateEntity, VaultCertificate>()

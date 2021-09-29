@@ -9,7 +9,7 @@ using Opdex.Platform.Application.EntryHandlers.Markets.Quotes;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using System.Collections.Generic;
@@ -69,7 +69,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Quotes
                 new TransactionQuoteRequestParameter("Staking Token", new SmartContractMethodParameter(command.StakingToken))
             };
 
-            var deployer = new Deployer(5, "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw", "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, 500, 505);
+            var deployer = new Deployer(5, "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw", Address.Empty, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveDeployerQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(deployer);
 
             // Act
@@ -101,7 +101,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Quotes
 
             var expectedRequest = new TransactionQuoteRequest(deployerOwner, stakingToken, FixedDecimal.Zero, MarketDeployerConstants.Methods.CreateStakingMarket, _config.WalletTransactionCallback);
 
-            var deployer = new Deployer(5, "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw", "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, 500, 505);
+            var deployer = new Deployer(5, "PTotLfm9w7A4KBVq7sJgyP8Hd2MAU8vaRw", Address.Empty, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveDeployerQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(deployer);
 
             var expectedQuote = new TransactionQuote("PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjQf", null, 23800, null, expectedRequest);

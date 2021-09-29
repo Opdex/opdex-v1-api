@@ -1,7 +1,7 @@
 using AutoMapper;
 using FluentAssertions;
 using Moq;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Deployers;
@@ -65,6 +65,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Deployers
                 {
                     Id = 1,
                     Address = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm",
+                    PendingOwner = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy",
                     Owner = "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN",
                     IsActive = true,
                     CreatedBlock = 3,
@@ -72,7 +73,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Deployers
                 }
             };
 
-            var expectedResponse = new List<Deployer> { new Deployer(1, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", true, 3, 4) };
+            var expectedResponse = new List<Deployer> { new Deployer(1, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", true, 3, 4) };
 
             var command = new SelectDeployersByModifiedBlockQuery(modifiedBlock);
 

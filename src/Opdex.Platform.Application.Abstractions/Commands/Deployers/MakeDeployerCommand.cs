@@ -1,6 +1,6 @@
 using System;
 using MediatR;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Deployers;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Deployers
 {
@@ -14,8 +14,9 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Deployers
         /// </summary>
         /// <param name="deployer">The Deployer domain model being made.</param>
         /// <param name="blockHeight">The block height of the update being made.</param>
-        /// <param name="rewind">Flag to signal a rewind to the specified block height.</param>
-        public MakeDeployerCommand(Deployer deployer, ulong blockHeight, bool rewind = false)
+        /// <param name="refreshPendingOwner">Flag to refresh the pending owner property of the deployer contract, default is false.</param>
+        /// <param name="refreshOwner">Flag to refresh the owner property of the deployer contract, default is false.</param>
+        public MakeDeployerCommand(Deployer deployer, ulong blockHeight, bool refreshPendingOwner = false, bool refreshOwner = false)
         {
             if (blockHeight == 0)
             {
@@ -24,11 +25,14 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Deployers
 
             Deployer = deployer ?? throw new ArgumentNullException(nameof(deployer), "Deployer must be provided.");
             BlockHeight = blockHeight;
-            Rewind = rewind;
+            RefreshPendingOwner = refreshPendingOwner;
+            RefreshOwner = refreshOwner;
         }
 
         public Deployer Deployer { get; }
         public ulong BlockHeight { get; }
-        public bool Rewind { get; }
+        public bool RefreshPendingOwner { get; }
+        public bool RefreshOwner { get; }
+        public bool Refresh => RefreshPendingOwner || RefreshOwner;
     }
 }

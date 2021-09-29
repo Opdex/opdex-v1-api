@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
+using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using System;
 using System.Threading;
@@ -21,7 +23,16 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                return await MakeTransactionLog(request.Log);
+                var persisted = await MakeTransactionLog(request.Log);
+                if (!persisted) return false;
+
+                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true));
+
+                deployer.SetPendingOwnership(request.Log, request.BlockHeight);
+
+                var deployerId = await _mediator.Send(new MakeDeployerCommand(deployer, request.BlockHeight));
+
+                return deployerId > 0;
             }
             catch (Exception ex)
             {

@@ -7,6 +7,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults
     {
         public long Id { get; set; }
         public long TokenId { get; set; }
+        public Address PendingOwner { get; set; }
         public Address Address { get; set; }
         public Address Owner { get; set; }
         public ulong Genesis { get; set; }

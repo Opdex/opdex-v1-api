@@ -5,7 +5,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Deployers;
@@ -18,6 +18,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
             $@"SELECT
                 {nameof(DeployerEntity.Id)},
                 {nameof(DeployerEntity.Address)},
+                {nameof(DeployerEntity.PendingOwner)},
                 {nameof(DeployerEntity.Owner)},
                 {nameof(DeployerEntity.CreatedBlock)},
                 {nameof(DeployerEntity.ModifiedBlock)}

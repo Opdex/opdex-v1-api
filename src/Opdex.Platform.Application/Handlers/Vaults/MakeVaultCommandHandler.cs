@@ -24,6 +24,7 @@ namespace Opdex.Platform.Application.Handlers.Vaults
             {
                 var summary = await _mediator.Send(new RetrieveVaultContractSummaryQuery(request.Vault.Address,
                                                                                          request.BlockHeight,
+                                                                                         includePendingOwner: request.RefreshPendingOwner,
                                                                                          includeOwner: request.RefreshOwner,
                                                                                          includeSupply: request.RefreshSupply,
                                                                                          includeGenesis: request.RefreshGenesis));

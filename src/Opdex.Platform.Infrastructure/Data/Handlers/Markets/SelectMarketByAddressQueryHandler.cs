@@ -21,6 +21,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 {nameof(MarketEntity.Address)},
                 {nameof(MarketEntity.DeployerId)},
                 {nameof(MarketEntity.StakingTokenId)},
+                {nameof(MarketEntity.PendingOwner)},
                 {nameof(MarketEntity.Owner)},
                 {nameof(MarketEntity.AuthPoolCreators)},
                 {nameof(MarketEntity.AuthProviders)},

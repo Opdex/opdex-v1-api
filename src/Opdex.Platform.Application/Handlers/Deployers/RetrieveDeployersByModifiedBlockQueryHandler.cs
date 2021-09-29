@@ -1,6 +1,6 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Deployers;
 using System;
 using System.Collections.Generic;

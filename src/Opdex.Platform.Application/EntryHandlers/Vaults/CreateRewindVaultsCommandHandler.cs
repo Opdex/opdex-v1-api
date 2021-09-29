@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults
             foreach (var vault in vaults)
             {
                 var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.RewindHeight,
-                                                                        refreshOwner: true, refreshSupply: true, refreshGenesis: true));
+                                                                        refreshPendingOwner: true, refreshOwner: true, refreshSupply: true, refreshGenesis: true));
 
                 var vaultRefreshed = vaultId > 0;
 

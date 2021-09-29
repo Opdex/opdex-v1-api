@@ -3,10 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Deployers;
-using Opdex.Platform.Common.Constants.SmartContracts;
-using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
+using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers;
 
 namespace Opdex.Platform.Application.Handlers.Deployers
@@ -22,15 +19,15 @@ namespace Opdex.Platform.Application.Handlers.Deployers
 
         public async Task<long> Handle(MakeDeployerCommand request, CancellationToken cancellationToken)
         {
-            // When rewind is true, force the update of updatable properties prior to persistence
-            if (request.Rewind)
+            // When refresh is true, force the update of updatable properties prior to persistence
+            if (request.Refresh)
             {
-                var owner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Deployer.Address,
-                                                                                             MarketDeployerConstants.StateKeys.Owner,
-                                                                                             SmartContractParameterType.Address,
-                                                                                             request.BlockHeight));
+                var summary = await _mediator.Send(new RetrieveDeployerContractSummaryQuery(request.Deployer.Address,
+                                                                                            request.BlockHeight,
+                                                                                            includePendingOwner: request.RefreshPendingOwner,
+                                                                                            includeOwner: request.RefreshOwner));
 
-                request.Deployer.SetOwner(owner.Parse<Address>(), request.BlockHeight);
+                request.Deployer.Update(summary);
             }
 
             // Persist the deployer

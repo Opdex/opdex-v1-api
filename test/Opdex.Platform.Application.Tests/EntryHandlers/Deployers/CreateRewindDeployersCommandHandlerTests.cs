@@ -5,7 +5,8 @@ using Opdex.Platform.Application.Abstractions.Commands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.EntryHandlers.Deployers;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Deployers;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -64,10 +65,10 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
 
             var deployers = new List<Deployer>
             {
-                new Deployer(1, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", "PT1GLsMroLgqqARwmH1ih6zXXNMU9Ejmiv", true, 2, 3),
-                new Deployer(2, "PMU9EjmivLgh6zXXNqqARwmH1iT1GLsMro", "PMUqARwmH1iT1GLsMro9EjmivLgh6zXXNq", true, 3, 4),
-                new Deployer(3, "PMULsMroh6zXXN9EjmivLgqqARwmH1iT1G", "PMULsMroh6qqARwmH1iT1GzXXN9EjmivLg", true, 4, 5),
-                new Deployer(4, "PMU9Ej6zXXNmivLgqqARwmH1iT1GLsMroh", "PXNmivLgqqARwmH1iT1GLsMrohMU9Ej6zX", true, 5, 6)
+                new Deployer(1, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", Address.Empty, "PT1GLsMroLgqqARwmH1ih6zXXNMU9Ejmiv", true, 2, 3),
+                new Deployer(2, "PMU9EjmivLgh6zXXNqqARwmH1iT1GLsMro", Address.Empty, "PMUqARwmH1iT1GLsMro9EjmivLgh6zXXNq", true, 3, 4),
+                new Deployer(3, "PMULsMroh6zXXN9EjmivLgqqARwmH1iT1G", Address.Empty, "PMULsMroh6qqARwmH1iT1GzXXN9EjmivLg", true, 4, 5),
+                new Deployer(4, "PMU9Ej6zXXNmivLgqqARwmH1iT1GLsMroh", Address.Empty, "PXNmivLgqqARwmH1iT1GLsMrohMU9Ej6zX", true, 5, 6)
             };
 
             _mediator.Setup(callTo => callTo.Send(It.Is<RetrieveDeployersByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),
@@ -80,7 +81,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
             foreach (var deployer in deployers)
             {
                 _mediator.Verify(callTo => callTo.Send(It.Is<MakeDeployerCommand>(q => q.BlockHeight == rewindHeight &&
-                                                                                       q.Rewind == true &&
+                                                                                       q.Refresh == true &&
                                                                                        q.Deployer.Id == deployer.Id &&
                                                                                        q.Deployer.Address == deployer.Address &&
                                                                                        q.Deployer.Owner == deployer.Owner &&

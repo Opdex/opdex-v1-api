@@ -67,7 +67,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
 
             // Act
@@ -89,7 +89,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
             var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[0];
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -108,7 +108,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
             var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
                 new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -134,7 +134,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
             var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
                 new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -163,7 +163,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
             var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
                 new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -192,7 +192,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
             var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
                 new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -219,7 +219,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
             var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
                 new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -246,7 +246,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
             var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
                 new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -273,7 +273,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
             var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
                 new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
@@ -299,7 +299,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
             var cursor = new VaultCertificatesCursor(Address.Empty, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
             var request = new GetVaultCertificatesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
-            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
+            var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
             var certificates = new VaultCertificate[]
             {
                 new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
