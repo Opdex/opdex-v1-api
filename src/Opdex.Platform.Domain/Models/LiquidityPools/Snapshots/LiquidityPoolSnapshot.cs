@@ -89,17 +89,23 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         }
 
         /// <summary>
-        /// Rewinds a snapshot by resetting everything then using
-        /// existing, lower level snapshot to rebuild this instance.
+        /// Rewinds a snapshot by resetting everything then using existing, lower level snapshot to rebuild this instance.
         /// </summary>
         public void RewindSnapshot(IList<LiquidityPoolSnapshot> snapshots)
         {
-            Volume = new VolumeSnapshot(snapshots.Select(snapshot => snapshot.Volume).ToList());
-            Rewards = new RewardsSnapshot(snapshots.Select(snapshot => snapshot.Rewards).ToList());
-            Staking = new StakingSnapshot(snapshots.Select(snapshot => snapshot.Staking).ToList());
-            Reserves = new ReservesSnapshot(snapshots.Select(snapshot => snapshot.Reserves).ToList());
-            Cost = new CostSnapshot(snapshots.Select(snapshot => snapshot.Cost).ToList());
-            TransactionCount = snapshots.Sum(snapshot => snapshot.TransactionCount);
+            // Technically, we should be able to return out if none exist. Would mean that this
+            // snapshot being refreshed _should_ be a new Zero instance. For now, refreshing everything.
+            var exists = snapshots.Any();
+
+            // Verify order is correct
+            if (exists) snapshots = snapshots.OrderBy(snapshot => snapshot.EndDate).ToList();
+
+            Volume = exists ? new VolumeSnapshot(snapshots.Select(snapshot => snapshot.Volume).ToList()) : new VolumeSnapshot();
+            Rewards = exists ? new RewardsSnapshot(snapshots.Select(snapshot => snapshot.Rewards).ToList()) : new RewardsSnapshot();
+            Staking = exists ? new StakingSnapshot(snapshots.Select(snapshot => snapshot.Staking).ToList()) : new StakingSnapshot();
+            Reserves = exists ? new ReservesSnapshot(snapshots.Last().Reserves) : new ReservesSnapshot();
+            Cost = exists ? new CostSnapshot(snapshots.Select(snapshot => snapshot.Cost).ToList()) : new CostSnapshot();
+            TransactionCount = exists ? snapshots.Sum(snapshot => snapshot.TransactionCount) : 0;
         }
 
         public void RefreshSnapshot(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, ulong srcSats)

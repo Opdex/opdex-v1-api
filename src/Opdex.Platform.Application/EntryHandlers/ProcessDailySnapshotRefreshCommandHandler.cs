@@ -57,8 +57,9 @@ namespace Opdex.Platform.Application.EntryHandlers
 
                     foreach (var snapshotType in snapshotTypes)
                     {
-                        await _mediator.Send(new ProcessDailyLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, stakingToken,
-                                                                                                 lpToken, request.CrsUsd, snapshotType, blockTime, request.BlockHeight));
+                        await _mediator.Send(new ProcessDailyLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, stakingToken, lpToken,
+                                                                                                 request.CrsUsd, snapshotType, blockTime,
+                                                                                                 request.BlockHeight));
                     }
 
                     var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(stakingToken.Id, market.Id,
@@ -69,8 +70,7 @@ namespace Opdex.Platform.Application.EntryHandlers
                 // Every pool excluding the staking token and it's liquidity pool
                 foreach(var liquidityPool in marketPools.Where(mp => mp.SrcTokenId != market.StakingTokenId))
                 {
-                    if (!tokens.TryGetValue(liquidityPool.SrcTokenId, out var srcToken) ||
-                        !tokens.TryGetValue(liquidityPool.LpTokenId, out var lpToken))
+                    if (!tokens.TryGetValue(liquidityPool.SrcTokenId, out var srcToken) || !tokens.TryGetValue(liquidityPool.LpTokenId, out var lpToken))
                     {
                         continue;
                     }
@@ -78,7 +78,8 @@ namespace Opdex.Platform.Application.EntryHandlers
                     foreach (var snapshotType in snapshotTypes)
                     {
                         await _mediator.Send(new ProcessDailyLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, srcToken, lpToken,
-                                                                                                 request.CrsUsd, snapshotType, blockTime, request.BlockHeight, stakingTokenUsd));
+                                                                                                 request.CrsUsd, snapshotType, blockTime,
+                                                                                                 request.BlockHeight, stakingTokenUsd));
                     }
                 }
 

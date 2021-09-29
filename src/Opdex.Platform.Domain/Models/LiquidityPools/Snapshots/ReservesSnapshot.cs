@@ -17,11 +17,11 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Usd = 0.00000000m;
         }
 
-        public ReservesSnapshot(IList<ReservesSnapshot> snapshots)
+        public ReservesSnapshot(ReservesSnapshot snapshots)
         {
-            Crs = snapshots.Aggregate(0UL, (a,c) => a + c.Crs);
-            Src = snapshots.Aggregate(UInt256.Zero, (a,c) => a + c.Src);
-            Usd = snapshots.Aggregate(0.00000000m, (a,c) => a + c.Usd);
+            Crs = snapshots.Crs;
+            Src = snapshots.Src;
+            Usd = snapshots.Usd;
         }
 
         public ReservesSnapshot(ulong reserveCrs, UInt256 reserveSrc, decimal reserveUsd)

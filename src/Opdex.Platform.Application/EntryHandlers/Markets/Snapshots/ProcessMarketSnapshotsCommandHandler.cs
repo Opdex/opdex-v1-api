@@ -3,7 +3,6 @@ using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
-using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Common.Enums;
 using System;
@@ -24,11 +23,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
 
         public async Task<Unit> Handle(ProcessMarketSnapshotsCommand request, CancellationToken cancellationToken)
         {
-            var market = await _mediator.Send(new RetrieveMarketByIdQuery(request.MarketId));
-            var marketPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(market.Id));
-            var marketSnapshot = await _mediator.Send(new RetrieveMarketSnapshotWithFilterQuery(request.MarketId,
-                                                                                                request.BlockTime,
-                                                                                                SnapshotType));
+            var marketPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(request.MarketId));
+            var marketSnapshot = await _mediator.Send(new RetrieveMarketSnapshotWithFilterQuery(request.MarketId, request.BlockTime, SnapshotType));
 
             // Reset stale snapshot if its old
             if (marketSnapshot.EndDate < request.BlockTime)
@@ -45,9 +41,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
             foreach (var pool in marketPools)
             {
                 // Get snapshot
-                var poolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id,
-                                                                                                         request.BlockTime,
-                                                                                                         SnapshotType));
+                var poolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, request.BlockTime, SnapshotType));
+
+                // Skip if the returned snapshot is a new default
+                if (poolSnapshot.Id == 0) continue;
 
                 // Apply LP snapshot to market snapshot
                 marketSnapshot.Update(poolSnapshot);

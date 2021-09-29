@@ -42,44 +42,73 @@ namespace Opdex.Platform.Application.EntryHandlers
             var markets = await _mediator.Send(new RetrieveAllMarketsQuery());
             var marketList = markets.ToList();
 
+            _logger.LogDebug($"Found {marketList.Count} stale markets.");
+
             // Every pool and every token need their Daily snapshots re-calculated up to the rewind hour
             foreach (var market in marketList)
             {
                 // Get All Pools
                 var pools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(market.Id));
+                var poolsList = pools.ToList();
 
-                foreach (var pool in pools)
+                _logger.LogDebug($"Found {poolsList.Count} stale liquidity pool daily snapshots.");
+                _logger.LogDebug($"Found {poolsList.Count * 2} stale token daily snapshots.");
+
+                int poolRefreshFailures = 0;
+                int tokenRefreshFailures = 0;
+
+                foreach (var pool in poolsList)
                 {
                     // Rewind pool daily snapshot
                     var poolDailySnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, startOfDay, SnapshotType.Daily));
                     var poolHourlySnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id, startOfDay, endOfDay, SnapshotType.Hourly));
                     poolDailySnapshot.RewindSnapshot(poolHourlySnapshots.ToList());
-                    await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(poolDailySnapshot));
+                    var resetPoolSnapshot = await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(poolDailySnapshot));
+                    if (!resetPoolSnapshot) poolRefreshFailures++;
 
                     // Rewind token daily snapshots
-                    await RewindTokenDailySnapshot(pool.SrcTokenId, market.Id, startOfDay, endOfDay);
-                    await RewindTokenDailySnapshot(pool.LpTokenId, market.Id, startOfDay, endOfDay);
+                    var srcSnapshot = await RewindTokenDailySnapshot(pool.SrcTokenId, market.Id, startOfDay, endOfDay);
+                    if (!srcSnapshot) tokenRefreshFailures++;
+
+                    var lptSnapshot = await RewindTokenDailySnapshot(pool.LpTokenId, market.Id, startOfDay, endOfDay);
+                    if (!lptSnapshot) tokenRefreshFailures++;
                 }
+
+                _logger.LogDebug($"Rewound {poolsList.Count - poolRefreshFailures} stale liquidity pool daily snapshots.");
+                _logger.LogDebug($"Rewound {(poolsList.Count * 2) - tokenRefreshFailures} stale token daily snapshots.");
+
+                if (poolRefreshFailures > 0) _logger.LogError($"Failed to reset {poolRefreshFailures} stale liquidity pools daily snapshots.");
+                if (tokenRefreshFailures > 0) _logger.LogError($"Failed to reset {tokenRefreshFailures} stale token daily snapshots.");
             }
 
             // Get transactions
             var transactions = await _mediator.Send(new SelectTransactionsForSnapshotRewindQuery(startOfHour));
-            foreach (var transaction in transactions)
+            var transactionsList = transactions.ToList();
+
+            _logger.LogDebug($"Found {transactionsList.Count} transactions to reprocess liquidity pool and token snapshot history.");
+
+            foreach (var transaction in transactionsList)
                 await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(transaction));
+
+            _logger.LogDebug($"Replayed {transactionsList.Count} transactions to refresh liquidity pool and token snapshot history.");
+
+            _logger.LogDebug($"Rebuilding {marketList.Count} stale markets snapshots.");
 
             // Process market daily snapshots with all of the latest rewind data
             foreach (var market in marketList)
                 await _mediator.Send(new ProcessMarketSnapshotsCommand(market.Id, startOfDay));
 
+            _logger.LogDebug($"Refreshed {marketList.Count} stale markets snapshots.");
+
             return true;
         }
 
-        private async Task RewindTokenDailySnapshot(long tokenId, long marketId, DateTime startOfDay, DateTime endOfDay)
+        private async Task<bool> RewindTokenDailySnapshot(long tokenId, long marketId, DateTime startOfDay, DateTime endOfDay)
         {
             var srcTokenDailySnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(tokenId, marketId, startOfDay, SnapshotType.Daily));
             var srcTokenHourlySnapshots = await _mediator.Send(new RetrieveTokenSnapshotsWithFilterQuery(tokenId, marketId, startOfDay, endOfDay, SnapshotType.Hourly));
             srcTokenDailySnapshot.RewindSnapshot(srcTokenHourlySnapshots.ToList());
-            await _mediator.Send(new MakeTokenSnapshotCommand(srcTokenDailySnapshot));
+            return await _mediator.Send(new MakeTokenSnapshotCommand(srcTokenDailySnapshot));
         }
     }
 }

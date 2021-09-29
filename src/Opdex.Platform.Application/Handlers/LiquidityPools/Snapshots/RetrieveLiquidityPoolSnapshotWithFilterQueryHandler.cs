@@ -20,8 +20,9 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools.Snapshots
 
         public Task<LiquidityPoolSnapshot> Handle(RetrieveLiquidityPoolSnapshotWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var query = new SelectLiquidityPoolSnapshotWithFilterQuery(request.LiquidityPoolId, request.DateTime, request.SnapshotType);
-            return _mediator.Send(query, cancellationToken);
+            return _mediator.Send(new SelectLiquidityPoolSnapshotWithFilterQuery(request.LiquidityPoolId,
+                                                                                 request.DateTime,
+                                                                                 request.SnapshotType), cancellationToken);
         }
     }
 }

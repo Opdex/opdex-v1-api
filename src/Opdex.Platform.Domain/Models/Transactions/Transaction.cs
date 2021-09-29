@@ -1,6 +1,8 @@
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +46,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
             To = to;
             Success = success;
             NewContractAddress = newContractAddress;
+            EligibilityStatus = TransactionEligibilityType.PendingInitialValidation;
             Logs = logs ?? new List<TransactionLog>();
         }
 
@@ -57,6 +60,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
             To = to;
             Success = success;
             NewContractAddress = newContractAddress;
+            EligibilityStatus = TransactionEligibilityType.Eligible;
             Logs = new List<TransactionLog>();
         }
 
@@ -71,8 +75,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
 
         public IList<TransactionLog> Logs { get; }
 
-        // Todo: maybe enum - unknown | maybe | yeah | no
-        public bool IsOpdexTx { get; private set; }
+        public TransactionEligibilityType EligibilityStatus { get; private set; }
 
         public IList<T> LogsOfType<T>(TransactionLogType logType) where T : TransactionLog
         {
@@ -104,6 +107,28 @@ namespace Opdex.Platform.Domain.Models.Transactions
             }
 
             Logs.Add(log);
+            ValidateLogTypeEligibility();
+        }
+
+        public void ValidateLogTypeEligibility()
+        {
+            // No logs is most likely ineligible
+            if (!Logs.Any())
+            {
+                // Only transactions without logs could be new contract deployments in which we'll validate.
+                EligibilityStatus = NewContractAddress == Address.Empty
+                    ? TransactionEligibilityType.Ineligible
+                    : TransactionEligibilityType.PendingContractValidation;
+
+                return;
+            }
+
+            var partiallyEligibleLogTypes = new List<TransactionLogType> { TransactionLogType.ApprovalLog, TransactionLogType.TransferLog };
+
+            // Partially eligible if all of the transaction's logs are transfer or approval logs
+            EligibilityStatus = LogsOfTypes(partiallyEligibleLogTypes).Count() == Logs.Count
+                ? TransactionEligibilityType.PartiallyEligible
+                : TransactionEligibilityType.PendingContractValidation;
         }
 
         public void SetId(long id)

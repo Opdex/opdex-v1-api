@@ -21,13 +21,10 @@ namespace Opdex.Platform.Application.Handlers.Transactions
         {
             try
             {
-                var query = new CallCirrusGetTransactionByHashQuery(request.TxHash);
-
-                return await _mediator.Send(query, cancellationToken);
+                return await _mediator.Send(new CallCirrusGetTransactionByHashQuery(request.TxHash), cancellationToken);
             }
             catch (Exception)
             {
-                // log - should be a not found expection
                 return null;
             }
         }

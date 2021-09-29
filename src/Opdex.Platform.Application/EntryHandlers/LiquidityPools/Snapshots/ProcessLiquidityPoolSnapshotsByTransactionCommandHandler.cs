@@ -92,8 +92,8 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                 {
                     // Retrieves the snapshot in range, the most recent one prior, or a newly instantiated snapshot
                     var snapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id,
-                                                                                                                      blockTime,
-                                                                                                                      snapshotType));
+                                                                                                         blockTime,
+                                                                                                         snapshotType));
                     // Update a stale snapshot if it is older than what was requested
                     if (snapshot.EndDate < blockTime)
                     {
@@ -142,19 +142,18 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                                                                                                             market.Id,
                                                                                                             blockTime,
                                                                                                             SnapshotType.Hourly));
-
                             // Process Volume of a Swap
                             snapshot.ProcessSwapLog((SwapLog)poolLog, crsUsd, srcSnapshot.Price.Close, srcToken.Sats,
-                                                                 market.IsStakingMarket, market.TransactionFee, market.MarketFeeEnabled);
+                                                    market.IsStakingMarket, market.TransactionFee, market.MarketFeeEnabled);
                         }
-                        else if (poolLog.LogType == TransactionLogType.StartStakingLog || poolLog.LogType == TransactionLogType.StopStakingLog)
+                        else if (poolLog.LogType == TransactionLogType.StartStakingLog ||
+                                 poolLog.LogType == TransactionLogType.StopStakingLog)
                         {
                             // Process Staking Weight
                             snapshot.ProcessStakingLog((StakeLog)poolLog, stakingTokenUsd);
                         }
                     }
 
-                    // Todo: Consider persisting which TxHashes or another identifier of which transactions have been included.
                     snapshot.IncrementTransactionCount();
 
                     // Only update the summary on the daily snapshot
