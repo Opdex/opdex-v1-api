@@ -106,8 +106,20 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             const string uri = CirrusUriHelper.SmartContractWallet.Create;
             var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(call, uri, HttpMethod.Post);
 
-            var transactionHash = await PostAsync<string>(uri, httpRequest.Content, cancellationToken);
-            return transactionHash;
+            var logDetails = new Dictionary<string, object>
+            {
+                ["ContractCode"] = call.ContractCode,
+                ["Sender"] = call.Sender,
+                ["Amount"] = call.Amount,
+                ["Parameters"] = call.Parameters,
+                ["WalletName"] = call.WalletName
+            };
+
+            using (_logger.BeginScope(logDetails))
+            {
+                var transactionHash = await PostAsync<string>(uri, httpRequest.Content, cancellationToken);
+                return transactionHash;
+            }
         }
 
         public Task<ulong> GetWalletAddressCrsBalance(Address walletAddress, CancellationToken cancellationToken)
