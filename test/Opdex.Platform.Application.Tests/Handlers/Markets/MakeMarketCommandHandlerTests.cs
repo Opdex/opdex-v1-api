@@ -81,10 +81,9 @@ namespace Opdex.Platform.Application.Tests.Handlers.Markets
         }
 
         [Theory]
-        [InlineData(false, false)]
-        [InlineData(true, true)]
-        public async Task MakeMarketCommand_Sends_PersistMarketCommand(bool refreshOwner,
-                                                                       bool expected)
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task MakeMarketCommand_Sends_PersistMarketCommand(bool refreshOwner)
         {
             // Arrange
             const ulong blockHeight = 20;

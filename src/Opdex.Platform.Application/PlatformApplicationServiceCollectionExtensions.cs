@@ -297,6 +297,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateStartStakingTransactionQuoteCommand, TransactionQuoteDto>, CreateStartStakingTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateStopStakingTransactionQuoteCommand, TransactionQuoteDto>, CreateStopStakingTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateCollectStakingRewardsTransactionQuoteCommand, TransactionQuoteDto>, CreateCollectStakingRewardsTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindLiquidityPoolDailySnapshotCommand, bool>, CreateRewindLiquidityPoolDailySnapshotCommandHandler>();
 
             // Mining Pools
             services.AddTransient<IRequestHandler<CreateStartMiningTransactionQuoteCommand, TransactionQuoteDto>, CreateStartMiningTransactionQuoteCommandHandler>();
@@ -334,6 +335,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateRewindStakingPositionsCommand, bool>, CreateRewindStakingPositionsCommandHandler>();
             services.AddTransient<IRequestHandler<CreateAddressBalanceCommand, long>, CreateAddressBalanceCommandHandler>();
             services.AddTransient<IRequestHandler<CreateTokenCommand, long>, CreateTokenCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindTokenDailySnapshotCommand, bool>, CreateRewindTokenDailySnapshotCommandHandler>();
 
             // Transaction Log Processors
             services.AddTransient<IRequestHandler<ProcessCreateLiquidityPoolLogCommand, bool>, ProcessCreateLiquidityPoolLogCommandHandler>();
