@@ -27,6 +27,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
+using Microsoft.AspNetCore.Authorization;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Converters;
 using Opdex.Platform.WebApi.Extensions;
@@ -198,10 +199,12 @@ namespace Opdex.Platform.WebApi
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AdminOnly", policy => policy.RequireClaim("admin"));
+                options.AddPolicy("AdminOnly", policy =>
+                                      policy.Requirements.Add(
+                                          new AdminOnlyRequirement(authConfig.GetSection(nameof(AuthConfiguration.AdminKey)).Value)));
             });
 
-            services.AddSingleton<IUserIdProvider, WalletAddressUserIdProvider>();
+            services.AddSingleton<IAuthorizationHandler, AdminOnlyHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

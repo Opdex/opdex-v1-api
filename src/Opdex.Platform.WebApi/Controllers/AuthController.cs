@@ -55,7 +55,7 @@ namespace Opdex.Platform.WebApi.Controllers
             // Validate Admin
             var hasKey = Request.Headers.TryGetValue("OPDEX_ADMIN", out var adminKey);
             var validAdmin = hasKey && _authConfiguration.AdminKey == adminKey;
-            if (validAdmin) tokenDescriptor.Subject.AddClaim(new Claim("admin", "true"));
+            if (validAdmin) tokenDescriptor.Subject.AddClaim(new Claim(nameof(AuthConfiguration.AdminKey), adminKey));
 
             // Market is optional for admins, required otherwise
             if (!validAdmin && market == Address.Empty) return Unauthorized();
