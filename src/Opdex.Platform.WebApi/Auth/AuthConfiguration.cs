@@ -1,10 +1,13 @@
 using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Common.Extensions;
+using System;
 
 namespace Opdex.Platform.WebApi.Auth
 {
     public class AuthConfiguration : IValidatable
     {
         public AuthProvider Opdex { get; set; }
+        public string AdminKey { get; set; }
 
         public class AuthProvider
         {
@@ -13,8 +16,10 @@ namespace Opdex.Platform.WebApi.Auth
 
         public void Validate()
         {
-            // Todo: Implement
-            return;
+            if (!AdminKey.HasValue())
+            {
+                throw new Exception($"{nameof(AuthConfiguration)}.{nameof(AdminKey)} must not be null or empty.");
+            }
         }
     }
 }

@@ -54,7 +54,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <remarks>Retrieve the identifier of this specific host instance.</remarks>
         /// <returns>GUID as string identifier</returns>
         [HttpGet("instance-identity")]
-        [Authorize]
+        [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(typeof(InstanceIdentityResponseModel), StatusCodes.Status200OK)]
         public ActionResult<InstanceIdentityResponseModel> InstanceIdentity()
         {
@@ -71,6 +71,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>No Content</returns>
         [HttpPost("resync-from-deployment")]
+        [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
@@ -107,7 +108,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>No content</returns>
         [HttpPost("rewind")]
-        [Authorize]
+        [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
