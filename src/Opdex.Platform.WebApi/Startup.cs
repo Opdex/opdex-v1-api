@@ -196,6 +196,11 @@ namespace Opdex.Platform.WebApi
             services.AddSignalR()
                     .AddAzureSignalR();
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy => policy.RequireClaim("admin"));
+            });
+
             services.AddSingleton<IUserIdProvider, WalletAddressUserIdProvider>();
         }
 

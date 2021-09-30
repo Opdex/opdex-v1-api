@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using System.Linq;
 
@@ -17,6 +18,8 @@ namespace Opdex.Platform.WebApi.Models
 
         public Address Wallet => GetWallet();
 
+        public bool Admin => IsAdmin();
+
         private Address GetMarket()
         {
             var subject = _httpContextAccessor.HttpContext
@@ -31,6 +34,14 @@ namespace Opdex.Platform.WebApi.Models
                 .User.Claims.FirstOrDefault(claim => claim.Type == "wallet");
 
             return new Address(subject?.Value);
+        }
+
+        private bool IsAdmin()
+        {
+            var subject = _httpContextAccessor.HttpContext
+                .User.Claims.FirstOrDefault(claim => claim.Type == "admin");
+
+            return subject?.Value?.HasValue() == true && bool.Parse(subject.Value);
         }
     }
 }
