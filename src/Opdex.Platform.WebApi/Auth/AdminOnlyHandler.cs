@@ -8,13 +8,13 @@ namespace Opdex.Platform.WebApi.Auth
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AdminOnlyRequirement requirement)
         {
             // Return if not found
-            if (!context.User.HasClaim(c => c.Type == nameof(AuthConfiguration.AdminKey)))
+            if (!context.User.HasClaim(c => c.Type == "admin"))
             {
                 return Task.CompletedTask;
             }
 
             // Validate the admin key provided against the configuration
-            if (context.User.FindFirst(c => c.Type == nameof(AuthConfiguration.AdminKey)).Value == requirement.Key)
+            if (context.User.FindFirst(c => c.Type == "admin").Value == requirement.Key)
             {
                 context.Succeed(requirement);
             }

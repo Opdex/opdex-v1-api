@@ -199,11 +199,10 @@ namespace Opdex.Platform.WebApi
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AdminOnly", policy =>
-                                      policy.Requirements.Add(
-                                          new AdminOnlyRequirement(authConfig.GetSection(nameof(AuthConfiguration.AdminKey)).Value)));
+                options.AddPolicy("AdminOnly", policy => policy.Requirements.Add(new AdminOnlyRequirement()));
             });
 
+            services.AddSingleton<IUserIdProvider, WalletAddressUserIdProvider>();
             services.AddSingleton<IAuthorizationHandler, AdminOnlyHandler>();
         }
 
