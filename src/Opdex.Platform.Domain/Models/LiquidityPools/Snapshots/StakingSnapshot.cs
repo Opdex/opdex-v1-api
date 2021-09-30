@@ -3,8 +3,6 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 {
@@ -16,10 +14,10 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Usd = 0.00000000m;
         }
 
-        public StakingSnapshot(IList<StakingSnapshot> snapshots)
+        public StakingSnapshot(StakingSnapshot snapshot)
         {
-            Weight = snapshots.Aggregate(UInt256.Zero, (a,c) => a + c.Weight);
-            Usd = snapshots.Aggregate(0.00000000m, (a,c) => a + c.Usd);
+            Weight = snapshot.Weight;
+            Usd = snapshot.Usd;
         }
 
         public StakingSnapshot(UInt256 stakingWeight, decimal stakingUsd)

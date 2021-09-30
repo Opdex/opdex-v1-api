@@ -171,7 +171,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
                                                      snapshotType, startDate, endDate, startDate);
 
             // Act
-            snapshot.RefreshSnapshot(10.00m, 1.25m, .50m, TokenConstants.Cirrus.Sats);
+            snapshot.RefreshSnapshotFiatAmounts(10.00m, 1.25m, .50m, TokenConstants.Cirrus.Sats);
 
             // Assert
             snapshot.Id.Should().Be(id);
