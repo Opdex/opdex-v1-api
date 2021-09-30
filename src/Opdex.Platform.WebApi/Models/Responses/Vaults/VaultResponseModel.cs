@@ -9,6 +9,9 @@ namespace Opdex.Platform.WebApi.Models.Responses.Vaults
         public Address Address { get; set; }
 
         [NotNull]
+        public Address PendingOwner { get; set; }
+
+        [NotNull]
         public Address Owner { get; set; }
 
         [NotNull]

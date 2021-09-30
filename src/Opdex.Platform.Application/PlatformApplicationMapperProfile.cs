@@ -58,6 +58,7 @@ namespace Opdex.Platform.Application
             CreateMap<Market, MarketDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.AuthPoolCreators, opt => opt.MapFrom(src => src.AuthPoolCreators))
                 .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
@@ -186,6 +187,7 @@ namespace Opdex.Platform.Application
 
             CreateMap<Vault, VaultDto>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
                 .ForAllOtherMembers(opt => opt.Ignore());

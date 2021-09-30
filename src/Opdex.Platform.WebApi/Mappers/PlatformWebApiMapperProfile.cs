@@ -140,6 +140,7 @@ namespace Opdex.Platform.WebApi.Mappers
 
             CreateMap<MarketDto, MarketResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.StakingToken, opt => opt.MapFrom(src => src.StakingToken))
                 .ForMember(dest => dest.CrsToken, opt => opt.MapFrom(src => src.CrsToken))
@@ -204,6 +205,7 @@ namespace Opdex.Platform.WebApi.Mappers
 
             CreateMap<VaultDto, VaultResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
                 .ForMember(dest => dest.TokensLocked, opt => opt.MapFrom(src => src.TokensLocked))
