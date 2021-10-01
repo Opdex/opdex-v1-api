@@ -7,6 +7,7 @@ using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using Xunit;
 
@@ -413,6 +414,74 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.TransactionCount.Should().Be(transactionCount);
             snapshot.StartDate.Should().Be(startDate);
             snapshot.EndDate.Should().Be(endDate);
+        }
+
+        [Theory]
+        [InlineData(SnapshotType.Hourly)]
+        [InlineData(SnapshotType.Minute)]
+        public void RewindDailySnapshot_InvalidSnapshotType_ThrowsException(SnapshotType type)
+        {
+            // Arrange
+            var snapshot = new LiquidityPoolSnapshot(1, type, DateTime.UtcNow);
+
+            // Act
+            void Act() => snapshot.RewindDailySnapshot(new List<LiquidityPoolSnapshot>());
+
+            // Assert
+            Assert.Throws<Exception>(Act).Message.Should().Contain("Only daily snapshots can be rewound.");
+        }
+
+        [Theory]
+        [InlineData(SnapshotType.Minute)]
+        [InlineData(SnapshotType.Daily)]
+        public void RewindDailySnapshot_InvalidSnapshotsTypes_ThrowsException(SnapshotType type)
+        {
+            // Arrange
+            var snapshot = new LiquidityPoolSnapshot(1, SnapshotType.Daily, DateTime.UtcNow);
+            var hourlySnapshots = new List<LiquidityPoolSnapshot>
+            {
+                new LiquidityPoolSnapshot(1, type, DateTime.Today)
+            };
+
+            // Act
+            void Act() => snapshot.RewindDailySnapshot(hourlySnapshots);
+
+            // Assert
+            Assert.Throws<Exception>(Act).Message.Should().Contain("Daily snapshots can only rewind using hourly snapshots.");
+        }
+
+        [Fact]
+        public void RewindDailySnapshot_InvalidSnapshotsLiquidityPoolId_ThrowsException()
+        {
+            // Arrange
+            var snapshot = new LiquidityPoolSnapshot(1, SnapshotType.Daily, DateTime.UtcNow);
+            var hourlySnapshots = new List<LiquidityPoolSnapshot>
+            {
+                new LiquidityPoolSnapshot(2, SnapshotType.Hourly, DateTime.Today)
+            };
+
+            // Act
+            void Act() => snapshot.RewindDailySnapshot(hourlySnapshots);
+
+            // Assert
+            Assert.Throws<Exception>(Act).Message.Should().Contain("Daily snapshots can only rewind using hourly snapshots.");
+        }
+
+        [Fact]
+        public void RewindDailySnapshot_InvalidLSnapshotsDates_ThrowsException()
+        {
+            // Arrange
+            var snapshot = new LiquidityPoolSnapshot(1, SnapshotType.Daily, DateTime.UtcNow);
+            var hourlySnapshots = new List<LiquidityPoolSnapshot>
+            {
+                new LiquidityPoolSnapshot(1, SnapshotType.Hourly, DateTime.Today.AddDays(-1))
+            };
+
+            // Act
+            void Act() => snapshot.RewindDailySnapshot(hourlySnapshots);
+
+            // Assert
+            Assert.Throws<Exception>(Act).Message.Should().Contain("Daily snapshots can only rewind using hourly snapshots.");
         }
     }
 }

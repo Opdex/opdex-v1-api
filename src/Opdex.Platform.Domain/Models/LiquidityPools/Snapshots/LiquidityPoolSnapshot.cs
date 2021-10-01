@@ -121,7 +121,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 
             if (!allValidSnapshots)
             {
-                throw new Exception("Daily snapshots can only rewind using hourly snapshots");
+                throw new Exception("Daily snapshots can only rewind using hourly snapshots.");
             }
 
             // Technically, we should be able to return out if none exist. Would mean that this
