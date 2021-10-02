@@ -7,23 +7,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
 {
     public class LocalCallResponseDto
     {
-        private IList<TransactionLogDto> _logs = new List<TransactionLogDto>();
-
         public IList<InternalTransfer> InternalTransfers { get; set; } = new List<InternalTransfer>();
-
-        public IList<TransactionLogDto> Logs
-        {
-            get
-            {
-                return _logs;
-            }
-            set
-            {
-                for (int i = 0; i < value?.Count; i++) value[i].SortOrder = i;
-                _logs = value;
-            }
-        }
-
+        public IList<TransactionLogDto> Logs { get; set; }
         public GasConsumed GasConsumed { get; set; }
         public bool Revert { get; set; }
         public Error ErrorMessage { get; set; }

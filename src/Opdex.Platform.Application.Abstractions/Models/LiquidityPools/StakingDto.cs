@@ -1,6 +1,5 @@
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
@@ -13,7 +12,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
 
         public void SetDailyChange(UInt256 previousWeight)
         {
-            WeightDailyChange = Weight.PercentChange(previousWeight, TokenConstants.Opdex.Decimals);
+            WeightDailyChange = Weight.PercentChange(previousWeight, TokenConstants.Opdex.Sats);
         }
     }
 }

@@ -28,7 +28,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
             if (tokenSnapshot.EndDate < request.BlockTime)
             {
                 var crsPerSrc = request.ReserveCrs.Token0PerToken1(request.ReserveSrc, request.SrcToken.Sats);
-
                 tokenSnapshot.ResetStaleSnapshot(crsPerSrc, request.CrsUsd, request.BlockTime);
             }
             else

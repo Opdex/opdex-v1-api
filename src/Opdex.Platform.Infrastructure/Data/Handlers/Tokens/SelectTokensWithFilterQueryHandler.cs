@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.Tokens;
@@ -115,7 +114,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
             return sortRequest switch
             {
-                "Price" => $" ORDER BY CAST(JSON_EXTRACT(ts.Details, '$.Close') as Decimal) {orderRequest}",
+                "Price" => $" ORDER BY CAST(JSON_EXTRACT(ts.Details, '$.close') as Decimal) {orderRequest}",
                 "Name" => $" ORDER BY t.{nameof(TokenEntity.Name)} {orderRequest}",
                 "Symbol" => $" ORDER BY t.{nameof(TokenEntity.Symbol)} {orderRequest}",
                 _ => throw new ArgumentOutOfRangeException(nameof(sortRequest), "Invalid token sort type.")

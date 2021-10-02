@@ -8,12 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Index;
 using Opdex.Platform.WebApi.Models.Responses.Indexer;
 using System.Linq;
@@ -27,14 +25,12 @@ namespace Opdex.Platform.WebApi.Controllers
         private readonly IMediator _mediator;
         private readonly NetworkType _network;
         private readonly string _instanceId;
-        private readonly IApplicationContext _context;
 
-        public IndexController(IMediator mediator, OpdexConfiguration opdexConfiguration, IApplicationContext context)
+        public IndexController(IMediator mediator, OpdexConfiguration opdexConfiguration)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
             _instanceId = opdexConfiguration?.InstanceId ?? throw new ArgumentNullException(nameof(opdexConfiguration));
-            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <summary>Get Latest Block</summary>
@@ -54,7 +50,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <remarks>Retrieve the identifier of this specific host instance.</remarks>
         /// <returns>GUID as string identifier</returns>
         [HttpGet("instance-identity")]
-        [Authorize]
+        [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(typeof(InstanceIdentityResponseModel), StatusCodes.Status200OK)]
         public ActionResult<InstanceIdentityResponseModel> InstanceIdentity()
         {
@@ -71,6 +67,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>No Content</returns>
         [HttpPost("resync-from-deployment")]
+        [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
@@ -107,14 +104,11 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>No content</returns>
         [HttpPost("rewind")]
-        [Authorize]
+        [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
         {
-            var admin = await _mediator.Send(new GetAdminByAddressQuery(_context.Wallet, findOrThrow: false), cancellationToken);
-            if (admin == null) return Unauthorized();
-
             await _mediator.Send(new MakeIndexerLockCommand());
 
             try

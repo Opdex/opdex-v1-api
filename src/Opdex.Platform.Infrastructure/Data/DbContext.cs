@@ -40,6 +40,23 @@ namespace Opdex.Platform.Infrastructure.Data
             }
         }
 
+        public async Task<IEnumerable<TReturn>> ExecuteQueryAsync<TFirst, TSecond, TReturn>(DatabaseQuery query,
+                                                                                            Func<TFirst, TSecond, TReturn> map,
+                                                                                            string splitOn)
+        {
+            try
+            {
+                var command = BuildCommandDefinition(query);
+                await using var connection = _databaseSettings.Create();
+                return await connection.QueryAsync<TFirst, TSecond, TReturn>(command, map, splitOn);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failure to execute query.");
+                throw;
+            }
+        }
+
         public async Task<TEntity> ExecuteFindAsync<TEntity>(DatabaseQuery query)
         {
             try

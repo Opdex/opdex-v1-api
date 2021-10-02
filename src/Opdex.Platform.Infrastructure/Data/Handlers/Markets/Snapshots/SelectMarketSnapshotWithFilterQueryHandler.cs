@@ -25,8 +25,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots
             WHERE {nameof(MarketSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)}
                 AND
                     (
-                        @{nameof(SqlParams.Date)} BETWEEN
-                            {nameof(MarketSnapshotEntity.StartDate)} AND {nameof(MarketSnapshotEntity.EndDate)}
+                        (@{nameof(SqlParams.Date)} BETWEEN {nameof(MarketSnapshotEntity.StartDate)} AND {nameof(MarketSnapshotEntity.EndDate)})
                         OR
                         @{nameof(SqlParams.Date)} > {nameof(MarketSnapshotEntity.EndDate)}
                     )
@@ -45,14 +44,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots
 
         public async Task<MarketSnapshot> Handle(SelectMarketSnapshotWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var queryParams = new SqlParams(request.MarketId, request.Date, (int)request.SnapshotType);
+            var queryParams = new SqlParams(request.MarketId, request.DateTime, (int)request.SnapshotType);
 
             var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
 
             var result = await _context.ExecuteFindAsync<MarketSnapshotEntity>(command);
 
             return result == null
-                ? new MarketSnapshot(request.MarketId, request.SnapshotType, request.Date)
+                ? new MarketSnapshot(request.MarketId, request.SnapshotType, request.DateTime)
                 : _mapper.Map<MarketSnapshot>(result);
         }
 

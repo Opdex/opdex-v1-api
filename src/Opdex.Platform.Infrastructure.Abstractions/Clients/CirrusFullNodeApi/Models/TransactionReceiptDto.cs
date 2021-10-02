@@ -5,7 +5,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
 {
     public class TransactionReceiptDto
     {
-        private IList<TransactionLogDto> _logs = new List<TransactionLogDto>();
         public string TransactionHash { get; set; }
         public string BlockHash { get; set; }
         public string PostState { get; set; }
@@ -20,18 +19,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
 
         public ulong BlockHeight { get; private set; }
 
-        public IList<TransactionLogDto> Logs
-        {
-            get
-            {
-                return _logs;
-            }
-            set
-            {
-                for (int i = 0; i < value?.Count; i++) value[i].SortOrder = i;
-                _logs = value;
-            }
-        }
+        public IList<TransactionLogDto> Logs { get; set; }
 
         public void SetBlockHeight(ulong height)
         {

@@ -42,4 +42,6 @@ jobs:
                 appName: 'app-opdex-${{ parameters.environment }}-api'
                 package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
                 deploymentMethod: 'auto'
+                deployToSlotOrASE: true
+                slotName: 'staging'
               displayName: Deploy to App Service

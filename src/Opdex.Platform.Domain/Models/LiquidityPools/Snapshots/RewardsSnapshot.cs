@@ -1,5 +1,7 @@
 using Opdex.Platform.Common.Models.UInt;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 {
@@ -7,8 +9,14 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
     {
         public RewardsSnapshot()
         {
-            ProviderUsd = 0.00m;
-            MarketUsd = 0.00m;
+            ProviderUsd = 0.00000000m;
+            MarketUsd = 0.00000000m;
+        }
+
+        public RewardsSnapshot(IList<RewardsSnapshot> snapshots)
+        {
+            ProviderUsd = snapshots.Aggregate(0.00000000m, (a,c) => a + c.ProviderUsd);
+            MarketUsd = snapshots.Aggregate(0.00000000m, (a,c) => a + c.MarketUsd);
         }
 
         public RewardsSnapshot(decimal providerUsd, decimal marketUsd)
