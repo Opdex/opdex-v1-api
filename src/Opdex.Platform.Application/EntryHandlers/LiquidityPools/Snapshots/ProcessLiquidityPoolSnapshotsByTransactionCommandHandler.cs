@@ -138,19 +138,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
 
                     snapshot.IncrementTransactionCount();
 
-                    // Only update the summary on the daily snapshot
-                    if (snapshotType == SnapshotType.Daily)
-                    {
-                        var summary = await _mediator.Send(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(liquidityPool.Id, false));
-
-                        summary ??= new LiquidityPoolSummary(liquidityPool.Id, block.Height);
-
-                        summary.Update(snapshot, block.Height);
-
-                        await _mediator.Send(new MakeLiquidityPoolSummaryCommand(summary));
-                    }
-
-                    await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(snapshot));
+                    await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(snapshot, block.Height));
                 }
             }
 

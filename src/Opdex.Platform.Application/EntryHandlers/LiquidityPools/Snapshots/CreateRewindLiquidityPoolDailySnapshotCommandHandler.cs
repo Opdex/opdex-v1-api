@@ -1,6 +1,7 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Constants;
@@ -34,6 +35,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                                                                                                              request.StartDate,
                                                                                                              request.EndDate,
                                                                                                              SnapshotType.Hourly));
+            var poolHourlySnapshotsList = poolHourlySnapshots.OrderBy(p => p.EndDate).ToList(); // ASC order
 
             // If the rewind block is within the first hour of the day, that hourly snapshot will be deleted and none will exist.
             // Need to always reuse the latest state of the most recent found daily liquidity pool snapshot. Sometimes we might need to
@@ -52,10 +54,14 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
             }
 
             // Rewind the daily snapshot using the hourly snapshots
-            poolDailySnapshot.RewindDailySnapshot(poolHourlySnapshots.ToList());
+            poolDailySnapshot.RewindDailySnapshot(poolHourlySnapshotsList);
+
+            // Get the closest block by time
+            var blockTime = poolHourlySnapshotsList.LastOrDefault()?.EndDate ?? poolDailySnapshot.EndDate;
+            var block = await _mediator.Send(new RetrieveBlockByMedianTimeQuery(blockTime));
 
             // Persist and return success
-            return await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(poolDailySnapshot));
+            return await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(poolDailySnapshot, block.Height));
         }
     }
 }

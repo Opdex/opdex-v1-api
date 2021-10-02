@@ -46,19 +46,11 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                 lpSnapshot.RefreshSnapshotFiatAmounts(request.CrsUsd, srcUsd, stakingUsd, request.SrcToken.Sats);
             }
 
-            await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(lpSnapshot));
+            await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(lpSnapshot, request.BlockHeight));
 
             // Process latest lp token snapshot
             var lptUsd = await _mediator.Send(new ProcessLpTokenSnapshotCommand(request.MarketId, request.LpToken, lpSnapshot.Reserves.Usd,
                                                                                 request.SnapshotType, request.BlockTime));
-
-            var summary = await _mediator.Send(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(request.LiquidityPoolId, false));
-
-            summary ??= new LiquidityPoolSummary(request.LiquidityPoolId, request.BlockHeight);
-
-            summary.Update(lpSnapshot, request.BlockHeight);
-
-            await _mediator.Send(new MakeLiquidityPoolSummaryCommand(summary));
 
             return Unit.Value;
         }
