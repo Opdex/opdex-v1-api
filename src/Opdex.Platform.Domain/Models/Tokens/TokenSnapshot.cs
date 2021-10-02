@@ -54,11 +54,20 @@ namespace Opdex.Platform.Domain.Models.Tokens
         public DateTime ModifiedDate { get; private set; }
 
         /// <summary>
+        /// Determine if the snapshot is stale compared to a provided datetime.
+        /// </summary>
+        /// <param name="endDate">The current end date to check against</param>
+        /// <returns>true if the record is stale</returns>
+        public bool IsStale(DateTime endDate) => EndDate < endDate;
+
+        /// <summary>
         /// Rewinds a daily snapshot using all existing hourly snapshots from the same day.
         /// </summary>
         /// <param name="snapshots">List of all hourly snapshots for the day.</param>
         public void RewindDailySnapshot(IList<TokenSnapshot> snapshots)
         {
+            if (!snapshots.Any()) return;
+
             // This snapshot must be a daily type
             if (SnapshotType != SnapshotType.Daily)
             {
@@ -81,16 +90,10 @@ namespace Opdex.Platform.Domain.Models.Tokens
                 throw new Exception("Daily snapshots can only rewind using hourly snapshots");
             }
 
-            // Technically, we should be able to return out if none exist. Would mean that this
-            // snapshot being refreshed _should_ be a new Zero instance. For now, refreshing everything.
-            var exists = snapshots.Any();
-
             // Verify order is correct
-            if (exists) snapshots = snapshots.OrderBy(snapshot => snapshot.EndDate).ToList();
+            snapshots = snapshots.OrderBy(snapshot => snapshot.EndDate).ToList();
 
-            Price = exists
-                ? new OhlcDecimalSnapshot(snapshots.Select(snapshot => snapshot.Price).ToList())
-                : new OhlcDecimalSnapshot();
+            Price = new OhlcDecimalSnapshot(snapshots.Select(snapshot => snapshot.Price).ToList());
         }
 
         /// <summary>

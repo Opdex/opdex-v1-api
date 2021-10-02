@@ -2,7 +2,10 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
 using System;
 using System.Linq;
 using System.Threading;
@@ -31,6 +34,22 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                                                                                                              request.StartDate,
                                                                                                              request.EndDate,
                                                                                                              SnapshotType.Hourly));
+
+            // If the rewind block is within the first hour of the day, that hourly snapshot will be deleted and none will exist.
+            // Need to always reuse the latest state of the most recent found daily liquidity pool snapshot. Sometimes we might need to
+            // reset stale snapshot prior to the rewind if no hourly are found.
+            if (poolDailySnapshot.IsStale(request.EndDate))
+            {
+                var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(request.SrcTokenId));
+
+                // Liquidity pools reserves are always 50% USD CRS and 50% USD SRC - use CRS to get the total reserves
+                var halfPoolReservesStartOfDay = poolDailySnapshot.Reserves.Crs.TotalFiat(request.CrsUsdStartOfDay, TokenConstants.Cirrus.Sats);
+                var srcFiatPerTokenStartOfDay = poolDailySnapshot.Reserves.Src.FiatPerToken(halfPoolReservesStartOfDay, srcToken.Sats);
+
+                // Reset the daily snapshot Id and date to be a new instance, carrying over necessary values from the previous snapshot.
+                poolDailySnapshot.ResetStaleSnapshot(request.CrsUsdStartOfDay, srcFiatPerTokenStartOfDay,
+                                                     request.StakingTokenUsdStartOfDay, srcToken.Sats, request.StartDate);
+            }
 
             // Rewind the daily snapshot using the hourly snapshots
             poolDailySnapshot.RewindDailySnapshot(poolHourlySnapshots.ToList());

@@ -63,6 +63,13 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         public DateTime ModifiedDate { get; }
 
         /// <summary>
+        /// Determine if the snapshot is stale compared to a provided datetime.
+        /// </summary>
+        /// <param name="endDate">The current end date to check against</param>
+        /// <returns>true if the record is stale</returns>
+        public bool IsStale(DateTime endDate) => EndDate < endDate;
+
+        /// <summary>
         /// Reset a stale snapshot to a new instance with a 0 Id and update values that carryover
         /// such as staking totals, reserves, token costs etc.
         /// </summary>
@@ -103,6 +110,11 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         /// <param name="snapshots">List of all hourly snapshots for the day.</param>
         public void RewindDailySnapshot(IList<LiquidityPoolSnapshot> snapshots)
         {
+            if (!snapshots.Any())
+            {
+                return;
+            }
+
             // This snapshot must be a day
             if (SnapshotType != SnapshotType.Daily)
             {
@@ -124,30 +136,26 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
                 throw new Exception("Daily snapshots can only rewind using hourly snapshots.");
             }
 
-            // Technically, we should be able to return out if none exist. Would mean that this
-            // snapshot being refreshed _should_ be a new Zero instance. For now, refreshing everything.
-            var exists = snapshots.Any();
-
             // Verify order is correct
-            if (exists) snapshots = snapshots.OrderBy(snapshot => snapshot.EndDate).ToList();
+            snapshots = snapshots.OrderBy(snapshot => snapshot.EndDate).ToList();
 
             // Volume will add all hourly volume totals
-            Volume = exists ? new VolumeSnapshot(snapshots.Select(snapshot => snapshot.Volume).ToList()) : new VolumeSnapshot();
+            Volume = new VolumeSnapshot(snapshots.Select(snapshot => snapshot.Volume).ToList());
 
             // Rewards add all hourly reward tokens
-            Rewards = exists ? new RewardsSnapshot(snapshots.Select(snapshot => snapshot.Rewards).ToList()) : new RewardsSnapshot();
+            Rewards = new RewardsSnapshot(snapshots.Select(snapshot => snapshot.Rewards).ToList());
 
             // Staking takes the latest total
-            Staking = exists ? new StakingSnapshot(snapshots.Last().Staking) : new StakingSnapshot();
+            Staking = new StakingSnapshot(snapshots.Last().Staking);
 
             // Reserves take the latest total
-            Reserves = exists ? new ReservesSnapshot(snapshots.Last().Reserves) : new ReservesSnapshot();
+            Reserves = new ReservesSnapshot(snapshots.Last().Reserves);
 
             // Cost is rebuilt for OHLC using all cost snapshots for the day
-            Cost = exists ? new CostSnapshot(snapshots.Select(snapshot => snapshot.Cost).ToList()) : new CostSnapshot();
+            Cost = new CostSnapshot(snapshots.Select(snapshot => snapshot.Cost).ToList());
 
             // Transaction counts add the total of each hour
-            TransactionCount = exists ? snapshots.Sum(snapshot => snapshot.TransactionCount) : 0;
+            TransactionCount = snapshots.Sum(snapshot => snapshot.TransactionCount);
         }
 
         /// <summary>

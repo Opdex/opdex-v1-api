@@ -127,8 +127,7 @@ namespace Opdex.Platform.Domain.Models.Markets
                 throw new Exception("Only daily liquidity snapshots can be used.");
             }
 
-            if (poolSnapshot.StartDate.Date != StartDate.Date ||
-                poolSnapshot.EndDate.Date != EndDate.Date)
+            if (poolSnapshot.StartDate.Date != StartDate.Date || poolSnapshot.EndDate.Date != EndDate.Date)
             {
                 throw new Exception("Market and liquidity pool snapshot dates do not match.");
             }

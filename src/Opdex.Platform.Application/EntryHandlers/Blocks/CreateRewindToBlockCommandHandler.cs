@@ -24,6 +24,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
     {
         private readonly IMediator _mediator;
         private readonly ILogger<CreateRewindToBlockCommandHandler> _logger;
+        // Devnet averages 450-500 blocks per minute
+        private const ulong MaxRewind = 10_800; // 48 hours - being generous at first, will take ~20 minutes to rewind
 
         public CreateRewindToBlockCommandHandler(IMediator mediator, ILogger<CreateRewindToBlockCommandHandler> logger)
         {
@@ -33,16 +35,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
         public async Task<bool> Handle(CreateRewindToBlockCommand request, CancellationToken cancellationToken)
         {
-            // Todo: Consider a MaxRewind limit to protect from accidental triggers from `index/rewind`.
-            // MaxRewind could potentially create a future problem if it is not limited to the endpoint and
-            // a real rewind is larger than our set maximum limit.
-
             // Ensure the rewind block exists
-            var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.Block, false), cancellationToken);
-            if (block == null) throw new InvalidDataException(nameof(block), "Unable to find a block by the provided block number.");
+            var rewindBlock = await _mediator.Send(new RetrieveBlockByHeightQuery(request.Block, false), cancellationToken);
+            if (rewindBlock == null) throw new InvalidDataException(nameof(rewindBlock), "Unable to find a block by the provided block number.");
+
+            // Get current block and verify that the rewind does not exceed the max limit
+            var currentBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
+            if (currentBlock.Height - rewindBlock.Height > MaxRewind) throw new Exception("Rewind request exceeds maximum rewind limit.");
 
             var rewound = await _mediator.Send(new MakeRewindToBlockCommand(request.Block));
-            // If delete fails, return immediately
             if (!rewound) return false;
 
             _logger.LogTrace("Beginning to refresh stale records.");

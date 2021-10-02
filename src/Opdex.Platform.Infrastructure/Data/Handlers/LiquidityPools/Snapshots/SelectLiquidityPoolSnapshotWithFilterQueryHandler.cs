@@ -27,10 +27,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots
             WHERE {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
                 AND
                     (
-                        @{nameof(SqlParams.Date)} BETWEEN
-                            {nameof(LiquidityPoolSnapshotEntity.StartDate)} AND {nameof(LiquidityPoolSnapshotEntity.EndDate)}
+                        (@{nameof(SqlParams.DateTime)} BETWEEN {nameof(LiquidityPoolSnapshotEntity.StartDate)} AND {nameof(LiquidityPoolSnapshotEntity.EndDate)})
                         OR
-                        @{nameof(SqlParams.Date)} > {nameof(LiquidityPoolSnapshotEntity.EndDate)}
+                        @{nameof(SqlParams.DateTime)} > {nameof(LiquidityPoolSnapshotEntity.EndDate)}
                     )
                 AND {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}
             ORDER BY {nameof(LiquidityPoolSnapshotEntity.EndDate)} DESC
@@ -47,28 +46,28 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots
 
         public async Task<LiquidityPoolSnapshot> Handle(SelectLiquidityPoolSnapshotWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var queryParams = new SqlParams(request.LiquidityPoolId, request.Date, (int)request.SnapshotType);
+            var queryParams = new SqlParams(request.LiquidityPoolId, request.DateTime, (int)request.SnapshotType);
 
             var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
 
             var result = await _context.ExecuteFindAsync<LiquidityPoolSnapshotEntity>(query);
 
             return result == null
-                ? new LiquidityPoolSnapshot(request.LiquidityPoolId, request.SnapshotType, request.Date)
+                ? new LiquidityPoolSnapshot(request.LiquidityPoolId, request.SnapshotType, request.DateTime)
                 : _mapper.Map<LiquidityPoolSnapshot>(result);
         }
 
         private sealed class SqlParams
         {
-            internal SqlParams(long liquidityPoolId, DateTime date, int snapshotType)
+            internal SqlParams(long liquidityPoolId, DateTime dateTime, int snapshotType)
             {
                 LiquidityPoolId = liquidityPoolId;
-                Date = date;
+                DateTime = dateTime;
                 SnapshotTypeId = snapshotType;
             }
 
             public long LiquidityPoolId { get; }
-            public DateTime Date { get; }
+            public DateTime DateTime { get; }
             public int SnapshotTypeId { get; }
         }
     }
