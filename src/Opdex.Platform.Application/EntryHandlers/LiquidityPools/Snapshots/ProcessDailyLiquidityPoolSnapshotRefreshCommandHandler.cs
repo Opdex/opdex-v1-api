@@ -2,7 +2,9 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
+using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
+using Opdex.Platform.Domain.Models.LiquidityPools;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,15 +27,9 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                                                                                                    request.BlockTime,
                                                                                                    request.SnapshotType));
 
-
-
             // Process new token snapshot
-            var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(request.MarketId,
-                                                                                 request.SrcToken,
-                                                                                 request.SnapshotType,
-                                                                                 request.BlockTime,
-                                                                                 request.CrsUsd,
-                                                                                 lpSnapshot.Reserves.Crs,
+            var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(request.MarketId, request.SrcToken, request.SnapshotType,
+                                                                                 request.BlockTime, request.CrsUsd, lpSnapshot.Reserves.Crs,
                                                                                  lpSnapshot.Reserves.Src));
 
             // When processing a liquidity pool of a staking token, use the srcUsd value instead.
@@ -47,17 +43,14 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
             }
             else // refresh existing snapshot USD amounts
             {
-                lpSnapshot.RefreshSnapshot(request.CrsUsd, srcUsd, stakingUsd, request.SrcToken.Sats);
+                lpSnapshot.RefreshSnapshotFiatAmounts(request.CrsUsd, srcUsd, stakingUsd, request.SrcToken.Sats);
             }
 
-            await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(lpSnapshot));
+            await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(lpSnapshot, request.BlockHeight));
 
             // Process latest lp token snapshot
-            var lptUsd = await _mediator.Send(new ProcessLpTokenSnapshotCommand(request.MarketId,
-                                                                                request.LpToken,
-                                                                                lpSnapshot.Reserves.Usd,
-                                                                                request.SnapshotType,
-                                                                                request.BlockTime));
+            var lptUsd = await _mediator.Send(new ProcessLpTokenSnapshotCommand(request.MarketId, request.LpToken, lpSnapshot.Reserves.Usd,
+                                                                                request.SnapshotType, request.BlockTime));
 
             return Unit.Value;
         }

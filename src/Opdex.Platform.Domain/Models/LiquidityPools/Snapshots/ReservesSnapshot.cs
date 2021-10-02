@@ -3,6 +3,8 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 {
@@ -12,7 +14,14 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         {
             Crs = 0;
             Src = UInt256.Zero;
-            Usd = 0.00m;
+            Usd = 0.00000000m;
+        }
+
+        public ReservesSnapshot(ReservesSnapshot snapshots)
+        {
+            Crs = snapshots.Crs;
+            Src = snapshots.Src;
+            Usd = snapshots.Usd;
         }
 
         public ReservesSnapshot(ulong reserveCrs, UInt256 reserveSrc, decimal reserveUsd)

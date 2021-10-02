@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
@@ -30,8 +29,6 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
-        // Todo: try catch with retry external from polly for 400 Bad Requests based on flag
-        // (incase transaction has not been included in block yet)
         public async Task<Transaction> Handle(CallCirrusGetTransactionByHashQuery request, CancellationToken cancellationToken)
         {
             var transaction = await _smartContractsModule.GetReceiptAsync(request.TxHash, cancellationToken);
@@ -39,7 +36,10 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
 
             transaction.SetBlockHeight(block.Height);
 
-            var transactionLogs = transaction.Logs.Select(t => _mapper.Map<TransactionLog>(t)).ToList();
+            var transactionLogs = transaction.Logs.Select((t, i) => {
+                t.SortOrder = i;
+                return _mapper.Map<TransactionLog>(t);
+            }).ToList();
 
             if (!string.IsNullOrEmpty(transaction.Error))
             {

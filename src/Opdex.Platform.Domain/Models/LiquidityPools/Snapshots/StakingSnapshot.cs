@@ -11,7 +11,13 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         public StakingSnapshot()
         {
             Weight = 0;
-            Usd = 0.00m;
+            Usd = 0.00000000m;
+        }
+
+        public StakingSnapshot(StakingSnapshot snapshot)
+        {
+            Weight = snapshot.Weight;
+            Usd = snapshot.Usd;
         }
 
         public StakingSnapshot(UInt256 stakingWeight, decimal stakingUsd)

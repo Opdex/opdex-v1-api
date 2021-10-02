@@ -18,8 +18,8 @@ namespace Opdex.Platform.Domain.Models.Tokens
         }
 
         public ulong BlockHeight { get; }
-        public string? Name { get; private set; }
-        public string? Symbol { get; private set; }
+        public string Name { get; private set; }
+        public string Symbol { get; private set; }
         public uint? Decimals { get; private set; }
         public ulong? Sats { get; private set; }
         public bool? IsLpt { get; private set; }

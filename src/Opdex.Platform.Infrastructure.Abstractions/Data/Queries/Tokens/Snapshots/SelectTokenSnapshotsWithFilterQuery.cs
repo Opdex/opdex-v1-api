@@ -7,15 +7,30 @@ using Opdex.Platform.Domain.Models.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots
 {
+    /// <summary>
+    /// Selects token snapshots by a token and its market, their type and date range else an empty list.
+    /// </summary>
     public class SelectTokenSnapshotsWithFilterQuery : IRequest<IEnumerable<TokenSnapshot>>
     {
+        /// <summary>
+        /// Create the select token snapshots with filter query.
+        /// </summary>
+        /// <param name="tokenId">The token id of snapshots to find.</param>
+        /// <param name="marketId">The market id of snapshots to find.</param>
+        /// <param name="startDate">The start date, earliest snapshot to find.</param>
+        /// <param name="endDate">The end date, latest snapshot to find.</param>
+        /// <param name="snapshotType">The type of snapshots requested, CRS is minute/hourly/daily, SRC is hourly/daily.</param>
         public SelectTokenSnapshotsWithFilterQuery(long tokenId, long marketId, DateTime startDate, DateTime endDate, SnapshotType snapshotType)
         {
-            // NOTE: skip marketId check, 0 is valid for CRS or potential global token averages
-
             if (tokenId < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(tokenId));
+            }
+
+            // 0 is valid
+            if (marketId < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(marketId), "Market id must be greater or equal to zero.");
             }
 
             if (startDate.Equals(default))

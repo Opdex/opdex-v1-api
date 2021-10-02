@@ -8,7 +8,6 @@ using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
-using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
@@ -63,16 +62,13 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                 {
                     var stakingTokenId = market.StakingTokenId.GetValueOrDefault();
 
-                    var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(stakingTokenId,
-                                                                                                             liquidityPool.MarketId,
-                                                                                                             blockTime,
-                                                                                                             SnapshotType.Hourly));
+                    var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(stakingTokenId, liquidityPool.MarketId,
+                                                                                                             blockTime, SnapshotType.Hourly));
 
                     // Update a stale snapshot if it is older than what was requested
                     if (stakingTokenSnapshot.EndDate < blockTime)
                     {
-                        var stakingTokenPool = await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(stakingTokenId,
-                                                                                                                          market.Id));
+                        var stakingTokenPool = await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(stakingTokenId, market.Id));
 
                         var stakingTokenPoolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(stakingTokenPool.Id,
                                                                                                                              stakingTokenSnapshot.EndDate,
@@ -92,18 +88,12 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                 foreach (var snapshotType in request.SnapshotTypes)
                 {
                     // Retrieves the snapshot in range, the most recent one prior, or a newly instantiated snapshot
-                    var snapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id,
-                                                                                                                      blockTime,
-                                                                                                                      snapshotType));
+                    var snapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id, blockTime, snapshotType));
                     // Update a stale snapshot if it is older than what was requested
                     if (snapshot.EndDate < blockTime)
                     {
-                        var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(liquidityPool.MarketId,
-                                                                                             srcToken,
-                                                                                             snapshotType,
-                                                                                             snapshot.EndDate,
-                                                                                             crsUsd,
-                                                                                             snapshot.Reserves.Crs,
+                        var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(liquidityPool.MarketId, srcToken, snapshotType,
+                                                                                             snapshot.EndDate, crsUsd, snapshot.Reserves.Crs,
                                                                                              snapshot.Reserves.Src));
 
                         snapshot.ResetStaleSnapshot(crsUsd, srcUsd, stakingTokenUsd, srcToken.Sats, blockTime);
@@ -119,58 +109,36 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                             var reservesLog = (ReservesLog)poolLog;
 
                             // Process SRC Token Snapshot
-                            var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(liquidityPool.MarketId,
-                                                                                                 srcToken,
-                                                                                                 snapshotType,
-                                                                                                 blockTime,
-                                                                                                 crsUsd,
-                                                                                                 reservesLog.ReserveCrs,
+                            var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(liquidityPool.MarketId, srcToken, snapshotType,
+                                                                                                 blockTime, crsUsd, reservesLog.ReserveCrs,
                                                                                                  reservesLog.ReserveSrc));
 
                             // Process Reserves and Token Pricing Snapshot
                             snapshot.ProcessReservesLog(reservesLog, crsUsd, srcUsd, srcToken.Sats);
 
                             // Process LP Token Snapshot
-                            await _mediator.Send(new ProcessLpTokenSnapshotCommand(liquidityPool.MarketId,
-                                                                                   lpToken,
-                                                                                   snapshot.Reserves.Usd,
-                                                                                   snapshotType,
-                                                                                   blockTime));
+                            await _mediator.Send(new ProcessLpTokenSnapshotCommand(liquidityPool.MarketId, lpToken, snapshot.Reserves.Usd,
+                                                                                   snapshotType, blockTime));
                         }
                         else if (poolLog.LogType == TransactionLogType.SwapLog)
                         {
-                            var srcSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(srcToken.Id,
-                                                                                                            market.Id,
-                                                                                                            blockTime,
-                                                                                                            SnapshotType.Hourly));
-
+                            var srcSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(srcToken.Id, market.Id,
+                                                                                                            blockTime, SnapshotType.Hourly));
                             // Process Volume of a Swap
                             snapshot.ProcessSwapLog((SwapLog)poolLog, crsUsd, srcSnapshot.Price.Close, srcToken.Sats,
-                                                                 market.IsStakingMarket, market.TransactionFee, market.MarketFeeEnabled);
+                                                    market.IsStakingMarket, market.TransactionFee, market.MarketFeeEnabled);
                         }
-                        else if (poolLog.LogType == TransactionLogType.StartStakingLog || poolLog.LogType == TransactionLogType.StopStakingLog)
+                        else if (poolLog.LogType == TransactionLogType.StartStakingLog ||
+                                 poolLog.LogType == TransactionLogType.StopStakingLog)
                         {
                             // Process Staking Weight
                             snapshot.ProcessStakingLog((StakeLog)poolLog, stakingTokenUsd);
                         }
                     }
 
-                    // Todo: Consider persisting which TxHashes or another identifier of which transactions have been included.
                     snapshot.IncrementTransactionCount();
 
-                    // Only update the summary on the daily snapshot
-                    if (snapshotType == SnapshotType.Daily)
-                    {
-                        var summary = await _mediator.Send(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(liquidityPool.Id, false));
-
-                        summary ??= new LiquidityPoolSummary(liquidityPool.Id, block.Height);
-
-                        summary.Update(snapshot, block.Height);
-
-                        await _mediator.Send(new MakeLiquidityPoolSummaryCommand(summary));
-                    }
-
-                    await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(snapshot));
+                    await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(snapshot, block.Height));
                 }
             }
 

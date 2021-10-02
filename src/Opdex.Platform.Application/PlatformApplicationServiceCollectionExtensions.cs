@@ -250,6 +250,7 @@ namespace Opdex.Platform.Application
         {
             // Indexer
             services.AddTransient<IRequestHandler<ProcessDailySnapshotRefreshCommand, Unit>, ProcessDailySnapshotRefreshCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindSnapshotsCommand, bool>, CreateRewindSnapshotsCommandHandler>();
 
             // Deployments
             services.AddTransient<IRequestHandler<ProcessCoreDeploymentTransactionCommand, Unit>, ProcessCoreDeploymentTransactionCommandHandler>();
@@ -296,6 +297,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateStartStakingTransactionQuoteCommand, TransactionQuoteDto>, CreateStartStakingTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateStopStakingTransactionQuoteCommand, TransactionQuoteDto>, CreateStopStakingTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateCollectStakingRewardsTransactionQuoteCommand, TransactionQuoteDto>, CreateCollectStakingRewardsTransactionQuoteCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindLiquidityPoolDailySnapshotCommand, bool>, CreateRewindLiquidityPoolDailySnapshotCommandHandler>();
 
             // Mining Pools
             services.AddTransient<IRequestHandler<CreateStartMiningTransactionQuoteCommand, TransactionQuoteDto>, CreateStartMiningTransactionQuoteCommandHandler>();
@@ -333,6 +335,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateRewindStakingPositionsCommand, bool>, CreateRewindStakingPositionsCommandHandler>();
             services.AddTransient<IRequestHandler<CreateAddressBalanceCommand, long>, CreateAddressBalanceCommandHandler>();
             services.AddTransient<IRequestHandler<CreateTokenCommand, long>, CreateTokenCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateRewindTokenDailySnapshotCommand, bool>, CreateRewindTokenDailySnapshotCommandHandler>();
 
             // Transaction Log Processors
             services.AddTransient<IRequestHandler<ProcessCreateLiquidityPoolLogCommand, bool>, ProcessCreateLiquidityPoolLogCommandHandler>();
@@ -371,11 +374,12 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveAdminByAddressQuery, Admin>, RetrieveAdminByAddressQueryHandler>();
 
             // Blocks
-            services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, Block>, RetrieveLatestBlockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusCurrentBlockQuery, BlockReceipt>, RetrieveCirrusCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusBlockByHashQuery, BlockReceipt>, RetrieveCirrusBlockByHashQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveBlockByHeightQuery, Block>, RetrieveBlockByHeightQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusBlockHashByHeightQuery, string>, RetrieveCirrusBlockHashByHeightQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveBlockByMedianTimeQuery, Block>, RetrieveBlockByMedianTimeQueryHandler>();
 
             // Deployers
             services.AddTransient<IRequestHandler<RetrieveActiveDeployerQuery, Deployer>, RetrieveActiveDeployerQueryHandler>();

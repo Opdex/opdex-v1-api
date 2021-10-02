@@ -5,9 +5,20 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Snapshots
 {
+    /// <summary>
+    /// Select a single liquidity pool snapshot of specified type. Returns a matching record by dateTime and type from the database else the most
+    /// recent record by type. If nothing is found, will return a new snapshot instance.
+    /// </summary>
     public class SelectLiquidityPoolSnapshotWithFilterQuery : IRequest<LiquidityPoolSnapshot>
     {
-        public SelectLiquidityPoolSnapshotWithFilterQuery(long liquidityPoolId, DateTime date, SnapshotType snapshotType)
+        /// <summary>
+        /// Create the select liquidity pool snapshot with filter query.
+        /// </summary>
+        /// <param name="liquidityPoolId">The liquidity pool id to get the snapshot of.</param>
+        /// <param name="dateTime">The date to get the snapshot of.</param>
+        /// <param name="snapshotType"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public SelectLiquidityPoolSnapshotWithFilterQuery(long liquidityPoolId, DateTime dateTime, SnapshotType snapshotType)
         {
             if (liquidityPoolId < 1)
             {
@@ -15,12 +26,12 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
             }
 
             LiquidityPoolId = liquidityPoolId;
-            Date = date;
+            DateTime = dateTime;
             SnapshotType = snapshotType;
         }
 
         public long LiquidityPoolId { get; }
-        public DateTime Date { get; }
+        public DateTime DateTime { get; }
         public SnapshotType SnapshotType { get; }
     }
 }

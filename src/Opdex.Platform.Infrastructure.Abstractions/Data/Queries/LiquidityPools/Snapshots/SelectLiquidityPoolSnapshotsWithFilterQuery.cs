@@ -7,8 +7,18 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Snapshots
 {
+    /// <summary>
+    /// Select liquidity pool snapshots by the associated liquidity pool id, a date range and snapshot type.
+    /// </summary>
     public class SelectLiquidityPoolSnapshotsWithFilterQuery: IRequest<IEnumerable<LiquidityPoolSnapshot>>
     {
+        /// <summary>
+        /// Constructor to create the select liquidity pool snapshots with filter query.
+        /// </summary>
+        /// <param name="poolId">The liquidity pool id of snapshots to find.</param>
+        /// <param name="startDate">The start date, earliest snapshot to find.</param>
+        /// <param name="endDate">The end date, latest snapshot to find.</param>
+        /// <param name="snapshotType">The type of snapshots to return, hourly/daily options.</param>
         public SelectLiquidityPoolSnapshotsWithFilterQuery(long poolId, DateTime startDate, DateTime endDate, SnapshotType snapshotType)
         {
             if (poolId < 1)

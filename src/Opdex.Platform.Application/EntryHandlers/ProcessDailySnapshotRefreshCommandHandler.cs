@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryCommands;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
@@ -28,7 +27,7 @@ namespace Opdex.Platform.Application.EntryHandlers
 
         public async Task<Unit> Handle(ProcessDailySnapshotRefreshCommand request, CancellationToken cancellationToken)
         {
-            var blockTime = request.Blocktime.ToStartOf(SnapshotType.Daily);
+            var blockTime = request.BlockTime.ToStartOf(SnapshotType.Daily);
             var snapshotTypes = new List<SnapshotType> {SnapshotType.Hourly, SnapshotType.Daily};
 
             var markets = await _mediator.Send(new RetrieveAllMarketsQuery());
@@ -58,8 +57,9 @@ namespace Opdex.Platform.Application.EntryHandlers
 
                     foreach (var snapshotType in snapshotTypes)
                     {
-                        await _mediator.Send(new ProcessDailyLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, stakingToken,
-                                                                                                 lpToken, request.CrsUsd, snapshotType, blockTime));
+                        await _mediator.Send(new ProcessDailyLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, stakingToken, lpToken,
+                                                                                                 request.CrsUsd, snapshotType, blockTime,
+                                                                                                 request.BlockHeight));
                     }
 
                     var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(stakingToken.Id, market.Id,
@@ -70,8 +70,7 @@ namespace Opdex.Platform.Application.EntryHandlers
                 // Every pool excluding the staking token and it's liquidity pool
                 foreach(var liquidityPool in marketPools.Where(mp => mp.SrcTokenId != market.StakingTokenId))
                 {
-                    if (!tokens.TryGetValue(liquidityPool.SrcTokenId, out var srcToken) ||
-                        !tokens.TryGetValue(liquidityPool.LpTokenId, out var lpToken))
+                    if (!tokens.TryGetValue(liquidityPool.SrcTokenId, out var srcToken) || !tokens.TryGetValue(liquidityPool.LpTokenId, out var lpToken))
                     {
                         continue;
                     }
@@ -79,7 +78,8 @@ namespace Opdex.Platform.Application.EntryHandlers
                     foreach (var snapshotType in snapshotTypes)
                     {
                         await _mediator.Send(new ProcessDailyLiquidityPoolSnapshotRefreshCommand(liquidityPool.Id, market.Id, srcToken, lpToken,
-                                                                                                 request.CrsUsd, snapshotType, blockTime, stakingTokenUsd));
+                                                                                                 request.CrsUsd, snapshotType, blockTime,
+                                                                                                 request.BlockHeight, stakingTokenUsd));
                     }
                 }
 

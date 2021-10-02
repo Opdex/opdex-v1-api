@@ -40,7 +40,11 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
                 error = errorProcessor.ProcessOpdexTransactionError(response.ErrorMessage.Value);
             }
 
-            var transactionLogs = response.Logs.Select(t => _mapper.Map<TransactionLog>(t)).ToList();
+            var transactionLogs = response.Logs.Select((t, i) =>
+            {
+                t.SortOrder = i;
+                return _mapper.Map<TransactionLog>(t);
+            }).ToList();
 
             return new TransactionQuote(response.Return, error, response.GasConsumed.Value, transactionLogs, request.QuoteRequest);
         }

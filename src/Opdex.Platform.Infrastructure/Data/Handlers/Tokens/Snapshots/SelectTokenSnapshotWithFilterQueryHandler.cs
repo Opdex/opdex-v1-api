@@ -26,9 +26,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
                 {nameof(TokenSnapshotEntity.TokenId)} = @{nameof(SqlParams.TokenId)} AND
                 {nameof(TokenSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)} AND
                 (
-                    @{nameof(SqlParams.Date)} BETWEEN {nameof(TokenSnapshotEntity.StartDate)} AND {nameof(TokenSnapshotEntity.EndDate)}
-                    OR
-                    @{nameof(SqlParams.Date)} > {nameof(TokenSnapshotEntity.EndDate)}
+                    (@{nameof(SqlParams.DateTime)} BETWEEN {nameof(TokenSnapshotEntity.StartDate)} AND {nameof(TokenSnapshotEntity.EndDate)})
+                    OR @{nameof(SqlParams.DateTime)} > {nameof(TokenSnapshotEntity.EndDate)}
                 )
                 AND {nameof(TokenSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}
             ORDER BY {nameof(TokenSnapshotEntity.EndDate)} DESC
@@ -57,17 +56,17 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
 
         private sealed class SqlParams
         {
-            internal SqlParams(long tokenId, long marketId, DateTime date, int snapshotType)
+            internal SqlParams(long tokenId, long marketId, DateTime dateTime, int snapshotType)
             {
                 TokenId = tokenId;
                 MarketId = marketId;
-                Date = date;
+                DateTime = dateTime;
                 SnapshotTypeId = snapshotType;
             }
 
             public long TokenId { get; }
             public long MarketId { get; }
-            public DateTime Date { get; }
+            public DateTime DateTime { get; }
             public int SnapshotTypeId { get; }
         }
     }

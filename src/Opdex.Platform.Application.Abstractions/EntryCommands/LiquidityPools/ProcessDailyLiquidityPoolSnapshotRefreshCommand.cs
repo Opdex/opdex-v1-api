@@ -9,7 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
     public class ProcessDailyLiquidityPoolSnapshotRefreshCommand : IRequest<Unit>
     {
         public ProcessDailyLiquidityPoolSnapshotRefreshCommand(long liquidityPoolId, long marketId, Token srcToken, Token lpToken, decimal crsUsd,
-                                                               SnapshotType snapshotType, DateTime blockTime, decimal? stakingTokenUsd = null)
+                                                               SnapshotType snapshotType, DateTime blockTime, ulong blockHeight, decimal? stakingTokenUsd = null)
         {
             if (liquidityPoolId < 1)
             {
@@ -46,6 +46,11 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
                 throw new ArgumentOutOfRangeException(nameof(blockTime), $"{nameof(blockTime)} must be a valid date time.");
             }
 
+            if (blockHeight == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
+            }
+
             LiquidityPoolId = liquidityPoolId;
             MarketId = marketId;
             SrcToken = srcToken;
@@ -53,6 +58,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
             CrsUsd = crsUsd;
             SnapshotType = snapshotType;
             BlockTime = blockTime;
+            BlockHeight = blockHeight;
             StakingTokenUsd = stakingTokenUsd;
         }
 
@@ -63,6 +69,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
         public decimal CrsUsd { get; }
         public SnapshotType SnapshotType { get; }
         public DateTime BlockTime { get; }
+        public ulong BlockHeight { get; }
         public decimal? StakingTokenUsd { get; }
     }
 }
