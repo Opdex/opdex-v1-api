@@ -1,10 +1,9 @@
-using MediatR;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Common.Queries;
+using Opdex.Platform.Domain.Models.Blocks;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Blocks
 {
-    public class RetrieveLatestBlockQuery : FindQuery<BlockDto>
+    public class RetrieveLatestBlockQuery : FindQuery<Block>
     {
         public RetrieveLatestBlockQuery(bool findOrThrow = true) : base(findOrThrow)
         {

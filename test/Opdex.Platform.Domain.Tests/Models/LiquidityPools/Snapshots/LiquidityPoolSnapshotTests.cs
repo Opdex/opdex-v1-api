@@ -423,9 +423,13 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         {
             // Arrange
             var snapshot = new LiquidityPoolSnapshot(1, type, DateTime.UtcNow);
+            var hourlySnapshots = new List<LiquidityPoolSnapshot>
+            {
+                new LiquidityPoolSnapshot(1, type, DateTime.Today)
+            };
 
             // Act
-            void Act() => snapshot.RewindDailySnapshot(new List<LiquidityPoolSnapshot>());
+            void Act() => snapshot.RewindDailySnapshot(hourlySnapshots);
 
             // Assert
             Assert.Throws<Exception>(Act).Message.Should().Contain("Only daily snapshots can be rewound.");

@@ -374,7 +374,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveAdminByAddressQuery, Admin>, RetrieveAdminByAddressQueryHandler>();
 
             // Blocks
-            services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, BlockDto>, RetrieveLatestBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, Block>, RetrieveLatestBlockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusCurrentBlockQuery, BlockReceipt>, RetrieveCirrusCurrentBlockQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusBlockByHashQuery, BlockReceipt>, RetrieveCirrusBlockByHashQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveBlockByHeightQuery, Block>, RetrieveBlockByHeightQueryHandler>();

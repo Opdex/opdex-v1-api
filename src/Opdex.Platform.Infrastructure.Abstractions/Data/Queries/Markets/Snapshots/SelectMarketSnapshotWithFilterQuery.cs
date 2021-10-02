@@ -17,7 +17,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Snapsh
         /// <param name="marketId">The market id to get a snapshot of.</param>
         /// <param name="dateTime">The datetime to get the snapshot of.</param>
         /// <param name="snapshotType">The snapshot type - currently only daily is enabled.</param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public SelectMarketSnapshotWithFilterQuery(long marketId, DateTime dateTime, SnapshotType snapshotType)
         {
             if (marketId < 1)

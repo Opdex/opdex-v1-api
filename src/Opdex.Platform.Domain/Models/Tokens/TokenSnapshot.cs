@@ -15,7 +15,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
         {
             if (tokenId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(marketId), "TOken id must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(marketId), "Token id must be greater than 0.");
             }
 
             if (!snapshotType.IsValid())

@@ -4,7 +4,6 @@ using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Controllers;
-using Opdex.Platform.WebApi.Models;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -14,17 +13,15 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.IndexControllerTests
     public class LastSyncedBlockTests
     {
         private readonly Mock<IMediator> _mediator;
-        private readonly Mock<IApplicationContext> _context;
         private readonly IndexController _controller;
 
         public LastSyncedBlockTests()
         {
             _mediator = new Mock<IMediator>();
-            _context = new Mock<IApplicationContext>();
 
             var opdexConfiguration = new OpdexConfiguration {Network = NetworkType.DEVNET};
 
-            _controller = new IndexController(_mediator.Object, opdexConfiguration, _context.Object);
+            _controller = new IndexController(_mediator.Object, opdexConfiguration);
         }
 
         [Fact]

@@ -55,9 +55,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
         {
             var command = DatabaseQuery.Create(QueryBuilder(request), new SqlParams(request.MarketId, request.Pools), cancellationToken);
 
-            var tokenEntities = await _context.ExecuteQueryAsync<LiquidityPoolEntity>(command);
+            var results = await _context.ExecuteQueryAsync<LiquidityPoolEntity>(command);
 
-            return _mapper.Map<IEnumerable<LiquidityPool>>(tokenEntities);
+            return _mapper.Map<IEnumerable<LiquidityPool>>(results);
         }
 
         private static string QueryBuilder(SelectLiquidityPoolsWithFilterQuery request)
@@ -144,13 +144,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
 
             return sortRequest switch
             {
-                "Liquidity" => string.Format(baseSort, "Reserves.Usd", orderRequest),
-                "Volume" => string.Format(baseSort, "Volume.Usd", orderRequest),
-                "StakingWeight" => string.Format(baseSort, "Staking.Weight", orderRequest),
-                "StakingUsd" => string.Format(baseSort, "Staking.Usd", orderRequest),
+                "Liquidity" => string.Format(baseSort, "reserves.usd", orderRequest),
+                "Volume" => string.Format(baseSort, "volume.usd", orderRequest),
+                "StakingWeight" => string.Format(baseSort, "staking.weight", orderRequest),
+                "StakingUsd" => string.Format(baseSort, "staking.usd", orderRequest),
                 // Todo: Consider persisting the TotalRewards for this sort
-                "ProviderRewards" => string.Format(baseSort, "Rewards.ProviderUsd", orderRequest),
-                "MarketRewards" => string.Format(baseSort, "Rewards.MarketUsd", orderRequest),
+                "ProviderRewards" => string.Format(baseSort, "rewards.providerUsd", orderRequest),
+                "MarketRewards" => string.Format(baseSort, "rewards.marketUsd", orderRequest),
                 _ => throw new ArgumentOutOfRangeException(nameof(sortRequest), "Invalid liquidity pool sort type.")
             };
         }

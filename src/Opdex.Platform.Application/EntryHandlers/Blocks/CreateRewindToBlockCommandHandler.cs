@@ -41,7 +41,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
             // Get current block and verify that the rewind does not exceed the max limit
             var currentBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
-            if (currentBlock.Height - rewindBlock.Height > MaxRewind) throw new Exception("Rewind request exceeds maximum rewind limit.");
+            if (currentBlock.Height - rewindBlock.Height > MaxRewind)
+            {
+                throw new ArgumentOutOfRangeException(nameof(request.Block), "Rewind request exceeds maximum rewind limit.");
+            }
 
             var rewound = await _mediator.Send(new MakeRewindToBlockCommand(request.Block));
             if (!rewound) return false;
