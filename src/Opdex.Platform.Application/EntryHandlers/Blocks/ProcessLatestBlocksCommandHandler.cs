@@ -24,7 +24,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
     {
         private readonly IMediator _mediator;
         private readonly ILogger<ProcessLatestBlocksCommandHandler> _logger;
-
+        private const int MaxReorg = 200;
         public ProcessLatestBlocksCommandHandler(IMediator mediator, ILogger<ProcessLatestBlocksCommandHandler> logger)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -38,23 +38,27 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                 // The latest synced block we have, if we don't have any, the tip of Cirrus chain, else null
                 var bestBlock = await _mediator.Send(new GetBestBlockQuery(), cancellationToken);
 
-                // Rewind when applicable
+                // Rewind when applicable, would mean our latest synced block cannot be found at the FN by block hash
                 if (bestBlock == null)
                 {
+                    // Get our latest synced block from the database and attempt to retrieve it again from the FN
                     var dbLatestBlock = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: true));
-                    var commonCirrusBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
+                    bestBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
 
-                    while (commonCirrusBlock == null)
+                    // Walk backward through our database blocks until we find one that can be found at the FN
+                    int reorgLength = 0;
+                    while (bestBlock == null && reorgLength < MaxReorg)
                     {
                         dbLatestBlock = await _mediator.Send(new RetrieveBlockByHeightQuery(dbLatestBlock.Height - 1));
-                        commonCirrusBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
+                        bestBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
+                        if (bestBlock == null) reorgLength++;
                     }
 
-                    var rewound = await _mediator.Send(new CreateRewindToBlockCommand(commonCirrusBlock.Height));
-                    if (!rewound) throw new Exception($"Failure rewinding database to block height: {commonCirrusBlock.Height}");
+                    if (bestBlock == null) throw new MaximumReorgException();
 
-                    bestBlock = await _mediator.Send(new GetBestBlockQuery());
-                    if (bestBlock == null) throw new Exception("Rewound database and still cannot find matching best block.");
+                    // Rewind our data back to the latest matching block
+                    var rewound = await _mediator.Send(new CreateRewindToBlockCommand(bestBlock.Height));
+                    if (!rewound) throw new Exception($"Failure rewinding database to block height: {bestBlock.Height}");
                 }
 
                 // Process each block until we reach the chain tip
@@ -107,10 +111,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                     bestBlock = currentBlock;
                 }
             }
-            // Not Found exception may not be specific enough, might want a unique exception related to not found block.
-            catch (NotFoundException ex)
+            catch (MaximumReorgException ex)
             {
-                _logger.LogWarning(ex, "Unable to find best block, attempting rewind");
+                _logger.LogCritical(ex, "Maximum reorg limit reached");
             }
             catch (Exception ex)
             {

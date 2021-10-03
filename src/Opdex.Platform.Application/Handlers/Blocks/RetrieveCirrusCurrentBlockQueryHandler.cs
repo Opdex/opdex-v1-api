@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Handlers.Blocks
 
         public Task<BlockReceipt> Handle(RetrieveCirrusCurrentBlockQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new CallCirrusGetCurrentBlockQuery(), cancellationToken);
+            return _mediator.Send(new CallCirrusGetBestBlockReceiptQuery(), cancellationToken);
         }
     }
 }

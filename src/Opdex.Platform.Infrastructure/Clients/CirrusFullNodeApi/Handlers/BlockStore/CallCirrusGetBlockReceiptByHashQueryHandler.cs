@@ -11,19 +11,19 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.BlockStore
 {
-    public class CallCirrusGetBlockByHashQueryHandler : IRequestHandler<CallCirrusGetBlockByHashQuery, BlockReceipt>
+    public class CallCirrusGetBlockReceiptByHashQueryHandler : IRequestHandler<CallCirrusGetBlockReceiptByHashQuery, BlockReceipt>
     {
         private readonly IBlockStoreModule _blockStoreModule;
-        private readonly ILogger<CallCirrusGetBlockByHashQueryHandler> _logger;
+        private readonly ILogger<CallCirrusGetBlockReceiptByHashQueryHandler> _logger;
 
-        public CallCirrusGetBlockByHashQueryHandler(IBlockStoreModule blockStoreModule,
-            ILogger<CallCirrusGetBlockByHashQueryHandler> logger)
+        public CallCirrusGetBlockReceiptByHashQueryHandler(IBlockStoreModule blockStoreModule,
+            ILogger<CallCirrusGetBlockReceiptByHashQueryHandler> logger)
         {
             _blockStoreModule = blockStoreModule ?? throw new ArgumentNullException(nameof(blockStoreModule));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<BlockReceipt> Handle(CallCirrusGetBlockByHashQuery request, CancellationToken cancellationToken)
+        public async Task<BlockReceipt> Handle(CallCirrusGetBlockReceiptByHashQuery request, CancellationToken cancellationToken)
         {
             const string notFound = "Block by hash not found.";
 
