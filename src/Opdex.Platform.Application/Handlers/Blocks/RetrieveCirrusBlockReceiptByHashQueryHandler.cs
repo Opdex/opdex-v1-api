@@ -8,18 +8,18 @@ using Opdex.Platform.Domain.Models.Blocks;
 
 namespace Opdex.Platform.Application.Handlers.Blocks
 {
-    public class RetrieveCirrusCurrentBlockQueryHandler : IRequestHandler<RetrieveCirrusCurrentBlockQuery, BlockReceipt>
+    public class RetrieveCirrusBlockReceiptByHashQueryHandler : IRequestHandler<RetrieveCirrusBlockReceiptByHashQuery, BlockReceipt>
     {
         private readonly IMediator _mediator;
 
-        public RetrieveCirrusCurrentBlockQueryHandler(IMediator mediator)
+        public RetrieveCirrusBlockReceiptByHashQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<BlockReceipt> Handle(RetrieveCirrusCurrentBlockQuery request, CancellationToken cancellationToken)
+        public Task<BlockReceipt> Handle(RetrieveCirrusBlockReceiptByHashQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new CallCirrusGetBestBlockReceiptQuery(), cancellationToken);
+            return _mediator.Send(new CallCirrusGetBlockReceiptByHashQuery(request.Hash, request.FindOrThrow), cancellationToken);
         }
     }
 }

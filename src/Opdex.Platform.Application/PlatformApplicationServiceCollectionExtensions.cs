@@ -236,7 +236,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetStakingPositionsWithFilterQuery, StakingPositionsDto>, GetStakingPositionsWithFilterQueryHandler>();
 
             // Blocks
-            services.AddTransient<IRequestHandler<GetBestBlockQuery, BlockReceipt>, GetBestBlockQueryHandler>();
+            services.AddTransient<IRequestHandler<GetBestBlockReceiptQuery, BlockReceipt>, GetBestBlockReceiptQueryHandler>();
 
             // Transactions
             services.AddTransient<IRequestHandler<GetTransactionsWithFilterQuery, TransactionsDto>, GetTransactionsWithFilterQueryHandler>();
@@ -371,8 +371,8 @@ namespace Opdex.Platform.Application
 
             // Blocks
             services.AddTransient<IRequestHandler<RetrieveLatestBlockQuery, Block>, RetrieveLatestBlockQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveCirrusCurrentBlockQuery, BlockReceipt>, RetrieveCirrusCurrentBlockQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveCirrusBlockByHashQuery, BlockReceipt>, RetrieveCirrusBlockByHashQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveCirrusBestBlockReceiptQuery, BlockReceipt>, RetrieveCirrusBestBlockReceiptQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveCirrusBlockReceiptByHashQuery, BlockReceipt>, RetrieveCirrusBlockReceiptByHashQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveBlockByHeightQuery, Block>, RetrieveBlockByHeightQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusBlockHashByHeightQuery, string>, RetrieveCirrusBlockHashByHeightQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveBlockByMedianTimeQuery, Block>, RetrieveBlockByMedianTimeQueryHandler>();

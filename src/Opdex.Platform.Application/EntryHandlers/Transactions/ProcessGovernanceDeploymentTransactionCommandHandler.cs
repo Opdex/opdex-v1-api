@@ -49,7 +49,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     var blockHash = await _mediator.Send(new RetrieveCirrusBlockHashByHeightQuery(transaction.BlockHeight));
 
                     // Get block by hash
-                    var blockReceiptDto = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(blockHash, findOrThrow: true));
+                    var blockReceiptDto = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(blockHash, findOrThrow: true));
 
                     // Make block
                     await _mediator.Send(new MakeBlockCommand(blockReceiptDto.Height, blockReceiptDto.Hash,

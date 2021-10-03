@@ -36,21 +36,21 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
             try
             {
                 // The latest synced block we have, if we don't have any, the tip of Cirrus chain, else null
-                var bestBlock = await _mediator.Send(new GetBestBlockQuery(), cancellationToken);
+                var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), cancellationToken);
 
                 // Rewind when applicable, would mean our latest synced block cannot be found at the FN by block hash
                 if (bestBlock == null)
                 {
                     // Get our latest synced block from the database and attempt to retrieve it again from the FN
                     var dbLatestBlock = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: true));
-                    bestBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
+                    bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
 
                     // Walk backward through our database blocks until we find one that can be found at the FN
                     int reorgLength = 0;
                     while (bestBlock == null && reorgLength < MaxReorg)
                     {
                         dbLatestBlock = await _mediator.Send(new RetrieveBlockByHeightQuery(dbLatestBlock.Height - 1));
-                        bestBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
+                        bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
                         if (bestBlock == null) reorgLength++;
                     }
 
@@ -65,7 +65,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                 while (bestBlock.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
                 {
                     // Retrieve and create the block
-                    var currentBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(bestBlock.NextBlockHash, findOrThrow: true));
+                    var currentBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash, findOrThrow: true));
                     var blockCreated = await _mediator.Send(new CreateBlockCommand(currentBlock));
 
                     if (!blockCreated) break;
