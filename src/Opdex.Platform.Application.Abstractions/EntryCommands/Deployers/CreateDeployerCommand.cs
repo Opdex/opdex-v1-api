@@ -13,10 +13,9 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Deployers
         /// Create the create deployer command.
         /// </summary>
         /// <param name="deployer">The address of the deployer contract.</param>
-        /// <param name="pendingOwner">The address of the pending owner of the deployer contract.</param>
         /// <param name="owner">The address of the owner of the deployer contract.</param>
         /// <param name="blockHeight">The block height the deployer was created or updated at.</param>
-        public CreateDeployerCommand(Address deployer, Address pendingOwner, Address owner, ulong blockHeight)
+        public CreateDeployerCommand(Address deployer, Address owner, ulong blockHeight)
         {
             if (deployer == Address.Empty)
             {
@@ -34,13 +33,11 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Deployers
             }
 
             Deployer = deployer;
-            PendingOwner = pendingOwner;
             Owner = owner;
             BlockHeight = blockHeight;
         }
 
         public Address Deployer { get; }
-        public Address PendingOwner { get; }
         public Address Owner { get; }
         public ulong BlockHeight { get; }
     }

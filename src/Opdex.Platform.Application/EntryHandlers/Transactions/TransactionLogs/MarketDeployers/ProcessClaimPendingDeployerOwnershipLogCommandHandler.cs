@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers
@@ -27,7 +26,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 if (!persisted) return false;
 
-                var deployer = await _mediator.Send(new CreateDeployerCommand(request.Log.Contract, Address.Empty, request.Log.To, request.BlockHeight));
+                var deployer = await _mediator.Send(new CreateDeployerCommand(request.Log.Contract, request.Log.To, request.BlockHeight));
 
                 return deployer > 0;
             }

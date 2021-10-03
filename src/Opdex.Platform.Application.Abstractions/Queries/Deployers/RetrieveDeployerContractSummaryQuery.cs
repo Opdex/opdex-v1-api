@@ -15,7 +15,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Deployers
         /// </summary>
         /// <param name="deployer">The address of the deployer contract.</param>
         /// <param name="blockHeight">The block height to query the contract's state at.</param>
-        /// <param name="includeOwner">Flag to include the deployer pending owner property, default is false.</param>
+        /// <param name="includePendingOwner">Flag to include the deployer pending owner property, default is false.</param>
         /// <param name="includeOwner">Flag to include the deployer owner property, default is false.</param>
         public RetrieveDeployerContractSummaryQuery(Address deployer, ulong blockHeight, bool includePendingOwner = false, bool includeOwner = false)
         {

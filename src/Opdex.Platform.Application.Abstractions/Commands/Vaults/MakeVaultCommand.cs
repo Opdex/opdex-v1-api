@@ -15,7 +15,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Vaults
         /// </summary>
         /// <param name="vault">The vault domain model to update and/or persist.</param>
         /// <param name="blockHeight">The block height used to refresh select properties when applicable based on associated refresh parameters.</param>
-        /// <param name="refreshOwner">Flag to refresh the pending owner value from contract state, default is false.</param>
+        /// <param name="refreshPendingOwner">Flag to refresh the pending owner value from contract state, default is false.</param>
         /// <param name="refreshOwner">Flag to refresh the owner value from contract state, default is false.</param>
         /// <param name="refreshSupply">Flag to refresh the supply value from contract state, default is false.</param>
         /// <param name="refreshGenesis">Flag to refresh the genesis block value from contract state, default is false.</param>

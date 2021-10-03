@@ -32,7 +32,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
             const ulong blockHeight = 10;
 
             // Act
-            void Act() => new CreateDeployerCommand(null, Address.Empty, owner, blockHeight);
+            void Act() => new CreateDeployerCommand(null, owner, blockHeight);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Contains("Deployer address must be provided.");
@@ -46,7 +46,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
             const ulong blockHeight = 10;
 
             // Act
-            void Act() => new CreateDeployerCommand(deployer, Address.Empty, Address.Empty, blockHeight);
+            void Act() => new CreateDeployerCommand(deployer, Address.Empty, blockHeight);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Contains("Owner address must be provided.");
@@ -60,7 +60,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
             Address deployer = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
 
             // Act
-            void Act() => new CreateDeployerCommand(deployer, Address.Empty, owner, 0);
+            void Act() => new CreateDeployerCommand(deployer, owner, 0);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
@@ -77,7 +77,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
             // Act
             try
             {
-                await _handler.Handle(new CreateDeployerCommand(deployer, Address.Empty, owner, blockHeight), CancellationToken.None);
+                await _handler.Handle(new CreateDeployerCommand(deployer, owner, blockHeight), CancellationToken.None);
             }
             catch { }
 
@@ -91,18 +91,16 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
         public async Task CreateDeployerCommand_Sends_MakeDeployerCommand_IsNewDeployer()
         {
             // Arrange
-            Address pendingOwner = Address.Empty;
             Address owner = "P1iT1GLsMroh6zXXNMU9EjmivLgqqARwmH";
             Address deployer = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
             const ulong blockHeight = 10;
 
             // Act
-            await _handler.Handle(new CreateDeployerCommand(deployer, pendingOwner, owner, blockHeight), CancellationToken.None);
+            await _handler.Handle(new CreateDeployerCommand(deployer, owner, blockHeight), CancellationToken.None);
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<MakeDeployerCommand>(q => q.Deployer.Address == deployer &&
                                                                                    q.Deployer.Id == 0 &&
-                                                                                   q.Deployer.PendingOwner == pendingOwner &&
                                                                                    q.Deployer.Owner == owner),
                                                    It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -119,7 +117,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Deployers
                      .ReturnsAsync(new Deployer(1, deployer, Address.Empty, owner, true, 2, 3));
 
             // Act
-            await _handler.Handle(new CreateDeployerCommand(deployer, Address.Empty, owner, blockHeight), CancellationToken.None);
+            await _handler.Handle(new CreateDeployerCommand(deployer, owner, blockHeight), CancellationToken.None);
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeDeployerCommand>(), It.IsAny<CancellationToken>()), Times.Never);

@@ -8,7 +8,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.Markets
         [NotNull]
         public Address Address { get; set; }
 
-        [NotNull]
         public Address PendingOwner { get; set; }
 
         [NotNull]
