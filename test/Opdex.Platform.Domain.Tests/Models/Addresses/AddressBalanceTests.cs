@@ -37,7 +37,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         public void Constructor_ValidArguments_PropertiesSet()
         {
             // Arrange
-            long tokenId = 123;
+             ulong tokenId = 123;
             Address owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             UInt256 balance = 50000000;
             ulong createdBlock = 10_001;

@@ -12,7 +12,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void CreateNew_MiningGovernanceNomination_InvalidGovernanceId_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            const long governanceId = 0;
+            const ulong governanceId = 0;
 
             // Act
             void Act() => new MiningGovernanceNomination(governanceId, 1, 2, true, 100, 100);
@@ -25,7 +25,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void CreateNew_MiningGovernanceNomination_InvalidLiquidityPoolId_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            const long liquidityPoolId = 0;
+            const ulong liquidityPoolId = 0;
 
             // Act
             void Act() => new MiningGovernanceNomination(1, liquidityPoolId, 2, true, 100, 100);
@@ -38,7 +38,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void CreateNew_MiningGovernanceNomination_InvalidMiningPoolId_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            const long miningPoolId = 0;
+            const ulong miningPoolId = 0;
 
             // Act
             void Act() => new MiningGovernanceNomination(2, 1, miningPoolId, true, 100, 100);
@@ -51,9 +51,9 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void CreateNew_MiningGovernanceNomination_Success()
         {
             // Arrange
-            const long governanceId = 9;
-            const long liquidityPoolId = 1;
-            const long miningPoolId = 2;
+            const ulong governanceId = 9;
+            const ulong liquidityPoolId = 1;
+            const ulong miningPoolId = 2;
             const bool isNominated = true;
             UInt256 weight = 125;
             const ulong createdBlock = 100;
@@ -74,10 +74,10 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void Create_MiningGovernanceNomination_Success()
         {
             // Arrange
-            const long id = 1;
-            const long governanceId = 9;
-            const long liquidityPoolId = 1;
-            const long miningPoolId = 2;
+            const ulong id = 1;
+            const ulong governanceId = 9;
+            const ulong liquidityPoolId = 1;
+            const ulong miningPoolId = 2;
             const bool isNominated = true;
             UInt256 weight = 125;
             const ulong createdBlock = 100;
@@ -101,9 +101,9 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void MiningGovernanceNomination_SetStatus_Success()
         {
             // Arrange
-            const long governanceId = 9;
-            const long liquidityPoolId = 1;
-            const long miningPoolId = 2;
+            const ulong governanceId = 9;
+            const ulong liquidityPoolId = 1;
+            const ulong miningPoolId = 2;
             const bool isNominated = true;
             UInt256 weight = 125;
             const ulong createdBlock = 100;
@@ -124,9 +124,9 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void MiningGovernanceNomination_SetWeight_Success()
         {
             // Arrange
-            const long governanceId = 9;
-            const long liquidityPoolId = 1;
-            const long miningPoolId = 2;
+            const ulong governanceId = 9;
+            const ulong liquidityPoolId = 1;
+            const ulong miningPoolId = 2;
             const bool isNominated = true;
             UInt256 weight = 125;
             const ulong createdBlock = 100;

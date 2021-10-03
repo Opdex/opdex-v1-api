@@ -10,9 +10,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
     public class AddressStakingTests
     {
         [Theory]
-        [InlineData(-1)]
         [InlineData(0)]
-        public void Constructor_LiquidityPoolIdNotValid_ThrowArgumentOutOfRangeException(long liquidityPoolId)
+        public void Constructor_LiquidityPoolIdNotValid_ThrowArgumentOutOfRangeException(ulong liquidityPoolId)
         {
             // Arrange
             // Act
@@ -39,16 +38,16 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         public void Constructor_ArgumentsValid_SetProperties()
         {
             // Arrange
-            var liqudityPoolId = 1;
+            var liquidityPoolId = 1ul;
             Address owner = "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST";
             UInt256 weight = 9999999999999;
             ulong createdBlock = 100_000;
 
             // Act
-            var addressStaking = new AddressStaking(liqudityPoolId, owner, weight, createdBlock);
+            var addressStaking = new AddressStaking(liquidityPoolId, owner, weight, createdBlock);
 
             // Assert
-            addressStaking.LiquidityPoolId.Should().Be(liqudityPoolId);
+            addressStaking.LiquidityPoolId.Should().Be(liquidityPoolId);
             addressStaking.Owner.Should().Be(owner);
             addressStaking.Weight.Should().Be(weight);
             addressStaking.CreatedBlock.Should().Be(createdBlock);

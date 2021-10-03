@@ -4,8 +4,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools
 {
     public class LiquidityPoolSummaryEntity : AuditEntity
     {
-        public long Id { get; set; }
-        public long LiquidityPoolId { get; set; }
+        public ulong Id { get; set; }
+        public ulong LiquidityPoolId { get; set; }
         public decimal LiquidityUsd { get; set; }
         public decimal VolumeUsd { get; set; }
         public ulong StakingWeight { get; set; }

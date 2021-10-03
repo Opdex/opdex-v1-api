@@ -55,13 +55,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining
 
         private sealed class SqlParams
         {
-            internal SqlParams(long miningPoolId, Address owner)
+            internal SqlParams(ulong miningPoolId, Address owner)
             {
                 MiningPoolId = miningPoolId;
                 Owner = owner;
             }
 
-            public long MiningPoolId { get; }
+            public ulong MiningPoolId { get; }
             public Address Owner { get; }
         }
     }

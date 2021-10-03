@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Governances
     /// <summary>
     /// Make a mining governance by persisting as is or optionally refresh select properties.
     /// </summary>
-    public class MakeMiningGovernanceCommand : IRequest<long>
+    public class MakeMiningGovernanceCommand : IRequest<ulong>
     {
         /// <summary>
         /// Constructor to create the make mining governance command.

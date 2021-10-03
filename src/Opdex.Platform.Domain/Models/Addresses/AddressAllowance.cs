@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
 {
     public class AddressAllowance : BlockAudit
     {
-        public AddressAllowance(long tokenId, Address owner, Address spender, UInt256 allowance, ulong createdBlock)
+        public AddressAllowance(ulong tokenId, Address owner, Address spender, UInt256 allowance, ulong createdBlock)
             : base(createdBlock)
         {
             if (tokenId < 1)
@@ -31,7 +31,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Allowance = allowance;
         }
 
-        public AddressAllowance(long id, long tokenId, Address owner, Address spender, UInt256 allowance,
+        public AddressAllowance(ulong id, ulong tokenId, Address owner, Address spender, UInt256 allowance,
             ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -41,8 +41,8 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Allowance = allowance;
         }
 
-        public long Id { get; }
-        public long TokenId { get; }
+        public ulong Id { get; }
+        public ulong TokenId { get; }
 
         public Address Owner { get; }
         public Address Spender { get; }

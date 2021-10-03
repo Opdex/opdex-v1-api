@@ -4,7 +4,7 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Governances
 {
-    public class PersistMiningGovernanceCommand : IRequest<long>
+    public class PersistMiningGovernanceCommand : IRequest<ulong>
     {
         public PersistMiningGovernanceCommand(MiningGovernance miningGovernance)
         {

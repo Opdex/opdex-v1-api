@@ -4,7 +4,7 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Governances
 {
-    public class MakeMiningGovernanceNominationCommand : IRequest<long>
+    public class MakeMiningGovernanceNominationCommand : IRequest<ulong>
     {
         public MakeMiningGovernanceNominationCommand(MiningGovernanceNomination nomination)
         {

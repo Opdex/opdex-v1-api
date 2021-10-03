@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
 {
     public class LiquidityPoolDto
     {
-        public long Id { get; set; }
+        public ulong Id { get; set; }
         public Address Address { get; set; }
         public bool StakingEnabled { get; set; }
         public MiningPoolDto MiningPool { get; set; }

@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools
         public async Task Handle_MediatorSelectLiquidityPoolSummaryCommand_Send()
         {
             // Arrange
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
@@ -55,8 +55,8 @@ namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools
         public async Task Handle_MediatorSelectLiquidityPoolSummaryCommand_Return()
         {
             // Arrange
-            const long id = 100L;
-            const long liquidityPoolId = 1;
+            const ulong id = 100L;
+            const ulong liquidityPoolId = 1;
             var summary = new LiquidityPoolSummary(id, liquidityPoolId, 2.00m, 3.00m, 4, 5, 7, 8, 9);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery>(), It.IsAny<CancellationToken>()))

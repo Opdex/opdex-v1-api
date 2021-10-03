@@ -11,7 +11,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
         {
         }
 
-        public StopStakingLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public StopStakingLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.StopStakingLog, id, transactionId, address, sortOrder, details)
         {
         }

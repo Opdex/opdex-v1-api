@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
         [Fact]
         public async Task SelectLiquidityPoolById_Success()
         {
-            const long id = 99;
+            const ulong id = 99ul;
 
             var expectedEntity = new LiquidityPoolEntity
             {
@@ -61,7 +61,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
         [Fact]
         public void SelectLiquidityPoolById_Throws_NotFoundException()
         {
-            const long id = 99;
+            const ulong id = 99ul;
 
             var command = new SelectLiquidityPoolByIdQuery(id);
 
@@ -77,7 +77,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
         [Fact]
         public async Task SelectLiquidityPoolById_ReturnsNull()
         {
-            const long id = 99;
+            const ulong id = 99ul;
             const bool findOrThrow = false;
 
             var command = new SelectLiquidityPoolByIdQuery(id, findOrThrow);

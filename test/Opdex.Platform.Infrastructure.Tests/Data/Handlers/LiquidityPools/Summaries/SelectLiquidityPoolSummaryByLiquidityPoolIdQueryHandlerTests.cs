@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
         [Fact]
         public async Task SelectLiquidityPoolSummaryByLiquidityPoolId_Success()
         {
-            const long id = 99;
+            const ulong id = 99ul;
 
             var expectedEntity = new LiquidityPoolSummaryEntity
             {
@@ -65,7 +65,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
         [Fact]
         public void SelectLiquidityPoolSummaryByLiquidityPoolId_Throws_NotFoundException()
         {
-            const long id = 99;
+            const ulong id = 99ul;
 
             var command = new SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(id);
 
@@ -81,7 +81,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
         [Fact]
         public async Task SelectLiquidityPoolSummaryByLiquidityPoolId_ReturnsNull()
         {
-            const long id = 99;
+            const ulong id = 99ul;
             const bool findOrThrow = false;
 
             var command = new SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(id, findOrThrow);

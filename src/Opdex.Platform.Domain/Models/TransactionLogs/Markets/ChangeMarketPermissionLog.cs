@@ -32,7 +32,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
             IsAuthorized = isAuthorized;
         }
 
-        public ChangeMarketPermissionLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public ChangeMarketPermissionLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.ChangeMarketPermissionLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

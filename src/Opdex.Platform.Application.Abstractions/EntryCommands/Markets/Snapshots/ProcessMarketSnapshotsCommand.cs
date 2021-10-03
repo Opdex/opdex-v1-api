@@ -5,7 +5,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshot
 {
     public class ProcessMarketSnapshotsCommand : IRequest<Unit>
     {
-        public ProcessMarketSnapshotsCommand(long marketId, DateTime blockTime)
+        public ProcessMarketSnapshotsCommand(ulong marketId, DateTime blockTime)
         {
             if (marketId < 1)
             {
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshot
             BlockTime = blockTime;
         }
 
-        public long MarketId { get; }
+        public ulong MarketId { get; }
         public DateTime BlockTime { get; }
     }
 }

@@ -137,7 +137,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         [Fact]
         public void CreatePersisted_Transaction_Success()
         {
-            const long id = 1;
+            const ulong id = 1;
             const string txHash = "TxHash";
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;

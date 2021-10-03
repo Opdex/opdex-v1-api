@@ -6,8 +6,8 @@ namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class TokenDistribution : BlockAudit
     {
-        public TokenDistribution(long tokenId, UInt256 vaultDistribution, UInt256 miningGovernanceDistribution, int periodIndex, ulong distributionBlock, ulong nextDistributionBlock,
-            ulong createdBlock) : base(createdBlock)
+        public TokenDistribution(ulong tokenId, UInt256 vaultDistribution, UInt256 miningGovernanceDistribution, int periodIndex, ulong distributionBlock,
+                                 ulong nextDistributionBlock, ulong createdBlock) : base(createdBlock)
         {
             if (tokenId < 1)
             {
@@ -31,8 +31,9 @@ namespace Opdex.Platform.Domain.Models.Tokens
             NextDistributionBlock = nextDistributionBlock;
         }
 
-        public TokenDistribution(long id, long tokenId, UInt256 vaultDistribution, UInt256 miningGovernanceDistribution, int periodIndex, ulong distributionBlock, ulong nextDistributionBlock,
-            ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+        public TokenDistribution(ulong id, ulong tokenId, UInt256 vaultDistribution, UInt256 miningGovernanceDistribution, int periodIndex,
+                                 ulong distributionBlock, ulong nextDistributionBlock, ulong createdBlock, ulong modifiedBlock)
+            : base(createdBlock, modifiedBlock)
         {
             Id = id;
             TokenId = tokenId;
@@ -43,8 +44,8 @@ namespace Opdex.Platform.Domain.Models.Tokens
             NextDistributionBlock = nextDistributionBlock;
         }
 
-        public long Id { get; }
-        public long TokenId { get; }
+        public ulong Id { get; }
+        public ulong TokenId { get; }
         public UInt256 VaultDistribution { get; }
         public UInt256 MiningGovernanceDistribution { get; }
         public int PeriodIndex { get; }

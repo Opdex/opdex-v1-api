@@ -38,7 +38,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
                 await _handler.Handle(command, CancellationToken.None);
             } catch { }
 
-            _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<long>(
+            _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<ulong>(
                                   It.Is<DatabaseQuery>(q => q.Sql.Contains("INSERT INTO pool_liquidity_summary")
                                                             && q.Sql.Contains("SELECT LAST_INSERT_ID();"))));
         }
@@ -46,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
         [Fact]
         public async Task Update_LiquidityPoolSummary_SendsSqlCommand()
         {
-            const long expectedId = 10;
+            const ulong expectedId = 10ul;
             var model = new LiquidityPoolSummary(expectedId, 1, 2.00m, 3.00m, 4, 5, 7, 8, 9);
             var command = new PersistLiquidityPoolSummaryCommand(model);
 
@@ -55,7 +55,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
                 await _handler.Handle(command, CancellationToken.None);
             } catch { }
 
-            _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<long>(
+            _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<ulong>(
                                   It.Is<DatabaseQuery>(q => q.Sql.Contains("UPDATE pool_liquidity_summary")
                                                        && q.Sql.Contains("WHERE Id = @Id;"))));
         }
@@ -63,11 +63,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
         [Fact]
         public async Task Insert_LiquidityPoolSummary_Returns()
         {
-            const long expectedId = 10;
+            const ulong expectedId = 10ul;
             var model = new LiquidityPoolSummary(1, 2.00m, 3.00m, 4, 5, 7, 8);
             var command = new PersistLiquidityPoolSummaryCommand(model);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedId));
 
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -78,11 +78,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
         [Fact]
         public async Task Update_LiquidityPoolSummary_Returns()
         {
-            const long expectedId = 10;
+            const ulong expectedId = 10ul;
             var model = new LiquidityPoolSummary(expectedId, 1, 2.00m, 3.00m, 4, 5, 7, 8, 9);
             var command = new PersistLiquidityPoolSummaryCommand(model);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedId));
 
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -93,11 +93,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
         [Fact]
         public async Task PersistsLiquidityPoolSummary_Fail()
         {
-            const long expectedId = 0;
+            const ulong expectedId = 0;
             var model = new LiquidityPoolSummary(expectedId, 1, 2.00m, 3.00m, 4, 5, 7, 8, 9);
             var command = new PersistLiquidityPoolSummaryCommand(model);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                 .Throws(new Exception("Some SQL Exception"));
 
             var result = await _handler.Handle(command, CancellationToken.None);

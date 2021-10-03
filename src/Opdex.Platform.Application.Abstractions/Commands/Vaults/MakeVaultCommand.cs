@@ -8,7 +8,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Vaults
     /// Create a make vault command to persist a vault domain model. Include refresh parameters to refresh the
     /// included vault properties prior to persistence.
     /// </summary>
-    public class MakeVaultCommand : IRequest<long>
+    public class MakeVaultCommand : IRequest<ulong>
     {
         /// <summary>
         /// Constructor to make a vault command.

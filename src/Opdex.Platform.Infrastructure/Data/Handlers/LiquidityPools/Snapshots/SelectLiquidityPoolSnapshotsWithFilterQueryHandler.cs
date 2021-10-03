@@ -53,7 +53,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots
 
         private sealed class SqlParams
         {
-            internal SqlParams(long poolId, DateTime start, DateTime end, int snapshotTypeId)
+            internal SqlParams(ulong poolId, DateTime start, DateTime end, int snapshotTypeId)
             {
                 LiquidityPoolId = poolId;
                 Start = start;
@@ -61,7 +61,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots
                 SnapshotTypeId = snapshotTypeId;
             }
 
-            public long LiquidityPoolId { get; }
+            public ulong LiquidityPoolId { get; }
             public DateTime Start { get; }
             public DateTime End { get; }
             public int SnapshotTypeId { get; }

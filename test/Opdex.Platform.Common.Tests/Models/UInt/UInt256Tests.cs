@@ -180,7 +180,7 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
             Assert.Equal<uint>(0x12345678, (uint)v1);
             Assert.Equal<int>(0x12345678, (int)v1);
             Assert.Equal<ulong>(0x12345678, (ulong)v1);
-            Assert.Equal<long>(0x12345678, (long)v1);
+            Assert.Equal<ulong>(0x12345678, (ulong)v1);
             Assert.Equal<UInt128>(0x12345678, (UInt128)v1);
             Assert.Equal<UInt256>(0x12345678, v1);
         }

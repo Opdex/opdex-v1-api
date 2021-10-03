@@ -149,7 +149,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining
 
         private sealed class SqlParams
         {
-            public SqlParams(long positionId, Address address, IEnumerable<Address> liquidityPools, IEnumerable<Address> miningPools)
+            public SqlParams(ulong positionId, Address address, IEnumerable<Address> liquidityPools, IEnumerable<Address> miningPools)
             {
                 PositionId = positionId;
                 Address = address;
@@ -157,7 +157,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining
                 MiningPools = miningPools.Select(pool => pool.ToString());
             }
 
-            public long PositionId { get; }
+            public ulong PositionId { get; }
             public Address Address { get; }
             public IEnumerable<string> LiquidityPools { get; }
             public IEnumerable<string> MiningPools { get; }

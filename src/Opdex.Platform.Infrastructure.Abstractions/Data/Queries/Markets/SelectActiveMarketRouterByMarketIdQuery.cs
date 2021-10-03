@@ -6,7 +6,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets
 {
     public class SelectActiveMarketRouterByMarketIdQuery : FindQuery<MarketRouter>
     {
-        public SelectActiveMarketRouterByMarketIdQuery(long marketId, bool findOrThrow = true) : base(findOrThrow)
+        public SelectActiveMarketRouterByMarketIdQuery(ulong marketId, bool findOrThrow = true) : base(findOrThrow)
         {
             if (marketId < 1)
             {
@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets
 
             MarketId = marketId;
         }
-        
-        public long MarketId { get; }
+
+        public ulong MarketId { get; }
     }
 }

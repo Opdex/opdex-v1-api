@@ -8,15 +8,15 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
 {
     public class ProcessDailyLiquidityPoolSnapshotRefreshCommand : IRequest<Unit>
     {
-        public ProcessDailyLiquidityPoolSnapshotRefreshCommand(long liquidityPoolId, long marketId, Token srcToken, Token lpToken, decimal crsUsd,
+        public ProcessDailyLiquidityPoolSnapshotRefreshCommand(ulong liquidityPoolId, ulong marketId, Token srcToken, Token lpToken, decimal crsUsd,
                                                                SnapshotType snapshotType, DateTime blockTime, ulong blockHeight, decimal? stakingTokenUsd = null)
         {
-            if (liquidityPoolId < 1)
+            if (liquidityPoolId == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
             }
 
-            if (marketId < 1)
+            if (marketId == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(marketId));
             }
@@ -62,8 +62,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
             StakingTokenUsd = stakingTokenUsd;
         }
 
-        public long LiquidityPoolId { get; }
-        public long MarketId { get; }
+        public ulong LiquidityPoolId { get; }
+        public ulong MarketId { get; }
         public Token SrcToken { get; }
         public Token LpToken { get; }
         public decimal CrsUsd { get; }

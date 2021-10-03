@@ -30,11 +30,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Balances
         [Fact]
         public async Task Insert_AddressBalance_Success()
         {
-            const long expectedId = 10;
+            const ulong expectedId = 10ul;
             var balance = new AddressBalance(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 100000000, 3);
             var command = new PersistAddressBalanceCommand(balance);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedId));
 
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -45,11 +45,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Balances
         [Fact]
         public async Task Update_AddressBalance_Success()
         {
-            const long expectedId = 10;
+            const ulong expectedId = 10ul;
             var balance = new AddressBalance(expectedId, 1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 100000000, 3, 4);
             var command = new PersistAddressBalanceCommand(balance);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedId));
 
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -60,11 +60,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Balances
         [Fact]
         public async Task PersistsAddressBalance_Fail()
         {
-            const long expectedId = 0;
+            const ulong expectedId = 0;
             var balance = new AddressBalance(expectedId, 1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 100000000, 3, 4);
             var command = new PersistAddressBalanceCommand(balance);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                 .Throws(new Exception("Some SQL Exception"));
 
             var result = await _handler.Handle(command, CancellationToken.None);

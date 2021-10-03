@@ -4,10 +4,10 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets
 {
     public class MarketEntity : AuditEntity
     {
-        public long Id { get; set; }
+        public ulong Id { get; set; }
         public Address Address { get; set; }
-        public long DeployerId { get; set; }
-        public long? StakingTokenId { get; set; }
+        public ulong DeployerId { get; set; }
+        public ulong? StakingTokenId { get; set; }
         public Address PendingOwner { get; set; }
         public Address Owner { get; set; }
         public bool AuthPoolCreators { get; set; }

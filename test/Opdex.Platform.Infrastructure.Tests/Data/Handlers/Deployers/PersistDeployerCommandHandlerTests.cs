@@ -30,13 +30,13 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Deployers
         [Fact]
         public async Task Insert_Deployer_Success()
         {
-            const long expectedId = 10;
+            const ulong expectedId = 10ul;
             const bool isActive = true;
 
             var deployer = new Deployer("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", isActive, 1);
             var command = new PersistDeployerCommand(deployer);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedId);
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedId);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -46,13 +46,13 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Deployers
         [Fact]
         public async Task Update_Deployer_Success()
         {
-            const long expectedId = 10;
+            const ulong expectedId = 10ul;
             const bool isActive = true;
 
             var deployer = new Deployer(expectedId, "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", isActive, 1, 2);
             var command = new PersistDeployerCommand(deployer);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedId);
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedId);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -62,13 +62,13 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Deployers
         [Fact]
         public async Task PersistsDeployer_Fail()
         {
-            const long expectedId = 0;
+            const ulong expectedId = 0;
             const bool isActive = true;
 
             var deployer = new Deployer(expectedId, "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", isActive, 1, 2);
             var command = new PersistDeployerCommand(deployer);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).ThrowsAsync(new Exception("Some SQL Exception"));
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).ThrowsAsync(new Exception("Some SQL Exception"));
 
             var result = await _handler.Handle(command, CancellationToken.None);
 

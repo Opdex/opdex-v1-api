@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining
 {
-    public class PersistAddressMiningCommandHandler : IRequestHandler<PersistAddressMiningCommand, long>
+    public class PersistAddressMiningCommandHandler : IRequestHandler<PersistAddressMiningCommand, ulong>
     {
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO address_mining (
@@ -49,7 +49,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistAddressMiningCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(PersistAddressMiningCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining
 
                 var command = DatabaseQuery.Create(sql, entity, cancellationToken);
 
-                var result = await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<ulong>(command);
 
                 return isUpdate ? entity.Id : result;
             }

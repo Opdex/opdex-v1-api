@@ -5,7 +5,7 @@ namespace Opdex.Platform.Application.Abstractions.Models
 {
     public class MarketDto
     {
-        public long Id { get; set; }
+        public ulong Id { get; set; }
         public Address Address { get; set; }
         public TokenDto StakingToken { get; set; }
         public TokenDto CrsToken { get; set; }

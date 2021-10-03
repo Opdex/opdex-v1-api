@@ -25,7 +25,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         public void CreateMarketRouter_InvalidMarketId_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            const long marketId = 0;
+            const ulong marketId = 0;
 
             // Act
             void Act() => new MarketRouter("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", marketId, true, 1);
@@ -39,7 +39,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         {
             // Arrange
             var address = "PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi";
-            var marketId = 10;
+            var marketId = 10ul;
             var isActive = true;
             ulong createdBlock = 100_000;
 

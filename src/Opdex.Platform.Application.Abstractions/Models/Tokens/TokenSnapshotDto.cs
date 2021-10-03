@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.Tokens
 {
     public class TokenSnapshotDto
     {
-        public long Id { get; set; }
+        public ulong Id { get; set; }
         public OhlcDecimalDto Price { get; set; }
         public decimal? DailyPriceChange { get; set; }
         public int SnapshotType { get; set; }

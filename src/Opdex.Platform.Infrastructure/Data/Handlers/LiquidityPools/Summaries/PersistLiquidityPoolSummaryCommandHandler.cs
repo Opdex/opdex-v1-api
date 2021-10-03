@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
 {
-    public class PersistLiquidityPoolSummaryCommandHandler : IRequestHandler<PersistLiquidityPoolSummaryCommand, long>
+    public class PersistLiquidityPoolSummaryCommandHandler : IRequestHandler<PersistLiquidityPoolSummaryCommand, ulong>
     {
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO pool_liquidity_summary (
@@ -59,7 +59,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistLiquidityPoolSummaryCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(PersistLiquidityPoolSummaryCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
 
                 var command = DatabaseQuery.Create(sql, entity, cancellationToken);
 
-                var result = await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<ulong>(command);
 
                 return isUpdate ? entity.Id : result;
             }

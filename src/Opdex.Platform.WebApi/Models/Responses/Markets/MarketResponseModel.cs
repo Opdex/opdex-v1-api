@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Models.Responses.Tokens;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Markets

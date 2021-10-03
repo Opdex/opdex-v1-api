@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions
 {
-    public class PersistMarketPermissionCommandHandler : IRequestHandler<PersistMarketPermissionCommand, long>
+    public class PersistMarketPermissionCommandHandler : IRequestHandler<PersistMarketPermissionCommand, ulong>
     {
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO market_permission (
@@ -51,7 +51,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistMarketPermissionCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(PersistMarketPermissionCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions
 
                 var command = DatabaseQuery.Create(sql, entity, cancellationToken);
 
-                var result = await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<ulong>(command);
 
                 return isUpdate ? entity.Id : result;
             }

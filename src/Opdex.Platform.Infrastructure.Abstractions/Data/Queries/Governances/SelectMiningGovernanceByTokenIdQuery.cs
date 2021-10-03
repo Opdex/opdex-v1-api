@@ -6,7 +6,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances
 {
     public class SelectMiningGovernanceByTokenIdQuery : FindQuery<MiningGovernance>
     {
-        public SelectMiningGovernanceByTokenIdQuery(long tokenId, bool findOrThrow = true) : base(findOrThrow)
+        public SelectMiningGovernanceByTokenIdQuery(ulong tokenId, bool findOrThrow = true) : base(findOrThrow)
         {
             if (tokenId < 1)
             {
@@ -16,6 +16,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances
             TokenId = tokenId;
         }
 
-        public long TokenId { get; }
+        public ulong TokenId { get; }
     }
 }

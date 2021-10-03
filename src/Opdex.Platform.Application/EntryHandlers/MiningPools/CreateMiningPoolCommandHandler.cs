@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.MiningPools
 {
-    public class CreateMiningPoolCommandHandler : IRequestHandler<CreateMiningPoolCommand, long>
+    public class CreateMiningPoolCommandHandler : IRequestHandler<CreateMiningPoolCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -22,7 +22,7 @@ namespace Opdex.Platform.Application.EntryHandlers.MiningPools
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Handle(CreateMiningPoolCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(CreateMiningPoolCommand request, CancellationToken cancellationToken)
         {
             // Todo: Should probably replace with a RetrieveStakingPoolContractSummaryQuery when we have one.
             var miningPoolAddress = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.LiquidityPoolAddress,

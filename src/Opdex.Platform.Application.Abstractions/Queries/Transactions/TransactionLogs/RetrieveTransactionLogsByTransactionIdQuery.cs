@@ -7,16 +7,16 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Transactions.Transacti
 {
     public class RetrieveTransactionLogsByTransactionIdQuery : IRequest<IEnumerable<TransactionLog>>
     {
-        public RetrieveTransactionLogsByTransactionIdQuery(long transactionId)
+        public RetrieveTransactionLogsByTransactionIdQuery(ulong transactionId)
         {
             if (transactionId < 1)
             {
                 throw new ArgumentNullException(nameof(transactionId));
             }
-            
+
             TransactionId = transactionId;
         }
-        
-        public long TransactionId { get; }
+
+        public ulong TransactionId { get; }
     }
 }

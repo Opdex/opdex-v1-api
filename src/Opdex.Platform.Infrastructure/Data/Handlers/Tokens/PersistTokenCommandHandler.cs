@@ -10,7 +10,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 {
-    public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, long>
+    public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, ulong>
     {
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO token (
@@ -37,8 +37,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
             SELECT LAST_INSERT_ID();";
 
         private static readonly string UpdateSqlCommand =
-            $@"UPDATE token 
-                SET 
+            $@"UPDATE token
+                SET
                     {nameof(TokenEntity.TotalSupply)} = @{nameof(TokenEntity.TotalSupply)},
                     {nameof(TokenEntity.ModifiedBlock)} = @{nameof(TokenEntity.ModifiedBlock)}
                 WHERE {nameof(TokenEntity.Id)} = @{nameof(TokenEntity.Id)};";
@@ -55,7 +55,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistTokenCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(PersistTokenCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
                 var command = DatabaseQuery.Create(sql, entity, cancellationToken);
 
-                var result = await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<ulong>(command);
 
                 return isUpdate ? entity.Id : result;
             }

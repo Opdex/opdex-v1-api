@@ -44,7 +44,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets.Permissions
             var result = await _handler.Handle(new PersistMarketPermissionCommand(marketPermission), cancellationToken);
 
             // Assert
-            _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<long>(
+            _dbContext.Verify(callTo => callTo.ExecuteScalarAsync<ulong>(
                 It.Is<DatabaseQuery>(query => query.Token == cancellationToken)),
                 Times.Once);
         }
@@ -53,7 +53,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets.Permissions
         public async Task Handle_InsertSuccessfully_ReturnId()
         {
             // Arrange
-            var id = 5L;
+            var id = 5ul;
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                         MarketPermissionType.Trade,
@@ -61,7 +61,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets.Permissions
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                         500);
 
-            _dbContext.Setup(callTo => callTo.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(callTo => callTo.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                       .ReturnsAsync(id);
 
             // Act
@@ -75,7 +75,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets.Permissions
         public async Task Handle_UpdateSuccessfully_ReturnId()
         {
             // Arrange
-            var id = 10L;
+            var id = 10ul;
             var marketPermission = new MarketPermission(id,
                                                         5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
@@ -85,8 +85,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets.Permissions
                                                         500,
                                                         505);
 
-            _dbContext.Setup(callTo => callTo.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                      .ReturnsAsync(1);
+            _dbContext.Setup(callTo => callTo.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+                      .ReturnsAsync(1ul);
 
             // Act
             var result = await _handler.Handle(new PersistMarketPermissionCommand(marketPermission), default);
@@ -106,7 +106,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets.Permissions
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk",
                                                         500);
 
-            _dbContext.Setup(callTo => callTo.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(callTo => callTo.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                       .ThrowsAsync(new Exception("Something went wrong!"));
 
             // Act

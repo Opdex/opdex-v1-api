@@ -11,7 +11,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 {
-    public class PersistTransactionCommandHandler : IRequestHandler<PersistTransactionCommand, long>
+    public class PersistTransactionCommandHandler : IRequestHandler<PersistTransactionCommand, ulong>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO transaction (
@@ -36,8 +36,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        
-        public PersistTransactionCommandHandler(IDbContext context, IMapper mapper, 
+
+        public PersistTransactionCommandHandler(IDbContext context, IMapper mapper,
             ILogger<PersistTransactionCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistTransactionCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(PersistTransactionCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
                 var command = DatabaseQuery.Create(SqlCommand, transactionEntity, cancellationToken);
 
-                var result = await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<ulong>(command);
 
                 if (result == 0)
                 {
@@ -65,7 +65,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Unable to persist {nameof(request.Transaction)}");
-                
+
                 return 0;
             }
         }

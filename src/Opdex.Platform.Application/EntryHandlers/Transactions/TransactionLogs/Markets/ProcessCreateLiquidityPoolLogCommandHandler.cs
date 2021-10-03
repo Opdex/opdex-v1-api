@@ -40,7 +40,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false)) ??
                                     new LiquidityPool(request.Log.Pool, srcTokenId, lpTokenId, market.Id, request.BlockHeight);
 
-                long liquidityPoolId = liquidityPool.Id;
+                ulong liquidityPoolId = liquidityPool.Id;
                 var isNewLiquidityPool = liquidityPoolId == 0;
                 if (isNewLiquidityPool)
                 {

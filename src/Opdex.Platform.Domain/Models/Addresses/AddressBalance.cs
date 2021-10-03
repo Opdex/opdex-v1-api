@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
 {
     public class AddressBalance : BlockAudit
     {
-        public AddressBalance(long tokenId, Address owner, UInt256 balance, ulong createdBlock) : base(createdBlock)
+        public AddressBalance(ulong tokenId, Address owner, UInt256 balance, ulong createdBlock) : base(createdBlock)
         {
             if (tokenId < 1)
             {
@@ -24,7 +24,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Balance = balance;
         }
 
-        public AddressBalance(long id, long tokenId, Address owner, UInt256 balance, ulong createdBlock, ulong modifiedBlock)
+        public AddressBalance(ulong id, ulong tokenId, Address owner, UInt256 balance, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -33,8 +33,8 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Balance = balance;
         }
 
-        public long Id { get; }
-        public long TokenId { get; }
+        public ulong Id { get; }
+        public ulong TokenId { get; }
         public Address Owner { get; }
         public UInt256 Balance { get; private set; }
 

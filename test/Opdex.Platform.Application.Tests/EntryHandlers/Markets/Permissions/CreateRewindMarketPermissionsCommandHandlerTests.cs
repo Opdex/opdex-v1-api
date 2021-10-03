@@ -63,7 +63,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Permissions
         {
             // Arrange
             const ulong rewindHeight = 10;
-            const long marketId = 2;
+            const ulong marketId = 2;
 
             var permissions = new List<MarketPermission>
             {
@@ -91,7 +91,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Permissions
         {
             // Arrange
             const ulong rewindHeight = 10;
-            const long marketId = 3;
+            const ulong marketId = 3;
             var market = new Market(marketId, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", 2, 3, Address.Empty, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", false, false, false, 3, true, 10, 11);
 
             var certificates = new List<MarketPermission>

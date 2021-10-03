@@ -45,7 +45,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             AmountSrcOut = amountSrcOut;
         }
 
-        public SwapLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public SwapLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.SwapLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
 {
-    public class PersistMiningGovernanceCommandHandler : IRequestHandler<PersistMiningGovernanceCommand, long>
+    public class PersistMiningGovernanceCommandHandler : IRequestHandler<PersistMiningGovernanceCommand, ulong>
     {
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO governance (
@@ -54,7 +54,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistMiningGovernanceCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(PersistMiningGovernanceCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
 
                 var command = DatabaseQuery.Create(sql, poolEntity, cancellationToken);
 
-                var result = await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<ulong>(command);
 
                 return isUpdate ? poolEntity.Id : result;
             }

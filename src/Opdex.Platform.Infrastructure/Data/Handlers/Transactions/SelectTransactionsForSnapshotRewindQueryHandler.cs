@@ -57,7 +57,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
         {
             var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.DateTime), cancellationToken);
 
-            var transactions = new Dictionary<long, Transaction>();
+            var transactions = new Dictionary<ulong, Transaction>();
 
             await _context.ExecuteQueryAsync<TransactionEntity, TransactionLogEntity, Transaction>(query, (transaction, log) =>
             {

@@ -141,13 +141,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools
 
         private sealed class SqlParams
         {
-            internal SqlParams(long miningPoolId, IEnumerable<Address> liquidityPools)
+            internal SqlParams(ulong miningPoolId, IEnumerable<Address> liquidityPools)
             {
                 MiningPoolId = miningPoolId;
                 LiquidityPools = liquidityPools.Select(pool => pool.ToString());
             }
 
-            public long MiningPoolId { get; }
+            public ulong MiningPoolId { get; }
             public IEnumerable<string> LiquidityPools { get; }
         }
     }

@@ -9,7 +9,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
         {
         }
 
-        public SetPendingVaultOwnershipLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public SetPendingVaultOwnershipLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.SetPendingVaultOwnershipLog, id, transactionId, address, sortOrder, details)
         {
         }

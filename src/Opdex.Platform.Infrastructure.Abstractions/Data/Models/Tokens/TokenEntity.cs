@@ -5,7 +5,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens
 {
     public class TokenEntity : AuditEntity
     {
-        public long Id { get; set; }
+        public ulong Id { get; set; }
         public bool IsLpt { get; set; }
         public Address Address { get; set; }
         public string Symbol { get; set; }

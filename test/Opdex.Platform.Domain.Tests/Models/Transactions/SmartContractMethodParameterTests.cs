@@ -351,7 +351,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             var parameter = new SmartContractMethodParameter(value);
 
             // Act
-            var parsed = parameter.Parse<long>();
+            var parsed = parameter.Parse<ulong>();
 
             // Assert
             parsed.Should().Be(value);

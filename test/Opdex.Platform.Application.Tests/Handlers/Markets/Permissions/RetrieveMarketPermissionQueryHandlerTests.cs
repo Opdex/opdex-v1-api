@@ -27,7 +27,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Markets.Permissions
         public async Task Handle_MediatorSelectMarketPermissionQuery_Send()
         {
             // Arrange
-            var marketId = 10L;
+            var marketId = 10ul;
             var address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var permission = MarketPermissionType.Provide;
             var findOrThrow = false;

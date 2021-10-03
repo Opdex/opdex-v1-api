@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Governances
 {
-    public class CreateMiningGovernanceCommandHandler : IRequestHandler<CreateMiningGovernanceCommand, long>
+    public class CreateMiningGovernanceCommandHandler : IRequestHandler<CreateMiningGovernanceCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Governances
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Handle(CreateMiningGovernanceCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(CreateMiningGovernanceCommand request, CancellationToken cancellationToken)
         {
             var governance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.Governance, findOrThrow: false));
 

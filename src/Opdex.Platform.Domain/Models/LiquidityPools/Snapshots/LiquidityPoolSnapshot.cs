@@ -9,7 +9,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 {
     public class LiquidityPoolSnapshot
     {
-        public LiquidityPoolSnapshot(long liquidityPoolId, SnapshotType snapshotType, DateTime blockTime)
+        public LiquidityPoolSnapshot(ulong liquidityPoolId, SnapshotType snapshotType, DateTime blockTime)
         {
             if (liquidityPoolId < 1)
             {
@@ -32,7 +32,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             EndDate = blockTime.ToEndOf(snapshotType);
         }
 
-        public LiquidityPoolSnapshot(long id, long liquidityPoolId, long transactionCount, ReservesSnapshot reserves, RewardsSnapshot rewards,
+        public LiquidityPoolSnapshot(ulong id, ulong liquidityPoolId, long transactionCount, ReservesSnapshot reserves, RewardsSnapshot rewards,
             StakingSnapshot staking, VolumeSnapshot volume, CostSnapshot cost, SnapshotType snapshotType, DateTime startDate, DateTime endDate, DateTime modifiedDate)
         {
             Id = id;
@@ -49,8 +49,8 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             ModifiedDate = modifiedDate;
         }
 
-        public long Id { get; private set; }
-        public long LiquidityPoolId { get; }
+        public ulong Id { get; private set; }
+        public ulong LiquidityPoolId { get; }
         public long TransactionCount { get; private set; }
         public ReservesSnapshot Reserves { get; private set; }
         public RewardsSnapshot Rewards { get; private set; }

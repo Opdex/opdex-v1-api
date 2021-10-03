@@ -26,7 +26,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Markets.Permissions
         public async Task Handle_MediatorSelectMarketPermissionsByUserQuery_Send()
         {
             // Arrange
-            var marketId = 5L;
+            var marketId = 5ul;
             var user = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var cancellationToken = new CancellationTokenSource().Token;
 

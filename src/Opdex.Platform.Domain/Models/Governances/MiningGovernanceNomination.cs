@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.Governances
 {
     public class MiningGovernanceNomination : BlockAudit
     {
-        public MiningGovernanceNomination(long governanceId, long liquidityPoolId, long miningPoolId, bool isNominated, UInt256 weight, ulong createdBlock) : base(createdBlock)
+        public MiningGovernanceNomination(ulong governanceId, ulong liquidityPoolId, ulong miningPoolId, bool isNominated, UInt256 weight, ulong createdBlock) : base(createdBlock)
         {
             if (governanceId < 1)
             {
@@ -30,7 +30,7 @@ namespace Opdex.Platform.Domain.Models.Governances
             Weight = weight;
         }
 
-        public MiningGovernanceNomination(long id, long governanceId, long liquidityPoolId, long miningPoolId, bool isNominated, UInt256 weight, ulong createdBlock, ulong modifiedBlock)
+        public MiningGovernanceNomination(ulong id, ulong governanceId, ulong liquidityPoolId, ulong miningPoolId, bool isNominated, UInt256 weight, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -41,10 +41,10 @@ namespace Opdex.Platform.Domain.Models.Governances
             Weight = weight;
         }
 
-        public long Id { get; }
-        public long GovernanceId { get; }
-        public long LiquidityPoolId { get; }
-        public long MiningPoolId { get; }
+        public ulong Id { get; }
+        public ulong GovernanceId { get; }
+        public ulong LiquidityPoolId { get; }
+        public ulong MiningPoolId { get; }
         public bool IsNominated { get; private set; }
         public UInt256 Weight { get; private set; }
 

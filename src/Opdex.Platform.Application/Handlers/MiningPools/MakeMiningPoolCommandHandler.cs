@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.MiningPools
 {
-    public class MakeMiningPoolCommandHandler : IRequestHandler<MakeMiningPoolCommand, long>
+    public class MakeMiningPoolCommandHandler : IRequestHandler<MakeMiningPoolCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -17,7 +17,7 @@ namespace Opdex.Platform.Application.Handlers.MiningPools
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Handle(MakeMiningPoolCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(MakeMiningPoolCommand request, CancellationToken cancellationToken)
         {
             if (request.Refresh)
             {

@@ -5,13 +5,13 @@ using Opdex.Platform.Domain.Models.Transactions;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions
 {
-    public class MakeTransactionCommand : IRequest<long>
+    public class MakeTransactionCommand : IRequest<ulong>
     {
         public MakeTransactionCommand(Transaction transaction)
         {
             Transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
         }
-        
+
         public Transaction Transaction { get; }
     }
 }

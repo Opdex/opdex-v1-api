@@ -8,7 +8,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Addresses
     /// <summary>
     /// Create the make address balance command where address' SRC balances are refreshed by calling full node.
     /// </summary>
-    public class MakeAddressBalanceCommand : IRequest<long>
+    public class MakeAddressBalanceCommand : IRequest<ulong>
     {
         /// <summary>
         /// Create the make address balance command.

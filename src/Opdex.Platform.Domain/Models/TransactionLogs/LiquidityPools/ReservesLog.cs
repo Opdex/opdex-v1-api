@@ -27,7 +27,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             ReserveSrc = reserveSrc;
         }
 
-        public ReservesLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public ReservesLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.ReservesLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

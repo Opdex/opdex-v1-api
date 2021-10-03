@@ -103,7 +103,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
             var log = new ChangeMarketPermissionLog(logData, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeMarketPermissionCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(1);
+                         .ReturnsAsync(1ul);
 
             // Act
             var response = await _handler.Handle(new ProcessChangeMarketPermissionLogCommand(log, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 10_000),

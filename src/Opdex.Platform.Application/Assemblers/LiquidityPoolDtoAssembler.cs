@@ -116,21 +116,21 @@ namespace Opdex.Platform.Application.Assemblers
             return poolDto;
         }
 
-        private async Task<TokenDto> AssembleToken(long tokenId, long marketId)
+        private async Task<TokenDto> AssembleToken(ulong tokenId, ulong marketId)
         {
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(tokenId));
 
             return await AssembleTokenExecute(token, marketId);
         }
 
-        private async Task<TokenDto> AssembleToken(Address tokenAddress, long marketId)
+        private async Task<TokenDto> AssembleToken(Address tokenAddress, ulong marketId)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress));
 
             return await AssembleTokenExecute(token, marketId);
         }
 
-        private async Task<TokenDto> AssembleTokenExecute(Token token, long marketId)
+        private async Task<TokenDto> AssembleTokenExecute(Token token, ulong marketId)
         {
             token.SetMarket(marketId);
 

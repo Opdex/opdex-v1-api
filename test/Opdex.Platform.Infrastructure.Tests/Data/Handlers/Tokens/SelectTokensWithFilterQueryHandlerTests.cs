@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task SelectAllTokens_Success()
         {
-            const long marketId = 1;
+            const ulong marketId = 1;
 
             var expectedEntity = new TokenEntity
             {

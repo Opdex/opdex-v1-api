@@ -6,11 +6,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 {
     public class SelectVaultByIdQuery : FindQuery<Vault>
     {
-        public SelectVaultByIdQuery(long vaultId, bool findOrThrow) : base(findOrThrow)
+        public SelectVaultByIdQuery(ulong vaultId, bool findOrThrow) : base(findOrThrow)
         {
             VaultId = vaultId > 0 ? vaultId : throw new ArgumentOutOfRangeException(nameof(vaultId), "Vault Id must be greater than zero.");
         }
 
-        public long VaultId { get; }
+        public ulong VaultId { get; }
     }
 }

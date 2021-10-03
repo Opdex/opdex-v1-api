@@ -18,7 +18,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
         /// <param name="dateTime">The date to get the snapshot of.</param>
         /// <param name="snapshotType"></param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public SelectLiquidityPoolSnapshotWithFilterQuery(long liquidityPoolId, DateTime dateTime, SnapshotType snapshotType)
+        public SelectLiquidityPoolSnapshotWithFilterQuery(ulong liquidityPoolId, DateTime dateTime, SnapshotType snapshotType)
         {
             if (liquidityPoolId < 1)
             {
@@ -30,7 +30,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
             SnapshotType = snapshotType;
         }
 
-        public long LiquidityPoolId { get; }
+        public ulong LiquidityPoolId { get; }
         public DateTime DateTime { get; }
         public SnapshotType SnapshotType { get; }
     }

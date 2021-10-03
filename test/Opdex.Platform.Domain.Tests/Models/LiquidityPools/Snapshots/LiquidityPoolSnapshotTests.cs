@@ -19,7 +19,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void CreateLiquidityPoolSnapshot_InvalidLiquidityPoolId_ThrowsArgumentOutOfRangeException()
         {
             // Arrange
-            const long liquidityPoolId = 0;
+            const ulong liquidityPoolId = 0;
 
             // Act
             void Act() => new LiquidityPoolSnapshot(liquidityPoolId, SnapshotType.Hourly, DateTime.UtcNow);
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void CreateLiquidityPoolSnapshot_Default_Success()
         {
             // Arrange
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const SnapshotType snapshotType = SnapshotType.Daily;
             var blockTime = new DateTime(2021, 6, 21, 12, 23, 56);
 
@@ -71,7 +71,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void LiquidityPoolSnapshot_IncrementTransactionCount_Success(int times)
         {
             // Arrange
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const SnapshotType snapshotType = SnapshotType.Daily;
             var blockTime = new DateTime(2021, 6, 21, 12, 23, 56);
             var snapshot = new LiquidityPoolSnapshot(liquidityPoolId, snapshotType, blockTime);
@@ -89,8 +89,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         [Fact]
         public void ResetStaleSnapshot_Success()
         {
-            const long id = 12345;
-            const long liquidityPoolId = 124;
+            const ulong id = 12345;
+            const ulong liquidityPoolId = 124;
             const long transactionCount = 1;
             var reserves = new ReservesSnapshot(100_000_000, 200000000, 3.00m); // 1 crs, 2 src,
             var rewards = new RewardsSnapshot(5.00m, 1.00m);
@@ -125,15 +125,15 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void RefreshSnapshot_Success()
         {
             // Arrange
-            const long id = 12345;
-            const long liquidityPoolId = 124;
+            const ulong id = 12345;
+            const ulong liquidityPoolId = 124;
             const long transactionCount = 1;
             const SnapshotType snapshotType = SnapshotType.Daily;
             var startDate = new DateTime(2021, 6, 21);
             var endDate = new DateTime(2021, 6, 21, 23, 59, 59);
 
             // Reserves
-            const long reserveCrs = 100_000_000;
+            const ulong reserveCrs = 100_000_000;
             UInt256 reserveSrc = 200000000;
             const decimal reserveUsd = 3.00m;
 
@@ -203,8 +203,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void ProcessSwapLog_Success()
         {
             // Arrange
-            const long id = 12345;
-            const long liquidityPoolId = 124;
+            const ulong id = 12345;
+            const ulong liquidityPoolId = 124;
             const long transactionCount = 1;
             var reserves = new ReservesSnapshot(100_000_000, 200000000, 3.00m); // 1 crs, 2 src,
             var rewards = new RewardsSnapshot(.50m, .10m);
@@ -250,8 +250,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void ProcessReservesLog_Success()
         {
             // Arrange
-            const long id = 12345;
-            const long liquidityPoolId = 124;
+            const ulong id = 12345;
+            const ulong liquidityPoolId = 124;
             const long transactionCount = 1;
             const SnapshotType snapshotType = SnapshotType.Daily;
             var startDate = new DateTime(2021, 6, 21);
@@ -329,15 +329,15 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void ProcessStakingLog_Success()
         {
             // Arrange
-            const long id = 12345;
-            const long liquidityPoolId = 124;
+            const ulong id = 12345;
+            const ulong liquidityPoolId = 124;
             const long transactionCount = 1;
             const SnapshotType snapshotType = SnapshotType.Daily;
             var startDate = new DateTime(2021, 6, 21);
             var endDate = new DateTime(2021, 6, 21, 23, 59, 59);
 
             // Reserves
-            const long reserveCrs = 100_000_000;
+            const ulong reserveCrs = 100_000_000;
             UInt256 reserveSrc = 200000000;
             const decimal reserveUsd = 3.00m;
 

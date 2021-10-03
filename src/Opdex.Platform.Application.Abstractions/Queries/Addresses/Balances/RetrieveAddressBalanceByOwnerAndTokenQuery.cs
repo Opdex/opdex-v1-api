@@ -17,13 +17,11 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances
         /// <param name="tokenId">Optional tokenId to lookup the balance by.</param>
         /// <param name="tokenAddress">Optional token address to lookup the balance by.</param>
         /// <param name="findOrThrow">Defaulted to true, optionally throw not found exception when applicable.</param>
-        /// <exception cref="ArgumentNullException">Argument null exception for invalid request arguments.</exception>
-        /// <exception cref="ArgumentException">Argument exception thrown when tokenId and tokenAddress are both invalid.</exception>
-        public RetrieveAddressBalanceByOwnerAndTokenQuery(Address owner, long? tokenId = null, Address? tokenAddress = null, bool findOrThrow = true) : base(findOrThrow)
+        public RetrieveAddressBalanceByOwnerAndTokenQuery(Address owner, ulong? tokenId = null, Address? tokenAddress = null, bool findOrThrow = true) : base(findOrThrow)
         {
             Owner = owner != Address.Empty ? owner : throw new ArgumentNullException(nameof(owner), "Owner address must be set.");
 
-            if (!(tokenId.HasValue && tokenId.Value > 0) && tokenAddress == Address.Empty)
+            if ((tokenId == 0 || tokenId == null) && tokenAddress == Address.Empty)
             {
                 throw new ArgumentException("Either a tokenId or a tokenAddress must be provided.");
             }
@@ -33,7 +31,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances
         }
 
         public Address TokenAddress { get; }
-        public long? TokenId { get; }
+        public ulong? TokenId { get; }
         public Address Owner { get; }
     }
 }

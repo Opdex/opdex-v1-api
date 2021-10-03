@@ -36,7 +36,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Admins
         public void CreateAdmin_Success()
         {
             // Arrange
-            const long id = 1;
+            const ulong id = 1;
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
             // Act

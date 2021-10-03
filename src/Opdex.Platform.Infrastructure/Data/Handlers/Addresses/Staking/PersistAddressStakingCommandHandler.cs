@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking
 {
-    public class PersistAddressStakingCommandHandler : IRequestHandler<PersistAddressStakingCommand, long>
+    public class PersistAddressStakingCommandHandler : IRequestHandler<PersistAddressStakingCommand, ulong>
     {
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO address_staking (
@@ -49,7 +49,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistAddressStakingCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(PersistAddressStakingCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking
 
                 var command = DatabaseQuery.Create(sql, entity, cancellationToken);
 
-                var result = await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<ulong>(command);
 
                 return isUpdate ? entity.Id : result;
             }

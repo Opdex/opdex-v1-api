@@ -5,8 +5,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets
 {
     public class MarketSnapshotEntity : SnapshotEntity
     {
-        public long Id { get; set; }
-        public long MarketId { get; set; }
+        public ulong Id { get; set; }
+        public ulong MarketId { get; set; }
         public decimal Liquidity { get; set; }
         public decimal Volume { get; set; }
         public SnapshotStakingEntity Staking { get; set; }

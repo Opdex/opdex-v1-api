@@ -60,7 +60,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             TotalSupply = totalSupply;
         }
 
-        public MintLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public MintLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.MintLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

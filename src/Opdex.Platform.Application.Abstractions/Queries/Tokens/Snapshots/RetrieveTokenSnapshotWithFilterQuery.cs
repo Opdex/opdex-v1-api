@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots
         /// <param name="marketId">The market id of the snapshot.</param>
         /// <param name="dateTime">The requested datetime of the snapshot.</param>
         /// <param name="snapshotType">The type of snapshot.</param>
-        public RetrieveTokenSnapshotWithFilterQuery(long tokenId, long marketId, DateTime dateTime, SnapshotType snapshotType)
+        public RetrieveTokenSnapshotWithFilterQuery(ulong tokenId, ulong marketId, DateTime dateTime, SnapshotType snapshotType)
         {
             if (tokenId < 1)
             {
@@ -37,8 +37,8 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots
             SnapshotType = snapshotType;
         }
 
-        public long TokenId { get; }
-        public long MarketId { get; }
+        public ulong TokenId { get; }
+        public ulong MarketId { get; }
         public DateTime DateTime { get; }
         public SnapshotType SnapshotType { get; }
     }

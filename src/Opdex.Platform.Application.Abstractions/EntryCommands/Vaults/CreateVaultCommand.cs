@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
     /// <summary>
     /// Create a vault command to create a new vault.
     /// </summary>
-    public class CreateVaultCommand : IRequest<long>
+    public class CreateVaultCommand : IRequest<ulong>
     {
         /// <summary>
         /// Constructor to initialize a create vault command.
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
         /// <param name="tokenId">The tokenId of the locked token.</param>
         /// <param name="owner">The address of the vault owner.</param>
         /// <param name="blockHeight">The block height the vault was created at.</param>
-        public CreateVaultCommand(Address vault, long tokenId, Address owner, ulong blockHeight)
+        public CreateVaultCommand(Address vault, ulong tokenId, Address owner, ulong blockHeight)
         {
             if (vault == Address.Empty)
             {
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults
         }
 
         public Address Vault { get; }
-        public long TokenId { get; }
+        public ulong TokenId { get; }
         public Address Owner { get; }
         public ulong BlockHeight { get; }
     }

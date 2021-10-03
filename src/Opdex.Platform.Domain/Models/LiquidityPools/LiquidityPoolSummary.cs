@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
 {
     public class LiquidityPoolSummary : BlockAudit
     {
-        public LiquidityPoolSummary(long liquidityPoolId, decimal liquidity, decimal volume, ulong stakingWeight, ulong lockedCrs, UInt256 lockedSrc, ulong createdBlock)
+        public LiquidityPoolSummary(ulong liquidityPoolId, decimal liquidity, decimal volume, ulong stakingWeight, ulong lockedCrs, UInt256 lockedSrc, ulong createdBlock)
             : this(liquidityPoolId, createdBlock)
         {
             if (liquidity < 0m)
@@ -27,7 +27,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
             LockedSrc = lockedSrc;
         }
 
-        public LiquidityPoolSummary(long liquidityPoolId, ulong createdBlock) : base(createdBlock, createdBlock)
+        public LiquidityPoolSummary(ulong liquidityPoolId, ulong createdBlock) : base(createdBlock, createdBlock)
         {
             if (liquidityPoolId < 1)
             {
@@ -37,7 +37,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
             LiquidityPoolId = liquidityPoolId;
         }
 
-        public LiquidityPoolSummary(long id, long liquidityPoolId, decimal liquidity, decimal volume, ulong stakingWeight, ulong lockedCrs, UInt256 lockedSrc,
+        public LiquidityPoolSummary(ulong id, ulong liquidityPoolId, decimal liquidity, decimal volume, ulong stakingWeight, ulong lockedCrs, UInt256 lockedSrc,
                                     ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -49,8 +49,8 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
             LockedSrc = lockedSrc;
         }
 
-        public long Id { get; }
-        public long LiquidityPoolId { get; }
+        public ulong Id { get; }
+        public ulong LiquidityPoolId { get; }
         public decimal LiquidityUsd { get; private set; }
         public decimal VolumeUsd { get; private set; }
         public ulong StakingWeight { get; private set; }

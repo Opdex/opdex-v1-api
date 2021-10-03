@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 {
-    public class PersistVaultCommandHandler : IRequestHandler<PersistVaultCommand, long>
+    public class PersistVaultCommandHandler : IRequestHandler<PersistVaultCommand, ulong>
     {
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO vault (
@@ -55,7 +55,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistVaultCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(PersistVaultCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
                 var command = DatabaseQuery.Create(sql, entity, cancellationToken);
 
-                var result = await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<ulong>(command);
 
                 return isUpdate ? entity.Id : result;
             }

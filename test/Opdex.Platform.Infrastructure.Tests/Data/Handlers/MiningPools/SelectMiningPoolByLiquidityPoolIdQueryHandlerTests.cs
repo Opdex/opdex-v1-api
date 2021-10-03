@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
         [Fact]
         public async Task SelectMiningPoolByLiquidityPoolId_Success()
         {
-            const long lpId = 99;
+            const ulong lpId = 99;
 
             var expectedEntity = new MiningPoolEntity
             {
@@ -63,7 +63,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
         [Fact]
         public void SelectMiningPoolByLiquidityPoolId_Throws_NotFoundException()
         {
-            const long lpId = 99;
+            const ulong lpId = 99;
 
             var command = new SelectMiningPoolByLiquidityPoolIdQuery(lpId);
 
@@ -79,7 +79,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
         [Fact]
         public async Task SelectMiningPoolByLiquidityPoolId_ReturnsNull()
         {
-            const long lpId = 99;
+            const ulong lpId = 99;
             const bool findOrThrow = false;
 
             var command = new SelectMiningPoolByLiquidityPoolIdQuery(lpId, findOrThrow);

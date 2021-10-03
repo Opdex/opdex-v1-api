@@ -11,7 +11,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
         {
         }
 
-        public StopMiningLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public StopMiningLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.StopMiningLog, id, transactionId, address, sortOrder, details)
         {
         }

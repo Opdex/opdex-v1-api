@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Governances.Nomination
 {
     public class RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery : FindQuery<MiningGovernanceNomination>
     {
-        public RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(long governanceId, long liquidityPoolId, long miningPoolId, bool findOrThrow = true)
+        public RetrieveMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery(ulong governanceId, ulong liquidityPoolId, ulong miningPoolId, bool findOrThrow = true)
             : base(findOrThrow)
         {
             if (governanceId < 1)
@@ -29,8 +29,8 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Governances.Nomination
             MiningPoolId = miningPoolId;
         }
 
-        public long GovernanceId { get; }
-        public long LiquidityPoolId { get; }
-        public long MiningPoolId { get; }
+        public ulong GovernanceId { get; }
+        public ulong LiquidityPoolId { get; }
+        public ulong MiningPoolId { get; }
     }
 }

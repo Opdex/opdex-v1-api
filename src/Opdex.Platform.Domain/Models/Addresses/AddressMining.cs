@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
 {
     public class AddressMining : BlockAudit
     {
-        public AddressMining(long miningPoolId, Address owner, UInt256 balance, ulong createdBlock) : base(createdBlock)
+        public AddressMining(ulong miningPoolId, Address owner, UInt256 balance, ulong createdBlock) : base(createdBlock)
         {
             if (miningPoolId < 1)
             {
@@ -24,7 +24,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Balance = balance;
         }
 
-        public AddressMining(long id, long miningPoolId, Address owner, UInt256 balance, ulong createdBlock, ulong modifiedBlock)
+        public AddressMining(ulong id, ulong miningPoolId, Address owner, UInt256 balance, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -33,8 +33,8 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Balance = balance;
         }
 
-        public long Id { get; }
-        public long MiningPoolId { get; }
+        public ulong Id { get; }
+        public ulong MiningPoolId { get; }
         public Address Owner { get; }
         public UInt256 Balance { get; private set; }
 

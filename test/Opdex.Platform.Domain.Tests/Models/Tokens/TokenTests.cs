@@ -17,7 +17,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
             const bool isLpt = true;
             const string symbol = "OPDX";
             const int decimals = 18;
-            const long sats = 10000000000000000;
+            const ulong sats = 10000000000000000;
             UInt256 totalSupply = 987654321;
             const ulong createdBlock = 3;
 
@@ -92,13 +92,13 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         [Fact]
         public void CreatesExistingToken_Success()
         {
-            const long id = 1;
+            const ulong id = 1;
             Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             const string name = "Opdex Token";
             const bool isLpt = true;
             const string symbol = "OPDX";
             const int decimals = 18;
-            const long sats = 10000000000000000;
+            const ulong sats = 10000000000000000;
             UInt256 totalSupply = 987654321;
             const ulong createdBlock = 3;
             const ulong modifiedBlock = 4;
@@ -119,7 +119,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         [Fact]
         public void Token_SetMarket_Success()
         {
-            const long marketId = 10;
+            const ulong marketId = 10;
 
             var token = new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "name", "symbol", 8, 100_000_000, 100, 2);
 

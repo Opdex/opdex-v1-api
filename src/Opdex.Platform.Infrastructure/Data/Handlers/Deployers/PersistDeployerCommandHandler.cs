@@ -10,7 +10,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
 {
-    public class PersistDeployerCommandHandler : IRequestHandler<PersistDeployerCommand, long>
+    public class PersistDeployerCommandHandler : IRequestHandler<PersistDeployerCommand, ulong>
     {
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO market_deployer (
@@ -50,7 +50,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistDeployerCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(PersistDeployerCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
 
                 var command = DatabaseQuery.Create(sql, entity, cancellationToken);
 
-                var result = await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<ulong>(command);
 
                 return isUpdate ? entity.Id : result;
             }

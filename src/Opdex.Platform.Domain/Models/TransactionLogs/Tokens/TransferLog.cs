@@ -29,7 +29,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             Amount = amount;
         }
 
-        public TransferLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public TransferLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.TransferLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

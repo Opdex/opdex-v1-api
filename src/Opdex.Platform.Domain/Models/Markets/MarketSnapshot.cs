@@ -9,7 +9,7 @@ namespace Opdex.Platform.Domain.Models.Markets
 {
     public class MarketSnapshot
     {
-        public MarketSnapshot(long marketId, SnapshotType snapshotType, DateTime dateTime)
+        public MarketSnapshot(ulong marketId, SnapshotType snapshotType, DateTime dateTime)
         {
             if (marketId < 1)
             {
@@ -31,7 +31,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             EndDate = dateTime.ToEndOf(snapshotType);
         }
 
-        public MarketSnapshot(long id, long marketId, decimal liquidity, decimal volume, StakingSnapshot staking, RewardsSnapshot rewards,
+        public MarketSnapshot(ulong id, ulong marketId, decimal liquidity, decimal volume, StakingSnapshot staking, RewardsSnapshot rewards,
                               SnapshotType snapshotType, DateTime startDate, DateTime endDate)
         {
             Id = id;
@@ -45,8 +45,8 @@ namespace Opdex.Platform.Domain.Models.Markets
             EndDate = endDate;
         }
 
-        public long Id { get; private set; }
-        public long MarketId { get; }
+        public ulong Id { get; private set; }
+        public ulong MarketId { get; }
         public decimal Liquidity { get; private set; }
         public decimal Volume { get; private set; }
         public StakingSnapshot Staking { get; private set; }

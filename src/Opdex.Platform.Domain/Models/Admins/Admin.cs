@@ -5,7 +5,7 @@ namespace Opdex.Platform.Domain.Models.Admins
 {
     public class Admin
     {
-        public Admin(long id, Address address)
+        public Admin(ulong id, Address address)
         {
             if (id < 1)
             {
@@ -21,7 +21,7 @@ namespace Opdex.Platform.Domain.Models.Admins
             Address = address;
         }
 
-        public long Id { get; }
+        public ulong Id { get; }
 
         public Address Address { get; }
     }

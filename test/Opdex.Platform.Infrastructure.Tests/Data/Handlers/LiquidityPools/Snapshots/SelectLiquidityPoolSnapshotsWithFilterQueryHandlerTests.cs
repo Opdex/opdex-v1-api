@@ -32,7 +32,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
         [Fact]
         public async Task SelectLiquidityPoolSnapshotsWithFilter_Success()
         {
-            const long liquidityPoolId = 8;
+            const ulong liquidityPoolId = 8;
             var startDate = new DateTime(2021, 6, 21, 12, 0, 0);
             var endDate = new DateTime(2021, 6, 21, 15, 0, 0);
             const SnapshotType snapshotType = SnapshotType.Daily;
@@ -109,7 +109,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
         [Fact]
         public async Task SelectLiquidityPoolSnapshotsWithFilter_Returns_EmptyList()
         {
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             var startDate = new DateTime(2021, 6, 21, 12, 0, 0);
             var endDate = new DateTime(2021, 6, 21, 15, 0, 0);
             const SnapshotType snapshotType = SnapshotType.Daily;

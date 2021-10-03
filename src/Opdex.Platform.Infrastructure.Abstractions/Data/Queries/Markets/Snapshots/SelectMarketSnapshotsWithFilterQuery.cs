@@ -19,7 +19,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Snapsh
         /// <param name="startDate">The start date, earliest snapshot to find.</param>
         /// <param name="endDate">The end date, latest snapshot to find.</param>
         /// <param name="snapshotType">The type of snapshots to return, hourly/daily options.</param>
-        public SelectMarketSnapshotsWithFilterQuery(long marketId, DateTime startDate, DateTime endDate, SnapshotType snapshotType)
+        public SelectMarketSnapshotsWithFilterQuery(ulong marketId, DateTime startDate, DateTime endDate, SnapshotType snapshotType)
         {
             if (marketId < 1)
             {
@@ -37,7 +37,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Snapsh
             SnapshotType = snapshotType;
         }
 
-        public long MarketId { get; }
+        public ulong MarketId { get; }
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }
         public SnapshotType SnapshotType { get; }

@@ -49,7 +49,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Markets.Permissions
         public async Task Handle_MediatorPersistMarketPermissionCommand_Return()
         {
             // Arrange
-            var id = 5L;
+            var id = 5ul;
             var marketPermission = new MarketPermission(5,
                                                         "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
                                                         MarketPermissionType.Trade,

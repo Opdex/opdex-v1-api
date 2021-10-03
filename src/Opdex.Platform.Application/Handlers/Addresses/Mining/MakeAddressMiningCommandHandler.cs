@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Addresses.Mining
 {
-    public class MakeAddressMiningCommandHandler : IRequestHandler<MakeAddressMiningCommand, long>
+    public class MakeAddressMiningCommandHandler : IRequestHandler<MakeAddressMiningCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Handlers.Addresses.Mining
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<long> Handle(MakeAddressMiningCommand request, CancellationToken cancellationToken)
+        public Task<ulong> Handle(MakeAddressMiningCommand request, CancellationToken cancellationToken)
         {
             return _mediator.Send(new PersistAddressMiningCommand(request.AddressMining), cancellationToken);
         }

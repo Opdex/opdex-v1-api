@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address owner = Address.Empty;
-            const long tokenId = 2;
+            const  ulong tokenId = 2;
 
             void Act() => new RetrieveAddressBalanceByOwnerAndTokenQuery(owner, tokenId);
 
@@ -43,12 +43,12 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
 
         [Theory]
         [InlineData(null, null)]
-        [InlineData(null, 0)]
+        [InlineData(null, 0ul)]
         [InlineData("", null)]
-        [InlineData("", 0)]
+        [InlineData("", 0ul)]
         [InlineData(" ", null)]
-        [InlineData(" ", 0)]
-        public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentException_InvalidTokenIdAndAddress(string owner, long? tokenId)
+        [InlineData(" ", 0ul)]
+        public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentException_InvalidTokenIdAndAddress(string owner, ulong? tokenId)
         {
             // Arrange
 
@@ -85,7 +85,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const long tokenId = 2;
+            const  ulong tokenId = 2;
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
@@ -106,7 +106,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const long tokenId = 2;
+            const  ulong tokenId = 2;
             const bool findOrThrow = false;
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -127,7 +127,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const long tokenId = 2;
+            const  ulong tokenId = 2;
             const bool findOrThrow = false;
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -150,7 +150,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const long tokenId = 2;
+            const  ulong tokenId = 2;
             const bool findOrThrow = false;
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -176,7 +176,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const long tokenId = 2;
+            const  ulong tokenId = 2;
             const bool findOrThrow = true;
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -198,7 +198,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const long tokenId = 2;
+            const  ulong tokenId = 2;
             const bool findOrThrow = true;
             var cancellationToken = new CancellationTokenSource().Token;
 

@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
 {
-    public class VaultsCursor : Cursor<long>
+    public class VaultsCursor : Cursor<ulong>
     {
-        public VaultsCursor(Address lockedToken, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
+        public VaultsCursor(Address lockedToken, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
             LockedToken = lockedToken;
@@ -25,7 +25,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
         }
 
         /// <inheritdoc />
-        public override Cursor<long> Turn(PagingDirection direction, long pointer)
+        public override Cursor<ulong> Turn(PagingDirection direction, ulong pointer)
         {
             if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
             if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
         }
 
         /// <inheritdoc />
-        protected override bool ValidatePointer(long pointer) => pointer >= 0 && base.ValidatePointer(pointer);
+        protected override bool ValidatePointer(ulong pointer) => pointer >= 0 && base.ValidatePointer(pointer);
 
         /// <summary>
         /// Parses a stringified version of the cursor
@@ -76,11 +76,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults
             return true;
         }
 
-        private static bool TryDecodePointer(string encoded, out long pointer)
+        private static bool TryDecodePointer(string encoded, out ulong pointer)
         {
             pointer = 0;
 
-            if (!Base64Extensions.TryBase64Decode(encoded, out var decoded) || !long.TryParse(decoded, out var result)) return false;
+            if (!Base64Extensions.TryBase64Decode(encoded, out var decoded) || !ulong.TryParse(decoded, out var result)) return false;
 
             pointer = result;
             return true;

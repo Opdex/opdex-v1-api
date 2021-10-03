@@ -145,8 +145,8 @@ namespace Opdex.Platform.Infrastructure
         private static void AddDataCommands(IServiceCollection services)
         {
             // Markets
-            services.AddTransient<IRequestHandler<PersistMarketCommand, long>, PersistMarketCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistMarketPermissionCommand, long>, PersistMarketPermissionCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistMarketCommand, ulong>, PersistMarketCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistMarketPermissionCommand, ulong>, PersistMarketPermissionCommandHandler>();
             services.AddTransient<IRequestHandler<PersistMarketSnapshotCommand, bool>, PersistMarketSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<PersistMarketRouterCommand, bool>, PersistMarketRouterCommandHandler>();
 
@@ -157,39 +157,39 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<ExecuteRewindToBlockCommand, bool>, ExecuteRewindToBlockCommandHandler>();
 
             // Liquidity Pools
-            services.AddTransient<IRequestHandler<PersistLiquidityPoolCommand, long>, PersistLiquidityPoolCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistLiquidityPoolCommand, ulong>, PersistLiquidityPoolCommandHandler>();
             services.AddTransient<IRequestHandler<PersistLiquidityPoolSnapshotCommand, bool>, PersistLiquidityPoolSnapshotCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistLiquidityPoolSummaryCommand, long>, PersistLiquidityPoolSummaryCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistLiquidityPoolSummaryCommand, ulong>, PersistLiquidityPoolSummaryCommandHandler>();
 
             // Mining Pools
-            services.AddTransient<IRequestHandler<PersistMiningPoolCommand, long>, PersistMiningPoolCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistMiningPoolCommand, ulong>, PersistMiningPoolCommandHandler>();
 
             // Tokens
-            services.AddTransient<IRequestHandler<PersistTokenCommand, long>, PersistTokenCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTokenCommand, ulong>, PersistTokenCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTokenSnapshotCommand, bool>, PersistTokenSnapshotCommandHandler>();
 
             // Transactions
-            services.AddTransient<IRequestHandler<PersistTransactionCommand, long>, PersistTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTransactionCommand, ulong>, PersistTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionLogCommand, bool>, PersistTransactionLogCommandHandler>();
 
             // Token Distribution
             services.AddTransient<IRequestHandler<PersistTokenDistributionCommand, bool>, PersistTokenDistributionCommandHandler>();
 
             // Governances
-            services.AddTransient<IRequestHandler<PersistMiningGovernanceCommand, long>, PersistMiningGovernanceCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistMiningGovernanceNominationCommand, long>, PersistMiningGovernanceNominationCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistMiningGovernanceCommand, ulong>, PersistMiningGovernanceCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistMiningGovernanceNominationCommand, ulong>, PersistMiningGovernanceNominationCommandHandler>();
 
             // Deployers
-            services.AddTransient<IRequestHandler<PersistDeployerCommand, long>, PersistDeployerCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistDeployerCommand, ulong>, PersistDeployerCommandHandler>();
 
             // Vault
-            services.AddTransient<IRequestHandler<PersistVaultCommand, long>, PersistVaultCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistVaultCommand, ulong>, PersistVaultCommandHandler>();
             services.AddTransient<IRequestHandler<PersistVaultCertificateCommand, bool>, PersistVaultCertificateCommandHandler>();
 
             // Addresses
-            services.AddTransient<IRequestHandler<PersistAddressBalanceCommand, long>, PersistAddressBalanceCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistAddressMiningCommand, long>, PersistAddressMiningCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistAddressStakingCommand, long>, PersistAddressStakingCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistAddressBalanceCommand, ulong>, PersistAddressBalanceCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistAddressMiningCommand, ulong>, PersistAddressMiningCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistAddressStakingCommand, ulong>, PersistAddressStakingCommandHandler>();
         }
 
         private static void AddDataQueries(IServiceCollection services)

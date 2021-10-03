@@ -9,7 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.MiningPools
     /// </summary>
     public class RetrieveMiningPoolByIdQuery : FindQuery<MiningPool>
     {
-        public RetrieveMiningPoolByIdQuery(long miningPoolId, bool findOrThrow = true) : base(findOrThrow)
+        public RetrieveMiningPoolByIdQuery(ulong miningPoolId, bool findOrThrow = true) : base(findOrThrow)
         {
             if (miningPoolId < 1)
             {
@@ -19,6 +19,6 @@ namespace Opdex.Platform.Application.Abstractions.Queries.MiningPools
             MiningPoolId = miningPoolId;
         }
 
-        public long MiningPoolId { get; }
+        public ulong MiningPoolId { get; }
     }
 }

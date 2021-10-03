@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.Markets
 {
     public class MarketRouter : BlockAudit
     {
-        public MarketRouter(Address address, long marketId, bool isActive, ulong createdBlock) : base(createdBlock)
+        public MarketRouter(Address address, ulong marketId, bool isActive, ulong createdBlock) : base(createdBlock)
         {
             if (address == Address.Empty)
             {
@@ -23,7 +23,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             IsActive = isActive;
         }
 
-        public MarketRouter(long id, Address address, long marketId, bool isActive, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+        public MarketRouter(ulong id, Address address, ulong marketId, bool isActive, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
@@ -31,9 +31,9 @@ namespace Opdex.Platform.Domain.Models.Markets
             IsActive = isActive;
         }
 
-        public long Id { get; }
+        public ulong Id { get; }
         public Address Address { get; }
-        public long MarketId { get; }
+        public ulong MarketId { get; }
         public bool IsActive { get; }
     }
 }

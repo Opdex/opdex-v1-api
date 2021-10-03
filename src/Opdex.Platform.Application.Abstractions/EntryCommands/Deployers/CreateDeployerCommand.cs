@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Deployers
     /// <summary>
     /// Creates or updates a market deployer and it's properties.
     /// </summary>
-    public class CreateDeployerCommand : IRequest<long>
+    public class CreateDeployerCommand : IRequest<ulong>
     {
         /// <summary>
         /// Create the create deployer command.

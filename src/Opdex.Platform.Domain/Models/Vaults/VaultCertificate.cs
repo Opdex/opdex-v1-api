@@ -9,7 +9,7 @@ namespace Opdex.Platform.Domain.Models.Vaults
 {
     public class VaultCertificate : BlockAudit
     {
-        public VaultCertificate(long vaultId, Address owner, UInt256 amount, ulong vestedBlock, ulong createdBlock) : base(createdBlock)
+        public VaultCertificate(ulong vaultId, Address owner, UInt256 amount, ulong vestedBlock, ulong createdBlock) : base(createdBlock)
         {
             if (vaultId < 1)
             {
@@ -39,7 +39,7 @@ namespace Opdex.Platform.Domain.Models.Vaults
             Revoked = false;
         }
 
-        public VaultCertificate(long id, long vaultId, Address owner, UInt256 amount, ulong vestedBlock, bool redeemed, bool revoked, ulong createdBlock, ulong modifiedBlock)
+        public VaultCertificate(ulong id, ulong vaultId, Address owner, UInt256 amount, ulong vestedBlock, bool redeemed, bool revoked, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -51,8 +51,8 @@ namespace Opdex.Platform.Domain.Models.Vaults
             Revoked = revoked;
         }
 
-        public long Id { get; }
-        public long VaultId { get; }
+        public ulong Id { get; }
+        public ulong VaultId { get; }
         public Address Owner { get; }
         public UInt256 Amount { get; private set; }
         public bool Revoked { get; private set; }

@@ -162,13 +162,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
 
         private sealed class SqlParams
         {
-            internal SqlParams(long marketId, IEnumerable<Address> pools)
+            internal SqlParams(ulong marketId, IEnumerable<Address> pools)
             {
                 MarketId = marketId;
                 Pools = pools.Select(pool => pool.ToString());
             }
 
-            public long MarketId { get; }
+            public ulong MarketId { get; }
             public IEnumerable<string> Pools { get; }
         }
     }

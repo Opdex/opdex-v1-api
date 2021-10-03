@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             MiningPeriodEndBlock = miningPeriodEndBlock;
         }
 
-        public EnableMiningLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public EnableMiningLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.EnableMiningLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

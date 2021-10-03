@@ -6,8 +6,8 @@ namespace Opdex.Platform.Application.Abstractions.Models
 {
     public class MarketSnapshotDto
     {
-        public long Id { get; set; }
-        public long MarketId { get; set; }
+        public ulong Id { get; set; }
+        public ulong MarketId { get; set; }
         public decimal Liquidity { get; set; }
         public decimal? LiquidityDailyChange { get; set; }
         public decimal Volume { get; set; }

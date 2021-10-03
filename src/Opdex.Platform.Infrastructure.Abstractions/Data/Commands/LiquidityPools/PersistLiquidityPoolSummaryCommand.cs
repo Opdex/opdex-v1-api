@@ -4,7 +4,7 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools
 {
-    public class PersistLiquidityPoolSummaryCommand : IRequest<long>
+    public class PersistLiquidityPoolSummaryCommand : IRequest<ulong>
     {
         public PersistLiquidityPoolSummaryCommand(LiquidityPoolSummary summary)
         {

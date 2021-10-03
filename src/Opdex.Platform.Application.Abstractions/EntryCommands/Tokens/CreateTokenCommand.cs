@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens
     /// <summary>
     /// Create a new token and persist it to the database.
     /// </summary>
-    public class CreateTokenCommand : IRequest<long>
+    public class CreateTokenCommand : IRequest<ulong>
     {
         /// <summary>
         /// Constructor for the create token command.

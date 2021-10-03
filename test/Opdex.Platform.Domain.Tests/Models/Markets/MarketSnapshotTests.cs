@@ -14,7 +14,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         [Fact]
         public void CreateNewMarketSnapshot_Success()
         {
-            const long marketId = 2;
+            const ulong marketId = 2;
             const SnapshotType snapshotType = SnapshotType.Daily;
             var date = new DateTime(2021, 6, 22, 12, 23, 32);
 
@@ -35,8 +35,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         [Fact]
         public void CreateMarketSnapshot_Success()
         {
-            const long id = 1;
-            const long marketId = 2;
+            const ulong id = 1;
+            const ulong marketId = 2;
             const decimal liquidity = 234543.32m;
             const decimal volume = 345456.23m;
             var staking = new StakingSnapshot(999, 5.43m);

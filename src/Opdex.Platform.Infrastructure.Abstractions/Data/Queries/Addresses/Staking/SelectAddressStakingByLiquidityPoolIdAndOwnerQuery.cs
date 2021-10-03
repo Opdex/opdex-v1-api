@@ -7,7 +7,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Stak
 {
     public class SelectAddressStakingByLiquidityPoolIdAndOwnerQuery : FindQuery<AddressStaking>
     {
-        public SelectAddressStakingByLiquidityPoolIdAndOwnerQuery(long liquidityPoolId, Address owner, bool findOrThrow = true) : base(findOrThrow)
+        public SelectAddressStakingByLiquidityPoolIdAndOwnerQuery(ulong liquidityPoolId, Address owner, bool findOrThrow = true) : base(findOrThrow)
         {
             if (liquidityPoolId < 1)
             {
@@ -23,7 +23,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Stak
             Owner = owner;
         }
 
-        public long LiquidityPoolId { get; }
+        public ulong LiquidityPoolId { get; }
         public Address Owner { get; }
     }
 }

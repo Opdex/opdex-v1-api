@@ -6,7 +6,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
 {
     public class SelectLiquidityPoolSummaryByLiquidityPoolIdQuery : FindQuery<LiquidityPoolSummary>
     {
-        public SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(long liquidityPoolId, bool findOrThrow = true) : base(findOrThrow)
+        public SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(ulong liquidityPoolId, bool findOrThrow = true) : base(findOrThrow)
         {
             if (liquidityPoolId < 1)
             {
@@ -16,6 +16,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
             LiquidityPoolId = liquidityPoolId;
         }
 
-        public long LiquidityPoolId { get; }
+        public ulong LiquidityPoolId { get; }
     }
 }

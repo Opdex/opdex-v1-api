@@ -8,7 +8,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permis
 {
     public class SelectMarketPermissionsByUserQuery : IRequest<IEnumerable<MarketPermissionType>>
     {
-        public SelectMarketPermissionsByUserQuery(long marketId, Address user)
+        public SelectMarketPermissionsByUserQuery(ulong marketId, Address user)
         {
             if (marketId < 1) throw new ArgumentOutOfRangeException(nameof(marketId), "Id must be greater than zero.");
             if (user == Address.Empty) throw new ArgumentNullException(nameof(user), "User address must be set.");
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permis
             User = user;
         }
 
-        public long MarketId { get; }
+        public ulong MarketId { get; }
         public Address User { get; }
     }
 }

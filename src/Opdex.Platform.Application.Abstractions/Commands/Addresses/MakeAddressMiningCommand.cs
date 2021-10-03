@@ -4,7 +4,7 @@ using Opdex.Platform.Domain.Models.Addresses;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Addresses
 {
-    public class MakeAddressMiningCommand : IRequest<long>
+    public class MakeAddressMiningCommand : IRequest<ulong>
     {
         public MakeAddressMiningCommand(AddressMining addressMining)
         {

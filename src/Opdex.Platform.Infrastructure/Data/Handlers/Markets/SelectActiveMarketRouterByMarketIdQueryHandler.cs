@@ -53,12 +53,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
         private sealed class SqlParams
         {
-            internal SqlParams(long marketId)
+            internal SqlParams(ulong marketId)
             {
                 MarketId = marketId;
             }
 
-            public long MarketId { get; }
+            public ulong MarketId { get; }
         }
     }
 }

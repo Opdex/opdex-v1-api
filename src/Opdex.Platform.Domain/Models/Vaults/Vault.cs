@@ -8,7 +8,7 @@ namespace Opdex.Platform.Domain.Models.Vaults
 {
     public class Vault : BlockAudit
     {
-        public Vault(Address address, long tokenId, Address owner, ulong createdBlock) : base(createdBlock)
+        public Vault(Address address, ulong tokenId, Address owner, ulong createdBlock) : base(createdBlock)
         {
             if (address == Address.Empty)
             {
@@ -30,7 +30,7 @@ namespace Opdex.Platform.Domain.Models.Vaults
             Owner = owner;
         }
 
-        public Vault(long id, Address address, long tokenId, Address pendingOwner, Address owner, ulong genesis, UInt256 unassignedSupply, ulong createdBlock, ulong modifiedBlock)
+        public Vault(ulong id, Address address, ulong tokenId, Address pendingOwner, Address owner, ulong genesis, UInt256 unassignedSupply, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -42,9 +42,9 @@ namespace Opdex.Platform.Domain.Models.Vaults
             UnassignedSupply = unassignedSupply;
         }
 
-        public long Id { get; }
+        public ulong Id { get; }
         public Address Address { get; }
-        public long TokenId { get; }
+        public ulong TokenId { get; }
         public Address PendingOwner { get; private set; }
         public Address Owner { get; private set; }
         public ulong Genesis { get; private set; }

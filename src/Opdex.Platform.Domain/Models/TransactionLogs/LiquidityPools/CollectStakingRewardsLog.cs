@@ -27,7 +27,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
             Amount = amount;
         }
 
-        public CollectStakingRewardsLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public CollectStakingRewardsLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.CollectStakingRewardsLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

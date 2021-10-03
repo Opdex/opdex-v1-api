@@ -149,7 +149,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
         private sealed class SqlParams
         {
-            internal SqlParams(long transactionId, Address wallet, IEnumerable<uint> logTypes, IEnumerable<Address> contracts)
+            internal SqlParams(ulong transactionId, Address wallet, IEnumerable<uint> logTypes, IEnumerable<Address> contracts)
             {
                 TransactionId = transactionId;
                 Wallet = wallet;
@@ -157,7 +157,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                 Contracts = contracts.Select(contract => contract.ToString());
             }
 
-            public long TransactionId { get; }
+            public ulong TransactionId { get; }
             public Address Wallet { get; }
             public IEnumerable<uint> LogTypes { get; }
             public IEnumerable<string> Contracts { get; }

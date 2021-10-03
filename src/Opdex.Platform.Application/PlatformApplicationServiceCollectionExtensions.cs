@@ -256,7 +256,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<ProcessGovernanceDeploymentTransactionCommand, Unit>, ProcessGovernanceDeploymentTransactionCommandHandler>();
 
             // Deployers
-            services.AddTransient<IRequestHandler<CreateDeployerCommand, long>, CreateDeployerCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateDeployerCommand, ulong>, CreateDeployerCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindDeployersCommand, bool>, CreateRewindDeployersCommandHandler>();
 
             // Transactions
@@ -299,7 +299,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateStopMiningTransactionQuoteCommand, TransactionQuoteDto>, CreateStopMiningTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateCollectMiningRewardsTransactionQuoteCommand, TransactionQuoteDto>, CreateCollectMiningRewardsTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindMiningPoolsCommand, bool>, CreateRewindMiningPoolsCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateMiningPoolCommand, long>, CreateMiningPoolCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateMiningPoolCommand, ulong>, CreateMiningPoolCommandHandler>();
 
             // Vaults
             services.AddTransient<IRequestHandler<CreateSetPendingVaultOwnershipTransactionQuoteCommand, TransactionQuoteDto>, CreateSetPendingVaultOwnershipTransactionQuoteCommandHandler>();
@@ -310,13 +310,13 @@ namespace Opdex.Platform.Application
 
             // Governances
             services.AddTransient<IRequestHandler<CreateRewardMiningPoolsTransactionQuoteCommand, TransactionQuoteDto>, CreateRewardMiningPoolsTransactionQuoteCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateMiningGovernanceCommand, long>, CreateMiningGovernanceCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateMiningGovernanceCommand, ulong>, CreateMiningGovernanceCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindMiningGovernancesAndNominationsCommand, bool>, CreateRewindMiningGovernancesAndNominationsCommandHandler>();
             services.AddTransient<IRequestHandler<CreateGovernanceNominationsCommand, bool>, CreateGovernanceNominationsCommandHandler>();
 
             // Vaults
             services.AddTransient<IRequestHandler<CreateRewindVaultsCommand, bool>, CreateRewindVaultsCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateVaultCommand, long>, CreateVaultCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateVaultCommand, ulong>, CreateVaultCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindVaultCertificatesCommand, bool>, CreateRewindVaultCertificatesCommandHandler>();
 
             // Tokens
@@ -328,8 +328,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateRewindAddressBalancesCommand, bool>, CreateRewindAddressBalancesCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindMiningPositionsCommand, bool>, CreateRewindMiningPositionsCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindStakingPositionsCommand, bool>, CreateRewindStakingPositionsCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateAddressBalanceCommand, long>, CreateAddressBalanceCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateTokenCommand, long>, CreateTokenCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateAddressBalanceCommand, ulong>, CreateAddressBalanceCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateTokenCommand, ulong>, CreateTokenCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindTokenDailySnapshotCommand, bool>, CreateRewindTokenDailySnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<CreateSwapTransactionQuoteCommand, TransactionQuoteDto>, CreateSwapTransactionQuoteCommandHandler>();
 
@@ -487,46 +487,46 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeIndexerUnlockCommand, Unit>, MakeIndexerUnlockCommandHandler>();
 
             // Tokens
-            services.AddTransient<IRequestHandler<MakeTokenCommand, long>, MakeTokenCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeTokenCommand, ulong>, MakeTokenCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTokenSnapshotCommand, bool>, MakeTokenSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTokenDistributionCommand, bool>, MakeTokenDistributionCommandHandler>();
 
             // Transactions
-            services.AddTransient<IRequestHandler<MakeTransactionCommand, long>, MakeTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeTransactionCommand, ulong>, MakeTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTransactionQuoteCommand, TransactionQuote>, MakeTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<MakeNotifyUserOfTransactionBroadcastCommand, bool>, MakeNotifyUserOfTransactionBroadcastCommandHandler>();
 
             // Liquidity Pools
-            services.AddTransient<IRequestHandler<MakeLiquidityPoolCommand, long>, MakeLiquidityPoolCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeLiquidityPoolCommand, ulong>, MakeLiquidityPoolCommandHandler>();
             services.AddTransient<IRequestHandler<MakeLiquidityPoolSnapshotCommand, bool>, MakeLiquidityPoolSnapshotCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeLiquidityPoolSummaryCommand, long>, MakeLiquidityPoolSummaryCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeLiquidityPoolSummaryCommand, ulong>, MakeLiquidityPoolSummaryCommandHandler>();
 
             // Mining Pools
-            services.AddTransient<IRequestHandler<MakeMiningPoolCommand, long>, MakeMiningPoolCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeMiningPoolCommand, ulong>, MakeMiningPoolCommandHandler>();
 
             // Markets
-            services.AddTransient<IRequestHandler<MakeMarketCommand, long>, MakeMarketCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeMarketPermissionCommand, long>, MakeMarketPermissionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeMarketCommand, ulong>, MakeMarketCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeMarketPermissionCommand, ulong>, MakeMarketPermissionCommandHandler>();
 
             services.AddTransient<IRequestHandler<MakeMarketRouterCommand, bool>, MakeMarketRouterCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMarketSnapshotCommand, bool>, MakeMarketSnapshotCommandHandler>();
 
             // Deployers
-            services.AddTransient<IRequestHandler<MakeDeployerCommand, long>, MakeDeployerCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeDeployerCommand, ulong>, MakeDeployerCommandHandler>();
 
             // Governances
-            services.AddTransient<IRequestHandler<MakeMiningGovernanceCommand, long>, MakeMiningGovernanceCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeMiningGovernanceNominationCommand, long>, MakeMiningGovernanceNominationCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeMiningGovernanceCommand, ulong>, MakeMiningGovernanceCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeMiningGovernanceNominationCommand, ulong>, MakeMiningGovernanceNominationCommandHandler>();
             services.AddTransient<IRequestHandler<MakeGovernanceNominationsCommand, bool>, MakeGovernanceNominationsCommandHandler>();
 
             // Vaults
-            services.AddTransient<IRequestHandler<MakeVaultCommand, long>, MakeVaultCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeVaultCommand, ulong>, MakeVaultCommandHandler>();
             services.AddTransient<IRequestHandler<MakeVaultCertificateCommand, bool>, MakeVaultCertificateCommandHandler>();
 
             // Wallet Address
-            services.AddTransient<IRequestHandler<MakeAddressBalanceCommand, long>, MakeAddressBalanceCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeAddressStakingCommand, long>, MakeAddressStakingCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeAddressMiningCommand, long>, MakeAddressMiningCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeAddressBalanceCommand, ulong>, MakeAddressBalanceCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeAddressStakingCommand, ulong>, MakeAddressStakingCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeAddressMiningCommand, ulong>, MakeAddressMiningCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTransactionBroadcastCommand, string>, MakeTransactionBroadcastCommandHandler>(); // Keep this one around
 
             return services;

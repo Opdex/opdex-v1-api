@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Governances.Nominations
 {
-    public class MakeMiningGovernanceNominationCommandHandler : IRequestHandler<MakeMiningGovernanceNominationCommand, long>
+    public class MakeMiningGovernanceNominationCommandHandler : IRequestHandler<MakeMiningGovernanceNominationCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Handlers.Governances.Nominations
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<long> Handle(MakeMiningGovernanceNominationCommand request, CancellationToken cancellationToken)
+        public Task<ulong> Handle(MakeMiningGovernanceNominationCommand request, CancellationToken cancellationToken)
         {
             return _mediator.Send(new PersistMiningGovernanceNominationCommand(request.Nomination), cancellationToken);
         }

@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Snapsh
         /// <param name="marketId">The market id to get a snapshot of.</param>
         /// <param name="dateTime">The datetime to get the snapshot of.</param>
         /// <param name="snapshotType">The snapshot type - currently only daily is enabled.</param>
-        public SelectMarketSnapshotWithFilterQuery(long marketId, DateTime dateTime, SnapshotType snapshotType)
+        public SelectMarketSnapshotWithFilterQuery(ulong marketId, DateTime dateTime, SnapshotType snapshotType)
         {
             if (marketId < 1)
             {
@@ -31,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Snapsh
             SnapshotType = snapshotType;
         }
 
-        public long MarketId { get; }
+        public ulong MarketId { get; }
         public DateTime DateTime { get; }
         public SnapshotType SnapshotType { get; }
     }

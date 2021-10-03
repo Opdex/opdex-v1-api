@@ -24,7 +24,7 @@ namespace Opdex.Platform.Domain.Models.Deployers
             IsActive = isActive;
         }
 
-        public Deployer(long id, Address address, Address pendingOwner, Address owner, bool isActive, ulong createdBlock, ulong modifiedBlock)
+        public Deployer(ulong id, Address address, Address pendingOwner, Address owner, bool isActive, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.Deployers
             IsActive = isActive;
         }
 
-        public long Id { get; }
+        public ulong Id { get; }
         public Address Address { get; }
         public Address PendingOwner { get; private set; }
         public Address Owner { get; private set; }

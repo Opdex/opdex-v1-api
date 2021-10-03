@@ -4,7 +4,7 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MiningPools
 {
-    public class PersistMiningPoolCommand : IRequest<long>
+    public class PersistMiningPoolCommand : IRequest<ulong>
     {
         public PersistMiningPoolCommand(MiningPool miningPool)
         {

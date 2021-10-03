@@ -31,7 +31,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
         {
             // Arrange
             const ulong blockHeight = 10;
-            const long stakingTokenId = 2;
+            const ulong stakingTokenId = 2;
 
             // Act
             void Act() => new CreateMiningGovernanceCommand(null, stakingTokenId, blockHeight);
@@ -41,9 +41,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
         }
 
         [Theory]
-        [InlineData(-1)]
         [InlineData(0)]
-        public void CreateMiningGovernanceCommand_InvalidStakingTokenId_ThrowsArgumentOutOfRangeException(long stakingTokenId)
+        public void CreateMiningGovernanceCommand_InvalidStakingTokenId_ThrowsArgumentOutOfRangeException(ulong stakingTokenId)
         {
             // Arrange
             Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
@@ -61,7 +60,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
         {
             // Arrange
             Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
-            const long stakingTokenId = 2;
+            const ulong stakingTokenId = 2;
             const ulong blockHeight = 0;
 
             // Act
@@ -77,7 +76,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
             // Arrange
             Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
             const ulong blockHeight = 10;
-            const long stakingTokenId = 2;
+            const ulong stakingTokenId = 2;
 
             // Act
             try
@@ -97,7 +96,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
             // Arrange
             Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
             const ulong blockHeight = 10;
-            const long stakingTokenId = 2;
+            const ulong stakingTokenId = 2;
 
             var expectedGovernance = new MiningGovernance(1, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 2, 100, 200, 4, 300, 3, 11);
 
@@ -119,7 +118,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
             // Arrange
             Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
             const ulong blockHeight = 10;
-            const long stakingTokenId = 2;
+            const ulong stakingTokenId = 2;
 
             // Act
             try
@@ -144,7 +143,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Governances
             // Arrange
             Address governance = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
             const ulong blockHeight = 10;
-            const long stakingTokenId = 2;
+            const ulong stakingTokenId = 2;
             const ulong miningDuration = 5;
 
             var expectedSummary = new MiningGovernanceContractSummary(blockHeight);

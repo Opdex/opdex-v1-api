@@ -9,7 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions
 {
     public class RetrieveMarketPermissionQuery : FindQuery<MarketPermission>
     {
-        public RetrieveMarketPermissionQuery(long marketId, Address address, MarketPermissionType permission, bool findOrThrow = true) : base(findOrThrow)
+        public RetrieveMarketPermissionQuery(ulong marketId, Address address, MarketPermissionType permission, bool findOrThrow = true) : base(findOrThrow)
         {
             if (marketId < 1) throw new ArgumentOutOfRangeException(nameof(marketId), "Id must be greater than zero.");
             if (address == Address.Empty) throw new ArgumentNullException(nameof(address), "Address must be set.");
@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions
             Permission = permission;
         }
 
-        public long MarketId { get; }
+        public ulong MarketId { get; }
         public Address Address { get; }
         public MarketPermissionType Permission { get; }
     }

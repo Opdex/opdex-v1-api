@@ -29,7 +29,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             SortOrder = sortOrder;
         }
 
-        protected internal TransactionLog(TransactionLogType logType, long id, long transactionId, Address contract, int sortOrder)
+        protected internal TransactionLog(TransactionLogType logType, ulong id, ulong transactionId, Address contract, int sortOrder)
         {
             LogType = logType;
             Id = id;
@@ -38,13 +38,13 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             SortOrder = sortOrder;
         }
 
-        public long Id { get; }
+        public ulong Id { get; }
         public TransactionLogType LogType { get; }
-        public long TransactionId { get; private set; }
+        public ulong TransactionId { get; private set; }
         public Address Contract { get; }
         public int SortOrder { get; }
 
-        protected internal void SetTransactionId(long txId)
+        protected internal void SetTransactionId(ulong txId)
         {
             // Todo: Maybe throw
             if (TransactionId == 0 && txId > 0)

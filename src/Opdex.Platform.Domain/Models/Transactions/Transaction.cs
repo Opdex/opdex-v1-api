@@ -49,7 +49,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
             Logs = logs ?? new List<TransactionLog>();
         }
 
-        public Transaction(long id, string txHash, ulong blockHeight, int gasUsed, Address from, Address to, bool success, Address newContractAddress)
+        public Transaction(ulong id, string txHash, ulong blockHeight, int gasUsed, Address from, Address to, bool success, Address newContractAddress)
         {
             Id = id;
             Hash = txHash;
@@ -63,7 +63,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
             Logs = new List<TransactionLog>();
         }
 
-        public long Id { get; private set; }
+        public ulong Id { get; private set; }
         public string Hash { get; }
         public ulong BlockHeight { get; }
         public int GasUsed { get; }
@@ -130,7 +130,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
                 : TransactionEligibilityType.PendingContractValidation;
         }
 
-        public void SetId(long id)
+        public void SetId(ulong id)
         {
             if (Id != 0)
             {
