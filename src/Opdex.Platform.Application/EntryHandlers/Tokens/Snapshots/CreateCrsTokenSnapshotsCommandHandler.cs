@@ -17,7 +17,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
     {
         private readonly IMediator _mediator;
 
-        private const long CrsMarketId = 0;
+        private const ulong CrsMarketId = 0;
         private readonly SnapshotType[] _snapshotTypes = { SnapshotType.Minute, SnapshotType.Hourly, SnapshotType.Daily };
 
         public CreateCrsTokenSnapshotsCommandHandler(IMediator mediator)

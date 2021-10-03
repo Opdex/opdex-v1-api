@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Addresses.Balances
 {
-    public class CreateAddressBalanceCommandHandler : IRequestHandler<CreateAddressBalanceCommand, long>
+    public class CreateAddressBalanceCommandHandler : IRequestHandler<CreateAddressBalanceCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -20,7 +20,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Balances
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Handle(CreateAddressBalanceCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(CreateAddressBalanceCommand request, CancellationToken cancellationToken)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token), cancellationToken);
 

@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Markets
     /// <summary>
     /// Create a make market command to upsert and persist a market instance.
     /// </summary>
-    public class MakeMarketCommand : IRequest<long>
+    public class MakeMarketCommand : IRequest<ulong>
     {
         /// <summary>
         /// Constructor to create a make market command.

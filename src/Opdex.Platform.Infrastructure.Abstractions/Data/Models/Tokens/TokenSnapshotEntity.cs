@@ -6,9 +6,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens
 {
     public class TokenSnapshotEntity : SnapshotEntity
     {
-        public long Id { get; set; }
-        public long MarketId { get; set; }
-        public long TokenId { get; set; }
+        public ulong Id { get; set; }
+        public ulong MarketId { get; set; }
+        public ulong TokenId { get; set; }
         public OhlcDecimalEntity Price { get; set; }
         public string Details
         {

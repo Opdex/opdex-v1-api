@@ -52,12 +52,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
 
         private sealed class SqlParams
         {
-            internal SqlParams(long lpTokenId)
+            internal SqlParams(ulong lpTokenId)
             {
                 LpTokenId = lpTokenId;
             }
 
-            public long LpTokenId { get; }
+            public ulong LpTokenId { get; }
         }
     }
 }

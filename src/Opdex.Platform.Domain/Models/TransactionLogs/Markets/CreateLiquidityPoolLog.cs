@@ -26,7 +26,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
             Pool = pool;
         }
 
-        public CreateLiquidityPoolLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public CreateLiquidityPoolLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.CreateLiquidityPoolLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

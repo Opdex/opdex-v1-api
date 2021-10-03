@@ -58,14 +58,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions
 
         private sealed class SqlParams
         {
-            internal SqlParams(long marketId, Address user, int permission)
+            internal SqlParams(ulong marketId, Address user, int permission)
             {
                 MarketId = marketId;
                 User = user;
                 Permission = permission;
             }
 
-            public long MarketId { get; }
+            public ulong MarketId { get; }
             public Address User { get; }
             public int Permission { get; }
         }

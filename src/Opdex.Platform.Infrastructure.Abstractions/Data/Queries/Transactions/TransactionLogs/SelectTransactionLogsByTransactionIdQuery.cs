@@ -7,7 +7,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.T
 {
     public class SelectTransactionLogsByTransactionIdQuery : IRequest<IEnumerable<TransactionLog>>
     {
-        public SelectTransactionLogsByTransactionIdQuery(long transactionId)
+        public SelectTransactionLogsByTransactionIdQuery(ulong transactionId)
         {
             if (transactionId < 1)
             {
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.T
 
             TransactionId = transactionId;
         }
-        
-        public long TransactionId { get; }
+
+        public ulong TransactionId { get; }
     }
 }

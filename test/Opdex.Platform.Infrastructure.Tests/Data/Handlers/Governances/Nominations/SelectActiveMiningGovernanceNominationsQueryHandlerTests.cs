@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
         public async Task SelectActiveMiningGovernanceNominations_Success()
         {
             // Arrange
-            const long governanceId = 3;
+            const ulong governanceId = 3;
 
             var expected = new[]
             {
@@ -62,7 +62,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
         public async Task SelectActiveMiningGovernanceNominations_ReturnsEmpty()
         {
             // Arrange
-            const long governanceId = 3;
+            const ulong governanceId = 3;
             var command = new SelectActiveGovernanceNominationsByGovernanceIdQuery(governanceId);
 
             _dbContext.Setup(db => db.ExecuteQueryAsync<MiningGovernanceNominationEntity>(It.IsAny<DatabaseQuery>()))

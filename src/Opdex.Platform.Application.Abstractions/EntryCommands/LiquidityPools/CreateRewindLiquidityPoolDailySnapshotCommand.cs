@@ -5,7 +5,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
 {
     public class CreateRewindLiquidityPoolDailySnapshotCommand : IRequest<bool>
     {
-        public CreateRewindLiquidityPoolDailySnapshotCommand(long liquidityPoolId, long srcTokenId, decimal crsUsdStartOfDay,
+        public CreateRewindLiquidityPoolDailySnapshotCommand(ulong liquidityPoolId, ulong srcTokenId, decimal crsUsdStartOfDay,
                                                              decimal stakingTokenUsdStartOfDay, DateTime startOfDay, DateTime endOfDay)
         {
             if (liquidityPoolId < 1)
@@ -41,8 +41,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
             EndDate = endOfDay;
         }
 
-        public long LiquidityPoolId { get; }
-        public long SrcTokenId { get; }
+        public ulong LiquidityPoolId { get; }
+        public ulong SrcTokenId { get; }
         public decimal CrsUsdStartOfDay { get; }
         public decimal StakingTokenUsdStartOfDay { get; }
         public DateTime StartDate { get; }

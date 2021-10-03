@@ -263,14 +263,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
             dto.Cursor.Previous.Should().Be(null);
         }
 
-        private void AssertNext(CursorDto dto, long pointer)
+        private void AssertNext(CursorDto dto, ulong pointer)
         {
             AddressBalancesCursor.TryParse(dto.Next.Base64Decode(), out var next).Should().Be(true);
             next.PagingDirection.Should().Be(PagingDirection.Forward);
             next.Pointer.Should().Be(pointer);
         }
 
-        private void AssertPrevious(CursorDto dto, long pointer)
+        private void AssertPrevious(CursorDto dto, ulong pointer)
         {
             AddressBalancesCursor.TryParse(dto.Previous.Base64Decode(), out var next).Should().Be(true);
             next.PagingDirection.Should().Be(PagingDirection.Backward);

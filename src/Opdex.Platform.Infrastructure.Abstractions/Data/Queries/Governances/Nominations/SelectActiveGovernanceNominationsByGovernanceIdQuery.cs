@@ -7,7 +7,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.No
 {
     public class SelectActiveGovernanceNominationsByGovernanceIdQuery : IRequest<IEnumerable<MiningGovernanceNomination>>
     {
-        public SelectActiveGovernanceNominationsByGovernanceIdQuery(long governanceId)
+        public SelectActiveGovernanceNominationsByGovernanceIdQuery(ulong governanceId)
         {
             if (governanceId < 1)
             {
@@ -17,6 +17,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.No
             GovernanceId = governanceId;
         }
 
-        public long GovernanceId { get; }
+        public ulong GovernanceId { get; }
     }
 }

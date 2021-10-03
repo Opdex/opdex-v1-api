@@ -54,12 +54,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
         private sealed class SqlParams
         {
-            internal SqlParams(long tokenId)
+            internal SqlParams(ulong tokenId)
             {
                 TokenId = tokenId;
             }
 
-            public long TokenId { get; }
+            public ulong TokenId { get; }
         }
     }
 }

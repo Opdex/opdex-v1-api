@@ -50,7 +50,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots
 
         private sealed class SqlParams
         {
-            internal SqlParams(long marketId, DateTime start, DateTime end, int snapshotTypeId)
+            internal SqlParams(ulong marketId, DateTime start, DateTime end, int snapshotTypeId)
             {
                 MarketId = marketId;
                 Start = start;
@@ -58,7 +58,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots
                 SnapshotTypeId = snapshotTypeId;
             }
 
-            public long MarketId { get; }
+            public ulong MarketId { get; }
             public DateTime Start { get; }
             public DateTime End { get; }
             public int SnapshotTypeId { get; }

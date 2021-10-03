@@ -31,8 +31,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Snapshots
         [Fact]
         public async Task SelectTokenSnapshotWithFilter_Success()
         {
-            const long tokenId = 8;
-            const long marketId = 9;
+            const  ulong tokenId = 8;
+            const ulong marketId = 9;
             var blockTime = new DateTime(2021, 6, 21, 12, 0, 0);
             const SnapshotType snapshotType = SnapshotType.Daily;
 
@@ -71,8 +71,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Snapshots
         [Fact]
         public async Task SelectTokenSnapshotWithFilter_Returns_NewInstance()
         {
-            const long tokenId = 1;
-            const long marketId = 4;
+            const  ulong tokenId = 1;
+            const ulong marketId = 4;
             var blockTime = new DateTime(2021, 6, 21, 12, 0, 0);
             const SnapshotType snapshotType = SnapshotType.Daily;
 

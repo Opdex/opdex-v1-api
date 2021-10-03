@@ -7,7 +7,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets
 {
     public class SelectMarketByIdQuery : FindQuery<Market>
     {
-        public SelectMarketByIdQuery(long marketId, bool findOrThrow = true) : base(findOrThrow) 
+        public SelectMarketByIdQuery(ulong marketId, bool findOrThrow = true) : base(findOrThrow)
         {
             if (marketId < 1)
             {
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets
 
             MarketId = marketId;
         }
-        
-        public long MarketId { get; }
+
+        public ulong MarketId { get; }
     }
 }

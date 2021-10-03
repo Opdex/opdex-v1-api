@@ -5,7 +5,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions
     // Todo: Consider removing "Block" and using AuditEntity for Created/Modified Block
     public class TransactionEntity
     {
-        public long Id { get; set; }
+        public ulong Id { get; set; }
         public string Hash { get; set; }
         public Address From { get; set; }
         public Address To { get; set; }

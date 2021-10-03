@@ -40,7 +40,7 @@ namespace Opdex.Platform.Domain.Tests.Models.MiningPools
         public void CreateNewMiningPool_Success()
         {
             // Arrange
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             Address address = "PARwm9EjmivLgqqH1Mroh6zXXNMUiT1GLs";
             const ulong createdBlock = 2;
 
@@ -57,8 +57,8 @@ namespace Opdex.Platform.Domain.Tests.Models.MiningPools
         public void CrateExistingMiningPool_Success()
         {
             // Arrange
-            const long id = 1;
-            const long liquidityPoolId = 2;
+            const ulong id = 1;
+            const ulong liquidityPoolId = 2;
             Address address = "PARwm9EjmivLgqqH1Mroh6zXXNMUiT1GLs";
             UInt256 rewardPerBlock = 3;
             UInt256 rewardPerLpt = 4;

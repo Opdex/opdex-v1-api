@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balanc
     /// <summary>
     /// Create or updates an address balance record based on the modified block of the record and the provided block height.
     /// </summary>
-    public class CreateAddressBalanceCommand : IRequest<long>
+    public class CreateAddressBalanceCommand : IRequest<ulong>
     {
         /// <summary>
         /// Create the create address balance command.

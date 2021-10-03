@@ -19,7 +19,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
         /// <param name="startDate">The start date, earliest snapshot to find.</param>
         /// <param name="endDate">The end date, latest snapshot to find.</param>
         /// <param name="snapshotType">The type of snapshots to return, hourly/daily options.</param>
-        public SelectLiquidityPoolSnapshotsWithFilterQuery(long poolId, DateTime startDate, DateTime endDate, SnapshotType snapshotType)
+        public SelectLiquidityPoolSnapshotsWithFilterQuery(ulong poolId, DateTime startDate, DateTime endDate, SnapshotType snapshotType)
         {
             if (poolId < 1)
             {
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
             SnapshotType = snapshotType;
         }
 
-        public long PoolId { get; }
+        public ulong PoolId { get; }
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }
         public SnapshotType SnapshotType { get; }

@@ -132,13 +132,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances
 
         private sealed class SqlParams
         {
-            internal SqlParams(long governanceId, Address minedToken)
+            internal SqlParams(ulong governanceId, Address minedToken)
             {
                 GovernanceId = governanceId;
                 MinedToken = minedToken;
             }
 
-            public long GovernanceId { get; }
+            public ulong GovernanceId { get; }
             public Address MinedToken { get; }
         }
     }

@@ -56,16 +56,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations
 
         private sealed class SqlParams
         {
-            internal SqlParams(long governanceId, long liquidityPoolId, long miningPoolId)
+            internal SqlParams(ulong governanceId, ulong liquidityPoolId, ulong miningPoolId)
             {
                 GovernanceId = governanceId;
                 LiquidityPoolId = liquidityPoolId;
                 MiningPoolId = miningPoolId;
             }
 
-            public long GovernanceId { get; }
-            public long LiquidityPoolId { get; }
-            public long MiningPoolId { get; }
+            public ulong GovernanceId { get; }
+            public ulong LiquidityPoolId { get; }
+            public ulong MiningPoolId { get; }
         }
     }
 }

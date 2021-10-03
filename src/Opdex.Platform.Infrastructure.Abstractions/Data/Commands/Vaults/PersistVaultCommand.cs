@@ -4,7 +4,7 @@ using Opdex.Platform.Domain.Models.Vaults;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults
 {
-    public class PersistVaultCommand : IRequest<long>
+    public class PersistVaultCommand : IRequest<ulong>
     {
         public PersistVaultCommand(Vault vault)
         {

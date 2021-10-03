@@ -8,9 +8,9 @@ using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Mining
 {
-    public class MiningPositionsCursor : Cursor<long>
+    public class MiningPositionsCursor : Cursor<ulong>
     {
-        public MiningPositionsCursor(IEnumerable<Address> liquidityPools, IEnumerable<Address> miningPools, bool includeZeroAmounts, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, long pointer)
+        public MiningPositionsCursor(IEnumerable<Address> liquidityPools, IEnumerable<Address> miningPools, bool includeZeroAmounts, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
             LiquidityPools = liquidityPools ?? Enumerable.Empty<Address>();
@@ -38,7 +38,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Mini
         }
 
         /// <inheritdoc />
-        public override Cursor<long> Turn(PagingDirection direction, long pointer)
+        public override Cursor<ulong> Turn(PagingDirection direction, ulong pointer)
         {
             if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
             if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Mini
         }
 
         /// <inheritdoc />
-        protected override bool ValidatePointer(long pointer) => pointer >= 0 && base.ValidatePointer(pointer);
+        protected override bool ValidatePointer(ulong pointer) => pointer >= 0 && base.ValidatePointer(pointer);
 
         /// <summary>
         /// Parses a stringified version of the cursor
@@ -93,11 +93,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Mini
             return true;
         }
 
-        private static bool TryDecodePointer(string encoded, out long pointer)
+        private static bool TryDecodePointer(string encoded, out ulong pointer)
         {
             pointer = 0;
 
-            if (!Base64Extensions.TryBase64Decode(encoded, out var decoded) || !long.TryParse(decoded, out var result)) return false;
+            if (!Base64Extensions.TryBase64Decode(encoded, out var decoded) || !ulong.TryParse(decoded, out var result)) return false;
 
             pointer = result;
             return true;

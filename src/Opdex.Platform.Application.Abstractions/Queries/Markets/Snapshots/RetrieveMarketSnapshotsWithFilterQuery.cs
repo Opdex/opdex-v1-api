@@ -9,7 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots
 {
     public class RetrieveMarketSnapshotsWithFilterQuery : IRequest<IEnumerable<MarketSnapshot>>
     {
-        public RetrieveMarketSnapshotsWithFilterQuery(long marketId, DateTime startDate, DateTime endDate, SnapshotType snapshotType)
+        public RetrieveMarketSnapshotsWithFilterQuery(ulong marketId, DateTime startDate, DateTime endDate, SnapshotType snapshotType)
         {
             if (marketId < 1)
             {
@@ -27,7 +27,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots
             SnapshotType = snapshotType;
         }
 
-        public long MarketId { get; }
+        public ulong MarketId { get; }
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }
         public SnapshotType SnapshotType { get; }

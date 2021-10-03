@@ -54,7 +54,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
 
         private sealed class SqlParams
         {
-            internal SqlParams(long tokenId, long marketId, DateTime startDate, DateTime endDate, int snapshotTypeId)
+            internal SqlParams(ulong tokenId, ulong marketId, DateTime startDate, DateTime endDate, int snapshotTypeId)
             {
                 TokenId = tokenId;
                 MarketId = marketId;
@@ -63,8 +63,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
                 SnapshotTypeId = snapshotTypeId;
             }
 
-            public long TokenId { get; }
-            public long MarketId { get; }
+            public ulong TokenId { get; }
+            public ulong MarketId { get; }
             public DateTime StartDate { get; }
             public DateTime EndDate { get; }
             public int SnapshotTypeId { get; }

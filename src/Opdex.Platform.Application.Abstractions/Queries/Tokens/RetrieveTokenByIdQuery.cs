@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens
 {
     public class RetrieveTokenByIdQuery : FindQuery<Token>
     {
-        public RetrieveTokenByIdQuery(long tokenId, bool findOrThrow = true) : base(findOrThrow)
+        public RetrieveTokenByIdQuery(ulong tokenId, bool findOrThrow = true) : base(findOrThrow)
         {
             if (tokenId < 1)
             {
@@ -16,6 +16,6 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens
             TokenId = tokenId;
         }
 
-        public long TokenId { get; }
+        public ulong TokenId { get; }
     }
 }

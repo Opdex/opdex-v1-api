@@ -14,7 +14,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
     public class SelectTokenByIdQueryHandler: IRequestHandler<SelectTokenByIdQuery, Token>
     {
         private static readonly string SqlQuery =
-            @$"Select 
+            @$"Select
                 {nameof(TokenEntity.Id)},
                 {nameof(TokenEntity.Address)},
                 {nameof(TokenEntity.IsLpt)},
@@ -54,12 +54,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
         private sealed class SqlParams
         {
-            internal SqlParams(long id)
+            internal SqlParams(ulong id)
             {
                 Id = id;
             }
 
-            public long Id { get; }
+            public ulong Id { get; }
         }
     }
 }

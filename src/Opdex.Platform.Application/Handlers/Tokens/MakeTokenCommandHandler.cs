@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Opdex.Platform.Application.Handlers.Tokens
 {
-    public class MakeTokenCommandHandler : IRequestHandler<MakeTokenCommand, long>
+    public class MakeTokenCommandHandler : IRequestHandler<MakeTokenCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -17,7 +17,7 @@ namespace Opdex.Platform.Application.Handlers.Tokens
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Handle(MakeTokenCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(MakeTokenCommand request, CancellationToken cancellationToken)
         {
             if (request.Refresh)
             {

@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Tokens
     /// <summary>
     /// Create a make token command to update and/or persist a token domain model.
     /// </summary>
-    public class MakeTokenCommand : IRequest<long>
+    public class MakeTokenCommand : IRequest<ulong>
     {
         /// <summary>
         /// Constructor to create the make token command.

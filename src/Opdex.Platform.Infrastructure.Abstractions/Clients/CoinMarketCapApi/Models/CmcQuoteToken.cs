@@ -7,7 +7,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Mo
     [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
     public class CmcQuoteToken
     {
-        public long Id { get; set; }
+        public ulong Id { get; set; }
         public string Name { get; set; }
         public string Symbol { get; set; }
         public string Slug { get; set; }

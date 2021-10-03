@@ -29,11 +29,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         [Fact]
         public async Task PersistsTransaction_Success()
         {
-            const long id = 1234;
+            const ulong id = 1234ul;
             var transaction = new Transaction("txHash", ulong.MaxValue, 1, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, null, null);
             var command = new PersistTransactionCommand(transaction);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(id));
 
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -44,11 +44,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         [Fact]
         public async Task PersistsTransaction_Fail()
         {
-            const long id = 0;
+            const ulong id = 0ul;
             var transaction = new Transaction("txHash", ulong.MaxValue, 1, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, null, null);
             var command = new PersistTransactionCommand(transaction);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(id));
 
             var result = await _handler.Handle(command, CancellationToken.None);

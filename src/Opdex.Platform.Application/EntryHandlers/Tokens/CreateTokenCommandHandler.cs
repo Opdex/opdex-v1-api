@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Tokens
 {
-    public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, long>
+    public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Handle(CreateTokenCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(CreateTokenCommand request, CancellationToken cancellationToken)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: false));
 

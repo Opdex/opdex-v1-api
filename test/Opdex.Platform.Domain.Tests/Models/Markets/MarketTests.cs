@@ -38,9 +38,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         }
 
         [Theory]
-        [InlineData(-1)]
         [InlineData(0)]
-        public void CreateMarket_InvalidDeployerId_ThrowArgumentOutOfRangeException(long deployer)
+        public void CreateMarket_InvalidDeployerId_ThrowArgumentOutOfRangeException(ulong deployer)
         {
             // Arrange
             // Act
@@ -68,8 +67,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         {
             // Arrange
             Address address = "PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi";
-            var deployerId = 5;
-            var stakingTokenId = 10;
+            var deployerId = 5ul;
+            var stakingTokenId = 10ul;
             Address owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var authPoolCreators = true;
             var authProviders = true;

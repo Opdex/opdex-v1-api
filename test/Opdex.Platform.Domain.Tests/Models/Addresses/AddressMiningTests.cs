@@ -10,9 +10,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
     public class AddressMiningTests
     {
         [Theory]
-        [InlineData(-1)]
         [InlineData(0)]
-        public void Constructor_MiningPoolIdNotValid_ThrowArgumentOutOfRangeException(long miningPoolId)
+        public void Constructor_MiningPoolIdNotValid_ThrowArgumentOutOfRangeException(ulong miningPoolId)
         {
             // Arrange
             // Act
@@ -39,7 +38,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         public void Constructor_ArgumentsValid_SetProperties()
         {
             // Arrange
-            var miningPoolId = 1;
+            var miningPoolId = 1ul;
             Address owner = "PXLFzhR6jaHa1oT6kiSdmgS1tH23X3XeST";
             UInt256 balance = 9999999999999;
             ulong createdBlock = 100_000;

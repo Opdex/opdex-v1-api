@@ -125,15 +125,15 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates
 
         private sealed class SqlParams
         {
-            internal SqlParams(long certificateId, long vaultId, Address holder)
+            internal SqlParams(ulong certificateId, ulong vaultId, Address holder)
             {
                 CertificateId = certificateId;
                 VaultId = vaultId;
                 Holder = holder;
             }
 
-            public long CertificateId { get; }
-            public long VaultId { get; }
+            public ulong CertificateId { get; }
+            public ulong VaultId { get; }
             public Address Holder { get; }
         }
     }

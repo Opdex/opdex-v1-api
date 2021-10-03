@@ -5,8 +5,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningPools
 {
     public class MiningPoolEntity : AuditEntity
     {
-        public long Id { get; set; }
-        public long LiquidityPoolId { get; set; }
+        public ulong Id { get; set; }
+        public ulong LiquidityPoolId { get; set; }
         public Address Address { get; set; }
         public UInt256 RewardPerBlock { get; set; }
         public UInt256 RewardPerLpt { get; set; }

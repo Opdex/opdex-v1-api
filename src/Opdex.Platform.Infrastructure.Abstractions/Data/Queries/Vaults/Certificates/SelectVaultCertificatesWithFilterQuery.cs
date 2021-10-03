@@ -7,13 +7,13 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certifi
 {
     public class SelectVaultCertificatesWithFilterQuery : IRequest<IEnumerable<VaultCertificate>>
     {
-        public SelectVaultCertificatesWithFilterQuery(long vaultId, VaultCertificatesCursor cursor)
+        public SelectVaultCertificatesWithFilterQuery(ulong vaultId, VaultCertificatesCursor cursor)
         {
             VaultId = vaultId > 0 ? vaultId : throw new ArgumentOutOfRangeException(nameof(vaultId), "Vault id must be greater than zero.");
             Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor), "Cursor must be set.");
         }
 
-        public long VaultId { get; }
+        public ulong VaultId { get; }
         public VaultCertificatesCursor Cursor { get; }
     }
 }

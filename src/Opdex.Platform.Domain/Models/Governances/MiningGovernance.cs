@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.Governances
 {
     public class MiningGovernance : BlockAudit
     {
-        public MiningGovernance(long id, Address address, long tokenId, ulong nominationPeriodEnd, ulong miningDuration, uint miningPoolsFunded,
+        public MiningGovernance(ulong id, Address address, ulong tokenId, ulong nominationPeriodEnd, ulong miningDuration, uint miningPoolsFunded,
                                 UInt256 miningPoolReward, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
@@ -20,7 +20,7 @@ namespace Opdex.Platform.Domain.Models.Governances
             MiningPoolReward = miningPoolReward;
         }
 
-        public MiningGovernance(Address address, long tokenId, ulong miningDuration, ulong createdBlock) : base(createdBlock)
+        public MiningGovernance(Address address, ulong tokenId, ulong miningDuration, ulong createdBlock) : base(createdBlock)
         {
             if (address == Address.Empty)
             {
@@ -42,9 +42,9 @@ namespace Opdex.Platform.Domain.Models.Governances
             MiningDuration = miningDuration;
         }
 
-        public long Id { get; }
+        public ulong Id { get; }
         public Address Address { get; }
-        public long TokenId { get; }
+        public ulong TokenId { get; }
         public ulong MiningDuration { get; }
         public ulong NominationPeriodEnd { get; private set; }
         public uint MiningPoolsFunded { get; private set; }

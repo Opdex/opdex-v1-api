@@ -12,7 +12,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         public void CreateTokenDistribution_InvalidTokenId_ThrowsArgumentOutOfRangeException()
         {
             // Arrange
-            const long tokenId = 0;
+            const  ulong tokenId = 0;
 
             // Act
             static void Act() => new TokenDistribution(tokenId, 10, 20, 2, 3, 4, 5);
@@ -51,7 +51,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         public void CreatesNew_TokenDistribution_Success()
         {
             // Arrange
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             UInt256 vaultDistribution = 10000000;
             UInt256 governanceDistribution = 3000000;
             const int periodIndex = 2;
@@ -79,8 +79,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         public void CreatesExisting_TokenDistribution_Success()
         {
             // Arrange
-            const long id = 999;
-            const long tokenId = 1;
+            const ulong id = 999;
+            const  ulong tokenId = 1;
             UInt256 vaultDistribution = 10000000;
             UInt256 governanceDistribution = 3000000;
             const int periodIndex = 2;

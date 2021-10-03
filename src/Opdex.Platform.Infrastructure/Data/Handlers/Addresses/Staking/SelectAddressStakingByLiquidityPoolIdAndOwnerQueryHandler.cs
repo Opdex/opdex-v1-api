@@ -56,13 +56,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking
 
         private sealed class SqlParams
         {
-            internal SqlParams(long liquidityPoolId, Address owner)
+            internal SqlParams(ulong liquidityPoolId, Address owner)
             {
                 LiquidityPoolId = liquidityPoolId;
                 Owner = owner;
             }
 
-            public long LiquidityPoolId { get; }
+            public ulong LiquidityPoolId { get; }
             public Address Owner { get; }
         }
     }

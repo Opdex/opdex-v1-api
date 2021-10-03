@@ -31,12 +31,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
         public async Task PersistNew_MiningGovernanceNomination_Success()
         {
             // Arrange
-            const long expectedId = 1234567;
+            const ulong expectedId = 10ul;
 
             var miningGovernance = new MiningGovernanceNomination(3, 4, 5, true, 1000000, 1);
             var command = new PersistMiningGovernanceNominationCommand(miningGovernance);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.Is<DatabaseQuery>(q => q.Sql.Contains("INSERT"))))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.Is<DatabaseQuery>(q => q.Sql.Contains("INSERT"))))
                 .Returns(() => Task.FromResult(expectedId));
 
             // Act
@@ -50,12 +50,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
         public async Task PersistUpdate_MiningGovernanceNomination_Success()
         {
             // Arrange
-            const long expectedId = 1234567;
+            const ulong expectedId = 10ul;
 
             var miningGovernance = new MiningGovernanceNomination(expectedId, 3, 4, 5, true, 1000000, 1, 2);
             var command = new PersistMiningGovernanceNominationCommand(miningGovernance);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.Is<DatabaseQuery>(q => q.Sql.Contains("UPDATE"))))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.Is<DatabaseQuery>(q => q.Sql.Contains("UPDATE"))))
                 .Returns(() => Task.FromResult(expectedId));
 
             // Act
@@ -72,8 +72,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
             var miningGovernance = new MiningGovernanceNomination(3, 4, 5, true, 1000000, 1);
             var command = new PersistMiningGovernanceNominationCommand(miningGovernance);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .ReturnsAsync(() => 0L);
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+                .ReturnsAsync(() => 0ul);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Addresses.Staking
 {
-    public class MakeAddressStakingCommandHandler : IRequestHandler<MakeAddressStakingCommand, long>
+    public class MakeAddressStakingCommandHandler : IRequestHandler<MakeAddressStakingCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Handlers.Addresses.Staking
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<long> Handle(MakeAddressStakingCommand request, CancellationToken cancellationToken)
+        public Task<ulong> Handle(MakeAddressStakingCommand request, CancellationToken cancellationToken)
         {
             return _mediator.Send(new PersistAddressStakingCommand(request.AddressStaking), cancellationToken);
         }

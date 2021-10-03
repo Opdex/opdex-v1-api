@@ -16,7 +16,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLo
         : IRequestHandler<SelectTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>
     {
         private static readonly string SqlQuery =
-            @$"SELECT 
+            @$"SELECT
                 {nameof(TransactionLogEntity.Id)},
                 {nameof(TransactionLogEntity.TransactionId)},
                 {nameof(TransactionLogEntity.LogTypeId)},
@@ -47,12 +47,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLo
 
         private sealed class SqlParams
         {
-            internal SqlParams(long transactionId)
+            internal SqlParams(ulong transactionId)
             {
                 TransactionId = transactionId;
             }
 
-            public long TransactionId { get; }
+            public ulong TransactionId { get; }
         }
     }
 }

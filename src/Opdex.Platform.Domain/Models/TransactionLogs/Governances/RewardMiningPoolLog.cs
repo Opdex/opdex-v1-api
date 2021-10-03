@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Governances
             Amount = amount;
         }
 
-        public RewardMiningPoolLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public RewardMiningPoolLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.RewardMiningPoolLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

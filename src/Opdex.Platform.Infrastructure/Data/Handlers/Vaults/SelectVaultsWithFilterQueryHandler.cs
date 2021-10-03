@@ -131,13 +131,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
 
         private sealed class SqlParams
         {
-            internal SqlParams(long vaultId, Address lockedToken)
+            internal SqlParams(ulong vaultId, Address lockedToken)
             {
                 VaultId = vaultId;
                 LockedToken = lockedToken;
             }
 
-            public long VaultId { get; }
+            public ulong VaultId { get; }
             public Address LockedToken { get; }
         }
     }

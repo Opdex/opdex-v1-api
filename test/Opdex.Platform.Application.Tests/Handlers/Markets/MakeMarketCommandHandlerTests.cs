@@ -63,7 +63,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Markets
         {
             // Arrange
             const ulong blockHeight = 20;
-            var stakingTokenId = refreshOwner || refreshPendingOwner ? 0 : 1;
+            var stakingTokenId = refreshOwner || refreshPendingOwner ? 0ul : 1ul;
             var market = new Market(1, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", 2, stakingTokenId, Address.Empty, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", true,
                                         false, false, 3, true, 10, 11);
 
@@ -96,7 +96,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Markets
         {
             // Arrange
             const ulong blockHeight = 20;
-            var stakingTokenId = refreshOwner ? 0 : 1;
+            ulong stakingTokenId = refreshOwner ? 0ul : 1ul;
 
             Address currentPendingOwner = Address.Empty;
             Address updatedPendingOwner = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";

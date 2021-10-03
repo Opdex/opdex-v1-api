@@ -11,7 +11,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
 {
     public class TokenSnapshot
     {
-        public TokenSnapshot(long tokenId, long marketId, SnapshotType snapshotType, DateTime dateTime)
+        public TokenSnapshot(ulong tokenId, ulong marketId, SnapshotType snapshotType, DateTime dateTime)
         {
             if (tokenId < 1)
             {
@@ -31,7 +31,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
             EndDate = dateTime.ToEndOf(snapshotType);
         }
 
-        public TokenSnapshot(long id, long tokenId, long marketId, OhlcDecimalSnapshot price, SnapshotType snapshotType, DateTime startDate,
+        public TokenSnapshot(ulong id, ulong tokenId, ulong marketId, OhlcDecimalSnapshot price, SnapshotType snapshotType, DateTime startDate,
                              DateTime endDate, DateTime modifiedDate)
         {
             Id = id;
@@ -44,9 +44,9 @@ namespace Opdex.Platform.Domain.Models.Tokens
             ModifiedDate = modifiedDate;
         }
 
-        public long Id { get; private set; }
-        public long TokenId { get; }
-        public long MarketId { get; }
+        public ulong Id { get; private set; }
+        public ulong TokenId { get; }
+        public ulong MarketId { get; }
         public OhlcDecimalSnapshot Price { get; private set; }
         public SnapshotType SnapshotType { get; }
         public DateTime StartDate { get; private set; }

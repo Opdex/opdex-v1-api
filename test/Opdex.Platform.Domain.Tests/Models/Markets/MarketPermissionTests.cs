@@ -55,7 +55,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         public void CreateMarketPermission_ValidArguments_SetProperties()
         {
             // Arrange
-            var marketId = 5L;
+            var marketId = 5ul;
             var user = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             var permission = MarketPermissionType.Trade;
             var isAuthorized = true;

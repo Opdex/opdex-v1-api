@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.Markets
 {
     public class Market : BlockAudit
     {
-        public Market(Address address, long deployerId, long? stakingTokenId, Address owner, bool authPoolCreators, bool authProviders,
+        public Market(Address address, ulong deployerId, ulong? stakingTokenId, Address owner, bool authPoolCreators, bool authProviders,
             bool authTraders, uint transactionFee, bool marketFeeEnabled, ulong createdBlock) : base(createdBlock)
         {
             if (address == Address.Empty)
@@ -41,7 +41,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             MarketFeeEnabled = marketFeeEnabled;
         }
 
-        public Market(long id, Address address, long deployerId, long? stakingTokenId, Address pendingOwner, Address owner, bool authPoolCreators, bool authProviders,
+        public Market(ulong id, Address address, ulong deployerId, ulong? stakingTokenId, Address pendingOwner, Address owner, bool authPoolCreators, bool authProviders,
             bool authTraders, uint transactionFee, bool marketFeeEnabled, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -57,10 +57,10 @@ namespace Opdex.Platform.Domain.Models.Markets
             MarketFeeEnabled = marketFeeEnabled;
         }
 
-        public long Id { get; }
+        public ulong Id { get; }
         public Address Address { get; }
-        public long DeployerId { get; }
-        public long? StakingTokenId { get; }
+        public ulong DeployerId { get; }
+        public ulong? StakingTokenId { get; }
         public Address PendingOwner { get; private set; }
         public Address Owner { get; private set; }
         public bool AuthPoolCreators { get; }

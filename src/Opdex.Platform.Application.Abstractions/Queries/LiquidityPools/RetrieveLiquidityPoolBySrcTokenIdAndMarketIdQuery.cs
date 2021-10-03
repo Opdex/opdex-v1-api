@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
 {
     public class RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery : FindQuery<LiquidityPool>
     {
-        public RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(long srcTokenId, long marketId, bool findOrThrow = true) : base(findOrThrow)
+        public RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(ulong srcTokenId, ulong marketId, bool findOrThrow = true) : base(findOrThrow)
         {
             if (srcTokenId < 1)
             {
@@ -22,7 +22,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
             MarketId = marketId;
         }
 
-        public long SrcTokenId { get; }
-        public long MarketId { get; }
+        public ulong SrcTokenId { get; }
+        public ulong MarketId { get; }
     }
 }

@@ -29,12 +29,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
         [Fact]
         public async Task PersistsMiningGovernance_Success()
         {
-            const long expectedId = 1234567;
+            const ulong expectedId = 10ul;
 
             var miningGovernance = new MiningGovernance("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 1, 2, 3);
             var command = new PersistMiningGovernanceCommand(miningGovernance);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedId));
 
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -48,8 +48,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
             var token = new MiningGovernance("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 1, 2, 3);
             var command = new PersistMiningGovernanceCommand(token);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(0L));
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult(0ul));
 
             var result = await _handler.Handle(command, CancellationToken.None);
 

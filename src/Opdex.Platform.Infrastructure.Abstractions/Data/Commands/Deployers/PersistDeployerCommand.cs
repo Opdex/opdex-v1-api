@@ -4,7 +4,7 @@ using Opdex.Platform.Domain.Models.Deployers;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers
 {
-    public class PersistDeployerCommand : IRequest<long>
+    public class PersistDeployerCommand : IRequest<ulong>
     {
         public PersistDeployerCommand(Deployer deployer)
         {

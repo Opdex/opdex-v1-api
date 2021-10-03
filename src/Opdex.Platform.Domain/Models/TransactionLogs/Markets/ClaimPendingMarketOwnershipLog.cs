@@ -9,7 +9,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
         {
         }
 
-        public ClaimPendingMarketOwnershipLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public ClaimPendingMarketOwnershipLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.ClaimPendingMarketOwnershipLog, id, transactionId, address, sortOrder, details)
         {
         }

@@ -128,14 +128,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
         private sealed class SqlParams
         {
-            internal SqlParams(long marketId, bool? isLpt, IEnumerable<Address> tokens)
+            internal SqlParams(ulong marketId, bool? isLpt, IEnumerable<Address> tokens)
             {
                 MarketId = marketId;
                 IsLpt = isLpt;
                 Tokens = tokens.Select(token => token.ToString());
             }
 
-            public long MarketId { get; }
+            public ulong MarketId { get; }
             public bool? IsLpt { get; }
             public IEnumerable<string> Tokens { get; }
         }

@@ -53,14 +53,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
 
         private sealed class SqlParams
         {
-            internal SqlParams(long srcTokenId, long marketId)
+            internal SqlParams(ulong srcTokenId, ulong marketId)
             {
                 SrcTokenId = srcTokenId;
                 MarketId = marketId;
             }
 
-            public long SrcTokenId { get; }
-            public long MarketId { get; }
+            public ulong SrcTokenId { get; }
+            public ulong MarketId { get; }
         }
     }
 }

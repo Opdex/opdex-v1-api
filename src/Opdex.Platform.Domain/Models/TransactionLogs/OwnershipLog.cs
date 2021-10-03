@@ -24,7 +24,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
             To = to;
         }
 
-        protected OwnershipLog(TransactionLogType logType, long id, long transactionId, Address address, int sortOrder, string details)
+        protected OwnershipLog(TransactionLogType logType, ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(logType, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

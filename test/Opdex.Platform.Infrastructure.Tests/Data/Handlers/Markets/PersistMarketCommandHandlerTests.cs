@@ -30,11 +30,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public async Task Insert_Market_Success()
         {
-            const long expectedId = 10;
+            const ulong expectedId = 10ul;
             var market = new Market("PMGLf8N8QEnKoncvGxcDZYoTNG5ysnxXpX", 1, 2, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", true, true, true, 3, false, 4);
             var command = new PersistMarketCommand(market);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedId);
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedId);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -44,11 +44,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public async Task Update_Market_Success()
         {
-            const long expectedId = 10;
+            const ulong expectedId = 10ul;
             var market = new Market(expectedId, "PMGLf8N8QEnKoncvGxcDZYoTNG5ysnxXpX", 1, 2, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", true, true, true, 3, false, 4, 5);
             var command = new PersistMarketCommand(market);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).ReturnsAsync(1);
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).ReturnsAsync(1ul);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -58,11 +58,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public async Task PersistsMarket_Fail()
         {
-            const long expectedId = 0;
+            const ulong expectedId = 0;
             var market = new Market(expectedId, "PMGLf8N8QEnKoncvGxcDZYoTNG5ysnxXpX", 1, 2, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", true, true, true, 3, false, 4, 5);
             var command = new PersistMarketCommand(market);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).ThrowsAsync(new Exception("Some SQL Exception"));
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).ThrowsAsync(new Exception("Some SQL Exception"));
 
             var result = await _handler.Handle(command, CancellationToken.None);
 

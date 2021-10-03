@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
 {
-    public class PersistLiquidityPoolCommandHandler : IRequestHandler<PersistLiquidityPoolCommand, long>
+    public class PersistLiquidityPoolCommandHandler : IRequestHandler<PersistLiquidityPoolCommand, ulong>
     {
         private static readonly string SqlCommand =
             $@"INSERT INTO pool_liquidity (
@@ -42,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistLiquidityPoolCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(PersistLiquidityPoolCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
 
                 var command = DatabaseQuery.Create(SqlCommand, poolEntity, cancellationToken);
 
-                return await _context.ExecuteScalarAsync<long>(command);
+                return await _context.ExecuteScalarAsync<ulong>(command);
             }
             catch (Exception ex)
             {

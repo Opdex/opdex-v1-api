@@ -24,7 +24,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Vaults
 
         [Theory]
         [ClassData(typeof(InvalidLongPointerData))]
-        public void Create_InvalidPointer_ThrowArgumentException(PagingDirection pagingDirection, long pointer)
+        public void Create_InvalidPointer_ThrowArgumentException(PagingDirection pagingDirection, ulong pointer)
         {
             // Arrange
             // Act

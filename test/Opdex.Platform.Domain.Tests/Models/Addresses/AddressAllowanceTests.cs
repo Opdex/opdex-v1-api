@@ -50,7 +50,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Addresses
         public void Constructor_ValidArguments_PropertiesSet()
         {
             // Arrange
-            var tokenId = 102;
+            var tokenId = 102ul;
             Address owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             Address spender = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
             var allowance = new UInt256("50000000");

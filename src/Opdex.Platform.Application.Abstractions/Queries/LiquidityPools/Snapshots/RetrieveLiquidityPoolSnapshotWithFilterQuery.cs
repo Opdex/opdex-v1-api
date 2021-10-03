@@ -20,7 +20,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapsho
         /// <param name="dateTime">The date and time of the requested snapshot to be in between.</param>
         /// <param name="snapshotType">The type of snapshot being requested.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown for invalid liquidityPoolId or snapshotType.</exception>
-        public RetrieveLiquidityPoolSnapshotWithFilterQuery(long liquidityPoolId, DateTime dateTime, SnapshotType snapshotType)
+        public RetrieveLiquidityPoolSnapshotWithFilterQuery(ulong liquidityPoolId, DateTime dateTime, SnapshotType snapshotType)
         {
             if (liquidityPoolId < 1)
             {
@@ -37,7 +37,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapsho
             SnapshotType = snapshotType;
         }
 
-        public long LiquidityPoolId { get; }
+        public ulong LiquidityPoolId { get; }
         public DateTime DateTime { get; }
         public SnapshotType SnapshotType { get; }
     }

@@ -6,7 +6,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Markets
     /// <summary>
     /// Create a new make market permission command to persist an instance of a market.
     /// </summary>
-    public class MakeMarketPermissionCommand : IRequest<long>
+    public class MakeMarketPermissionCommand : IRequest<ulong>
     {
         /// <summary>
         /// Constructor to create a make market permission command.

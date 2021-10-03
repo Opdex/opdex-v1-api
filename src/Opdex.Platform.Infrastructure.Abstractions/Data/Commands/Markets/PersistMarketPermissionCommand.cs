@@ -3,7 +3,7 @@ using Opdex.Platform.Domain.Models.Markets;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets
 {
-    public class PersistMarketPermissionCommand : IRequest<long>
+    public class PersistMarketPermissionCommand : IRequest<ulong>
     {
         public PersistMarketPermissionCommand(MarketPermission marketPermission)
         {

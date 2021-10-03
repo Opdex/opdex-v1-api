@@ -26,7 +26,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             MinerBalance = minerBalance;
         }
 
-        protected MineLog(TransactionLogType logType, long id, long transactionId, Address address, int sortOrder, string details)
+        protected MineLog(TransactionLogType logType, ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(logType, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

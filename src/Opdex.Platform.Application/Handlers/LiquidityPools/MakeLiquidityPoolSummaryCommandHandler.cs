@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.LiquidityPools
 {
-    public class MakeLiquidityPoolSummaryCommandHandler : IRequestHandler<MakeLiquidityPoolSummaryCommand, long>
+    public class MakeLiquidityPoolSummaryCommandHandler : IRequestHandler<MakeLiquidityPoolSummaryCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -16,7 +16,7 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<long> Handle(MakeLiquidityPoolSummaryCommand request, CancellationToken cancellationToken)
+        public Task<ulong> Handle(MakeLiquidityPoolSummaryCommand request, CancellationToken cancellationToken)
         {
             return _mediator.Send(new PersistLiquidityPoolSummaryCommand(request.Summary), cancellationToken);
         }

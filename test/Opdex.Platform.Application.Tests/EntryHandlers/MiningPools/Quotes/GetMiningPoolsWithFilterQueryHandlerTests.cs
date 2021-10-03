@@ -267,14 +267,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools.Quotes
             dto.Cursor.Previous.Should().Be(null);
         }
 
-        private void AssertNext(CursorDto dto, long pointer)
+        private void AssertNext(CursorDto dto, ulong pointer)
         {
             MiningPoolsCursor.TryParse(dto.Next.Base64Decode(), out var next).Should().Be(true);
             next.PagingDirection.Should().Be(PagingDirection.Forward);
             next.Pointer.Should().Be(pointer);
         }
 
-        private void AssertPrevious(CursorDto dto, long pointer)
+        private void AssertPrevious(CursorDto dto, ulong pointer)
         {
             MiningPoolsCursor.TryParse(dto.Previous.Base64Decode(), out var next).Should().Be(true);
             next.PagingDirection.Should().Be(PagingDirection.Backward);

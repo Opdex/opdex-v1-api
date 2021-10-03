@@ -8,7 +8,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.MiningPools
     /// Create a make mining pool command to persist a mining pool domain model. Include refresh parameters to refresh the
     /// included properties prior to persistence.
     /// </summary>
-    public class MakeMiningPoolCommand : IRequest<long>
+    public class MakeMiningPoolCommand : IRequest<ulong>
     {
         /// <summary>
         /// Constructor to create a make mining pool command.

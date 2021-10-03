@@ -33,7 +33,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             NextDistributionBlock = nextDistributionBlock;
         }
 
-        public DistributionLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public DistributionLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.DistributionLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

@@ -64,7 +64,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
         {
             // Arrange
             const ulong rewindHeight = 10;
-            const long vaultId = 1;
+            const ulong vaultId = 1;
 
             var certificates = new List<VaultCertificate>
             {
@@ -91,7 +91,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
         {
             // Arrange
             const ulong rewindHeight = 10;
-            const long vaultId = 1;
+            const ulong vaultId = 1;
             var vault = new Vault(vaultId, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, Address.Empty, "PLsMroh6zwmH1iU9EjmXXNMivLgqqART1G", 3, 4, 5, 6);
 
             var certificates = new List<VaultCertificate>
@@ -131,7 +131,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults.Certificates
         {
             // Arrange
             const ulong rewindHeight = 10;
-            const long vaultId = 1;
+            const ulong vaultId = 1;
             var vault = new Vault(vaultId, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, Address.Empty, "PLsMroh6zwmH1iU9EjmXXNMivLgqqART1G", 3, 4, 5, 6);
 
             var certificates = new List<VaultCertificate>

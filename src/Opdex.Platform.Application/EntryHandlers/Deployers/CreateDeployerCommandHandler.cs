@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Deployers
 {
-    public class CreateDeployerCommandHandler : IRequestHandler<CreateDeployerCommand, long>
+    public class CreateDeployerCommandHandler : IRequestHandler<CreateDeployerCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Deployers
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Handle(CreateDeployerCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(CreateDeployerCommand request, CancellationToken cancellationToken)
         {
             var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Deployer, findOrThrow: false));
 

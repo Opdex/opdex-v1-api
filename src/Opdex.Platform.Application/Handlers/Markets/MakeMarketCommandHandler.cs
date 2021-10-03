@@ -8,7 +8,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 
 namespace Opdex.Platform.Application.Handlers.Markets
 {
-    public class MakeMarketCommandHandler : IRequestHandler<MakeMarketCommand, long>
+    public class MakeMarketCommandHandler : IRequestHandler<MakeMarketCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -17,7 +17,7 @@ namespace Opdex.Platform.Application.Handlers.Markets
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Handle(MakeMarketCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(MakeMarketCommand request, CancellationToken cancellationToken)
         {
             if (request.Refresh)
             {

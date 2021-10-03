@@ -8,7 +8,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
 {
     public class ProcessLpTokenSnapshotCommand : IRequest<decimal>
     {
-        public ProcessLpTokenSnapshotCommand(long marketId, Token lpToken, decimal reservesUsd, SnapshotType snapshotType, DateTime blockTime)
+        public ProcessLpTokenSnapshotCommand(ulong marketId, Token lpToken, decimal reservesUsd, SnapshotType snapshotType, DateTime blockTime)
         {
             if (marketId < 1)
             {
@@ -42,7 +42,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
             ReservesUsd = reservesUsd;
         }
 
-        public long MarketId { get; }
+        public ulong MarketId { get; }
         public Token LpToken { get; }
         public SnapshotType SnapshotType { get; }
         public DateTime BlockTime { get; }

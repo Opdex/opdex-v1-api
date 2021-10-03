@@ -4,8 +4,8 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
 {
     public class LiquidityPoolSnapshotDto
     {
-        public long Id { get; set; }
-        public long LiquidityPoolId { get; set; }
+        public ulong Id { get; set; }
+        public ulong LiquidityPoolId { get; set; }
         public long TransactionCount { get; set; }
         public ReservesDto Reserves { get; set; }
         public RewardsDto Rewards { get; set; }

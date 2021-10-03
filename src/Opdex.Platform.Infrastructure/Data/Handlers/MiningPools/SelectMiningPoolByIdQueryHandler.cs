@@ -52,12 +52,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools
 
         private sealed class SqlParams
         {
-            internal SqlParams(long id)
+            internal SqlParams(ulong id)
             {
                 Id = id;
             }
 
-            public long Id { get; }
+            public ulong Id { get; }
         }
     }
 }

@@ -57,9 +57,9 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
         public void CreateNewLiquidityPool_Success()
         {
             Address address = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
-            const long srcId = 2;
-            const long lptId = 4;
-            const long marketId = 1;
+            const ulong srcId = 2;
+            const ulong lptId = 4;
+            const ulong marketId = 1;
             const ulong createdBlock = 3;
 
             var pool = new LiquidityPool(address, srcId, lptId, marketId, createdBlock);
@@ -76,10 +76,10 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
         public void CreateExistingLiquidityPool_Success()
         {
             Address address = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
-            const long id = 999;
-            const long srcId = 2;
-            const long lptId = 4;
-            const long marketId = 1;
+            const ulong id = 999;
+            const ulong srcId = 2;
+            const ulong lptId = 4;
+            const ulong marketId = 1;
             const ulong createdBlock = 3;
             const ulong modifiedBlock = 10;
 

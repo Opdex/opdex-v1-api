@@ -22,10 +22,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Governan
         }
 
         [Theory]
-        [InlineData(PagingDirection.Forward, -1)]
-        [InlineData(PagingDirection.Backward, -1)]
         [InlineData(PagingDirection.Backward, 0)] // zero indicates first request, only possible to page forward
-        public void Create_InvalidPointer_ThrowArgumentException(PagingDirection pagingDirection, long pointer)
+        public void Create_InvalidPointer_ThrowArgumentException(PagingDirection pagingDirection, ulong pointer)
         {
             // Arrange
             // Act

@@ -4,7 +4,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Admins
 {
     public class AdminEntity
     {
-        public long Id { get; set; }
+        public ulong Id { get; set; }
         public Address Address { get; set; }
     }
 }

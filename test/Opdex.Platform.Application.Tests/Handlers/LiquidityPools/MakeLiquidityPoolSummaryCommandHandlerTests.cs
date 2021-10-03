@@ -55,7 +55,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools
         public async Task Handle_MediatorPersistLiquidityPoolSummaryCommand_Return()
         {
             // Arrange
-            var id = 5L;
+            var id = 5ul;
             var summary = new LiquidityPoolSummary(1, 2.00m, 3.00m, 4, 5, 7, 8);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistLiquidityPoolSummaryCommand>(), It.IsAny<CancellationToken>()))

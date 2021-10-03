@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public async Task SelectMarketById_Success()
         {
-            const long id = 99;
+            const ulong id = 99ul;
 
             var expectedEntity = new MarketEntity
             {
@@ -67,7 +67,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public void SelectMarketById_Throws_NotFoundException()
         {
-            const long id = 99;
+            const ulong id = 99ul;
 
             var command = new SelectMarketByIdQuery(id);
 
@@ -83,7 +83,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
         [Fact]
         public async Task SelectMarketById_ReturnsNull()
         {
-            const long id = 99;
+            const ulong id = 99ul;
             const bool findOrThrow = false;
 
             var command = new SelectMarketByIdQuery(id, findOrThrow);

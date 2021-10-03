@@ -5,7 +5,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
 {
     public class CreateRewindTokenDailySnapshotCommand : IRequest<bool>
     {
-        public CreateRewindTokenDailySnapshotCommand(long tokenId, long marketId, decimal crsUsdStartOfDay, DateTime startOfDay, DateTime endOfDay)
+        public CreateRewindTokenDailySnapshotCommand(ulong tokenId, ulong marketId, decimal crsUsdStartOfDay, DateTime startOfDay, DateTime endOfDay)
         {
             if (tokenId < 1)
             {
@@ -36,8 +36,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
             EndDate = endOfDay;
         }
 
-        public long TokenId { get; }
-        public long MarketId { get; }
+        public ulong TokenId { get; }
+        public ulong MarketId { get; }
         public decimal CrsUsdStartOfDay { get; }
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }

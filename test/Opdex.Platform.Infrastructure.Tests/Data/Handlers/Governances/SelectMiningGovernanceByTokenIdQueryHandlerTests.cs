@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
         [Fact]
         public async Task SelectMiningGovernanceByTokenId_Success()
         {
-            const long tokenId = 10;
+            const  ulong tokenId = 10;
 
             var expectedEntity = new MiningGovernanceEntity
             {
@@ -74,7 +74,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances
         [Fact]
         public async Task SelectMiningGovernanceByTokenId_ReturnsNull()
         {
-            const long tokenId = 10;
+            const  ulong tokenId = 10;
             const bool findOrThrow = false;
 
             var command = new SelectMiningGovernanceByTokenIdQuery(tokenId, findOrThrow);

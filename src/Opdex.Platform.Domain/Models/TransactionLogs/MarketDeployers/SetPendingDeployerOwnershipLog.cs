@@ -9,7 +9,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
         {
         }
 
-        public SetPendingDeployerOwnershipLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public SetPendingDeployerOwnershipLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.SetPendingDeployerOwnershipLog, id, transactionId, address, sortOrder, details)
         {
         }

@@ -33,8 +33,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
             var pool = new LiquidityPool("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", 1, 4, 1, 2);
             var command = new PersistLiquidityPoolCommand(pool);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(1234L));
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult(1234UL));
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -44,12 +44,12 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
         [Fact]
         public async Task UpdateLiquidityPool_Success()
         {
-            const long id = 99;
+            const ulong id = 99ul;
 
             var pool = new LiquidityPool(id, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", 2, 3, 4, 5, 6);
             var command = new PersistLiquidityPoolCommand(pool);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(id));
 
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -63,8 +63,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
             var pool = new LiquidityPool("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", 1, 4, 1, 2);
             var command = new PersistLiquidityPoolCommand(pool);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(0L));
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult(0ul));
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -77,7 +77,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
             var pool = new LiquidityPool("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", 1, 4, 1, 2);
             var command = new PersistLiquidityPoolCommand(pool);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>())).Throws<Exception>();
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).Throws<Exception>();
 
             var result = await _handler.Handle(command, CancellationToken.None);
 

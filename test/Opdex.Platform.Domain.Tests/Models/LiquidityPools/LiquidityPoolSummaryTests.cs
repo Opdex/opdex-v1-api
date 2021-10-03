@@ -15,7 +15,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
         public void CreateNew_LiquidityPoolSummary_InvalidLiquidityPoolId_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            const long liquidityPoolId = 0;
+            const ulong liquidityPoolId = 0;
             const decimal liquidity = 2.00m;
             const decimal volume = 3.00m;
             const ulong stakingWeight = 4;
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
         public void CreateNew_LiquidityPoolSummary_InvalidLiquidity_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const decimal liquidity = -2.00m;
             const decimal volume = 3.00m;
             const ulong stakingWeight = 4;
@@ -53,7 +53,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
         public void CreateNew_LiquidityPoolSummary_InvalidVolume_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const decimal liquidity = 2.00m;
             const decimal volume = -3.00m;
             const ulong stakingWeight = 4;
@@ -72,7 +72,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
         public void CreateNew_LiquidityPoolSummary_Success()
         {
             // Arrange
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const decimal liquidity = 2.00m;
             const decimal volume = 3.00m;
             const ulong stakingWeight = 4;
@@ -99,8 +99,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
         public void CreateExistingFromEntity_LiquidityPoolSummary_Success()
         {
             // Arrange
-            const long id = 10;
-            const long liquidityPoolId = 1;
+            const ulong id = 10;
+            const ulong liquidityPoolId = 1;
             const decimal liquidity = 2.00m;
             const decimal volume = 3.00m;
             const ulong stakingWeight = 4;
@@ -128,7 +128,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
         public void Updates_LiquidityPoolSummary_Success()
         {
             // Arrange
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const ulong createdBlock = 7;
             const ulong modifiedBlock = 8;
 
@@ -146,9 +146,9 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
             summary.LockedSrc.Should().Be(snapshot.Reserves.Src);
         }
 
-        private static LiquidityPoolSnapshot GetLiquidityPoolSnapshot(long liquidityPoolId)
+        private static LiquidityPoolSnapshot GetLiquidityPoolSnapshot(ulong liquidityPoolId)
         {
-            const long id = 12345;
+            const ulong id = 12345;
             const long transactionCount = 1;
             var reserves = new ReservesSnapshot(100_000_000, 200000000, 3.00m); // 1 crs, 2 src,
             var rewards = new RewardsSnapshot(5.00m, 1.00m);

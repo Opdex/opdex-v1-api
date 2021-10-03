@@ -6,7 +6,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
 {
     public class LiquidityPool : BlockAudit
     {
-        public LiquidityPool(Address address, long srcTokenId, long lpTokenId, long marketId, ulong createdBlock) : base(createdBlock)
+        public LiquidityPool(Address address, ulong srcTokenId, ulong lpTokenId, ulong marketId, ulong createdBlock) : base(createdBlock)
         {
             if (address == Address.Empty)
             {
@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
             MarketId = marketId;
         }
 
-        public LiquidityPool(long id, Address address, long srcTokenId, long lpTokenId, long marketId, ulong createdBlock, ulong modifiedBlock)
+        public LiquidityPool(ulong id, Address address, ulong srcTokenId, ulong lpTokenId, ulong marketId, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -44,10 +44,10 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
             MarketId = marketId;
         }
 
-        public long Id { get; }
+        public ulong Id { get; }
         public Address Address { get; }
-        public long SrcTokenId { get; }
-        public long LpTokenId { get; }
-        public long MarketId { get; }
+        public ulong SrcTokenId { get; }
+        public ulong LpTokenId { get; }
+        public ulong MarketId { get; }
     }
 }

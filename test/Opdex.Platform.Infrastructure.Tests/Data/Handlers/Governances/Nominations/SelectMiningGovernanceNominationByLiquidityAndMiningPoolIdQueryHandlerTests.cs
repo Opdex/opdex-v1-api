@@ -32,9 +32,9 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
         public async Task SelectMiningGovernanceNominationByLiquidityAndMiningPoolId_Success()
         {
             // Arrange
-            const long governanceId = 3;
-            const long liquidityPoolId = 4;
-            const long miningPoolId = 5;
+            const ulong governanceId = 3;
+            const ulong liquidityPoolId = 4;
+            const ulong miningPoolId = 5;
 
             var expectedEntity = new MiningGovernanceNominationEntity
             {

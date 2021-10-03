@@ -10,7 +10,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 {
-    public class PersistMarketCommandHandler : IRequestHandler<PersistMarketCommand, long>
+    public class PersistMarketCommandHandler : IRequestHandler<PersistMarketCommand, ulong>
     {
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO market (
@@ -61,7 +61,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<long> Handle(PersistMarketCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(PersistMarketCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
                 var command = DatabaseQuery.Create(sql, entity, cancellationToken);
 
-                var result = await _context.ExecuteScalarAsync<long>(command);
+                var result = await _context.ExecuteScalarAsync<ulong>(command);
 
                 return isUpdate ? entity.Id : result;
             }

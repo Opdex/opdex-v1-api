@@ -11,7 +11,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
         {
         }
 
-        public StartStakingLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public StartStakingLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.StartStakingLog, id, transactionId, address, sortOrder, details)
         {
         }

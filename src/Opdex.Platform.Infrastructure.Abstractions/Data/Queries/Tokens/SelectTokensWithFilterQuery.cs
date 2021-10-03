@@ -9,7 +9,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
 {
     public class SelectTokensWithFilterQuery : IRequest<IEnumerable<Token>>
     {
-        public SelectTokensWithFilterQuery(long marketId, bool? lpToken = null, uint skip = 0, uint take = 0, string sortBy = null,
+        public SelectTokensWithFilterQuery(ulong marketId, bool? lpToken = null, uint skip = 0, uint take = 0, string sortBy = null,
                                            string orderBy = null, IEnumerable<Address> tokens = null)
         {
             if (marketId < 1)
@@ -26,7 +26,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
             Tokens = tokens ?? Enumerable.Empty<Address>();
         }
 
-        public long MarketId { get; }
+        public ulong MarketId { get; }
         public bool? LpToken { get; }
         public uint Skip { get; }
         public uint Take { get; }

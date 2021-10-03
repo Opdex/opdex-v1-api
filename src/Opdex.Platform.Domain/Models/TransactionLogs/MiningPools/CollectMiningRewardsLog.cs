@@ -27,7 +27,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MiningPools
             Amount = amount;
         }
 
-        public CollectMiningRewardsLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public CollectMiningRewardsLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.CollectMiningRewardsLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

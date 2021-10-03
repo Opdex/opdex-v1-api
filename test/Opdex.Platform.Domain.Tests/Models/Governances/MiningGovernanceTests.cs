@@ -15,7 +15,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         {
             // Arrange
             Address address = Address.Empty;
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             const ulong miningDuration = 2;
             const ulong createdBlock = 3;
 
@@ -31,7 +31,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         {
             // Arrange
             Address address ="PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD";
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             const ulong miningDuration = 0;
             const ulong createdBlock = 3;
 
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         {
             // Arrange
             Address address ="PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD";
-            const long tokenId = 0;
+            const  ulong tokenId = 0;
             const ulong miningDuration = 2;
             const ulong createdBlock = 3;
 
@@ -63,7 +63,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         {
             // Arrange
             Address address = "PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD";
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             const ulong miningDuration = 100;
             const ulong createdBlock = 150;
 
@@ -81,9 +81,9 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void Create_MiningGovernance_Success()
         {
             // Arrange
-            const long id = 99;
+            const ulong id = 99ul;
             Address address = "PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD";
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             const ulong nominationPeriodEnd = 10;
             const ulong miningDuration = 100;
             const uint miningPoolsFunded = 12;
@@ -111,9 +111,9 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
         public void MiningGovernance_Update_Success()
         {
             // Arrange
-            const long id = 2;
+            const ulong id = 2;
             Address address = "PE7FiEUa8NG9Xh2WU8q87nq2KGFTtoSPBD";
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             const ulong nominationPeriodEnd = 10;
             const ulong miningDuration = 100;
             const uint miningPoolsFunded = 12;

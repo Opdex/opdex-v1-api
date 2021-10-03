@@ -140,7 +140,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
 
         private sealed class SqlParams
         {
-            internal SqlParams(long balanceId, Address wallet, IEnumerable<Address> tokens, bool includeLpTokens)
+            internal SqlParams(ulong balanceId, Address wallet, IEnumerable<Address> tokens, bool includeLpTokens)
             {
                 BalanceId = balanceId;
                 Wallet = wallet;
@@ -148,7 +148,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
                 IncludeLpTokens = includeLpTokens;
             }
 
-            public long BalanceId { get; }
+            public ulong BalanceId { get; }
             public Address Wallet { get; }
             public IEnumerable<string> Tokens { get; }
             public bool IncludeLpTokens { get; }

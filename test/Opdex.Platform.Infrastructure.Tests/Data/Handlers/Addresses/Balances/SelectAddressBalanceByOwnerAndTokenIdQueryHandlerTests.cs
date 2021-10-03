@@ -33,7 +33,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Balances
         {
             // Arrange
             Address owner = Address.Empty;
-            const long tokenId = 2;
+            const  ulong tokenId = 2;
 
             void Act() => new SelectAddressBalanceByOwnerAndTokenIdQuery(owner, tokenId);
 
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Balances
         public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentNullException_InvalidTokenId()
         {
             // Arrange
-            const long tokenId = 0;
+            const  ulong tokenId = 0;
             const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
             // Act
@@ -59,7 +59,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Balances
         public async Task SelectAddressBalanceByOwnerAndTokenId_Success()
         {
             // Arrange
-            const long tokenId = 2;
+            const  ulong tokenId = 2;
             const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
             var expectedEntity = new AddressBalanceEntity
@@ -93,7 +93,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Balances
         public void SelectAddressBalanceByOwnerAndTokenId_Throws_NotFoundException()
         {
             // Arrange
-            const long tokenId = 2;
+            const  ulong tokenId = 2;
             const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
 
             var command = new SelectAddressBalanceByOwnerAndTokenIdQuery(owner, tokenId);
@@ -113,7 +113,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Balances
         public async Task SelectAddressBalanceByOwnerAndTokenId_ReturnsNull()
         {
             // Arrange
-            const long tokenId = 2;
+            const  ulong tokenId = 2;
             const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
             const bool findOrThrow = false;
 

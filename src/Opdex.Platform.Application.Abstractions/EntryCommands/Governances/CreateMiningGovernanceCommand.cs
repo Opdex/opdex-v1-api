@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Governances
     /// <summary>
     /// Create a new mining governance record when one does not already exist.
     /// </summary>
-    public class CreateMiningGovernanceCommand : IRequest<long>
+    public class CreateMiningGovernanceCommand : IRequest<ulong>
     {
         /// <summary>
         /// Constructor to create a mining governance command.
@@ -15,7 +15,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Governances
         /// <param name="governance">The mining governance contract address.</param>
         /// <param name="stakingTokenId">The staking or mined token in the governance.</param>
         /// <param name="blockHeight">The block height the governance was created at.</param>
-        public CreateMiningGovernanceCommand(Address governance, long stakingTokenId, ulong blockHeight)
+        public CreateMiningGovernanceCommand(Address governance, ulong stakingTokenId, ulong blockHeight)
         {
             if (governance == Address.Empty)
             {
@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Governances
         }
 
         public Address Governance { get; }
-        public long StakingTokenId { get; }
+        public ulong StakingTokenId { get; }
         public ulong BlockHeight { get; }
     }
 }

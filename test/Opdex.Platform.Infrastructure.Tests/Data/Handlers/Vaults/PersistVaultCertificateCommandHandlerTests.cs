@@ -62,7 +62,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Vaults
             var allowance = new VaultCertificate(10, 1, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1234, 10000, true, false, 123, 322);
             var command = new PersistVaultCertificateCommand(allowance);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
                 .Throws(new Exception("Some SQL Exception"));
 
             var result = await _handler.Handle(command, CancellationToken.None);

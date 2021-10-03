@@ -32,8 +32,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
             var token = new Token("PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", true, "TokenName", "TKN", 8, 100_000_000, 500000000, 1);
             var command = new PersistTokenCommand(token);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(1234L));
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult(1234ul));
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -46,8 +46,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
             var token = new Token("PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", true, "TokenName", "TKN", 8, 100_000_000, 500000000, 1);
             var command = new PersistTokenCommand(token);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(0L));
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult(0ul));
 
             var result = await _handler.Handle(command, CancellationToken.None);
 

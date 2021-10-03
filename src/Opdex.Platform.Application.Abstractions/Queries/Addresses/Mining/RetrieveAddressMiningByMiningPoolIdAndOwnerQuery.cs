@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Addresses.Mining
 {
     public class RetrieveAddressMiningByMiningPoolIdAndOwnerQuery : FindQuery<AddressMining>
     {
-        public RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(long miningPoolId, Address owner, bool findOrThrow = true) : base(findOrThrow)
+        public RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(ulong miningPoolId, Address owner, bool findOrThrow = true) : base(findOrThrow)
         {
             if (miningPoolId < 1)
             {
@@ -23,7 +23,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Addresses.Mining
             Owner = owner;
         }
 
-        public long MiningPoolId { get; }
+        public ulong MiningPoolId { get; }
         public Address Owner { get; }
     }
 }

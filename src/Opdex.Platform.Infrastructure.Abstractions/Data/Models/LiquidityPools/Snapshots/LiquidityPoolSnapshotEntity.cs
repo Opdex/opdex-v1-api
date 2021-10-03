@@ -4,8 +4,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.
 {
     public class LiquidityPoolSnapshotEntity : SnapshotEntity
     {
-        public long Id { get; set; }
-        public long LiquidityPoolId { get; set; }
+        public ulong Id { get; set; }
+        public ulong LiquidityPoolId { get; set; }
         public long TransactionCount { get; set; }
         public SnapshotReservesEntity Reserves { get; set; }
         public SnapshotRewardsEntity Rewards { get; set; }

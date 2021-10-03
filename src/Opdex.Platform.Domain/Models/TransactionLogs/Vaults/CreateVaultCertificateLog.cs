@@ -34,7 +34,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
             VestedBlock = vestedBlock;
         }
 
-        public CreateVaultCertificateLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public CreateVaultCertificateLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.CreateVaultCertificateLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

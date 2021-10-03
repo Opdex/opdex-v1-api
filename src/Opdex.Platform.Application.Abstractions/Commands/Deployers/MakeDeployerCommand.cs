@@ -7,7 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Deployers
     /// <summary>
     /// Create a make deployer command that rewinds, when necessary, and persist deployers.
     /// </summary>
-    public class MakeDeployerCommand : IRequest<long>
+    public class MakeDeployerCommand : IRequest<ulong>
     {
         /// <summary>
         /// Creates the make deployer command.

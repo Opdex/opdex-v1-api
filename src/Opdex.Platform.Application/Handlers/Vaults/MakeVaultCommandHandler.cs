@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Opdex.Platform.Application.Handlers.Vaults
 
 {
-    public class MakeVaultCommandHandler : IRequestHandler<MakeVaultCommand, long>
+    public class MakeVaultCommandHandler : IRequestHandler<MakeVaultCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.Handlers.Vaults
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Handle(MakeVaultCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(MakeVaultCommand request, CancellationToken cancellationToken)
         {
             if (request.Refresh)
             {

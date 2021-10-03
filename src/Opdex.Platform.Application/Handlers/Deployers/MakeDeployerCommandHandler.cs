@@ -8,7 +8,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers;
 
 namespace Opdex.Platform.Application.Handlers.Deployers
 {
-    public class MakeDeployerCommandHandler : IRequestHandler<MakeDeployerCommand, long>
+    public class MakeDeployerCommandHandler : IRequestHandler<MakeDeployerCommand, ulong>
     {
         private readonly IMediator _mediator;
 
@@ -17,7 +17,7 @@ namespace Opdex.Platform.Application.Handlers.Deployers
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Handle(MakeDeployerCommand request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(MakeDeployerCommand request, CancellationToken cancellationToken)
         {
             // When refresh is true, force the update of updatable properties prior to persistence
             if (request.Refresh)

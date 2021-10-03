@@ -5,7 +5,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.Tokens
 {
     public class TokenDto
     {
-        public long Id { get; set; }
+        public ulong Id { get; set; }
         public Address Address { get; set; }
         public string Name { get; set; }
         public string Symbol { get; set; }

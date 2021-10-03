@@ -68,7 +68,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             var transactionLog = new FakeTransactionLog(TransactionLogType.ApprovalLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Act
-            transactionLog.SetTxId(-1);
+            transactionLog.SetTxId(0);
 
             // Assert
             transactionLog.TransactionId.Should().Be(0);
@@ -115,7 +115,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
                 return "";
             }
 
-            public void SetTxId(long id)
+            public void SetTxId(ulong id)
             {
                 SetTransactionId(id);
             }

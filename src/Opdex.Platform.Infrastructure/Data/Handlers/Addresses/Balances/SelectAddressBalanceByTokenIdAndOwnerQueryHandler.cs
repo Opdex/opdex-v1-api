@@ -54,13 +54,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
 
         private sealed class SqlParams
         {
-            internal SqlParams(long tokenId, Address owner)
+            internal SqlParams(ulong tokenId, Address owner)
             {
                 TokenId = tokenId;
                 Owner = owner;
             }
 
-            public long TokenId { get; }
+            public ulong TokenId { get; }
             public Address Owner { get; }
         }
     }

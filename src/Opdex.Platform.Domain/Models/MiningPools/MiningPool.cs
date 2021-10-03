@@ -8,7 +8,7 @@ namespace Opdex.Platform.Domain.Models.MiningPools
 {
     public class MiningPool : BlockAudit
     {
-        public MiningPool(long liquidityPoolId, Address address, ulong createdBlock) : base(createdBlock)
+        public MiningPool(ulong liquidityPoolId, Address address, ulong createdBlock) : base(createdBlock)
         {
             if (address == Address.Empty)
             {
@@ -27,7 +27,7 @@ namespace Opdex.Platform.Domain.Models.MiningPools
             MiningPeriodEndBlock = 0;
         }
 
-        public MiningPool(long id, long liquidityPoolId, Address address, UInt256 rewardPerBlock, UInt256 rewardPerLpt, ulong miningPeriodEndBlock,
+        public MiningPool(ulong id, ulong liquidityPoolId, Address address, UInt256 rewardPerBlock, UInt256 rewardPerLpt, ulong miningPeriodEndBlock,
             ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -38,8 +38,8 @@ namespace Opdex.Platform.Domain.Models.MiningPools
             MiningPeriodEndBlock = miningPeriodEndBlock;
         }
 
-        public long Id { get; }
-        public long LiquidityPoolId { get; }
+        public ulong Id { get; }
+        public ulong LiquidityPoolId { get; }
         public Address Address { get; }
         public UInt256 RewardPerBlock { get; private set; }
         public UInt256 RewardPerLpt { get; private set; }

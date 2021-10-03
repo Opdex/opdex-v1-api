@@ -135,14 +135,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking
 
         private sealed class SqlParams
         {
-            public SqlParams(long positionId, Address address, IEnumerable<Address> liquidityPools)
+            public SqlParams(ulong positionId, Address address, IEnumerable<Address> liquidityPools)
             {
                 PositionId = positionId;
                 Address = address;
                 LiquidityPools = liquidityPools.Select(pool => pool.ToString());
             }
 
-            public long PositionId { get; }
+            public ulong PositionId { get; }
             public Address Address { get; }
             public IEnumerable<string> LiquidityPools { get; }
         }

@@ -18,7 +18,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Bala
         /// <param name="findOrThrow">Defaulted to true, optionally throw if a record is not found.</param>
         /// <exception cref="ArgumentNullException">Thrown when the owner parameter is invalid.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the tokenId provided is invalid.</exception>
-        public SelectAddressBalanceByOwnerAndTokenIdQuery(Address owner, long tokenId, bool findOrThrow = true) : base(findOrThrow)
+        public SelectAddressBalanceByOwnerAndTokenIdQuery(Address owner, ulong tokenId, bool findOrThrow = true) : base(findOrThrow)
         {
             if (owner == Address.Empty)
             {
@@ -35,6 +35,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Bala
         }
 
         public Address Owner { get; }
-        public long TokenId { get; }
+        public ulong TokenId { get; }
     }
 }

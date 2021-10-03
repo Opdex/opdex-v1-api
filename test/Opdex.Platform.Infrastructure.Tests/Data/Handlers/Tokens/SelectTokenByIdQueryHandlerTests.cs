@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task SelectTokenById_Success()
         {
-            const long id = 99;
+            const ulong id = 99ul;
 
             var expectedEntity = new TokenEntity
             {
@@ -65,7 +65,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public void SelectTokenById_Throws_NotFoundException()
         {
-            const long id = 99;
+            const ulong id = 99ul;
 
             var command = new SelectTokenByIdQuery(id);
 
@@ -81,7 +81,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
         [Fact]
         public async Task SelectTokenById_ReturnsNull()
         {
-            const long id = 99;
+            const ulong id = 99ul;
             const bool findOrThrow = false;
 
             var command = new SelectTokenByIdQuery(id, findOrThrow);

@@ -36,7 +36,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
             VestedBlock = vestedBlock;
         }
 
-        public RevokeVaultCertificateLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public RevokeVaultCertificateLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.RevokeVaultCertificateLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

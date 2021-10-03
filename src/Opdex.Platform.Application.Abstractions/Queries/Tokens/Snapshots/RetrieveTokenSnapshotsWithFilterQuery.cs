@@ -20,7 +20,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots
         /// <param name="startDate">The start date, earliest snapshot to find.</param>
         /// <param name="endDate">The end date, latest snapshot to find.</param>
         /// <param name="snapshotType">The type of snapshots requested, CRS is minute/hourly/daily, SRC is hourly/daily.</param>
-        public RetrieveTokenSnapshotsWithFilterQuery(long tokenId, long marketId, DateTime startDate, DateTime endDate, SnapshotType snapshotType)
+        public RetrieveTokenSnapshotsWithFilterQuery(ulong tokenId, ulong marketId, DateTime startDate, DateTime endDate, SnapshotType snapshotType)
         {
             if (tokenId < 1)
             {
@@ -55,8 +55,8 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots
             SnapshotType = snapshotType;
         }
 
-        public long TokenId { get; }
-        public long MarketId { get; }
+        public ulong TokenId { get; }
+        public ulong MarketId { get; }
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }
         public SnapshotType SnapshotType { get; }

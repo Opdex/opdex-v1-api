@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
 {
     public class AddressStaking : BlockAudit
     {
-        public AddressStaking(long liquidityPoolId, Address owner, UInt256 weight, ulong createdBlock) : base(createdBlock)
+        public AddressStaking(ulong liquidityPoolId, Address owner, UInt256 weight, ulong createdBlock) : base(createdBlock)
         {
             if (liquidityPoolId < 1)
             {
@@ -24,7 +24,7 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Weight = weight;
         }
 
-        public AddressStaking(long id, long liquidityPoolId, Address owner, UInt256 weight, ulong createdBlock, ulong modifiedBlock)
+        public AddressStaking(ulong id, ulong liquidityPoolId, Address owner, UInt256 weight, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -33,8 +33,8 @@ namespace Opdex.Platform.Domain.Models.Addresses
             Weight = weight;
         }
 
-        public long Id { get; }
-        public long LiquidityPoolId { get; }
+        public ulong Id { get; }
+        public ulong LiquidityPoolId { get; }
         public Address Owner { get; }
         public UInt256 Weight { get; private set; }
 

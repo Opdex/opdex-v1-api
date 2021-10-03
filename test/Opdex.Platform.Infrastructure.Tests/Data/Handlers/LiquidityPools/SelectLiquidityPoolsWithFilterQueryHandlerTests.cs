@@ -28,7 +28,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
         [Fact]
         public async Task SelectAllPools_Success()
         {
-            const long marketId = 3;
+            const ulong marketId = 3;
 
             var expectedEntity = new LiquidityPoolEntity
             {

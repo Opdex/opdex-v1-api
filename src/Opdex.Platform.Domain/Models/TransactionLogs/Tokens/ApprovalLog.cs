@@ -31,7 +31,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
             OldAmount = oldAmount;
         }
 
-        public ApprovalLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public ApprovalLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.ApprovalLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

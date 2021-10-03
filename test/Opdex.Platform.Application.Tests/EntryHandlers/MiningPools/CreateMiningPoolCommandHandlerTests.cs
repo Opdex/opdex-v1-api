@@ -34,7 +34,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
         {
             // Arrange
             Address liquidityPoolAddress = Address.Empty;
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const ulong blockHeight = 10;
 
             // Act
@@ -49,7 +49,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
         {
             // Arrange
             Address liquidityPoolAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const long liquidityPoolId = 0;
+            const ulong liquidityPoolId = 0;
             const ulong blockHeight = 10;
 
             // Act
@@ -64,7 +64,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
         {
             // Arrange
             Address liquidityPoolAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const ulong blockHeight = 0;
 
             // Act
@@ -79,7 +79,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
         {
             // Arrange
             Address liquidityPoolAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const ulong blockHeight = 10;
 
             // Act
@@ -102,7 +102,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
         {
             // Arrange
             Address liquidityPoolAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const ulong blockHeight = 10;
 
             Address miningPoolAddress = "PNG7FiEUa89Xh2WU8q87nq2KGFTtoSPBDE";
@@ -129,11 +129,11 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
         {
             // Arrange
             Address liquidityPoolAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const ulong blockHeight = 10;
 
             Address miningPoolAddress = "PNG7FiEUa89Xh2WU8q87nq2KGFTtoSPBDE";
-            const long miningPoolId = 2;
+            const ulong miningPoolId = 2;
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetSmartContractPropertyQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new SmartContractMethodParameter(miningPoolAddress));
@@ -154,7 +154,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools
         {
             // Arrange
             Address liquidityPoolAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const long liquidityPoolId = 1;
+            const ulong liquidityPoolId = 1;
             const ulong blockHeight = 10;
 
             Address miningPoolAddress = "PNG7FiEUa89Xh2WU8q87nq2KGFTtoSPBDE";

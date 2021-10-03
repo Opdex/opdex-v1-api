@@ -46,8 +46,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
             var tokenDistribution = new TokenDistribution(999, 10011, 100011, 1, 2, 3, 4);
             var command = new PersistTokenDistributionCommand(tokenDistribution);
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<long>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(0L));
+            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+                .Returns(() => Task.FromResult(0ul));
 
             var result = await _handler.Handle(command, CancellationToken.None);
 

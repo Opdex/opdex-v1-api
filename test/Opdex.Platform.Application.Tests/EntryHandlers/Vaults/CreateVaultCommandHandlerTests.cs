@@ -30,7 +30,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         public void CreateVaultCommand_InvalidVault_ThrowsArgumentNullException()
         {
             // Arrange
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             Address owner = "Poh6zXXNMU9EjmivLgqqARwmH1iT1GLsMr";
             const ulong blockHeight = 10;
 
@@ -46,7 +46,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         {
             // Arrange
             Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             const ulong blockHeight = 10;
 
             // Act
@@ -57,9 +57,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         }
 
         [Theory]
-        [InlineData(-1)]
         [InlineData(0)]
-        public void CreateVaultCommand_InvalidTokenId_ThrowsArgumentOutOfRangeException(long tokenId)
+        public void CreateVaultCommand_InvalidTokenId_ThrowsArgumentOutOfRangeException(ulong tokenId)
         {
             // Arrange
             Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
@@ -78,7 +77,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         {
             // Arrange
             Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             Address owner = "Poh6zXXNMU9EjmivLgqqARwmH1iT1GLsMr";
 
             // Act
@@ -93,7 +92,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         {
             // Arrange
             Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             Address owner = "Poh6zXXNMU9EjmivLgqqARwmH1iT1GLsMr";
             const ulong blockHeight = 10;
 
@@ -115,10 +114,10 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         {
             // Arrange
             Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             Address owner = "Poh6zXXNMU9EjmivLgqqARwmH1iT1GLsMr";
             const ulong blockHeight = 10;
-            const long vaultId = 100;
+            const ulong vaultId = 100;
 
             var expectedVault = new Vault(vaultId, vault, tokenId, Address.Empty, owner, 0ul, UInt256.Zero, blockHeight, blockHeight);
 
@@ -138,7 +137,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
         {
             // Arrange
             Address vault = "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm";
-            const long tokenId = 1;
+            const  ulong tokenId = 1;
             Address owner = "Poh6zXXNMU9EjmivLgqqARwmH1iT1GLsMr";
             const ulong blockHeight = 10;
 

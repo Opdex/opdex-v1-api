@@ -29,7 +29,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.Governances
             Weight = weight;
         }
 
-        public NominationLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public NominationLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.NominationLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);

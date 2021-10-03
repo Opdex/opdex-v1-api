@@ -50,7 +50,7 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers
             EnableMarketFee = enableMarketFee;
         }
 
-        public CreateMarketLog(long id, long transactionId, Address address, int sortOrder, string details)
+        public CreateMarketLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
             : base(TransactionLogType.CreateMarketLog, id, transactionId, address, sortOrder)
         {
             var logDetails = DeserializeLogDetails(details);
