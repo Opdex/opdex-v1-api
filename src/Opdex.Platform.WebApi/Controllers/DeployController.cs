@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
-using Opdex.Platform.Application.Abstractions.Commands.Transactions.Wallet;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
@@ -18,7 +17,6 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
@@ -127,14 +125,6 @@ namespace Opdex.Platform.WebApi.Controllers
                     async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: createLiquidityPoolRequest), cancellationToken));
 
                 createLiquidityPoolTransactions.Add(createLiquidityPoolTransaction);
-
-                // Add Liquidity to pools
-                var crs = tokenParams.ProvideParams[0];
-                var src = tokenParams.ProvideParams[1].ToSatoshis(int.Parse(tokenParams.CreateParams[3].Replace("2#", string.Empty)));
-                await CallAndWait(async () => await _mediator.Send(new MakeWalletAddLiquidityTransactionCommand(request.WalletAddress,
-                                                                                                                createTokenTransaction.NewContractAddress,
-                                                                                                                crs, src, 0, UInt256.Zero, request.WalletAddress,
-                                                                                                                stakingMarket.Router), cancellationToken));
             }
 
             // Get liquidity pools to use for initial governance token distribution and mining governance nominations
@@ -234,12 +224,6 @@ namespace Opdex.Platform.WebApi.Controllers
                     "4#BTC (Wrapped)",
                     "4#xBTC",
                     "2#8"
-                },
-                ProvideParams = new FixedDecimal[]
-                {
-                    // 22,000 to 1
-                    FixedDecimal.Parse("66000.00000000"), // crs
-                    FixedDecimal.Parse("3.00000000") // xBTC
                 }
             },
             new TokenDetails
@@ -250,12 +234,6 @@ namespace Opdex.Platform.WebApi.Controllers
                     "4#ETH (Wrapped)",
                     "4#xETH",
                     "2#18"
-                },
-                ProvideParams = new FixedDecimal[]
-                {
-                    // 1424 to 1
-                    FixedDecimal.Parse("66000.00000000"), // crs
-                    FixedDecimal.Parse("47.000000000000000000"), // xETH
                 }
             },
             new TokenDetails
@@ -266,12 +244,6 @@ namespace Opdex.Platform.WebApi.Controllers
                     "4#BNB (Wrapped)",
                     "4#xBNB",
                     "2#18"
-                },
-                ProvideParams = new FixedDecimal[]
-                {
-                    // 207 to 1
-                    FixedDecimal.Parse("66000.00000000"), // crs
-                    FixedDecimal.Parse("319.000000000000000000"), // xBNB
                 }
             },
             new TokenDetails
@@ -282,12 +254,6 @@ namespace Opdex.Platform.WebApi.Controllers
                     "4#Gluon",
                     "4#GLU",
                     "2#8"
-                },
-                ProvideParams = new FixedDecimal[]
-                {
-                    // .5 to 1
-                    FixedDecimal.Parse("66000.00000000"), // crs
-                    FixedDecimal.Parse("132000.00000000"), // GLU
                 }
             }
         };
@@ -295,7 +261,6 @@ namespace Opdex.Platform.WebApi.Controllers
         private class TokenDetails
         {
             public string[] CreateParams;
-            public FixedDecimal[] ProvideParams;
         }
     }
 }

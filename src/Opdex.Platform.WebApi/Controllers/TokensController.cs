@@ -144,10 +144,30 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("{address}/distribute")]
         [ProducesResponseType(typeof(ActionResult<TransactionQuoteResponseModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Distribute([FromRoute] Address address,
-                                                    CancellationToken cancellationToken)
+        public async Task<IActionResult> Distribute([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateDistributeTokensTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
+
+            var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+
+            return Ok(quote);
+        }
+
+        /// <summary>Swap Tokens Quote</summary>
+        /// <remarks>Quotes token swap transactions.</remarks>
+        /// <param name="address">The address of the token being sold, may require allowance.</param>
+        /// <param name="request">The token swap request object.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A token swap transaction quote.</returns>
+        [HttpPost("{address}/swap")]
+        [ProducesResponseType(typeof(ActionResult<TransactionQuoteResponseModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Swap([FromRoute] Address address, SwapRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(new CreateSwapTransactionQuoteCommand(address, _context.Wallet, request.TokenOut, request.TokenInAmount,
+                                                                                      request.TokenOutAmount, request.TokenInMaximumAmount,
+                                                                                      request.TokenOutMinimumAmount, request.TokenInExactAmount,
+                                                                                      request.Recipient, _context.Market, request.Deadline), cancellationToken);
 
             var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
 
