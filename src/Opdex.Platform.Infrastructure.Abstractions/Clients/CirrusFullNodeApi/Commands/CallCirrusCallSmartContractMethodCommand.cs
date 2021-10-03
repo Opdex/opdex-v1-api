@@ -9,9 +9,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.C
     {
         public CallCirrusCallSmartContractMethodCommand(TransactionQuoteRequest quoteRequest = null, SmartContractCallRequestDto callDto = null)
         {
-            // Todo: This is a temporary work around while we keep the API backward compatible
-            // Once all quote endpoints are finished and can use the transactions/broadcast-quote remove CallDto from here
-            // both are null or both are populated, throw
+            // CallDto should not be used going forward, is only used currently in the deploy controller
             if (!(quoteRequest == null ^ callDto == null))
             {
                 throw new ArgumentNullException(nameof(quoteRequest), "Call Dto or quote request must be provided.");

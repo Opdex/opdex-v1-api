@@ -20,8 +20,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Q
         /// <param name="amountSrcMin">The minimum amount of STC tokens to add.</param>
         /// <param name="recipient">The recipient of the returned liquidity pool tokens.</param>
         /// <param name="deadline">The block deadline that the transaction is valid before.</param>
-        /// <exception cref="ArgumentException">Invalid liquidity pool, amounts, or recipient command parameters.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Invalid deadline</exception>
         public CreateAddLiquidityTransactionQuoteCommand(Address liquidityPool, Address wallet, FixedDecimal amountCrs, FixedDecimal amountSrc,
                                                          FixedDecimal amountCrsMin, FixedDecimal amountSrcMin, Address recipient, ulong deadline) : base(wallet)
         {
