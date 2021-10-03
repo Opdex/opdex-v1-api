@@ -46,6 +46,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets
                     {
                         var marketId = await _mediator.Send(new MakeMarketCommand(market,
                                                                                   request.RewindHeight,
+                                                                                  refreshPendingOwner: true,
                                                                                   refreshOwner: true));
 
                         marketRefreshed = marketId > 0;

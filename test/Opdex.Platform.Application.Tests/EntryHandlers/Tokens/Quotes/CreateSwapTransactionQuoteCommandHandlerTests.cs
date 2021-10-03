@@ -210,7 +210,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Quotes
             var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
             var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
-            var market = new Market(1, command.Market, 2, 3, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
+            var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
             _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(p => p.Address == command.TokenIn), cancellationToken)).ReturnsAsync(tokenIn);
             _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(p => p.Address == command.TokenOut), cancellationToken)).ReturnsAsync(tokenOut);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), cancellationToken)).ReturnsAsync(market);
@@ -237,7 +237,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Quotes
             var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
             var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
-            var market = new Market(1, command.Market, 2, 3, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
+            var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
             var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(p => p.Address == command.TokenIn), cancellationToken)).ReturnsAsync(tokenIn);
@@ -285,7 +285,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Quotes
             var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
             var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
-            var market = new Market(1, command.Market, 2, 3, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
+            var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
             var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(p => p.Address == command.TokenIn), cancellationToken)).ReturnsAsync(tokenIn);
@@ -333,7 +333,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Quotes
             var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
             var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
-            var market = new Market(1, command.Market, 2, 3, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
+            var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
             var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(p => p.Address == command.TokenIn), cancellationToken)).ReturnsAsync(tokenIn);
@@ -380,7 +380,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Quotes
             var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
             var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
-            var market = new Market(1, command.Market, 2, 3, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
+            var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
             var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(p => p.Address == command.TokenIn), cancellationToken)).ReturnsAsync(tokenIn);
@@ -426,7 +426,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Quotes
 
             var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 100_000_000, UInt256.Parse("21000000"), 5, 15);
             var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
-            var market = new Market(1, command.Market, 2, 3, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
+            var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
             var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(p => p.Address == command.TokenIn), cancellationToken)).ReturnsAsync(tokenIn);
@@ -475,7 +475,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Quotes
             var tokenIn = new Token(5, command.TokenIn, false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
             var tokenOut = new Token(5, command.TokenOut, false, "Anything Else", "ANY", 18, 1_000_000_000_000_000_000, UInt256.Parse("210000000000000000"), 5, 15);
 
-            var market = new Market(1, command.Market, 2, 3, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
+            var market = new Market(1, command.Market, 2, 3, Address.Empty, "Pz6364jVFCDoHJgUK3jsy1XTenAyWcdTKU", true, true, true, 3, true, 4, 5);
             var router = new MarketRouter(2, "Pz636HJgUK3jsy1XTenAyWcdTKU4jVFCDo", market.Id, true, 4, 5);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(p => p.Address == command.TokenIn), cancellationToken)).ReturnsAsync(tokenIn);

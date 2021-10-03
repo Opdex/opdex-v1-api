@@ -1,7 +1,10 @@
 using System;
+using System.Dynamic;
 using FluentAssertions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
+using Opdex.Platform.Domain.Models.Transactions;
 using Xunit;
 
 namespace Opdex.Platform.Domain.Tests.Models.Markets
@@ -37,11 +40,11 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
         [Theory]
         [InlineData(-1)]
         [InlineData(0)]
-        public void CreateMarket_InvalidDeployerId_ThrowArgumentOutOfRangeException(long deployerId)
+        public void CreateMarket_InvalidDeployerId_ThrowArgumentOutOfRangeException(long deployer)
         {
             // Arrange
             // Act
-            void Act() => new Market("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", deployerId, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 3, true, 100_000);
+            void Act() => new Market("PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", deployer, 10, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 3, true, 100_000);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Deployer id must be greater than 0.");
@@ -90,6 +93,139 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             market.MarketFeeEnabled.Should().Be(marketFeeEnabled);
             market.CreatedBlock.Should().Be(createdBlock);
             market.ModifiedBlock.Should().Be(createdBlock);
+        }
+
+        [Fact]
+        public void SetPendingOwnership_NullValueProvided_ThrowArgumentNullException()
+        {
+            // Arrange
+            var market = new Market(5, "PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 1, 10, Address.Empty, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 5, true, 100, 105);
+            var pendingOwner = "PTdjXpRFWXrUK7FCHcAjbsPWXaCSefipxh";
+
+            dynamic log = new ExpandoObject();
+            log.from = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            log.to = pendingOwner;
+
+            // Act
+            void Act() => market.SetPendingOwnership(null, 510);
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(Act);
+        }
+
+
+        [Fact]
+        public void SetPendingOwnership_PendingOwner_Updated()
+        {
+            // Arrange
+            var market = new Market(5, "PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 1, 10, Address.Empty, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 5, true, 100, 105);
+            var pendingOwner = "PTdjXpRFWXrUK7FCHcAjbsPWXaCSefipxh";
+
+            dynamic log = new ExpandoObject();
+            log.from = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            log.to = pendingOwner;
+
+            // Act
+            market.SetPendingOwnership(new SetPendingMarketOwnershipLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5), 100_005);
+
+            // Assert
+            market.PendingOwner.Should().Be(pendingOwner);
+        }
+
+        [Fact]
+        public void SetPendingOwnership_ModifiedBlock_Updated()
+        {
+            // Arrange
+            var market = new Market(5, "PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 1, 10, Address.Empty, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 5, true, 100, 105);
+            var pendingOwner = "PTdjXpRFWXrUK7FCHcAjbsPWXaCSefipxh";
+
+            dynamic log = new ExpandoObject();
+            log.from = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            log.to = pendingOwner;
+            ulong blockHeight = 100_005;
+
+            // Act
+            market.SetPendingOwnership(new SetPendingMarketOwnershipLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5), blockHeight);
+
+            // Assert
+            market.ModifiedBlock.Should().Be(blockHeight);
+        }
+
+        [Fact]
+        public void SetOwnershipClaimed_NullValueProvided_ThrowArgumentNullException()
+        {
+            // Arrange
+            var market = new Market(5, "PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 1, 10, Address.Empty, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 5, true, 100, 105);
+
+            // Act
+            void Act() => market.SetOwnershipClaimed(null, 99_999);
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(Act);
+        }
+
+        [Fact]
+        public void SetOwnershipClaimed_PreviousModifiedBlock_ThrowArgumentOutOfRangeException()
+        {
+            // Arrange
+            var currentOwner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            var pendingOwner = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+            var market = new Market(5, "PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 1, 10, Address.Empty, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 5, true, 100, 105);
+
+            dynamic log = new ExpandoObject();
+            log.from = currentOwner;
+            log.to = pendingOwner;
+
+            // Act
+            void Act() => market.SetOwnershipClaimed(new ClaimPendingMarketOwnershipLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5), 104);
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(Act);
+        }
+
+        [Fact]
+        public void SetOwnershipClaimed_ValidArguments_SetProperties()
+        {
+            // Arrange
+            var currentOwner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+            var pendingOwner = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+            var market = new Market(5, "PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 1, 10, Address.Empty, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 5, true, 100, 105);
+
+            dynamic log = new ExpandoObject();
+            log.from = currentOwner;
+            log.to = pendingOwner;
+            ulong blockHeight = 100_010;
+
+            // Act
+            market.SetOwnershipClaimed(new ClaimPendingMarketOwnershipLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5), blockHeight);
+
+            // Assert
+            market.PendingOwner.Should().Be(Address.Empty);
+            market.Owner.Should().Be(pendingOwner);
+            market.ModifiedBlock.Should().Be(blockHeight);
+        }
+
+        [Fact]
+        public void Update_Values_Updated()
+        {
+            // Arrange
+            var market = new Market(5, "PMWrLGcwhr1zboamZQzC5Jk75JyYJSAzoi", 1, 10, Address.Empty, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", true, true, true, 5, true, 100, 105);
+
+            const ulong block = 99999999;
+            Address updatedPendingOwner = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";
+            Address updatedOwner = "Pf7LXaWgRKCvMJL7JK7skDpACVauUvuqjB";
+
+            var summary = new MarketContractSummary(block);
+            summary.SetPendingOwner(new SmartContractMethodParameter(updatedPendingOwner));
+            summary.SetOwner(new SmartContractMethodParameter(updatedOwner));
+
+            // Act
+            market.Update(summary);
+
+            // Assert
+            market.PendingOwner.Should().Be(updatedPendingOwner);
+            market.Owner.Should().Be(updatedOwner);
+            market.ModifiedBlock.Should().Be(block);
         }
     }
 }

@@ -43,7 +43,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
         public void MakeVaultCommand_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
         {
             // Arrange
-            var vault = new Vault(1, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 3ul, 4, 5, 6);
+            var vault = new Vault(1, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, Address.Empty, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 3ul, 4, 5, 6);
 
             // Act
             void Act() => new MakeVaultCommand(vault, 0);
@@ -53,17 +53,21 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
         }
 
         [Theory]
-        [InlineData(false, false, true, true)]
-        [InlineData(false, true, false, true)]
-        [InlineData(true, false, false, true)]
-        [InlineData(true, true, false, true)]
-        [InlineData(true, false, true, true)]
-        [InlineData(true, true, true, true)]
-        [InlineData(false, false, false, false)]
-        public async Task MakeVaultCommand_Sends_RetrieveVaultContractSummaryQuery(bool refreshOwner, bool refreshSupply, bool refreshGenesis, bool expected)
+        [InlineData(true, false, false, true, true)]
+        [InlineData(true, false, true, false, true)]
+        [InlineData(false, true, false, false, true)]
+        [InlineData(true, true, true, false, true)]
+        [InlineData(false, true, false, true, true)]
+        [InlineData(true, true, true, true, true)]
+        [InlineData(false, false, false, false, false)]
+        public async Task MakeVaultCommand_Sends_RetrieveVaultContractSummaryQuery(bool refreshPendingOwner,
+                                                                                   bool refreshOwner,
+                                                                                   bool refreshSupply,
+                                                                                   bool refreshGenesis,
+                                                                                   bool expected)
         {
             // Arrange
-            var vault = new Vault(1, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 3ul, 4, 5, 6);
+            var vault = new Vault(1, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, Address.Empty, "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i", 3ul, 4, 5, 6);
             const ulong blockHeight = 10;
 
             // Act
@@ -71,6 +75,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
             {
                 await _handler.Handle(new MakeVaultCommand(vault, blockHeight,
                                                            refreshGenesis: refreshGenesis,
+                                                           refreshPendingOwner: refreshPendingOwner,
                                                            refreshOwner: refreshOwner,
                                                            refreshSupply: refreshSupply), CancellationToken.None);
             }
@@ -82,6 +87,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
             _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultContractSummaryQuery>(q => q.Vault == vault.Address &&
                                                                                                    q.BlockHeight == blockHeight &&
                                                                                                    q.IncludeGenesis == refreshGenesis &&
+                                                                                                   q.IncludePendingOwner == refreshPendingOwner &&
                                                                                                    q.IncludeOwner == refreshOwner &&
                                                                                                    q.IncludeSupply == refreshSupply &&
                                                                                                    q.IncludeLockedToken == false),
@@ -89,16 +95,25 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
         }
 
         [Theory]
-        [InlineData(false, false, true)]
-        [InlineData(false, true, false)]
-        [InlineData(true, false, false)]
-        [InlineData(true, true, false)]
-        [InlineData(true, false, true)]
-        [InlineData(true, true, true)]
-        [InlineData(false, false, false)]
-        public async Task MakeVaultCommand_Sends_PersistVaultCommand(bool refreshOwner, bool refreshSupply, bool refreshGenesis)
+        [InlineData(false, false, false, true)]
+        [InlineData(false, false, true, false)]
+        [InlineData(false, true, false, false)]
+        [InlineData(true, false, false, false)]
+        [InlineData(true, true, false, false)]
+        [InlineData(true, true, true, false)]
+        [InlineData(true, true, false, true)]
+        [InlineData(false, true, true, false)]
+        [InlineData(false, true, true, true)]
+        [InlineData(false, true, false, true)]
+        [InlineData(false, false, true, true)]
+        [InlineData(true, true, true, true)]
+        [InlineData(false, false, false, false)]
+        public async Task MakeVaultCommand_Sends_PersistVaultCommand(bool refreshPendingOwner, bool refreshOwner, bool refreshSupply, bool refreshGenesis)
         {
             // Arrange
+            Address currentPendingOwner = Address.Empty;
+            Address newPendingOwner = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";
+
             Address currentOwner = "PT1GLsMroh6zXXNMU9EjmivLgqqARwmH1i";
             Address newOwner = "PRwmH1iT1GLsMroh6zXXNMU9EjmivLgqqA";
 
@@ -108,7 +123,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
             const ulong genesis = 0;
             const ulong newGenesis = 10;
 
-            var vault = new Vault(1, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, currentOwner, genesis, currentSupply, 5, 6);
+            var vault = new Vault(1, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, currentPendingOwner, currentOwner, genesis, currentSupply, 5, 6);
             const ulong blockHeight = 10;
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultContractSummaryQuery>(), It.IsAny<CancellationToken>()))
@@ -116,6 +131,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
                 {
                     var summary = new VaultContractSummary(blockHeight);
 
+                    if (refreshPendingOwner) summary.SetPendingOwner(new SmartContractMethodParameter(newPendingOwner));
                     if (refreshOwner) summary.SetOwner(new SmartContractMethodParameter(newOwner));
                     if (refreshSupply) summary.SetUnassignedSupply(new SmartContractMethodParameter(newSupply));
                     if (refreshGenesis) summary.SetGenesis(new SmartContractMethodParameter(newGenesis));
@@ -126,12 +142,14 @@ namespace Opdex.Platform.Application.Tests.Handlers.Vaults
             // Act
             await _handler.Handle(new MakeVaultCommand(vault, blockHeight,
                                                        refreshGenesis: refreshGenesis,
+                                                       refreshPendingOwner: refreshPendingOwner,
                                                        refreshOwner: refreshOwner,
                                                        refreshSupply: refreshSupply), CancellationToken.None);
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<PersistVaultCommand>(q => q.Vault.Id == vault.Id &&
                                                                                    q.Vault.Address == vault.Address &&
+                                                                                   q.Vault.PendingOwner == (refreshPendingOwner ? newPendingOwner : currentPendingOwner) &&
                                                                                    q.Vault.Owner == (refreshOwner ? newOwner : currentOwner) &&
                                                                                    q.Vault.Genesis == (refreshGenesis ? newGenesis : genesis) &&
                                                                                    q.Vault.UnassignedSupply == (refreshSupply ? newSupply : currentSupply)),

@@ -101,7 +101,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             try
             {
                 await _handler.Handle(new CreateVaultCommand(vault, tokenId, owner, blockHeight), CancellationToken.None);
-            } catch { }
+            }
+            catch { }
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveVaultByAddressQuery>(q => q.Vault == vault &&
@@ -119,7 +120,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Vaults
             const ulong blockHeight = 10;
             const long vaultId = 100;
 
-            var expectedVault = new Vault(vaultId, vault, tokenId, owner, 0ul, UInt256.Zero, blockHeight, blockHeight);
+            var expectedVault = new Vault(vaultId, vault, tokenId, Address.Empty, owner, 0ul, UInt256.Zero, blockHeight, blockHeight);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedVault);

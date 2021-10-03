@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.EntryHandlers.Markets;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 using System;
 using System.Collections.Generic;
@@ -64,8 +65,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
 
             var markets = new List<Market>
             {
-                new Market(1, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", 2, 3, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", false, false, false, 3, true, 10, 11),
-                new Market(1, "PvLgqqARwmH1iT1GLsMroh6zXXNMU9Ejmi", 2, 0, "PRwmH1iT1GLsMroh6zXXMU9EjmivLgqqAN", true, true, true, 3, true, 10, 11)
+                new Market(1, "PH1iT1GLsMroh6zXXNMU9EjmivLgqqARwm", 2, 3, Address.Empty, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", false, false, false, 3, true, 10, 11),
+                new Market(1, "PvLgqqARwmH1iT1GLsMroh6zXXNMU9Ejmi", 2, 0, Address.Empty, "PRwmH1iT1GLsMroh6zXXMU9EjmivLgqqAN", true, true, true, 3, true, 10, 11)
             };
 
             _mediator.Setup(callTo => callTo.Send(It.Is<RetrieveMarketsByModifiedBlockQuery>(q => q.BlockHeight == rewindHeight),

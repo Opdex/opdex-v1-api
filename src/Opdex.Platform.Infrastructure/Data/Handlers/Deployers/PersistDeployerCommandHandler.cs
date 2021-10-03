@@ -15,12 +15,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
         private static readonly string InsertSqlCommand =
             $@"INSERT INTO market_deployer (
                 {nameof(DeployerEntity.Address)},
+                {nameof(DeployerEntity.PendingOwner)},
                 {nameof(DeployerEntity.Owner)},
                 {nameof(DeployerEntity.IsActive)},
                 {nameof(DeployerEntity.CreatedBlock)},
                 {nameof(DeployerEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(DeployerEntity.Address)},
+                @{nameof(DeployerEntity.PendingOwner)},
                 @{nameof(DeployerEntity.Owner)},
                 @{nameof(DeployerEntity.IsActive)},
                 @{nameof(DeployerEntity.CreatedBlock)},
@@ -31,6 +33,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
         private static readonly string UpdateSqlCommand =
             $@"UPDATE market_deployer
                 SET
+                    {nameof(DeployerEntity.PendingOwner)} = @{nameof(DeployerEntity.PendingOwner)},
                     {nameof(DeployerEntity.Owner)} = @{nameof(DeployerEntity.Owner)},
                     {nameof(DeployerEntity.IsActive)} = @{nameof(DeployerEntity.IsActive)},
                     {nameof(DeployerEntity.ModifiedBlock)} = @{nameof(DeployerEntity.ModifiedBlock)}

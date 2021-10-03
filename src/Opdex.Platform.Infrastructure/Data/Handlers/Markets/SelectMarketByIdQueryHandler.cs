@@ -20,6 +20,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 {nameof(MarketEntity.Address)},
                 {nameof(MarketEntity.DeployerId)},
                 {nameof(MarketEntity.StakingTokenId)},
+                {nameof(MarketEntity.PendingOwner)},
                 {nameof(MarketEntity.Owner)},
                 {nameof(MarketEntity.AuthPoolCreators)},
                 {nameof(MarketEntity.AuthProviders)},
@@ -47,7 +48,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
 
             var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
 
-            var result =  await _context.ExecuteFindAsync<MarketEntity>(command);
+            var result = await _context.ExecuteFindAsync<MarketEntity>(command);
 
             if (request.FindOrThrow && result == null)
             {

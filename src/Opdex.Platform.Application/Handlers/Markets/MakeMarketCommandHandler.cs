@@ -23,6 +23,7 @@ namespace Opdex.Platform.Application.Handlers.Markets
             {
                 var summary = await _mediator.Send(new RetrieveMarketContractSummaryQuery(request.Market.Address,
                                                                                           request.BlockHeight,
+                                                                                          includePendingOwner: request.RefreshPendingOwner,
                                                                                           includeOwner: request.RefreshOwner));
 
                 request.Market.Update(summary);

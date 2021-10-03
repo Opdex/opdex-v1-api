@@ -28,6 +28,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
                 v.{nameof(VaultEntity.Id)},
                 v.{nameof(VaultEntity.Address)},
                 v.{nameof(VaultEntity.TokenId)},
+                v.{nameof(VaultEntity.PendingOwner)},
                 v.{nameof(VaultEntity.Owner)},
                 v.{nameof(VaultEntity.Genesis)},
                 v.{nameof(VaultEntity.UnassignedSupply)},

@@ -9,6 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.Models
         public Address Address { get; set; }
         public TokenDto StakingToken { get; set; }
         public TokenDto CrsToken { get; set; }
+        public Address PendingOwner { get; set; }
         public Address Owner { get; set; }
         public bool AuthPoolCreators { get; set; }
         public bool AuthProviders { get; set; }

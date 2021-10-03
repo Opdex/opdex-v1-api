@@ -3,16 +3,13 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
 
-namespace Opdex.Platform.Domain.Models.Markets
+namespace Opdex.Platform.Domain.Models.Deployers
 {
-    public class MarketContractSummary
+    public class DeployerContractSummary
     {
-        public MarketContractSummary(ulong blockHeight)
+        public DeployerContractSummary(ulong blockHeight)
         {
-            if (blockHeight == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-            }
+            if (blockHeight == 0) throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
 
             BlockHeight = blockHeight;
         }

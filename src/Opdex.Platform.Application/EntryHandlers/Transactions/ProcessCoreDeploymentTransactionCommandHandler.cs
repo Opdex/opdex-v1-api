@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
@@ -56,8 +57,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
                 await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime.Value));
 
-                var deployerId = await _mediator.Send(new CreateDeployerCommand(transaction.NewContractAddress, transaction.From,
-                                                                                transaction.BlockHeight, isUpdate: false));
+                var deployerId = await _mediator.Send(new CreateDeployerCommand(transaction.NewContractAddress, transaction.From, transaction.BlockHeight));
 
                 if (transaction.Id == 0)
                 {

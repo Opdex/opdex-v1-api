@@ -33,6 +33,16 @@ namespace Opdex.Platform.Application.Handlers.Vaults
                 summary.SetLockedToken(lockedToken);
             }
 
+            if (request.IncludePendingOwner)
+            {
+                var pendingOwner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
+                                                                                                    VaultConstants.StateKeys.PendingOwner,
+                                                                                                    SmartContractParameterType.Address,
+                                                                                                    request.BlockHeight));
+
+                summary.SetPendingOwner(pendingOwner);
+            }
+
             if (request.IncludeOwner)
             {
                 var owner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,

@@ -1,9 +1,9 @@
 using AutoMapper;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.Blocks;
+using Opdex.Platform.Domain.Models.Deployers;
 using Opdex.Platform.Domain.Models.Governances;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
@@ -118,7 +118,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketEntity, Market>()
-                .ConstructUsing(src => new Market(src.Id, src.Address, src.DeployerId, src.StakingTokenId, src.Owner, src.AuthPoolCreators,
+                .ConstructUsing(src => new Market(src.Id, src.Address, src.DeployerId, src.StakingTokenId, src.PendingOwner, src.Owner, src.AuthPoolCreators,
                     src.AuthProviders, src.AuthTraders, src.TransactionFee, src.MarketFeeEnabled, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -141,7 +141,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<DeployerEntity, Deployer>()
-                .ConstructUsing(src => new Deployer(src.Id, src.Address, src.Owner, src.IsActive, src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new Deployer(src.Id, src.Address, src.PendingOwner, src.Owner, src.IsActive, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketSnapshotEntity, MarketSnapshot>()
@@ -152,7 +152,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<VaultEntity, Vault>()
-                .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.Owner, src.Genesis, src.UnassignedSupply, src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.PendingOwner, src.Owner, src.Genesis, src.UnassignedSupply, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<VaultCertificateEntity, VaultCertificate>()
@@ -291,6 +291,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
                 .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
                 .ForMember(dest => dest.StakingTokenId, opt => opt.MapFrom(src => src.StakingTokenId))
+                .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.DeployerId, opt => opt.MapFrom(src => src.DeployerId))
                 .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
@@ -333,6 +334,7 @@ namespace Opdex.Platform.Infrastructure
             CreateMap<Deployer, DeployerEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
@@ -515,6 +517,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+                .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
                 .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
                 .ForMember(dest => dest.UnassignedSupply, opt => opt.MapFrom(src => src.UnassignedSupply))

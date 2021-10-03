@@ -32,7 +32,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: true));
 
-                vault.SetOwner(request.Log, request.BlockHeight);
+                vault.SetOwnershipClaimed(request.Log, request.BlockHeight);
 
                 var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight));
 

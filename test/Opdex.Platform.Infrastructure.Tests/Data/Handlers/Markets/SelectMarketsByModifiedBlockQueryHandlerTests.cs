@@ -83,7 +83,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
 
             var expectedResponse = new List<Market>
             {
-                new Market(entity.Id, entity.Address, entity.DeployerId, entity.StakingTokenId, entity.Owner, entity.AuthPoolCreators,
+                new Market(entity.Id, entity.Address, entity.DeployerId, entity.StakingTokenId, entity.PendingOwner, entity.Owner, entity.AuthPoolCreators,
                            entity.AuthProviders, entity.AuthTraders, entity.TransactionFee, entity.MarketFeeEnabled, entity.CreatedBlock, entity.ModifiedBlock)
             };
 

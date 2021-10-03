@@ -15,8 +15,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Deployers
         /// <param name="deployer">The address of the deployer contract.</param>
         /// <param name="owner">The address of the owner of the deployer contract.</param>
         /// <param name="blockHeight">The block height the deployer was created or updated at.</param>
-        /// <param name="isUpdate">Flag signaling if the command is to update or create a deployer.</param>
-        public CreateDeployerCommand(Address deployer, Address owner, ulong blockHeight, bool isUpdate)
+        public CreateDeployerCommand(Address deployer, Address owner, ulong blockHeight)
         {
             if (deployer == Address.Empty)
             {
@@ -36,12 +35,10 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Deployers
             Deployer = deployer;
             Owner = owner;
             BlockHeight = blockHeight;
-            IsUpdate = isUpdate;
         }
 
         public Address Deployer { get; }
         public Address Owner { get; }
         public ulong BlockHeight { get; }
-        public bool IsUpdate { get; }
     }
 }

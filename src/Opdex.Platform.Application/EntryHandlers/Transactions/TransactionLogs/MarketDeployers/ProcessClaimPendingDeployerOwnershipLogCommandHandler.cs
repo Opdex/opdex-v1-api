@@ -26,7 +26,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 if (!persisted) return false;
 
-                var deployer = await _mediator.Send(new CreateDeployerCommand(request.Log.Contract, request.Log.To, request.BlockHeight, isUpdate: true));
+                var deployer = await _mediator.Send(new CreateDeployerCommand(request.Log.Contract, request.Log.To, request.BlockHeight));
 
                 return deployer > 0;
             }

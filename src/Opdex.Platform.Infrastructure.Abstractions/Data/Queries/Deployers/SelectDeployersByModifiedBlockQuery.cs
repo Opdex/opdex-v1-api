@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Deployers;
 using System;
 using System.Collections.Generic;
 
