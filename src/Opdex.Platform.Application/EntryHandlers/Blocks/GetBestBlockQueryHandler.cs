@@ -19,14 +19,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
         public async Task<BlockReceipt> Handle(GetBestBlockQuery request, CancellationToken cancellationToken)
         {
+            // If we don't have a latest block in the database, fetch the chain tip from cirrus. Should only ever be hit during the initial sync
+            // Todo: Maybe this should be wiped and we start syncing from the time we deploy our contracts.
             var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: false), cancellationToken);
-
-            if (latestSyncedBlock != null)
+            if (latestSyncedBlock == null)
             {
-                return await _mediator.Send(new RetrieveCirrusBlockByHashQuery(latestSyncedBlock.Hash), CancellationToken.None);
+                return await _mediator.Send(new RetrieveCirrusCurrentBlockQuery(), cancellationToken);
             }
 
-            return await _mediator.Send(new RetrieveCirrusCurrentBlockQuery(), cancellationToken);
+            return await _mediator.Send(new RetrieveCirrusBlockByHashQuery(latestSyncedBlock.Hash, findOrThrow: false), cancellationToken);
         }
     }
 }

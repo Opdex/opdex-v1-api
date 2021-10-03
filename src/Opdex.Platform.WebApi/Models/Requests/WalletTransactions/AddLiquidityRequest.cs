@@ -31,12 +31,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         public FixedDecimal AmountCrsMin { get; set; }
 
         /// <summary>
-        /// Decimal number between .9999 and .0001 (99.99% to 0.01%)
-        /// </summary>
-        [Obsolete] // Delete property when removing WalletBroadcast endpoints and flows.
-        public decimal Tolerance { get; set; }
-
-        /// <summary>
         /// The recipient of the liquidity pool tokens.
         /// </summary>
         [Required]

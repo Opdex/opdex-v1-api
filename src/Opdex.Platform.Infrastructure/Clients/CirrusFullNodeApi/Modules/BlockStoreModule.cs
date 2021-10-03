@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Http;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 {
@@ -19,18 +20,36 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
         {
             const bool outputJson = true;
             var uri = string.Format(CirrusUriHelper.BlockStore.GetBlockByHash, blockHash, outputJson);
-            return GetAsync<BlockReceiptDto>(uri, cancellationToken);
+
+            var logDetails = new Dictionary<string, object>
+            {
+                ["BlockHash"] = blockHash
+            };
+
+            using (_logger.BeginScope(logDetails))
+            {
+                return GetAsync<BlockReceiptDto>(uri, cancellationToken);
+            }
         }
 
         public Task<string> GetBestBlockAsync(CancellationToken cancellationToken)
         {
             return GetAsync<string>(CirrusUriHelper.Consensus.GetBestBlockHash, cancellationToken);
         }
-        
+
         public Task<string> GetBlockHashAsync(ulong height, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.Consensus.GetBlockHash, height);
-            return GetAsync<string>(uri, cancellationToken);
+
+            var logDetails = new Dictionary<string, object>
+            {
+                ["BlockHeight"] = height
+            };
+
+            using (_logger.BeginScope(logDetails))
+            {
+                return GetAsync<string>(uri, cancellationToken);
+            }
         }
     }
 }

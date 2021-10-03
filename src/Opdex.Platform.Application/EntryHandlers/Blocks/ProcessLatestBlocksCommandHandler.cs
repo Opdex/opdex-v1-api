@@ -15,6 +15,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Blocks
@@ -34,19 +35,38 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
         {
             try
             {
-                // The latest synced block we have, if none, the tip of cirrus chain
-                var previousBlock = await _mediator.Send(new GetBestBlockQuery(), cancellationToken);
+                // The latest synced block we have, if we don't have any, the tip of Cirrus chain, else null
+                var bestBlock = await _mediator.Send(new GetBestBlockQuery(), cancellationToken);
+
+                // Rewind when applicable
+                if (bestBlock == null)
+                {
+                    var dbLatestBlock = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: true));
+                    var commonCirrusBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
+
+                    while (commonCirrusBlock == null)
+                    {
+                        dbLatestBlock = await _mediator.Send(new RetrieveBlockByHeightQuery(dbLatestBlock.Height - 1));
+                        commonCirrusBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
+                    }
+
+                    var rewound = await _mediator.Send(new CreateRewindToBlockCommand(commonCirrusBlock.Height));
+                    if (!rewound) throw new Exception($"Failure rewinding database to block height: {commonCirrusBlock.Height}");
+
+                    bestBlock = await _mediator.Send(new GetBestBlockQuery());
+                    if (bestBlock == null) throw new Exception("Rewound database and still cannot find matching best block.");
+                }
 
                 // Process each block until we reach the chain tip
-                while (previousBlock?.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
+                while (bestBlock.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
                 {
                     // Retrieve and create the block
-                    var currentBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(previousBlock.NextBlockHash));
+                    var currentBlock = await _mediator.Send(new RetrieveCirrusBlockByHashQuery(bestBlock.NextBlockHash, findOrThrow: true));
                     var blockCreated = await _mediator.Send(new CreateBlockCommand(currentBlock));
 
                     if (!blockCreated) break;
 
-                    if (currentBlock.IsNewMinuteFromPrevious(previousBlock.MedianTime))
+                    if (currentBlock.IsNewMinuteFromPrevious(bestBlock.MedianTime))
                     {
                         // Dev Environment = 15 minutes, otherwise 1 minute
                         if (request.NetworkType != NetworkType.DEVNET || currentBlock.MedianTime.Minute % 15 == 0)
@@ -60,7 +80,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                     var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, 0, currentBlock.MedianTime, SnapshotType.Minute));
 
                     // If it's a new day from the previous block, refresh all daily snapshots. (Tokens, Liquidity Pools, Markets)
-                    if (currentBlock.IsNewDayFromPrevious(previousBlock.MedianTime))
+                    if (currentBlock.IsNewDayFromPrevious(bestBlock.MedianTime))
                     {
                         await _mediator.Send(new ProcessDailySnapshotRefreshCommand(currentBlock.Height, currentBlock.MedianTime, crsSnapshot.Price.Close));
                     }
@@ -73,7 +93,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                     }
 
                     // Process market snapshots every 5 minutes
-                    if (currentBlock.IsNewMinuteFromPrevious(previousBlock.MedianTime) &&
+                    if (currentBlock.IsNewMinuteFromPrevious(bestBlock.MedianTime) &&
                         currentBlock.MedianTime.Minute % 5 == 0)
                     {
                         var markets = await _mediator.Send(new RetrieveAllMarketsQuery());
@@ -84,8 +104,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                         }
                     }
 
-                    previousBlock = currentBlock;
+                    bestBlock = currentBlock;
                 }
+            }
+            // Not Found exception may not be specific enough, might want a unique exception related to not found block.
+            catch (NotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Unable to find best block, attempting rewind");
             }
             catch (Exception ex)
             {

@@ -25,7 +25,6 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Block
         public async Task<BlockReceipt> Handle(CallCirrusGetCurrentBlockQuery request, CancellationToken cancellationToken)
         {
             var bestsBlockHash = await _blockStore.GetBestBlockAsync(cancellationToken);
-
             var block = await _blockStore.GetBlockAsync(bestsBlockHash, cancellationToken);
 
             return new BlockReceipt(block.Hash, block.Height, block.Time.FromUnixTimeSeconds(), block.MedianTime.FromUnixTimeSeconds(),

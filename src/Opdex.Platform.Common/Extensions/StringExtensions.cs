@@ -28,22 +28,6 @@ namespace Opdex.Platform.Common.Extensions
             return value.Equals(comparison, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static UInt256 ToleranceAsSatoshis(this UInt256 value, decimal tolerance)
-        {
-            tolerance = Math.Round(tolerance, 4);
-
-            if (tolerance > .9999m || tolerance < .0001m)
-            {
-                throw new ArgumentOutOfRangeException(nameof(tolerance), "Invalid tolerance, .0001 - .9999 supported");
-            }
-
-            const int offset = 10_000;
-            var offsetPercentage = value / offset;
-            var toleranceOffset = (ulong)(Math.Round(1 - tolerance, 4) * offset);
-
-            return offsetPercentage * toleranceOffset;
-        }
-
         /// <summary>
         /// Returns the total fiat amount of a number of tokens with a known price per token.
         /// </summary>
