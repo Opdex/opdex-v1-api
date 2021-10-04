@@ -6,6 +6,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Http;
 using System.Collections.Generic;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 {
@@ -50,6 +51,12 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             {
                 return GetAsync<string>(uri, cancellationToken);
             }
+        }
+
+        public async Task<AddressesBalancesDto> GetWalletAddressesBalances(IEnumerable<Address> addresses, CancellationToken cancellationToken)
+        {
+            var uri = string.Format(CirrusUriHelper.BlockStore.GetAddressesBalances, string.Join(',', addresses));
+            return await GetAsync<AddressesBalancesDto>(uri, cancellationToken);
         }
     }
 }
