@@ -1,6 +1,4 @@
 using MediatR;
-using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Balances;
 using System;
@@ -11,22 +9,19 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balan
 {
     public class CallCirrusGetAddressBalanceQueryHandler : IRequestHandler<CallCirrusGetAddressBalanceQuery, ulong>
     {
-        private readonly NetworkType _network;
-        private readonly ISmartContractsModule _smartContractsModule;
+        private readonly IBlockStoreModule _blockStoreModule;
 
-        public CallCirrusGetAddressBalanceQueryHandler(OpdexConfiguration opdexConfiguration, ISmartContractsModule smartContractsModule)
+        public CallCirrusGetAddressBalanceQueryHandler(IBlockStoreModule blockStoreModule)
         {
-            _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
-            _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+            _blockStoreModule = blockStoreModule ?? throw new ArgumentNullException(nameof(blockStoreModule));
         }
 
         public async Task<ulong> Handle(CallCirrusGetAddressBalanceQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                return _network == NetworkType.DEVNET
-                    ? await _smartContractsModule.GetWalletAddressCrsBalance(request.Address, cancellationToken)
-                    : 0ul;
+                var response = await _blockStoreModule.GetWalletAddressesBalances(new[] { request.Address }, cancellationToken);
+                return response.Balances[0].Balance;
             }
             catch (Exception)
             {

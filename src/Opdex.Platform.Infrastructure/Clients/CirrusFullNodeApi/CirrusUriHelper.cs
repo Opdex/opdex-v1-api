@@ -16,12 +16,12 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi
         {
             public const string Call = "SmartContractWallet/call";
             public const string Create = "SmartContractWallet/create";
-            public const string AddressBalance = "SmartContractWallet/address-balance?address={0}";
         }
 
         public static class BlockStore
         {
             public const string GetBlockByHash = "BlockStore/block?hash={0}&OutputJson={1}";
+            public const string GetAddressesBalances = "BlockStore/getaddressesbalances?addresses={0}";
         }
 
         public static class Consensus
