@@ -14,6 +14,7 @@ using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Domain.Models.MarketTokens;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.Transactions;
@@ -107,14 +108,17 @@ using Opdex.Platform.Infrastructure.Clients.SignalR.Handlers;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Mempool;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MarketTokens;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Mempool;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.Nominations;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permissions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MarketTokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Markets;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
+using Opdex.Platform.Infrastructure.Data.Handlers.MarketTokens;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 
 namespace Opdex.Platform.Infrastructure
@@ -167,6 +171,9 @@ namespace Opdex.Platform.Infrastructure
             // Tokens
             services.AddTransient<IRequestHandler<PersistTokenCommand, ulong>, PersistTokenCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTokenSnapshotCommand, bool>, PersistTokenSnapshotCommandHandler>();
+
+            // Market Tokens
+            services.AddTransient<IRequestHandler<PersistMarketTokenCommand, bool>, PersistMarketTokenCommandHandler>();
 
             // Transactions
             services.AddTransient<IRequestHandler<PersistTransactionCommand, ulong>, PersistTransactionCommandHandler>();
@@ -246,6 +253,9 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshot>>, SelectTokenSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>, SelectTokenSnapshotWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>, SelectLatestTokenDistributionQueryHandler>();
+
+            // Market Tokens
+            services.AddTransient<IRequestHandler<SelectMarketTokenByMarketAndTokenIdQuery, MarketToken>, SelectMarketTokenByMarketAndTokenIdQueryHandler>();
 
             // Governances
             services.AddTransient<IRequestHandler<SelectActiveGovernanceNominationsByGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveGovernanceNominationsByGovernanceIdQueryHandler>();
