@@ -10,12 +10,12 @@ namespace Opdex.Platform.Domain.Models.MarketTokens
         {
             if (tokenId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(tokenId), "Token id must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(tokenId), "Token id must be greater than zero.");
             }
 
             if (marketId < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(marketId), "Market id must be greater than 0.");
+                throw new ArgumentOutOfRangeException(nameof(marketId), "Market id must be greater than zero.");
             }
 
             MarketId = marketId;

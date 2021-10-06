@@ -35,7 +35,7 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
                 }
             }
 
-            return await _mediator.Send(new PersistLiquidityPoolCommand(request.LiquidityPool), cancellationToken);
+            return await _mediator.Send(new PersistLiquidityPoolCommand(request.LiquidityPool));
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MarketTokens
                 {nameof(MarketTokenEntity.ModifiedBlock)}
             FROM market_token
             WHERE {nameof(MarketTokenEntity.MarketId)} = @{nameof(SqlParams.MarketId)}
-                    AND {nameof(MarketTokenEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
+                   AND {nameof(MarketTokenEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;";
 
         private readonly IDbContext _context;
