@@ -1,9 +1,9 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
-using Opdex.Platform.Domain.Models.MarketTokens;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MarketTokens;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MarketTokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Market;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

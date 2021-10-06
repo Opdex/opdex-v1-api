@@ -2,18 +2,18 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Domain.Models.MarketTokens;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MarketTokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MarketTokens;
-using Opdex.Platform.Infrastructure.Data.Handlers.MarketTokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Market;
+using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Market;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MarketTokens
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Market
 {
     public class SelectMarketTokenByMarketAndTokenIdQueryHandlerTests
     {
@@ -35,11 +35,25 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MarketTokens
             const ulong id = 99ul;
             const ulong marketId = 3;
             const ulong tokenId = 2;
-            var expectedEntity = new MarketTokenEntity()
+            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+            const string name = "Opdex Token";
+            const bool isLpt = true;
+            const string symbol = "OPDX";
+            const int decimals = 18;
+            const ulong sats = 10000000000000000;
+            UInt256 totalSupply = 987654321;
+            var expectedEntity = new MarketTokenEntity
             {
                 Id = id,
                 MarketId = marketId,
                 TokenId = tokenId,
+                Address = address,
+                Name = name,
+                IsLpt = isLpt,
+                Symbol = symbol,
+                Decimals = decimals,
+                Sats = sats,
+                TotalSupply = totalSupply,
                 CreatedBlock = 10,
                 ModifiedBlock = 11
             };
@@ -54,6 +68,13 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MarketTokens
             result.Id.Should().Be(expectedEntity.Id);
             result.MarketId.Should().Be(expectedEntity.MarketId);
             result.TokenId.Should().Be(expectedEntity.TokenId);
+            result.Address.Should().Be(expectedEntity.Address);
+            result.Name.Should().Be(expectedEntity.Name);
+            result.Symbol.Should().Be(expectedEntity.Symbol);
+            result.IsLpt.Should().Be(expectedEntity.IsLpt);
+            result.Decimals.Should().Be(expectedEntity.Decimals);
+            result.Sats.Should().Be(expectedEntity.Sats);
+            result.TotalSupply.Should().Be(expectedEntity.TotalSupply);
             result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);
             result.ModifiedBlock.Should().Be(expectedEntity.ModifiedBlock);
         }

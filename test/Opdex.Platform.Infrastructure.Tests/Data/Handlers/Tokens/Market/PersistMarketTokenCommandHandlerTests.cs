@@ -2,16 +2,16 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Domain.Models.MarketTokens;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MarketTokens;
-using Opdex.Platform.Infrastructure.Data.Handlers.MarketTokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
+using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Market;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MarketTokens
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Market
 {
     public class PersistMarketTokenCommandHandlerTests
     {

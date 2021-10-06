@@ -1,8 +1,8 @@
 using Opdex.Platform.Common.Queries;
-using Opdex.Platform.Domain.Models.MarketTokens;
+using Opdex.Platform.Domain.Models.Tokens;
 using System;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MarketTokens
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Market
 {
     public class SelectMarketTokenByMarketAndTokenIdQuery : FindQuery<MarketToken>
     {

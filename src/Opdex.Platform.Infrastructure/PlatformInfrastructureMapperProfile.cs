@@ -9,7 +9,6 @@ using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
-using Opdex.Platform.Domain.Models.MarketTokens;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.TransactionLogs;
@@ -30,7 +29,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MarketTokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
@@ -58,7 +56,8 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketTokenEntity, MarketToken>()
-                .ConstructUsing(src => new MarketToken(src.Id, src.MarketId, src.TokenId, src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new MarketToken(src.Id, src.MarketId, src.TokenId, src.Address, src.IsLpt, src.Name, src.Symbol, src.Decimals,
+                                                       src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TokenSnapshotEntity, TokenSnapshot>()
@@ -387,6 +386,13 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.IsLpt, opt => opt.MapFrom(src => src.IsLpt))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
+                .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
+                .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
+                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());

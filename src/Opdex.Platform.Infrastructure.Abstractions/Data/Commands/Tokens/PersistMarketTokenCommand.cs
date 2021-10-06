@@ -1,8 +1,8 @@
 using MediatR;
-using Opdex.Platform.Domain.Models.MarketTokens;
+using Opdex.Platform.Domain.Models.Tokens;
 using System;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MarketTokens
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens
 {
     public class PersistMarketTokenCommand : IRequest<bool>
     {

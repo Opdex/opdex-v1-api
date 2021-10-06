@@ -2,19 +2,19 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MarketTokens;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MarketTokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.MarketTokens
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Market
 {
     public class PersistMarketTokenCommandHandler : IRequestHandler<PersistMarketTokenCommand, bool>
     {
         private static readonly string InsertSqlCommand =
-            $@"INSERT INTO market_token (
+            $@"INSERT IGNORE INTO market_token (
                 {nameof(MarketTokenEntity.MarketId)},
                 {nameof(MarketTokenEntity.TokenId)},
                 {nameof(MarketTokenEntity.CreatedBlock)},
@@ -59,8 +59,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MarketTokens
                 {
                     _logger.LogError(ex, "Failure persisting market token.");
                 }
-
-                _logger.LogError(ex, $"Failure persisting token {request?.MarketToken?.TokenId}");
 
                 throw;
             }
