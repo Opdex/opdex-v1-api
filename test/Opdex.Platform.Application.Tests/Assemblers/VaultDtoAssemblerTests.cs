@@ -86,7 +86,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveAddressBalanceByOwnerAndTokenQuery>(query => query.TokenId == token.Id
                                                                                                                   && query.Owner == vault.Address
-                                                                                                                  && query.FindOrThrow),
+                                                                                                                  && query.FindOrThrow == false),
                                                        It.IsAny<CancellationToken>()), Times.Once);
         }
     }
