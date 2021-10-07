@@ -10,7 +10,6 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
