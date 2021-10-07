@@ -8,17 +8,12 @@ namespace Opdex.Platform.Domain.Models.Tokens
     {
         public TokenSummary(ulong marketId, ulong tokenId, ulong createdBlock) : base(createdBlock)
         {
-            if (marketId == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(marketId), "Market id must be greater than zero.");
-            }
-
             if (tokenId == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(tokenId), "Token id must be greater than zero.");
             }
 
-            MarketId = marketId;
+            MarketId = marketId; // 0 is ok
             TokenId = tokenId;
         }
 
