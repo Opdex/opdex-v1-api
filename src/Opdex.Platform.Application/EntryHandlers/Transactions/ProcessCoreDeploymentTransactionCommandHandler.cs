@@ -55,7 +55,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     await _mediator.Send(new MakeBlockCommand(blockReceipt.Height, blockReceipt.Hash, blockReceipt.Time, blockReceipt.MedianTime));
                 }
 
-                await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime.Value));
+                await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime.Value, transaction.BlockHeight));
 
                 var deployerId = await _mediator.Send(new CreateDeployerCommand(transaction.NewContractAddress, transaction.From, transaction.BlockHeight));
 

@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
@@ -77,7 +78,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Unable to persist {request.Summary}");
+                _logger.LogError(ex, $"Unable to persist {nameof(LiquidityPoolSummary)}");
                 return 0;
             }
         }

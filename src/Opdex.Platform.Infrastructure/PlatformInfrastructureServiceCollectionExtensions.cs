@@ -111,12 +111,14 @@ using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Mempool;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.Nominations;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permissions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Market;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Summaries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Markets;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Market;
+using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 
 namespace Opdex.Platform.Infrastructure
@@ -169,6 +171,7 @@ namespace Opdex.Platform.Infrastructure
             // Tokens
             services.AddTransient<IRequestHandler<PersistTokenCommand, ulong>, PersistTokenCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTokenSnapshotCommand, bool>, PersistTokenSnapshotCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTokenSummaryCommand, ulong>, PersistTokenSummaryCommandHandler>();
 
             // Market Tokens
             services.AddTransient<IRequestHandler<PersistMarketTokenCommand, bool>, PersistMarketTokenCommandHandler>();
@@ -251,6 +254,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshot>>, SelectTokenSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>, SelectTokenSnapshotWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>, SelectLatestTokenDistributionQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
 
             // Market Tokens
             services.AddTransient<IRequestHandler<SelectMarketTokenByMarketAndTokenIdQuery, MarketToken>, SelectMarketTokenByMarketAndTokenIdQueryHandler>();

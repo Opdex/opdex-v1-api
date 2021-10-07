@@ -15,7 +15,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Tra
 
             if (blockHeight < 1)
             {
-                throw new ArgumentNullException(nameof(blockHeight));
+                throw new ArgumentOutOfRangeException(nameof(blockHeight));
             }
 
             Sender = sender;

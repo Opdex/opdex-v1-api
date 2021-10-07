@@ -52,7 +52,7 @@ namespace Opdex.Platform.Application.EntryHandlers
             var marketList = markets.ToList();
 
             // Rewind daily liquidity pool and token snapshots
-            await RewindLiquidityPoolsAndTokens(marketList, startOfDay, endOfDay);
+            await RewindLiquidityPoolsAndTokens(marketList, startOfDay, endOfDay, rewindBlock.Height);
 
             // Replay transactions from the start of the hour to reprocess their associated snapshots
             await ReplayTransactionsFromStartOfHour(startOfHour);
@@ -63,7 +63,7 @@ namespace Opdex.Platform.Application.EntryHandlers
             return true;
         }
 
-        private async Task RewindLiquidityPoolsAndTokens(IList<Market> marketList, DateTime startOfDay, DateTime endOfDay)
+        private async Task RewindLiquidityPoolsAndTokens(IList<Market> marketList, DateTime startOfDay, DateTime endOfDay, ulong rewindBlockHeight)
         {
             _logger.LogDebug($"Found {marketList.Count} stale markets.");
 
@@ -93,7 +93,7 @@ namespace Opdex.Platform.Application.EntryHandlers
                     {
                         (poolRefreshFailures, tokenRefreshFailures) = await RewindLiquidityPoolAndTokens(stakingPool, crsUsdStartOfDay.Price.Open,
                                                                                                          stakingTokenUsdStartOfDay, startOfDay, endOfDay,
-                                                                                                         poolRefreshFailures, tokenRefreshFailures);
+                                                                                                         poolRefreshFailures, tokenRefreshFailures, rewindBlockHeight);
 
                         // Get the staking token usd price for the rest of the liquidity pools to use.
                         var snapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(stakingPool.SrcTokenId, market.Id,
@@ -107,7 +107,7 @@ namespace Opdex.Platform.Application.EntryHandlers
                 {
                     (poolRefreshFailures, tokenRefreshFailures) = await RewindLiquidityPoolAndTokens(pool, crsUsdStartOfDay.Price.Open,
                                                                                                      stakingTokenUsdStartOfDay, startOfDay, endOfDay,
-                                                                                                     poolRefreshFailures, tokenRefreshFailures);
+                                                                                                     poolRefreshFailures, tokenRefreshFailures, rewindBlockHeight);
                 }
 
                 _logger.LogDebug($"Rewound {poolsList.Count - poolRefreshFailures} stale liquidity pool daily snapshots.");
@@ -121,7 +121,8 @@ namespace Opdex.Platform.Application.EntryHandlers
         private async Task<(int poolRefreshFailures, int tokenRefreshFailures)> RewindLiquidityPoolAndTokens(LiquidityPool pool, decimal crsUsdStartOfDay,
                                                                                                              decimal stakingTokenUsdStartOfDay,
                                                                                                              DateTime startOfDay, DateTime endOfDay,
-                                                                                                             int poolRefreshFailures, int tokenRefreshFailures)
+                                                                                                             int poolRefreshFailures, int tokenRefreshFailures,
+                                                                                                             ulong rewindBlockHeight)
         {
             // Rewind pool daily snapshot
             var resetPoolSnapshot = await _mediator.Send(new CreateRewindLiquidityPoolDailySnapshotCommand(pool.Id, pool.SrcTokenId,
@@ -131,10 +132,12 @@ namespace Opdex.Platform.Application.EntryHandlers
             if (!resetPoolSnapshot) poolRefreshFailures++;
 
             // Rewind token daily snapshots
-            var srcSnapshot = await _mediator.Send(new CreateRewindTokenDailySnapshotCommand(pool.SrcTokenId, pool.MarketId, crsUsdStartOfDay, startOfDay, endOfDay));
+            var srcSnapshot = await _mediator.Send(new CreateRewindTokenDailySnapshotCommand(pool.SrcTokenId, pool.MarketId, crsUsdStartOfDay,
+                                                                                             startOfDay, endOfDay, rewindBlockHeight));
             if (!srcSnapshot) tokenRefreshFailures++;
 
-            var lptSnapshot = await _mediator.Send(new CreateRewindTokenDailySnapshotCommand(pool.LpTokenId, pool.MarketId, crsUsdStartOfDay, startOfDay, endOfDay));
+            var lptSnapshot = await _mediator.Send(new CreateRewindTokenDailySnapshotCommand(pool.LpTokenId, pool.MarketId, crsUsdStartOfDay,
+                                                                                             startOfDay, endOfDay, rewindBlockHeight));
             if (!lptSnapshot) tokenRefreshFailures++;
 
             return (poolRefreshFailures, tokenRefreshFailures);

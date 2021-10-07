@@ -60,6 +60,10 @@ namespace Opdex.Platform.Infrastructure
                                                        src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<TokenSummaryEntity, TokenSummary>()
+                .ConstructUsing(src => new TokenSummary(src.Id, src.MarketId, src.TokenId, src.DailyChangeUsd, src.PriceUsd, src.CreatedBlock, src.ModifiedBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<TokenSnapshotEntity, TokenSnapshot>()
                 .ConstructUsing((src, ctx) => new TokenSnapshot(src.Id, src.TokenId, src.MarketId, ctx.Mapper.Map<OhlcDecimalSnapshot>(src.Price),
                                                                 (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate, src.ModifiedDate))
@@ -393,6 +397,16 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
                 .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
                 .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
+                .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+                .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<TokenSummary, TokenSummaryEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
+                .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+                .ForMember(dest => dest.DailyChangeUsd, opt => opt.MapFrom(src => src.DailyChangeUsd))
+                .ForMember(dest => dest.PriceUsd, opt => opt.MapFrom(src => src.PriceUsd))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());

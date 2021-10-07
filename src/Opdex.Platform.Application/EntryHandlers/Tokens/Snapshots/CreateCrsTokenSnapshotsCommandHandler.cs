@@ -4,7 +4,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
-using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using System;
@@ -67,7 +66,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
                     snapshotOfType.UpdatePrice(price);
                 }
 
-                var persisted = await _mediator.Send(new MakeTokenSnapshotCommand(snapshotOfType), CancellationToken.None);
+                var persisted = await _mediator.Send(new MakeTokenSnapshotCommand(snapshotOfType, request.BlockHeight), CancellationToken.None);
                 if (!persisted)
                 {
                     throw new Exception("Unable to persist token snapshot.");
