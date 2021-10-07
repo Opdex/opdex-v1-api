@@ -55,11 +55,6 @@ namespace Opdex.Platform.Infrastructure
                 .ConstructUsing(src => new Token(src.Id, src.Address, src.IsLpt, src.Name, src.Symbol, src.Decimals, src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<MarketTokenEntity, MarketToken>()
-                .ConstructUsing(src => new MarketToken(src.Id, src.MarketId, src.TokenId, src.Address, src.IsLpt, src.Name, src.Symbol, src.Decimals,
-                                                       src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
             CreateMap<TokenSummaryEntity, TokenSummary>()
                 .ConstructUsing(src => new TokenSummary(src.Id, src.MarketId, src.TokenId, src.DailyChangeUsd, src.PriceUsd, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
@@ -375,21 +370,6 @@ namespace Opdex.Platform.Infrastructure
 
             CreateMap<Token, TokenEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-                .ForMember(dest => dest.IsLpt, opt => opt.MapFrom(src => src.IsLpt))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
-                .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
-                .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
-                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
-                .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
-                .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<MarketToken, MarketTokenEntity>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
-                .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.IsLpt, opt => opt.MapFrom(src => src.IsLpt))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))

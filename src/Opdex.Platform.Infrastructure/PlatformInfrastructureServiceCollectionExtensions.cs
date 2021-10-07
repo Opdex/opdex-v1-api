@@ -110,14 +110,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Mempool;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Governances.Nominations;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permissions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Market;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Summaries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Markets;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
-using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Market;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 
@@ -252,9 +250,6 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>, SelectTokenSnapshotWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>, SelectLatestTokenDistributionQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
-
-            // Market Tokens
-            services.AddTransient<IRequestHandler<SelectMarketTokenByMarketAndTokenIdQuery, MarketToken>, SelectMarketTokenByMarketAndTokenIdQueryHandler>();
 
             // Governances
             services.AddTransient<IRequestHandler<SelectActiveGovernanceNominationsByGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveGovernanceNominationsByGovernanceIdQueryHandler>();
