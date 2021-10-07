@@ -1,8 +1,8 @@
-using System;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
+using System;
 
 namespace Opdex.Platform.Domain.Models.Tokens
 {
@@ -46,8 +46,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
         }
 
         public Token(ulong id, Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply,
-                     ulong createdBlock, ulong modifiedBlock)
-            : base(createdBlock, modifiedBlock)
+                     ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
@@ -70,6 +69,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
 
         // Todo: Look into and fix or document fix with future task for market_tokens
         // Being used to tie a token to a market so the Assembler can fetch pricing
+        // Todo: Remove after assemblers are adjusted for Market vs Global tokens
         public ulong? MarketId { get; private set; }
 
         public void UpdateTotalSupply(UInt256 value, ulong blockHeight)

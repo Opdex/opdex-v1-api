@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
 
         public Task<ulong> Handle(MakeLiquidityPoolCommand request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new PersistLiquidityPoolCommand(request.LiquidityPool), cancellationToken);
+            return _mediator.Send(new PersistLiquidityPoolCommand(request.LiquidityPool));
         }
     }
 }

@@ -8,7 +8,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
 {
     public class ProcessLpTokenSnapshotCommand : IRequest<decimal>
     {
-        public ProcessLpTokenSnapshotCommand(ulong marketId, Token lpToken, decimal reservesUsd, SnapshotType snapshotType, DateTime blockTime)
+        public ProcessLpTokenSnapshotCommand(ulong marketId, Token lpToken, decimal reservesUsd, SnapshotType snapshotType,
+                                             DateTime blockTime, ulong blockHeight)
         {
             if (marketId < 1)
             {
@@ -35,11 +36,17 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
                 throw new ArgumentOutOfRangeException(nameof(reservesUsd), $"{nameof(reservesUsd)} must be greater than 0.");
             }
 
+            if (blockHeight == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
+            }
+
             MarketId = marketId;
             LpToken = lpToken;
             SnapshotType = snapshotType;
             BlockTime = blockTime;
             ReservesUsd = reservesUsd;
+            BlockHeight = blockHeight;
         }
 
         public ulong MarketId { get; }
@@ -47,5 +54,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
         public SnapshotType SnapshotType { get; }
         public DateTime BlockTime { get; }
         public decimal ReservesUsd { get; }
+        public ulong BlockHeight { get; }
     }
 }

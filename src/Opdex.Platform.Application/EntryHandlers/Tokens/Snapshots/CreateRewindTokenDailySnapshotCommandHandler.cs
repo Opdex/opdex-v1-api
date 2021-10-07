@@ -69,7 +69,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
             srcTokenDailySnapshot.RewindDailySnapshot(srcTokenHourlySnapshots.ToList());
 
             // Persist and return success
-            return await _mediator.Send(new MakeTokenSnapshotCommand(srcTokenDailySnapshot));
+            return await _mediator.Send(new MakeTokenSnapshotCommand(srcTokenDailySnapshot, request.BlockHeight));
         }
     }
 }

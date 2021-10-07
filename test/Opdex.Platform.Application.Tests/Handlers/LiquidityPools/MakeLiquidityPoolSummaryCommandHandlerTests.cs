@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools
         public async Task Handle_MediatorPersistLiquidityPoolSummaryCommand_Send()
         {
             // Arrange
-            var summary = new LiquidityPoolSummary(1, 2.00m, 3.00m, 4, 5, 7, 8);
+            var summary = new LiquidityPoolSummary(1, 8);
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
@@ -56,7 +56,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools
         {
             // Arrange
             var id = 5ul;
-            var summary = new LiquidityPoolSummary(1, 2.00m, 3.00m, 4, 5, 7, 8);
+            var summary = new LiquidityPoolSummary(1, 8);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistLiquidityPoolSummaryCommand>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(id);

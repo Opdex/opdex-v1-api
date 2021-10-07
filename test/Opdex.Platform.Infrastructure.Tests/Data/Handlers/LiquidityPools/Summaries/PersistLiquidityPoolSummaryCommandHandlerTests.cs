@@ -30,7 +30,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
         [Fact]
         public async Task Insert_LiquidityPoolSummary_SendsSqlCommand()
         {
-            var model = new LiquidityPoolSummary(1, 2.00m, 3.00m, 4, 5, 7, 8);
+            var model = new LiquidityPoolSummary(1, 8);
             var command = new PersistLiquidityPoolSummaryCommand(model);
 
             try
@@ -64,7 +64,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
         public async Task Insert_LiquidityPoolSummary_Returns()
         {
             const ulong expectedId = 10ul;
-            var model = new LiquidityPoolSummary(1, 2.00m, 3.00m, 4, 5, 7, 8);
+            var model = new LiquidityPoolSummary(1, 8);
             var command = new PersistLiquidityPoolSummaryCommand(model);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))

@@ -7,26 +7,6 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
 {
     public class LiquidityPoolSummary : BlockAudit
     {
-        public LiquidityPoolSummary(ulong liquidityPoolId, decimal liquidity, decimal volume, ulong stakingWeight, ulong lockedCrs, UInt256 lockedSrc, ulong createdBlock)
-            : this(liquidityPoolId, createdBlock)
-        {
-            if (liquidity < 0m)
-            {
-                throw new ArgumentOutOfRangeException(nameof(liquidity), "LiquidityUsd must be greater than or equal to 0.");
-            }
-
-            if (volume < 0m)
-            {
-                throw new ArgumentOutOfRangeException(nameof(volume), "VolumeUsd must be greater than or equal to 0.");
-            }
-
-            LiquidityUsd = liquidity;
-            VolumeUsd = volume;
-            StakingWeight = stakingWeight;
-            LockedCrs = lockedCrs;
-            LockedSrc = lockedSrc;
-        }
-
         public LiquidityPoolSummary(ulong liquidityPoolId, ulong createdBlock) : base(createdBlock, createdBlock)
         {
             if (liquidityPoolId < 1)
