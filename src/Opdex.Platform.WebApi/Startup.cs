@@ -44,6 +44,7 @@ using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.Infrastructure.Clients.SignalR;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using FluentValidation.AspNetCore;
 
 namespace Opdex.Platform.WebApi
 {
@@ -87,6 +88,10 @@ namespace Opdex.Platform.WebApi
                 .AddControllers(options =>
                 {
                     options.ModelBinderProviders.Insert(0, new AddressModelBinderProvider());
+                })
+                .AddFluentValidation(config =>
+                {
+                    config.RegisterValidatorsFromAssemblyContaining<Startup>();
                 })
                 .AddProblemDetailsConventions()
                 .AddNewtonsoftJson(options =>

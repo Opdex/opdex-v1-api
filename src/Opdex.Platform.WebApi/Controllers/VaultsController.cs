@@ -25,7 +25,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificate
 namespace Opdex.Platform.WebApi.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("vaults")]
     public class VaultsController : ControllerBase
     {
@@ -49,9 +48,10 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="limit">Number of certificates to take must be greater than 0 and less than 51.</param>
         /// <param name="cursor">The cursor when paging.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>Vaults paging results</returns>
+        /// <returns>Vaults paging results.</returns>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(VaultsResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] Address lockedToken,
                                                                        [FromQuery] SortDirectionType direction,
                                                                        [FromQuery] uint limit,
@@ -84,8 +84,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Vault details</returns>
         /// <response code="404">The vault does not exist.</response>
         [HttpGet("{address}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(VaultResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<VaultResponseModel>> GetVaultByAddress([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var vault = await _mediator.Send(new GetVaultByAddressQuery(address), cancellationToken);
@@ -101,7 +102,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/set-ownership")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> SetOwnerQuote([FromRoute] Address address,
                                                                                      SetVaultOwnerQuoteRequest request,
                                                                                      CancellationToken cancellationToken)
@@ -122,7 +124,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/claim-ownership")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> ClaimOwnershipQuote([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateClaimPendingVaultOwnershipTransactionQuoteCommand(address, _context.Wallet),
@@ -144,8 +147,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Vault certificates</returns>
         /// <response code="404">The vault does not exist.</response>
         [HttpGet("{address}/certificates")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(VaultCertificatesResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<VaultCertificatesResponseModel>> GetVaultCertificates([FromRoute] Address address,
                                                                                              [FromQuery] Address holder,
                                                                                              [FromQuery] SortDirectionType direction,
@@ -181,7 +185,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/certificates")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> CreateCertificateQuote([FromRoute] Address address,
                                                                                               CreateVaultCertificateQuoteRequest request,
                                                                                               CancellationToken cancellationToken)
@@ -202,7 +207,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/certificates/redeem")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> RedeemCertificatesQuote([FromRoute] Address address,
                                                                                                CancellationToken cancellationToken)
         {
@@ -222,7 +228,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/certificates/revoke")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> RevokeCertificatesQuote([FromRoute] Address address,
                                                                                                RevokeVaultCertificatesQuoteRequest request,
                                                                                                CancellationToken cancellationToken)
