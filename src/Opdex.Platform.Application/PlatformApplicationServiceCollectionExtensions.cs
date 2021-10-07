@@ -225,6 +225,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetTokensWithFilterQuery, IEnumerable<TokenDto>>, GetTokensWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshotDto>>, GetTokenSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenByAddressQuery, TokenDto>, GetTokenByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<GetTokenByAddressFromFullNodeQuery, TokenDto>, GetTokenByAddressFromFullNodeQueryHandler>();
 
             // Address Balances
             services.AddTransient<IRequestHandler<GetAddressBalanceByTokenQuery, AddressBalanceDto>, GetAddressBalanceByTokenQueryHandler>();

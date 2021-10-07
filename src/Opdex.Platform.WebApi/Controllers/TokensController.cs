@@ -67,8 +67,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <summary>Get Token</summary>
         /// <remarks>Returns the token that matches the provided address.</remarks>
         /// <param name="address">The token's smart contract address.</param>
-        /// <param name="cancellationToken">cancellation token.</param>
-        /// <returns><see cref="TokenResponseModel"/> of the requested token</returns>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns><see cref="TokenResponseModel"/> of the requested token.</returns>
         [HttpGet("{address}")]
         [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -172,6 +172,23 @@ namespace Opdex.Platform.WebApi.Controllers
             var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
 
             return Ok(quote);
+        }
+
+        /// <summary>Get Token from Cirrus</summary>
+        /// <remarks>Returns the token that matches the provided address.</remarks>
+        /// <param name="address">The address of the token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Details of the requested token.</returns>
+        [HttpGet("{address}/validate")]
+        [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Validate([FromRoute] Address address, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetTokenByAddressFromFullNodeQuery(address), cancellationToken);
+
+            var response = _mapper.Map<TokenResponseModel>(result);
+
+            return Ok(response);
         }
     }
 }
