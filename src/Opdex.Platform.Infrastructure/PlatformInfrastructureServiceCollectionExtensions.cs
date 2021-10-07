@@ -173,9 +173,6 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<PersistTokenSnapshotCommand, bool>, PersistTokenSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTokenSummaryCommand, ulong>, PersistTokenSummaryCommandHandler>();
 
-            // Market Tokens
-            services.AddTransient<IRequestHandler<PersistMarketTokenCommand, bool>, PersistMarketTokenCommandHandler>();
-
             // Transactions
             services.AddTransient<IRequestHandler<PersistTransactionCommand, ulong>, PersistTransactionCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTransactionLogCommand, bool>, PersistTransactionLogCommandHandler>();

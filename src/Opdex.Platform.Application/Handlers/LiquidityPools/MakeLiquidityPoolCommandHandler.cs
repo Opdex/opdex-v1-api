@@ -1,9 +1,6 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
-using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Market;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,23 +16,9 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<ulong> Handle(MakeLiquidityPoolCommand request, CancellationToken cancellationToken)
+        public Task<ulong> Handle(MakeLiquidityPoolCommand request, CancellationToken cancellationToken)
         {
-            if (request.LiquidityPool.Id == 0)
-            {
-                var marketId = request.LiquidityPool.MarketId;
-                var srcTokenId = request.LiquidityPool.SrcTokenId;
-                var marketToken = await _mediator.Send(new SelectMarketTokenByMarketAndTokenIdQuery(marketId, srcTokenId, findOrThrow: false));
-
-                if (marketToken == null)
-                {
-                    marketToken = new MarketToken(marketId, srcTokenId, request.LiquidityPool.ModifiedBlock);
-
-                    await _mediator.Send(new PersistMarketTokenCommand(marketToken));
-                }
-            }
-
-            return await _mediator.Send(new PersistLiquidityPoolCommand(request.LiquidityPool));
+            return _mediator.Send(new PersistLiquidityPoolCommand(request.LiquidityPool));
         }
     }
 }
