@@ -20,6 +20,8 @@ namespace Opdex.Platform.Common.Configurations
 
         public string InstanceId { get; } = Guid.NewGuid().ToString();
 
+        public string CommitHash { get; set; }
+
         public void Validate()
         {
             if (!ApiUrl.HasValue())
@@ -35,6 +37,11 @@ namespace Opdex.Platform.Common.Configurations
             if (!Network.IsValid())
             {
                 throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(Environment)} must be a valid network type.");
+            }
+
+            if (!CommitHash.HasValue())
+            {
+                throw new Exception($"{nameof(OpdexConfiguration)}.{nameof(CommitHash)} must not be null or empty.");
             }
         }
     }
