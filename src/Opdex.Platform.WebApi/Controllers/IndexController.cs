@@ -13,7 +13,6 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Requests.Index;
-using Opdex.Platform.WebApi.Models.Responses.Indexer;
 using System.Linq;
 
 namespace Opdex.Platform.WebApi.Controllers
