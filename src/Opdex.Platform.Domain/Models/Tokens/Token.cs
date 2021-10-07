@@ -45,8 +45,8 @@ namespace Opdex.Platform.Domain.Models.Tokens
             TotalSupply = totalSupply;
         }
 
-        public Token(ulong id, Address address, bool isLpt, string name, string symbol, int decimals, ulong sats,
-                        UInt256 totalSupply, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+        public Token(ulong id, Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply,
+                     ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
             Address = address;
@@ -65,7 +65,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
         public string Symbol { get; }
         public int Decimals { get; }
         public ulong Sats { get; }
-        public UInt256 TotalSupply { get; protected set; }
+        public UInt256 TotalSupply { get; private set; }
 
         // Todo: Look into and fix or document fix with future task for market_tokens
         // Being used to tie a token to a market so the Assembler can fetch pricing
