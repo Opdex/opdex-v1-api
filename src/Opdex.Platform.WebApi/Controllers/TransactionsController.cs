@@ -24,7 +24,6 @@ using Opdex.Platform.Common.Exceptions;
 namespace Opdex.Platform.WebApi.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("transactions")]
     public class TransactionsController : ControllerBase
     {
@@ -56,6 +55,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionsResponseModel"/> with transactions and paging.</returns>
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(typeof(TransactionsResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<TransactionsResponseModel>> Transactions([FromQuery] IEnumerable<Address> contracts,
@@ -108,6 +108,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionResponseModel"/> details</returns>
         [HttpGet("{hash}")]
+        [Authorize]
         [ProducesResponseType(typeof(TransactionResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -126,6 +127,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Transaction hash and sender address.</returns>
         [HttpPost("broadcast-quote")]
+        [Authorize]
         [ProducesResponseType(typeof(BroadcastTransactionResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -153,6 +155,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> outcome of the quote.</returns>
         [HttpPost("replay-quote")]
+        [Authorize]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> ReplayTransactionQuote(QuoteReplayRequest request, CancellationToken cancellationToken)
         {
