@@ -13,7 +13,6 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Requests.Index;
-using Opdex.Platform.WebApi.Models.Responses.Indexer;
 using System.Linq;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -24,13 +23,11 @@ namespace Opdex.Platform.WebApi.Controllers
     {
         private readonly IMediator _mediator;
         private readonly NetworkType _network;
-        private readonly string _instanceId;
 
         public IndexController(IMediator mediator, OpdexConfiguration opdexConfiguration)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
-            _instanceId = opdexConfiguration?.InstanceId ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
         /// <summary>Get Latest Block</summary>
@@ -44,17 +41,6 @@ namespace Opdex.Platform.WebApi.Controllers
             // Todo: Get Query with ResponseModel
             var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
             return Ok(latestSyncedBlock);
-        }
-
-        /// <summary>Get Instance Identity</summary>
-        /// <remarks>Retrieve the identifier of this specific host instance.</remarks>
-        /// <returns>GUID as string identifier</returns>
-        [HttpGet("instance-identity")]
-        [Authorize(Policy = "AdminOnly")]
-        [ProducesResponseType(typeof(InstanceIdentityResponseModel), StatusCodes.Status200OK)]
-        public ActionResult<InstanceIdentityResponseModel> InstanceIdentity()
-        {
-            return Ok(new InstanceIdentityResponseModel { Identity = _instanceId });
         }
 
         /// <summary>Resync From Deployment</summary>

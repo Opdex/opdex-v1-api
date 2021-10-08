@@ -44,4 +44,6 @@ jobs:
                 deploymentMethod: 'auto'
                 deployToSlotOrASE: true
                 slotName: 'staging'
+                appSettings: '-OpdexConfiguration:CommitHash $(Build.SourceVersion)'
+
               displayName: Deploy to App Service
