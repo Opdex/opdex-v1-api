@@ -330,6 +330,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateRewindStakingPositionsCommand, bool>, CreateRewindStakingPositionsCommandHandler>();
             services.AddTransient<IRequestHandler<CreateAddressBalanceCommand, ulong>, CreateAddressBalanceCommandHandler>();
             services.AddTransient<IRequestHandler<CreateTokenCommand, ulong>, CreateTokenCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateAddTokenCommand, TokenDto>, CreateAddTokenCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindTokenDailySnapshotCommand, bool>, CreateRewindTokenDailySnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<CreateSwapTransactionQuoteCommand, TransactionQuoteDto>, CreateSwapTransactionQuoteCommandHandler>();
 

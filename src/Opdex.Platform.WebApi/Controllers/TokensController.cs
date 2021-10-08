@@ -7,12 +7,14 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Requests.Tokens;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
@@ -62,6 +64,29 @@ namespace Opdex.Platform.WebApi.Controllers
             var response = _mapper.Map<IEnumerable<TokenResponseModel>>(result);
 
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Add Token
+        /// </summary>
+        /// <remarks>Adds an SRC token to the Opdex indexer that can be tracked and used within markets.</remarks>
+        /// <param name="request">Token details.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Token details.</returns>
+        /// <response code="201">The token was added to indexed tokens.</response>
+        /// <response code="303">Token is already indexed.</response>
+        /// <response code="422">The address provided was not a valid token.</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status303SeeOther)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> AddToken([FromBody] AddTokenRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new CreateAddTokenCommand(request.TokenAddress), cancellationToken);
+
+            var response = _mapper.Map<TokenResponseModel>(result);
+
+            return Created($"/tokens/{request.TokenAddress}", response);
         }
 
         /// <summary>Get Token</summary>
