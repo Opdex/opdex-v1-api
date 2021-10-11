@@ -9,6 +9,7 @@ namespace Opdex.Platform.WebApi.Middleware
     public class ConfigurationValidationStartupFilter : IStartupFilter
     {
         readonly IEnumerable<IValidatable> _validatableObjects;
+
         public ConfigurationValidationStartupFilter(IEnumerable<IValidatable> validatableObjects)
         {
             _validatableObjects = validatableObjects;

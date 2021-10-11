@@ -216,6 +216,7 @@ namespace Opdex.Platform.WebApi
             }
 
             app.UseProblemDetails();
+            app.UseMiddleware<RedirectToResourceMiddleware>();
             app.UseCors(options => options
                             .SetIsOriginAllowed(host => true)
                             .AllowAnyHeader()
