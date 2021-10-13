@@ -7,7 +7,7 @@ namespace Opdex.Platform.WebApi.Validation.Vaults
     {
         public RevokeVaultCertificatesQuoteRequestValidator()
         {
-            RuleFor(request => request.Holder).MustBeSmartContractAddress();
+            RuleFor(request => request.Holder).MustBeNetworkAddress();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Opdex.Platform.WebApi.Validation.Vaults
     {
         public SetVaultOwnerQuoteRequestValidator()
         {
-            RuleFor(request => request.Owner).MustBeSmartContractAddress();
+            RuleFor(request => request.Owner).MustBeNetworkAddress();
         }
     }
 }

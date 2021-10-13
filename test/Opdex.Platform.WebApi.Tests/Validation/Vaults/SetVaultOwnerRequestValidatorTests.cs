@@ -16,7 +16,8 @@ namespace Opdex.Platform.WebApi.Tests.Validation.Vaults
         }
 
         [Theory]
-        [ClassData(typeof(NonSmartContractAddressData))]
+        [ClassData(typeof(EmptyAddressData))]
+        [ClassData(typeof(NonNetworkAddressData))]
         public void Owner_Invalid(Address owner)
         {
             // Arrange

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Models.Responses
 {
+    [Obsolete("Validation can be done outside of cursor, using fluent validation.")]
     public class ValidationErrorProblemDetailsResult : UnprocessableEntityObjectResult
     {
         public ValidationErrorProblemDetailsResult(string key, params string[] value) : base(CreateProblemDetails(key, value))

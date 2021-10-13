@@ -1,26 +1,17 @@
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
-using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -43,37 +34,16 @@ namespace Opdex.Platform.WebApi.Controllers
         /// Get Vaults
         /// </summary>
         /// <remarks>Retrieves known vaults</remarks>
-        /// <param name="lockedToken">Locked token address.</param>
-        /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
-        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 51.</param>
-        /// <param name="cursor">The cursor when paging.</param>
+        /// <param name="filters">Filter parameters.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Vaults paging results.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(VaultsResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-        public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] Address lockedToken,
-                                                                       [FromQuery] SortDirectionType direction,
-                                                                       [FromQuery] uint limit,
-                                                                       [FromQuery] string cursor,
+        public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] VaultFilterParameters filters,
                                                                        CancellationToken cancellationToken)
         {
-            VaultsCursor pagingCursor;
-
-            if (cursor.HasValue())
-            {
-                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !VaultsCursor.TryParse(decodedCursor, out var parsedCursor))
-                {
-                    return new ValidationErrorProblemDetailsResult(nameof(cursor), "Cursor not formed correctly.");
-                }
-                pagingCursor = parsedCursor;
-            }
-            else
-            {
-                pagingCursor = new VaultsCursor(lockedToken, direction, limit, PagingDirection.Forward, default);
-            }
-
-            var vaults = await _mediator.Send(new GetVaultsWithFilterQuery(pagingCursor), cancellationToken);
+            var vaults = await _mediator.Send(new GetVaultsWithFilterQuery(filters.BuildCursor()), cancellationToken);
             return Ok(_mapper.Map<VaultsResponseModel>(vaults));
         }
 
@@ -139,10 +109,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <summary>Get Certificates</summary>
         /// <remarks>Retrieves vault certificates for a vault address</remarks>
         /// <param name="address">Address of the vault</param>
-        /// <param name="holder">Certificate holder address</param>
-        /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
-        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 51.</param>
-        /// <param name="cursor">The cursor when paging.</param>
+        /// <param name="filters">Filter parameters.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Vault certificates</returns>
         /// <response code="404">The vault does not exist.</response>
@@ -151,28 +118,10 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<VaultCertificatesResponseModel>> GetVaultCertificates([FromRoute] Address address,
-                                                                                             [FromQuery] Address holder,
-                                                                                             [FromQuery] SortDirectionType direction,
-                                                                                             [FromQuery] uint limit,
-                                                                                             [FromQuery] string cursor,
+                                                                                             [FromQuery] VaultCertificateFilterParameters filters,
                                                                                              CancellationToken cancellationToken)
         {
-            VaultCertificatesCursor pagingCursor;
-
-            if (cursor.HasValue())
-            {
-                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !VaultCertificatesCursor.TryParse(decodedCursor, out var parsedCursor))
-                {
-                    return new ValidationErrorProblemDetailsResult(nameof(cursor), "Cursor not formed correctly.");
-                }
-                pagingCursor = parsedCursor;
-            }
-            else
-            {
-                pagingCursor = new VaultCertificatesCursor(holder, direction, limit, PagingDirection.Forward, default);
-            }
-
-            var certificates = await _mediator.Send(new GetVaultCertificatesWithFilterQuery(address, pagingCursor), cancellationToken);
+            var certificates = await _mediator.Send(new GetVaultCertificatesWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
             return Ok(_mapper.Map<VaultCertificatesResponseModel>(certificates));
         }
 

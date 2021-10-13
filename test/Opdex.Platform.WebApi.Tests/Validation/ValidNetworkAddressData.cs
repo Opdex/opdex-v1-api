@@ -4,12 +4,11 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Tests.Validation
 {
-    public class NonSmartContractAddressData : IEnumerable<object[]>
+    public class ValidNetworkAddressData : IEnumerable<object[]>
     {
         public IEnumerator<object[]> GetEnumerator()
         {
-            yield return new object[] { Address.Empty };
-            yield return new object[] { Address.Cirrus };
+            yield return new object[] { new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm") };
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

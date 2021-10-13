@@ -9,7 +9,7 @@ namespace Opdex.Platform.WebApi.Validation.Vaults
         public CreateVaultCertificateQuoteRequestValidator()
         {
             RuleFor(request => request.Amount).GreaterThan(FixedDecimal.Zero);
-            RuleFor(request => request.Holder).MustBeSmartContractAddress();
+            RuleFor(request => request.Holder).MustBeNetworkAddress();
         }
     }
 }
