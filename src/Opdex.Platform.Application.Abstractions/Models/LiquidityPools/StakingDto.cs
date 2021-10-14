@@ -9,6 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
         public UInt256 Weight { get; set; }
         public decimal Usd { get; set; }
         public decimal? WeightDailyChange { get; set; }
+        public bool IsNominated { get; set; }
 
         public void SetDailyChange(UInt256 previousWeight)
         {

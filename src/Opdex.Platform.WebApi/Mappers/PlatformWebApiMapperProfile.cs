@@ -19,7 +19,6 @@ using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using Opdex.Platform.WebApi.Models.Responses.Governances;
@@ -70,6 +69,7 @@ namespace Opdex.Platform.WebApi.Mappers
 
             CreateMap<LiquidityPoolDto, LiquidityPoolResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src))
                 .ForMember(dest => dest.TransactionCount, opt => opt.MapFrom(src => src.Summary.TransactionCount))
                 .ForMember(dest => dest.Reserves, opt => opt.MapFrom(src => MapReserves(src.Summary.Reserves, src.SrcToken.Decimals)))
@@ -493,7 +493,8 @@ namespace Opdex.Platform.WebApi.Mappers
                 Weight = stakingDto.Weight.ToDecimal(TokenConstants.Opdex.Decimals),
                 Usd = stakingDto.Usd,
                 WeightDailyChange = stakingDto.WeightDailyChange,
-                IsActive = stakingEnabled
+                IsActive = stakingEnabled,
+                IsNominated = stakingDto.IsNominated,
             };
         }
 

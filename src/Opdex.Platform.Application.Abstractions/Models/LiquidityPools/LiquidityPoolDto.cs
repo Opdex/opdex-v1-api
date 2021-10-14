@@ -8,6 +8,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
     {
         public ulong Id { get; set; }
         public Address Address { get; set; }
+        public decimal TransactionFee { get; set; }
         public bool StakingEnabled { get; set; }
         public MiningPoolDto MiningPool { get; set; }
         public TokenDto SrcToken { get; set; }

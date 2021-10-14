@@ -5,6 +5,8 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Governances;
+using Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
@@ -46,6 +48,11 @@ namespace Opdex.Platform.Application.Assemblers
             var yesterday = now.Subtract(TimeSpan.FromDays(1)).ToStartOf(SnapshotType);
 
             var market = await _mediator.Send(new RetrieveMarketByIdQuery(pool.MarketId));
+
+            // Set the transaction fee for the pool
+            poolDto.TransactionFee = market.TransactionFee == 0
+                ? 0
+                : Math.Round((decimal)market.TransactionFee / 1000, 3); // 1-10 => .01 - .001 as percent
 
             // Assemble CRS Token
             poolDto.CrsToken = await AssembleToken(Address.Cirrus, 0);
@@ -100,6 +107,11 @@ namespace Opdex.Platform.Application.Assemblers
 
                 // Set staking daily change
                 poolDto.Summary.Staking.SetDailyChange(previousPoolSnapshot?.Staking?.Weight ?? UInt256.Zero);
+
+                // Set Nomination Status
+                var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(stakingTokenDto.Id));
+                var nominations = await _mediator.Send(new RetrieveActiveGovernanceNominationsByGovernanceIdQuery(governance.Id));
+                poolDto.Summary.Staking.IsNominated = nominations.Any(nomination => nomination.LiquidityPoolId == poolDto.Id);
 
                 // Get mining pool
                 var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id));

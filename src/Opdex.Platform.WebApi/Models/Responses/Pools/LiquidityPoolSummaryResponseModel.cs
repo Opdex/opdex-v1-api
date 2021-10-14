@@ -1,5 +1,3 @@
-using System;
-
 namespace Opdex.Platform.WebApi.Models.Responses.Pools
 {
     public abstract class LiquidityPoolSummaryResponseModel {

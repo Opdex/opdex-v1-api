@@ -18,6 +18,8 @@ using Opdex.Platform.WebApi.Models.Responses.Pools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System.Linq;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Models.Requests.Quotes;
+using System.Net;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -168,6 +170,26 @@ namespace Opdex.Platform.WebApi.Controllers
             var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
 
             return Ok(quote);
+        }
+
+        /// <summary>Add Liquidity Amount In Quote</summary>
+        /// <remarks>Providing an amount of tokenA in a liquidity pool, returns an equal amount of tokenB for liquidity provisioning.</remarks>
+        /// <param name="address">The liquidity pool address.</param>
+        /// <param name="request">Request model detailing how many of which tokens are desired to be deposited.</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>The quoted number of tokens to be deposited.</returns>
+        [HttpPost("{address}/add/amount-in")]
+        [ProducesResponseType(typeof(AddLiquidityAmountInQuoteResponseModel), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<AddLiquidityAmountInQuoteResponseModel>> AddLiquidityAmountInQuote([FromRoute] Address address,
+                                                                                                          [FromBody] AddLiquidityQuoteRequestModel request,
+                                                                                                          CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetLiquidityPoolAddLiquidityAmountInQuoteQuery(request.AmountIn, request.TokenIn,
+                                                                                                 address, _context.Market), cancellationToken);
+
+            var response = new AddLiquidityAmountInQuoteResponseModel { AmountIn = result };
+
+            return Ok(response);
         }
 
         /// <summary>Remove Liquidity Quote</summary>
