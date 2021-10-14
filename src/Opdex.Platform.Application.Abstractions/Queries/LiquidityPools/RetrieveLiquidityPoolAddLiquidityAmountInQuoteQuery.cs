@@ -5,9 +5,9 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
 {
-    public class RetrieveLiquidityPoolAddLiquidityQuoteQuery : IRequest<UInt256>
+    public class RetrieveLiquidityPoolAddLiquidityAmountInQuoteQuery : IRequest<UInt256>
     {
-        public RetrieveLiquidityPoolAddLiquidityQuoteQuery(UInt256 amountIn, Address tokenIn, Address pool, Address router)
+        public RetrieveLiquidityPoolAddLiquidityAmountInQuoteQuery(UInt256 amountIn, Address tokenIn, Address pool, Address router)
         {
             if (tokenIn == Address.Empty)
             {

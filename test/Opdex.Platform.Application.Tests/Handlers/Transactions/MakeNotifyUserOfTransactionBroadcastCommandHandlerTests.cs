@@ -29,13 +29,14 @@ namespace Opdex.Platform.Application.Tests.Handlers.Transactions
             var transactionHash = "87ff7bf5dccd3683ef2925ff2ce9148766eb1c0cb97594d612d7b74e8214ba80";
             var request = new MakeNotifyUserOfTransactionBroadcastCommand("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", transactionHash);
             var cancellationToken = new CancellationTokenSource().Token;
+            const int maxRetries = 3;
 
             // Act
             await _handler.Handle(request, cancellationToken);
 
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusGetExistsInMempoolQuery>(query => query.TransactionHash == transactionHash), cancellationToken),
-                             Times.Once);
+                             Times.AtMost(maxRetries));
         }
 
         [Fact]

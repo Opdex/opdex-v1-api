@@ -5,9 +5,9 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.LiquidityQuotes
 {
-    public class CallCirrusGetAddLiquidityQuoteQuery : IRequest<UInt256>
+    public class CallCirrusGetLiquidityPoolAddLiquidityAmountInQuoteQuery : IRequest<UInt256>
     {
-        public CallCirrusGetAddLiquidityQuoteQuery(UInt256 amountA, UInt256 reserveA, UInt256 reserveB, Address market)
+        public CallCirrusGetLiquidityPoolAddLiquidityAmountInQuoteQuery(UInt256 amountA, UInt256 reserveA, UInt256 reserveB, Address market)
         {
             if (market == Address.Empty)
             {

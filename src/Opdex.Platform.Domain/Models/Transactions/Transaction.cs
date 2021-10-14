@@ -111,11 +111,12 @@ namespace Opdex.Platform.Domain.Models.Transactions
 
         public void ValidateLogTypeEligibility()
         {
+            // Todo: Failed transactions won't have logs.
             // No logs is most likely ineligible
             if (!Logs.Any())
             {
-                // Only transactions without logs could be new contract deployments in which we'll validate.
-                EligibilityStatus = NewContractAddress == Address.Empty
+                // Only transactions without logs could be new contract deployments or errored transactions in which we'll validate.
+                EligibilityStatus = NewContractAddress == Address.Empty || !Success
                     ? TransactionEligibilityType.Ineligible
                     : TransactionEligibilityType.PendingContractValidation;
 
