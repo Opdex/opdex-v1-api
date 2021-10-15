@@ -5,6 +5,9 @@ namespace Opdex.Platform.Common.Models
 {
     public readonly struct Address : IEquatable<string>, IEquatable<Address>
     {
+        private const int MinLength = 30;
+        private const int MaxLength = 42;
+
         private string Value { get; }
 
         public static readonly Address Cirrus = new Address("CRS");
@@ -13,8 +16,8 @@ namespace Opdex.Platform.Common.Models
 
         public Address(string value)
         {
-            // If provided, should be > 30 but < 42 characters. 42 for potential ETH addresses if ever necessary.
-            if (value.HasValue() & value != "CRS" && (value.Length < 30 || value.Length > 42))
+            // If provided, should be >= 30 but <= 42 characters. 42 for potential ETH addresses if ever necessary.
+            if (value.HasValue() && value != "CRS" && (value.Length < MinLength || value.Length > MaxLength))
             {
                 throw new ArgumentException("Invalid address.");
             }
@@ -65,6 +68,23 @@ namespace Opdex.Platform.Common.Models
         public bool Equals(string other)
         {
             return Value == other;
+        }
+
+        public static bool TryParse(string value, out Address address)
+        {
+            address = Empty;
+            if (!value.HasValue()) return true;
+            if (value == Cirrus.Value)
+            {
+                address = Cirrus;
+                return true;
+            }
+
+            if (value.Length < MinLength || value.Length > MaxLength) return false;
+
+            address = new Address(value);
+
+            return true;
         }
     }
 }
