@@ -7,9 +7,12 @@ using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Constants.SmartContracts;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,7 +35,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults.Quotes
             // ensure the vault exists, else throw 404 not found
             _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault), cancellationToken);
 
-            var amount = request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals);
+            UInt256 amount;
+            try
+            {
+                amount = request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals);
+            }
+            catch (OverflowException)
+            {
+                throw new InvalidDataException("amount", "Value too large.");
+            }
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {
@@ -43,6 +54,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Vaults.Quotes
             var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
 
             return await ExecuteAsync(quoteRequest, cancellationToken);
+
         }
     }
 }

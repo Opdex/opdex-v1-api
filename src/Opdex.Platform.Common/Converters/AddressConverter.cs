@@ -13,9 +13,8 @@ namespace Opdex.Platform.Common.Converters
 
         public override Address ReadJson(JsonReader reader, Type objectType, Address existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            var validAddress = Address.TryParse(reader.Value?.ToString(), out var address);
-            if (!validAddress) throw new JsonException("Invalid address.");
-            return address;
+            if (Address.TryParse(reader.Value?.ToString(), out var address)) return address;
+            throw new JsonException("Invalid address.");
         }
     }
 }

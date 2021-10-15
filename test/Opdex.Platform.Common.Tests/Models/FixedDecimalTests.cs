@@ -329,5 +329,33 @@ namespace Opdex.Platform.Common.Tests.Models
             result.ScaledValue.Should().Be(underlying * BigInteger.Pow(10, targetPrecision - currentPrecision));
             result.Precision.Should().Be(targetPrecision);
         }
+
+        [Fact]
+        public void Normalize_CannotReducePrecision_Equal()
+        {
+            // Arrange
+            var value = FixedDecimal.Parse("8327.23482192");
+
+            // Act
+            var normalized = value.Normalize();
+
+            // Assert
+            normalized.Should().Be(value);
+            normalized.Precision.Should().Be(value.Precision);
+        }
+
+        [Fact]
+        public void Normalize_IntegerValue_ZeroPrecision()
+        {
+            // Arrange
+            var value = FixedDecimal.Parse("8888.0000000000000000000000000000000000000000");
+
+            // Act
+            var normalized = value.Normalize();
+
+            // Assert
+            normalized.Should().Be(value);
+            normalized.Precision.Should().Be(0);
+        }
     }
 }
