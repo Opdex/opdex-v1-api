@@ -56,6 +56,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns>Vault details</returns>
         /// <response code="404">The vault does not exist.</response>
+        [HttpGet("{address}")]
         [ProducesResponseType(typeof(VaultResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
