@@ -94,7 +94,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> NotifyBroadcasted(TransactionBroadcastNotificationRequest request, CancellationToken cancellationToken)
         {
             var notified = await _mediator.Send(new CreateNotifyUserOfTransactionBroadcastCommand(request.WalletAddress, request.TransactionHash), cancellationToken);
@@ -110,7 +110,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{hash}")]
         [Authorize]
         [ProducesResponseType(typeof(TransactionResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TransactionResponseModel>> Transaction(string hash, CancellationToken cancellationToken)
         {
@@ -129,7 +129,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("broadcast-quote")]
         [Authorize]
         [ProducesResponseType(typeof(BroadcastTransactionResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<BroadcastTransactionResponseModel>> BroadcastTransactionQuote(QuoteReplayRequest request, CancellationToken cancellationToken)
         {

@@ -35,7 +35,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
         }
 
         [Fact]
-        public async Task GetMiningPools_CursorProvidedNotBase64_Return422ValidationError()
+        public async Task GetMiningPools_CursorProvidedNotBase64_Return400ValidationError()
         {
             // Arrange
             // Act
@@ -46,7 +46,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
         }
 
         [Fact]
-        public async Task GetMiningPools_CursorProvidedNotValidCursor_Return422ValidationError()
+        public async Task GetMiningPools_CursorProvidedNotValidCursor_Return400ValidationError()
         {
             // Arrange
             // Act

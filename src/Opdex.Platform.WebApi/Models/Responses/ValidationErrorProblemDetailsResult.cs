@@ -20,10 +20,10 @@ namespace Opdex.Platform.WebApi.Models.Responses
 
             var problemDetails = new ValidationProblemDetails
             {
-                Title = "Unprocessable Entity",
-                Status = StatusCodes.Status422UnprocessableEntity,
+                Title = "Bad Request",
+                Status = StatusCodes.Status400BadRequest,
                 Detail = "A validation error occurred.",
-                Type = "https://httpstatuses.com/422"
+                Type = "https://httpstatuses.com/400"
             };
 
             foreach (var pair in errors) problemDetails.Errors.Add(pair);

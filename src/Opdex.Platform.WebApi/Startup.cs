@@ -68,6 +68,7 @@ namespace Opdex.Platform.WebApi
 
             services.AddProblemDetails(options =>
             {
+                options.ValidationProblemStatusCode = 400;
                 options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
                 options.Map<BadRequestException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
                 options.Map<InvalidDataException>(e => ValidationErrorProblemDetailsResult.CreateProblemDetails(e.PropertyName, e.Message));
