@@ -5,19 +5,20 @@ namespace Opdex.Platform.Common.Models
 {
     public readonly struct Address : IEquatable<string>, IEquatable<Address>
     {
+        private const string CRS = "CRS";
         private const int MinLength = 30;
         private const int MaxLength = 42;
 
         private string Value { get; }
 
-        public static readonly Address Cirrus = new Address("CRS");
+        public static readonly Address Cirrus = new Address(CRS);
 
         public static readonly Address Empty = new Address(default);
 
         public Address(string value)
         {
             // If provided, should be >= 30 but <= 42 characters. 42 for potential ETH addresses if ever necessary.
-            if (value.HasValue() && value != "CRS" && (value.Length < MinLength || value.Length > MaxLength))
+            if (value.HasValue() && value != CRS && (value.Length < MinLength || value.Length > MaxLength))
             {
                 throw new ArgumentException("Invalid address.");
             }

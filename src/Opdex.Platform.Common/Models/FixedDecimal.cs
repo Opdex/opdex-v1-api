@@ -72,24 +72,6 @@ namespace Opdex.Platform.Common.Models
             return result;
         }
 
-        /// <summary>Removes all trailing zeros from after the decimal point.</summary>
-        /// <returns>A <see cref="FixedDecimal" /> that represents the current value, with minimal precision.</returns>
-        public FixedDecimal Normalize()
-        {
-            var scaledValue = ScaledValue;
-            var precision = Precision;
-            BigInteger divisor = 10;
-
-            while (precision > 0)
-            {
-                if (scaledValue % divisor != BigInteger.Zero) break;
-                scaledValue /= divisor;
-                precision--;
-            }
-
-            return new FixedDecimal(scaledValue, precision);
-        }
-
         /// <summary>Resizes the precision of the <see cref="FixedDecimal" /> to another value. A lower precision results in a loss of accuracy.</summary>
         /// <param name="precision">The desired number of decimal places.</param>
         /// <returns>A <see cref="FixedDecimal" /> with the desired precision.</returns>

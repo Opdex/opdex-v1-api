@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Opdex.Platform.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("vaults")]
     public class VaultsController : ControllerBase
     {
@@ -41,6 +42,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(VaultsResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] VaultFilterParameters filters,
                                                                        CancellationToken cancellationToken)
         {
@@ -54,9 +56,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns>Vault details</returns>
         /// <response code="404">The vault does not exist.</response>
-        [HttpGet("{address}")]
         [ProducesResponseType(typeof(VaultResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<VaultResponseModel>> GetVaultByAddress([FromRoute] Address address, CancellationToken cancellationToken)
         {
@@ -71,7 +73,6 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
         /// <response code="404">The vault does not exist.</response>
-        [Authorize]
         [HttpPost("{address}/set-ownership")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -95,7 +96,6 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
         /// <response code="404">The vault does not exist.</response>
-        [Authorize]
         [HttpPost("{address}/claim-ownership")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -121,6 +121,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}/certificates")]
         [ProducesResponseType(typeof(VaultCertificatesResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<VaultCertificatesResponseModel>> GetVaultCertificates([FromRoute] Address address,
                                                                                              [FromQuery] VaultCertificateFilterParameters filters,
@@ -137,7 +138,6 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
         /// <response code="404">The vault does not exist.</response>
-        [Authorize]
         [HttpPost("{address}/certificates")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -161,7 +161,6 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
         /// <response code="404">The vault does not exist.</response>
-        [Authorize]
         [HttpPost("{address}/certificates/redeem")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -184,7 +183,6 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
         /// <response code="404">The vault does not exist.</response>
-        [Authorize]
         [HttpPost("{address}/certificates/revoke")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
