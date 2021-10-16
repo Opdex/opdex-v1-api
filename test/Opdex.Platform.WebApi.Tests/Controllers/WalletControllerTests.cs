@@ -83,7 +83,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetMiningPositions_CursorProvidedNotBase64_Return422ValidationError()
+        public async Task GetMiningPositions_CursorProvidedNotBase64_Return400ValidationError()
         {
             // Arrange
             // Act
@@ -94,7 +94,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetMiningPositions_CursorProvidedNotValidCursor_Return422ValidationError()
+        public async Task GetMiningPositions_CursorProvidedNotValidCursor_Return400ValidationError()
         {
             // Arrange
             // Act
@@ -158,7 +158,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetStakingPositions_CursorProvidedNotBase64_Return422ValidationError()
+        public async Task GetStakingPositions_CursorProvidedNotBase64_Return400ValidationError()
         {
             // Arrange
             // Act
@@ -169,7 +169,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetStakingPositions_CursorProvidedNotValidCursor_Return422ValidationError()
+        public async Task GetStakingPositions_CursorProvidedNotValidCursor_Return400ValidationError()
         {
             // Arrange
             // Act

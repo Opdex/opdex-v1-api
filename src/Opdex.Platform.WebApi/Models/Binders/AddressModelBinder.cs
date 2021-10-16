@@ -21,14 +21,13 @@ namespace Opdex.Platform.WebApi.Models.Binders
 
             var value = valueProviderResult.FirstValue;
 
-            try
+            if (Address.TryParse(value, out var address))
             {
-                var address = new Address(value);
                 bindingContext.Result = ModelBindingResult.Success(address);
             }
-            catch (Exception e)
+            else
             {
-                bindingContext.ModelState.AddModelError(modelName, e.Message);
+                bindingContext.ModelState.AddModelError(modelName, "Invalid address.");
             }
 
             return Task.CompletedTask;

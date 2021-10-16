@@ -1,5 +1,4 @@
 using Opdex.Platform.Common.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Requests.Vaults
 {
@@ -9,7 +8,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.Vaults
     public class RevokeVaultCertificatesQuoteRequest
     {
         /// <summary>Address of the certificate holder.</summary>
-        [Required]
         public Address Holder { get; set; }
     }
 }

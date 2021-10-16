@@ -100,5 +100,48 @@ namespace Opdex.Platform.Common.Tests.Models.UInt
             (value == address).Should().BeFalse();
             address.Equals(value).Should().BeFalse();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void TryParse_Empty_True(string value)
+        {
+            var isValid = Address.TryParse(value, out var address);
+
+            isValid.Should().Be(true);
+            address.Should().Be(Address.Empty);
+        }
+
+        [Fact]
+        public void TryParse_Cirrus_True()
+        {
+            var isValid = Address.TryParse("CRS", out var address);
+
+            isValid.Should().Be(true);
+            address.Should().Be(Address.Cirrus);
+        }
+
+        [Theory]
+        [InlineData("303030303030303030303030303030")]
+        [InlineData("424242424242424242424242424242424242424242")]
+        public void TryParse_Length30To42_True(string value)
+        {
+            var isValid = Address.TryParse(value, out var address);
+
+            isValid.Should().Be(true);
+            address.ToString().Should().Be(value);
+        }
+
+        [Theory]
+        [InlineData("29292929292929292929292929292")]
+        [InlineData("4343434343434343434343434343434343434343434")]
+        public void TryParse_Length29And43_False(string value)
+        {
+            var isValid = Address.TryParse(value, out var address);
+
+            isValid.Should().Be(false);
+            address.Should().Be(Address.Empty);
+        }
     }
 }

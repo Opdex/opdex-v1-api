@@ -35,7 +35,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.GovernancesControllerTests
         }
 
         [Fact]
-        public async Task GetGovernances_CursorProvidedNotBase64_Return422ValidationError()
+        public async Task GetGovernances_CursorProvidedNotBase64_Return400ValidationError()
         {
             // Arrange
             // Act
@@ -46,7 +46,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.GovernancesControllerTests
         }
 
         [Fact]
-        public async Task GetGovernances_CursorProvidedNotValidCursor_Return422ValidationError()
+        public async Task GetGovernances_CursorProvidedNotValidCursor_Return400ValidationError()
         {
             // Arrange
             // Act

@@ -1,26 +1,18 @@
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
-using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -44,36 +36,17 @@ namespace Opdex.Platform.WebApi.Controllers
         /// Get Vaults
         /// </summary>
         /// <remarks>Retrieves known vaults</remarks>
-        /// <param name="lockedToken">Locked token address.</param>
-        /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
-        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 51.</param>
-        /// <param name="cursor">The cursor when paging.</param>
+        /// <param name="filters">Filter parameters.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>Vaults paging results</returns>
+        /// <returns>Vaults paging results.</returns>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] Address lockedToken,
-                                                                       [FromQuery] SortDirectionType direction,
-                                                                       [FromQuery] uint limit,
-                                                                       [FromQuery] string cursor,
+        [ProducesResponseType(typeof(VaultsResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] VaultFilterParameters filters,
                                                                        CancellationToken cancellationToken)
         {
-            VaultsCursor pagingCursor;
-
-            if (cursor.HasValue())
-            {
-                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !VaultsCursor.TryParse(decodedCursor, out var parsedCursor))
-                {
-                    return new ValidationErrorProblemDetailsResult(nameof(cursor), "Cursor not formed correctly.");
-                }
-                pagingCursor = parsedCursor;
-            }
-            else
-            {
-                pagingCursor = new VaultsCursor(lockedToken, direction, limit, PagingDirection.Forward, default);
-            }
-
-            var vaults = await _mediator.Send(new GetVaultsWithFilterQuery(pagingCursor), cancellationToken);
+            var vaults = await _mediator.Send(new GetVaultsWithFilterQuery(filters.BuildCursor()), cancellationToken);
             return Ok(_mapper.Map<VaultsResponseModel>(vaults));
         }
 
@@ -84,8 +57,10 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Vault details</returns>
         /// <response code="404">The vault does not exist.</response>
         [HttpGet("{address}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(VaultResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<VaultResponseModel>> GetVaultByAddress([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var vault = await _mediator.Send(new GetVaultByAddressQuery(address), cancellationToken);
@@ -101,7 +76,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/set-ownership")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> SetOwnerQuote([FromRoute] Address address,
                                                                                      SetVaultOwnerQuoteRequest request,
                                                                                      CancellationToken cancellationToken)
@@ -122,7 +99,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/claim-ownership")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> ClaimOwnershipQuote([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateClaimPendingVaultOwnershipTransactionQuoteCommand(address, _context.Wallet),
@@ -136,39 +115,20 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <summary>Get Certificates</summary>
         /// <remarks>Retrieves vault certificates for a vault address</remarks>
         /// <param name="address">Address of the vault</param>
-        /// <param name="holder">Certificate holder address</param>
-        /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
-        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 51.</param>
-        /// <param name="cursor">The cursor when paging.</param>
+        /// <param name="filters">Filter parameters.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Vault certificates</returns>
         /// <response code="404">The vault does not exist.</response>
         [HttpGet("{address}/certificates")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(VaultCertificatesResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<VaultCertificatesResponseModel>> GetVaultCertificates([FromRoute] Address address,
-                                                                                             [FromQuery] Address holder,
-                                                                                             [FromQuery] SortDirectionType direction,
-                                                                                             [FromQuery] uint limit,
-                                                                                             [FromQuery] string cursor,
+                                                                                             [FromQuery] VaultCertificateFilterParameters filters,
                                                                                              CancellationToken cancellationToken)
         {
-            VaultCertificatesCursor pagingCursor;
-
-            if (cursor.HasValue())
-            {
-                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !VaultCertificatesCursor.TryParse(decodedCursor, out var parsedCursor))
-                {
-                    return new ValidationErrorProblemDetailsResult(nameof(cursor), "Cursor not formed correctly.");
-                }
-                pagingCursor = parsedCursor;
-            }
-            else
-            {
-                pagingCursor = new VaultCertificatesCursor(holder, direction, limit, PagingDirection.Forward, default);
-            }
-
-            var certificates = await _mediator.Send(new GetVaultCertificatesWithFilterQuery(address, pagingCursor), cancellationToken);
+            var certificates = await _mediator.Send(new GetVaultCertificatesWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
             return Ok(_mapper.Map<VaultCertificatesResponseModel>(certificates));
         }
 
@@ -181,7 +141,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/certificates")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> CreateCertificateQuote([FromRoute] Address address,
                                                                                               CreateVaultCertificateQuoteRequest request,
                                                                                               CancellationToken cancellationToken)
@@ -202,7 +164,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/certificates/redeem")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> RedeemCertificatesQuote([FromRoute] Address address,
                                                                                                CancellationToken cancellationToken)
         {
@@ -222,7 +186,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <response code="404">The vault does not exist.</response>
         [HttpPost("{address}/certificates/revoke")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> RevokeCertificatesQuote([FromRoute] Address address,
                                                                                                RevokeVaultCertificatesQuoteRequest request,
                                                                                                CancellationToken cancellationToken)

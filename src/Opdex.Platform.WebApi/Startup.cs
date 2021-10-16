@@ -44,6 +44,8 @@ using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.Infrastructure.Clients.SignalR;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using FluentValidation.AspNetCore;
+using Opdex.Platform.WebApi.Validation;
 
 namespace Opdex.Platform.WebApi
 {
@@ -67,6 +69,7 @@ namespace Opdex.Platform.WebApi
 
             services.AddProblemDetails(options =>
             {
+                options.ValidationProblemStatusCode = 400;
                 options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
                 options.Map<BadRequestException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
                 options.Map<InvalidDataException>(e => ValidationErrorProblemDetailsResult.CreateProblemDetails(e.PropertyName, e.Message));
@@ -87,6 +90,10 @@ namespace Opdex.Platform.WebApi
                 .AddControllers(options =>
                 {
                     options.ModelBinderProviders.Insert(0, new AddressModelBinderProvider());
+                })
+                .AddFluentValidation(config =>
+                {
+                    config.RegisterValidatorsFromAssemblyContaining<Startup>();
                 })
                 .AddProblemDetailsConventions()
                 .AddNewtonsoftJson(options =>
@@ -170,11 +177,17 @@ namespace Opdex.Platform.WebApi
                     };
                 });
 
-            services.AddOpenApiDocument(settings =>
+            services.AddOpenApiDocument((settings, provider) =>
             {
                 // must add type converter attribute to pass NSwag check for IsPrimitiveType
                 TypeDescriptor.AddAttributes(typeof(Address), new TypeConverterAttribute(typeof(AddressConverter)));
                 TypeDescriptor.AddAttributes(typeof(FixedDecimal), new TypeConverterAttribute(typeof(FixedDecimalConverter)));
+
+                // processes fluent validation rules as OpenAPI type rules
+                settings.AddFluentValidationSchemaProcessor(provider, config =>
+                {
+                    config.RegisterRulesFromAssemblyContaining<Startup>();
+                });
 
                 settings.Title = "Opdex Platform API";
                 settings.Version = "v1";
@@ -187,11 +200,7 @@ namespace Opdex.Platform.WebApi
                 });
                 settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
                 settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Address), schema => schema.Type = JsonObjectType.String));
-                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema =>
-                {
-                    schema.Type = JsonObjectType.String;
-                    schema.Pattern = @"^\d*\.\d{1,18}$"; // matches a number which must contain a decimal point and precision of 1 to 18
-                }));
+                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema => schema.Type = JsonObjectType.String));
             });
 
             services.AddSignalR()

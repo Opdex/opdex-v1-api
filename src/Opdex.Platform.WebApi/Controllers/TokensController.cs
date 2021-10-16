@@ -75,11 +75,11 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Token details.</returns>
         /// <response code="201">The token was added to indexed tokens.</response>
         /// <response code="303">Token is already indexed.</response>
-        /// <response code="422">The address provided was not a valid token.</response>
+        /// <response code="400">The address provided was not a valid token.</response>
         [HttpPost]
         [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status303SeeOther)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddToken([FromBody] AddTokenRequest request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new CreateAddTokenCommand(request.TokenAddress), cancellationToken);

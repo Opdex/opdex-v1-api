@@ -7,20 +7,28 @@ using System.Linq;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
 {
+    public abstract class Cursor
+    {
+        public const uint DefaultLimit = 10;
+        public const uint DefaultMaxLimit = 50;
+        public const SortDirectionType DefaultSortDirectionType = SortDirectionType.DESC;
+    }
+
     /// <summary>
     /// Can be implemented with queries to a data source, so that data can be retrieved in a paginated manor
     /// </summary>
     /// <typeparam name="TPointer">Pointer on which to mark location in the data source</typeparam>
-    public abstract class Cursor<TPointer> where TPointer : IEquatable<TPointer>
+    public abstract class Cursor<TPointer> : Cursor where TPointer : IEquatable<TPointer>
     {
         public Cursor(SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, TPointer pointer,
-                      uint defaultLimit = 10, uint maxLimit = 50, SortDirectionType defaultSortDirection = SortDirectionType.DESC)
+                      uint defaultLimit = DefaultLimit, uint maxLimit = DefaultMaxLimit, SortDirectionType defaultSortDirection = DefaultSortDirectionType)
         {
             if (defaultLimit == 0) throw new ArgumentOutOfRangeException("Default limit must be greater than 0.");
             if (maxLimit == 0) throw new ArgumentOutOfRangeException("Max limit must be greater than 0.");
             if (defaultLimit > maxLimit) throw new ArgumentOutOfRangeException("Default limit cannot be greater than max limit.");
             if (!defaultSortDirection.IsValid()) throw new ArgumentOutOfRangeException("Invalid default sort direction.");
 
+            // default is invalid enum hence if else
             if (sortDirection == default) SortDirection = defaultSortDirection;
             else SortDirection = sortDirection.IsValid() ? sortDirection : throw new ArgumentOutOfRangeException("Invalid sort direction.");
 

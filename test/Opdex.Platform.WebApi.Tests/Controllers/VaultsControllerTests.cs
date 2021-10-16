@@ -3,17 +3,14 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
-using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using System;
@@ -40,44 +37,16 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetVaults_CursorProvidedNotBase64_Return422ValidationError()
-        {
-            // Arrange
-            // Act
-            var response = await _controller.GetVaults(default, default, default, "NOT_BASE_64_****", CancellationToken.None);
-
-            // Assert
-            response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
-        }
-
-        [Fact]
-        public async Task GetVaults_CursorProvidedNotValidCursor_Return422ValidationError()
-        {
-            // Arrange
-            // Act
-            var response = await _controller.GetVaults(default, default, default, "Tk9UX1ZBTElE", CancellationToken.None);
-
-            // Assert
-            response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
-        }
-
-        [Fact]
         public async Task GetVaults_GetVaultsWithFilterQuery_Send()
         {
             // Arrange
-            var sortDirection = SortDirectionType.ASC;
-            var limit = 10U;
-            var lockedToken = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _controller.GetVaults(lockedToken, sortDirection, limit, null, cancellationToken);
+            await _controller.GetVaults(new VaultFilterParameters(), cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultsWithFilterQuery>(query => query.Cursor.IsFirstRequest
-                                                                                             && query.Cursor.LockedToken == lockedToken
-                                                                                             && query.Cursor.SortDirection == sortDirection
-                                                                                             && query.Cursor.Limit == limit), cancellationToken), Times.Once);
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultsWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -90,7 +59,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             _mapperMock.Setup(callTo => callTo.Map<VaultsResponseModel>(It.IsAny<VaultsDto>())).Returns(vaults);
 
             // Act
-            var response = await _controller.GetVaults("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", SortDirectionType.ASC, 10, null, CancellationToken.None);
+            var response = await _controller.GetVaults(new VaultFilterParameters(), CancellationToken.None);
 
             // Assert
             response.Result.Should().BeOfType<OkObjectResult>();
@@ -281,6 +250,36 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             // Act
             response.Result.Should().BeOfType<OkObjectResult>();
             ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
+        }
+
+        [Fact]
+        public async Task GetVaultCertificates_GetVaultCertificatesWithFilterQuery_Send()
+        {
+            // Arrange
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            await _controller.GetVaultCertificates("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i", new VaultCertificateFilterParameters(), cancellationToken);
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultCertificatesWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetVaultCertificates_Result_ReturnOk()
+        {
+            // Arrange
+            var certificates = new VaultCertificatesResponseModel();
+
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new VaultCertificatesDto());
+            _mapperMock.Setup(callTo => callTo.Map<VaultCertificatesResponseModel>(It.IsAny<VaultCertificatesDto>())).Returns(certificates);
+
+            // Act
+            var response = await _controller.GetVaultCertificates("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i", new VaultCertificateFilterParameters(), CancellationToken.None);
+
+            // Assert
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(certificates);
         }
 
         [Fact]
