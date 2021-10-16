@@ -7,9 +7,12 @@ using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.LiquidityPools;
+using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets
@@ -45,6 +48,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 if (isNewLiquidityPool)
                 {
                     liquidityPoolId = await _mediator.Send(new MakeLiquidityPoolCommand(liquidityPool));
+
+                    var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.BlockHeight));
+                    var snapshot = new LiquidityPoolSnapshot(liquidityPoolId, SnapshotType.Daily, block.MedianTime);
+                    await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(snapshot, request.BlockHeight));
                 }
 
                 // If it's the staking market, a new liquidity pool, and the pool src token isn't the markets staking token

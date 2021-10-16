@@ -34,7 +34,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
                 tokenSnapshot.UpdatePrice(lptUsd);
             }
 
-            await _mediator.Send(new MakeTokenSnapshotCommand(tokenSnapshot));
+            await _mediator.Send(new MakeTokenSnapshotCommand(tokenSnapshot, request.BlockHeight));
 
             return tokenSnapshot.Price.Close;
         }

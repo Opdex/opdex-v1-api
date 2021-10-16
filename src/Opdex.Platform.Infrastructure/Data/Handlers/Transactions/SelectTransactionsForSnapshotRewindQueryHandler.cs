@@ -64,7 +64,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                 var exists = transactions.TryGetValue(transaction.Id, out Transaction tx);
                 if (!exists) tx = _mapper.Map<Transaction>(transaction);
 
-                tx.SetLog(_mapper.Map<TransactionLog>(log));
+                if (log != null)
+                {
+                    tx.SetLog(_mapper.Map<TransactionLog>(log));
+                }
 
                 transactions[tx.Id] = tx;
 

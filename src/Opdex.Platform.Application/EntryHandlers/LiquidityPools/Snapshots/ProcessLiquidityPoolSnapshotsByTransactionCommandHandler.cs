@@ -10,7 +10,6 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
@@ -41,7 +40,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
 
             if (crsSnapshot.Id == 0 || crsSnapshot.EndDate < blockTime)
             {
-                await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime));
+                await _mediator.Send(new CreateCrsTokenSnapshotsCommand(blockTime, block.Height));
                 crsSnapshot = await _mediator.Send(crsSnapshotQuery);
             }
 
@@ -94,7 +93,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                     {
                         var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(liquidityPool.MarketId, srcToken, snapshotType,
                                                                                              snapshot.EndDate, crsUsd, snapshot.Reserves.Crs,
-                                                                                             snapshot.Reserves.Src));
+                                                                                             snapshot.Reserves.Src, block.Height));
 
                         snapshot.ResetStaleSnapshot(crsUsd, srcUsd, stakingTokenUsd, srcToken.Sats, blockTime);
                     }
@@ -111,14 +110,14 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                             // Process SRC Token Snapshot
                             var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(liquidityPool.MarketId, srcToken, snapshotType,
                                                                                                  blockTime, crsUsd, reservesLog.ReserveCrs,
-                                                                                                 reservesLog.ReserveSrc));
+                                                                                                 reservesLog.ReserveSrc, block.Height));
 
                             // Process Reserves and Token Pricing Snapshot
                             snapshot.ProcessReservesLog(reservesLog, crsUsd, srcUsd, srcToken.Sats);
 
                             // Process LP Token Snapshot
                             await _mediator.Send(new ProcessLpTokenSnapshotCommand(liquidityPool.MarketId, lpToken, snapshot.Reserves.Usd,
-                                                                                   snapshotType, blockTime));
+                                                                                   snapshotType, blockTime, block.Height));
                         }
                         else if (poolLog.LogType == TransactionLogType.SwapLog)
                         {

@@ -3,7 +3,6 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using System;
@@ -12,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
 {
-    public class GetLiquidityPoolAddLiquidityQuoteQueryHandler : IRequestHandler<GetLiquidityPoolAddLiquidityQuoteQuery, FixedDecimal>
+    public class GetLiquidityPoolAddLiquidityAmountInQuoteQueryHandler : IRequestHandler<GetLiquidityPoolAddLiquidityAmountInQuoteQuery, FixedDecimal>
     {
         private readonly IMediator _mediator;
 
-        public GetLiquidityPoolAddLiquidityQuoteQueryHandler(IMediator mediator)
+        public GetLiquidityPoolAddLiquidityAmountInQuoteQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<FixedDecimal> Handle(GetLiquidityPoolAddLiquidityQuoteQuery request, CancellationToken cancellationToken)
+        public async Task<FixedDecimal> Handle(GetLiquidityPoolAddLiquidityAmountInQuoteQuery request, CancellationToken cancellationToken)
         {
             var tokenInIsCrs = request.TokenIn == Address.Cirrus;
             var tokenIn = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenIn), cancellationToken);
@@ -35,8 +34,8 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
 
             var amountIn = request.AmountIn.ToSatoshis(tokenIn.Decimals);
 
-            var quote = await _mediator.Send(new RetrieveLiquidityPoolAddLiquidityQuoteQuery(amountIn, request.TokenIn,
-                                                                                             request.Pool, router.Address), cancellationToken);
+            var quote = await _mediator.Send(new RetrieveLiquidityPoolAddLiquidityAmountInQuoteQuery(amountIn, request.TokenIn,
+                                                                                                     request.Pool, router.Address), cancellationToken);
 
             return quote.ToDecimal(tokenOut.Decimals);
         }

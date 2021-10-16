@@ -63,6 +63,8 @@ namespace Opdex.Platform.WebApi
                 .ConfigureServices(services =>
                 {
                     services.AddHostedService<IndexerBackgroundService>();
+                    services.Configure<HostOptions>(
+                        opts => opts.ShutdownTimeout = TimeSpan.FromSeconds(30));
                 });
     }
 }

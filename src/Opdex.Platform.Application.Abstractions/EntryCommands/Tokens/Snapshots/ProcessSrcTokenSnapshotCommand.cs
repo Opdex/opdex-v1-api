@@ -10,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
     public class ProcessSrcTokenSnapshotCommand : IRequest<decimal>
     {
         public ProcessSrcTokenSnapshotCommand(ulong marketId, Token srcToken, SnapshotType snapshotType, DateTime blockTime,
-                                              decimal crsUsd, ulong reserveCrs, UInt256 reserveSrc)
+                                              decimal crsUsd, ulong reserveCrs, UInt256 reserveSrc, ulong blockHeight)
         {
             if (marketId < 1)
             {
@@ -37,6 +37,11 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
                 throw new ArgumentOutOfRangeException(nameof(crsUsd), $"{nameof(crsUsd)} must be greater than 0.");
             }
 
+            if (blockHeight == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
+            }
+
             MarketId = marketId;
             SrcToken = srcToken;
             SnapshotType = snapshotType;
@@ -44,6 +49,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
             CrsUsd = crsUsd;
             ReserveCrs = reserveCrs;
             ReserveSrc = reserveSrc;
+            BlockHeight = blockHeight;
         }
 
         public ulong MarketId { get; }
@@ -53,5 +59,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
         public decimal CrsUsd { get; }
         public ulong ReserveCrs { get; }
         public UInt256 ReserveSrc { get; }
+        public ulong BlockHeight { get; }
     }
 }

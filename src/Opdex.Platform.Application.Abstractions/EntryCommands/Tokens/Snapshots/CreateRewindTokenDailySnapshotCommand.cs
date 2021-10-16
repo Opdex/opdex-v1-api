@@ -5,7 +5,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
 {
     public class CreateRewindTokenDailySnapshotCommand : IRequest<bool>
     {
-        public CreateRewindTokenDailySnapshotCommand(ulong tokenId, ulong marketId, decimal crsUsdStartOfDay, DateTime startOfDay, DateTime endOfDay)
+        public CreateRewindTokenDailySnapshotCommand(ulong tokenId, ulong marketId, decimal crsUsdStartOfDay, DateTime startOfDay,
+                                                     DateTime endOfDay, ulong blockHeight)
         {
             if (tokenId < 1)
             {
@@ -29,11 +30,17 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
                 throw new Exception("Start date time must be prior to end date time and the dates must match.");
             }
 
+            if (blockHeight == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
+            }
+
             TokenId = tokenId;
             MarketId = marketId;
             CrsUsdStartOfDay = crsUsdStartOfDay;
             StartDate = startOfDay;
             EndDate = endOfDay;
+            BlockHeight = blockHeight;
         }
 
         public ulong TokenId { get; }
@@ -41,5 +48,6 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots
         public decimal CrsUsdStartOfDay { get; }
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }
+        public ulong BlockHeight { get; }
     }
 }

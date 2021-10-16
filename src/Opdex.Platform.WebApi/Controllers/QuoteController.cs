@@ -52,22 +52,5 @@ namespace Opdex.Platform.WebApi.Controllers
 
             return Ok(result);
         }
-
-        /// <summary>Add Liquidity Amount</summary>
-        /// <remarks>
-        /// Gets a quote for how many tokens are required to be input given the other token in a pool's desired input amount.
-        /// </remarks>
-        /// <param name="request">Request model detailing how many of which tokens are desired to be deposited.</param>
-        /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>The number of tokens to match the desired input amount of tokens.</returns>
-        [HttpPost("add-liquidity")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> CreateAddLiquidityQuote(AddLiquidityQuoteRequestModel request, CancellationToken cancellationToken)
-        {
-            var result = await _mediator.Send(new GetLiquidityPoolAddLiquidityQuoteQuery(request.AmountIn, request.TokenIn,
-                request.Pool, _context.Market), cancellationToken);
-
-            return Ok(result);
-        }
     }
 }
