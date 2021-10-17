@@ -17,6 +17,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
@@ -180,6 +181,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             }
 
             await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(transaction));
+
+            await _mediator.Send(new NotifyUserOfMinedTransactionCommand(transaction.From, transaction.Hash));
 
             return true;
         }
