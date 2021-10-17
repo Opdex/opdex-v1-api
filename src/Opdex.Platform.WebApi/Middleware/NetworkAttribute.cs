@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Exceptions;
+using System;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.WebApi.Middleware
@@ -10,6 +11,7 @@ namespace Opdex.Platform.WebApi.Middleware
     /// <summary>
     /// An attribute that can be placed on a controller action to enable it only for a specified network type.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class NetworkAttribute : ActionFilterAttribute
     {
         public NetworkAttribute(NetworkType network)
