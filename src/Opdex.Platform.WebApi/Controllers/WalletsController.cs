@@ -20,12 +20,12 @@ namespace Opdex.Platform.WebApi.Controllers
     [ApiController]
     [Authorize]
     [Route("wallets")]
-    public class WalletController : ControllerBase
+    public class WalletsController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public WalletController(IMapper mapper, IMediator mediator)
+        public WalletsController(IMapper mapper, IMediator mediator)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

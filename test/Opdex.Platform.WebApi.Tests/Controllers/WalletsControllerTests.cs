@@ -18,19 +18,19 @@ using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Controllers
 {
-    public class WalletControllerTests
+    public class WalletsControllerTests
     {
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<IMediator> _mediatorMock;
 
-        private readonly WalletController _controller;
+        private readonly WalletsController _controller;
 
-        public WalletControllerTests()
+        public WalletsControllerTests()
         {
             _mapperMock = new Mock<IMapper>();
             _mediatorMock = new Mock<IMediator>();
 
-            _controller = new WalletController(_mapperMock.Object, _mediatorMock.Object);
+            _controller = new WalletsController(_mapperMock.Object, _mediatorMock.Object);
         }
 
         [Fact]
