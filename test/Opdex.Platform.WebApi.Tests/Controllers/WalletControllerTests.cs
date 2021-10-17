@@ -3,19 +3,15 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.WebApi.Controllers;
-using Opdex.Platform.WebApi.Models.Responses;
+using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -35,6 +31,36 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             _mediatorMock = new Mock<IMediator>();
 
             _controller = new WalletController(_mapperMock.Object, _mediatorMock.Object);
+        }
+
+        [Fact]
+        public async Task GetAddressBalances_GetAddressBalancesWithFilterQuery_Send()
+        {
+            // Arrange
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            await _controller.GetAddressBalances("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new AddressBalanceFilterParameters(), cancellationToken);
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetAddressBalancesWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetAddressBalances_Result_ReturnOk()
+        {
+            // Arrange
+            var addressBalances = new AddressBalancesResponseModel();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new AddressBalancesDto());
+            _mapperMock.Setup(callTo => callTo.Map<AddressBalancesResponseModel>(It.IsAny<AddressBalancesDto>())).Returns(addressBalances);
+
+            // Act
+            var response = await _controller.GetAddressBalances("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new AddressBalanceFilterParameters(), CancellationToken.None);
+
+            // Assert
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(addressBalances);
         }
 
         [Fact]
@@ -72,61 +98,16 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetMiningPositions_CursorNotProvidedNullIncludeZeroAmounts_IncludeZeroAmountsFalse()
-        {
-            // Arrange
-            // Act
-            await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), null, SortDirectionType.DESC, 10, null, CancellationToken.None);
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetMiningPositionsWithFilterQuery>(query => query.Cursor.IncludeZeroAmounts == false), It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task GetMiningPositions_CursorProvidedNotBase64_Return400ValidationError()
-        {
-            // Arrange
-            // Act
-            var response = await _controller.GetMiningPositions(default, default, default, default, default, default, "NOT_BASE_64_****", CancellationToken.None);
-
-            // Assert
-            response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
-        }
-
-        [Fact]
-        public async Task GetMiningPositions_CursorProvidedNotValidCursor_Return400ValidationError()
-        {
-            // Arrange
-            // Act
-            var response = await _controller.GetMiningPositions(default, default, default, default, default, default, "Tk9UX1ZBTElE", CancellationToken.None);
-
-            // Assert
-            response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
-        }
-
-        [Fact]
         public async Task GetMiningPositions_GetMiningPositionsWithFilterQuery_Send()
         {
             // Arrange
-            var liquidityPools = Enumerable.Empty<Address>();
-            var miningPools = new Address[] { "PB5gG1wRsTpST5mFLkgxwauamhW28i1LRe", "PXRNXAEYkCjMJpqdgdRG4FzbguG4GcdZuN" };
-            var includeZeroBalances = true;
-            var sortDirection = SortDirectionType.ASC;
-            var limit = 10U;
-            var address = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _controller.GetMiningPositions(address, liquidityPools, miningPools, includeZeroBalances, sortDirection, limit, null, cancellationToken);
+            await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new MiningPositionFilterParameters(), cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetMiningPositionsWithFilterQuery>(query => query.Address == address
-                                                                                                      && query.Cursor.IsFirstRequest
-                                                                                                      && query.Cursor.LiquidityPools.SequenceEqual(liquidityPools)
-                                                                                                      && query.Cursor.MiningPools.SequenceEqual(miningPools)
-                                                                                                      && query.Cursor.IncludeZeroAmounts == includeZeroBalances
-                                                                                                      && query.Cursor.SortDirection == sortDirection
-                                                                                                      && query.Cursor.Limit == limit), cancellationToken), Times.Once);
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetMiningPositionsWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -134,12 +115,12 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             var miningPositions = new MiningPositionsResponseModel();
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new MiningPositionsDto());
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new MiningPositionsDto());
             _mapperMock.Setup(callTo => callTo.Map<MiningPositionsResponseModel>(It.IsAny<MiningPositionsDto>())).Returns(miningPositions);
 
             // Act
-            var response = await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<Address>(), Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 10, null, CancellationToken.None);
+            var response = await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new MiningPositionFilterParameters(), CancellationToken.None);
 
             // Assert
             response.Result.Should().BeOfType<OkObjectResult>();
@@ -147,59 +128,16 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetStakingPositions_CursorNotProvidedNullIncludeZeroAmounts_IncludeZeroAmountsFalse()
-        {
-            // Arrange
-            // Act
-            await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<Address>(), null, SortDirectionType.DESC, 10, null, CancellationToken.None);
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetStakingPositionsWithFilterQuery>(query => query.Cursor.IncludeZeroAmounts == false), It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task GetStakingPositions_CursorProvidedNotBase64_Return400ValidationError()
-        {
-            // Arrange
-            // Act
-            var response = await _controller.GetStakingPositions(default, default, default, default, default, "NOT_BASE_64_****", CancellationToken.None);
-
-            // Assert
-            response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
-        }
-
-        [Fact]
-        public async Task GetStakingPositions_CursorProvidedNotValidCursor_Return400ValidationError()
-        {
-            // Arrange
-            // Act
-            var response = await _controller.GetStakingPositions(default, default, default, default, default, "Tk9UX1ZBTElE", CancellationToken.None);
-
-            // Assert
-            response.Result.Should().BeOfType<ValidationErrorProblemDetailsResult>();
-        }
-
-        [Fact]
         public async Task GetStakingPositions_GetStakingPositionsWithFilterQuery_Send()
         {
             // Arrange
-            var liquidityPools = Enumerable.Empty<Address>();
-            var includeZeroBalances = true;
-            var sortDirection = SortDirectionType.ASC;
-            var limit = 10U;
-            var address = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
-            await _controller.GetStakingPositions(address, liquidityPools, includeZeroBalances, sortDirection, limit, null, cancellationToken);
+            await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new StakingPositionFilterParameters(), cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetStakingPositionsWithFilterQuery>(query => query.Address == address
-                                                                                                       && query.Cursor.IsFirstRequest
-                                                                                                       && query.Cursor.LiquidityPools.SequenceEqual(liquidityPools)
-                                                                                                       && query.Cursor.IncludeZeroAmounts == includeZeroBalances
-                                                                                                       && query.Cursor.SortDirection == sortDirection
-                                                                                                       && query.Cursor.Limit == limit), cancellationToken), Times.Once);
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetStakingPositionsWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -207,12 +145,12 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             // Arrange
             var stakingPositions = new StakingPositionsResponseModel();
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetStakingPositionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new StakingPositionsDto());
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetStakingPositionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(new StakingPositionsDto());
             _mapperMock.Setup(callTo => callTo.Map<StakingPositionsResponseModel>(It.IsAny<StakingPositionsDto>())).Returns(stakingPositions);
 
             // Act
-            var response = await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", Enumerable.Empty<Address>(), false, SortDirectionType.ASC, 10, null, CancellationToken.None);
+            var response = await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new StakingPositionFilterParameters(), CancellationToken.None);
 
             // Assert
             response.Result.Should().BeOfType<OkObjectResult>();

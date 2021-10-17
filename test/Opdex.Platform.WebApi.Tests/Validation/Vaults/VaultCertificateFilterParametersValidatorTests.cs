@@ -18,12 +18,12 @@ namespace Opdex.Platform.WebApi.Tests.Validation.Vaults
 
         [Theory]
         [ClassData(typeof(NonNetworkAddressData))]
-        public void LockedToken_Invalid(Address lockedToken)
+        public void Holder_Invalid(Address holder)
         {
             // Arrange
             var request = new VaultCertificateFilterParameters
             {
-                Holder = lockedToken
+                Holder = holder
             };
 
             // Act
@@ -34,14 +34,15 @@ namespace Opdex.Platform.WebApi.Tests.Validation.Vaults
         }
 
         [Theory]
+        [ClassData(typeof(NullAddressData))]
         [ClassData(typeof(EmptyAddressData))]
         [ClassData(typeof(ValidNetworkAddressData))]
-        public void LockedToken_Valid(Address lockedToken)
+        public void Holder_Valid(Address holder)
         {
             // Arrange
             var request = new VaultCertificateFilterParameters
             {
-                Holder = lockedToken
+                Holder = holder
             };
 
             // Act

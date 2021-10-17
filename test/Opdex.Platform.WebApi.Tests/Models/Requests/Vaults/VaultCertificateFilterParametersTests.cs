@@ -70,5 +70,18 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults
             // Assert
             cursor.Should().Be(null);
         }
+
+        [Fact]
+        public void BuildCursor_ValidCursorString_ReturnCursor()
+        {
+            // Arrange
+            var filters = new VaultCertificateFilterParameters { Cursor = "ZGlyZWN0aW9uOkRFU0M7bGltaXQ6NTtwYWdpbmc6Rm9yd2FyZDtwb2ludGVyOk13PT07" };
+
+            // Act
+            var cursor = filters.BuildCursor();
+
+            // Assert
+            cursor.Should().NotBe(null);
+        }
     }
 }
