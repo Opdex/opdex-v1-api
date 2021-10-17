@@ -2,22 +2,24 @@ using FluentAssertions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.WebApi.Models.Requests.Vaults;
+using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults
+namespace Opdex.Platform.WebApi.Tests.Models.Requests.Wallets
 {
-    public class VaultFilterParametersTests
+    public class MiningPositionFilterParametersTests
     {
         [Fact]
         public void DefaultPropertyValues()
         {
             // Arrange
             // Act
-            var filters = new VaultFilterParameters();
+            var filters = new MiningPositionFilterParameters();
 
             // Assert
-            filters.LockedToken.Should().Be(Address.Empty);
+            filters.MiningPools.Should().BeEmpty();
+            filters.LiquidityPools.Should().BeEmpty();
+            filters.IncludeZeroAmounts.Should().Be(false);
             filters.Direction.Should().Be(default(SortDirectionType));
             filters.Limit.Should().Be(default);
         }
@@ -26,9 +28,11 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults
         public void BuildCursor_CursorStringNotProvided_ReturnFiltered()
         {
             // Arrange
-            var filters = new VaultFilterParameters
+            var filters = new MiningPositionFilterParameters
             {
-                LockedToken = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm"),
+                MiningPools = new Address[] { new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm") },
+                LiquidityPools = new Address[] { new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh") },
+                IncludeZeroAmounts = true,
                 Limit = 20,
                 Direction = SortDirectionType.DESC
             };
@@ -37,7 +41,9 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults
             var cursor = filters.BuildCursor();
 
             // Assert
-            cursor.LockedToken.Should().Be(filters.LockedToken);
+            cursor.MiningPools.Should().BeEquivalentTo(filters.MiningPools);
+            cursor.LiquidityPools.Should().BeEquivalentTo(filters.LiquidityPools);
+            cursor.IncludeZeroAmounts.Should().Be(filters.IncludeZeroAmounts);
             cursor.SortDirection.Should().Be(filters.Direction);
             cursor.Limit.Should().Be(filters.Limit);
             cursor.PagingDirection.Should().Be(PagingDirection.Forward);
@@ -49,7 +55,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults
         public void BuildCursor_NotABase64CursorString_ReturnNull()
         {
             // Arrange
-            var filters = new VaultFilterParameters { Cursor = "NOT_BASE_64_****" };
+            var filters = new MiningPositionFilterParameters { Cursor = "NOT_BASE_64_****" };
 
             // Act
             var cursor = filters.BuildCursor();
@@ -62,7 +68,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults
         public void BuildCursor_NotAValidCursorString_ReturnNull()
         {
             // Arrange
-            var filters = new VaultFilterParameters { Cursor = "Tk9UX1ZBTElE" };
+            var filters = new MiningPositionFilterParameters { Cursor = "Tk9UX1ZBTElE" };
 
             // Act
             var cursor = filters.BuildCursor();
@@ -75,7 +81,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults
         public void BuildCursor_ValidCursorString_ReturnCursor()
         {
             // Arrange
-            var filters = new VaultFilterParameters { Cursor = "ZGlyZWN0aW9uOkRFU0M7bGltaXQ6NTtwYWdpbmc6Rm9yd2FyZDtwb2ludGVyOk13PT07" };
+            var filters = new MiningPositionFilterParameters { Cursor = "ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MjtwYWdpbmc6Rm9yd2FyZDtpbmNsdWRlWmVyb0Ftb3VudHM6RmFsc2U7cG9pbnRlcjpNdz09Ow==" };
 
             // Act
             var cursor = filters.BuildCursor();
