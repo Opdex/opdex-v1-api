@@ -49,21 +49,22 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             // Initial validation based on logs alone.
             transaction.ValidateLogTypeEligibility();
 
-            switch (transaction.EligibilityStatus)
-            {
-                // Gracefully skip transactions we don't care about.
-                case TransactionEligibilityType.Ineligible:
-                    return true;
-                case TransactionEligibilityType.PendingContractValidation:
-                    // Todo: Validate log contracts
-                    // Maybe process all logs, to do the validation and persist them with the transaction after.
-                    break;
-                case TransactionEligibilityType.PartiallyEligible:
-                    // Todo: Act on whitelisted known log types such as transfer or approval logs
-
-                    // Exit gracefully after
-                    return true;
-            }
+            // Index everything for right now.
+            // switch (transaction.EligibilityStatus)
+            // {
+            //     // Gracefully skip transactions we don't care about.
+            //     case TransactionEligibilityType.Ineligible:
+            //         return true;
+            //     case TransactionEligibilityType.PendingContractValidation:
+            //         // Todo: Validate log contracts
+            //         // Maybe process all logs, to do the validation and persist them with the transaction after.
+            //         break;
+            //     case TransactionEligibilityType.PartiallyEligible:
+            //         // Todo: Act on whitelisted known log types such as transfer or approval logs
+            //
+            //         // Exit gracefully after
+            //         return true;
+            // }
 
             // Persist the transaction without logs
             var transactionId = await _mediator.Send(new MakeTransactionCommand(transaction));
