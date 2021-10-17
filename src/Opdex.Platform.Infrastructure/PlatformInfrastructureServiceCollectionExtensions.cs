@@ -353,6 +353,7 @@ namespace Opdex.Platform.Infrastructure
         private static void AddSignalRServices(IServiceCollection services)
         {
             services.AddTransient<IRequestHandler<NotifyUserOfBroadcastTransactionCommand, Unit>, NotifyUserOfBroadcastTransactionCommandHandler>();
+            services.AddTransient<IRequestHandler<NotifyUserOfMinedTransactionCommand, Unit>, NotifyUserOfMinedTransactionCommandHandler>();
         }
     }
 }

@@ -1,9 +1,8 @@
 # Opdex Platform API
 
-Web API project to ingest Opdex smart contract transactions for analytical data, transaction quotes and building unsigned transactions.
+Web API project to aggregate Opdex smart contract transactional data providing a restful connection to the underlying protocols.
 
 ## Local Environment Setup
-
 
 ### Auth
 
