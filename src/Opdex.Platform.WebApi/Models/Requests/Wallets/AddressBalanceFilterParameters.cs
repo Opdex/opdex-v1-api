@@ -20,12 +20,12 @@ namespace Opdex.Platform.WebApi.Models.Requests.Wallets
         public IEnumerable<Address> Tokens { get; set; }
 
         /// <summary>
-        /// Includes all tokens if true, otherwise excludes liquidity pool tokens. Default true.
+        /// Includes all tokens if true, otherwise excludes liquidity pool tokens if false. Default true.
         /// </summary>
         public bool IncludeLpTokens { get; set; }
 
         /// <summary>
-        /// Only includes 0 balances if true. Default false.
+        /// Includes zero balances if true, otherwise filters out zero balances if false. Default false.
         /// </summary>
         public bool IncludeZeroBalances { get; set; }
 

@@ -20,7 +20,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Wallets
         public IEnumerable<Address> LiquidityPools { get; set; }
 
         /// <summary>
-        /// Only includes 0 amounts if true. Default false.
+        /// Includes zero amounts if true, otherwise filters out zero amounts if false. Default false.
         /// </summary>
         public bool IncludeZeroAmounts { get; set; }
 
