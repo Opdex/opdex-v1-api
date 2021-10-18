@@ -95,6 +95,7 @@ namespace Opdex.Platform.WebApi
                 {
                     config.RegisterValidatorsFromAssemblyContaining<Startup>();
                 })
+                .AddNetworkActionHidingConvention()
                 .AddProblemDetailsConventions()
                 .AddNewtonsoftJson(options =>
                 {
