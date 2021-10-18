@@ -68,10 +68,10 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             var transactionLog = new FakeTransactionLog(TransactionLogType.ApprovalLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
             // Act
-            transactionLog.SetTxId(0);
+            void Act() => transactionLog.SetTxId(0);
 
             // Assert
-            transactionLog.TransactionId.Should().Be(0);
+            Assert.Throws<ArgumentOutOfRangeException>(Act);
         }
 
         [Fact]
@@ -95,10 +95,10 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs
             transactionLog.SetTxId(1111);
 
             // Act
-            transactionLog.SetTxId(5555);
+            void Act() => transactionLog.SetTxId(5555);
 
             // Assert
-            transactionLog.TransactionId.Should().Be(1111);
+            Assert.Throws<InvalidOperationException>(Act);
         }
 
         class FakeTransactionLog : TransactionLog

@@ -10,12 +10,14 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools
 {
-    public class ProcessBurnLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessBurnLogCommand, bool>
+    public class ProcessBurnLogCommandHandler : IRequestHandler<ProcessBurnLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessBurnLogCommandHandler> _logger;
 
-        public ProcessBurnLogCommandHandler(IMediator mediator, ILogger<ProcessBurnLogCommandHandler> logger) : base(mediator)
+        public ProcessBurnLogCommandHandler(IMediator mediator, ILogger<ProcessBurnLogCommandHandler> logger)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,12 +25,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
-
                 var lpToken = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 lpToken.UpdateTotalSupply(request.Log.TotalSupply, request.BlockHeight);

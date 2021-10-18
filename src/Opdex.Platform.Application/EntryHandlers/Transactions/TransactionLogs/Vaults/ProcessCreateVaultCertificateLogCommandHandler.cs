@@ -13,13 +13,14 @@ using System.Linq;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
 {
-    public class ProcessCreateVaultCertificateLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessCreateVaultCertificateLogCommand, bool>
+    public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<ProcessCreateVaultCertificateLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessCreateVaultCertificateLogCommandHandler> _logger;
 
         public ProcessCreateVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessCreateVaultCertificateLogCommandHandler> logger)
-            : base(mediator)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -27,12 +28,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
-
                 var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 // Update the vault when applicable
@@ -52,7 +47,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 // Insert if we reach here
                 var vaultCertificate = new VaultCertificate(vault.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
                 return await _mediator.Send(new MakeVaultCertificateCommand(vaultCertificate));
-
             }
             catch (Exception ex)
             {

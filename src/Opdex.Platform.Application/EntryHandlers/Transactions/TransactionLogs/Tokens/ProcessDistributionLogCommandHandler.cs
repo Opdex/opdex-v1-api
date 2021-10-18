@@ -19,12 +19,14 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens
 {
-    public class ProcessDistributionLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessDistributionLogCommand, bool>
+    public class ProcessDistributionLogCommandHandler : IRequestHandler<ProcessDistributionLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessDistributionLogCommandHandler> _logger;
 
-        public ProcessDistributionLogCommandHandler(IMediator mediator, ILogger<ProcessDistributionLogCommandHandler> logger) : base(mediator)
+        public ProcessDistributionLogCommandHandler(IMediator mediator, ILogger<ProcessDistributionLogCommandHandler> logger)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -32,12 +34,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
-
                 var initialDistribution = request.Log.PeriodIndex == 0;
 
                 var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true));
@@ -46,24 +42,25 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 // process vault balances
                 var vaultResult = await _mediator.Send(new CreateAddressBalanceCommand(vault.Address, token.Address, request.BlockHeight));
-                if (vaultResult <= 0) return false;
+                if (vaultResult <= 0) _logger.LogError($"Unknown error updating vault {vault.Id} balance during distribution");
 
                 // process governance balances
                 var governanceResult = await _mediator.Send(new CreateAddressBalanceCommand(governance.Address, token.Address, request.BlockHeight));
-                if (governanceResult <= 0) return false;
+                if (governanceResult <= 0) _logger.LogError($"Unknown error updating governance {governance.Id} balance during distribution");
 
                 // Refresh the vault
                 if (request.BlockHeight >= vault.ModifiedBlock)
                 {
                     var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true,
                                                                                  refreshGenesis: initialDistribution));
-                    if (vaultUpdates <= 0) return false;
+                    if (vaultUpdates <= 0) _logger.LogError($"Unknown error updating vault {vault.Id} details during distribution");
                 }
 
                 // Initial distribution only, update governance and create initial nominated liquidity pools
                 if (initialDistribution)
                 {
-                    await _mediator.Send(new MakeMiningGovernanceCommand(governance, request.BlockHeight, refreshMiningPoolReward: true,
+                    await _mediator.Send(new MakeMiningGovernanceCommand(governance, request.BlockHeight,
+                                                                         refreshMiningPoolReward: true,
                                                                          refreshNominationPeriodEnd: true));
 
                     await _mediator.Send(new MakeGovernanceNominationsCommand(governance, request.BlockHeight));

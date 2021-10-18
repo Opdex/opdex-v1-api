@@ -8,8 +8,8 @@ using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
-using System.Linq;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
 {
@@ -40,11 +40,20 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
                 error = errorProcessor.ProcessOpdexTransactionError(response.ErrorMessage.Value);
             }
 
-            var transactionLogs = response.Logs.Select((t, i) =>
+            var transactionLogs = new List<TransactionLog>();
+            for(var i = 0; i < response.Logs.Count; i++)
             {
-                t.SortOrder = i;
-                return _mapper.Map<TransactionLog>(t);
-            }).ToList();
+                response.Logs[i].SortOrder = i;
+                try
+                {
+                    var log = _mapper.Map<TransactionLog>(response.Logs[i]);
+                    transactionLogs.Add(log);
+                }
+                catch
+                {
+                    // Ignored, a transaction log's name and may have matched but not the schema
+                }
+            }
 
             return new TransactionQuote(response.Return, error, response.GasConsumed.Value, transactionLogs, request.QuoteRequest);
         }

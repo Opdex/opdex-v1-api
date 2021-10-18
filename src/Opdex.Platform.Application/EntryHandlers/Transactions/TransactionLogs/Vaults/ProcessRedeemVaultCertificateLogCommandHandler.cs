@@ -6,35 +6,38 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
 {
-    public class ProcessRedeemVaultCertificateLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessRedeemVaultCertificateLogCommand, bool>
+    public class ProcessRedeemVaultCertificateLogCommandHandler : IRequestHandler<ProcessRedeemVaultCertificateLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessRedeemVaultCertificateLogCommandHandler> _logger;
 
         public ProcessRedeemVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessRedeemVaultCertificateLogCommandHandler> logger)
-            : base(mediator)
+
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+
         }
 
         public async Task<bool> Handle(ProcessRedeemVaultCertificateLogCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
+                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract));
+                if (vault == null) return false;
 
                 var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
 
                 // Select certificates using the vestedBlock as an Id
-                var certificateToUpdate = certificates.Single(c => c.VestedBlock == request.Log.VestedBlock);
+                var certificateToUpdate = certificates.SingleOrDefault(c => c.VestedBlock == request.Log.VestedBlock);
+
+                if (certificateToUpdate == null) return false;
 
                 certificateToUpdate.Redeem(request.Log, request.BlockHeight);
 

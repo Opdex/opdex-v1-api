@@ -12,13 +12,14 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
 {
-    public class ProcessRevokeVaultCertificateLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessRevokeVaultCertificateLogCommand, bool>
+    public class ProcessRevokeVaultCertificateLogCommandHandler : IRequestHandler<ProcessRevokeVaultCertificateLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessRevokeVaultCertificateLogCommandHandler> _logger;
 
         public ProcessRevokeVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessRevokeVaultCertificateLogCommandHandler> logger)
-            : base(mediator)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -26,12 +27,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
-
                 var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 if (request.BlockHeight >= vault.ModifiedBlock)

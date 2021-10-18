@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
 {
-    public class ProcessSetPendingVaultOwnershipLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessSetPendingVaultOwnershipLogCommand, bool>
+    public class ProcessSetPendingVaultOwnershipLogCommandHandler : IRequestHandler<ProcessSetPendingVaultOwnershipLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessSetPendingVaultOwnershipLogCommandHandler> _logger;
 
-        public ProcessSetPendingVaultOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessSetPendingVaultOwnershipLogCommandHandler> logger) : base(mediator)
+        public ProcessSetPendingVaultOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessSetPendingVaultOwnershipLogCommandHandler> logger)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,9 +25,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted) return false;
-
                 var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 vault.SetPendingOwnership(request.Log, request.BlockHeight);

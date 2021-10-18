@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets
 {
-    public class ProcessSetPendingMarketOwnershipLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessSetPendingMarketOwnershipLogCommand, bool>
+    public class ProcessSetPendingMarketOwnershipLogCommandHandler : IRequestHandler<ProcessSetPendingMarketOwnershipLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessSetPendingMarketOwnershipLogCommandHandler> _logger;
 
-        public ProcessSetPendingMarketOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessSetPendingMarketOwnershipLogCommandHandler> logger) : base(mediator)
+        public ProcessSetPendingMarketOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessSetPendingMarketOwnershipLogCommandHandler> logger)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,9 +25,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted) return false;
-
                 var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: true));
 
                 market.SetPendingOwnership(request.Log, request.BlockHeight);

@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Governances
 {
-    public class ProcessNominationLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessNominationLogCommand, bool>
+    public class ProcessNominationLogCommandHandler : IRequestHandler<ProcessNominationLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessNominationLogCommandHandler> _logger;
 
-        public ProcessNominationLogCommandHandler(IMediator mediator, ILogger<ProcessNominationLogCommandHandler> logger) : base(mediator)
+        public ProcessNominationLogCommandHandler(IMediator mediator, ILogger<ProcessNominationLogCommandHandler> logger)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -22,15 +24,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
-
-                await _mediator.Send(new CreateGovernanceNominationsCommand(request.Log.Contract, request.BlockHeight));
-
-                return true;
+                return await _mediator.Send(new CreateGovernanceNominationsCommand(request.Log.Contract, request.BlockHeight));
             }
             catch (Exception ex)
             {

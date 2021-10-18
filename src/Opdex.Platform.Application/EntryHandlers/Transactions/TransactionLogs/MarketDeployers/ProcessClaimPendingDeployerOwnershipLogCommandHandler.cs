@@ -9,12 +9,14 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers
 {
-    public class ProcessClaimPendingDeployerOwnershipLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessClaimPendingDeployerOwnershipLogCommand, bool>
+    public class ProcessClaimPendingDeployerOwnershipLogCommandHandler : IRequestHandler<ProcessClaimPendingDeployerOwnershipLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessClaimPendingDeployerOwnershipLogCommandHandler> _logger;
 
-        public ProcessClaimPendingDeployerOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessClaimPendingDeployerOwnershipLogCommandHandler> logger) : base(mediator)
+        public ProcessClaimPendingDeployerOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessClaimPendingDeployerOwnershipLogCommandHandler> logger)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -22,10 +24,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-
-                if (!persisted) return false;
-
                 var deployer = await _mediator.Send(new CreateDeployerCommand(request.Log.Contract, request.Log.To, request.BlockHeight));
 
                 return deployer > 0;
