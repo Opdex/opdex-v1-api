@@ -41,7 +41,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
             }
 
             var transactionLogs = new List<TransactionLog>();
-            for(var i = 0; i < response.Logs.Count; i++)
+            for (var i = 0; i < response.Logs.Count; i++)
             {
                 response.Logs[i].SortOrder = i;
                 try
@@ -49,9 +49,11 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
                     var log = _mapper.Map<TransactionLog>(response.Logs[i]);
                     transactionLogs.Add(log);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Ignored, a transaction log's name and may have matched but not the schema
+                    // Ignored, a transaction log's name may have matched but not the schema
+                    var logger = _loggerFactory.CreateLogger<TransactionErrorProcessor>();
+                    logger.LogDebug(ex, "Incorrect transaction log schema in transaction quote");
                 }
             }
 

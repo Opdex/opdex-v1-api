@@ -231,8 +231,6 @@ namespace Opdex.Platform.Infrastructure
             CreateMap<TransactionLogDto, TransactionLog>()
                 .ConstructUsing((src, ctx) =>
                 {
-                    // Todo: Try catch outside of here remove invalid / null logs
-
                     var logType = src.Topics[0].HexToString();
 
                     return logType switch

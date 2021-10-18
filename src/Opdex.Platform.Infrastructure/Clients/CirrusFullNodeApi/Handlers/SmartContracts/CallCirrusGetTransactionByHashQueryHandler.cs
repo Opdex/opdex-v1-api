@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -38,7 +37,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
             transaction.SetBlockHeight(block.Height);
 
             var transactionLogs = new List<TransactionLog>();
-            for(var i = 0; i < transaction.Logs.Count; i++)
+            for (var i = 0; i < transaction.Logs.Count; i++)
             {
                 transaction.Logs[i].SortOrder = i;
                 try
@@ -46,9 +45,14 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
                     var log = _mapper.Map<TransactionLog>(transaction.Logs[i]);
                     transactionLogs.Add(log);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Ignored, a transaction log's name and may have matched but not the schema
+                    // Ignored, a transaction log's name may have matched but not the schema
+                    var logger = _loggerFactory.CreateLogger<TransactionErrorProcessor>();
+                    using (logger.BeginScope(new Dictionary<string, object>{["TxHash"] = request.TxHash}))
+                    {
+                        logger.LogDebug(ex, "Incorrect transaction log schema in transaction receipt");
+                    }
                 }
             }
 
