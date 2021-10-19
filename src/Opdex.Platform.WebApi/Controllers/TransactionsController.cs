@@ -10,16 +10,13 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
-using System.Collections.Generic;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.WebApi.Middleware;
+using Opdex.Platform.WebApi.Models.Requests.Transactions;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -44,42 +41,17 @@ namespace Opdex.Platform.WebApi.Controllers
         /// Opdex does not index all smart contract transactions and only watches Opdex receipt logs specifically.
         /// This is not intended to be used to lookup all smart contract based transactions.
         /// </remarks>
-        /// <param name="contracts">Optional list of smart contract address to filter transactions by.</param>
-        /// <param name="eventTypes">Filter transactions based on event types included.</param>
-        /// <param name="wallet">Optionally filter transactions by wallet address.</param>
-        /// <param name="limit">Number of transactions to take must be greater than 0 and less than 51.</param>
-        /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
-        /// <param name="cursor">The cursor when paging.</param>
-        /// <param name="cancellationToken">Cancellation token</param>
+        /// <param name="filters">Filter parameters.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns><see cref="TransactionsResponseModel"/> with transactions and paging.</returns>
         [HttpGet]
         [Authorize]
         [ProducesResponseType(typeof(TransactionsResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<TransactionsResponseModel>> Transactions([FromQuery] IEnumerable<Address> contracts,
-                                                                                [FromQuery] IEnumerable<TransactionEventType> eventTypes,
-                                                                                [FromQuery] Address wallet,
-                                                                                [FromQuery] uint limit,
-                                                                                [FromQuery] SortDirectionType direction,
-                                                                                [FromQuery] string cursor,
+        public async Task<ActionResult<TransactionsResponseModel>> GetTransactions([FromQuery] TransactionFilterParameters filters,
                                                                                 CancellationToken cancellationToken)
         {
-            TransactionsCursor pagingCursor;
-
-            if (cursor.HasValue())
-            {
-                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !TransactionsCursor.TryParse(decodedCursor, out var parsedCursor))
-                {
-                    return new ValidationErrorProblemDetailsResult(nameof(cursor), "Cursor not formed correctly.");
-                }
-                pagingCursor = parsedCursor;
-            }
-            else
-            {
-                pagingCursor = new TransactionsCursor(wallet, eventTypes, contracts, direction, limit, PagingDirection.Forward, 0);
-            }
-
-            var transactionsDto = await _mediator.Send(new GetTransactionsWithFilterQuery(pagingCursor), cancellationToken);
+            var transactionsDto = await _mediator.Send(new GetTransactionsWithFilterQuery(filters.BuildCursor()), cancellationToken);
 
             var response = _mapper.Map<TransactionsResponseModel>(transactionsDto);
 
