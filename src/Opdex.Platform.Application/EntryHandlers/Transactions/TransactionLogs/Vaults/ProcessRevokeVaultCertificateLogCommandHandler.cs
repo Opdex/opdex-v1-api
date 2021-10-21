@@ -36,7 +36,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                     if (vaultId <= 0)
                     {
-                        _logger.LogError($"Unexpected error updating vault supply by address: {vault.Address}");
+                        _logger.LogWarning($"Unexpected error updating vault supply by address: {vault.Address}");
                     }
                 }
 

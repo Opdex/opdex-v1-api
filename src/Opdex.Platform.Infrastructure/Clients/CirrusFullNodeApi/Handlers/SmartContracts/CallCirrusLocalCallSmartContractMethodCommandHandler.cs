@@ -47,7 +47,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
                 try
                 {
                     var log = _mapper.Map<TransactionLog>(response.Logs[i]);
-                    transactionLogs.Add(log);
+                    if (log != null) transactionLogs.Add(log);
                 }
                 catch (Exception ex)
                 {

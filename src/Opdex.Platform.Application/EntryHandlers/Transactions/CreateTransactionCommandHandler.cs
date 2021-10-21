@@ -16,6 +16,12 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.Deployers;
+using Opdex.Platform.Application.Abstractions.Queries.Governances;
+using Opdex.Platform.Application.Abstractions.Queries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
@@ -57,24 +63,65 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 return false;
             }
 
-            // Todo: Checked unsuccessful transactions, we want to persist them if they were calling an Opdex contract
-            // Validate and process all available logs - It only takes a single success to index the entire transaction
-            var isValidTx = await ProcessTransactionLogs(tx);
-
-            // Persist the transaction and its logs if applicable
-            if (isValidTx)
+            if (tx.Success)
             {
-                var txId = await _mediator.Send(new MakeTransactionCommand(tx));
-                if (txId == 0) return false;
+                // Validate and process all available logs - It only takes a single success to index the entire transaction
+                var isValidTx = await ProcessTransactionLogs(tx);
+                if (!isValidTx) return false;
+            }
+            else
+            {
+                var isToOpdexContract = await IsToOpdexContract(tx.To);
+                if (!isToOpdexContract) return false;
             }
 
-            // Process snapshots this Tx affects
-            await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(tx));
+            // Persist the transaction if logs were processed or its a failed Opdex related transaction
+            var txId = await _mediator.Send(new MakeTransactionCommand(tx));
+            if (txId == 0) return false;
+
+            // Only attempt to process snapshots this transaction affects on successful transactions
+            if (tx.Success)
+            {
+                await _mediator.Send(new ProcessLiquidityPoolSnapshotsByTransactionCommand(tx));
+            }
 
             // Notify the user we found a pending transaction of theirs
             await _mediator.Send(new NotifyUserOfMinedTransactionCommand(tx.From, tx.Hash));
 
             return true;
+        }
+
+        /// <summary>
+        /// Queries each individual contract type we store looking for a match.
+        /// </summary>
+        /// <param name="to">The address the transaction was sent to.</param>
+        /// <returns>Boolean as success</returns>
+        private async Task<bool> IsToOpdexContract(Address to)
+        {
+            const bool findOrThrow = false;
+
+            // Order the following checks by likelihood
+            var router = await _mediator.Send(new RetrieveMarketRouterByAddressQuery(to, findOrThrow));
+            if (router != null) return true;
+
+            // Also takes care of liquidity pool check by looking for the equivalent OLPT token
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(to, findOrThrow));
+            if (token != null) return true;
+
+            var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(to, findOrThrow));
+            if (miningPool != null) return true;
+
+            var governance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(to, findOrThrow));
+            if (governance != null) return true;
+
+            var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(to, findOrThrow));
+            if (vault != null) return true;
+
+            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(to, findOrThrow));
+            if (market != null) return true;
+
+            var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(to, findOrThrow));
+            return deployer != null;
         }
 
         /// <summary>

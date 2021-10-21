@@ -35,7 +35,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 if (request.BlockHeight >= vault.ModifiedBlock)
                 {
                     var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
-                    if (vaultId <= 0) _logger.LogError($"Unexpected error updating vault supply by address: {vault.Address}");
+                    if (vaultId == 0) _logger.LogWarning($"Unexpected error updating vault supply by address: {vault.Address}");
                 }
 
                 // Validate that we don't already have this vault certificate inserted.

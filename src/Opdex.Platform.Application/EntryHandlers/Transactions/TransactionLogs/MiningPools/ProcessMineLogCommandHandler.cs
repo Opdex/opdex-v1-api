@@ -45,7 +45,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     if (miningPositionId == 0)
                     {
                         // Don't exit here, we will want to attempt to update the mining pool below
-                        _logger.LogError($"Unexpected error updating mining position for {request.Log.Miner}");
+                        _logger.LogWarning($"Unexpected error updating mining position for {request.Log.Miner}");
                     }
                 }
 

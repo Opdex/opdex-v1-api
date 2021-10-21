@@ -66,7 +66,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                     if (tokenId == 0)
                     {
-                        _logger.LogError($"Unknown error updating token {token.Id} details during distribution");
+                        _logger.LogWarning($"Unknown error updating token {token.Id} details during distribution");
                     }
                 }
 
@@ -78,13 +78,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                                                                                             refreshNominationPeriodEnd: true));
                     if (governanceId == 0)
                     {
-                        _logger.LogError($"Unknown error updating governance {governance.Id} details during initial distribution");
+                        _logger.LogWarning($"Unknown error updating governance {governance.Id} details during initial distribution");
                     }
 
                     var updatedNominations = await _mediator.Send(new MakeGovernanceNominationsCommand(governance, request.BlockHeight));
                     if (!updatedNominations)
                     {
-                        _logger.LogError($"Unknown error updating governance {governance.Id} nominations during initial distribution");
+                        _logger.LogWarning($"Unknown error updating governance {governance.Id} nominations during initial distribution");
                     }
                 }
 
@@ -92,14 +92,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var vaultResult = await _mediator.Send(new CreateAddressBalanceCommand(vault.Address, token.Address, request.BlockHeight));
                 if (vaultResult == 0)
                 {
-                    _logger.LogError($"Unknown error updating vault {vault.Id} balance during distribution");
+                    _logger.LogWarning($"Unknown error updating vault {vault.Id} balance during distribution");
                 }
 
                 // try to process governance balances
                 var governanceResult = await _mediator.Send(new CreateAddressBalanceCommand(governance.Address, token.Address, request.BlockHeight));
                 if (governanceResult == 0)
                 {
-                    _logger.LogError($"Unknown error updating governance {governance.Id} balance during distribution");
+                    _logger.LogWarning($"Unknown error updating governance {governance.Id} balance during distribution");
                 }
 
                 // try to refresh the vault
@@ -109,7 +109,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                                                                             refreshGenesis: initialDistribution));
                     if (vaultId == 0)
                     {
-                        _logger.LogError($"Unknown error updating vault {vault.Id} details during distribution");
+                        _logger.LogWarning($"Unknown error updating vault {vault.Id} details during distribution");
                     }
                 }
 
