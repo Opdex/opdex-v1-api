@@ -25,13 +25,17 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (deployer == null) return false;
+
+                if (request.BlockHeight < deployer.ModifiedBlock)
+                {
+                    return true;
+                }
 
                 deployer.SetPendingOwnership(request.Log, request.BlockHeight);
 
-                var deployerId = await _mediator.Send(new MakeDeployerCommand(deployer, request.BlockHeight));
-
-                return deployerId > 0;
+                return await _mediator.Send(new MakeDeployerCommand(deployer, request.BlockHeight)) > 0;
             }
             catch (Exception ex)
             {

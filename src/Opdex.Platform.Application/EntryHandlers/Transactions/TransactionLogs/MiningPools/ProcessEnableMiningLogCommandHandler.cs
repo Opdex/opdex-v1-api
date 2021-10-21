@@ -25,7 +25,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (miningPool == null) return false;
 
                 if (request.BlockHeight < miningPool.ModifiedBlock)
                 {
@@ -34,9 +35,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 miningPool.EnableMining(request.Log, request.BlockHeight);
 
-                var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPool, request.BlockHeight, refreshRewardPerLpt: true));
-
-                return miningPoolId > 0;
+                return  await _mediator.Send(new MakeMiningPoolCommand(miningPool, request.BlockHeight, refreshRewardPerLpt: true)) > 0;
             }
             catch (Exception ex)
             {

@@ -25,7 +25,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (market == null) return false;
 
                 if (request.BlockHeight < market.ModifiedBlock)
                 {
@@ -34,9 +35,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 market.SetOwnershipClaimed(request.Log, request.BlockHeight);
 
-                var marketId = await _mediator.Send(new MakeMarketCommand(market, request.BlockHeight));
-
-                return marketId > 0;
+                return await _mediator.Send(new MakeMarketCommand(market, request.BlockHeight)) > 0;
             }
             catch (Exception ex)
             {

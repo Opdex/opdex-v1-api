@@ -25,7 +25,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var governance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var governance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (governance == null) return false;
+
+                if (request.BlockHeight < governance.ModifiedBlock)
+                {
+                    return true;
+                }
 
                 var updateId = await _mediator.Send(new MakeMiningGovernanceCommand(governance, request.BlockHeight,
                                                                                     refreshMiningPoolReward: true,

@@ -29,16 +29,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             try
             {
                 // Get deployer
-                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (deployer == null) return false;
 
                 // Check if market exists, skip if so
                 var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Market, findOrThrow: false));
-
-                // Skip if market already exists
-                if (market != null)
-                {
-                    return true;
-                }
+                if (market != null) return true;
 
                 // Get potential market staking token
                 var stakingToken = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.StakingToken, findOrThrow: false));
@@ -50,16 +46,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                                     request.Log.EnableMarketFee, request.BlockHeight);
 
                 var marketId = await _mediator.Send(new MakeMarketCommand(market, request.BlockHeight));
+                if (marketId == 0) return false;
 
                 // Create Router
                 var router = await _mediator.Send(new RetrieveMarketRouterByAddressQuery(request.Log.Router, findOrThrow: false));
-                if (router == null)
-                {
-                    router = new MarketRouter(request.Log.Router, marketId, true, request.BlockHeight);
-                    await _mediator.Send(new MakeMarketRouterCommand(router), CancellationToken.None);
-                }
+                if (router != null) return true;
 
-                return marketId > 0;
+                router = new MarketRouter(request.Log.Router, marketId, true, request.BlockHeight);
+                return await _mediator.Send(new MakeMarketRouterCommand(router), CancellationToken.None);
+
             }
             catch (Exception ex)
             {

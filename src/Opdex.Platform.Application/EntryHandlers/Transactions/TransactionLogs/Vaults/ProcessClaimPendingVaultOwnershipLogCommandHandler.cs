@@ -25,7 +25,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (vault == null) return false;
 
                 if (request.BlockHeight < vault.ModifiedBlock)
                 {
@@ -34,9 +35,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 vault.SetOwnershipClaimed(request.Log, request.BlockHeight);
 
-                var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight));
-
-                return vaultId > 0;
+                return await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight)) > 0;
             }
             catch (Exception ex)
             {

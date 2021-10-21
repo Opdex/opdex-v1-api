@@ -29,23 +29,27 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (miningPool == null) return false;
 
                 var miningBalance = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, request.Log.Miner, findOrThrow: false))
                                     ?? new AddressMining(miningPool.Id, request.Log.Miner, UInt256.Zero, request.BlockHeight);
 
-                if (request.BlockHeight < miningBalance.ModifiedBlock)
+                // Update the mining position if this log is equal or later than the modified block
+                if (request.BlockHeight >= miningBalance.ModifiedBlock)
                 {
-                    return true;
+                    miningBalance.SetBalance(request.Log.MinerBalance, request.BlockHeight);
+
+                    var miningPositionId = await _mediator.Send(new MakeAddressMiningCommand(miningBalance));
+
+                    if (miningPositionId == 0)
+                    {
+                        // Don't exit here, we will want to attempt to update the mining pool below
+                        _logger.LogError($"Unexpected error updating mining position for {request.Log.Miner}");
+                    }
                 }
 
-                miningBalance.SetBalance(request.Log.MinerBalance, request.BlockHeight);
-
-                await _mediator.Send(new MakeAddressMiningCommand(miningBalance));
-
-                var miningPoolId = await _mediator.Send(new MakeMiningPoolCommand(miningPool, request.BlockHeight, refreshRewardPerLpt: true));
-
-                return miningPoolId > 0;
+                return await _mediator.Send(new MakeMiningPoolCommand(miningPool, request.BlockHeight, refreshRewardPerLpt: true)) > 0;
             }
             catch (Exception ex)
             {

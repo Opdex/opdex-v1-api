@@ -27,18 +27,28 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (vault == null) return false;
 
                 if (request.BlockHeight >= vault.ModifiedBlock)
                 {
                     var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
-                    if (vaultId <= 0) _logger.LogError($"Unexpected error updating vault supply by address: {vault.Address}");
+
+                    if (vaultId <= 0)
+                    {
+                        _logger.LogError($"Unexpected error updating vault supply by address: {vault.Address}");
+                    }
                 }
 
                 var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
 
                 // Select certificates using the vestedBlock as an Id
-                var certificateToUpdate = certificates.Single(c => c.VestedBlock == request.Log.VestedBlock);
+                var certificateToUpdate = certificates.SingleOrDefault(c => c.VestedBlock == request.Log.VestedBlock);
+
+                if (certificateToUpdate == null)
+                {
+                    return false;
+                }
 
                 if (request.BlockHeight >= certificateToUpdate.ModifiedBlock)
                 {

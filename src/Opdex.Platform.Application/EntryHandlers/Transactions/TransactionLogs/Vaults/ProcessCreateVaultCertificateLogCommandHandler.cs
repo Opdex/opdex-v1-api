@@ -28,7 +28,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (vault == null) return false;
 
                 // Update the vault when applicable
                 if (request.BlockHeight >= vault.ModifiedBlock)
@@ -44,8 +45,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return true;
                 }
 
-                // Insert if we reach here
                 var vaultCertificate = new VaultCertificate(vault.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
+
                 return await _mediator.Send(new MakeVaultCertificateCommand(vaultCertificate));
             }
             catch (Exception ex)

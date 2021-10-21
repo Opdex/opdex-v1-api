@@ -29,14 +29,13 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract));
+                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
                 if (vault == null) return false;
 
                 var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
 
                 // Select certificates using the vestedBlock as an Id
                 var certificateToUpdate = certificates.SingleOrDefault(c => c.VestedBlock == request.Log.VestedBlock);
-
                 if (certificateToUpdate == null) return false;
 
                 certificateToUpdate.Redeem(request.Log, request.BlockHeight);

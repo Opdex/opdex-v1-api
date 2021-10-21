@@ -27,10 +27,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
             {
                 // We are only going to process balances of tokens we know about
                 var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: false));
-                if (token == null)
-                {
-                    return false;
-                }
+                if (token == null) return false;
 
                 // Update sender balance
                 await _mediator.Send(new CreateAddressBalanceCommand(request.Log.From, request.Log.Contract, request.BlockHeight));
