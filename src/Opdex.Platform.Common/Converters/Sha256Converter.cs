@@ -23,7 +23,9 @@ namespace Opdex.Platform.Common.Converters
     {
         public override Sha256? ReadJson(JsonReader reader, Type objectType, [AllowNull] Sha256? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            if (Sha256.TryParse(reader.Value?.ToString(), out var hash)) return hash;
+            var hexadecimal = reader.Value?.ToString();
+            if (hexadecimal is null) return null;
+            if (Sha256.TryParse(hexadecimal, out var hash)) return hash;
             throw new JsonException("Invalid Sha256 hash.");
         }
 
