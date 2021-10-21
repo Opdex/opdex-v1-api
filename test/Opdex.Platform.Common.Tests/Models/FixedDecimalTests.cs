@@ -73,7 +73,7 @@ namespace Opdex.Platform.Common.Tests.Models
             // Assert
             (valueA < valueB).Should().Be(false);
             valueA.CompareTo(valueB).Should().NotBe(-1);
-            valueA.CompareTo(valueB).Should().NotBe(-1);
+            valueA.CompareTo((object)valueB).Should().NotBe(-1);
         }
 
         [Theory]
@@ -89,7 +89,7 @@ namespace Opdex.Platform.Common.Tests.Models
             // Assert
             (valueA < valueB).Should().Be(true);
             valueA.CompareTo(valueB).Should().Be(-1);
-            valueA.CompareTo(valueB).Should().Be(-1);
+            valueA.CompareTo((object)valueB).Should().Be(-1);
         }
 
         [Theory]
@@ -106,7 +106,7 @@ namespace Opdex.Platform.Common.Tests.Models
             // Assert
             (valueA > valueB).Should().Be(false);
             valueA.CompareTo(valueB).Should().NotBe(1);
-            valueA.CompareTo(valueB).Should().NotBe(1);
+            valueA.CompareTo((object)valueB).Should().NotBe(1);
         }
 
         [Theory]
@@ -122,9 +122,8 @@ namespace Opdex.Platform.Common.Tests.Models
             // Assert
             (valueA > valueB).Should().Be(true);
             valueA.CompareTo(valueB).Should().Be(1);
-            valueA.CompareTo(valueB).Should().Be(1);
+            valueA.CompareTo((object)valueB).Should().Be(1);
         }
-
 
         [Theory]
         [InlineData("0", "-444")]

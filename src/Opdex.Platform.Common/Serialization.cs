@@ -18,6 +18,8 @@ namespace Opdex.Platform.Common
                     new UInt128Converter(),
                     new UInt256Converter(),
                     new AddressConverter(),
+                    new Sha256Converter(),
+                    new NullableSha256Converter(),
                     new FixedDecimalConverter(),
                     new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssK" }
                 }

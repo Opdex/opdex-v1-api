@@ -13,7 +13,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.Transactions
         }
 
         public bool Success { get; set; }
-        public string Hash { get; set; }
+        public Sha256 Hash { get; set; }
         public Address NewContractAddress { get; set; }
         public BlockDto BlockDto { get; set; }
         public int GasUsed { get; set; }

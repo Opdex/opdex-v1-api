@@ -1,10 +1,11 @@
 using MediatR;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions
 {
-    public class MakeTransactionBroadcastCommand : IRequest<string>
+    public class MakeTransactionBroadcastCommand : IRequest<Sha256>
     {
         public MakeTransactionBroadcastCommand(TransactionQuoteRequest transactionQuote)
         {

@@ -14,7 +14,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
         }
 
         public bool Success { get; set; }
-        public string Hash { get; set; }
+        public Sha256 Hash { get; set; }
         public Address NewContractAddress { get; set; }
         public BlockResponseModel Block { get; set; }
         public int GasUsed { get; set; }

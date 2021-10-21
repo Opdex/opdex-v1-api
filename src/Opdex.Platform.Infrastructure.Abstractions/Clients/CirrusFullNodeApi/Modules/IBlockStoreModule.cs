@@ -8,9 +8,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
 {
     public interface IBlockStoreModule
     {
-        Task<BlockReceiptDto> GetBlockAsync(string blockHash, CancellationToken cancellationToken);
-        Task<string> GetBestBlockAsync(CancellationToken cancellationToken);
-        Task<string> GetBlockHashAsync(ulong height, CancellationToken cancellationToken);
+        Task<BlockReceiptDto> GetBlockAsync(Sha256 blockHash, CancellationToken cancellationToken);
+        Task<Sha256> GetBestBlockAsync(CancellationToken cancellationToken);
+        Task<Sha256> GetBlockHashAsync(ulong height, CancellationToken cancellationToken);
         Task<AddressesBalancesDto> GetWalletAddressesBalances(IEnumerable<Address> addresses, CancellationToken cancellationToken);
     }
 }

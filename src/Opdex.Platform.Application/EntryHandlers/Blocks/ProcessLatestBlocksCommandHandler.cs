@@ -65,7 +65,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                 while (bestBlock.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
                 {
                     // Retrieve and create the block
-                    var currentBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash, findOrThrow: true));
+                    var currentBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash.Value, findOrThrow: true));
                     var blockCreated = await _mediator.Send(new CreateBlockCommand(currentBlock));
 
                     if (!blockCreated) break;

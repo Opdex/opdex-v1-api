@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions.TransactionLogs;
 using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
@@ -39,7 +40,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public async Task AssembleTransactionDto_Sends_RetrieveTransactionLogsByTransactionIdQuery()
         {
             // Arrange
-            var transaction = new Transaction(1, "txHash", 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
+            var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
 
             // Act
             await _handler.Assemble(transaction);
@@ -53,7 +54,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         public async Task AssembleTransactionDto_Sends_RetrieveBlockByHeightQuery()
         {
             // Arrange
-            var transaction = new Transaction(1, "txHash", 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
+            var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
 
             // Act
             await _handler.Assemble(transaction);
@@ -90,14 +91,14 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             swap.totalSupply = "100";
             var swapLog = new SwapLog(swap, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
-            var transaction = new Transaction(1, "txHash", 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
+            var transaction = new Transaction(1, new Sha256(5340958239), 2, 3, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM");
             var transactionLogs = new List<TransactionLog> { approvalLog, transferLog, swapLog };
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionLogsByTransactionIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(transactionLogs);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Block(1, "blockHash", DateTime.UtcNow, DateTime.UtcNow));
+                .ReturnsAsync(new Block(1, new Sha256(4234238947328), DateTime.UtcNow, DateTime.UtcNow));
 
             // Act
             await _handler.Assemble(transaction);

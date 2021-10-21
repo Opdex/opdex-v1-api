@@ -18,8 +18,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
         public Task<bool> Handle(CreateBlockCommand request, CancellationToken cancellationToken)
         {
-            var blockCommand = new MakeBlockCommand(request.BlockReceipt.Height, request.BlockReceipt.Hash,
-                request.BlockReceipt.Time, request.BlockReceipt.MedianTime);
+            var blockCommand = new MakeBlockCommand(request.BlockReceipt.Height, request.BlockReceipt.Hash, request.BlockReceipt.Time, request.BlockReceipt.MedianTime);
 
             return _mediator.Send(blockCommand, CancellationToken.None);
         }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
@@ -15,7 +16,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
     public class SelectTransactionByHashQueryHandler : IRequestHandler<SelectTransactionByHashQuery, Transaction>
     {
         private static readonly string SqlQuery =
-            @$"SELECT 
+            @$"SELECT
                 {nameof(TransactionEntity.Id)},
                 `{nameof(TransactionEntity.To)}`,
                 `{nameof(TransactionEntity.From)}`,
@@ -53,12 +54,12 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
 
         private sealed class SqlParams
         {
-            internal SqlParams(string hash)
+            internal SqlParams(Sha256 hash)
             {
                 Hash = hash;
             }
 
-            public string Hash { get; }
+            public Sha256 Hash { get; }
         }
     }
 }

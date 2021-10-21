@@ -1,8 +1,10 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.WebApi.Models.Requests.Index
 {
     public class ResyncFromDeploymentRequest
     {
-        public string MinedTokenDeploymentHash { get; set; }
-        public string MarketDeployerDeploymentTxHash { get; set; }
+        public Sha256 MinedTokenDeploymentHash { get; set; }
+        public Sha256 MarketDeployerDeploymentTxHash { get; set; }
     }
 }

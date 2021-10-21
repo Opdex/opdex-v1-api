@@ -1,3 +1,5 @@
+using Opdex.Platform.Common.Models;
+
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     public class SmartContractCallResponseDto
@@ -6,6 +8,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public string Hex { get; set; }
         public string Message { get; set; }
         public bool Success { get; set; }
-        public string TransactionId { get; set; }
+        public Sha256 TransactionId { get; set; }
     }
 }

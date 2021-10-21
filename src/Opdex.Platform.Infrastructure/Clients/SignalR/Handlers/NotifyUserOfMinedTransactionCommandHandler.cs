@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Clients.SignalR.Handlers
 
         protected override async Task Handle(NotifyUserOfMinedTransactionCommand request, CancellationToken cancellationToken)
         {
-            await _hubContext.Clients.User(request.User.ToString()).OnTransactionMined(request.TxHash);
+            await _hubContext.Clients.User(request.User.ToString()).OnTransactionMined(request.TxHash.ToString());
         }
     }
 }

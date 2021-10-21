@@ -36,7 +36,8 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
 
             transaction.SetBlockHeight(block.Height);
 
-            var transactionLogs = transaction.Logs.Select((t, i) => {
+            var transactionLogs = transaction.Logs.Select((t, i) =>
+            {
                 t.SortOrder = i;
                 return _mapper.Map<TransactionLog>(t);
             }).ToList();

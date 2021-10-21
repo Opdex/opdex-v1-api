@@ -16,7 +16,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 using System.Collections.Generic;
 
@@ -156,7 +155,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 }
                 catch (Exception ex)
                 {
-                    using (_logger.BeginScope(new Dictionary<string, object>{
+                    using (_logger.BeginScope(new Dictionary<string, object>
+                    {
                         ["Contract"] = log.Contract,
                         ["LogType"] = log.LogType,
                         ["TransactionHash"] = transaction.Hash
@@ -171,7 +171,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     continue;
                 }
 
-                using (_logger.BeginScope(new Dictionary<string, object>{
+                using (_logger.BeginScope(new Dictionary<string, object>
+                {
                     ["Contract"] = log.Contract,
                     ["LogType"] = log.LogType,
                     ["TransactionHash"] = transaction.Hash

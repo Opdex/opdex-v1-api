@@ -1,6 +1,5 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
-using System;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Mempool
 {
@@ -8,11 +7,11 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
     /// <remarks>The mempool stores transactions which have not yet been confirmed by the network.</remarks>
     public class CallCirrusGetExistsInMempoolQuery : IRequest<bool>
     {
-        public CallCirrusGetExistsInMempoolQuery(string transactionHash)
+        public CallCirrusGetExistsInMempoolQuery(Sha256 transactionHash)
         {
-            TransactionHash = transactionHash.HasValue() ? transactionHash : throw new ArgumentNullException(nameof(transactionHash), "Transaction hash must be set.");
+            TransactionHash = transactionHash;
         }
 
-        public string TransactionHash { get; }
+        public Sha256 TransactionHash { get; }
     }
 }
