@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,6 +8,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
 {
@@ -36,10 +36,25 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
 
             transaction.SetBlockHeight(block.Height);
 
-            var transactionLogs = transaction.Logs.Select((t, i) => {
-                t.SortOrder = i;
-                return _mapper.Map<TransactionLog>(t);
-            }).ToList();
+            var transactionLogs = new List<TransactionLog>();
+            for (var i = 0; i < transaction.Logs.Count; i++)
+            {
+                transaction.Logs[i].SortOrder = i;
+                try
+                {
+                    var log = _mapper.Map<TransactionLog>(transaction.Logs[i]);
+                    if (log != null) transactionLogs.Add(log);
+                }
+                catch (Exception ex)
+                {
+                    // Ignored, a transaction log's name may have matched but not the schema
+                    var logger = _loggerFactory.CreateLogger<TransactionErrorProcessor>();
+                    using (logger.BeginScope(new Dictionary<string, object>{["TxHash"] = request.TxHash}))
+                    {
+                        logger.LogDebug(ex, "Incorrect transaction log schema in transaction receipt");
+                    }
+                }
+            }
 
             if (!string.IsNullOrEmpty(transaction.Error))
             {

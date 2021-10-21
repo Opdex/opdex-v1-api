@@ -79,16 +79,15 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.Transactio
             dynamic logData = SetupChangeMarketPermissionData("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", MarketPermissionType.Trade, true);
             var log = new ChangeMarketPermissionLog(logData, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", 5);
             var block = 10_000UL;
-            var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
             var response = await _handler.Handle(new ProcessChangeMarketPermissionLogCommand(log, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj", block),
-                                                 cancellationToken);
+                                                 It.IsAny<CancellationToken>());
 
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<MakeMarketPermissionCommand>(
                 command => command.MarketPermission.IsAuthorized == log.IsAuthorized
-                        && command.MarketPermission.ModifiedBlock == block), cancellationToken), Times.Once);
+                        && command.MarketPermission.ModifiedBlock == block), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]

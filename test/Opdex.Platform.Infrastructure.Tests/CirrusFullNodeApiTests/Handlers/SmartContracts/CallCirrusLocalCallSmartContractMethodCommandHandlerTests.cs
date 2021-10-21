@@ -1,14 +1,13 @@
 using AutoMapper;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts;
 using System;
@@ -101,13 +100,15 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
             txLog.reserveCrs = 1ul;
             txLog.reserveSrc = "957488";
 
+            var logOutputDto = new TransactionLogEventDto { Event = "ReservesLog", Data = txLog };
+
             var dtoResponse = new LocalCallResponseDto
             {
                 ErrorMessage = new Error { Value = null },
                 GasConsumed = new GasConsumed { Value = 10000 },
-                Logs = new List<TransactionLogDto>
+                Logs = new List<TransactionLogSummaryDto>
                 {
-                    new TransactionLogDto { Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", Data = "Data", Log = txLog, SortOrder = 0, Topics = new [] { "52657365727665734C6F67" }}
+                    new TransactionLogSummaryDto { Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", Data = "Data", Log = logOutputDto, SortOrder = 0, Topics = new [] { "52657365727665734C6F67" }}
                 }
             };
 
@@ -148,7 +149,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Sm
             {
                 ErrorMessage = new Error { Value = "Error" },
                 GasConsumed = new GasConsumed { Value = 10000 },
-                Logs = new List<TransactionLogDto>()
+                Logs = new List<TransactionLogSummaryDto>()
             };
 
             _smartContractsModuleMock

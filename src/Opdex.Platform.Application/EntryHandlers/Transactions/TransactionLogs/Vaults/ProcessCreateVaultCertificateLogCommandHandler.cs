@@ -13,13 +13,14 @@ using System.Linq;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
 {
-    public class ProcessCreateVaultCertificateLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessCreateVaultCertificateLogCommand, bool>
+    public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<ProcessCreateVaultCertificateLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessCreateVaultCertificateLogCommandHandler> _logger;
 
         public ProcessCreateVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessCreateVaultCertificateLogCommandHandler> logger)
-            : base(mediator)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -27,19 +28,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
-
-                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (vault == null) return false;
 
                 // Update the vault when applicable
                 if (request.BlockHeight >= vault.ModifiedBlock)
                 {
                     var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
-                    if (vaultId <= 0) _logger.LogError($"Unexpected error updating vault supply by address: {vault.Address}");
+                    if (vaultId == 0) _logger.LogWarning($"Unexpected error updating vault supply by address: {vault.Address}");
                 }
 
                 // Validate that we don't already have this vault certificate inserted.
@@ -49,10 +45,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     return true;
                 }
 
-                // Insert if we reach here
                 var vaultCertificate = new VaultCertificate(vault.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
-                return await _mediator.Send(new MakeVaultCertificateCommand(vaultCertificate));
 
+                return await _mediator.Send(new MakeVaultCertificateCommand(vaultCertificate));
             }
             catch (Exception ex)
             {

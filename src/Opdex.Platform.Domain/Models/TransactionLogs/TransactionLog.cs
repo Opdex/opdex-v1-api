@@ -1,5 +1,4 @@
 using System;
-using Newtonsoft.Json;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 
@@ -46,11 +45,10 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
 
         protected internal void SetTransactionId(ulong txId)
         {
-            // Todo: Maybe throw
-            if (TransactionId == 0 && txId > 0)
-            {
-                TransactionId = txId;
-            }
+            if (TransactionId > 0) throw new InvalidOperationException("TransactionId is already set.");
+            if (txId == 0) throw new ArgumentOutOfRangeException(nameof(txId), "TransactionId must be greater than zero.");
+
+            TransactionId = txId;
         }
 
         public abstract string SerializeLogDetails();

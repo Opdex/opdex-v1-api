@@ -1,7 +1,7 @@
 using Opdex.Platform.Common.Models;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
+namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models.Transactions
 {
     public class TransactionReceiptDto
     {
@@ -19,7 +19,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
 
         public ulong BlockHeight { get; private set; }
 
-        public IList<TransactionLogDto> Logs { get; set; }
+        public IList<TransactionLogSummaryDto> Logs { get; set; }
 
         public void SetBlockHeight(ulong height)
         {

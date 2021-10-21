@@ -5,16 +5,19 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens
 {
-    public class ProcessTransferLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessTransferLogCommand, bool>
+    public class ProcessTransferLogCommandHandler : IRequestHandler<ProcessTransferLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessTransferLogCommandHandler> _logger;
 
-        public ProcessTransferLogCommandHandler(IMediator mediator, ILogger<ProcessTransferLogCommandHandler> logger) : base(mediator)
+        public ProcessTransferLogCommandHandler(IMediator mediator, ILogger<ProcessTransferLogCommandHandler> logger)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -22,11 +25,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
+                // We are only going to process balances of tokens we know about
+                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (token == null) return false;
 
                 // Update sender balance
                 await _mediator.Send(new CreateAddressBalanceCommand(request.Log.From, request.Log.Contract, request.BlockHeight));

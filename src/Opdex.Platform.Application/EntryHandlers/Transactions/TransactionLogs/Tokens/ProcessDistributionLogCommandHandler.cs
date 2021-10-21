@@ -19,12 +19,14 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens
 {
-    public class ProcessDistributionLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessDistributionLogCommand, bool>
+    public class ProcessDistributionLogCommandHandler : IRequestHandler<ProcessDistributionLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessDistributionLogCommandHandler> _logger;
 
-        public ProcessDistributionLogCommandHandler(IMediator mediator, ILogger<ProcessDistributionLogCommandHandler> logger) : base(mediator)
+        public ProcessDistributionLogCommandHandler(IMediator mediator, ILogger<ProcessDistributionLogCommandHandler> logger)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -32,52 +34,18 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
-
                 var initialDistribution = request.Log.PeriodIndex == 0;
 
-                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: true));
-                var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(token.Id, findOrThrow: true));
-                var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id, findOrThrow: true));
+                var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (token == null) return false;
 
-                // process vault balances
-                var vaultResult = await _mediator.Send(new CreateAddressBalanceCommand(vault.Address, token.Address, request.BlockHeight));
-                if (vaultResult <= 0) return false;
+                var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(token.Id, findOrThrow: false));
+                if (vault == null) return false;
 
-                // process governance balances
-                var governanceResult = await _mediator.Send(new CreateAddressBalanceCommand(governance.Address, token.Address, request.BlockHeight));
-                if (governanceResult <= 0) return false;
-
-                // Refresh the vault
-                if (request.BlockHeight >= vault.ModifiedBlock)
-                {
-                    var vaultUpdates = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true,
-                                                                                 refreshGenesis: initialDistribution));
-                    if (vaultUpdates <= 0) return false;
-                }
-
-                // Initial distribution only, update governance and create initial nominated liquidity pools
-                if (initialDistribution)
-                {
-                    await _mediator.Send(new MakeMiningGovernanceCommand(governance, request.BlockHeight, refreshMiningPoolReward: true,
-                                                                         refreshNominationPeriodEnd: true));
-
-                    await _mediator.Send(new MakeGovernanceNominationsCommand(governance, request.BlockHeight));
-                }
-
-                // Process the distributed token total supply updates
-                if (request.BlockHeight >= token.ModifiedBlock)
-                {
-                    token.UpdateTotalSupply(request.Log.TotalSupply, request.BlockHeight);
-                    await _mediator.Send(new MakeTokenCommand(token, request.BlockHeight));
-                }
+                var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id, findOrThrow: false));
+                if (governance == null) return false;
 
                 var latestDistribution = await _mediator.Send(new RetrieveLatestTokenDistributionQuery(findOrThrow: false));
-
                 if (latestDistribution != null && latestDistribution.PeriodIndex >= request.Log.PeriodIndex)
                 {
                     return true;
@@ -86,7 +54,66 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var distribution = new TokenDistribution(token.Id, request.Log.VaultAmount, request.Log.MiningAmount, (int)request.Log.PeriodIndex,
                                                          request.BlockHeight, request.Log.NextDistributionBlock, request.BlockHeight);
 
-                return await _mediator.Send(new MakeTokenDistributionCommand(distribution), CancellationToken.None);
+                var madeDistribution = await _mediator.Send(new MakeTokenDistributionCommand(distribution));
+                if (!madeDistribution)  return false;
+
+                // Process the distributed token total supply updates
+                if (request.BlockHeight >= token.ModifiedBlock)
+                {
+                    token.UpdateTotalSupply(request.Log.TotalSupply, request.BlockHeight);
+
+                    var tokenId = await _mediator.Send(new MakeTokenCommand(token, request.BlockHeight));
+
+                    if (tokenId == 0)
+                    {
+                        _logger.LogWarning($"Unknown error updating token {token.Id} details during distribution");
+                    }
+                }
+
+                // Update mining/nominations on the initial distribution
+                if (initialDistribution)
+                {
+                    var governanceId = await _mediator.Send(new MakeMiningGovernanceCommand(governance, request.BlockHeight,
+                                                                                            refreshMiningPoolReward: true,
+                                                                                            refreshNominationPeriodEnd: true));
+                    if (governanceId == 0)
+                    {
+                        _logger.LogWarning($"Unknown error updating governance {governance.Id} details during initial distribution");
+                    }
+
+                    var updatedNominations = await _mediator.Send(new MakeGovernanceNominationsCommand(governance, request.BlockHeight));
+                    if (!updatedNominations)
+                    {
+                        _logger.LogWarning($"Unknown error updating governance {governance.Id} nominations during initial distribution");
+                    }
+                }
+
+                // try to process vault balances
+                var vaultResult = await _mediator.Send(new CreateAddressBalanceCommand(vault.Address, token.Address, request.BlockHeight));
+                if (vaultResult == 0)
+                {
+                    _logger.LogWarning($"Unknown error updating vault {vault.Id} balance during distribution");
+                }
+
+                // try to process governance balances
+                var governanceResult = await _mediator.Send(new CreateAddressBalanceCommand(governance.Address, token.Address, request.BlockHeight));
+                if (governanceResult == 0)
+                {
+                    _logger.LogWarning($"Unknown error updating governance {governance.Id} balance during distribution");
+                }
+
+                // try to refresh the vault
+                if (request.BlockHeight >= vault.ModifiedBlock)
+                {
+                    var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true,
+                                                                            refreshGenesis: initialDistribution));
+                    if (vaultId == 0)
+                    {
+                        _logger.LogWarning($"Unknown error updating vault {vault.Id} details during distribution");
+                    }
+                }
+
+                return true;
             }
             catch (Exception ex)
             {

@@ -31,6 +31,14 @@ namespace Opdex.Platform.Application.Tests.Handlers.Transactions
             var cancellationToken = new CancellationTokenSource().Token;
             const int maxRetries = 3;
 
+            // Suppress additional attempts after the first + retry to speed up tests
+            int attempt = 0;
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetExistsInMempoolQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(() =>
+            {
+                if (++attempt > 1) return true;
+                return false;
+            });
+
             // Act
             await _handler.Handle(request, cancellationToken);
 
