@@ -3,11 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore;
 
 namespace Opdex.Platform.Application.Handlers.Blocks
 {
-    public class RetrieveCirrusBlockHashByHeightQueryHandler : IRequestHandler<RetrieveCirrusBlockHashByHeightQuery, string>
+    public class RetrieveCirrusBlockHashByHeightQueryHandler : IRequestHandler<RetrieveCirrusBlockHashByHeightQuery, Sha256>
     {
         private readonly IMediator _mediator;
 
@@ -16,7 +17,7 @@ namespace Opdex.Platform.Application.Handlers.Blocks
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<string> Handle(RetrieveCirrusBlockHashByHeightQuery request, CancellationToken cancellationToken)
+        public Task<Sha256> Handle(RetrieveCirrusBlockHashByHeightQuery request, CancellationToken cancellationToken)
         {
             return _mediator.Send(new CallCirrusGetBlockHashByHeightQuery(request.Height), cancellationToken);
         }

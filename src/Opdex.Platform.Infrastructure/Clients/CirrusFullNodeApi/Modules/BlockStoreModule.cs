@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
         {
         }
 
-        public Task<BlockReceiptDto> GetBlockAsync(string blockHash, CancellationToken cancellationToken)
+        public Task<BlockReceiptDto> GetBlockAsync(Sha256 blockHash, CancellationToken cancellationToken)
         {
             const bool outputJson = true;
             var uri = string.Format(CirrusUriHelper.BlockStore.GetBlockByHash, blockHash, outputJson);
@@ -33,12 +33,12 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             }
         }
 
-        public Task<string> GetBestBlockAsync(CancellationToken cancellationToken)
+        public Task<Sha256> GetBestBlockAsync(CancellationToken cancellationToken)
         {
-            return GetAsync<string>(CirrusUriHelper.Consensus.GetBestBlockHash, cancellationToken);
+            return GetAsync<Sha256>(CirrusUriHelper.Consensus.GetBestBlockHash, cancellationToken);
         }
 
-        public Task<string> GetBlockHashAsync(ulong height, CancellationToken cancellationToken)
+        public Task<Sha256> GetBlockHashAsync(ulong height, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.Consensus.GetBlockHash, height);
 
@@ -49,7 +49,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 
             using (_logger.BeginScope(logDetails))
             {
-                return GetAsync<string>(uri, cancellationToken);
+                return GetAsync<Sha256>(uri, cancellationToken);
             }
         }
 

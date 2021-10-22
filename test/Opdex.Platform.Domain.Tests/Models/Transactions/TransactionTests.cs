@@ -11,32 +11,12 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
 {
     public class TransactionTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateNew_Transaction_InvalidTxHash_ThrowArgumentNullException(string txHash)
-        {
-            // Arrange
-            const ulong blockHeight = ulong.MaxValue;
-            const int gasUsed = 90000;
-            Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";
-            Address to = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW";
-            const bool success = true;
-
-            // Act
-            void Act() => new Transaction(txHash, blockHeight, gasUsed, from, to, success, null, null);
-
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Transaction hash must be set.");
-        }
-
         [Fact]
         public void CreateNew_Transaction_InvalidFrom_ThrowArgumentNullException()
         {
             // Arrange
             Address from = Address.Empty;
-            const string txHash = "TxHash";
+            Sha256 txHash = new Sha256(42239325244524362); ;
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;
             Address to = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW";
@@ -54,7 +34,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         {
             // Arrange
             Address to = Address.Empty;
-            const string txHash = "TxHash";
+            Sha256 txHash = new Sha256(42239325244524362); ;
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;
             Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";
@@ -71,7 +51,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         public void CreateNew_Transaction_InvalidBlockHeight_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            const string txHash = "TxHash";
+            Sha256 txHash = new Sha256(42239325244524362); ;
             const ulong blockHeight = 0;
             const int gasUsed = 90000;
             Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";
@@ -89,7 +69,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         public void CreateNew_Transaction_InvalidGasUsed_ThrowArgumentOutOfRangeException()
         {
             // Arrange
-            const string txHash = "TxHash";
+            Sha256 txHash = new Sha256(42239325244524362); ;
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 0;
             Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";
@@ -106,7 +86,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         [Fact]
         public void CreateNew_Transaction_Success()
         {
-            const string txHash = "TxHash";
+            Sha256 txHash = new Sha256(42239325244524362); ;
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;
             Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";
@@ -138,7 +118,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         public void CreatePersisted_Transaction_Success()
         {
             const ulong id = 1;
-            const string txHash = "TxHash";
+            Sha256 txHash = new Sha256(42239325244524362); ;
             const ulong blockHeight = ulong.MaxValue;
             const int gasUsed = 90000;
             Address from = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT";

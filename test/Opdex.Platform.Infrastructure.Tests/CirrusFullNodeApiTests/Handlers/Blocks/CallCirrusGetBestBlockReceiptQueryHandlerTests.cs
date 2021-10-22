@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Moq;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore;
@@ -43,7 +44,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Bl
         public async Task CallCirrusGetBestBlockReceiptQuery_Sends_GetBlockAsync()
         {
             // Arrange
-            const string bestBlock = "aaaa9e7e17058f070ab5ae015dab05fc974193afb578e245b2494631a9b28e95";
+            Sha256 bestBlock = Sha256.Parse("aaaa9e7e17058f070ab5ae015dab05fc974193afb578e245b2494631a9b28e95");
             var command = new CallCirrusGetBestBlockReceiptQuery();
             _blockStoreModule.Setup(callTo => callTo.GetBestBlockAsync(CancellationToken.None)).ReturnsAsync(bestBlock);
 
@@ -62,16 +63,16 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Bl
         public async Task CallCirrusGetBestBlockReceiptQuery_FoundBlock_Returns()
         {
             // Arrange
-            const string bestBlock = "aaaa9e7e17058f070ab5ae015dab05fc974193afb578e245b2494631a9b28e95";
+            Sha256 bestBlock = Sha256.Parse("aaaa9e7e17058f070ab5ae015dab05fc974193afb578e245b2494631a9b28e95");
             var blockReceiptDto = new BlockReceiptDto
             {
                 Hash = bestBlock,
                 Height = 10,
-                Time = ((ulong)(DateTime.UtcNow.Subtract(DateTime.MinValue).TotalSeconds)).ToString(),
-                MedianTime = ((ulong)(DateTime.UtcNow.Subtract(DateTime.MinValue).TotalSeconds)).ToString(),
-                PreviousBlockHash = "c974193afb578e245b2494631a9b28e95aaa9e7e17058f070ab5ae015dab05f",
-                NextBlockHash = "e245b2494631a9b28e95aaa9e7e5dab05f1705c974193afb5788f070ab5ae01",
-                MerkleRoot = "9b28e95aaa9e7e5dab05f1705c974193afb5788f0e245b2494631a70ab5ae01",
+                Time = ((ulong)DateTime.UtcNow.Subtract(DateTime.MinValue).TotalSeconds).ToString(),
+                MedianTime = ((ulong)DateTime.UtcNow.Subtract(DateTime.MinValue).TotalSeconds).ToString(),
+                PreviousBlockHash = Sha256.Parse("c974193afb578e245b2494631a9b28e95aaa9e7e17058f070ab5ae015dab05f2"),
+                NextBlockHash = null,
+                MerkleRoot = Sha256.Parse("9b28e95aaa9e7e5dab05f1705c974193afb5788f0e245b2494631a70ab5ae01d"),
             };
 
             var command = new CallCirrusGetBestBlockReceiptQuery();

@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using System.Threading;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 namespace Opdex.Platform.Application.EntryHandlers.Transactions
 {
     public class CreateTransactionBroadcastCommandHandler
-        : IRequestHandler<CreateTransactionBroadcastCommand, string>
+        : IRequestHandler<CreateTransactionBroadcastCommand, Sha256>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -23,7 +24,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public Task<string> Handle(CreateTransactionBroadcastCommand request, CancellationToken cancellationToken)
+        public Task<Sha256> Handle(CreateTransactionBroadcastCommand request, CancellationToken cancellationToken)
         {
             var dto = JsonConvert.DeserializeObject<TransactionQuoteRequestDto>(request.QuoteRequest);
 

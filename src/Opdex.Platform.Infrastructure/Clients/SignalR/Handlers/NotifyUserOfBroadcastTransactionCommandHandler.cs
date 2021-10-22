@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Clients.SignalR.Handlers
 
         protected override async Task Handle(NotifyUserOfBroadcastTransactionCommand request, CancellationToken cancellationToken)
         {
-            await _hubContext.Clients.User(request.User.ToString()).OnTransactionBroadcast(request.TxHash);
+            await _hubContext.Clients.User(request.User.ToString()).OnTransactionBroadcast(request.TxHash.ToString());
         }
     }
 }

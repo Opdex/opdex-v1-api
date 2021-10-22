@@ -19,6 +19,7 @@ namespace Opdex.Platform.Infrastructure.Http
                 Converters = new List<JsonConverter>
                 {
                     new AddressConverter(),
+                    new Sha256Converter(),
                     new UInt128Converter(),
                     new UInt256Converter()
                 }

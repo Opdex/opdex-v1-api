@@ -1,19 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Domain.Models.Blocks
 {
     public class BlockReceipt
     {
-        public BlockReceipt(string hash, ulong height, DateTime time, DateTime medianTime, string previousBlockHash, string nextBlockHash,
-            string merkleRoot, IEnumerable<string> txHashes)
+        public BlockReceipt(Sha256 hash, ulong height, DateTime time, DateTime medianTime, Sha256? previousBlockHash, Sha256? nextBlockHash,
+                            Sha256 merkleRoot, IEnumerable<Sha256> txHashes)
         {
-            if (!hash.HasValue())
-            {
-                throw new ArgumentNullException(nameof(hash), $"{nameof(hash)} must have a value.");
-            }
-
             if (height < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(height), $"{nameof(height)} must have a value greater than 0.");
@@ -29,11 +24,6 @@ namespace Opdex.Platform.Domain.Models.Blocks
                 throw new ArgumentOutOfRangeException(nameof(medianTime), $"{nameof(medianTime)} must have a valid value.");
             }
 
-            if (!merkleRoot.HasValue())
-            {
-                throw new ArgumentNullException(nameof(merkleRoot), $"{nameof(merkleRoot)} must have a value.");
-            }
-
             Hash = hash;
             Height = height;
             Time = time;
@@ -44,14 +34,14 @@ namespace Opdex.Platform.Domain.Models.Blocks
             TxHashes = txHashes;
         }
 
-        public string Hash { get; }
+        public Sha256 Hash { get; }
         public ulong Height { get; }
         public DateTime Time { get; }
         public DateTime MedianTime { get; }
-        public string PreviousBlockHash { get; }
-        public string NextBlockHash { get; }
-        public string MerkleRoot { get; }
-        public IEnumerable<string> TxHashes { get; }
+        public Sha256? PreviousBlockHash { get; }
+        public Sha256? NextBlockHash { get; }
+        public Sha256 MerkleRoot { get; }
+        public IEnumerable<Sha256> TxHashes { get; }
 
         public bool IsNewYearFromPrevious(DateTime previousBlockMedianTime)
         {

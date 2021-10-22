@@ -1,5 +1,6 @@
 using System;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Blocks;
 
@@ -15,11 +16,11 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Blocks
         /// </summary>
         /// <param name="hash">The block hash to look up the block by.</param>
         /// <param name="findOrThrow">Flag determining if no result is found, to throw not found or return null.</param>
-        public RetrieveCirrusBlockReceiptByHashQuery(string hash, bool findOrThrow = true) : base(findOrThrow)
+        public RetrieveCirrusBlockReceiptByHashQuery(Sha256 hash, bool findOrThrow = true) : base(findOrThrow)
         {
-            Hash = hash.HasValue() ? hash : throw new ArgumentNullException(nameof(hash), "Block hash must be provided.");
+            Hash = hash;
         }
 
-        public string Hash { get; }
+        public Sha256 Hash { get; }
     }
 }

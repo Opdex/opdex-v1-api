@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     public class BlockReceiptDto
     {
-        public string Hash { get; set; }
+        public Sha256 Hash { get; set; }
         public ulong Confirmations { get; set; }
         public ulong Size { get; set; }
         public ulong Weight { get; set; }
@@ -21,14 +22,14 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public ulong NTx { get; set; }
 
         [JsonProperty("previousblockhash")]
-        public string PreviousBlockHash { get; set; }
+        public Sha256? PreviousBlockHash { get; set; }
 
         [JsonProperty("nextblockhash")]
-        public string NextBlockHash { get; set; }
+        public Sha256? NextBlockHash { get; set; }
 
         [JsonProperty("merkleroot")]
-        public string MerkleRoot { get; set; }
+        public Sha256 MerkleRoot { get; set; }
 
-        public IEnumerable<string> Tx { get; set; }
+        public IEnumerable<Sha256> Tx { get; set; }
     }
 }

@@ -23,6 +23,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
+using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -52,6 +53,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Success</returns>
         [HttpPost("dev-contracts")]
         [Authorize(Policy = "AdminOnly")]
+        [Network(NetworkType.DEVNET)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeployDevModeEnvironment(LocalWalletCredentials request, CancellationToken cancellationToken)
         {
@@ -152,13 +154,13 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok("Successful");
         }
 
-        private async Task<Transaction> CallAndWait(Func<Task<string>> call)
+        private async Task<Transaction> CallAndWait(Func<Task<Sha256>> call)
         {
             const int maxRetries = 5;
             const int backoff = 5;
             var attempt = 0;
 
-            string txHash = null;
+            Sha256 txHash = default;
             Transaction transaction = null;
 
             try

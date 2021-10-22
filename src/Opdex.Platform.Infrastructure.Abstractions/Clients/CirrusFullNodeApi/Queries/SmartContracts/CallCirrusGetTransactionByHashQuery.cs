@@ -1,17 +1,16 @@
-using System;
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts
 {
     public class CallCirrusGetTransactionByHashQuery : IRequest<Transaction>
     {
-        public CallCirrusGetTransactionByHashQuery(string txHash)
+        public CallCirrusGetTransactionByHashQuery(Sha256 txHash)
         {
-            TxHash = txHash.HasValue() ? txHash : throw new ArgumentNullException(nameof(txHash));
+            TxHash = txHash;
         }
 
-        public string TxHash { get;}
+        public Sha256 TxHash { get; }
     }
 }

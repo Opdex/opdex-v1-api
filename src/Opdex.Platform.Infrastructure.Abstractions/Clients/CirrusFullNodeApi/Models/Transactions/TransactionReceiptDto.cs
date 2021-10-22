@@ -5,8 +5,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
 {
     public class TransactionReceiptDto
     {
-        public string TransactionHash { get; set; }
-        public string BlockHash { get; set; }
+        public Sha256 TransactionHash { get; set; }
+        public Sha256 BlockHash { get; set; }
         public string PostState { get; set; }
         public int GasUsed { get; set; }
         public Address From { get; set; }

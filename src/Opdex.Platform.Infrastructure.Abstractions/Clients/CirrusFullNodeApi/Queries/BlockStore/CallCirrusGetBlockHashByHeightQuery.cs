@@ -1,9 +1,10 @@
 using System;
 using MediatR;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore
 {
-    public class CallCirrusGetBlockHashByHeightQuery : IRequest<string>
+    public class CallCirrusGetBlockHashByHeightQuery : IRequest<Sha256>
     {
         public CallCirrusGetBlockHashByHeightQuery(ulong height)
         {
@@ -14,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
 
             Height = height;
         }
-        
+
         public ulong Height { get; }
     }
 }

@@ -1,4 +1,3 @@
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using System;
@@ -9,14 +8,9 @@ namespace Opdex.Platform.Domain.Models.Transactions
 {
     public class Transaction
     {
-        public Transaction(string txHash, ulong blockHeight, int gasUsed, Address from, Address to, bool success,
+        public Transaction(Sha256 txHash, ulong blockHeight, int gasUsed, Address from, Address to, bool success,
                            Address newContractAddress, IList<TransactionLog> logs)
         {
-            if (!txHash.HasValue())
-            {
-                throw new ArgumentNullException(nameof(txHash), "Transaction hash must be set.");
-            }
-
             if (blockHeight == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than 0.");
@@ -47,7 +41,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
             Logs = logs ?? new List<TransactionLog>();
         }
 
-        public Transaction(ulong id, string txHash, ulong blockHeight, int gasUsed, Address from, Address to, bool success, Address newContractAddress)
+        public Transaction(ulong id, Sha256 txHash, ulong blockHeight, int gasUsed, Address from, Address to, bool success, Address newContractAddress)
         {
             Id = id;
             Hash = txHash;
@@ -61,7 +55,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
         }
 
         public ulong Id { get; private set; }
-        public string Hash { get; }
+        public Sha256 Hash { get; }
         public ulong BlockHeight { get; }
         public int GasUsed { get; }
         public Address From { get; }

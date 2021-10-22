@@ -17,7 +17,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions
         /// <exception cref="ArgumentException">Encoded request null reference.</exception>
         public CreateTransactionQuoteCommand(string encodedRequest)
         {
-            if (!encodedRequest.HasValue() || !encodedRequest.TryBase64Decode(out string decodedRequest))
+            if (!encodedRequest.HasValue() || !Base64Extensions.TryBase64Decode(encodedRequest, out var decodedRequest))
             {
                 throw new ArgumentException("The encoded request must have a valid value", nameof(encodedRequest));
             }

@@ -5,11 +5,11 @@ using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
-using System.Linq;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
 {
-    public class CallCirrusCallSmartContractMethodCommandHandler : IRequestHandler<CallCirrusCallSmartContractMethodCommand, string>
+    public class CallCirrusCallSmartContractMethodCommandHandler : IRequestHandler<CallCirrusCallSmartContractMethodCommand, Sha256>
     {
         private readonly ISmartContractsModule _smartContractsModule;
 
@@ -18,7 +18,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
         }
 
-        public Task<string> Handle(CallCirrusCallSmartContractMethodCommand request, CancellationToken cancellationToken)
+        public Task<Sha256> Handle(CallCirrusCallSmartContractMethodCommand request, CancellationToken cancellationToken)
         {
             SmartContractCallRequestDto callRequest;
 

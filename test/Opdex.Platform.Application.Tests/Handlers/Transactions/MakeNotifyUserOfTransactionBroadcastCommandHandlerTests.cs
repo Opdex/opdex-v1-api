@@ -3,6 +3,7 @@ using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Handlers.Transactions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Mempool;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 using System.Threading;
@@ -26,7 +27,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Transactions
         public async Task Handle_CallCirrusGetExistsInMempoolQuery_Send()
         {
             // Arrange
-            var transactionHash = "87ff7bf5dccd3683ef2925ff2ce9148766eb1c0cb97594d612d7b74e8214ba80";
+            var transactionHash = new Sha256(43594389025);
             var request = new MakeNotifyUserOfTransactionBroadcastCommand("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", transactionHash);
             var cancellationToken = new CancellationTokenSource().Token;
             const int maxRetries = 3;
@@ -51,7 +52,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Transactions
         public async Task Handle_TransactionNotFoundInMempool_DoNotNotifyUser()
         {
             // Arrange
-            var request = new MakeNotifyUserOfTransactionBroadcastCommand("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "87ff7bf5dccd3683ef2925ff2ce9148766eb1c0cb97594d612d7b74e8214ba80");
+            var request = new MakeNotifyUserOfTransactionBroadcastCommand("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", new Sha256(43594389025));
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetExistsInMempoolQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
@@ -67,7 +68,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Transactions
         public async Task Handle_TransactionWasFoundInMempool_AttemptToNotifyUser()
         {
             // Arrange
-            var request = new MakeNotifyUserOfTransactionBroadcastCommand("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "87ff7bf5dccd3683ef2925ff2ce9148766eb1c0cb97594d612d7b74e8214ba80");
+            var request = new MakeNotifyUserOfTransactionBroadcastCommand("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", new Sha256(43594389025));
             var cancellationToken = new CancellationTokenSource().Token;
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetExistsInMempoolQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);

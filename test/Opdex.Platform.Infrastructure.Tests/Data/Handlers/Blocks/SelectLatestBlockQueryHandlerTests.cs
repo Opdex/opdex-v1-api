@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
 using Moq;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
@@ -16,11 +17,11 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
     {
         private readonly Mock<IDbContext> _dbContext;
         private readonly SelectLatestBlockQueryHandler _handler;
-        
+
         public SelectLatestBlockQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            
+
             _dbContext = new Mock<IDbContext>();
             _handler = new SelectLatestBlockQueryHandler(_dbContext.Object, mapper);
         }
@@ -30,17 +31,17 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
         {
             var expectedEntity = new BlockEntity
             {
-                Hash = "SomeHash",
+                Hash = new Sha256(543548579837345),
                 Height = 1235,
                 Time = DateTime.Now,
                 MedianTime = DateTime.Now
             };
-                
+
             var command = new SelectLatestBlockQuery();
-        
+
             _dbContext.Setup(db => db.ExecuteFindAsync<BlockEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(expectedEntity));
-            
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Hash.Should().Be(expectedEntity.Hash);

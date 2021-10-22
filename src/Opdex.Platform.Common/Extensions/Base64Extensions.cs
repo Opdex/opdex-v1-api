@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 
 namespace Opdex.Platform.Common.Extensions
@@ -6,7 +7,7 @@ namespace Opdex.Platform.Common.Extensions
     public static class Base64Extensions
     {
         /// <summary>
-        /// Base64 envode a string
+        /// Encode a Base64 string
         /// </summary>
         /// <param name="plainText">The plain text to encode.</param>
         /// <returns>The Base64 string</returns>
@@ -33,16 +34,24 @@ namespace Opdex.Platform.Common.Extensions
             return Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
+        /// <summary>
+        /// Attempts to decode base64 data into plain text. Supports padding.
+        /// </summary>
+        /// <param name="base64EncodedData">The base64 encoded data to decode.</param>
+        /// <param name="plainText">The decoded data.</param>
+        /// <returns>True if the input is valid base64 encoded data, otherwise false.</returns>
         public static bool TryBase64Decode(this string base64EncodedData, out string plainText)
         {
             plainText = "";
+            if (string.IsNullOrEmpty(base64EncodedData) || base64EncodedData.All(character => character == '=')) return false;
 
-            Span<byte> decodedBytes = stackalloc byte[3 * base64EncodedData.Length / 4];
+            var base64EncodedDataWithoutPadding = base64EncodedData.TrimEnd('=');
+            Span<byte> decodedBytes = stackalloc byte[3 * base64EncodedDataWithoutPadding.Length / 4];
 
             var canDecode = Convert.TryFromBase64String(base64EncodedData, decodedBytes, out var bytesWritten);
             if (!canDecode) return false;
 
-            plainText = Encoding.UTF8.GetString(decodedBytes.Slice(0, bytesWritten));
+            plainText = Encoding.UTF8.GetString(decodedBytes[..bytesWritten]);
             return true;
         }
     }

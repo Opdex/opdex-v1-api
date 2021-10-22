@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 using Opdex.Platform.Infrastructure.Clients.SignalR;
 using Opdex.Platform.Infrastructure.Clients.SignalR.Handlers;
@@ -31,13 +32,13 @@ namespace Opdex.Platform.Infrastructure.Tests.SignalRTests.Handlers
         public async Task Handle_NotifyUser_WithTransactionHash()
         {
             // Arrange
-            var request = new NotifyUserOfBroadcastTransactionCommand("PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "txHash12345");
+            var request = new NotifyUserOfBroadcastTransactionCommand("PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", new Sha256(324394839));
 
             // Act
             await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            _hubContextMock.Verify(callTo => callTo.Clients.User(request.User.ToString()).OnTransactionBroadcast(request.TxHash), Times.Once);
+            _hubContextMock.Verify(callTo => callTo.Clients.User(request.User.ToString()).OnTransactionBroadcast(request.TxHash.ToString()), Times.Once);
         }
     }
 }

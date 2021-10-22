@@ -129,7 +129,7 @@ namespace Opdex.Platform.Common.Models
         /// </summary>
         /// <param name="value">The string representation of a number.</param>
         /// <param name="result">
-        /// When this method returns, contains the <see cref="FixedDecimal" /> equivalent to the number that is contained in value,
+        /// When this method returns true, contains the <see cref="FixedDecimal" /> equivalent to the number that is contained in value,
         /// or 0 if the conversion failed.
         /// </param>
         /// <returns><see cref="true" /> if <see cref="value" /> was converted successfully; otherwise, <see cref="false" />.</returns>
