@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers
 {
-    public class ProcessSetPendingDeployerOwnershipLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessSetPendingDeployerOwnershipLogCommand, bool>
+    public class ProcessSetPendingDeployerOwnershipLogCommandHandler : IRequestHandler<ProcessSetPendingDeployerOwnershipLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessSetPendingDeployerOwnershipLogCommandHandler> _logger;
 
-        public ProcessSetPendingDeployerOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessSetPendingDeployerOwnershipLogCommandHandler> logger) : base(mediator)
+        public ProcessSetPendingDeployerOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessSetPendingDeployerOwnershipLogCommandHandler> logger)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,16 +25,17 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted) return false;
+                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (deployer == null) return false;
 
-                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: true));
+                if (request.BlockHeight < deployer.ModifiedBlock)
+                {
+                    return true;
+                }
 
                 deployer.SetPendingOwnership(request.Log, request.BlockHeight);
 
-                var deployerId = await _mediator.Send(new MakeDeployerCommand(deployer, request.BlockHeight));
-
-                return deployerId > 0;
+                return await _mediator.Send(new MakeDeployerCommand(deployer, request.BlockHeight)) > 0;
             }
             catch (Exception ex)
             {

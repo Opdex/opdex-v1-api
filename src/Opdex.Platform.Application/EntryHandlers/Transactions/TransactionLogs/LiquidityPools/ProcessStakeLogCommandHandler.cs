@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools;
-using Opdex.Platform.Application.Abstractions.Queries.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Common.Models.UInt;
@@ -14,12 +13,14 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools
 {
-    public class ProcessStakeLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessStakeLogCommand, bool>
+    public class ProcessStakeLogCommandHandler : IRequestHandler<ProcessStakeLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessStakeLogCommandHandler> _logger;
 
-        public ProcessStakeLogCommandHandler(IMediator mediator, ILogger<ProcessStakeLogCommandHandler> logger) : base(mediator)
+        public ProcessStakeLogCommandHandler(IMediator mediator, ILogger<ProcessStakeLogCommandHandler> logger)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -27,30 +28,22 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted)
-                {
-                    return false;
-                }
-
-                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: true));
+                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (liquidityPool == null) return false;
 
                 var stakingBalance = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liquidityPool.Id,
                                                                                                                    request.Log.Staker,
                                                                                                                    findOrThrow: false))
                                      ?? new AddressStaking(liquidityPool.Id, request.Log.Staker, UInt256.Zero, request.BlockHeight);
 
-                var balanceIsNewer = request.BlockHeight < stakingBalance.ModifiedBlock;
-                if (balanceIsNewer && stakingBalance.Id != 0)
+                if (request.BlockHeight < stakingBalance.ModifiedBlock)
                 {
-                    return false;
+                    return true;
                 }
 
                 stakingBalance.SetWeight(request.Log.StakerBalance, request.BlockHeight);
 
-                var addressStakingId = await _mediator.Send(new MakeAddressStakingCommand(stakingBalance));
-
-                return addressStakingId > 0;
+                return await _mediator.Send(new MakeAddressStakingCommand(stakingBalance)) > 0;
             }
             catch (Exception ex)
             {

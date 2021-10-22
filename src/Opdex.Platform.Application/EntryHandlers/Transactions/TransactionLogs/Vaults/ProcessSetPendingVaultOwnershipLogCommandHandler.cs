@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
 {
-    public class ProcessSetPendingVaultOwnershipLogCommandHandler : ProcessLogCommandHandler, IRequestHandler<ProcessSetPendingVaultOwnershipLogCommand, bool>
+    public class ProcessSetPendingVaultOwnershipLogCommandHandler : IRequestHandler<ProcessSetPendingVaultOwnershipLogCommand, bool>
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<ProcessSetPendingVaultOwnershipLogCommandHandler> _logger;
 
-        public ProcessSetPendingVaultOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessSetPendingVaultOwnershipLogCommandHandler> logger) : base(mediator)
+        public ProcessSetPendingVaultOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessSetPendingVaultOwnershipLogCommandHandler> logger)
         {
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -23,16 +25,17 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var persisted = await MakeTransactionLog(request.Log);
-                if (!persisted) return false;
+                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (vault == null) return false;
 
-                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: true));
+                if (request.BlockHeight < vault.ModifiedBlock)
+                {
+                    return true;
+                }
 
                 vault.SetPendingOwnership(request.Log, request.BlockHeight);
 
-                var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight));
-
-                return vaultId > 0;
+                return await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight)) > 0;
             }
             catch (Exception ex)
             {
