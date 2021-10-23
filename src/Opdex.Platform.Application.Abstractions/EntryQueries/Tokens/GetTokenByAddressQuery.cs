@@ -7,18 +7,16 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Tokens
 {
     public class GetTokenByAddressQuery : IRequest<TokenDto>
     {
-        public GetTokenByAddressQuery(Address address, Address? market = null)
+        public GetTokenByAddressQuery(Address address)
         {
             if (address == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(address), "Token address must be provided.");
             }
 
             Address = address;
-            Market = market ?? Address.Empty;
         }
 
         public Address Address { get; }
-        public Address Market { get; }
     }
 }

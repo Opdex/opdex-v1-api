@@ -1,12 +1,12 @@
-using System;
 using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Tokens;
+using System;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.Tokens
 {
-    public class RetrieveTokenByIdQuery : FindQuery<Token>
+    public class RetrieveTokenSummaryByMarketAndTokenIdQuery : FindQuery<TokenSummary>
     {
-        public RetrieveTokenByIdQuery(ulong tokenId, bool findOrThrow = true) : base(findOrThrow)
+        public RetrieveTokenSummaryByMarketAndTokenIdQuery(ulong marketId, ulong tokenId, bool findOrThrow = true) : base(findOrThrow)
         {
             if (tokenId < 1)
             {
@@ -14,8 +14,10 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens
             }
 
             TokenId = tokenId;
+            MarketId = marketId;
         }
 
         public ulong TokenId { get; }
+        public ulong MarketId { get; }
     }
 }

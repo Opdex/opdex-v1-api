@@ -428,6 +428,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveStakingTokenContractSummaryQuery, StakingTokenContractSummary>, RetrieveStakingTokenContractSummaryQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTokenByIdQuery, Token>, RetrieveTokenByIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTokenByAddressQuery, Token>, RetrieveTokenByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, RetrieveTokenSummaryByMarketAndTokenIdQueryHandler>();
 
             // Governances
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceContractSummaryByAddressQuery, MiningGovernanceContractSummary>, RetrieveMiningGovernanceContractSummaryByAddressQueryHandler>();

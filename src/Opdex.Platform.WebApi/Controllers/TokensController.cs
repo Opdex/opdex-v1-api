@@ -97,11 +97,9 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}")]
         [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<TokenResponseModel>> Token([FromRoute] Address address, CancellationToken cancellationToken)
+        public async Task<ActionResult<TokenResponseModel>> GetToken([FromRoute] Address address, CancellationToken cancellationToken)
         {
-            var query = new GetTokenByAddressQuery(address, _context.Market);
-
-            var result = await _mediator.Send(query, cancellationToken);
+            var result = await _mediator.Send(new GetTokenByAddressQuery(address), cancellationToken);
 
             var response = _mapper.Map<TokenResponseModel>(result);
 

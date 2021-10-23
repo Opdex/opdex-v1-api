@@ -1,8 +1,8 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Summaries;
 using System;
 using System.Threading.Tasks;
 
@@ -25,7 +25,7 @@ namespace Opdex.Platform.Application.Assemblers
         {
             var tokenDto = _mapper.Map<TokenDto>(token);
 
-            var summary = await _mediator.Send(new SelectTokenSummaryByMarketAndTokenIdQuery(MarketId, token.Id, findOrThrow: false));
+            var summary = await _mediator.Send(new RetrieveTokenSummaryByMarketAndTokenIdQuery(MarketId, token.Id, findOrThrow: false));
 
             if (summary != null)
             {
