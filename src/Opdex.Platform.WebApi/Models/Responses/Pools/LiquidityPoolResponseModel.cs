@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Pools

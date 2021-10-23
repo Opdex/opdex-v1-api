@@ -1,14 +1,12 @@
 using Opdex.Platform.Common.Models;
-using System.ComponentModel.DataAnnotations;
 
-namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
+namespace Opdex.Platform.WebApi.Models.Requests.MiningPools
 {
     public class MiningQuote
     {
         /// <summary>
         /// The amount of liquidity pool tokens to use for the quote.
         /// </summary>
-        [Required]
         public FixedDecimal Amount { get; set; }
     }
 }

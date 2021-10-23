@@ -1,7 +1,7 @@
 using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
 
-namespace Opdex.Platform.WebApi.Models.Responses.Pools
+namespace Opdex.Platform.WebApi.Models.Responses.MiningPools
 {
     /// <summary>
     /// Mining pool details response

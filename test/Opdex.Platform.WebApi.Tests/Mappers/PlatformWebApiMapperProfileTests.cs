@@ -12,6 +12,7 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.WebApi.Mappers;
 using Opdex.Platform.WebApi.Models.Responses.Governances;
+using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.LiquidityPools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.MiningPools;

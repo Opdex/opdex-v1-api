@@ -3,21 +3,14 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
-using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningPools;
 using Opdex.Platform.WebApi.Models;
-using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
-using Opdex.Platform.WebApi.Models.Responses;
-using Opdex.Platform.WebApi.Models.Responses.Pools;
+using Opdex.Platform.WebApi.Models.Requests.MiningPools;
+using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,39 +33,18 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Mining Pools</summary>
-        /// <remarks>Retrieves paginated collection of mining pool details</remarks>
-        /// <param name="liquidityPools">Liquidity pools that are used for mining.</param>
-        /// <param name="miningStatus">Mining pool activity status.</param>
-        /// <param name="direction">The order direction of the results, either "ASC" or "DESC".</param>
-        /// <param name="limit">Number of certificates to take must be greater than 0 and less than 51.</param>
-        /// <param name="cursor">The cursor when paging.</param>
-        /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>Mining pool details page</returns>
+        /// <remarks>Retrieves paginated collection of mining pool details.</remarks>
+        /// <param name="filters">Filter parameters.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Details of mining pools with paging.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(MiningPoolsResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<MiningPoolsResponseModel>> GetMiningPools([FromQuery] IEnumerable<Address> liquidityPools,
-                                                                                 [FromQuery] MiningStatusFilter miningStatus,
-                                                                                 [FromQuery] SortDirectionType direction,
-                                                                                 [FromQuery] uint limit,
-                                                                                 [FromQuery] string cursor,
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<MiningPoolsResponseModel>> GetMiningPools([FromQuery] MiningPoolFilterParameters filters,
                                                                                  CancellationToken cancellationToken)
         {
-            MiningPoolsCursor pagingCursor;
-
-            if (cursor.HasValue())
-            {
-                if (!Base64Extensions.TryBase64Decode(cursor, out var decodedCursor) || !MiningPoolsCursor.TryParse(decodedCursor, out var parsedCursor))
-                {
-                    return new ValidationErrorProblemDetailsResult(nameof(cursor), "Cursor not formed correctly.");
-                }
-                pagingCursor = parsedCursor;
-            }
-            else
-            {
-                pagingCursor = new MiningPoolsCursor(liquidityPools, miningStatus, direction, limit, PagingDirection.Forward, default);
-            }
-
-            var vaults = await _mediator.Send(new GetMiningPoolsWithFilterQuery(pagingCursor), cancellationToken);
+            var vaults = await _mediator.Send(new GetMiningPoolsWithFilterQuery(filters.BuildCursor()), cancellationToken);
             return Ok(_mapper.Map<MiningPoolsResponseModel>(vaults));
         }
 
@@ -81,8 +53,12 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="address">Address of the mining pool.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Mining pool details.</returns>
+        /// <response code="404">Mining pool not found.</response>
         [HttpGet("{address}")]
         [ProducesResponseType(typeof(MiningPoolResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<MiningPoolResponseModel>> GetMiningPool([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var dto = await _mediator.Send(new GetMiningPoolByAddressQuery(address), cancellationToken);
@@ -96,9 +72,14 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="request">A <see cref="MiningQuote"/> of how many tokens to mine with.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
+        /// <response code="404">Mining pool not found.</response>
         [HttpPost("{address}/start")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> StartMining([FromRoute] Address address, MiningQuote request, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> StartMining([FromRoute] Address address, [FromBody] MiningQuote request,
+                                                                                   CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateStartMiningTransactionQuoteCommand(address, _context.Wallet, request.Amount), cancellationToken);
 
@@ -113,9 +94,14 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="request">A <see cref="MiningQuote"/> of how many tokens to stop mining with.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
+        /// <response code="404">Mining pool not found.</response>
         [HttpPost("{address}/stop")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> StopMining([FromRoute] Address address, MiningQuote request, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> StopMining([FromRoute] Address address, [FromBody] MiningQuote request,
+                                                                                  CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateStopMiningTransactionQuoteCommand(address, _context.Wallet, request.Amount), cancellationToken);
 
@@ -129,8 +115,12 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="address">The address of the mining pool.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
+        /// <response code="404">Mining pool not found.</response>
         [HttpPost("{address}/collect")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> CollectMiningRewards([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateCollectMiningRewardsTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
