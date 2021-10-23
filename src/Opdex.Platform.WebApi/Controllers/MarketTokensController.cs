@@ -43,8 +43,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>A market token response.</returns>
         [HttpGet("{tokenAddress}")]
-        [ProducesResponseType(typeof(ActionResult<MarketTokenResponseModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(MarketTokenResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<MarketTokenResponseModel>> GetMarketToken([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
                                                                                  CancellationToken cancellationToken)
         {
@@ -63,8 +63,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A token swap transaction quote.</returns>
         [HttpPost("{tokenAddress}/swap")]
-        [ProducesResponseType(typeof(ActionResult<TransactionQuoteResponseModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Swap([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
                                               [FromBody] SwapRequest request, CancellationToken cancellationToken)
         {
@@ -86,8 +86,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>The amount of tokens to be input.</returns>
         [HttpPost("{tokenIn}/swap/amount-in")]
-        [ProducesResponseType(typeof(ActionResult<SwapAmountInQuoteResponseModel>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(SwapAmountInQuoteResponseModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SwapAmountInQuoteResponseModel>> SwapAmountIn([FromRoute] Address marketAddress,
                                                                                      [FromRoute] Address tokenIn,
                                                                                      [FromBody] SwapAmountInQuoteRequestModel request,
@@ -111,8 +111,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>The amount of tokens to be output.</returns>
         [HttpPost("{tokenOut}/swap/amount-out")]
-        [ProducesResponseType(typeof(ActionResult<SwapAmountOutQuoteResponseModel>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(SwapAmountOutQuoteResponseModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SwapAmountOutQuoteResponseModel>> SwapAmountOut([FromRoute] Address marketAddress,
                                                                                        [FromRoute] Address tokenOut,
                                                                                        [FromBody] SwapAmountOutQuoteRequestModel request,
