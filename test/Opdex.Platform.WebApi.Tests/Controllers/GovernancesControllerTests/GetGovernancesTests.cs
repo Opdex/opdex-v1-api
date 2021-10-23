@@ -49,17 +49,17 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.GovernancesControllerTests
         public async Task GetGovernances_Result_ReturnOk()
         {
             // Arrange
-            var vaults = new MiningGovernancesResponseModel();
+            var governances = new MiningGovernancesResponseModel();
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMiningGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new MiningGovernancesDto());
-            _mapperMock.Setup(callTo => callTo.Map<MiningGovernancesResponseModel>(It.IsAny<MiningGovernancesDto>())).Returns(vaults);
+            _mapperMock.Setup(callTo => callTo.Map<MiningGovernancesResponseModel>(It.IsAny<MiningGovernancesDto>())).Returns(governances);
 
             // Act
             var response = await _controller.GetGovernances(new GovernanceFilterParameters(), CancellationToken.None);
 
             // Assert
             response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(vaults);
+            ((OkObjectResult)response.Result).Value.Should().Be(governances);
         }
     }
 }
