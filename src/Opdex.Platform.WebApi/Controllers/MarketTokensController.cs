@@ -66,7 +66,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(ActionResult<TransactionQuoteResponseModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Swap([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
-                                              SwapRequest request, CancellationToken cancellationToken)
+                                              [FromBody] SwapRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateSwapTransactionQuoteCommand(tokenAddress, _context.Wallet, request.TokenOut, request.TokenInAmount,
                                                                                       request.TokenOutAmount, request.TokenInMaximumAmount,
@@ -88,8 +88,10 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("{tokenIn}/swap/amount-in")]
         [ProducesResponseType(typeof(ActionResult<SwapAmountInQuoteResponseModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SwapAmountInQuoteResponseModel>> SwapAmountIn([FromRoute] Address marketAddress, [FromRoute] Address tokenIn,
-                                                                                    [FromBody] SwapAmountInQuoteRequestModel request, CancellationToken cancellationToken)
+        public async Task<ActionResult<SwapAmountInQuoteResponseModel>> SwapAmountIn([FromRoute] Address marketAddress,
+                                                                                     [FromRoute] Address tokenIn,
+                                                                                     [FromBody] SwapAmountInQuoteRequestModel request,
+                                                                                     CancellationToken cancellationToken)
         {
             // Todo: Revisit and split out this query's flow to Amount In specifically
             var query = new GetLiquidityPoolSwapQuoteQuery(tokenIn, request.TokenOut, FixedDecimal.Zero, request.TokenOutAmount, marketAddress);
