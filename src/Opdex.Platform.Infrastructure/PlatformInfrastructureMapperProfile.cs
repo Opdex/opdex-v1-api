@@ -382,7 +382,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
                 .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
-                .ForMember(dest => dest.DailyChangeUsd, opt => opt.MapFrom(src => src.DailyChangeUsd))
+                .ForMember(dest => dest.DailyChangeUsd, opt => opt.MapFrom(src => src.DailyPriceChangePercent))
                 .ForMember(dest => dest.PriceUsd, opt => opt.MapFrom(src => src.PriceUsd))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))

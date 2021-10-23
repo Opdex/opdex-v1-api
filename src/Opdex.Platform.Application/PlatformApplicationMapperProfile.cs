@@ -67,6 +67,12 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<TokenSummary, TokenSummaryDto>()
+                .ForMember(dest => dest.PriceUsd, opt => opt.MapFrom(src => src.PriceUsd))
+                .ForMember(dest => dest.DailyPriceChangePercent, opt => opt.MapFrom(src => src.DailyPriceChangePercent))
+                .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<Token, TokenDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
@@ -74,7 +80,18 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
                 .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
                 .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
-                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
+                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply.ToDecimal(src.Decimals)))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<MarketToken, MarketTokenDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
+                .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
+                .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
+                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply.ToDecimal(src.Decimals)))
+                .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market.Address))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPool, LiquidityPoolDto>()
@@ -148,16 +165,6 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
                 .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))
                 .ForMember(dest => dest.Close, opt => opt.MapFrom(src => src.Close))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<Token, TokenDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
-                .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
-                .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
-                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TokenSnapshot, TokenSnapshotDto>()

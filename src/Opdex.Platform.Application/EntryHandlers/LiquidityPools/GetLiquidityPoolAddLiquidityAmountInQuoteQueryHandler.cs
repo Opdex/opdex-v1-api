@@ -24,9 +24,9 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
         {
             var tokenInIsCrs = request.TokenIn == Address.Cirrus;
             var tokenIn = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenIn), cancellationToken);
-            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market), cancellationToken);
-            var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(market.Id), cancellationToken);
             var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Pool), cancellationToken);
+            var market = await _mediator.Send(new RetrieveMarketByIdQuery(pool.MarketId), cancellationToken);
+            var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(market.Id), cancellationToken);
 
             var tokenOut = tokenInIsCrs
                 ? await _mediator.Send(new RetrieveTokenByIdQuery(pool.SrcTokenId), cancellationToken)

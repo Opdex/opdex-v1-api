@@ -1,6 +1,6 @@
-namespace Opdex.Platform.WebApi.Models.Responses.Tokens
+namespace Opdex.Platform.Application.Abstractions.Models.Tokens
 {
-    public class TokenSummaryResponseModel
+    public class TokenSummaryDto
     {
         public decimal PriceUsd { get; set; }
         public decimal DailyPriceChangePercent { get; set; }

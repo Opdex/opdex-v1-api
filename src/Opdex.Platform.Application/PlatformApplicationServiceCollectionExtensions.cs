@@ -225,6 +225,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetTokensWithFilterQuery, IEnumerable<TokenDto>>, GetTokensWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshotDto>>, GetTokenSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenByAddressQuery, TokenDto>, GetTokenByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<GetMarketTokenByMarketAndTokenAddressQuery, MarketTokenDto>, GetMarketTokenByMarketAndTokenAddressQueryHandler>();
 
             // Address Balances
             services.AddTransient<IRequestHandler<GetAddressBalanceByTokenQuery, AddressBalanceDto>, GetAddressBalanceByTokenQueryHandler>();
@@ -552,6 +553,7 @@ namespace Opdex.Platform.Application
 
             // Tokens
             services.AddTransient<IModelAssembler<Token, TokenDto>, TokenDtoAssembler>();
+            services.AddTransient<IModelAssembler<MarketToken, MarketTokenDto>, MarketTokenDtoAssembler>();
 
             // Governances
             services.AddTransient<IModelAssembler<MiningGovernance, MiningGovernanceDto>, MiningGovernanceDtoAssembler>();

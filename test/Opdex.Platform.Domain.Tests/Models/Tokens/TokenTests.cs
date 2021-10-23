@@ -117,18 +117,6 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         }
 
         [Fact]
-        public void Token_SetMarket_Success()
-        {
-            const ulong marketId = 10;
-
-            var token = new Token("PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, "name", "symbol", 8, 100_000_000, 100, 2);
-
-            token.SetMarket(marketId);
-
-            token.MarketId.Should().Be(marketId);
-        }
-
-        [Fact]
         public void Token_UpdateTotalSupply_Success()
         {
             UInt256 totalSupply = 200;

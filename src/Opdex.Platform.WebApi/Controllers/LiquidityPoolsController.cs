@@ -184,8 +184,9 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                                           [FromBody] AddLiquidityQuoteRequestModel request,
                                                                                                           CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetLiquidityPoolAddLiquidityAmountInQuoteQuery(request.AmountIn, request.TokenIn,
-                                                                                                 address, _context.Market), cancellationToken);
+            var result = await _mediator.Send(new GetLiquidityPoolAddLiquidityAmountInQuoteQuery(request.AmountIn,
+                                                                                                 request.TokenIn,
+                                                                                                 address), cancellationToken);
 
             var response = new AddLiquidityAmountInQuoteResponseModel { AmountIn = result };
 

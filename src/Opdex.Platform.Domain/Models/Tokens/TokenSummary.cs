@@ -17,20 +17,20 @@ namespace Opdex.Platform.Domain.Models.Tokens
             TokenId = tokenId;
         }
 
-        public TokenSummary(ulong id, ulong marketId, ulong tokenId, decimal dailyChangeUsd, decimal priceUsd, ulong createdBlock, ulong modifiedBlock)
+        public TokenSummary(ulong id, ulong marketId, ulong tokenId, decimal dailyPriceChangePercent, decimal priceUsd, ulong createdBlock, ulong modifiedBlock)
             : base(createdBlock, modifiedBlock)
         {
             Id = id;
             MarketId = marketId;
             TokenId = tokenId;
-            DailyChangeUsd = dailyChangeUsd;
+            DailyPriceChangePercent = dailyPriceChangePercent;
             PriceUsd = priceUsd;
         }
 
         public ulong Id { get; }
         public ulong MarketId { get; }
         public ulong TokenId { get; }
-        public decimal DailyChangeUsd { get; private set; }
+        public decimal DailyPriceChangePercent { get; private set; }
         public decimal PriceUsd { get; private set; }
 
         public void Update(TokenSnapshot snapshot, ulong blockHeight)
@@ -38,11 +38,9 @@ namespace Opdex.Platform.Domain.Models.Tokens
             var openPrice = snapshot.Price.Open;
             var closePrice = snapshot.Price.Close;
 
-            DailyChangeUsd = closePrice.PercentChange(openPrice);
+            DailyPriceChangePercent = closePrice.PercentChange(openPrice);
             PriceUsd = snapshot.Price.Close;
             SetModifiedBlock(blockHeight);
         }
     }
-
-
 }

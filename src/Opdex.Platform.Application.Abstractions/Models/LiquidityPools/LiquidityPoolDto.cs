@@ -11,9 +11,9 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
         public decimal TransactionFee { get; set; }
         public bool StakingEnabled { get; set; }
         public MiningPoolDto MiningPool { get; set; }
-        public TokenDto SrcToken { get; set; }
-        public TokenDto LpToken { get; set; }
-        public TokenDto StakingToken { get; set; }
+        public MarketTokenDto SrcToken { get; set; }
+        public MarketTokenDto LpToken { get; set; }
+        public MarketTokenDto StakingToken { get; set; }
         public TokenDto CrsToken { get; set; }
         public LiquidityPoolSnapshotDto Summary { get; set; }
     }

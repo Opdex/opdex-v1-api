@@ -21,14 +21,17 @@ namespace Opdex.Platform.Application.Assemblers
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly IModelAssembler<Token, TokenDto> _tokenAssembler;
+        private readonly IModelAssembler<MarketToken, MarketTokenDto> _marketTokenAssembler;
 
         private const SnapshotType SnapshotType = Common.Enums.SnapshotType.Daily;
 
-        public MarketDtoAssembler(IMediator mediator, IMapper mapper, IModelAssembler<Token, TokenDto> tokenAssembler)
+        public MarketDtoAssembler(IMediator mediator, IMapper mapper, IModelAssembler<Token, TokenDto> tokenAssembler,
+                                  IModelAssembler<MarketToken, MarketTokenDto> marketTokenAssembler)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _tokenAssembler = tokenAssembler ?? throw new ArgumentNullException(nameof(tokenAssembler));
+            _marketTokenAssembler = marketTokenAssembler ?? throw new ArgumentNullException(nameof(marketTokenAssembler));
         }
 
         public async Task<MarketDto> Assemble(Market market)
@@ -60,29 +63,24 @@ namespace Opdex.Platform.Application.Assemblers
             marketDto.Summary.SetLiquidityDailyChange(previousMarketSnapshot?.Liquidity ?? 0);
 
             // Assemble tokens
-            marketDto.CrsToken = await AssembleToken(Address.Cirrus, 0);
-            marketDto.StakingToken = stakingToken == null ? null : await AssembleToken(stakingToken.Id, market.Id);
+            marketDto.CrsToken = await AssembleToken(Address.Cirrus);
+            marketDto.StakingToken = stakingToken == null ? null : await AssembleMarketToken(stakingToken.Id, market);
 
             return marketDto;
         }
 
-        private async Task<TokenDto> AssembleToken(ulong tokenId, ulong marketId)
+        private async Task<MarketTokenDto> AssembleMarketToken(ulong tokenId, Market market)
         {
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(tokenId));
 
-            return await AssembleTokenExecute(token, marketId);
+            var marketToken = new MarketToken(market, token);
+
+            return await _marketTokenAssembler.Assemble(marketToken);
         }
 
-        private async Task<TokenDto> AssembleToken(Address tokenAddress, ulong marketId)
+        private async Task<TokenDto> AssembleToken(Address tokenAddress)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress));
-
-            return await AssembleTokenExecute(token, marketId);
-        }
-
-        private async Task<TokenDto> AssembleTokenExecute(Token token, ulong marketId)
-        {
-            token.SetMarket(marketId);
 
             return await _tokenAssembler.Assemble(token);
         }
