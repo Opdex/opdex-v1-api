@@ -76,6 +76,30 @@ namespace Opdex.Platform.Application.Tests.Assemblers
         }
 
         [Fact]
+        public async Task Assemble_RetrieveLiquidityPoolByAddressQuery_Send()
+        {
+            // Arrange
+            var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", true, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
+            var market = new Market(19, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 2, 3, null, "nkfGPPGgMkN2kwXwmu3wuFYmPBWQ38k7iY", true, true, true, 3, true, 9, 10);
+            var marketToken = new MarketToken(market, token);
+            var tokenSummary = new TokenSummary(1, market.Id, token.Id, 1.12m, 3.45m, 9, 10);
+
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSummaryByMarketAndTokenIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(tokenSummary);
+
+            // Act
+            try
+            {
+                await _assembler.Assemble(marketToken);
+            } catch { }
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveLiquidityPoolByAddressQuery>(query => query.Address == token.Address &&
+                                                                                                           query.FindOrThrow == true),
+                                                       It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
         public async Task Assemble_HappyPath_Map()
         {
             // Arrange

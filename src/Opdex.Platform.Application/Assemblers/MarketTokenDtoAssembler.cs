@@ -31,7 +31,9 @@ namespace Opdex.Platform.Application.Assemblers
                 marketTokenDto.Summary = _mapper.Map<TokenSummaryDto>(summary);
             }
 
-            var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(token.Id, token.Market.Id));
+            var liquidityPool = token.IsLpt
+                ? await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(token.Address))
+                : await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(token.Id, token.Market.Id));
 
             marketTokenDto.LiquidityPool = liquidityPool.Address;
 

@@ -65,8 +65,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost("{tokenAddress}/swap")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Swap([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
-                                              [FromBody] SwapRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<TransactionQuoteResponseModel>> Swap([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
+                                                                            [FromBody] SwapRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateSwapTransactionQuoteCommand(tokenAddress, _context.Wallet, request.TokenOut, request.TokenInAmount,
                                                                                       request.TokenOutAmount, request.TokenInMaximumAmount,

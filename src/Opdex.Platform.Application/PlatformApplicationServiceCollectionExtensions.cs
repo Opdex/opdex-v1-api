@@ -406,7 +406,6 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolSnapshotWithFilterQuery, LiquidityPoolSnapshot>, RetrieveLiquidityPoolSnapshotWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolSwapQuoteQuery, UInt256>, RetrieveLiquidityPoolSwapQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityAmountInQuoteQuery, UInt256>, RetrieveLiquidityAmountInQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveLiquidityPoolByLpTokenIdQuery, LiquidityPool>, RetrieveLiquidityPoolByLpTokenIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolByIdQuery, LiquidityPool>, RetrieveLiquidityPoolByIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery, LiquidityPool>, RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolByAddressQuery, LiquidityPool>, RetrieveLiquidityPoolByAddressQueryHandler>();
