@@ -30,7 +30,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.GovernancesControllerTests
             _mapperMock = new Mock<IMapper>();
             _contextMock = new Mock<IApplicationContext>();
 
-            _controller = new GovernancesController(_mediatorMock.Object, _mapperMock.Object, _contextMock.Object, new OpdexConfiguration());
+            _controller = new GovernancesController(_mediatorMock.Object, _mapperMock.Object, _contextMock.Object);
         }
 
         [Fact]
