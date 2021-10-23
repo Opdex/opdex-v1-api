@@ -478,7 +478,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             var snapshot = new LiquidityPoolSnapshot(1, SnapshotType.Daily, DateTime.UtcNow);
             var hourlySnapshots = new List<LiquidityPoolSnapshot>
             {
-                new LiquidityPoolSnapshot(1, SnapshotType.Hourly, DateTime.Today.AddDays(-1))
+                new LiquidityPoolSnapshot(1, SnapshotType.Hourly, DateTime.UtcNow.AddDays(-1).Date)
             };
 
             // Act
