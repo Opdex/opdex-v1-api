@@ -1,5 +1,4 @@
 using MediatR;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using System;
 
@@ -7,13 +6,13 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands
 {
     public class NotifyUserOfMinedTransactionCommand : IRequest
     {
-        public NotifyUserOfMinedTransactionCommand(Address user, string txHash)
+        public NotifyUserOfMinedTransactionCommand(Address user, Sha256 txHash)
         {
             User = user != Address.Empty ? user : throw new ArgumentNullException(nameof(user), "User address must be set.");
-            TxHash = txHash.HasValue() ? txHash : throw new ArgumentNullException(nameof(txHash), "Transaction hash must be set.");
+            TxHash = txHash;
         }
 
         public Address User { get; }
-        public string TxHash { get; }
+        public Sha256 TxHash { get; }
     }
 }

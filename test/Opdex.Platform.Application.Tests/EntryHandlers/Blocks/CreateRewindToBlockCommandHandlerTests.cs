@@ -17,6 +17,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.EntryHandlers.Blocks;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using System;
 using System.Threading;
@@ -82,7 +83,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public async Task CreateRewindToBlockCommand_Sends_RetrieveLatestBlockQuery()
         {
             // Arrange
-            var block = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
+            var block = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
 
             // Act
@@ -100,8 +101,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public void CreateRewindToBlockCommand_RequestExceedsMaximumRewind_ThrowsArgumentOutOfRangeException()
         {
             // Arrange
-            var rewindBlock = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
-            var latestBlock = new Block(20_000, "142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7", DateTime.UtcNow, DateTime.UtcNow);
+            var rewindBlock = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
+            var latestBlock = new Block(20_000, Sha256.Parse("142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7"), DateTime.UtcNow, DateTime.UtcNow);
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(rewindBlock);
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), CancellationToken.None)).ReturnsAsync(latestBlock);
 
@@ -116,8 +117,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public async Task CreateRewindToBlockCommand_Sends_MakeRewindToBlockCommand()
         {
             // Arrange
-            var rewindBlock = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
-            var latestBlock = new Block(1000, "142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7", DateTime.UtcNow, DateTime.UtcNow);
+            var rewindBlock = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
+            var latestBlock = new Block(1000, Sha256.Parse("142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7"), DateTime.UtcNow, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(rewindBlock);
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), CancellationToken.None)).ReturnsAsync(latestBlock);
@@ -137,8 +138,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public async Task CreateRewindToBlockCommand_Sends_CreateRewindAddressBalancesCommand()
         {
             // Arrange
-            var rewindBlock = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
-            var latestBlock = new Block(1000, "142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7", DateTime.UtcNow, DateTime.UtcNow);
+            var rewindBlock = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
+            var latestBlock = new Block(1000, Sha256.Parse("142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7"), DateTime.UtcNow, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(rewindBlock);
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), CancellationToken.None)).ReturnsAsync(latestBlock);
@@ -159,8 +160,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public async Task CreateRewindToBlockCommand_Sends_CreateRewindDeployersCommand()
         {
             // Arrange
-            var rewindBlock = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
-            var latestBlock = new Block(1000, "142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7", DateTime.UtcNow, DateTime.UtcNow);
+            var rewindBlock = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
+            var latestBlock = new Block(1000, Sha256.Parse("142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7"), DateTime.UtcNow, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(rewindBlock);
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), CancellationToken.None)).ReturnsAsync(latestBlock);
@@ -182,8 +183,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public async Task Handle_MakeRewindToBlockCommandFailure_DoNotRefreshStaleRecords()
         {
             // Arrange
-            var rewindBlock = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
-            var latestBlock = new Block(1000, "142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7", DateTime.UtcNow, DateTime.UtcNow);
+            var rewindBlock = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
+            var latestBlock = new Block(1000, Sha256.Parse("142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7"), DateTime.UtcNow, DateTime.UtcNow);
             var command = new CreateRewindToBlockCommand(10);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(rewindBlock);
@@ -202,8 +203,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public async Task Handle_RefreshStaleRecordsFailure_IgnoreAndContinue()
         {
             // Arrange
-            var rewindBlock = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
-            var latestBlock = new Block(1000, "142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7", DateTime.UtcNow, DateTime.UtcNow);
+            var rewindBlock = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
+            var latestBlock = new Block(1000, Sha256.Parse("142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7"), DateTime.UtcNow, DateTime.UtcNow);
             var command = new CreateRewindToBlockCommand(10);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(rewindBlock);
@@ -222,8 +223,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
         public async Task CreateRewindToBlockCommand_Success()
         {
             // Arrange
-            var rewindBlock = new Block(10, "18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147", DateTime.UtcNow, DateTime.UtcNow);
-            var latestBlock = new Block(1000, "142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7", DateTime.UtcNow, DateTime.UtcNow);
+            var rewindBlock = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
+            var latestBlock = new Block(1000, Sha256.Parse("142120a5086420ecf9c79b148236e42c337ee0b8a23df39523a904853ac9a1e7"), DateTime.UtcNow, DateTime.UtcNow);
             var command = new CreateRewindToBlockCommand(10);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), CancellationToken.None)).ReturnsAsync(rewindBlock);

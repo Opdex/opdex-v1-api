@@ -49,7 +49,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
                 {
                     // Ignored, a transaction log's name may have matched but not the schema
                     var logger = _loggerFactory.CreateLogger<TransactionErrorProcessor>();
-                    using (logger.BeginScope(new Dictionary<string, object>{["TxHash"] = request.TxHash}))
+                    using (logger.BeginScope(new Dictionary<string, object> { ["TxHash"] = request.TxHash }))
                     {
                         logger.LogDebug(ex, "Incorrect transaction log schema in transaction receipt");
                     }

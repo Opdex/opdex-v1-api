@@ -63,7 +63,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
             var cursor = new TransactionsCursor(Address.Empty, Enumerable.Empty<TransactionEventType>(), Enumerable.Empty<Address>(), SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
             var request = new GetTransactionsWithFilterQuery(cursor);
 
-            var transaction = new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null);
+            var transaction = new Transaction(5, new Sha256(5340958239), 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null);
             var transactions = new Transaction[] { transaction };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
 
@@ -83,9 +83,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 
             var transactions = new Transaction[]
             {
-                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+                new Transaction(5, new Sha256(5340958239), 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, new Sha256(5340958239), 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, new Sha256(5340958239), 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
@@ -106,9 +106,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 
             var transactions = new Transaction[]
             {
-                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+                new Transaction(5, new Sha256(5340958239), 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, new Sha256(5340958239), 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, new Sha256(5340958239), 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
@@ -130,9 +130,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 
             var transactions = new Transaction[]
             {
-                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+                new Transaction(5, new Sha256(5340958239), 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, new Sha256(5340958239), 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, new Sha256(5340958239), 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
@@ -154,9 +154,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 
             var transactions = new Transaction[]
             {
-                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+                new Transaction(5, new Sha256(5340958239), 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, new Sha256(5340958239), 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, new Sha256(5340958239), 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
@@ -178,9 +178,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 
             var transactions = new Transaction[]
             {
-                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+                new Transaction(5, new Sha256(5340958239), 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, new Sha256(5340958239), 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, new Sha256(5340958239), 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
@@ -202,9 +202,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 
             var transactions = new Transaction[]
             {
-                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(15, "hash", 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
+                new Transaction(5, new Sha256(5340958239), 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, new Sha256(5340958239), 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(15, new Sha256(5340958239), 510, 10000, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", true, null)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
@@ -226,8 +226,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 
             var transactions = new Transaction[]
             {
-                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null)
+                new Transaction(5, new Sha256(5340958239), 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, new Sha256(5340958239), 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());
@@ -249,8 +249,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions
 
             var transactions = new Transaction[]
             {
-                new Transaction(5, "hash", 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
-                new Transaction(10, "hash", 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null)
+                new Transaction(5, new Sha256(5340958239), 500, 10000, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null),
+                new Transaction(10, new Sha256(5340958239), 505, 10000, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", true, null)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTransactionsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(transactions);
             _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<Transaction>())).ReturnsAsync(new TransactionDto());

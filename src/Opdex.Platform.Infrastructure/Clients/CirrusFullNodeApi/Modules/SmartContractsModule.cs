@@ -42,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             return GetAsync<string>(uri, cancellationToken);
         }
 
-        public Task<TransactionReceiptDto> GetReceiptAsync(string txHash, CancellationToken cancellationToken)
+        public Task<TransactionReceiptDto> GetReceiptAsync(Sha256 txHash, CancellationToken cancellationToken)
         {
             var uri = string.Format(CirrusUriHelper.SmartContracts.GetTransactionReceipt, txHash);
             return GetAsync<TransactionReceiptDto>(uri, cancellationToken);
@@ -80,7 +80,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             }
         }
 
-        public async Task<string> CallSmartContractAsync(SmartContractCallRequestDto call, CancellationToken cancellationToken)
+        public async Task<Sha256> CallSmartContractAsync(SmartContractCallRequestDto call, CancellationToken cancellationToken)
         {
             const string uri = CirrusUriHelper.SmartContractWallet.Call;
             var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(call, uri, HttpMethod.Post);
@@ -102,7 +102,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             }
         }
 
-        public async Task<string> CreateSmartContractAsync(SmartContractCreateRequestDto call, CancellationToken cancellationToken)
+        public async Task<Sha256> CreateSmartContractAsync(SmartContractCreateRequestDto call, CancellationToken cancellationToken)
         {
             const string uri = CirrusUriHelper.SmartContractWallet.Create;
             var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(call, uri, HttpMethod.Post);
@@ -118,7 +118,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 
             using (_logger.BeginScope(logDetails))
             {
-                var transactionHash = await PostAsync<string>(uri, httpRequest.Content, cancellationToken);
+                var transactionHash = await PostAsync<Sha256>(uri, httpRequest.Content, cancellationToken);
                 return transactionHash;
             }
         }

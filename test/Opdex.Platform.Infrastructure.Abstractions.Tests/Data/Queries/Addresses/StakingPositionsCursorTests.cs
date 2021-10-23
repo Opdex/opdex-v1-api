@@ -124,7 +124,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
 
             // Assert
             canParse.Should().Be(true);
-            cursor.LiquidityPools.Should().ContainSingle(pool => pool == "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L");
+            cursor.LiquidityPools.Should().ContainSingle(pool => pool == new Address("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L"));
             cursor.IncludeZeroAmounts.Should().Be(false);
             cursor.SortDirection.Should().Be(SortDirectionType.ASC);
             cursor.Limit.Should().Be(50);

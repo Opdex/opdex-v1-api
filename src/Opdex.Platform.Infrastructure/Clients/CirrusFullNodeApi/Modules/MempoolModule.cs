@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Http;
 using System.Collections.Generic;
@@ -15,9 +16,9 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<string>> GetRawMempoolAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Sha256>> GetRawMempoolAsync(CancellationToken cancellationToken)
         {
-            return await GetAsync<IEnumerable<string>>(CirrusUriHelper.Mempool.GetRawMempool, cancellationToken);
+            return await GetAsync<IEnumerable<Sha256>>(CirrusUriHelper.Mempool.GetRawMempool, cancellationToken);
         }
     }
 }

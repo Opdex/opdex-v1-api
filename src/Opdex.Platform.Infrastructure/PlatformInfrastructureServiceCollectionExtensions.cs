@@ -118,6 +118,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Governances.Nominations;
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -131,6 +132,7 @@ namespace Opdex.Platform.Infrastructure
             SqlMapper.AddTypeHandler(new UInt256Handler());
             SqlMapper.AddTypeHandler(new AddressHandler());
             SqlMapper.AddTypeHandler(new FixedDecimalHandler());
+            SqlMapper.AddTypeHandler(new Sha256Handler());
 
             // Data Services
             AddDataQueries(services);
@@ -323,7 +325,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetAmountOutMultiHopQuoteQuery, UInt256>, CallCirrusGetAmountOutMultiHopQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAmountInMultiHopQuoteQuery, UInt256>, CallCirrusGetAmountInMultiHopQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetLiquidityAmountInQuoteQuery, UInt256>, CallCirrusGetLiquidityAmountInQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetBlockHashByHeightQuery, string>, CallCirrusGetBlockHashByHeightQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetBlockHashByHeightQuery, Sha256>, CallCirrusGetBlockHashByHeightQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, UInt256>, CallCirrusGetSrcTokenBalanceQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetGovernanceNominationsSummaryQuery, IEnumerable<GovernanceContractNominationSummary>>, CallCirrusGetGovernanceNominationsSummaryQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>, CallCirrusLocalCallSmartContractMethodCommandHandler>();
@@ -335,8 +337,8 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>, CallCirrusGetMarketPermissionAuthorizationQueryHandler>();
 
             // Commands
-            services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, string>, CallCirrusCallSmartContractMethodCommandHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusCreateSmartContractCommand, string>, CallCirrusCreateSmartContractCommandHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, Sha256>, CallCirrusCallSmartContractMethodCommandHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusCreateSmartContractCommand, Sha256>, CallCirrusCreateSmartContractCommandHandler>();
         }
 
         private static void AddCmcServices(IServiceCollection services, CoinMarketCapConfiguration cmcConfiguration)

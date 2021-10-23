@@ -262,7 +262,7 @@ namespace Opdex.Platform.Application
 
             // Transactions
             services.AddTransient<IRequestHandler<CreateTransactionCommand, bool>, CreateTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateTransactionBroadcastCommand, string>, CreateTransactionBroadcastCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateTransactionBroadcastCommand, Sha256>, CreateTransactionBroadcastCommandHandler>();
             services.AddTransient<IRequestHandler<CreateTransactionQuoteCommand, TransactionQuoteDto>, CreateTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateNotifyUserOfTransactionBroadcastCommand, bool>, CreateNotifyUserOfTransactionBroadcastCommandHandler>();
 
@@ -376,7 +376,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveCirrusBestBlockReceiptQuery, BlockReceipt>, RetrieveCirrusBestBlockReceiptQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveCirrusBlockReceiptByHashQuery, BlockReceipt>, RetrieveCirrusBlockReceiptByHashQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveBlockByHeightQuery, Block>, RetrieveBlockByHeightQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveCirrusBlockHashByHeightQuery, string>, RetrieveCirrusBlockHashByHeightQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveCirrusBlockHashByHeightQuery, Sha256>, RetrieveCirrusBlockHashByHeightQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveBlockByMedianTimeQuery, Block>, RetrieveBlockByMedianTimeQueryHandler>();
 
             // Deployers
@@ -530,7 +530,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeAddressBalanceCommand, ulong>, MakeAddressBalanceCommandHandler>();
             services.AddTransient<IRequestHandler<MakeAddressStakingCommand, ulong>, MakeAddressStakingCommandHandler>();
             services.AddTransient<IRequestHandler<MakeAddressMiningCommand, ulong>, MakeAddressMiningCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeTransactionBroadcastCommand, string>, MakeTransactionBroadcastCommandHandler>(); // Keep this one around
+            services.AddTransient<IRequestHandler<MakeTransactionBroadcastCommand, Sha256>, MakeTransactionBroadcastCommandHandler>(); // Keep this one around
 
             return services;
         }

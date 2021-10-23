@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Opdex.Platform.Common;
 
 namespace Opdex.Platform.Infrastructure.Http
 {
@@ -76,7 +77,7 @@ namespace Opdex.Platform.Infrastructure.Http
             {
                 var jsonString = await httpResponse.Content.ReadAsStringAsync();
 
-                return JsonConvert.DeserializeObject<TReturn>(jsonString);
+                return JsonConvert.DeserializeObject<TReturn>(jsonString, Serialization.DefaultJsonSettings);
             }
 
             TReturn result = default;

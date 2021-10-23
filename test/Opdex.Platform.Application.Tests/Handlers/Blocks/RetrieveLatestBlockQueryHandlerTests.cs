@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Handlers.Blocks;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
 using Xunit;
@@ -32,7 +33,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Blocks
         public async Task RetrievesLatestBlock_Success()
         {
             const ulong expectedBlockHeight = 1234ul;
-            const string expectedBlockHash = "Hash";
+            Sha256 expectedBlockHash = new Sha256(52858329043290832);
             var expectedBlockTime = DateTime.UtcNow;
             var expectedBlockMedianTime = DateTime.UtcNow;
 

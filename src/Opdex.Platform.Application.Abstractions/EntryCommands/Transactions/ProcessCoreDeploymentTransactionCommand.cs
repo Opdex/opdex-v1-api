@@ -1,21 +1,15 @@
-using System;
 using MediatR;
-using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions
 {
     public class ProcessCoreDeploymentTransactionCommand : IRequest<Unit>
     {
-        public ProcessCoreDeploymentTransactionCommand(string txHash)
+        public ProcessCoreDeploymentTransactionCommand(Sha256 txHash)
         {
-            if (!txHash.HasValue())
-            {
-                throw new ArgumentNullException(nameof(txHash));
-            }
-
             TxHash = txHash;
         }
 
-        public string TxHash { get; }
+        public Sha256 TxHash { get; }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using Xunit;
 
@@ -7,19 +8,6 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
 {
     public class BlockReceiptTests
     {
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData(null)]
-        public void CreateBlockReceipt_InvalidHash_ThrowsArgumentNullException(string hash)
-        {
-            // Arrange
-            // Act
-            void Act() => new BlockReceipt(hash, 12, DateTime.UtcNow, DateTime.UtcNow, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
-
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain($"{nameof(hash)} must have a value.");
-        }
 
         [Fact]
         public void CreateBlockReceipt_InvalidHeight_ThrowsArgumentOutOfRangeException()
@@ -28,7 +16,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             const ulong height = 0;
 
             // Act
-            void Act() => new BlockReceipt("hash", height, DateTime.UtcNow, DateTime.UtcNow, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            void Act() => new BlockReceipt(new Sha256(5340958239), height, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(height)} must have a value greater than 0.");
@@ -41,7 +29,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             var time = default(DateTime);
 
             // Act
-            void Act() => new BlockReceipt("hash", 1, time, DateTime.UtcNow, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            void Act() => new BlockReceipt(new Sha256(5340958239), 1, time, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(time)} must have a valid value.");
@@ -54,38 +42,24 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             var medianTime = default(DateTime);
 
             // Act
-            void Act() => new BlockReceipt("hash", 1, DateTime.UtcNow, medianTime, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            void Act() => new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, medianTime, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(medianTime)} must have a valid value.");
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData(null)]
-        public void CreateBlockReceipt_InvalidMerkleRoot_ThrowsArgumentNullException(string merkleRoot)
-        {
-            // Arrange
-            // Act
-            void Act() => new BlockReceipt("hash", 1, DateTime.UtcNow, DateTime.UtcNow, "previousBlockHash", "nextBlockHash", merkleRoot, new string[0]);
-
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain($"{nameof(merkleRoot)} must have a value.");
         }
 
         [Fact]
         public void CreateBlockReceipt_Success()
         {
             // Arrange
-            var hash = "hash";
+            Sha256 hash = new Sha256(42498230943);
             var height = 1ul;
             var time = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1));
             var medianTime = DateTime.UtcNow;
-            var previousBlockHash = "previousBlockHash";
-            var nextBlockHash = "nextBlockHash";
-            var merkleRoot = "merkleRoot";
-            var txHashes = new [] {"txHash1"};
+            Sha256 previousBlockHash = new Sha256(42394832940);
+            Sha256 nextBlockHash = new Sha256(92839482912423432);
+            Sha256 merkleRoot = new Sha256(13249049);
+            Sha256[] txHashes = new[] { new Sha256(323243298) };
 
             // Act
             var blockReceipt = new BlockReceipt(hash, height, time, medianTime, previousBlockHash, nextBlockHash, merkleRoot, txHashes);
@@ -107,7 +81,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             // Arrange
             var currentTime = DateTime.UtcNow;
             var previousTime = DateTime.UtcNow.Subtract(TimeSpan.FromDays(365));
-            var blockReceipt = new BlockReceipt("hash", 1, DateTime.UtcNow, currentTime, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, currentTime, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Act
             var result = blockReceipt.IsNewYearFromPrevious(previousTime);
@@ -122,7 +96,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             // Arrange
             var currentTime = new DateTime(2021, 6, 21);
             var previousTime = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1));
-            var blockReceipt = new BlockReceipt("hash", 1, DateTime.UtcNow, currentTime, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, currentTime, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Act
             var result = blockReceipt.IsNewYearFromPrevious(previousTime);
@@ -137,7 +111,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             // Arrange
             var currentTime = new DateTime(2021, 6, 1);
             var previousTime = new DateTime(2021, 5, 30);
-            var blockReceipt = new BlockReceipt("hash", 1, DateTime.UtcNow, currentTime, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, currentTime, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Act
             var result = blockReceipt.IsNewMonthFromPrevious(previousTime);
@@ -152,7 +126,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             // Arrange
             var currentTime = new DateTime(2021, 6, 23);
             var previousTime = new DateTime(2021, 6, 22);
-            var blockReceipt = new BlockReceipt("hash", 1, DateTime.UtcNow, currentTime, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, currentTime, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Act
             var result = blockReceipt.IsNewMonthFromPrevious(previousTime);
@@ -167,7 +141,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             // Arrange
             var currentTime = new DateTime(2021, 6, 21);
             var previousTime = new DateTime(2021, 6, 20);
-            var blockReceipt = new BlockReceipt("hash", 1, DateTime.UtcNow, currentTime, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, currentTime, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Act
             var result = blockReceipt.IsNewDayFromPrevious(previousTime);
@@ -182,7 +156,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             // Arrange
             var currentTime = new DateTime(2021, 6, 21);
             var previousTime = new DateTime(2021, 6, 21);
-            var blockReceipt = new BlockReceipt("hash", 1, DateTime.UtcNow, currentTime, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, currentTime, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Act
             var result = blockReceipt.IsNewDayFromPrevious(previousTime);
@@ -197,7 +171,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             // Arrange
             var currentTime = new DateTime(2021, 6, 21, 12, 0, 0);
             var previousTime = new DateTime(2021, 6, 21, 11, 0, 0);
-            var blockReceipt = new BlockReceipt("hash", 1, DateTime.UtcNow, currentTime, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, currentTime, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Act
             var result = blockReceipt.IsNewHourFromPrevious(previousTime);
@@ -212,7 +186,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             // Arrange
             var currentTime = new DateTime(2021, 6, 21, 12, 30, 0);
             var previousTime = new DateTime(2021, 6, 21, 12, 0, 0);
-            var blockReceipt = new BlockReceipt("hash", 1, DateTime.UtcNow, currentTime, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, currentTime, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Act
             var result = blockReceipt.IsNewHourFromPrevious(previousTime);
@@ -227,7 +201,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             // Arrange
             var currentTime = new DateTime(2021, 6, 21, 12, 10, 0);
             var previousTime = new DateTime(2021, 6, 21, 11, 9, 0);
-            var blockReceipt = new BlockReceipt("hash", 1, DateTime.UtcNow, currentTime, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, currentTime, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Act
             var result = blockReceipt.IsNewMinuteFromPrevious(previousTime);
@@ -242,7 +216,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
             // Arrange
             var currentTime = new DateTime(2021, 6, 21, 12, 11, 0);
             var previousTime = new DateTime(2021, 6, 21, 12, 11, 30);
-            var blockReceipt = new BlockReceipt("hash", 1, DateTime.UtcNow, currentTime, "previousBlockHash", "nextBlockHash", "merkleRoot", new string[0]);
+            var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, currentTime, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), new Sha256[0]);
 
             // Act
             var result = blockReceipt.IsNewMinuteFromPrevious(previousTime);

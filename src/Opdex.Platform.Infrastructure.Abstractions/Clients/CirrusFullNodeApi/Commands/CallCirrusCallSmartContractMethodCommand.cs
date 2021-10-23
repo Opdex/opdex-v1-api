@@ -1,11 +1,12 @@
 using MediatR;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands
 {
-    public class CallCirrusCallSmartContractMethodCommand : IRequest<string>
+    public class CallCirrusCallSmartContractMethodCommand : IRequest<Sha256>
     {
         public CallCirrusCallSmartContractMethodCommand(TransactionQuoteRequest quoteRequest = null, SmartContractCallRequestDto callDto = null)
         {

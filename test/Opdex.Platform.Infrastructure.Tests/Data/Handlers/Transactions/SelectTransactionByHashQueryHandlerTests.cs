@@ -5,6 +5,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
@@ -29,7 +30,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         [Fact]
         public async Task SelectTransactionByHash_Success()
         {
-            const string hash = "SomeHash";
+            Sha256 hash = new Sha256(95840954890);
             var expectedResponse = new TransactionEntity
             {
                 Id = 23423,
@@ -63,7 +64,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         [Fact]
         public void SelectTransactionByHash_Throws_NotFoundException()
         {
-            const string hash = "SomeHash";
+            Sha256 hash = new Sha256(95840954890);
 
             var command = new SelectTransactionByHashQuery(hash);
 

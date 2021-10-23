@@ -126,7 +126,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
 
         /// <summary>
         /// Loop and attempt to process each of the available logs in the transaction. Each log validates itself and
-        /// a single successful processed log allows for indexing of the entire transsaction.
+        /// a single successful processed log allows for indexing of the entire transaction.
         /// </summary>
         /// <param name="tx">The transaction being indexed.</param>
         /// <returns>Boolean value if at least a single log is processed.</returns>
@@ -187,7 +187,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                     }
                     else
                     {
-                        using (_logger.BeginScope(new Dictionary<string, object>{
+                        using (_logger.BeginScope(new Dictionary<string, object>
+                        {
                             ["Contract"] = log.Contract,
                             ["LogType"] = log.LogType,
                             ["TransactionHash"] = tx.Hash
@@ -199,7 +200,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                 }
                 catch (Exception ex)
                 {
-                    using (_logger.BeginScope(new Dictionary<string, object>{
+                    using (_logger.BeginScope(new Dictionary<string, object>
+                    {
                         ["Contract"] = log.Contract,
                         ["LogType"] = log.LogType,
                         ["TransactionHash"] = tx.Hash

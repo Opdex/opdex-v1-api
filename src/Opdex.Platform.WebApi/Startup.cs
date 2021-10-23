@@ -90,6 +90,7 @@ namespace Opdex.Platform.WebApi
                 .AddControllers(options =>
                 {
                     options.ModelBinderProviders.Insert(0, new AddressModelBinderProvider());
+                    options.ModelBinderProviders.Insert(1, new Sha256ModelBinderProvider());
                 })
                 .AddFluentValidation(config =>
                 {
@@ -183,6 +184,7 @@ namespace Opdex.Platform.WebApi
                 // must add type converter attribute to pass NSwag check for IsPrimitiveType
                 TypeDescriptor.AddAttributes(typeof(Address), new TypeConverterAttribute(typeof(AddressConverter)));
                 TypeDescriptor.AddAttributes(typeof(FixedDecimal), new TypeConverterAttribute(typeof(FixedDecimalConverter)));
+                TypeDescriptor.AddAttributes(typeof(Sha256), new TypeConverterAttribute(typeof(Sha256)));
 
                 // processes fluent validation rules as OpenAPI type rules
                 settings.AddFluentValidationSchemaProcessor(provider, config =>
@@ -201,7 +203,17 @@ namespace Opdex.Platform.WebApi
                 });
                 settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
                 settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Address), schema => schema.Type = JsonObjectType.String));
-                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema => schema.Type = JsonObjectType.String));
+                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema =>
+                {
+                    schema.IsNullableRaw = false;
+                    schema.Type = JsonObjectType.String;
+                }));
+                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Sha256), schema =>
+                {
+                    schema.IsNullableRaw = false;
+                    schema.Type = JsonObjectType.String;
+                    schema.Pattern = @"^[0-9a-fA-F]{64}$";
+                }));
             });
 
             services.AddSignalR()

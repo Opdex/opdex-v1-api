@@ -4,6 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
@@ -30,7 +31,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         public async Task PersistsTransaction_Success()
         {
             const ulong id = 1234ul;
-            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, null, null);
+            var transaction = new Transaction(new Sha256(5340958239), ulong.MaxValue, 1, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, null, null);
             var command = new PersistTransactionCommand(transaction);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
@@ -45,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
         public async Task PersistsTransaction_Fail()
         {
             const ulong id = 0ul;
-            var transaction = new Transaction("txHash", ulong.MaxValue, 1, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, null, null);
+            var transaction = new Transaction(new Sha256(5340958239), ulong.MaxValue, 1, "PFrSHgtz2khDuciJdLAZtR2uKwgyXryMjM", "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", true, null, null);
             var command = new PersistTransactionCommand(transaction);
 
             _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))

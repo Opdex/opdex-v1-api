@@ -3,7 +3,7 @@ using Opdex.Platform.Common.Models;
 using System;
 using Xunit;
 
-namespace Opdex.Platform.Common.Tests.Models.UInt
+namespace Opdex.Platform.Common.Tests.Models
 {
     public class AddressTests
     {

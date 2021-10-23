@@ -1,5 +1,6 @@
 using System;
 using FluentAssertions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
 using Xunit;
 
@@ -12,24 +13,10 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
         {
             // Arrange
             // Act
-            static void Act() => new Block(0, "hash", DateTime.UtcNow, DateTime.UtcNow);
+            static void Act() => new Block(0, new Sha256(5340958239), DateTime.UtcNow, DateTime.UtcNow);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act);
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void CreateBlock_InvalidHash_ThrowArgumentNullException(string hash)
-        {
-            // Arrange
-            // Act
-            void Act() => new Block(1, hash, DateTime.UtcNow, DateTime.UtcNow);
-
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act);
         }
 
         [Fact]
@@ -37,7 +24,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
         {
             // Arrange
             // Act
-            static void Act() => new Block(1, "hash", default, DateTime.UtcNow);
+            static void Act() => new Block(1, new Sha256(5340958239), default, DateTime.UtcNow);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act);
@@ -48,7 +35,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
         {
             // Arrange
             // Act
-            static void Act() => new Block(1, "hash", DateTime.UtcNow, default);
+            static void Act() => new Block(1, new Sha256(5340958239), DateTime.UtcNow, default);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>(Act);
@@ -58,7 +45,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Blocks
         public void CreateBlock_Success()
         {
             const ulong height = ulong.MaxValue;
-            const string hash = "Hash";
+            Sha256 hash = new Sha256(4239843924835);
             var time = DateTime.UtcNow;
             var medianTime = DateTime.UtcNow;
 

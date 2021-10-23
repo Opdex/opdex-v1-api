@@ -6,7 +6,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
     public class BroadcastTransactionResponseModel
     {
         [NotNull]
-        public string TxHash { get; set; }
+        public Sha256 TxHash { get; set; }
 
         [NotNull]
         public Address Sender { get; set; }
