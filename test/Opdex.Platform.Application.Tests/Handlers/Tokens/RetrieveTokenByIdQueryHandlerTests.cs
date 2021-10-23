@@ -31,7 +31,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Tokens
             void Act() => new RetrieveTokenByIdQuery(tokenId);
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("TokenId must be greater than 0.");
+            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("TokenId must be greater than zero.");
         }
 
         [Theory]

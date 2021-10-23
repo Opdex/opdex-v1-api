@@ -5,8 +5,15 @@ using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Tokens
 {
+    /// <summary>
+    /// Get a token by its smart contract address.
+    /// </summary>
     public class GetTokenByAddressQuery : IRequest<TokenDto>
     {
+        /// <summary>
+        /// Constructor to build a get token by address query.
+        /// </summary>
+        /// <param name="address">The token's smart contract address.</param>
         public GetTokenByAddressQuery(Address address)
         {
             if (address == Address.Empty)

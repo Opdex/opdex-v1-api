@@ -9,7 +9,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
             : base(token.Id, token.Address, token.IsLpt, token.Name, token.Symbol, token.Decimals, token.Sats, token.TotalSupply,
                    token.CreatedBlock, token.ModifiedBlock)
         {
-            Market = market ?? throw new ArgumentNullException(nameof(market), "Market address must be provided.");
+            Market = market ?? throw new ArgumentNullException(nameof(market), "Market must be provided.");
         }
 
         public Market Market { get; }
