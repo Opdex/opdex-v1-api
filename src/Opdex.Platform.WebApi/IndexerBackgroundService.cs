@@ -30,6 +30,8 @@ namespace Opdex.Platform.WebApi
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            return;
+
             var started = false;
             var unavailable = false;
 

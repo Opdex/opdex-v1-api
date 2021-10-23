@@ -4,9 +4,9 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
 {
-    public class GetLiquidityPoolAddLiquidityAmountInQuoteQuery : IRequest<FixedDecimal>
+    public class GetLiquidityAmountInQuoteQuery : IRequest<FixedDecimal>
     {
-        public GetLiquidityPoolAddLiquidityAmountInQuoteQuery(FixedDecimal amountIn, Address tokenIn, Address pool)
+        public GetLiquidityAmountInQuoteQuery(FixedDecimal amountIn, Address tokenIn, Address pool)
         {
             if (tokenIn == Address.Empty)
             {

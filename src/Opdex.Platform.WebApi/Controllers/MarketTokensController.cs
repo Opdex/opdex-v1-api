@@ -8,8 +8,9 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
-using Opdex.Platform.WebApi.Models.Requests.Quotes;
+using Opdex.Platform.WebApi.Models.Requests.MarketTokens;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System;
@@ -35,15 +36,15 @@ namespace Opdex.Platform.WebApi.Controllers
             _context = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
         }
 
-        /// <summary>Get Token</summary>
-        /// <remarks>Returns the token that matches the provided address.</remarks>
+        /// <summary>Get Market Token</summary>
+        /// <remarks>Returns the market token that matches the provided address.</remarks>
         /// <param name="marketAddress">The address of the market smart contract.</param>
         /// <param name="tokenAddress">The token's smart contract address.</param>
         /// <param name="cancellationToken">cancellation token.</param>
-        /// <returns><see cref="TokenResponseModel"/> of the requested token</returns>
+        /// <returns>A market token response.</returns>
         [HttpGet("{tokenAddress}")]
-        [ProducesResponseType(typeof(MarketTokenResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ActionResult<MarketTokenResponseModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<MarketTokenResponseModel>> GetMarketToken([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
                                                                                  CancellationToken cancellationToken)
         {
@@ -77,29 +78,52 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(quote);
         }
 
-        /// <summary>Swap Amount</summary>
-        /// <remarks>
-        /// Gets a quote for the amount of tokens returned from any given token swap.
-        /// </remarks>
-        /// <remarks>
-        /// Supports CRS-SRC transactions and SRC-SRC transactions. Given an amount of a token
-        /// get the returned amount of another token.
-        /// </remarks>
-        /// <param name="marketAddress"></param>
-        /// <param name="tokenAddress"></param>
-        /// <param name="request">The swap request model for which tokens to swap for and how much to swap.</param>
+        /// <summary>Swap Amount In Quote</summary>
+        /// <remarks>Retrieve the amount of tokens to be input given an expected output amount of tokens.</remarks>
+        /// <param name="marketAddress">The address of the market contract.</param>
+        /// <param name="tokenIn">The input token's contract address.</param>
+        /// <param name="request">The amount in swap request containing details of the expected output token and amount.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>The amount of tokens to swap for.</returns>
-        [HttpPost("{tokenAddress}/swap/amount")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetSwapQuote([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
-                                                      [FromBody] SwapQuoteRequestModel request, CancellationToken cancellationToken)
+        /// <returns>The amount of tokens to be input.</returns>
+        [HttpPost("{tokenIn}/swap/amount-in")]
+        [ProducesResponseType(typeof(ActionResult<SwapAmountInQuoteResponseModel>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<SwapAmountInQuoteResponseModel>> SwapAmountIn([FromRoute] Address marketAddress, [FromRoute] Address tokenIn,
+                                                                                    [FromBody] SwapAmountInQuoteRequestModel request, CancellationToken cancellationToken)
         {
-            var query = new GetLiquidityPoolSwapQuoteQuery(request.TokenIn, request.TokenOut, request.TokenInAmount, request.TokenOutAmount, marketAddress);
+            // Todo: Revisit and split out this query's flow to Amount In specifically
+            var query = new GetLiquidityPoolSwapQuoteQuery(tokenIn, request.TokenOut, FixedDecimal.Zero, request.TokenOutAmount, marketAddress);
 
             var result = await _mediator.Send(query, cancellationToken);
 
-            return Ok(result);
+            var response = new SwapAmountInQuoteResponseModel { AmountIn = result };
+
+            return Ok(response);
+        }
+
+        /// <summary>Swap Amount Out Quote</summary>
+        /// <remarks>Retrieve the amount of output tokens given an expected input amount of tokens.</remarks>
+        /// <param name="marketAddress">The address of the market contract.</param>
+        /// <param name="tokenOut">The output token's contract address.</param>
+        /// <param name="request">The amount out swap request containing details of the expected input token and amount.</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>The amount of tokens to be output.</returns>
+        [HttpPost("{tokenOut}/swap/amount-out")]
+        [ProducesResponseType(typeof(ActionResult<SwapAmountOutQuoteResponseModel>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<SwapAmountOutQuoteResponseModel>> SwapAmountOut([FromRoute] Address marketAddress,
+                                                                                       [FromRoute] Address tokenOut,
+                                                                                       [FromBody] SwapAmountOutQuoteRequestModel request,
+                                                                                       CancellationToken cancellationToken)
+        {
+            // Todo: Revisit and split out this query's flow to Amount Out specifically
+            var query = new GetLiquidityPoolSwapQuoteQuery(request.TokenIn, tokenOut, request.TokenInAmount, FixedDecimal.Zero, marketAddress);
+
+            var result = await _mediator.Send(query, cancellationToken);
+
+            var response = new SwapAmountOutQuoteResponseModel { AmountOut = result };
+
+            return Ok(response);
         }
     }
 }
