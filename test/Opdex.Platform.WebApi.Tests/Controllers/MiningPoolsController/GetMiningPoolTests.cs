@@ -6,7 +6,7 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.WebApi.Models;
-using Opdex.Platform.WebApi.Models.Responses.Pools;
+using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
