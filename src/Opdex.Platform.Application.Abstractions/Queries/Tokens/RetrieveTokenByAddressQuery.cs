@@ -11,7 +11,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens
         {
             if (address == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(address), "Token address must be provided.");
             }
 
             Address = address;

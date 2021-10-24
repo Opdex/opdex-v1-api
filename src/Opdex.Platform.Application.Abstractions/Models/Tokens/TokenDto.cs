@@ -1,5 +1,4 @@
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Application.Abstractions.Models.Tokens
 {
@@ -11,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.Tokens
         public string Symbol { get; set; }
         public int Decimals { get; set; }
         public ulong Sats { get; set; }
-        public UInt256 TotalSupply { get; set; }
-        public TokenSnapshotDto Summary { get; set; }
+        public FixedDecimal TotalSupply { get; set; }
+        public TokenSummaryDto Summary { get; set; }
     }
 }

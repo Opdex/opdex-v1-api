@@ -1,7 +1,7 @@
 using Opdex.Platform.Common.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace Opdex.Platform.WebApi.Models.Requests.Quotes
+namespace Opdex.Platform.WebApi.Models.Requests.LiquidityPools
 {
     public class AddLiquidityQuoteRequestModel
     {

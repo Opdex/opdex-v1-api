@@ -51,15 +51,26 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
                 .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
                 .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
-                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply.ToDecimal(src.Decimals)))
+                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<TokenSnapshotDto, TokenSummaryResponseModel>()
-                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
-                .ForMember(dest => dest.DailyPriceChange, opt => opt.MapFrom(src => src.DailyPriceChange))
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
-                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+            CreateMap<MarketTokenDto, MarketTokenResponseModel>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
+                .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
+                .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
+                .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
+                .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool))
+                .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<TokenSummaryDto, TokenSummaryResponseModel>()
+                .ForMember(dest => dest.PriceUsd, opt => opt.MapFrom(src => src.PriceUsd))
+                .ForMember(dest => dest.DailyPriceChangePercent, opt => opt.MapFrom(src => src.DailyPriceChangePercent))
+                .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TokenSnapshotDto, TokenSnapshotResponseModel>()

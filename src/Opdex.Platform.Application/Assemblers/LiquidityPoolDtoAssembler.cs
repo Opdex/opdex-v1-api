@@ -19,6 +19,7 @@ using Opdex.Platform.Domain.Models.Tokens;
 using System.Linq;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Markets;
 
 namespace Opdex.Platform.Application.Assemblers
 {
@@ -28,16 +29,20 @@ namespace Opdex.Platform.Application.Assemblers
         private readonly IMapper _mapper;
         private readonly IModelAssembler<MiningPool, MiningPoolDto> _miningPoolAssembler;
         private readonly IModelAssembler<Token, TokenDto> _tokenAssembler;
+        private readonly IModelAssembler<MarketToken, MarketTokenDto> _marketTokenAssembler;
 
         private const SnapshotType SnapshotType = Common.Enums.SnapshotType.Daily;
 
-        public LiquidityPoolDtoAssembler(IMediator mediator, IMapper mapper, IModelAssembler<MiningPool, MiningPoolDto> miningPoolAssembler,
-                                         IModelAssembler<Token, TokenDto> tokenAssembler)
+        public LiquidityPoolDtoAssembler(IMediator mediator, IMapper mapper,
+                                         IModelAssembler<MiningPool, MiningPoolDto> miningPoolAssembler,
+                                         IModelAssembler<Token, TokenDto> tokenAssembler,
+                                         IModelAssembler<MarketToken, MarketTokenDto> marketTokenAssembler)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _miningPoolAssembler = miningPoolAssembler ?? throw new ArgumentNullException(nameof(miningPoolAssembler));
             _tokenAssembler = tokenAssembler ?? throw new ArgumentNullException(nameof(tokenAssembler));
+            _marketTokenAssembler = marketTokenAssembler ?? throw new ArgumentNullException(nameof(marketTokenAssembler));
         }
 
         public async Task<LiquidityPoolDto> Assemble(LiquidityPool pool)
@@ -55,16 +60,16 @@ namespace Opdex.Platform.Application.Assemblers
                 : Math.Round((decimal)market.TransactionFee / 1000, 3); // 1-10 => .01 - .001 as percent
 
             // Assemble CRS Token
-            poolDto.CrsToken = await AssembleToken(Address.Cirrus, 0);
+            poolDto.CrsToken = await AssembleToken(Address.Cirrus);
 
             // Assemble staking token details when required
-            var stakingTokenDto = market.StakingTokenId > 0 ? await AssembleToken(market.StakingTokenId.Value, market.Id) : null;
+            var stakingTokenDto = market.StakingTokenId > 0 ? await AssembleMarketToken(market.StakingTokenId.Value, market) : null;
 
             // Assemble SRC Token
-            poolDto.SrcToken = await AssembleToken(pool.SrcTokenId, market.Id);
+            poolDto.SrcToken = await AssembleMarketToken(pool.SrcTokenId, market);
 
             // Assemble LP Token
-            poolDto.LpToken = await AssembleToken(pool.LpTokenId, market.Id);
+            poolDto.LpToken = await AssembleMarketToken(pool.LpTokenId, market);
 
             // LP pool snapshot details
             var liquidityPoolSnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id, yesterday, now, SnapshotType));
@@ -79,9 +84,9 @@ namespace Opdex.Platform.Application.Assemblers
                 currentPoolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, now, SnapshotType));
                 if (currentPoolSnapshot.EndDate < now)
                 {
-                    var stakingTokenPrice = stakingTokenDto?.Summary?.Price?.Close ?? 0.00m;
-                    var crsPrice = poolDto.CrsToken.Summary.Price.Close;
-                    var srcPrice = poolDto.SrcToken.Summary.Price.Close;
+                    var stakingTokenPrice = stakingTokenDto?.Summary?.PriceUsd ?? 0.00m;
+                    var crsPrice = poolDto.CrsToken.Summary.PriceUsd;
+                    var srcPrice = poolDto.SrcToken.Summary.PriceUsd;
 
                     currentPoolSnapshot.ResetStaleSnapshot(crsPrice, srcPrice, stakingTokenPrice, poolDto.SrcToken.Sats, now);
                 }
@@ -128,23 +133,18 @@ namespace Opdex.Platform.Application.Assemblers
             return poolDto;
         }
 
-        private async Task<TokenDto> AssembleToken(ulong tokenId, ulong marketId)
+        private async Task<MarketTokenDto> AssembleMarketToken(ulong tokenId, Market market)
         {
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(tokenId));
 
-            return await AssembleTokenExecute(token, marketId);
+            var marketToken = new MarketToken(market, token);
+
+            return await _marketTokenAssembler.Assemble(marketToken);
         }
 
-        private async Task<TokenDto> AssembleToken(Address tokenAddress, ulong marketId)
+        private async Task<TokenDto> AssembleToken(Address tokenAddress)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress));
-
-            return await AssembleTokenExecute(token, marketId);
-        }
-
-        private async Task<TokenDto> AssembleTokenExecute(Token token, ulong marketId)
-        {
-            token.SetMarket(marketId);
 
             return await _tokenAssembler.Assemble(token);
         }

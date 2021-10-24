@@ -19,7 +19,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries
                 {nameof(TokenSummaryEntity.Id)},
                 {nameof(TokenSummaryEntity.MarketId)},
                 {nameof(TokenSummaryEntity.TokenId)},
-                {nameof(TokenSummaryEntity.DailyChangeUsd)},
+                {nameof(TokenSummaryEntity.DailyPriceChangePercent)},
                 {nameof(TokenSummaryEntity.PriceUsd)},
                 {nameof(TokenSummaryEntity.CreatedBlock)},
                 {nameof(TokenSummaryEntity.ModifiedBlock)}

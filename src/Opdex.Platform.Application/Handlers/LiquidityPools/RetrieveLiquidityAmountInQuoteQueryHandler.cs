@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.LiquidityPools
 {
-    public class RetrieveLiquidityPoolAddLiquidityAmountInQuoteQueryHandler : IRequestHandler<RetrieveLiquidityPoolAddLiquidityAmountInQuoteQuery, UInt256>
+    public class RetrieveLiquidityAmountInQuoteQueryHandler : IRequestHandler<RetrieveLiquidityAmountInQuoteQuery, UInt256>
     {
         private readonly IMediator _mediator;
 
-        public RetrieveLiquidityPoolAddLiquidityAmountInQuoteQueryHandler(IMediator mediator)
+        public RetrieveLiquidityAmountInQuoteQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<UInt256> Handle(RetrieveLiquidityPoolAddLiquidityAmountInQuoteQuery request, CancellationToken cancellationToken)
+        public async Task<UInt256> Handle(RetrieveLiquidityAmountInQuoteQuery request, CancellationToken cancellationToken)
         {
             var reserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(request.Pool), cancellationToken);
 
@@ -28,7 +28,7 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
             var reserveIn = request.TokenIn == Address.Cirrus ? reservesCrs : reservesSrc;
             var reserveOut = request.TokenIn == Address.Cirrus ? reservesSrc : reservesCrs;
 
-            return await _mediator.Send(new CallCirrusGetLiquidityPoolAddLiquidityAmountInQuoteQuery(request.AmountIn, reserveIn, reserveOut, request.Router), cancellationToken);
+            return await _mediator.Send(new CallCirrusGetLiquidityAmountInQuoteQuery(request.AmountIn, reserveIn, reserveOut, request.Router), cancellationToken);
         }
     }
 }

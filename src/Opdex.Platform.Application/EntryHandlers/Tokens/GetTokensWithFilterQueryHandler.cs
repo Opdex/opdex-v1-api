@@ -10,7 +10,6 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models.Tokens;
 using System.Linq;
-using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Tokens
 {
@@ -37,14 +36,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
                                                                                 request.OrderBy,
                                                                                 request.Tokens), cancellationToken);
 
-            return await Task.WhenAll(tokens.Select(token =>
-            {
-                var marketId = token.Address == Address.Cirrus ? 0 : market.Id;
-
-                token.SetMarket(marketId);
-
-                return _tokenAssembler.Assemble(token);
-            }));
+            return await Task.WhenAll(tokens.Select(token => _tokenAssembler.Assemble(token)));
         }
     }
 }

@@ -18,14 +18,14 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries
             $@"INSERT INTO token_summary (
                 {nameof(TokenSummaryEntity.MarketId)},
                 {nameof(TokenSummaryEntity.TokenId)},
-                {nameof(TokenSummaryEntity.DailyChangeUsd)},
+                {nameof(TokenSummaryEntity.DailyPriceChangePercent)},
                 {nameof(TokenSummaryEntity.PriceUsd)},
                 {nameof(TokenSummaryEntity.CreatedBlock)},
                 {nameof(TokenSummaryEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(TokenSummaryEntity.MarketId)},
                 @{nameof(TokenSummaryEntity.TokenId)},
-                @{nameof(TokenSummaryEntity.DailyChangeUsd)},
+                @{nameof(TokenSummaryEntity.DailyPriceChangePercent)},
                 @{nameof(TokenSummaryEntity.PriceUsd)},
                 @{nameof(TokenSummaryEntity.CreatedBlock)},
                 @{nameof(TokenSummaryEntity.ModifiedBlock)}
@@ -35,7 +35,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries
         private static readonly string UpdateSqlCommand =
             $@"UPDATE token_summary
                 SET
-                    {nameof(TokenSummaryEntity.DailyChangeUsd)} = @{nameof(TokenSummaryEntity.DailyChangeUsd)},
+                    {nameof(TokenSummaryEntity.DailyPriceChangePercent)} = @{nameof(TokenSummaryEntity.DailyPriceChangePercent)},
                     {nameof(TokenSummaryEntity.PriceUsd)} = @{nameof(TokenSummaryEntity.PriceUsd)},
                     {nameof(TokenSummaryEntity.ModifiedBlock)} = @{nameof(TokenSummaryEntity.ModifiedBlock)}
                 WHERE {nameof(TokenSummaryEntity.Id)} = @{nameof(TokenSummaryEntity.Id)};".RemoveExcessWhitespace();
