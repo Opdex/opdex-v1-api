@@ -8,10 +8,10 @@ using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
 {
-    public class TokensCursor : Cursor<(decimal, ulong)>
+    public class TokensCursor : Cursor<(string, ulong)>
     {
         public TokensCursor(string keyword, IEnumerable<Address> tokens, IEnumerable<TokenAttributeType> attributes, TokenOrderByType orderBy,
-                            SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, (decimal, ulong) pointer)
+                            SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, (string, ulong) pointer )
             : base(sortDirection, limit, pagingDirection, pointer)
         {
             Keyword = keyword;
@@ -57,16 +57,13 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
         }
 
         /// <inheritdoc />
-        public override Cursor<(decimal, ulong)> Turn(PagingDirection direction, (decimal, ulong) pointer)
+        public override Cursor<(string, ulong)> Turn(PagingDirection direction, (string, ulong) pointer)
         {
             if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
             if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical pointer.");
 
             return new TokensCursor(Keyword, Tokens, Attributes, OrderBy, SortDirection, Limit, direction, pointer);
         }
-
-        /// <inheritdoc />
-        protected override bool ValidatePointer((decimal, ulong) pointer) => pointer.Item1 >= 0 && base.ValidatePointer(pointer);
 
         /// <summary>
         /// Parses a stringified version of the cursor
@@ -114,22 +111,21 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
             return true;
         }
 
-        private static bool TryDecodePointer(string encoded, out (decimal, ulong) pointer)
+        private static bool TryDecodePointer(string encoded, out (string, ulong) pointer)
         {
-            pointer = (0m, 0);
+            pointer = (string.Empty, 0);
 
             if (!encoded.TryBase64Decode(out var decoded)) return false;
 
             var tupleParts = decoded.Replace("(", "").Replace(")", "").Split(',');
 
-            if (tupleParts.Length != 2 ||
-                !decimal.TryParse(tupleParts[0], out var decimalValue) ||
-                !ulong.TryParse(tupleParts[1], out var ulongValue))
+            if (tupleParts.Length != 2 || !ulong.TryParse(tupleParts[1], out var ulongValue))
             {
                 return false;
             }
 
-            pointer = (decimalValue, ulongValue);
+            pointer = (tupleParts[0], ulongValue);
+
             return true;
         }
     }

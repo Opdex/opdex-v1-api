@@ -44,7 +44,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Filtered tokens with paging.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(TokensResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TokensResponseModel>> Tokens([FromQuery] TokenFilterParameters filters, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<TokensResponseModel>> GetTokens([FromQuery] TokenFilterParameters filters, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetTokensWithFilterQuery(filters.BuildCursor()), cancellationToken);
 
@@ -67,6 +68,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status303SeeOther)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> AddToken([FromBody] AddTokenRequest request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new CreateAddTokenCommand(request.TokenAddress), cancellationToken);
@@ -83,7 +85,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns><see cref="TokenResponseModel"/> of the requested token</returns>
         [HttpGet("{address}")]
         [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TokenResponseModel>> GetToken([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetTokenByAddressQuery(address), cancellationToken);
@@ -102,6 +105,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns><see cref="TokenSnapshotHistoryResponseModel"/> with a list of historical data points.</returns>
         [HttpGet("{address}/history")]
         [ProducesResponseType(typeof(TokenSnapshotHistoryResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TokenSnapshotHistoryResponseModel>> TokenHistory([FromRoute] Address address,
                                                                                         [FromQuery] string candleSpan,
                                                                                         [FromQuery] string timespan,
@@ -130,8 +135,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Transaction quote of an approve allowance transaction.</returns>
         [HttpPost("{address}/approve")]
-        [ProducesResponseType(typeof(ActionResult<TransactionQuoteResponseModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ApproveAllowance([FromRoute] Address address,
                                                           [FromBody] ApproveAllowanceRequest request,
                                                           CancellationToken cancellationToken)
@@ -152,8 +158,9 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Token distribute transaction quote.</returns>
         [HttpPost("{address}/distribute")]
-        [ProducesResponseType(typeof(ActionResult<TransactionQuoteResponseModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ActionResult<ProblemDetails>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Distribute([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateDistributeTokensTransactionQuoteCommand(address, _context.Wallet), cancellationToken);

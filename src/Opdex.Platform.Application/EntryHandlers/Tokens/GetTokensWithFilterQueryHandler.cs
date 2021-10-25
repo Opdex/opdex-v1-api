@@ -35,9 +35,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
             {
                 return request.Cursor.OrderBy switch
                 {
-                    TokenOrderByType.PriceUsd => (result.Summary.PriceUsd, result.Id),
-                    TokenOrderByType.DailyPriceChangePercent => (result.Summary.DailyPriceChangePercent, result.Id),
-                    _ => (0, result.Id)
+                    TokenOrderByType.AddedBlock => (result.Id.ToString(), result.Id),
+                    TokenOrderByType.Name => (result.Name, result.Id),
+                    TokenOrderByType.Symbol => (result.Symbol, result.Id),
+                    TokenOrderByType.PriceUsd => (result.Summary?.PriceUsd.ToString(), result.Id),
+                    TokenOrderByType.DailyPriceChangePercent => (result.Summary?.DailyPriceChangePercent.ToString(), result.Id),
+                    _ => (string.Empty, result.Id)
                 };
             });
 

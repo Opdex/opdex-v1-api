@@ -9,13 +9,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
     {
         public SelectTokensWithFilterQuery(ulong marketId, TokensCursor cursor)
         {
-            if (marketId < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(marketId));
-            }
-
             MarketId = marketId;
-            Cursor = cursor;
+            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor), "Tokens cursor must be provided.");
         }
 
         public ulong MarketId { get; }

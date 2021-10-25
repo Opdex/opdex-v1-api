@@ -13,6 +13,10 @@ namespace Opdex.Platform.WebApi.Models.Requests.Tokens
         {
             Tokens = new List<Address>();
             Attributes = new List<TokenAttributeType>();
+
+            // Todo: Should this be the default? Should we make a "Default" enum value?
+            // Maybe try and make this nullable again and have (null, tokenId) as a valid cursor and remove "AddedBlock" completely.
+            OrderBy = TokenOrderByType.AddedBlock;
         }
 
         /// <summary>
