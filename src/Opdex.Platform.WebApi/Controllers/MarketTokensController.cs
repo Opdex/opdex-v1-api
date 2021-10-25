@@ -9,11 +9,13 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.MarketTokens;
+using Opdex.Platform.WebApi.Models.Requests.Tokens;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,6 +36,19 @@ namespace Opdex.Platform.WebApi.Controllers
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _context = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(MarketTokensResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<MarketTokensResponseModel>> Tokens([FromRoute] Address marketAddress,
+                                                                          [FromQuery] TokenFilterParameters filters,
+                                                                          CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetMarketTokensWithFilterQuery(marketAddress, filters.BuildCursor()), cancellationToken);
+
+            var response = _mapper.Map<MarketTokensResponseModel>(result);
+
+            return Ok(response);
         }
 
         /// <summary>Get Market Token</summary>

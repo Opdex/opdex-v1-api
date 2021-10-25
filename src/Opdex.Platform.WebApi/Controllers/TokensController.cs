@@ -39,29 +39,16 @@ namespace Opdex.Platform.WebApi.Controllers
 
         /// <summary>Get Tokens</summary>
         /// <remarks>Retrieve tokens from within a market with a filter.</remarks>
-        /// <param name="lpToken">Optional flag to return liquidity pool tokens or not.</param>
-        /// <param name="skip">How many records to skip for pagination.</param>
-        /// <param name="take">How many records to take for pagination</param>
-        /// <param name="sortBy">Sort By</param>
-        /// <param name="orderBy">Order By</param>
-        /// <param name="tokens">Specific token addresses to filter for.</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>List of filtered tokens.</returns>
+        /// <param name="filters">Token search filters.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Filtered tokens with paging.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<TokenResponseModel>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<TokenResponseModel>>> Tokens([FromQuery] bool? lpToken,
-                                                                                [FromQuery] uint? skip,
-                                                                                [FromQuery] uint? take,
-                                                                                [FromQuery] string sortBy,
-                                                                                [FromQuery] string orderBy,
-                                                                                [FromQuery] IEnumerable<Address> tokens,
-                                                                                CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(TokensResponseModel), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TokensResponseModel>> Tokens([FromQuery] TokenFilterParameters filters, CancellationToken cancellationToken)
         {
-            var query = new GetTokensWithFilterQuery(_context.Market, lpToken, skip ?? 0, take ?? 10, sortBy, orderBy, tokens);
+            var result = await _mediator.Send(new GetTokensWithFilterQuery(filters.BuildCursor()), cancellationToken);
 
-            var result = await _mediator.Send(query, cancellationToken);
-
-            var response = _mapper.Map<IEnumerable<TokenResponseModel>>(result);
+            var response = _mapper.Map<TokensResponseModel>(result);
 
             return Ok(response);
         }

@@ -67,6 +67,11 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<MarketTokensDto, MarketTokensResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Tokens))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<TokenSummaryDto, TokenSummaryResponseModel>()
                 .ForMember(dest => dest.PriceUsd, opt => opt.MapFrom(src => src.PriceUsd))
                 .ForMember(dest => dest.DailyPriceChangePercent, opt => opt.MapFrom(src => src.DailyPriceChangePercent))
