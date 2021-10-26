@@ -10,14 +10,14 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
 {
     public class TokensCursor : Cursor<(string, ulong)>
     {
-        public TokensCursor(string keyword, IEnumerable<Address> tokens, IEnumerable<TokenAttributeType> attributes, TokenOrderByType orderBy,
-                            SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, (string, ulong) pointer )
+        public TokensCursor(string keyword, IEnumerable<Address> tokens, TokenProvisionalFilter provisionalFilter, TokenOrderByType orderBy,
+                            SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, (string, ulong) pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
             Keyword = keyword;
             OrderBy = orderBy;
             Tokens = tokens ?? Enumerable.Empty<Address>();
-            Attributes = attributes ?? Enumerable.Empty<TokenAttributeType>();
+            ProvisionalFilter = provisionalFilter;
         }
 
         /// <summary>
@@ -36,9 +36,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
         public IEnumerable<Address> Tokens { get; }
 
         /// <summary>
-        /// Token attributes to filter for.
+        /// The type of token to filter for, liquidity pool tokens or not.
         /// </summary>
-        public IEnumerable<TokenAttributeType> Attributes { get; }
+        public TokenProvisionalFilter ProvisionalFilter { get; }
 
         /// <inheritdoc />
         public override string ToString()
@@ -49,7 +49,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
             var sb = new StringBuilder();
             sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
             foreach (var token in Tokens) sb.AppendFormat("tokens:{0};", token);
-            foreach (var attr in Attributes) sb.AppendFormat("attributes:{0};", attr);
+            sb.AppendFormat("provisional:{0};", ProvisionalFilter);
             sb.AppendFormat("keyword:{0};", Keyword);
             sb.AppendFormat("orderBy:{0};", OrderBy);
             sb.AppendFormat("pointer:{0};", encodedPointer);
@@ -62,7 +62,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
             if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
             if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical pointer.");
 
-            return new TokensCursor(Keyword, Tokens, Attributes, OrderBy, SortDirection, Limit, direction, pointer);
+            return new TokensCursor(Keyword, Tokens, ProvisionalFilter, OrderBy, SortDirection, Limit, direction, pointer);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
 
             TryGetCursorProperties<Address>(values, "tokens", out var tokens);
 
-            TryGetCursorProperties<TokenAttributeType>(values, "attributes", out var attributes);
+            TryGetCursorProperty<TokenProvisionalFilter>(values, "provisional", out var provisional);
 
             if (!TryGetCursorProperty<SortDirectionType>(values, "direction", out var direction)) return false;
 
@@ -101,7 +101,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
 
             try
             {
-                cursor = new TokensCursor(keyword, tokens, attributes, orderBy, direction, limit, paging, pointer);
+                cursor = new TokensCursor(keyword, tokens, provisional, orderBy, direction, limit, paging, pointer);
             }
             catch (Exception)
             {
@@ -128,5 +128,57 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens
 
             return true;
         }
+    }
+
+    /// <summary>
+    /// Filter for a tokens status whether it is an Opdex liquidity pool token or not.
+    /// </summary>
+    public enum TokenProvisionalFilter
+    {
+        /// <summary>
+        /// Non Opdex liquidity pool tokens.
+        /// </summary>
+        NonProvisional = 0,
+
+        /// <summary>
+        /// Opdex liquidity pool tokens.
+        /// </summary>
+        Provisional = 1,
+
+        /// <summary>
+        /// All tokens.
+        /// </summary>
+        All = 2
+    }
+
+    /// <summary>
+    /// Selectable options to order token results by.
+    /// </summary>
+    public enum TokenOrderByType
+    {
+        /// <summary>
+        /// Ordered by the date they were added to Opdex.
+        /// </summary>
+        Default = 0,
+
+        /// <summary>
+        /// Ordered alphabetically by name.
+        /// </summary>
+        Name = 1,
+
+        /// <summary>
+        /// Ordered alphabetically by symbol.
+        /// </summary>
+        Symbol = 2,
+
+        /// <summary>
+        /// Ordered by value of daily price change percentage.
+        /// </summary>
+        DailyPriceChangePercent = 3,
+
+        /// <summary>
+        /// Ordered by USd price value.
+        /// </summary>
+        PriceUsd = 4
     }
 }

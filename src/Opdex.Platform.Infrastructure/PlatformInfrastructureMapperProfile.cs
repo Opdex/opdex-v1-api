@@ -68,6 +68,10 @@ namespace Opdex.Platform.Infrastructure
                     src.DistributionBlock, src.NextDistributionBlock, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<TokenAttributeEntity, TokenAttribute>()
+                .ConstructUsing(src => new TokenAttribute(src.Id, src.TokenId, (TokenAttributeType)src.AttributeTypeId))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<BlockEntity, Block>()
                 .ConstructUsing(src => new Block(src.Height, src.Hash, src.Time, src.MedianTime))
                 .ForAllOtherMembers(opt => opt.Ignore());
@@ -408,6 +412,12 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<TokenAttribute, TokenAttributeEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+                .ForMember(dest => dest.AttributeTypeId, opt => opt.MapFrom(src => (uint)src.AttributeType))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPool, LiquidityPoolEntity>()

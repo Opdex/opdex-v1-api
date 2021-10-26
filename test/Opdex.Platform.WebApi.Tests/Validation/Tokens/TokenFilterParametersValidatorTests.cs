@@ -2,6 +2,7 @@ using FluentValidation.TestHelper;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using Opdex.Platform.WebApi.Models.Requests.Tokens;
 using Opdex.Platform.WebApi.Validation.Tokens;
 using System.Collections.Generic;
@@ -18,13 +19,54 @@ namespace Opdex.Platform.WebApi.Tests.Validation.Tokens
             _validator = new TokenFilterParametersValidator();
         }
 
+        [Theory]
+        [InlineData("*")]
+        [InlineData("?")]
+        [InlineData(":")]
+        [InlineData("asdf;")]
+        public void Keyword_Invalid(string keyword)
+        {
+            // Arrange
+            var request = new TokenFilterParameters
+            {
+                Keyword = keyword
+            };
+
+            // Act
+            var result = _validator.TestValidate(request);
+
+            // Assert
+            result.ShouldHaveValidationErrorFor(r => r.Keyword).WithErrorMessage("Keyword must consist of letters, numbers and spaces only.");
+        }
+
+        [Theory]
+        [InlineData("asdf")]
+        [InlineData("fda")]
+        [InlineData("89df7g78eh5qehgn8943hg3")]
+        [InlineData("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc")]
+        [InlineData("Bitcoin Wrapped")]
+        public void Keyword_Valid(string keyword)
+        {
+            // Arrange
+            var request = new TokenFilterParameters
+            {
+                Keyword = keyword
+            };
+
+            // Act
+            var result = _validator.TestValidate(request);
+
+            // Assert
+            result.ShouldNotHaveValidationErrorFor(r => r.Keyword);
+        }
+
         [Fact]
         public void OrderBy_Invalid()
         {
             // Arrange
             var request = new TokenFilterParameters
             {
-                OrderBy = 0
+                OrderBy = (TokenOrderByType)10000
             };
 
             // Act
@@ -88,37 +130,40 @@ namespace Opdex.Platform.WebApi.Tests.Validation.Tokens
         }
 
         [Theory]
-        [InlineData(default(TokenAttributeType))]
-        [InlineData((TokenAttributeType)1000)]
-        public void Attributes_Items_Invalid(TokenAttributeType eventType)
+        [InlineData((TokenProvisionalFilter)1000)]
+        public void ProvisionalFilter_Item_Invalid(TokenProvisionalFilter filter)
         {
             // Arrange
             var request = new TokenFilterParameters
             {
-                Attributes = new List<TokenAttributeType> { eventType }
+                ProvisionalFilter = filter
             };
 
             // Act
             var result = _validator.TestValidate(request);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(r => r.Attributes);
+            result.ShouldHaveValidationErrorFor(r => r.ProvisionalFilter);
         }
 
-        [Fact]
-        public void Attributes_Items_Valid()
+        [Theory]
+        [InlineData((default))]
+        [InlineData(TokenProvisionalFilter.All)]
+        [InlineData(TokenProvisionalFilter.Provisional)]
+        [InlineData(TokenProvisionalFilter.NonProvisional)]
+        public void ProvisionalFilter_Item_Valid(TokenProvisionalFilter filter)
         {
             // Arrange
             var request = new TokenFilterParameters
             {
-                Attributes = new List<TokenAttributeType> { TokenAttributeType.SRC20 }
+                ProvisionalFilter = filter
             };
 
             // Act
             var result = _validator.TestValidate(request);
 
             // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.Attributes);
+            result.ShouldNotHaveValidationErrorFor(r => r.ProvisionalFilter);
         }
 
         [Fact]

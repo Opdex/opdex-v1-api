@@ -119,6 +119,8 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Attributes;
+using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -172,6 +174,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<PersistTokenCommand, ulong>, PersistTokenCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTokenSnapshotCommand, bool>, PersistTokenSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<PersistTokenSummaryCommand, ulong>, PersistTokenSummaryCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistTokenAttributeCommand, bool>, PersistTokenAttributeCommandHandler>();
 
             // Transactions
             services.AddTransient<IRequestHandler<PersistTransactionCommand, ulong>, PersistTransactionCommandHandler>();
@@ -251,6 +254,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>, SelectTokenSnapshotWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>, SelectLatestTokenDistributionQueryHandler>();
             services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, SelectTokenAttributesByTokenIdQueryHandler>();
 
             // Governances
             services.AddTransient<IRequestHandler<SelectActiveGovernanceNominationsByGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveGovernanceNominationsByGovernanceIdQueryHandler>();

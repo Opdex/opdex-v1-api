@@ -1,4 +1,3 @@
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -12,11 +11,6 @@ namespace Opdex.Platform.WebApi.Models.Requests.Tokens
         public TokenFilterParameters()
         {
             Tokens = new List<Address>();
-            Attributes = new List<TokenAttributeType>();
-
-            // Todo: Should this be the default? Should we make a "Default" enum value?
-            // Maybe try and make this nullable again and have (null, tokenId) as a valid cursor and remove "AddedBlock" completely.
-            OrderBy = TokenOrderByType.AddedBlock;
         }
 
         /// <summary>
@@ -25,9 +19,9 @@ namespace Opdex.Platform.WebApi.Models.Requests.Tokens
         public TokenOrderByType OrderBy { get; set; }
 
         /// <summary>
-        /// Token attributes to filter for.
+        /// The type of token to filter for, liquidity pool tokens or not.
         /// </summary>
-        public IEnumerable<TokenAttributeType> Attributes { get; set; }
+        public TokenProvisionalFilter ProvisionalFilter { get; set; }
 
         /// <summary>
         /// The liquidity pools used for mining.
@@ -42,7 +36,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Tokens
         /// <inheritdoc />
         protected override TokensCursor InternalBuildCursor()
         {
-            if (Cursor is null) return new TokensCursor(Keyword, Tokens, Attributes, OrderBy, Direction, Limit, PagingDirection.Forward, default);
+            if (Cursor is null) return new TokensCursor(Keyword, Tokens, ProvisionalFilter, OrderBy, Direction, Limit, PagingDirection.Forward, default);
             Cursor.TryBase64Decode(out var decodedCursor);
             TokensCursor.TryParse(decodedCursor, out var cursor);
             return cursor;

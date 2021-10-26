@@ -53,19 +53,18 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
             // Arrange
             var cursor = new TokensCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
                                           new Address[] { "PAmvCGQNeVVDMbgUkXKprGLzzUCPT9Wqu5", "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u" },
-                                          new [] { TokenAttributeType.SRC20, TokenAttributeType.OLPT },
+                                          TokenProvisionalFilter.Provisional,
                                           TokenOrderByType.DailyPriceChangePercent,
                                           SortDirectionType.ASC,
                                           25,
                                           PagingDirection.Forward,
                                           ("50.00", 10));
-            var request = new GetTokensWithFilterQuery(cursor);
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
             try
             {
-                await _handler.Handle(request, cancellationToken);
+                await _handler.Handle(new GetTokensWithFilterQuery(cursor), cancellationToken);
             }
             catch (Exception) { }
 
@@ -77,9 +76,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
         public async Task Handle_TokensRetrieved_MapResults()
         {
             // Arrange
-            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), Enumerable.Empty<TokenAttributeType>(),
+            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
                                           TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 25, PagingDirection.Forward, ("50.00", 10));
-            var request = new GetTokensWithFilterQuery(cursor);
             var token = new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10);
             var tokens = new [] { token };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(tokens);
@@ -87,7 +85,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
             // Act
             try
             {
-                await _handler.Handle(request, CancellationToken.None);
+                await _handler.Handle(new GetTokensWithFilterQuery(cursor), CancellationToken.None);
             }
             catch (Exception) { }
 
@@ -99,9 +97,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
         public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
         {
             // Arrange
-            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), Enumerable.Empty<TokenAttributeType>(),
+            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
                                           TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 4, PagingDirection.Forward, ("50.00", 10));
-            var request = new GetTokensWithFilterQuery(cursor);
             var tokens = new []
             {
                 new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
@@ -124,7 +121,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
             });
 
             // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+            var dto = await _handler.Handle(new GetTokensWithFilterQuery(cursor), CancellationToken.None);
 
             // Assert
             dto.Tokens.Count().Should().Be(tokens.Length);
@@ -134,9 +131,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
         public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
         {
             // Arrange
-            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), Enumerable.Empty<TokenAttributeType>(),
-                                          TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 2, PagingDirection.Backward, ("50.00", 10));
-            var request = new GetTokensWithFilterQuery(cursor);
+            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
+                                          TokenOrderByType.Default, SortDirectionType.ASC, 2, PagingDirection.Backward, ("50.00", 10));
             var tokens = new []
             {
                 new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
@@ -158,7 +154,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
             });
 
             // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+            var dto = await _handler.Handle(new GetTokensWithFilterQuery(cursor), CancellationToken.None);
 
             // Assert
             dto.Tokens.Count().Should().Be(tokens.Length - 1);
@@ -168,9 +164,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
         public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
         {
             // Arrange
-            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), Enumerable.Empty<TokenAttributeType>(),
+            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
                                           TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 2, PagingDirection.Forward, ("50.00", 10));
-            var request = new GetTokensWithFilterQuery(cursor);
             var tokens = new []
             {
                 new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
@@ -192,7 +187,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
             });
 
             // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+            var dto = await _handler.Handle(new GetTokensWithFilterQuery(cursor), CancellationToken.None);
 
             // Assert
             dto.Tokens.Count().Should().Be(tokens.Length - 1);
@@ -202,10 +197,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
         public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), Enumerable.Empty<TokenAttributeType>(),
+            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
                                           TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
 
-            var request = new GetTokensWithFilterQuery(cursor);
             var tokens = new []
             {
                 new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
@@ -228,7 +222,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
             });
 
             // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+            var dto = await _handler.Handle(new GetTokensWithFilterQuery(cursor), CancellationToken.None);
 
             // Assert
             AssertNext(dto.Cursor, ("0.23", tokens[1].Id));
@@ -239,10 +233,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
         public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), Enumerable.Empty<TokenAttributeType>(),
+            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
                                           TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 2, PagingDirection.Forward, ("10.12", 2));
 
-            var request = new GetTokensWithFilterQuery(cursor);
             var tokens = new []
             {
                 new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
@@ -265,7 +258,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
             });
 
             // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+            var dto = await _handler.Handle(new GetTokensWithFilterQuery(cursor), CancellationToken.None);
 
             // Assert
             AssertNext(dto.Cursor, ("0.23", tokens[^2].Id));
@@ -276,10 +269,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
         public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), Enumerable.Empty<TokenAttributeType>(),
+            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
                                           TokenOrderByType.Symbol, SortDirectionType.ASC, 2, PagingDirection.Backward, ("10.12", 2));
 
-            var request = new GetTokensWithFilterQuery(cursor);
             var tokens = new []
             {
                 new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
@@ -302,7 +294,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
             });
 
             // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+            var dto = await _handler.Handle(new GetTokensWithFilterQuery(cursor), CancellationToken.None);
 
             // Assert
             AssertNext(dto.Cursor, (tokens[^1].Symbol, tokens[^1].Id));
@@ -313,10 +305,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
         public async Task Handle_PagingForwardLastPage_ReturnCursor()
         {
             // Arrange
-            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), Enumerable.Empty<TokenAttributeType>(),
+            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
                                           TokenOrderByType.Name, SortDirectionType.ASC, 2, PagingDirection.Forward, ("10.12", 2));
 
-            var request = new GetTokensWithFilterQuery(cursor);
             var tokens = new []
             {
                 new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
@@ -338,7 +329,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
             });
 
             // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+            var dto = await _handler.Handle(new GetTokensWithFilterQuery(cursor), CancellationToken.None);
 
             // Assert
             dto.Cursor.Next.Should().Be(null);
@@ -349,10 +340,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
         public async Task Handle_PagingBackwardLastPage_ReturnCursor()
         {
             // Arrange
-            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), Enumerable.Empty<TokenAttributeType>(),
+            var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All,
                                           TokenOrderByType.PriceUsd, SortDirectionType.ASC, 2, PagingDirection.Backward, ("10.12", 2));
 
-            var request = new GetTokensWithFilterQuery(cursor);
             var tokens = new []
             {
                 new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
@@ -374,7 +364,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens
             });
 
             // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+            var dto = await _handler.Handle(new GetTokensWithFilterQuery(cursor), CancellationToken.None);
 
             // Assert
             AssertNext(dto.Cursor, ("1.11", tokens[^1].Id));

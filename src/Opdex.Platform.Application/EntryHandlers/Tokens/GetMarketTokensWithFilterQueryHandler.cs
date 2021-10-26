@@ -4,8 +4,8 @@ using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using System;
 using System.Linq;
 using System.Threading;
@@ -38,7 +38,6 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens
             {
                 return request.Cursor.OrderBy switch
                 {
-                    TokenOrderByType.AddedBlock => (result.Id.ToString(), result.Id),
                     TokenOrderByType.Name => (result.Name, result.Id),
                     TokenOrderByType.Symbol => (result.Symbol, result.Id),
                     TokenOrderByType.PriceUsd => (result.Summary.PriceUsd.ToString(), result.Id),
