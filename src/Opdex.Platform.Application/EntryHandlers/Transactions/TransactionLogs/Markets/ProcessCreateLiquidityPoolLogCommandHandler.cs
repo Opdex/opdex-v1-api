@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var srcTokenId = await _mediator.Send(new CreateTokenCommand(request.Log.Token, request.BlockHeight));
 
-                // Validate the SRC token in the pool is not an OLPT token, Opdex do not support these liquidity pools
+                // Validate the SRC token in the pool is not an OLPT token, Opdex does not support these liquidity pools
                 var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(srcTokenId));
                 if (srcToken.IsLpt) return false;
 

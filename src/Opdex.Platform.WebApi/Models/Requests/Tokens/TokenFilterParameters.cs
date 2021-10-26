@@ -21,10 +21,10 @@ namespace Opdex.Platform.WebApi.Models.Requests.Tokens
         /// <summary>
         /// The type of token to filter for, liquidity pool tokens or not.
         /// </summary>
-        public TokenProvisionalFilter ProvisionalFilter { get; set; }
+        public TokenProvisionalFilter Provisional { get; set; }
 
         /// <summary>
-        /// The liquidity pools used for mining.
+        /// Tokens to filter specifically for.
         /// </summary>
         public IEnumerable<Address> Tokens { get; set; }
 
@@ -36,7 +36,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Tokens
         /// <inheritdoc />
         protected override TokensCursor InternalBuildCursor()
         {
-            if (Cursor is null) return new TokensCursor(Keyword, Tokens, ProvisionalFilter, OrderBy, Direction, Limit, PagingDirection.Forward, default);
+            if (Cursor is null) return new TokensCursor(Keyword, Tokens, Provisional, OrderBy, Direction, Limit, PagingDirection.Forward, default);
             Cursor.TryBase64Decode(out var decodedCursor);
             TokensCursor.TryParse(decodedCursor, out var cursor);
             return cursor;

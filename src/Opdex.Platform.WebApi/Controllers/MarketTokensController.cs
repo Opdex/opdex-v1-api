@@ -36,10 +36,10 @@ namespace Opdex.Platform.WebApi.Controllers
             _context = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
         }
 
-        /// <summary> Get Market Tokens</summary>
-        /// <remarks>Search and filter tokens in a market.</remarks>
-        /// <param name="marketAddress"></param>
-        /// <param name="filters"></param>
+        /// <summary>Get Market Tokens</summary>
+        /// <remarks>Search and filter tokens in a market with pagination.</remarks>
+        /// <param name="marketAddress">The market contract address to search within.</param>
+        /// <param name="filters">Token search filters.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns><see cref="MarketTokensResponseModel"/> results response with pagination.</returns>
         [HttpGet]

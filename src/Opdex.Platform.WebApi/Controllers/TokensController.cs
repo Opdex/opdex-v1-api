@@ -38,7 +38,7 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Tokens</summary>
-        /// <remarks>Retrieve tokens from within a market with a filter.</remarks>
+        /// <remarks>Retrieve tokens known to Opdex with filtering and pagination.</remarks>
         /// <param name="filters">Token search filters.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Filtered tokens with paging.</returns>

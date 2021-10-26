@@ -136,14 +136,14 @@ namespace Opdex.Platform.WebApi.Tests.Validation.Tokens
             // Arrange
             var request = new TokenFilterParameters
             {
-                ProvisionalFilter = filter
+                Provisional = filter
             };
 
             // Act
             var result = _validator.TestValidate(request);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(r => r.ProvisionalFilter);
+            result.ShouldHaveValidationErrorFor(r => r.Provisional);
         }
 
         [Theory]
@@ -156,14 +156,14 @@ namespace Opdex.Platform.WebApi.Tests.Validation.Tokens
             // Arrange
             var request = new TokenFilterParameters
             {
-                ProvisionalFilter = filter
+                Provisional = filter
             };
 
             // Act
             var result = _validator.TestValidate(request);
 
             // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.ProvisionalFilter);
+            result.ShouldNotHaveValidationErrorFor(r => r.Provisional);
         }
 
         [Fact]
