@@ -20,13 +20,7 @@ namespace Opdex.Platform.Application.Handlers.Tokens
 
         public Task<IEnumerable<Token>> Handle(RetrieveTokensWithFilterQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectTokensWithFilterQuery(request.MarketId,
-                                                                  request.LpToken,
-                                                                  request.Skip,
-                                                                  request.Take,
-                                                                  request.SortBy,
-                                                                  request.OrderBy,
-                                                                  request.Tokens), cancellationToken);
+            return _mediator.Send(new SelectTokensWithFilterQuery(request.MarketId, request.Cursor), cancellationToken);
         }
     }
 }

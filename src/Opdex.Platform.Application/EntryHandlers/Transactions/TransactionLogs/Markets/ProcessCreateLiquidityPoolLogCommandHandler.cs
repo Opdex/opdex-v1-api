@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
@@ -36,6 +37,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 if (market == null) return false;
 
                 var srcTokenId = await _mediator.Send(new CreateTokenCommand(request.Log.Token, request.BlockHeight));
+
+                // Validate the SRC token in the pool is not an OLPT token, Opdex does not support these liquidity pools
+                var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(srcTokenId));
+                if (srcToken.IsLpt) return false;
+
                 var lpTokenId = await _mediator.Send(new CreateTokenCommand(request.Log.Pool, request.BlockHeight));
 
                 var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false)) ??

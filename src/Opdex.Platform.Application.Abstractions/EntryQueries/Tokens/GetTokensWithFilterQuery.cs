@@ -1,36 +1,24 @@
-using System.Collections.Generic;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using System;
-using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Tokens
 {
-    public class GetTokensWithFilterQuery : IRequest<IEnumerable<TokenDto>>
+    /// <summary>
+    /// Get tokens with pagination and filtering.
+    /// </summary>
+    public class GetTokensWithFilterQuery : IRequest<TokensDto>
     {
-        public GetTokensWithFilterQuery(Address marketAddress, bool? lpToken, uint skip, uint take, string sortBy,
-                                                string orderBy, IEnumerable<Address> tokens)
+        /// <summary>
+        /// Constructor to build a get tokens with filter query.
+        /// </summary>
+        /// <param name="cursor">The cursor used for filtering and pagination.</param>
+        public GetTokensWithFilterQuery(TokensCursor cursor)
         {
-            if (marketAddress == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(marketAddress));
-            }
-
-            MarketAddress = marketAddress;
-            LpToken = lpToken;
-            Skip = skip;
-            Take = take;
-            SortBy = sortBy;
-            OrderBy = orderBy;
-            Tokens = tokens;
+            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor), "Tokens cursor must be set.");
         }
 
-        public Address MarketAddress { get; }
-        public bool? LpToken { get; }
-        public uint Skip { get; }
-        public uint Take { get; }
-        public string SortBy { get; }
-        public string OrderBy { get; }
-        public IEnumerable<Address> Tokens { get; }
+        public TokensCursor Cursor { get; }
     }
 }

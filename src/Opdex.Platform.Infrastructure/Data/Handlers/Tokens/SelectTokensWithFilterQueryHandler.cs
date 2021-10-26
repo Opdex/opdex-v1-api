@@ -12,18 +12,19 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using System.Linq;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 {
     public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWithFilterQuery, IEnumerable<Token>>
     {
-        private const string TableJoins = "{TableJoins}";
         private const string WhereFilter = "{WhereFilter}";
         private const string OrderBy = "{OrderBy}";
         private const string Limit = "{Limit}";
 
-        private static readonly string SqlCommand =
-            $@"SELECT
+        private static readonly string SqlQuery =
+            $@"SELECT DISTINCT
                 t.{nameof(TokenEntity.Id)},
                 t.{nameof(TokenEntity.IsLpt)},
                 t.{nameof(TokenEntity.Address)},
@@ -33,12 +34,22 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
                 t.{nameof(TokenEntity.Sats)},
                 t.{nameof(TokenEntity.TotalSupply)},
                 t.{nameof(TokenEntity.CreatedBlock)},
-                t.{nameof(TokenEntity.ModifiedBlock)}
+                t.{nameof(TokenEntity.ModifiedBlock)},
+                ts.{nameof(TokenSummaryEntity.PriceUsd)},
+                ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}
             FROM token t
-            {TableJoins}
+            LEFT JOIN token_attribute ta ON ta.TokenId = t.{nameof(TokenEntity.Id)}
+            LEFT JOIN token_summary ts
+                ON ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)} AND
+                   ts.{nameof(TokenSummaryEntity.TokenId)} = t.{nameof(TokenEntity.Id)}
             {WhereFilter}
             {OrderBy}
-            {Limit};";
+            {Limit}".RemoveExcessWhitespace();
+
+        private const string InnerQuery = "{InnerQuery}";
+        private const string OrderBySort = "{OrderBySort}";
+
+        private static readonly string PagingBackwardQuery = @$"SELECT * FROM ({InnerQuery}) r {OrderBySort};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -51,7 +62,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
         public async Task<IEnumerable<Token>> Handle(SelectTokensWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var command = DatabaseQuery.Create(QueryBuilder(request), new SqlParams(request.MarketId, request.LpToken, request.Tokens), cancellationToken);
+            var sqlParams = new SqlParams(request.MarketId, request.Cursor.Pointer, request.Cursor.Keyword, request.Cursor.Tokens);
+
+            var command = DatabaseQuery.Create(QueryBuilder(request), sqlParams, cancellationToken);
 
             var tokenEntities = await _context.ExecuteQueryAsync<TokenEntity>(command);
 
@@ -60,83 +73,114 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
 
         private static string QueryBuilder(SelectTokensWithFilterQuery request)
         {
-            var whereFilter = string.Empty;
-            var tableJoins = string.Empty;
+            var whereFilter = request.MarketId > 0
+                ? $" WHERE ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}"
+                : $" WHERE (ts.{nameof(TokenSummaryEntity.MarketId)} IS NULL OR ts.{nameof(TokenSummaryEntity.MarketId)} = 0)";
 
-            // Tokens Filter
-            if (request.Tokens.Any())
+            if (!request.Cursor.IsFirstRequest)
             {
-                whereFilter += $" WHERE t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}";
+                var sortOperator = string.Empty;
+
+                // going forward in ascending order, use greater than
+                if (request.Cursor.PagingDirection == PagingDirection.Forward && request.Cursor.SortDirection == SortDirectionType.ASC) sortOperator = ">";
+
+                // going forward in descending order, use less than or equal to
+                if (request.Cursor.PagingDirection == PagingDirection.Forward && request.Cursor.SortDirection == SortDirectionType.DESC) sortOperator = "<";
+
+                // going backward in ascending order, use less than
+                if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.SortDirection == SortDirectionType.ASC) sortOperator = "<";
+
+                // going backward in descending order, use greater than
+                if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.SortDirection == SortDirectionType.DESC) sortOperator = ">";
+
+                var finisher = $"t.{nameof(TokenEntity.Id)}) {sortOperator} (@{nameof(SqlParams.OrderByValue)}, @{nameof(SqlParams.TokenId)})";
+
+                whereFilter += request.Cursor.OrderBy switch
+                {
+                    TokenOrderByType.Name => $" AND (t.{nameof(TokenEntity.Name)}, {finisher}",
+                    TokenOrderByType.Symbol => $" AND (t.{nameof(TokenEntity.Symbol)}, {finisher}",
+                    TokenOrderByType.PriceUsd => $" AND (ts.{nameof(TokenSummaryEntity.PriceUsd)}, {finisher}",
+                    TokenOrderByType.DailyPriceChangePercent => $" AND (ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}, {finisher}",
+                    _ => $" AND t.{nameof(TokenEntity.Id)} {sortOperator} @{nameof(SqlParams.TokenId)}"
+                };
             }
 
-            // LptFilter
-            if (request.LpToken.HasValue)
+            if (request.Cursor.Tokens.Any())
             {
-                var inclusive = whereFilter.HasValue() ? "AND" : "WHERE";
-                whereFilter += $" {inclusive} t.{nameof(TokenEntity.IsLpt)} = @{nameof(SqlParams.IsLpt)}";
+                whereFilter += $" AND t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}";
             }
 
-            // Sort Found Pools
-            var orderBy = OrderByBuilder(request.SortBy, request.OrderBy);
-            if (orderBy.HasValue() && orderBy.Contains("ts."))
+            if (request.Cursor.ProvisionalFilter != TokenProvisionalFilter.All)
             {
-                tableJoins += $@" JOIN token_snapshot ts ON
-                                ts.{nameof(TokenSnapshotEntity.TokenId)} = t.{nameof(TokenEntity.Id)}
-                                AND ts.{nameof(TokenSnapshotEntity.EndDate)} > UTC_TIMESTAMP()
-                                AND ts.{nameof(TokenSnapshotEntity.SnapshotTypeId)} = {(int)SnapshotType.Daily}
-                                AND (
-                                    (t.{nameof(TokenEntity.Address)} != '{Address.Cirrus}' AND ts.{nameof(TokenSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)})
-                                    OR
-                                    (t.{nameof(TokenEntity.Address)} = '{Address.Cirrus}' AND ts.{nameof(TokenSnapshotEntity.MarketId)} = 0)
-                                )";
+                var isProvisional = request.Cursor.ProvisionalFilter == TokenProvisionalFilter.Provisional;
+                whereFilter += $" AND t.{nameof(TokenEntity.IsLpt)} = {isProvisional}";
             }
 
-            // Build Limit string for pagination
-            var limit = LimitBuilder(request.Skip, request.Take);
+            if (request.Cursor.Keyword.HasValue())
+            {
+                whereFilter += @$" AND (t.{nameof(TokenEntity.Name)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
+                                        t.{nameof(TokenEntity.Symbol)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
+                                        t.{nameof(TokenEntity.Address)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%'))";
+            }
 
-            return SqlCommand
-                .Replace(TableJoins, tableJoins)
-                .Replace(WhereFilter, whereFilter)
+            // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
+            string direction;
+
+            if (request.Cursor.PagingDirection == PagingDirection.Backward)
+                direction = request.Cursor.SortDirection == SortDirectionType.DESC ? nameof(SortDirectionType.ASC) : nameof(SortDirectionType.DESC);
+            else
+                direction = Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection);
+
+            // Order the rows by the preferred, indexed column or tokenId by default
+            var orderBy = OrderByBuilder(request.Cursor.OrderBy, direction, reverse: false);
+
+            var limit = $" LIMIT {request.Cursor.Limit + 1}";
+
+            var query = SqlQuery.Replace(WhereFilter, whereFilter)
                 .Replace(OrderBy, orderBy)
                 .Replace(Limit, limit);
+
+            if (request.Cursor.PagingDirection == PagingDirection.Forward) return $"{query};";
+
+            // re-sort back into requested order
+            return PagingBackwardQuery.Replace(InnerQuery, query)
+                .Replace(OrderBySort, OrderByBuilder(request.Cursor.OrderBy,
+                                                     Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection),
+                                                     reverse: true));
         }
 
-        private static string OrderByBuilder(string sortRequest, string orderRequest)
+        private static string OrderByBuilder(TokenOrderByType cursorOrderBy, string direction, bool reverse)
         {
-            if (!sortRequest.HasValue())
-            {
-                return string.Empty;
-            }
+            var summaryPrefix = reverse ? "r" : "ts";
+            var tokenPrefix = reverse ? "r" : "t";
 
-            orderRequest = orderRequest.HasValue() && (orderRequest.EqualsIgnoreCase("ASC") || orderRequest.EqualsIgnoreCase("DESC"))
-                ? orderRequest.ToUpper()
-                : "DESC";
+            var tokenIdWithDirection = $"{tokenPrefix}.{nameof(TokenEntity.Id)} {direction}";
 
-            return sortRequest switch
+            return cursorOrderBy switch
             {
-                "Price" => $" ORDER BY CAST(JSON_EXTRACT(ts.Details, '$.close') as Decimal) {orderRequest}",
-                "Name" => $" ORDER BY t.{nameof(TokenEntity.Name)} {orderRequest}",
-                "Symbol" => $" ORDER BY t.{nameof(TokenEntity.Symbol)} {orderRequest}",
-                _ => throw new ArgumentOutOfRangeException(nameof(sortRequest), "Invalid token sort type.")
+                TokenOrderByType.Name => $" ORDER BY {tokenPrefix}.{nameof(TokenEntity.Name)} {direction}, {tokenIdWithDirection}",
+                TokenOrderByType.Symbol => $" ORDER BY {tokenPrefix}.{nameof(TokenEntity.Symbol)} {direction}, {tokenIdWithDirection}",
+                TokenOrderByType.PriceUsd => $" ORDER BY {summaryPrefix}.{nameof(TokenSummaryEntity.PriceUsd)} {direction}, {tokenIdWithDirection}",
+                TokenOrderByType.DailyPriceChangePercent => $" ORDER BY {summaryPrefix}.{nameof(TokenSummaryEntity.DailyPriceChangePercent)} {direction}, {tokenIdWithDirection}",
+                _ => $" ORDER BY {tokenIdWithDirection}"
             };
-        }
-
-        private static string LimitBuilder(uint skip, uint take)
-        {
-            return skip == 0 && take == 0 ? string.Empty : $" LIMIT {skip}, {take}";
         }
 
         private sealed class SqlParams
         {
-            internal SqlParams(ulong marketId, bool? isLpt, IEnumerable<Address> tokens)
+            internal SqlParams(ulong marketId, (string, ulong) pointer, string keyword, IEnumerable<Address> tokens)
             {
                 MarketId = marketId;
-                IsLpt = isLpt;
+                OrderByValue = pointer.Item1;
+                TokenId = pointer.Item2;
+                Keyword = keyword;
                 Tokens = tokens.Select(token => token.ToString());
             }
 
             public ulong MarketId { get; }
-            public bool? IsLpt { get; }
+            public string OrderByValue { get; }
+            public ulong TokenId { get; }
+            public string Keyword { get; }
             public IEnumerable<string> Tokens { get; }
         }
     }

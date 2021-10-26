@@ -3,7 +3,6 @@ using MediatR;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
@@ -142,9 +141,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
                                 .Replace(Limit, limit);
 
             if (request.Cursor.PagingDirection == PagingDirection.Forward) return $"{query};";
+
             // re-sort back into requested order
-            else return PagingBackwardQuery.Replace(InnerQuery, query)
-                                           .Replace(SortDirection, Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection));
+            return PagingBackwardQuery.Replace(InnerQuery, query)
+                .Replace(SortDirection, Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection));
         }
 
         private sealed class SqlParams

@@ -147,6 +147,7 @@ using Opdex.Platform.Application.Handlers.Markets.Permissions;
 using Opdex.Platform.Application.Handlers.Markets.Snapshots;
 using Opdex.Platform.Application.Handlers.MiningPools;
 using Opdex.Platform.Application.Handlers.Tokens;
+using Opdex.Platform.Application.Handlers.Tokens.Attributes;
 using Opdex.Platform.Application.Handlers.Tokens.Distribution;
 using Opdex.Platform.Application.Handlers.Tokens.Snapshots;
 using Opdex.Platform.Application.Handlers.Transactions;
@@ -222,7 +223,8 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetMiningGovernanceByAddressQuery, MiningGovernanceDto>, GetMiningGovernanceByAddressQueryHandler>();
 
             // Tokens
-            services.AddTransient<IRequestHandler<GetTokensWithFilterQuery, IEnumerable<TokenDto>>, GetTokensWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<GetTokensWithFilterQuery, TokensDto>, GetTokensWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<GetMarketTokensWithFilterQuery, MarketTokensDto>, GetMarketTokensWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshotDto>>, GetTokenSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenByAddressQuery, TokenDto>, GetTokenByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetMarketTokenByMarketAndTokenAddressQuery, MarketTokenDto>, GetMarketTokenByMarketAndTokenAddressQueryHandler>();
@@ -492,6 +494,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<MakeTokenCommand, ulong>, MakeTokenCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTokenSnapshotCommand, bool>, MakeTokenSnapshotCommandHandler>();
             services.AddTransient<IRequestHandler<MakeTokenDistributionCommand, bool>, MakeTokenDistributionCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeTokenAttributeCommand, bool>, MakeTokenAttributeCommandHandler>();
 
             // Transactions
             services.AddTransient<IRequestHandler<MakeTransactionCommand, ulong>, MakeTransactionCommandHandler>();

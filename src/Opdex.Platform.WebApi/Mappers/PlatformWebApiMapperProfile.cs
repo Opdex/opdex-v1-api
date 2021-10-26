@@ -55,6 +55,11 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<TokensDto, TokensResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Tokens))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<MarketTokenDto, MarketTokenResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
@@ -65,6 +70,11 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
                 .ForMember(dest => dest.LiquidityPool, opt => opt.MapFrom(src => src.LiquidityPool))
                 .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<MarketTokensDto, MarketTokensResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Tokens))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TokenSummaryDto, TokenSummaryResponseModel>()

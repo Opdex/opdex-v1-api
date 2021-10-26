@@ -34,26 +34,21 @@ namespace Opdex.Platform.Application.EntryHandlers
 
             foreach (var market in markets)
             {
-                var tokenList = await _mediator.Send(new RetrieveTokensWithFilterQuery(market.Id));
-                var tokens = tokenList.ToDictionary(k => k.Id);
-
                 var marketPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(market.Id));
                 var stakingTokenUsd = 0m;
 
                 // Process staking tokens and their liquidity pools first
                 if (market.IsStakingMarket)
                 {
-                    if (!tokens.TryGetValue(market.StakingTokenId.GetValueOrDefault(), out var stakingToken))
-                    {
-                        continue;
-                    }
+                    var stakingToken = await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId.GetValueOrDefault(), findOrThrow: false));
+
+                    if (stakingToken == null) continue;
 
                     var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(stakingToken.Id, market.Id));
 
-                    if (!tokens.TryGetValue(liquidityPool.LpTokenId, out var lpToken))
-                    {
-                        continue;
-                    }
+                    var lpToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.LpTokenId, findOrThrow: false));
+
+                    if (lpToken == null) continue;
 
                     foreach (var snapshotType in snapshotTypes)
                     {
@@ -70,10 +65,10 @@ namespace Opdex.Platform.Application.EntryHandlers
                 // Every pool excluding the staking token and it's liquidity pool
                 foreach(var liquidityPool in marketPools.Where(mp => mp.SrcTokenId != market.StakingTokenId))
                 {
-                    if (!tokens.TryGetValue(liquidityPool.SrcTokenId, out var srcToken) || !tokens.TryGetValue(liquidityPool.LpTokenId, out var lpToken))
-                    {
-                        continue;
-                    }
+                    var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.SrcTokenId, findOrThrow: false));
+                    var lpToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.LpTokenId, findOrThrow: false));
+
+                    if (srcToken == null || lpToken == null) continue;
 
                     foreach (var snapshotType in snapshotTypes)
                     {
