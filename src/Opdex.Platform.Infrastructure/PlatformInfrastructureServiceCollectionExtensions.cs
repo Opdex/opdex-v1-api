@@ -352,7 +352,8 @@ namespace Opdex.Platform.Infrastructure
                 .AddPolicyHandler(CmcHttpClientBuilder.GetCircuitBreakerPolicy());
 
             // Queries
-            services.AddTransient<IRequestHandler<CallCmcGetStraxQuotePriceQuery, decimal>, CallCmcGetStraxQuotePriceQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCmcGetStraxLatestQuoteQuery, decimal>, CallCmcGetStraxLatestQuoteQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCmcGetStraxHistoricalQuoteQuery, decimal>, CallCmcGetStraxHistoricalQuoteQueryHandler>();
         }
 
         private static void AddSignalRServices(IServiceCollection services)
