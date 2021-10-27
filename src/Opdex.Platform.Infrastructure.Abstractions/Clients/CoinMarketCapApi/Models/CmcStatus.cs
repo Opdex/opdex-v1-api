@@ -1,10 +1,7 @@
 using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Models
 {
-    [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
     public class CmcStatus
     {
         public DateTime Timestamp { get; set; }

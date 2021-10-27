@@ -75,7 +75,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                         // Dev Environment = 15 minutes, otherwise 1 minute
                         if (request.NetworkType != NetworkType.DEVNET || currentBlock.MedianTime.Minute % 15 == 0)
                         {
-                            await _mediator.Send(new CreateCrsTokenSnapshotsCommand(currentBlock.MedianTime, currentBlock.Height));
+                            var snapshotsCreated = await _mediator.Send(new CreateCrsTokenSnapshotsCommand(currentBlock.MedianTime, currentBlock.Height));
+                            if (!snapshotsCreated) break;
                         }
                     }
 

@@ -13,11 +13,13 @@ namespace Opdex.Platform.Infrastructure.Http
     {
         protected readonly ILogger _logger;
         private readonly HttpClient _httpClient;
+        private readonly JsonSerializerSettings _deserializerSettings;
 
-        protected ApiClientBase(HttpClient httpClient, ILogger logger)
+        protected ApiClientBase(HttpClient httpClient, ILogger logger, JsonSerializerSettings deserializerSettings = null)
         {
             _httpClient = httpClient;
             _logger = logger;
+            _deserializerSettings = deserializerSettings ?? Serialization.DefaultJsonSettings;
         }
 
         protected Task<TReturn> GetAsync<TReturn>(string uri, CancellationToken cancellationToken)
@@ -69,7 +71,7 @@ namespace Opdex.Platform.Infrastructure.Http
             }
         }
 
-        private static async Task<TReturn> HandleClientResponse<TReturn>(HttpResponseMessage httpResponse)
+        private async Task<TReturn> HandleClientResponse<TReturn>(HttpResponseMessage httpResponse)
         {
             httpResponse.EnsureSuccessStatusCode();
 
@@ -77,7 +79,7 @@ namespace Opdex.Platform.Infrastructure.Http
             {
                 var jsonString = await httpResponse.Content.ReadAsStringAsync();
 
-                return JsonConvert.DeserializeObject<TReturn>(jsonString, Serialization.DefaultJsonSettings);
+                return JsonConvert.DeserializeObject<TReturn>(jsonString, _deserializerSettings);
             }
 
             TReturn result = default;
