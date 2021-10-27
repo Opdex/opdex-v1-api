@@ -1,18 +1,14 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Models
 {
-    [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
     public class CmcHistoricalQuote
     {
         public CmcStatus Status { get; set; }
         public HistoricalQuoteData Data { get; set; }
     }
 
-    [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
     public class HistoricalQuoteData
     {
         public IEnumerable<HistoricalQuoteTimeframe> Quotes { get; set; }
@@ -23,14 +19,12 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Mo
         public int IsFiat { get; set; }
     }
 
-    [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
     public class HistoricalQuoteTimeframe
     {
         public DateTime Timestamp { get; set; }
         public IDictionary<string, HistoricalQuotePrice> Quote { get; set; }
     }
 
-    [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
     public class HistoricalQuotePrice
     {
         public decimal Price { get; set; }
