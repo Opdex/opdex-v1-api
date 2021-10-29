@@ -1,40 +1,24 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
-using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using System;
-using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools
 {
-    public class GetLiquidityPoolsWithFilterQuery : IRequest<IEnumerable<LiquidityPoolDto>>
+    /// <summary>
+    /// Get liquidity pools with filtering and pagination.
+    /// </summary>
+    public class GetLiquidityPoolsWithFilterQuery : IRequest<LiquidityPoolsDto>
     {
-        public GetLiquidityPoolsWithFilterQuery(Address marketAddress, bool? stakingEnabled, bool? miningEnabled, bool? nominated,
-                                               uint skip, uint take, string sortBy, string orderBy, IEnumerable<Address> pools)
+        /// <summary>
+        /// Constructor to build a get liquidity pools with filter query.
+        /// </summary>
+        /// <param name="cursor">The liquidity pools cursor to filter by.</param>
+        public GetLiquidityPoolsWithFilterQuery(LiquidityPoolsCursor cursor)
         {
-            if (marketAddress == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(marketAddress));
-            }
-
-            MarketAddress = marketAddress;
-            Staking = stakingEnabled;
-            Mining = miningEnabled;
-            Nominated = nominated;
-            Skip = skip;
-            Take = take;
-            SortBy = sortBy;
-            OrderBy = orderBy;
-            Pools = pools;
+            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor), "Liquidity pools cursor must be set.");
         }
 
-        public Address MarketAddress { get; }
-        public bool? Staking { get; }
-        public bool? Mining { get; }
-        public bool? Nominated { get; }
-        public uint Skip { get; }
-        public uint Take { get; }
-        public string SortBy { get; }
-        public string OrderBy { get; }
-        public IEnumerable<Address> Pools { get; }
+        public LiquidityPoolsCursor Cursor { get; }
     }
 }

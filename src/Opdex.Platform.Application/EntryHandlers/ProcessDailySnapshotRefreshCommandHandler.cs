@@ -13,6 +13,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 
 namespace Opdex.Platform.Application.EntryHandlers
 {
@@ -34,13 +35,13 @@ namespace Opdex.Platform.Application.EntryHandlers
 
             foreach (var market in markets)
             {
-                var marketPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(market.Id));
+                var marketPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(new LiquidityPoolsCursor(market.Address)));
                 var stakingTokenUsd = 0m;
 
                 // Process staking tokens and their liquidity pools first
                 if (market.IsStakingMarket)
                 {
-                    var stakingToken = await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId.GetValueOrDefault(), findOrThrow: false));
+                    var stakingToken = await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId, findOrThrow: false));
 
                     if (stakingToken == null) continue;
 
@@ -79,7 +80,7 @@ namespace Opdex.Platform.Application.EntryHandlers
                 }
 
                 // Process market snapshot
-                await _mediator.Send(new ProcessMarketSnapshotsCommand(market.Id, blockTime));
+                await _mediator.Send(new ProcessMarketSnapshotsCommand(market, blockTime));
             }
 
             return Unit.Value;

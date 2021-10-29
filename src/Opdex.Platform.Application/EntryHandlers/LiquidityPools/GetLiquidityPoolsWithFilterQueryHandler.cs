@@ -2,18 +2,17 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
-using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models.LiquidityPools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
 {
-    public class GetLiquidityPoolsWithFilterQueryHandler : IRequestHandler<GetLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPoolDto>>
+    public class GetLiquidityPoolsWithFilterQueryHandler : EntryFilterQueryHandler<GetLiquidityPoolsWithFilterQuery, LiquidityPoolsDto>
     {
         private readonly IMediator _mediator;
         private readonly IModelAssembler<LiquidityPool, LiquidityPoolDto> _assembler;
@@ -24,16 +23,28 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
             _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
         }
 
-        public async Task<IEnumerable<LiquidityPoolDto>> Handle(GetLiquidityPoolsWithFilterQuery request, CancellationToken cancellationToken)
+        public override async Task<LiquidityPoolsDto> Handle(GetLiquidityPoolsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.MarketAddress));
+            var pools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(request.Cursor), cancellationToken);
 
-            var query = new RetrieveLiquidityPoolsWithFilterQuery(market.Id, request.Staking, request.Mining, request.Nominated, request.Skip, request.Take,
-                                                                  request.SortBy, request.OrderBy, request.Pools);
+            var dtos = await Task.WhenAll(pools.Select(pool => _assembler.Assemble(pool)));
 
-            var pools = await _mediator.Send(query, cancellationToken);
+            var dtoResults = dtos.ToList();
 
-            return await Task.WhenAll(pools.Select(pool => _assembler.Assemble(pool)));
+            var cursor = BuildCursorDto(dtoResults, request.Cursor, pointerSelector: result =>
+            {
+                return request.Cursor.OrderBy switch
+                {
+                    LiquidityPoolOrderByType.Liquidity => (result.Summary.Reserves.Usd.ToString(), result.Id),
+                    LiquidityPoolOrderByType.Volume => (result.Summary.Volume.Usd.ToString(), result.Id),
+                    // Todo: when pool DTOs are changed, result.Summary should be our pool_liquidity_summary and snapshot or "details" should be what the current summary is.
+                    LiquidityPoolOrderByType.StakingWeight => (result.Summary?.Staking?.Weight.ToString(), result.Id),
+                    LiquidityPoolOrderByType.Name => (result.Name, result.Id),
+                    _ => (string.Empty, result.Id)
+                };
+            });
+
+            return new LiquidityPoolsDto { LiquidityPools = dtoResults, Cursor = cursor };
         }
     }
 }

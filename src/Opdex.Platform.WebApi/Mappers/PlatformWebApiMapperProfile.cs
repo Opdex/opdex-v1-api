@@ -91,6 +91,7 @@ namespace Opdex.Platform.WebApi.Mappers
 
             CreateMap<LiquidityPoolDto, LiquidityPoolResponseModel>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
                 .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src))
                 .ForMember(dest => dest.TransactionCount, opt => opt.MapFrom(src => src.Summary.TransactionCount))
@@ -107,6 +108,11 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.SrcToken))
                 .ForMember(dest => dest.Lp, opt => opt.MapFrom(src => src.LpToken))
                 .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.StakingToken))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<LiquidityPoolsDto, LiquidityPoolsResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.LiquidityPools))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolSnapshotDto, LiquidityPoolSummaryResponseModel>()

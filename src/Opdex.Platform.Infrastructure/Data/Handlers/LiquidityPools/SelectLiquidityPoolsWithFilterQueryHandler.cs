@@ -5,12 +5,14 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningPools;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using System;
 using System.Collections.Generic;
@@ -27,20 +29,32 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
         private const string OrderBy = "{OrderBy}";
         private const string Limit = "{Limit}";
 
-        private static readonly string SqlCommand =
-            $@"SELECT
+        private static readonly string SqlQuery =
+            $@"SELECT DISTINCT
                 pl.{nameof(LiquidityPoolEntity.Id)},
+                pl.{nameof(LiquidityPoolEntity.Name)},
                 pl.{nameof(LiquidityPoolEntity.Address)},
                 pl.{nameof(LiquidityPoolEntity.SrcTokenId)},
                 pl.{nameof(LiquidityPoolEntity.LpTokenId)},
                 pl.{nameof(LiquidityPoolEntity.MarketId)},
                 pl.{nameof(LiquidityPoolEntity.CreatedBlock)},
-                pl.{nameof(LiquidityPoolEntity.ModifiedBlock)}
+                pl.{nameof(LiquidityPoolEntity.ModifiedBlock)},
+                pls.{nameof(LiquidityPoolSummaryEntity.LiquidityUsd)},
+                pls.{nameof(LiquidityPoolSummaryEntity.VolumeUsd)},
+                pls.{nameof(LiquidityPoolSummaryEntity.StakingWeight)}
             FROM pool_liquidity pl
+            LEFT JOIN pool_liquidity_summary pls
+                ON pl.{nameof(LiquidityPoolEntity.Id)} = pls.{nameof(LiquidityPoolSummaryEntity.LiquidityPoolId)}
+            JOIN market m ON m.{nameof(MarketEntity.Id)} = pl.{nameof(LiquidityPoolEntity.MarketId)}
             {TableJoins}
             {WhereFilter}
             {OrderBy}
-            {Limit};";
+            {Limit}".RemoveExcessWhitespace();
+
+        private const string InnerQuery = "{InnerQuery}";
+        private const string OrderBySort = "{OrderBySort}";
+
+        private static readonly string PagingBackwardQuery = @$"SELECT * FROM ({InnerQuery}) r {OrderBySort};";
 
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
@@ -53,7 +67,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
 
         public async Task<IEnumerable<LiquidityPool>> Handle(SelectLiquidityPoolsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var command = DatabaseQuery.Create(QueryBuilder(request), new SqlParams(request.MarketId, request.Pools), cancellationToken);
+            var sqlParams = new SqlParams(request.Cursor.Keyword, request.Cursor.Markets, request.Cursor.LiquidityPools,
+                                          request.Cursor.Tokens, request.Cursor.Pointer);
+
+            var command = DatabaseQuery.Create(QueryBuilder(request), sqlParams, cancellationToken);
 
             var results = await _context.ExecuteQueryAsync<LiquidityPoolEntity>(command);
 
@@ -62,114 +79,165 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
 
         private static string QueryBuilder(SelectLiquidityPoolsWithFilterQuery request)
         {
-            var whereFilter = $"WHERE pl.{nameof(LiquidityPoolEntity.MarketId)} = @{nameof(SqlParams.MarketId)}";
+            var whereFilter = string.Empty;
             var tableJoins = string.Empty;
 
-            // Pools filter
-            if (request.Pools.Any())
+            if (!request.Cursor.IsFirstRequest)
             {
-                whereFilter += $" AND pl.{nameof(LiquidityPoolEntity.Address)} IN @{nameof(SqlParams.Pools)}";
+                var sortOperator = string.Empty;
+
+                // going forward in ascending order, use greater than
+                if (request.Cursor.PagingDirection == PagingDirection.Forward && request.Cursor.SortDirection == SortDirectionType.ASC) sortOperator = ">";
+
+                // going forward in descending order, use less than or equal to
+                if (request.Cursor.PagingDirection == PagingDirection.Forward && request.Cursor.SortDirection == SortDirectionType.DESC) sortOperator = "<";
+
+                // going backward in ascending order, use less than
+                if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.SortDirection == SortDirectionType.ASC) sortOperator = "<";
+
+                // going backward in descending order, use greater than
+                if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.SortDirection == SortDirectionType.DESC) sortOperator = ">";
+
+                var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
+                var suffix = $"pl.{nameof(LiquidityPoolEntity.Id)}) {sortOperator} (@{nameof(SqlParams.OrderByValue)}, @{nameof(SqlParams.LiquidityPoolId)})";
+
+                whereFilter += request.Cursor.OrderBy switch
+                {
+                    LiquidityPoolOrderByType.Liquidity => $"{prefix} (pls.{nameof(LiquidityPoolSummaryEntity.LiquidityUsd)}, {suffix}",
+                    LiquidityPoolOrderByType.Volume => $"{prefix} (pls.{nameof(LiquidityPoolSummaryEntity.VolumeUsd)}, {suffix}",
+                    LiquidityPoolOrderByType.StakingWeight => $"{prefix} (pls.{nameof(LiquidityPoolSummaryEntity.StakingWeight)}, {suffix}",
+                    LiquidityPoolOrderByType.Name => $"{prefix} (pl.{nameof(LiquidityPoolEntity.Name)}, {suffix}",
+                    _ => $"{prefix} pl.{nameof(LiquidityPoolEntity.Id)} {sortOperator} @{nameof(SqlParams.LiquidityPoolId)}"
+                };
+            }
+
+            // Pools filter
+            if (request.Cursor.LiquidityPools.Any())
+            {
+                var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
+                whereFilter += $"{prefix} pl.{nameof(LiquidityPoolEntity.Address)} IN @{nameof(SqlParams.Pools)}";
+            }
+
+            // Filter Markets
+            if (request.Cursor.Markets.Any())
+            {
+                var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
+                whereFilter += $"{prefix} m.{nameof(MarketEntity.Address)} IN @{nameof(SqlParams.Markets)}";
+            }
+
+            if (request.Cursor.Tokens.Any())
+            {
+                tableJoins += $" JOIN token t ON t.{nameof(TokenEntity.Id)} = pl.{nameof(LiquidityPoolEntity.SrcTokenId)}";
+
+                var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
+                whereFilter += $"{prefix} t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}";
+            }
+
+            if (request.Cursor.Keyword.HasValue())
+            {
+                whereFilter += @$" AND (pl.{nameof(LiquidityPoolEntity.Name)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
+                                        pl.{nameof(LiquidityPoolEntity.Address)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%'))";
             }
 
             // Mining filter
-            if (request.Mining.HasValue)
+            if (request.Cursor.MiningFilter != LiquidityPoolMiningStatusFilter.Default)
             {
                 tableJoins += $" JOIN pool_mining pm on pl.{nameof(LiquidityPoolEntity.Id)} = pm.{nameof(MiningPoolEntity.LiquidityPoolId)}";
 
-                var conditional = request.Mining.Value ? ">=" : "<";
+                var conditional = request.Cursor.MiningFilter == LiquidityPoolMiningStatusFilter.Enabled ? ">=" : "<";
+                var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
 
-                whereFilter += $@" AND (pm.{nameof(MiningPoolEntity.MiningPeriodEndBlock)} {conditional}
+                whereFilter += $@"{prefix} (pm.{nameof(MiningPoolEntity.MiningPeriodEndBlock)} {conditional}
                                 (Select {nameof(BlockEntity.Height)} FROM block ORDER BY {nameof(BlockEntity.Height)} DESC LIMIT 1))";
             }
 
             // Staking filter
-            if (request.Staking.HasValue)
+            if (request.Cursor.StakingFilter != LiquidityPoolStakingStatusFilter.Default)
             {
-                tableJoins += $" JOIN market m ON m.{nameof(MarketEntity.Id)} = pl.{nameof(LiquidityPoolEntity.MarketId)}";
-
-                whereFilter += request.Staking.Value
+                var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
+                whereFilter += request.Cursor.StakingFilter == LiquidityPoolStakingStatusFilter.Enabled
                     // IsStakingMarket && Pool.SrcTokenId != Market.StakingTokenId
-                    ? $@" AND
-                        (m.{nameof(MarketEntity.StakingTokenId)} IS NOT NULL AND
-                         m.{nameof(MarketEntity.StakingTokenId)} > 0 AND
-                         pl.SrcTokenId != m.{nameof(MarketEntity.StakingTokenId)})"
+                    ? $@"{prefix} (m.{nameof(MarketEntity.StakingTokenId)} > 0 AND pl.SrcTokenId != m.{nameof(MarketEntity.StakingTokenId)})"
                     // IsNotStakingMarket || Pool.SrcTokenId == Market.StakingTokenId
-                    : $@" AND
-                        (m.{nameof(MarketEntity.StakingTokenId)} IS NULL OR
-                        (m.{nameof(MarketEntity.StakingTokenId)} > 0 AND
-                        pl.{nameof(LiquidityPoolEntity.SrcTokenId)} = m.{nameof(MarketEntity.StakingTokenId)}))";
+                    : $@"{prefix} (m.{nameof(MarketEntity.StakingTokenId)} = 0
+                            OR (m.{nameof(MarketEntity.StakingTokenId)} > 0
+                                AND pl.{nameof(LiquidityPoolEntity.SrcTokenId)} = m.{nameof(MarketEntity.StakingTokenId)}))";
             }
 
             // Nominated filter
-            if (request.Nominated.HasValue)
+            if (request.Cursor.NominationFilter != LiquidityPoolNominationStatusFilter.Default)
             {
                 tableJoins += $@" JOIN governance_nomination gn
-                                ON gn.{nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}";
+                                    ON gn.{nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}";
 
-                whereFilter += $" AND gn.{nameof(MiningGovernanceNominationEntity.IsNominated)} = {request.Nominated.Value}";
+                var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
+                var status = request.Cursor.NominationFilter == LiquidityPoolNominationStatusFilter.Nominated ? "true" : "false";
+
+                whereFilter += $"{prefix} gn.{nameof(MiningGovernanceNominationEntity.IsNominated)} = {status}";
             }
 
-            // Sort Found Pools
-            var orderBy = OrderByBuilder(request.SortBy, request.OrderBy);
-            if (orderBy.HasValue())
-            {
-                tableJoins += $@" JOIN pool_liquidity_snapshot pls ON
-                                pls.{nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}
-                                AND pls.{nameof(LiquidityPoolSnapshotEntity.EndDate)} > UTC_TIMESTAMP()
-                                AND pls.{nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)} = {(int)SnapshotType.Daily}";
-            }
+            // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
+            string direction;
 
-            // Build Limit string for pagination
-            var limit = LimitBuilder(request.Skip, request.Take);
+            if (request.Cursor.PagingDirection == PagingDirection.Backward)
+                direction = request.Cursor.SortDirection == SortDirectionType.DESC ? nameof(SortDirectionType.ASC) : nameof(SortDirectionType.DESC);
+            else
+                direction = Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection);
 
-            return SqlCommand
+            // Order the rows by the preferred, indexed column or tokenId by default
+            var orderBy = OrderByBuilder(request.Cursor.OrderBy, direction, reverse: false);
+
+            var limit = $" LIMIT {request.Cursor.Limit + 1}";
+
+            var query = SqlQuery.Replace(WhereFilter, whereFilter)
                 .Replace(TableJoins, tableJoins)
-                .Replace(WhereFilter, whereFilter)
                 .Replace(OrderBy, orderBy)
                 .Replace(Limit, limit);
+
+            if (request.Cursor.PagingDirection == PagingDirection.Forward) return $"{query};";
+
+            // re-sort back into requested order
+            return PagingBackwardQuery.Replace(InnerQuery, query)
+                .Replace(OrderBySort, OrderByBuilder(request.Cursor.OrderBy,
+                                                     Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection),
+                                                     reverse: true));
         }
 
-        private static string OrderByBuilder(string sortRequest, string orderRequest)
+        private static string OrderByBuilder(LiquidityPoolOrderByType cursorOrderBy, string direction, bool reverse)
         {
-            if (!sortRequest.HasValue())
+            var summaryPrefix = reverse ? "r" : "pls";
+            var poolPrefix = reverse ? "r" : "pl";
+
+            var lpIdWithDirection = $"{poolPrefix}.{nameof(LiquidityPoolEntity.Id)} {direction}";
+
+            return cursorOrderBy switch
             {
-                return string.Empty;
-            }
-
-            var baseSort = " ORDER BY CAST(JSON_EXTRACT(pls.Details, '$.{0}') as Decimal) {1}";
-
-            orderRequest = orderRequest.HasValue() && (orderRequest.EqualsIgnoreCase("ASC") || orderRequest.EqualsIgnoreCase("DESC"))
-                ? orderRequest.ToUpper()
-                : "DESC";
-
-            return sortRequest switch
-            {
-                "Liquidity" => string.Format(baseSort, "reserves.usd", orderRequest),
-                "Volume" => string.Format(baseSort, "volume.usd", orderRequest),
-                "StakingWeight" => string.Format(baseSort, "staking.weight", orderRequest),
-                "StakingUsd" => string.Format(baseSort, "staking.usd", orderRequest),
-                // Todo: Consider persisting the TotalRewards for this sort
-                "ProviderRewards" => string.Format(baseSort, "rewards.providerUsd", orderRequest),
-                "MarketRewards" => string.Format(baseSort, "rewards.marketUsd", orderRequest),
-                _ => throw new ArgumentOutOfRangeException(nameof(sortRequest), "Invalid liquidity pool sort type.")
+                LiquidityPoolOrderByType.Liquidity => $" ORDER BY {summaryPrefix}.{nameof(LiquidityPoolSummaryEntity.LiquidityUsd)} {direction}, {lpIdWithDirection}",
+                LiquidityPoolOrderByType.Volume => $" ORDER BY {summaryPrefix}.{nameof(LiquidityPoolSummaryEntity.VolumeUsd)} {direction}, {lpIdWithDirection}",
+                LiquidityPoolOrderByType.StakingWeight => $" ORDER BY {summaryPrefix}.{nameof(LiquidityPoolSummaryEntity.StakingWeight)} {direction}, {lpIdWithDirection}",
+                LiquidityPoolOrderByType.Name => $" ORDER BY {poolPrefix}.{nameof(LiquidityPoolEntity.Name)} {direction}, {lpIdWithDirection}",
+                _ => $" ORDER BY {lpIdWithDirection}"
             };
-        }
-
-        private static string LimitBuilder(uint skip, uint take)
-        {
-            return skip == 0 && take == 0 ? string.Empty : $" LIMIT {skip}, {take}";
         }
 
         private sealed class SqlParams
         {
-            internal SqlParams(ulong marketId, IEnumerable<Address> pools)
+            internal SqlParams(string keyword, IEnumerable<Address> markets, IEnumerable<Address> pools, IEnumerable<Address> tokens, (string, ulong) pointer)
             {
-                MarketId = marketId;
+                Keyword = keyword;
+                OrderByValue = pointer.Item1;
+                LiquidityPoolId = pointer.Item2;
+                Markets = markets.Select(market => market.ToString());
                 Pools = pools.Select(pool => pool.ToString());
+                Tokens = tokens.Select(pool => pool.ToString());
             }
 
-            public ulong MarketId { get; }
+            public string Keyword { get; }
+            public string OrderByValue { get; }
+            public ulong LiquidityPoolId { get; }
+            public IEnumerable<string> Markets { get; }
             public IEnumerable<string> Pools { get; }
+            public IEnumerable<string> Tokens { get; }
         }
     }
 }

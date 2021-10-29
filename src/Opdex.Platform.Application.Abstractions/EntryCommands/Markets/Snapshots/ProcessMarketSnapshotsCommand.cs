@@ -1,22 +1,18 @@
 using MediatR;
+using Opdex.Platform.Domain.Models.Markets;
 using System;
 
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshots
 {
     public class ProcessMarketSnapshotsCommand : IRequest<Unit>
     {
-        public ProcessMarketSnapshotsCommand(ulong marketId, DateTime blockTime)
+        public ProcessMarketSnapshotsCommand(Market market, DateTime blockTime)
         {
-            if (marketId < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(marketId), $"{nameof(marketId)} must be greater than 0.");
-            }
-
-            MarketId = marketId;
+            Market = market ?? throw new ArgumentNullException(nameof(market), $"Market must be provided.");
             BlockTime = blockTime;
         }
 
-        public ulong MarketId { get; }
+        public Market Market { get; }
         public DateTime BlockTime { get; }
     }
 }

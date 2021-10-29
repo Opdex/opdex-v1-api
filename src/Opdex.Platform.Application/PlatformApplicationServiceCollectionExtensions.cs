@@ -203,7 +203,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshotDto>>, GetMarketSnapshotsWithFilterQueryHandler>();
 
             // Liquidity Pools
-            services.AddTransient<IRequestHandler<GetLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPoolDto>>, GetLiquidityPoolsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<GetLiquidityPoolsWithFilterQuery, LiquidityPoolsDto>, GetLiquidityPoolsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolSwapQuoteQuery, FixedDecimal>, GetLiquidityPoolSwapQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityAmountInQuoteQuery, FixedDecimal>, GetLiquidityAmountInQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshotDto>>, GetLiquidityPoolSnapshotsWithFilterQueryHandler>();

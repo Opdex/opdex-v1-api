@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -40,45 +39,19 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Liquidity Pools</summary>
-        /// <remarks>
-        /// Retrieve a list of pools that match the filters provided.
-        /// </remarks>
-        /// <param name="staking">Filter liquidity pools by staking status. Default null is ignored.</param>
-        /// <param name="mining">Filter liquidity pools by mining status. Default null is ignored.</param>
-        /// <param name="nominated">Filter liquidity pools by nomination status. Default null is ignored.</param>
-        /// <param name="skip">For pagination, the amount of records to skip. Default is 0.</param>
-        /// <param name="take">For pagination, the amount of records to take. Default is 10.</param>
-        /// <param name="sortBy">
-        /// "Liquidity", "Volume", "StakingWeight", "StakingUsd", "ProviderRewards", "MarketRewards" filters.
-        /// Single filter use at a time. Default is none.
-        /// </param>
-        /// <param name="orderBy">"ASC" or "DESC". Default is descending, is ignored if sortBy is null.</param>
-        /// <param name="pools">A list of liquidity pool addresses to filter for specific pools.</param>
+        /// <remarks>Retrieve a list of pools that match the filters provided.</remarks>
+        /// <param name="filters">Filter liquidity pools by staking status. Default null is ignored.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of <see cref="LiquidityPoolResponseModel"/>'s that match the filter criteria.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<LiquidityPoolResponseModel>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<LiquidityPoolResponseModel>>> LiquidityPools([FromQuery] bool? staking,
-                                                                                                [FromQuery] bool? mining,
-                                                                                                [FromQuery] bool? nominated,
-                                                                                                [FromQuery] uint? skip,
-                                                                                                [FromQuery] uint? take,
-                                                                                                [FromQuery] string sortBy,
-                                                                                                [FromQuery] string orderBy,
-                                                                                                [FromQuery] IEnumerable<Address> pools,
-                                                                                                CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(LiquidityPoolsResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<LiquidityPoolsResponseModel>> LiquidityPools([FromQuery] LiquidityPoolFilterParameters filters,
+                                                                                    CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetLiquidityPoolsWithFilterQuery(_context.Market,
-                                                                                   staking,
-                                                                                   mining,
-                                                                                   nominated,
-                                                                                   skip ?? 0,
-                                                                                   take ?? 10,
-                                                                                   sortBy,
-                                                                                   orderBy,
-                                                                                   pools), cancellationToken);
+            var result = await _mediator.Send(new GetLiquidityPoolsWithFilterQuery(filters.BuildCursor()), cancellationToken);
 
-            var response = _mapper.Map<IEnumerable<LiquidityPoolResponseModel>>(result);
+            var response = _mapper.Map<LiquidityPoolsResponseModel>(result);
 
             return Ok(response);
         }
@@ -90,9 +63,12 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>A create liquidity pool transaction quote.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TransactionQuoteResponseModel>> CreateLiquidityPool(CreateLiquidityPoolRequest request, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<TransactionQuoteResponseModel>> CreateLiquidityPool(CreateLiquidityPoolRequest request,
+                                                                                           CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(new CreateCreateLiquidityPoolTransactionQuoteCommand(_context.Market, _context.Wallet, request.Token), cancellationToken);
+            var response = await _mediator.Send(new CreateCreateLiquidityPoolTransactionQuoteCommand(_context.Market, _context.Wallet,
+                                                                                                     request.Token), cancellationToken);
 
             var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
 
@@ -106,6 +82,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>The requested pools</returns>
         [HttpGet("{address}")]
         [ProducesResponseType(typeof(LiquidityPoolResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<LiquidityPoolResponseModel>> LiquidityPool([FromRoute] Address address, CancellationToken cancellationToken)
         {
@@ -127,6 +104,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns><see cref="LiquidityPoolSnapshotHistoryResponseModel"/> with a list of historical data points.</returns>
         [HttpGet("{address}/history")]
         [ProducesResponseType(typeof(LiquidityPoolSnapshotHistoryResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<LiquidityPoolSnapshotHistoryResponseModel>> LiquidityPoolHistory([FromRoute] Address address,
                                                                                                         [FromQuery] string candleSpan,
                                                                                                         [FromQuery] string timespan,
@@ -161,6 +139,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote an add liquidity transaction.</returns>
         [HttpPost("{address}/add")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> AddLiquidityQuote([FromRoute] Address address, AddLiquidityRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateAddLiquidityTransactionQuoteCommand(address, _context.Wallet, request.AmountCrs, request.AmountSrc,
@@ -180,6 +159,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>The quoted number of tokens to be deposited.</returns>
         [HttpPost("{address}/add/amount-in")]
         [ProducesResponseType(typeof(AddLiquidityAmountInQuoteResponseModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<AddLiquidityAmountInQuoteResponseModel>> LiquidityAmountInQuote([FromRoute] Address address,
                                                                                                        [FromBody] AddLiquidityQuoteRequestModel request,
                                                                                                        CancellationToken cancellationToken)
@@ -201,6 +181,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a remove liquidity transaction.</returns>
         [HttpPost("{address}/remove")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> RemoveLiquidityQuote([FromRoute] Address address, RemoveLiquidityRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateRemoveLiquidityTransactionQuoteCommand(address, _context.Wallet, request.Liquidity, request.AmountCrsMin,
@@ -218,6 +199,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a sync transaction.</returns>
         [HttpPost("{address}/sync")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> SyncQuote([FromRoute] Address address, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateSyncTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
@@ -235,6 +217,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a skim transaction.</returns>
         [HttpPost("{address}/skim")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> SkimQuote([FromRoute] Address address, SkimRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateSkimTransactionQuoteCommand(address, _context.Wallet, request.Recipient), cancellationToken);
@@ -252,6 +235,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a start staking transaction.</returns>
         [HttpPost("{address}/staking/start")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> StartStakingQuote([FromRoute] Address address, StartStakingRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateStartStakingTransactionQuoteCommand(address, _context.Wallet, request.Amount), cancellationToken);
@@ -269,6 +253,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a stop staking transaction.</returns>
         [HttpPost("{address}/staking/stop")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> StopStakingQuote([FromRoute] Address address, StopStakingRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateStopStakingTransactionQuoteCommand(address, _context.Wallet, request.Amount, request.Liquidate), cancellationToken);
@@ -286,6 +271,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>Quote a collect staking rewards transaction.</returns>
         [HttpPost("{address}/staking/collect")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> CollectStakingRewardsQuote([FromRoute] Address address, CollectStakingRewardsRequest request, CancellationToken cancellationToken)
         {
             var response = await _mediator.Send(new CreateCollectStakingRewardsTransactionQuoteCommand(address, _context.Wallet, request.Liquidate), cancellationToken);

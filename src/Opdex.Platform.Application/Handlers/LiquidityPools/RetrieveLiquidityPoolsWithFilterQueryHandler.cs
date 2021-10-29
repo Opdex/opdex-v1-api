@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools;
@@ -19,12 +18,9 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<LiquidityPool>> Handle(RetrieveLiquidityPoolsWithFilterQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<LiquidityPool>> Handle(RetrieveLiquidityPoolsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var query = new SelectLiquidityPoolsWithFilterQuery(request.MarketId, request.Staking, request.Mining, request.Nominated,
-                                                                request.Skip, request.Take, request.SortBy, request.OrderBy, request.Pools);
-
-            return await _mediator.Send(query, cancellationToken);
+            return _mediator.Send(new SelectLiquidityPoolsWithFilterQuery(request.Cursor), cancellationToken);
         }
     }
 }

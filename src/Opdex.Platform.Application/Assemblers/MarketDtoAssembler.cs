@@ -43,7 +43,7 @@ namespace Opdex.Platform.Application.Assemblers
 
             // get staking token if necessary
             var stakingToken = market.IsStakingMarket
-                ? await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId.GetValueOrDefault()))
+                ? await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId))
                 : null;
 
             // Get yesterday and today's snapshots

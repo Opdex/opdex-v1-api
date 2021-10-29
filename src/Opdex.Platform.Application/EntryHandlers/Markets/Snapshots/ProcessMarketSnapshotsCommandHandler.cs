@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,8 +24,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
 
         public async Task<Unit> Handle(ProcessMarketSnapshotsCommand request, CancellationToken cancellationToken)
         {
-            var marketPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(request.MarketId));
-            var marketSnapshot = await _mediator.Send(new RetrieveMarketSnapshotWithFilterQuery(request.MarketId, request.BlockTime, SnapshotType));
+            var marketPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(new LiquidityPoolsCursor(request.Market.Address)));
+            var marketSnapshot = await _mediator.Send(new RetrieveMarketSnapshotWithFilterQuery(request.Market.Id, request.BlockTime, SnapshotType));
 
             // Reset stale snapshot if its old
             if (marketSnapshot.EndDate < request.BlockTime)
