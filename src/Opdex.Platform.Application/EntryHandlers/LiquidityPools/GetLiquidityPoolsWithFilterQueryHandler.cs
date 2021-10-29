@@ -37,8 +37,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
                 {
                     LiquidityPoolOrderByType.Liquidity => (result.Summary.Reserves.Usd.ToString(), result.Id),
                     LiquidityPoolOrderByType.Volume => (result.Summary.Volume.Usd.ToString(), result.Id),
-                    // Todo: when pool DTOs are changed, result.Summary should be our pool_liquidity_summary and snapshot or "details" should be what the current summary is.
-                    LiquidityPoolOrderByType.StakingWeight => (result.Summary?.Staking?.Weight.ToString(), result.Id),
+                    LiquidityPoolOrderByType.StakingWeight => (result.Summary.Staking?.Weight.ToString(), result.Id),
                     LiquidityPoolOrderByType.Name => (result.Name, result.Id),
                     _ => (string.Empty, result.Id)
                 };

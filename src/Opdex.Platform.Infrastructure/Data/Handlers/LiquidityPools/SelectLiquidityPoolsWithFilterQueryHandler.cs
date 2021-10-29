@@ -111,20 +111,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
                 };
             }
 
-            // Pools filter
+            // Liquidity Pools filter
             if (request.Cursor.LiquidityPools.Any())
             {
                 var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
-                whereFilter += $"{prefix} pl.{nameof(LiquidityPoolEntity.Address)} IN @{nameof(SqlParams.Pools)}";
+                whereFilter += $"{prefix} pl.{nameof(LiquidityPoolEntity.Address)} IN @{nameof(SqlParams.LiquidityPools)}";
             }
 
-            // Filter Markets
+            // Markets filter
             if (request.Cursor.Markets.Any())
             {
                 var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
                 whereFilter += $"{prefix} m.{nameof(MarketEntity.Address)} IN @{nameof(SqlParams.Markets)}";
             }
 
+            // Tokens filter
             if (request.Cursor.Tokens.Any())
             {
                 tableJoins += $" JOIN token t ON t.{nameof(TokenEntity.Id)} = pl.{nameof(LiquidityPoolEntity.SrcTokenId)}";
@@ -133,9 +134,11 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
                 whereFilter += $"{prefix} t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}";
             }
 
+            // Keyword filter
             if (request.Cursor.Keyword.HasValue())
             {
-                whereFilter += @$" AND (pl.{nameof(LiquidityPoolEntity.Name)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
+                var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
+                whereFilter += @$"{prefix} (pl.{nameof(LiquidityPoolEntity.Name)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
                                         pl.{nameof(LiquidityPoolEntity.Address)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%'))";
             }
 
@@ -148,7 +151,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
                 var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
 
                 whereFilter += $@"{prefix} (pm.{nameof(MiningPoolEntity.MiningPeriodEndBlock)} {conditional}
-                                (Select {nameof(BlockEntity.Height)} FROM block ORDER BY {nameof(BlockEntity.Height)} DESC LIMIT 1))";
+                                (SELECT {nameof(BlockEntity.Height)} FROM block ORDER BY {nameof(BlockEntity.Height)} DESC LIMIT 1))";
             }
 
             // Staking filter
@@ -167,8 +170,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
             // Nominated filter
             if (request.Cursor.NominationFilter != LiquidityPoolNominationStatusFilter.Any)
             {
-                tableJoins += $@" JOIN governance_nomination gn
-                                    ON gn.{nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}";
+                tableJoins += $@" JOIN governance_nomination gn ON gn.{nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}";
 
                 var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
                 var status = request.Cursor.NominationFilter == LiquidityPoolNominationStatusFilter.Nominated ? "true" : "false";
@@ -192,7 +194,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
             var query = SqlQuery.Replace(WhereFilter, whereFilter)
                 .Replace(TableJoins, tableJoins)
                 .Replace(OrderBy, orderBy)
-                .Replace(Limit, limit);
+                .Replace(Limit, limit).RemoveExcessWhitespace();
 
             if (request.Cursor.PagingDirection == PagingDirection.Forward) return $"{query};";
 
@@ -228,7 +230,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
                 OrderByValue = pointer.Item1;
                 LiquidityPoolId = pointer.Item2;
                 Markets = markets.Select(market => market.ToString());
-                Pools = pools.Select(pool => pool.ToString());
+                LiquidityPools = pools.Select(pool => pool.ToString());
                 Tokens = tokens.Select(pool => pool.ToString());
             }
 
@@ -236,7 +238,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
             public string OrderByValue { get; }
             public ulong LiquidityPoolId { get; }
             public IEnumerable<string> Markets { get; }
-            public IEnumerable<string> Pools { get; }
+            public IEnumerable<string> LiquidityPools { get; }
             public IEnumerable<string> Tokens { get; }
         }
     }
