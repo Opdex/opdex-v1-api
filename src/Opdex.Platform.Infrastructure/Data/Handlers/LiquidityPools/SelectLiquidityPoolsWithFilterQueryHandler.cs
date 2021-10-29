@@ -140,7 +140,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
             }
 
             // Mining filter
-            if (request.Cursor.MiningFilter != LiquidityPoolMiningStatusFilter.Default)
+            if (request.Cursor.MiningFilter != LiquidityPoolMiningStatusFilter.Any)
             {
                 tableJoins += $" JOIN pool_mining pm on pl.{nameof(LiquidityPoolEntity.Id)} = pm.{nameof(MiningPoolEntity.LiquidityPoolId)}";
 
@@ -152,7 +152,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
             }
 
             // Staking filter
-            if (request.Cursor.StakingFilter != LiquidityPoolStakingStatusFilter.Default)
+            if (request.Cursor.StakingFilter != LiquidityPoolStakingStatusFilter.Any)
             {
                 var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
                 whereFilter += request.Cursor.StakingFilter == LiquidityPoolStakingStatusFilter.Enabled
@@ -165,7 +165,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
             }
 
             // Nominated filter
-            if (request.Cursor.NominationFilter != LiquidityPoolNominationStatusFilter.Default)
+            if (request.Cursor.NominationFilter != LiquidityPoolNominationStatusFilter.Any)
             {
                 tableJoins += $@" JOIN governance_nomination gn
                                     ON gn.{nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}";

@@ -91,9 +91,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
 
             var sb = new StringBuilder();
             sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
-            foreach (var pool in LiquidityPools) sb.AppendFormat("pools:{0};", pool);
+            foreach (var pool in LiquidityPools) sb.AppendFormat("liquidityPools:{0};", pool);
             foreach (var token in Tokens) sb.AppendFormat("tokens:{0};", token);
-            foreach (var market in Tokens) sb.AppendFormat("markets:{0};", market);
+            foreach (var market in Markets) sb.AppendFormat("markets:{0};", market);
             sb.AppendFormat("keyword:{0};", Keyword);
             sb.AppendFormat("stakingFilter:{0};", StakingFilter);
             sb.AppendFormat("nominationFilter:{0};", NominationFilter);
@@ -135,7 +135,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
 
             TryGetCursorProperties<Address>(values, "tokens", out var tokens);
 
-            TryGetCursorProperties<Address>(values, "pools", out var pools);
+            TryGetCursorProperties<Address>(values, "liquidityPools", out var pools);
 
             TryGetCursorProperty<LiquidityPoolStakingStatusFilter>(values, "stakingFilter", out var stakingFilter);
 
@@ -187,12 +187,15 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
         }
     }
 
+    /// <summary>
+    /// Options to filter liquidity pools by according to their mining status.
+    /// </summary>
     public enum LiquidityPoolMiningStatusFilter
     {
         /// <summary>
-        /// Default status is ignored in filter.
+        /// Retrieve any liquidity pool not determined by mining status.
         /// </summary>
-        Default = 0,
+        Any = 0,
 
         /// <summary>
         /// Mining enabled filter.
@@ -205,12 +208,15 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
         Disabled = 2
     }
 
+    /// <summary>
+    /// Options to filter liquidity pools by according to their nomination status.
+    /// </summary>
     public enum LiquidityPoolNominationStatusFilter
     {
         /// <summary>
-        /// Default status is ignored in filter.
+        /// Retrieve any liquidity pool not determined by nomination status.
         /// </summary>
-        Default = 0,
+        Any = 0,
 
         /// <summary>
         /// Nominated for liquidity mining filter.
@@ -223,12 +229,15 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
         NonNominated = 2
     }
 
+    /// <summary>
+    /// Options to filter liquidity pools by according to their staking status.
+    /// </summary>
     public enum LiquidityPoolStakingStatusFilter
     {
         /// <summary>
-        /// Default status is ignored in filter.
+        /// Retrieve any liquidity pool not determined by staking status.
         /// </summary>
-        Default = 0,
+        Any = 0,
 
         /// <summary>
         /// Staking enabled filter.
@@ -241,12 +250,15 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
         Disabled = 2
     }
 
+    /// <summary>
+    /// The order in which to return liquidity pool records by.
+    /// </summary>
     public enum LiquidityPoolOrderByType
     {
         /// <summary>
-        /// Default orders results based on when they were added to Opdex.
+        /// The default status of any is ignored in filter.
         /// </summary>
-        Default = 0,
+        Any = 0,
 
         /// <summary>
         /// Order results by liquidity locked amounts.

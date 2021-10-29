@@ -7,14 +7,14 @@ using System.Text.RegularExpressions;
 
 namespace Opdex.Platform.WebApi.Validation.LiquidityPools
 {
-    public class LiquidityPoolFilterParametersTests : AbstractCursorValidator<LiquidityPoolFilterParameters, LiquidityPoolsCursor>
+    public class LiquidityPoolFilterParametersValidator : AbstractCursorValidator<LiquidityPoolFilterParameters, LiquidityPoolsCursor>
     {
-        private static readonly Regex Regex = new Regex("^[0-9A-Za-z ]+$");
+       const string RegexPattern = "^[0-9A-Za-z ]+$";
 
-        public LiquidityPoolFilterParametersTests()
+        public LiquidityPoolFilterParametersValidator()
         {
             RuleFor(filter => filter.Keyword)
-                .Must(keyword => !keyword.HasValue() || Regex.IsMatch(keyword))
+                .Must(keyword => !keyword.HasValue() || Regex.IsMatch(keyword, RegexPattern, RegexOptions.Compiled))
                 .WithMessage("Keyword must consist of letters, numbers and spaces only.");
 
             RuleFor(filter => filter.OrderBy).MustBeValidEnumValue();
