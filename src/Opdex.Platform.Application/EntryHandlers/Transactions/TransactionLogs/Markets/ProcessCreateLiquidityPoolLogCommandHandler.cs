@@ -50,7 +50,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var lpTokenId = await _mediator.Send(new CreateTokenCommand(request.Log.Pool, request.BlockHeight));
 
                 var networkPrefix = _config.Network.NetworkTokenPrefix();
-                var name = $"{srcToken.Name}-{networkPrefix}CRS";
+                var name = $"{srcToken.Symbol}-{networkPrefix}CRS";
 
                 var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false)) ??
                                     new LiquidityPool(request.Log.Pool, name, srcTokenId, lpTokenId, market.Id, request.BlockHeight);

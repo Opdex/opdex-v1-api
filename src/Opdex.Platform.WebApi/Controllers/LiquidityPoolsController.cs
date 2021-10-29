@@ -39,10 +39,10 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Liquidity Pools</summary>
-        /// <remarks>Retrieve a list of pools that match the filters provided.</remarks>
-        /// <param name="filters">Filter liquidity pools by staking status. Default null is ignored.</param>
+        /// <remarks>Search and filter liquidity pools with pagination.</remarks>
+        /// <param name="filters">Liquidity pool filter options.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>List of <see cref="LiquidityPoolResponseModel"/>'s that match the filter criteria.</returns>
+        /// <returns><see cref="LiquidityPoolsResponseModel"/> of matching results and paging details.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(LiquidityPoolsResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]

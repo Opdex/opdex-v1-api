@@ -26,7 +26,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.LiquidityPools
         public IEnumerable<Address> Markets { get; set; }
 
         /// <summary>
-        /// LiquidityPools to filter specifically for.
+        /// Liquidity pools to filter specifically for.
         /// </summary>
         public IEnumerable<Address> LiquidityPools { get; set; }
 

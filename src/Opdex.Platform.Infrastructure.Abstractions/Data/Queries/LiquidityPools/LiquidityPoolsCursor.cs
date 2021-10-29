@@ -54,7 +54,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
         public IEnumerable<Address> Markets { get; }
 
         /// <summary>
-        /// LiquidityPools to filter specifically for.
+        /// Liquidity pools to filter specifically for.
         /// </summary>
         public IEnumerable<Address> LiquidityPools { get; }
 

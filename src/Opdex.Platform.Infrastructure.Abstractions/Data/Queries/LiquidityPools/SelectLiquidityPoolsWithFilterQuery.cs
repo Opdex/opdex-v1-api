@@ -11,7 +11,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
     public class SelectLiquidityPoolsWithFilterQuery : IRequest<IEnumerable<LiquidityPool>>
     {
         /// <summary>
-        /// Constructor to build a retrieve liquidity pools with filter query.
+        /// Constructor to build a select liquidity pools with filter query.
         /// </summary>
         /// <param name="cursor">The liquidity pools cursor to filter by.</param>
         public SelectLiquidityPoolsWithFilterQuery(LiquidityPoolsCursor cursor)

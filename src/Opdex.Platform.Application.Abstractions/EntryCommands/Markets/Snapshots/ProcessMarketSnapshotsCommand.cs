@@ -8,7 +8,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshot
     {
         public ProcessMarketSnapshotsCommand(Market market, DateTime blockTime)
         {
-            Market = market ?? throw new ArgumentNullException(nameof(market), $"Market must be provided.");
+            Market = market ?? throw new ArgumentNullException(nameof(market), "Market must be provided.");
             BlockTime = blockTime;
         }
 
