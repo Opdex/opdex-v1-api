@@ -47,7 +47,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Routers
             var srcTokenId = tokenInIsCrs ? tokenOut.Id : tokenIn.Id;
             var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(srcTokenId, router.MarketId, findOrThrow: true), cancellationToken);
 
-            var reserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(liquidityPool.Address));
+            var reserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(liquidityPool.Address), cancellationToken);
             var reservesTokenIn = tokenInIsCrs ? reserves.Crs : reserves.Src;
             var reservesTokenOut = tokenInIsCrs ? reserves.Src : reserves.Crs;
 
@@ -59,12 +59,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Routers
             var liquidityPoolIn = await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(tokenIn.Id, router.MarketId, findOrThrow: true), cancellationToken);
             var liquidityPoolOut = await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(tokenOut.Id, router.MarketId, findOrThrow: true), cancellationToken);
 
-            var reservesPoolIn = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(liquidityPoolIn.Address));
-            var reservesPoolOut = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(liquidityPoolOut.Address));
+            var reservesPoolIn = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(liquidityPoolIn.Address), cancellationToken);
+            var reservesPoolOut = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(liquidityPoolOut.Address), cancellationToken);
 
             return await _mediator.Send(new CallCirrusGetAmountOutMultiHopQuoteQuery(router.Address, tokenInAmount,
                                                                                      reservesPoolIn.Crs, reservesPoolIn.Src,
-                                                                                     reservesPoolOut.Crs, reservesPoolOut.Src));
+                                                                                     reservesPoolOut.Crs, reservesPoolOut.Src), cancellationToken);
         }
     }
 }
