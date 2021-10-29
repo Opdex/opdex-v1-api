@@ -318,7 +318,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetStandardTokenContractSummaryQuery, StandardTokenContractSummary>, CallCirrusGetStandardTokenContractSummaryQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetMiningPoolRewardPerTokenMiningQuery, UInt256>, CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenAllowanceQuery, UInt256>, CallCirrusGetSrcTokenAllowanceQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, UInt256[]>, CallCirrusGetOpdexLiquidityPoolReservesQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, Reserves>, CallCirrusGetOpdexLiquidityPoolReservesQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAmountOutStandardQuoteQuery, UInt256>, CallCirrusGetAmountOutStandardQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAmountInStandardQuoteQuery, UInt256>, CallCirrusGetAmountInStandardQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetAmountOutMultiHopQuoteQuery, UInt256>, CallCirrusGetAmountOutMultiHopQuoteQueryHandler>();

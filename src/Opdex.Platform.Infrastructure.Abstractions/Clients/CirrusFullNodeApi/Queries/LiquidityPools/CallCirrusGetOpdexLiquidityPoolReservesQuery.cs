@@ -1,11 +1,10 @@
 using MediatR;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Common.Models.UInt;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools
 {
-    public class CallCirrusGetOpdexLiquidityPoolReservesQuery : IRequest<UInt256[]>
+    public class CallCirrusGetOpdexLiquidityPoolReservesQuery : IRequest<Reserves>
     {
         public CallCirrusGetOpdexLiquidityPoolReservesQuery(Address address)
         {

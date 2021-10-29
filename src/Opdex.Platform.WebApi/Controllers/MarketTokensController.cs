@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Quotes;
-using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Routers;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
@@ -93,10 +93,7 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                      [FromBody] SwapAmountInQuoteRequestModel request,
                                                                                      CancellationToken cancellationToken)
         {
-            // Todo: Revisit and split out this query's flow to Amount In specifically
-            var query = new GetLiquidityPoolSwapQuoteQuery(tokenIn, request.TokenOut, FixedDecimal.Zero, request.TokenOutAmount, marketAddress);
-
-            var result = await _mediator.Send(query, cancellationToken);
+            var result = await _mediator.Send(new GetSwapAmountInQuery(marketAddress, tokenIn, request.TokenOut, request.TokenOutAmount), cancellationToken);
 
             var response = new SwapAmountInQuoteResponseModel { AmountIn = result };
 
@@ -118,10 +115,7 @@ namespace Opdex.Platform.WebApi.Controllers
                                                                                        [FromBody] SwapAmountOutQuoteRequestModel request,
                                                                                        CancellationToken cancellationToken)
         {
-            // Todo: Revisit and split out this query's flow to Amount Out specifically
-            var query = new GetLiquidityPoolSwapQuoteQuery(request.TokenIn, tokenOut, request.TokenInAmount, FixedDecimal.Zero, marketAddress);
-
-            var result = await _mediator.Send(query, cancellationToken);
+            var result = await _mediator.Send(new GetSwapAmountOutQuery(marketAddress, request.TokenIn, request.TokenInAmount, tokenOut), cancellationToken);
 
             var response = new SwapAmountOutQuoteResponseModel { AmountOut = result };
 

@@ -53,6 +53,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Routers;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
@@ -115,6 +116,7 @@ using Opdex.Platform.Application.EntryHandlers.Markets.Quotes;
 using Opdex.Platform.Application.EntryHandlers.Markets.Snapshots;
 using Opdex.Platform.Application.EntryHandlers.MiningPools;
 using Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes;
+using Opdex.Platform.Application.EntryHandlers.Routers;
 using Opdex.Platform.Application.EntryHandlers.Tokens;
 using Opdex.Platform.Application.EntryHandlers.Tokens.Quotes;
 using Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots;
@@ -204,6 +206,8 @@ namespace Opdex.Platform.Application
             // Liquidity Pools
             services.AddTransient<IRequestHandler<GetLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPoolDto>>, GetLiquidityPoolsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolSwapQuoteQuery, FixedDecimal>, GetLiquidityPoolSwapQuoteQueryHandler>();
+            services.AddTransient<IRequestHandler<GetSwapAmountInQuery, FixedDecimal>, GetSwapAmountInQueryHandler>();
+            services.AddTransient<IRequestHandler<GetSwapAmountOutQuery, FixedDecimal>, GetSwapAmountOutQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityAmountInQuoteQuery, FixedDecimal>, GetLiquidityAmountInQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshotDto>>, GetLiquidityPoolSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolByAddressQuery, LiquidityPoolDto>, GetLiquidityPoolByAddressQueryHandler>();

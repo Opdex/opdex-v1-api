@@ -21,7 +21,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
         public async Task<UInt256> Handle(CallCirrusGetLiquidityAmountInQuoteQuery request, CancellationToken cancellationToken)
         {
             var quoteParams = new[] { $"12#{request.AmountA}", $"12#{request.ReserveA}", $"12#{request.ReserveB}" };
-            var localCall = new LocalCallRequestDto(request.Market, request.Market, "GetLiquidityQuote", quoteParams);
+            var localCall = new LocalCallRequestDto(request.Router, request.Router, "GetLiquidityQuote", quoteParams);
             var amountIn = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 
             if (amountIn.ErrorMessage != null)
