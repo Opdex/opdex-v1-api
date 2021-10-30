@@ -124,6 +124,19 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Liquidit
         }
 
         [Fact]
+        public void Create_With_MarketAddress()
+        {
+            // Act
+            Address market = "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L";
+
+            // Arrange
+            var cursor = new LiquidityPoolsCursor(market);
+
+            // Assert
+            cursor.Markets.Should().Contain(market);
+        }
+
+        [Fact]
         public void ToString_StringifiesCursor_FormatCorrectly()
         {
             // Arrange

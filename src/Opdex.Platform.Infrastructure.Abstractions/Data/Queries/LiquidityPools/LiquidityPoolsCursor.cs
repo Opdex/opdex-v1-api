@@ -10,6 +10,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
 {
     public class LiquidityPoolsCursor : Cursor<(string, ulong)>
     {
+        // Todo: This has to be handled better before we hit 10k, optional pagination in Retrieve may be key
+        private const int MaxInternalLimit = 1_000;
+
         public LiquidityPoolsCursor(string keyword, IEnumerable<Address> markets, IEnumerable<Address> pools, IEnumerable<Address> tokens, LiquidityPoolStakingStatusFilter stakingFilter,
                                     LiquidityPoolNominationStatusFilter nominationFilter, LiquidityPoolMiningStatusFilter miningFilter,
                                     LiquidityPoolOrderByType orderBy, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection,
@@ -36,7 +39,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
         /// </remarks>
         /// <param name="market">The market to select all liquidity pools for.</param>
         public LiquidityPoolsCursor(Address market)
-            : base(SortDirectionType.ASC, uint.MaxValue, PagingDirection.Forward, default, uint.MaxValue, uint.MaxValue)
+            : base(SortDirectionType.ASC, MaxInternalLimit, PagingDirection.Forward, default, MaxInternalLimit, MaxInternalLimit)
         {
             Markets = new List<Address> { market };
             LiquidityPools = Enumerable.Empty<Address>();
