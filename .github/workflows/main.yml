@@ -1,4 +1,4 @@
-name: CI
+name: Notifications
 
 on:
   pull_request:
