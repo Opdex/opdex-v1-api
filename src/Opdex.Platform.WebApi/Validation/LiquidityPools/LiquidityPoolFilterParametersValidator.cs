@@ -9,12 +9,12 @@ namespace Opdex.Platform.WebApi.Validation.LiquidityPools
 {
     public class LiquidityPoolFilterParametersValidator : AbstractCursorValidator<LiquidityPoolFilterParameters, LiquidityPoolsCursor>
     {
-       const string RegexPattern = "^[0-9A-Za-z ]+$";
+       private static readonly Regex Alphanumeric = new Regex("^[0-9A-Za-z ]+$", RegexOptions.Compiled);
 
         public LiquidityPoolFilterParametersValidator()
         {
             RuleFor(filter => filter.Keyword)
-                .Must(keyword => !keyword.HasValue() || Regex.IsMatch(keyword, RegexPattern, RegexOptions.Compiled))
+                .Must(keyword => !keyword.HasValue() || Alphanumeric.IsMatch(keyword))
                 .WithMessage("Keyword must consist of letters, numbers and spaces only.");
 
             RuleFor(filter => filter.OrderBy).MustBeValidEnumValue();
