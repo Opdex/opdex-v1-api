@@ -15,6 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
         private static readonly string SqlCommand =
             $@"INSERT INTO pool_liquidity (
                 {nameof(LiquidityPoolEntity.Address)},
+                {nameof(LiquidityPoolEntity.Name)},
                 {nameof(LiquidityPoolEntity.SrcTokenId)},
                 {nameof(LiquidityPoolEntity.LpTokenId)},
                 {nameof(LiquidityPoolEntity.MarketId)},
@@ -22,6 +23,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
                 {nameof(LiquidityPoolEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(LiquidityPoolEntity.Address)},
+                @{nameof(LiquidityPoolEntity.Name)},
                 @{nameof(LiquidityPoolEntity.SrcTokenId)},
                 @{nameof(LiquidityPoolEntity.LpTokenId)},
                 @{nameof(LiquidityPoolEntity.MarketId)},

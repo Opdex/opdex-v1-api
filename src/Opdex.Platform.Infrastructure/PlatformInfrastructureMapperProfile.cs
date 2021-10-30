@@ -77,7 +77,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolEntity, LiquidityPool>()
-                .ConstructUsing(src => new LiquidityPool(src.Id, src.Address, src.SrcTokenId, src.LpTokenId, src.MarketId, src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new LiquidityPool(src.Id, src.Address, src.Name, src.SrcTokenId, src.LpTokenId, src.MarketId, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolSummaryEntity, LiquidityPoolSummary>()
@@ -423,6 +423,7 @@ namespace Opdex.Platform.Infrastructure
             CreateMap<LiquidityPool, LiquidityPoolEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.SrcTokenId, opt => opt.MapFrom(src => src.SrcTokenId))
                 .ForMember(dest => dest.LpTokenId, opt => opt.MapFrom(src => src.LpTokenId))
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))

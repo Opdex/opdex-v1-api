@@ -16,6 +16,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
         private static readonly string SqlQuery =
             @$"SELECT
                 {nameof(LiquidityPoolEntity.Id)},
+                {nameof(LiquidityPoolEntity.Name)},
                 {nameof(LiquidityPoolEntity.Address)},
                 {nameof(LiquidityPoolEntity.SrcTokenId)},
                 {nameof(LiquidityPoolEntity.LpTokenId)},

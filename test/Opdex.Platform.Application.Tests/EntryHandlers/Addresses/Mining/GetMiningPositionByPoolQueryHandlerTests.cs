@@ -106,7 +106,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Mining
             var request = new GetMiningPositionByPoolQuery("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX");
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 15, 20, 25, 30);
+            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "ETH-CRS", 10, 15, 20, 25, 30);
             var addressMining = new AddressMining(5, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("100000000000"), 50, 500);
             var miningPool = new MiningPool(5, 5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("10"), UInt256.Parse("10"), 10000, 25, 30);
 
@@ -132,7 +132,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Mining
             var request = new GetMiningPositionByPoolQuery("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX");
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 15, 20, 25, 30);
+            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "GOV-CRS", 10, 15, 20, 25, 30);
             var addressMining = new AddressMining(5, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", 100000000000, 50, 500);
             var miningPool = new MiningPool(5, 5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 10, 10000, 25, 30);
             var token = new Token(5, "PDrzyNsewpj4KDnDttqcJT5EK7vZXQufNU", false, "Governance Token", "GOV", 8, 10000000, 10000000000000000000, 10, 20);

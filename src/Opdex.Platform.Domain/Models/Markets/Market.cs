@@ -7,7 +7,7 @@ namespace Opdex.Platform.Domain.Models.Markets
 {
     public class Market : BlockAudit
     {
-        public Market(Address address, ulong deployerId, ulong? stakingTokenId, Address owner, bool authPoolCreators, bool authProviders,
+        public Market(Address address, ulong deployerId, ulong stakingTokenId, Address owner, bool authPoolCreators, bool authProviders,
             bool authTraders, uint transactionFee, bool marketFeeEnabled, ulong createdBlock) : base(createdBlock)
         {
             if (address == Address.Empty)
@@ -41,7 +41,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             MarketFeeEnabled = marketFeeEnabled;
         }
 
-        public Market(ulong id, Address address, ulong deployerId, ulong? stakingTokenId, Address pendingOwner, Address owner, bool authPoolCreators, bool authProviders,
+        public Market(ulong id, Address address, ulong deployerId, ulong stakingTokenId, Address pendingOwner, Address owner, bool authPoolCreators, bool authProviders,
             bool authTraders, uint transactionFee, bool marketFeeEnabled, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
         {
             Id = id;
@@ -60,7 +60,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         public ulong Id { get; }
         public Address Address { get; }
         public ulong DeployerId { get; }
-        public ulong? StakingTokenId { get; }
+        public ulong StakingTokenId { get; }
         public Address PendingOwner { get; private set; }
         public Address Owner { get; private set; }
         public bool AuthPoolCreators { get; }
@@ -68,7 +68,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         public bool AuthTraders { get; }
         public uint TransactionFee { get; }
         public bool MarketFeeEnabled { get; }
-        public bool IsStakingMarket => StakingTokenId.GetValueOrDefault() > 0;
+        public bool IsStakingMarket => StakingTokenId > 0;
 
         public void SetPendingOwnership(SetPendingMarketOwnershipLog log, ulong block)
         {

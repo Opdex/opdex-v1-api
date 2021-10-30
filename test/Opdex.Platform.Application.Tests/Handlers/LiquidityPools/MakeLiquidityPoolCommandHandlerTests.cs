@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools
         public async Task MakeLiquidityPoolCommand_Sends_PersistLiquidityPoolCommand()
         {
             // Arrange
-            var liquidityPool = new LiquidityPool(5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", 5, 15, 25, 500, 505);
+            var liquidityPool = new LiquidityPool(5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "ETH-CRS", 5, 15, 25, 500, 505);
 
             // Act
             await _handler.Handle(new MakeLiquidityPoolCommand(liquidityPool), CancellationToken.None);

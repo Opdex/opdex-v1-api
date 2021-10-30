@@ -59,15 +59,13 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
 
                 if (market.IsStakingMarket)
                 {
-                    var stakingTokenId = market.StakingTokenId.GetValueOrDefault();
-
-                    var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(stakingTokenId, liquidityPool.MarketId,
+                    var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(market.StakingTokenId, liquidityPool.MarketId,
                                                                                                              blockTime, SnapshotType.Hourly));
 
                     // Update a stale snapshot if it is older than what was requested
                     if (stakingTokenSnapshot.EndDate < blockTime)
                     {
-                        var stakingTokenPool = await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(stakingTokenId, market.Id));
+                        var stakingTokenPool = await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(market.StakingTokenId, market.Id));
 
                         var stakingTokenPoolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(stakingTokenPool.Id,
                                                                                                                              stakingTokenSnapshot.EndDate,

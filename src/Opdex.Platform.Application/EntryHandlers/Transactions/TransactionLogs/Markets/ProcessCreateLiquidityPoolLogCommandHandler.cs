@@ -11,7 +11,9 @@ using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
@@ -20,11 +22,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 {
     public class ProcessCreateLiquidityPoolLogCommandHandler : IRequestHandler<ProcessCreateLiquidityPoolLogCommand, bool>
     {
+        private readonly OpdexConfiguration _config;
         private readonly IMediator _mediator;
         private readonly ILogger<ProcessCreateLiquidityPoolLogCommandHandler> _logger;
 
-        public ProcessCreateLiquidityPoolLogCommandHandler(IMediator mediator, ILogger<ProcessCreateLiquidityPoolLogCommandHandler> logger)
+        public ProcessCreateLiquidityPoolLogCommandHandler(OpdexConfiguration config, IMediator mediator,
+                                                           ILogger<ProcessCreateLiquidityPoolLogCommandHandler> logger)
         {
+            _config = config ?? throw new ArgumentNullException(nameof(config));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -44,8 +49,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
 
                 var lpTokenId = await _mediator.Send(new CreateTokenCommand(request.Log.Pool, request.BlockHeight));
 
+                var networkPrefix = _config.Network.NetworkTokenPrefix();
+                var name = $"{srcToken.Symbol}-{networkPrefix}CRS";
+
                 var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Pool, findOrThrow: false)) ??
-                                    new LiquidityPool(request.Log.Pool, srcTokenId, lpTokenId, market.Id, request.BlockHeight);
+                                    new LiquidityPool(request.Log.Pool, name, srcTokenId, lpTokenId, market.Id, request.BlockHeight);
 
                 ulong liquidityPoolId = liquidityPool.Id;
                 var isNewLiquidityPool = liquidityPoolId == 0;

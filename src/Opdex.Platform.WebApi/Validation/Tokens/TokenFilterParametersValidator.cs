@@ -9,12 +9,12 @@ namespace Opdex.Platform.WebApi.Validation.Tokens
 {
     public class TokenFilterParametersValidator : AbstractCursorValidator<TokenFilterParameters, TokensCursor>
     {
-        private static readonly Regex Regex = new Regex("^[0-9A-Za-z ]+$");
+        private static readonly Regex Alphanumeric = new Regex("^[0-9A-Za-z ]+$", RegexOptions.Compiled);
 
         public TokenFilterParametersValidator()
         {
             RuleFor(filter => filter.Keyword)
-                .Must(keyword => !keyword.HasValue() || Regex.IsMatch(keyword))
+                .Must(keyword => !keyword.HasValue() || Alphanumeric.IsMatch(keyword))
                 .WithMessage("Keyword must consist of letters, numbers and spaces only.");
 
             RuleFor(filter => filter.OrderBy).MustBeValidEnumValue();

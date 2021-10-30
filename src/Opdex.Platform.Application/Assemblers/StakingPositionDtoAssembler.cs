@@ -23,7 +23,7 @@ namespace Opdex.Platform.Application.Assemblers
         {
             var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByIdQuery(source.LiquidityPoolId, findOrThrow: true));
             var market = await _mediator.Send(new RetrieveMarketByIdQuery(liquidityPool.MarketId, findOrThrow: true));
-            var token = await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId.Value, findOrThrow: true));
+            var token = await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId, findOrThrow: true));
 
             return new StakingPositionDto
             {

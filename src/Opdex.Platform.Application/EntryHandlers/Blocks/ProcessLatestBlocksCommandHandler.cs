@@ -105,7 +105,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
 
                         foreach (var market in markets)
                         {
-                            await _mediator.Send(new ProcessMarketSnapshotsCommand(market.Id, currentBlock.MedianTime));
+                            await _mediator.Send(new ProcessMarketSnapshotsCommand(market, currentBlock.MedianTime));
                         }
                     }
 

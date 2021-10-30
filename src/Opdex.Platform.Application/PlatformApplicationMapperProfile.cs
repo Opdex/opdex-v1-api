@@ -97,6 +97,7 @@ namespace Opdex.Platform.Application
             CreateMap<LiquidityPool, LiquidityPoolDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<Block, BlockDto>()
@@ -104,11 +105,6 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
                 .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time))
                 .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<LiquidityPool, LiquidityPoolDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolSnapshot, LiquidityPoolSnapshotDto>()

@@ -147,7 +147,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             FixedDecimal amountSrcMin = FixedDecimal.Parse("1.8");
             const ulong deadline = 1ul;
 
-            var pool = new LiquidityPool(1, liquidityPool.ToString(), 2, 3, 4, 6, 7);
+            var pool = new LiquidityPool(1, liquidityPool.ToString(), "BTC-CRS", 2, 3, 4, 6, 7);
             var token = new Token(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, "Bitcoin", "BTC", 8, 100_000_000, 10000000, 2, 3);
             var marketRouter = new MarketRouter(1, "PMsinMXrr2uNEL5AQD1LpiYTRFiRTA8uZU", 2, true, 3, 4);
             var cancellationToken = new CancellationTokenSource().Token;
@@ -205,7 +205,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools
             FixedDecimal amountSrcMin = FixedDecimal.Parse("1.8");
             const ulong deadline = 5400ul;
 
-            var pool = new LiquidityPool(1, liquidityPool.ToString(), 2, 3, 4, 6, 7);
+            var pool = new LiquidityPool(1, liquidityPool.ToString(), "BTC-CRS", 2, 3, 4, 6, 7);
             var token = new Token(1, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, "Bitcoin", "BTC", 8, 100_000_000, 10000000, 2, 3);
             var marketRouter = new MarketRouter(1, "PMsinMXrr2uNEL5AQD1LpiYTRFiRTA8uZU", 2, true, 3, 4);
             var cancellationToken = new CancellationTokenSource().Token;

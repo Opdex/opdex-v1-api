@@ -7,6 +7,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
     public class LiquidityPoolDto
     {
         public ulong Id { get; set; }
+        public string Name { get; set; }
         public Address Address { get; set; }
         public decimal TransactionFee { get; set; }
         public bool StakingEnabled { get; set; }

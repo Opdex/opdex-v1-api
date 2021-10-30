@@ -1,41 +1,24 @@
 using MediatR;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools
 {
+    /// <summary>
+    /// Select liquidity pools with filtering.
+    /// </summary>
     public class SelectLiquidityPoolsWithFilterQuery : IRequest<IEnumerable<LiquidityPool>>
     {
-        public SelectLiquidityPoolsWithFilterQuery(ulong marketId, bool? stakingEnabled = null, bool? miningEnabled = null, bool? nominated = null,
-                                                   uint skip = 0, uint take = 0, string sortBy = null, string orderBy = null, IEnumerable<Address> pools = null)
+        /// <summary>
+        /// Constructor to build a select liquidity pools with filter query.
+        /// </summary>
+        /// <param name="cursor">The liquidity pools cursor to filter by.</param>
+        public SelectLiquidityPoolsWithFilterQuery(LiquidityPoolsCursor cursor)
         {
-            if (marketId < 1)
-            {
-                throw new ArgumentNullException(nameof(marketId), $"{nameof(marketId)} must be greater than 0.");
-            }
-
-            MarketId = marketId;
-            Staking = stakingEnabled;
-            Mining = miningEnabled;
-            Nominated = nominated;
-            Skip = skip;
-            Take = take;
-            SortBy = sortBy;
-            OrderBy = orderBy;
-            Pools = pools ?? Enumerable.Empty<Address>();
+            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor), "Liquidity pools cursor must be set.");
         }
 
-        public ulong MarketId { get; }
-        public bool? Staking { get; }
-        public bool? Mining { get; }
-        public bool? Nominated { get; }
-        public uint Skip { get; }
-        public uint Take { get; }
-        public string SortBy { get; }
-        public string OrderBy { get; }
-        public IEnumerable<Address> Pools { get; }
+        public LiquidityPoolsCursor Cursor { get; }
     }
 }
