@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.SwapQuotes;
@@ -20,7 +21,13 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
 
         public async Task<UInt256> Handle(CallCirrusGetAmountInStandardQuoteQuery request, CancellationToken cancellationToken)
         {
-            var quoteParams = new[] { $"12#{request.AmountOut}", $"12#{request.ReserveIn}", $"12#{request.ReserveOut}" };
+            var quoteParams = new[]
+            {
+                new SmartContractMethodParameter(request.AmountOut),
+                new SmartContractMethodParameter(request.ReserveIn),
+                new SmartContractMethodParameter(request.ReserveOut)
+            };
+
             var localCall = new LocalCallRequestDto(request.Router, request.Router, "GetAmountIn", quoteParams);
             var amountIn = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 

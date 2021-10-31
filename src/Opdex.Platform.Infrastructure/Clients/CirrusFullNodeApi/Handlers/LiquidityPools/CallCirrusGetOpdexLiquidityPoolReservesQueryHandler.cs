@@ -23,7 +23,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
 
         public async Task<Reserves> Handle(CallCirrusGetOpdexLiquidityPoolReservesQuery request, CancellationToken cancellationToken)
         {
-            var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Reserves", new string[0]);
+            var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Reserves");
             var reservesResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
             var reserves = ((JArray)reservesResponse.Return).ToArray();
 

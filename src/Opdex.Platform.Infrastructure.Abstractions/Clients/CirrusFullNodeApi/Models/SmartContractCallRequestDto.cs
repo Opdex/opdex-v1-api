@@ -1,11 +1,12 @@
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Transactions;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     public class SmartContractCallRequestDto
     {
         public SmartContractCallRequestDto(Address address, string walletName, Address walletAddress, string walletPassword, FixedDecimal amount,
-            string methodName, string[] parameters = null)
+            string methodName, SmartContractMethodParameter[] parameters = null)
         {
             Amount = amount;
             ContractAddress = address;
@@ -26,6 +27,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public string MethodName { get; set; }
         public FixedDecimal Amount { get; set; }
         public Address Sender { get; set; }
-        public string[] Parameters { get; set; }
+        public SmartContractMethodParameter[] Parameters { get; set; }
     }
 }

@@ -1,5 +1,4 @@
 using MediatR;
-using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Constants.SmartContracts.LiquidityPools;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
@@ -25,8 +24,9 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balan
         {
             var parameters = new[]
             {
-                new SmartContractMethodParameter(request.Staker).Serialize()
+                new SmartContractMethodParameter(request.Staker)
             };
+
             var localCallRequest = new LocalCallRequestDto(request.StakingPool, StakingPoolConstants.Methods.GetStakedBalance, parameters, request.BlockHeight);
             var response = await _smartContractsModule.LocalCallAsync(localCallRequest, cancellationToken);
             return response.DeserializeValue<UInt256>();

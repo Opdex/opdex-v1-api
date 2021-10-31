@@ -20,22 +20,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
 
         public Task<Sha256> Handle(CallCirrusCallSmartContractMethodCommand request, CancellationToken cancellationToken)
         {
-            SmartContractCallRequestDto callRequest;
-
-            if (request.QuoteRequest == null)
-            {
-                callRequest = request.CallDto;
-            }
-            else
-            {
-                var parameters = request.QuoteRequest.SerializedParameters;
-
-                callRequest = new SmartContractCallRequestDto(request.QuoteRequest.To, "cirrusdev", request.QuoteRequest.Sender,
-                                                              "password", request.QuoteRequest.Amount, request.QuoteRequest.Method, parameters);
-
-            }
-
-            return _smartContractsModule.CallSmartContractAsync(callRequest, cancellationToken);
+            return _smartContractsModule.CallSmartContractAsync(request.CallDto, cancellationToken);
         }
     }
 }

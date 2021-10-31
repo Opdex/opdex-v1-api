@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.MiningPools
 {
-    public class CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler
-        : IRequestHandler<CallCirrusGetMiningPoolRewardPerTokenMiningQuery, UInt256>
+    public class CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler : IRequestHandler<CallCirrusGetMiningPoolRewardPerTokenMiningQuery, UInt256>
     {
         private readonly ISmartContractsModule _smartContractsModule;
         private const string MethodName = MiningPoolConstants.Methods.GetRewardPerStakedToken;

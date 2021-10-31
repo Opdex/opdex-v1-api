@@ -28,7 +28,8 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Va
             _handler = new CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler(_smartContractsModuleMock.Object);
         }
 
-        [Fact] public void CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_InvalidVault_ThrowsArgumentNullException()
+        [Fact]
+        public void CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_InvalidVault_ThrowsArgumentNullException()
         {
             // Arrange
             Address vault = Address.Empty;
@@ -80,7 +81,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Va
             Address owner = "P1GLsMroh6zXXNMU9EjmivLgqqARwmH1iT";
             const ulong blockHeight = 10;
 
-            var parameters = new [] { new SmartContractMethodParameter(owner).Serialize() };
+            var parameters = new[] { new SmartContractMethodParameter(owner) };
 
             // Act
             try

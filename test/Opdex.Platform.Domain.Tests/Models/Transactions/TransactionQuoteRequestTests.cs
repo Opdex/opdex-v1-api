@@ -94,7 +94,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
 
             var parameters = new List<TransactionQuoteRequestParameter>
             {
-                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
+                new TransactionQuoteRequestParameter("Amount", (UInt256)10)
             };
 
             // Act
@@ -107,7 +107,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             request.Method.Should().Be(method);
             request.Callback.Should().Be(callback);
             request.Parameters.Should().BeEquivalentTo(parameters);
-            request.SerializedParameters.Should().BeEquivalentTo("12#10");
+            request.MethodParameters.Should().BeEquivalentTo(new SmartContractMethodParameter((UInt256)10));
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vault
         public async Task<IEnumerable<VaultContractCertificateSummary>> Handle(CallCirrusGetVaultContractCertificateSummariesByOwnerQuery request,
                                                                                CancellationToken cancellationToken)
         {
-            var parameters = new[] { new SmartContractMethodParameter(request.Owner).Serialize() };
+            var parameters = new[] { new SmartContractMethodParameter(request.Owner) };
             var balanceRequest = new LocalCallRequestDto(request.Vault, request.Owner, MethodName, parameters, request.BlockHeight);
 
             var response = await _smartContractsModule.LocalCallAsync(balanceRequest, cancellationToken);

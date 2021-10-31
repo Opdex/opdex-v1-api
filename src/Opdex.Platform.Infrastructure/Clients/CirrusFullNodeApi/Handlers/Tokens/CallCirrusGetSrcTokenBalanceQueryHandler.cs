@@ -23,7 +23,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Token
 
         public async Task<UInt256> Handle(CallCirrusGetSrcTokenBalanceQuery request, CancellationToken cancellationToken)
         {
-            var parameters = new[] { new SmartContractMethodParameter(request.Owner).Serialize() };
+            var parameters = new[] { new SmartContractMethodParameter(request.Owner) };
             var balanceRequest = new LocalCallRequestDto(request.Token, request.Owner, MethodName, parameters, request.BlockHeight);
 
             var response = await _smartContractsModule.LocalCallAsync(balanceRequest, cancellationToken);

@@ -82,7 +82,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.To
             Address spender = "PN28FQf5uJYUcmAsqAEgUXkBJPuCXfcNKd";
             const string methodName = StandardTokenConstants.Methods.Allowance;
 
-            var parameters = new[] { new SmartContractMethodParameter(owner).Serialize(), new SmartContractMethodParameter(spender).Serialize() };
+            var parameters = new[] { new SmartContractMethodParameter(owner), new SmartContractMethodParameter(spender) };
 
             var cancellationToken = new CancellationTokenSource().Token;
 

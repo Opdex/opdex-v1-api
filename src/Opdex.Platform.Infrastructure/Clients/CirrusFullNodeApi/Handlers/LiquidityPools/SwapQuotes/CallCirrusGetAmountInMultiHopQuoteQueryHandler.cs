@@ -1,7 +1,6 @@
 using MediatR;
-using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.SwapQuotes;
@@ -24,11 +23,11 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
         {
             var quoteParams = new[]
             {
-                request.TokenOutAmount.ToSmartContractParameter(SmartContractParameterType.UInt256),
-                request.TokenOutReserveCrs.ToSmartContractParameter(SmartContractParameterType.UInt256),
-                request.TokenOutReserveSrc.ToSmartContractParameter(SmartContractParameterType.UInt256),
-                request.TokenInReserveCrs.ToSmartContractParameter(SmartContractParameterType.UInt256),
-                request.TokenInReserveSrc.ToSmartContractParameter(SmartContractParameterType.UInt256)
+                new SmartContractMethodParameter(request.TokenOutAmount),
+                new SmartContractMethodParameter((UInt256)request.TokenOutReserveCrs),
+                new SmartContractMethodParameter(request.TokenOutReserveSrc),
+                new SmartContractMethodParameter((UInt256)request.TokenInReserveCrs),
+                new SmartContractMethodParameter(request.TokenInReserveSrc)
             };
 
             var localCall = new LocalCallRequestDto(request.Router, request.Router, "GetAmountIn", quoteParams);
