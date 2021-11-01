@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
         {
             if (address == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new ArgumentNullException(nameof(address), "The liquidity pool address must be set.");
             }
 
             Address = address;

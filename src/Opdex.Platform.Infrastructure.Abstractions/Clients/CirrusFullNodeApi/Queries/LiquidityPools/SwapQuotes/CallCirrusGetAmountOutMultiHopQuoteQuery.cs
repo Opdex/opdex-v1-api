@@ -24,7 +24,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
         {
             if (router == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(router));
+                throw new ArgumentNullException(nameof(router), "The router address must be set.");
             }
 
             if (tokenInAmount == 0)

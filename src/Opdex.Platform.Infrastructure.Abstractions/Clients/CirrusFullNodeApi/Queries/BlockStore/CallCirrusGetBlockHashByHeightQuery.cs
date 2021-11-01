@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
         {
             if (height < 1)
             {
-                throw new ArgumentNullException(nameof(height));
+                throw new ArgumentOutOfRangeException(nameof(height), "Block height cannot be zero.");
             }
 
             Height = height;

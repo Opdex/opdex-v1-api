@@ -36,7 +36,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
 
             if (amountIn.ErrorMessage != null)
             {
-                throw new Exception($"Invalid request: {amountIn.ErrorMessage}");
+                throw new Exception($"Invalid request: {amountIn.ErrorMessage.Value}");
             }
 
             return amountIn.DeserializeValue<UInt256>();

@@ -6,12 +6,12 @@ using System;
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.MiningPools
 {
     /// <summary>
-    /// Retrieves the last calculated reward per LP token for the mining pool itself.
+    /// Retrieves the reward per LP token that is staked in a particular mining pool.
     /// </summary>
     public class CallCirrusGetMiningPoolRewardPerTokenMiningQuery : IRequest<UInt256>
     {
         /// <summary>
-        /// Creates a request to retrieve the last calculated reward per LP token, for the mining pool itself.
+        /// Creates a request to retrieve the reward per LP token that is staked in a particular mining pool.
         /// </summary>
         /// <param name="miningPool">The address of the mining pool.</param>
         /// <param name="blockHeight">The block height to search at.</param>
