@@ -5,8 +5,18 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.LiquidityQuotes
 {
+    /// <summary>
+    /// Retrieves the amount of token B required to provide liquidity to a pool, based on the pool reserves and the token A input amount.
+    /// </summary>
     public class CallCirrusGetLiquidityAmountInQuoteQuery : IRequest<UInt256>
     {
+        /// <summary>
+        /// Creates a request to retrieve the amount of token B required to provide liquidity to a pool.
+        /// </summary>
+        /// <param name="amountA">The amount of token A provided to the pool.</param>
+        /// <param name="reserveA">The reserve amount of token A in the pool.</param>
+        /// <param name="reserveB">The reserve amount of token B in the pool.</param>
+        /// <param name="router">The address of the router contract.</param>
         public CallCirrusGetLiquidityAmountInQuoteQuery(UInt256 amountA, UInt256 reserveA, UInt256 reserveB, Address router)
         {
             if (router == Address.Empty)

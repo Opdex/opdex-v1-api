@@ -6,8 +6,16 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Governances
 {
+    /// <summary>
+    /// Retrieves the top 4 liquidity pools by staking weight.
+    /// </summary>
     public class CallCirrusGetGovernanceNominationsSummaryQuery : IRequest<IEnumerable<GovernanceContractNominationSummary>>
     {
+        /// <summary>
+        /// Creates a query to retrieve the top 4 liquidity pools by staking weight.
+        /// </summary>
+        /// <param name="governance">The address of the governance contract.</param>
+        /// <param name="blockHeight">The block height to search at.</param>
         public CallCirrusGetGovernanceNominationsSummaryQuery(Address governance, ulong blockHeight)
         {
             if (governance == Address.Empty)

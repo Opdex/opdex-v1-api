@@ -15,9 +15,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
     public class CreateTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateTransactionQuoteCommand>
     {
         private readonly IMapper _mapper;
+
         public CreateTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
                                                     IMediator mediator, IMapper mapper, OpdexConfiguration config)
-            : base (quoteAssembler, mediator, config)
+            : base(quoteAssembler, mediator, config)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }

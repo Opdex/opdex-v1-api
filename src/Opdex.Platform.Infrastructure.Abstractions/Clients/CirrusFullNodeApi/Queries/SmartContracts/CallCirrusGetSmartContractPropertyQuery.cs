@@ -7,8 +7,18 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts
 {
+    /// <summary>
+    /// Retrieves a smart contract property value at a point in time.
+    /// </summary>
     public class CallCirrusGetSmartContractPropertyQuery : IRequest<SmartContractMethodParameter>
     {
+        /// <summary>
+        /// Creates a query to retrieve a smart contract state value at a point in time.
+        /// </summary>
+        /// <param name="contract">The address of the smart contract.</param>
+        /// <param name="propertyStateKey">The key that points to the state value.</param>
+        /// <param name="propertyType">Data type of the state value.</param>
+        /// <param name="blockHeight">The block height at which to search.</param>
         public CallCirrusGetSmartContractPropertyQuery(Address contract, string propertyStateKey, SmartContractParameterType propertyType, ulong blockHeight)
         {
             if (contract == Address.Empty)

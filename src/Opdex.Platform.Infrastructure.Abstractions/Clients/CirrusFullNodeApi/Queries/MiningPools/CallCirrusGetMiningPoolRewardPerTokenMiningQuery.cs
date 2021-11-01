@@ -5,8 +5,16 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.MiningPools
 {
+    /// <summary>
+    /// Retrieves the last calculated reward per LP token for the mining pool itself.
+    /// </summary>
     public class CallCirrusGetMiningPoolRewardPerTokenMiningQuery : IRequest<UInt256>
     {
+        /// <summary>
+        /// Creates a request to retrieve the last calculated reward per LP token, for the mining pool itself.
+        /// </summary>
+        /// <param name="miningPool">The address of the mining pool.</param>
+        /// <param name="blockHeight">The block height to search at.</param>
         public CallCirrusGetMiningPoolRewardPerTokenMiningQuery(Address miningPool, ulong blockHeight)
         {
             if (miningPool == Address.Empty)

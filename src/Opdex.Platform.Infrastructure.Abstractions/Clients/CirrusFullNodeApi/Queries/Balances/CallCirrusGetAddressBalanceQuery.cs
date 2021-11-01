@@ -5,7 +5,7 @@ using System;
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Balances
 {
     /// <summary>
-    /// A query to get an address' CRS balance.
+    /// A query to get a CRS balance of an address.
     /// </summary>
     public class CallCirrusGetAddressBalanceQuery : FindQuery<ulong>
     {
