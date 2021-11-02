@@ -56,7 +56,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Staking
             var request = new GetStakingPositionByPoolQuery("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX");
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 15, 20, 25, 30);
+            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "ETH-CRS", 10, 15, 20, 25, 30);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liqudityPool);
 
@@ -81,7 +81,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Staking
             var request = new GetStakingPositionByPoolQuery("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX");
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 15, 20, 25, 30);
+            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "ETH-CRS", 10, 15, 20, 25, 30);
             var addressStaking = new AddressStaking(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("50000000000"), 50, 100);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liqudityPool);
@@ -106,7 +106,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Staking
             var request = new GetStakingPositionByPoolQuery("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX");
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 15, 20, 25, 30);
+            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "ETH-CRS", 10, 15, 20, 25, 30);
             var addressStaking = new AddressStaking(5, 5, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("50000000000"), 50, 100);
             var market = new Market(5, "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", 5, 25, Address.Empty, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, false, false, 3, false, 50, 100);
 
@@ -133,7 +133,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Staking
             var request = new GetStakingPositionByPoolQuery("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX");
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", 10, 15, 20, 25, 30);
+            var liqudityPool = new LiquidityPool(5, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", "GOV-CRS", 10, 15, 20, 25, 30);
             var addressStaking = new AddressStaking(5, 5, "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm", UInt256.Parse("50000000000"), 50, 100);
             var market = new Market(5, "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", 5, 25, Address.Empty, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", false, false, false, 3, false, 50, 100);
             var token = new Token(5, "PDrzyNsewpj4KDnDttqcJT5EK7vZXQufNU", false, "Governance Token", "GOV", 8, 10000000, UInt256.Parse("10000000000000000000"), 10, 20);

@@ -174,10 +174,10 @@ namespace Opdex.Platform.Application.Tests.Handlers.Governances
 
             var expectedLiquidityPools = new List<LiquidityPool>
             {
-                new LiquidityPool(2, "PU9EMroh6zXXNMjmivLgqqARwmH1iT1GLs", 20, 21, 1, 3, 4),
-                new LiquidityPool(3, "PjmivLgqqARwmH1iT1GLsU9EMroh6zXXNM", 22, 23, 1, 3, 4),
-                new LiquidityPool(4, "PH1iT1GLsU9EMroh6zXXNMjmivLgqqARwm", 24, 25, 1, 3, 4),
-                new LiquidityPool(5, "PARwmH1iT1GLsU9EMroh6zXXNMjmivLgqq", 26, 27, 1, 3, 4)
+                new LiquidityPool(2, "PU9EMroh6zXXNMjmivLgqqARwmH1iT1GLs", "ETH-CRS", 20, 21, 1, 3, 4),
+                new LiquidityPool(3, "PjmivLgqqARwmH1iT1GLsU9EMroh6zXXNM", "BTC-CRS", 22, 23, 1, 3, 4),
+                new LiquidityPool(4, "PH1iT1GLsU9EMroh6zXXNMjmivLgqqARwm", "BNB-CRS", 24, 25, 1, 3, 4),
+                new LiquidityPool(5, "PARwmH1iT1GLsU9EMroh6zXXNMjmivLgqq", "RRT-CRS", 26, 27, 1, 3, 4)
             };
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveGovernanceNominationsByGovernanceIdQuery>(), It.IsAny<CancellationToken>()))
@@ -233,10 +233,10 @@ namespace Opdex.Platform.Application.Tests.Handlers.Governances
 
             var expectedLiquidityPools = new List<LiquidityPool>
             {
-                new LiquidityPool(4, "PU9EMroh6zXXNMjmivLgqqARwmH1iT1GLs", 20, 21, 1, 3, 4),
-                new LiquidityPool(5, "PjmivLgqqARwmH1iT1GLsU9EMroh6zXXNM", 22, 23, 1, 3, 4),
-                new LiquidityPool(6, "PH1iT1GLsU9EMroh6zXXNMjmivLgqqARwm", 24, 25, 1, 3, 4),
-                new LiquidityPool(7, "PARwmH1iT1GLsU9EMroh6zXXNMjmivLgqq", 26, 27, 1, 3, 4)
+                new LiquidityPool(4, "PU9EMroh6zXXNMjmivLgqqARwmH1iT1GLs", "BTC-CRS", 20, 21, 1, 3, 4),
+                new LiquidityPool(5, "PjmivLgqqARwmH1iT1GLsU9EMroh6zXXNM", "ETH-CRS", 22, 23, 1, 3, 4),
+                new LiquidityPool(6, "PH1iT1GLsU9EMroh6zXXNMjmivLgqqARwm", "BNB-CRS", 24, 25, 1, 3, 4),
+                new LiquidityPool(7, "PARwmH1iT1GLsU9EMroh6zXXNMjmivLgqq", "RRT-CRS", 26, 27, 1, 3, 4)
             };
 
             var expectedMiningPools = new List<MiningPool>

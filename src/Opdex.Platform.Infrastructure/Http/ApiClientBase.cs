@@ -14,6 +14,7 @@ namespace Opdex.Platform.Infrastructure.Http
         protected readonly ILogger _logger;
         protected readonly JsonSerializerSettings _serializerSettings;
         private readonly HttpClient _httpClient;
+        private readonly JsonSerializerSettings _deserializerSettings;
 
         protected ApiClientBase(HttpClient httpClient, ILogger logger, JsonSerializerSettings serializerSettings = null)
         {

@@ -77,7 +77,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             var miningPool = new MiningPool(10, 5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", UInt256.Parse("5000"), UInt256.Parse("1000"), 500000, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
 
-            var liquidityPool = new LiquidityPool(5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", 5, 15, 25, 500, 505);
+            var liquidityPool = new LiquidityPool(5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "BTC-CRS", 5, 15, 25, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
 
             // Act
@@ -100,7 +100,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             var miningPool = new MiningPool(10, 5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", UInt256.Parse("5000"), UInt256.Parse("1000"), 500000, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
 
-            var liquidityPool = new LiquidityPool(5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", 5, 15, 25, 500, 505);
+            var liquidityPool = new LiquidityPool(5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "BTC-CRS", 5, 15, 25, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
 
             var token = new Token(15, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, "wBTC/CRS OLPT", "OLPT", 8, 8, UInt256.Parse("10000000000000000000"), 500, 505);

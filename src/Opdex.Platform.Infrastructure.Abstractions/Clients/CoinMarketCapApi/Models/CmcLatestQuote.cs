@@ -1,11 +1,26 @@
+using System.Collections.Generic;
 using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Models
 {
-    [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class CmcQuotePrice
+    public class CmcLatestQuote
+    {
+        public CmcStatus Status { get; set; }
+        public IDictionary<string, LatestQuoteToken> Data { get; set; }
+    }
+
+    public class LatestQuoteToken
+    {
+        public ulong Id { get; set; }
+        public string Name { get; set; }
+        public string Symbol { get; set; }
+        public string Slug { get; set; }
+        public ulong CirculatingSupply { get; set; }
+        public ulong TotalSupply { get; set; }
+        public IDictionary<string, LatestQuotePrice> Quote { get; set; }
+    }
+
+    public class LatestQuotePrice
     {
         public decimal Price { get; set; }
         public decimal Volume24H { get; set; }

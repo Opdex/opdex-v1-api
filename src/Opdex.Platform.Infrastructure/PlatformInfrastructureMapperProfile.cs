@@ -68,12 +68,16 @@ namespace Opdex.Platform.Infrastructure
                     src.DistributionBlock, src.NextDistributionBlock, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<TokenAttributeEntity, TokenAttribute>()
+                .ConstructUsing(src => new TokenAttribute(src.Id, src.TokenId, (TokenAttributeType)src.AttributeTypeId))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<BlockEntity, Block>()
                 .ConstructUsing(src => new Block(src.Height, src.Hash, src.Time, src.MedianTime))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolEntity, LiquidityPool>()
-                .ConstructUsing(src => new LiquidityPool(src.Id, src.Address, src.SrcTokenId, src.LpTokenId, src.MarketId, src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new LiquidityPool(src.Id, src.Address, src.Name, src.SrcTokenId, src.LpTokenId, src.MarketId, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolSummaryEntity, LiquidityPoolSummary>()
@@ -410,9 +414,16 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<TokenAttribute, TokenAttributeEntity>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+                .ForMember(dest => dest.AttributeTypeId, opt => opt.MapFrom(src => (uint)src.AttributeType))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<LiquidityPool, LiquidityPoolEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.SrcTokenId, opt => opt.MapFrom(src => src.SrcTokenId))
                 .ForMember(dest => dest.LpTokenId, opt => opt.MapFrom(src => src.LpTokenId))
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))

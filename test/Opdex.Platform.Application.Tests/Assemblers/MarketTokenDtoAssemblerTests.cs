@@ -107,7 +107,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             var market = new Market(19, "kN2kwXwmu3wuFYmPBWQ38k7iYnkfGPPGgM", 2, 3, null, "nkfGPPGgMkN2kwXwmu3wuFYmPBWQ38k7iY", true, true, true, 3, true, 9, 10);
             var tokenSummary = new TokenSummary(1, market.Id, token.Id, 1.12m, 3.45m, 9, 10);
             var marketToken = new MarketToken(market, token);
-            var liquidityPool = new LiquidityPool(5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", token.Id, 15, market.Id, 500, 505);
+            var liquidityPool = new LiquidityPool(5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "STRAX-CRS", token.Id, 15, market.Id, 500, 505);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSummaryByMarketAndTokenIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(tokenSummary);

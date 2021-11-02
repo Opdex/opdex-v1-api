@@ -20,8 +20,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
     /// <typeparam name="TPointer">Pointer on which to mark location in the data source</typeparam>
     public abstract class Cursor<TPointer> : Cursor where TPointer : IEquatable<TPointer>
     {
-        public Cursor(SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, TPointer pointer,
-                      uint defaultLimit = DefaultLimit, uint maxLimit = DefaultMaxLimit, SortDirectionType defaultSortDirection = DefaultSortDirectionType)
+        protected Cursor(SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, TPointer pointer,
+                         uint defaultLimit = DefaultLimit, uint maxLimit = DefaultMaxLimit, SortDirectionType defaultSortDirection = DefaultSortDirectionType)
         {
             if (defaultLimit == 0) throw new ArgumentOutOfRangeException("Default limit must be greater than 0.");
             if (maxLimit == 0) throw new ArgumentOutOfRangeException("Max limit must be greater than 0.");

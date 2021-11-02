@@ -14,6 +14,7 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using System;
 using System.Collections.Generic;
@@ -74,7 +75,7 @@ namespace Opdex.Platform.Application.EntryHandlers
             foreach (var market in marketList)
             {
                 // Get All Pools
-                var pools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(market.Id));
+                var pools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(new LiquidityPoolsCursor(market.Address)));
                 var poolsList = pools.ToList();
 
                 _logger.LogDebug($"Found {poolsList.Count} stale liquidity pool daily snapshots.");
@@ -180,7 +181,7 @@ namespace Opdex.Platform.Application.EntryHandlers
             {
                 try
                 {
-                    await _mediator.Send(new ProcessMarketSnapshotsCommand(market.Id, startOfDay));
+                    await _mediator.Send(new ProcessMarketSnapshotsCommand(market, startOfDay));
                 }
                 catch (Exception)
                 {

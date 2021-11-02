@@ -54,7 +54,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             // Arrange
             var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("50000000"), 500, 505);
 
-            var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", 5, 15, 25, 500, 505);
+            var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "BTC-CRS", 5, 15, 25, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
 
             // Act
@@ -74,7 +74,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             // Arrange
             var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("50000000"), 500, 505);
 
-            var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", 5, 15, 25, 500, 505);
+            var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "BTC-CRS", 5, 15, 25, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
 
             var market = new Market(5, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", 10, 50, Address.Empty, "PCiNwuLQemjMk63A6r5mS2Ma9Kskki6HZK", false, false, false, 1, true, 500, 505);
@@ -97,7 +97,7 @@ namespace Opdex.Platform.Application.Tests.Assemblers
             // Arrange
             var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("5000000000"), 500, 505);
 
-            var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", 5, 15, 25, 500, 505);
+            var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "BTC-CRS", 5, 15, 25, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
 
             var market = new Market(5, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", 10, 50, Address.Empty, "PCiNwuLQemjMk63A6r5mS2Ma9Kskki6HZK", false, false, false, 1, true, 500, 505);

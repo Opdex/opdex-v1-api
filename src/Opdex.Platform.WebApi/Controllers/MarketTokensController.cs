@@ -9,12 +9,12 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.MarketTokens;
+using Opdex.Platform.WebApi.Models.Requests.Tokens;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,6 +36,26 @@ namespace Opdex.Platform.WebApi.Controllers
             _context = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
         }
 
+        /// <summary>Get Market Tokens</summary>
+        /// <remarks>Search and filter tokens in a market with pagination.</remarks>
+        /// <param name="marketAddress">The market contract address to search within.</param>
+        /// <param name="filters">Token search filters.</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="MarketTokensResponseModel"/> results response with pagination.</returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(MarketTokensResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<MarketTokensResponseModel>> GetMarketTokens([FromRoute] Address marketAddress,
+                                                                                   [FromQuery] TokenFilterParameters filters,
+                                                                                   CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetMarketTokensWithFilterQuery(marketAddress, filters.BuildCursor()), cancellationToken);
+
+            var response = _mapper.Map<MarketTokensResponseModel>(result);
+
+            return Ok(response);
+        }
+
         /// <summary>Get Market Token</summary>
         /// <remarks>Returns the market token that matches the provided address.</remarks>
         /// <param name="marketAddress">The address of the market smart contract.</param>
@@ -44,6 +64,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>A market token response.</returns>
         [HttpGet("{tokenAddress}")]
         [ProducesResponseType(typeof(MarketTokenResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<MarketTokenResponseModel>> GetMarketToken([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
                                                                                  CancellationToken cancellationToken)
@@ -64,6 +85,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <returns>A token swap transaction quote.</returns>
         [HttpPost("{tokenAddress}/swap")]
         [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TransactionQuoteResponseModel>> Swap([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
                                                                             [FromBody] SwapRequest request, CancellationToken cancellationToken)
@@ -86,7 +108,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>The amount of tokens to be input.</returns>
         [HttpPost("{tokenIn}/swap/amount-in")]
-        [ProducesResponseType(typeof(SwapAmountInQuoteResponseModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(SwapAmountInQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SwapAmountInQuoteResponseModel>> SwapAmountIn([FromRoute] Address marketAddress,
                                                                                      [FromRoute] Address tokenIn,
@@ -108,7 +131,8 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>The amount of tokens to be output.</returns>
         [HttpPost("{tokenOut}/swap/amount-out")]
-        [ProducesResponseType(typeof(SwapAmountOutQuoteResponseModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(SwapAmountOutQuoteResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SwapAmountOutQuoteResponseModel>> SwapAmountOut([FromRoute] Address marketAddress,
                                                                                        [FromRoute] Address tokenOut,

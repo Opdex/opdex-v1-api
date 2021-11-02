@@ -63,7 +63,7 @@ namespace Opdex.Platform.Application.Assemblers
             poolDto.CrsToken = await AssembleToken(Address.Cirrus);
 
             // Assemble staking token details when required
-            var stakingTokenDto = market.StakingTokenId > 0 ? await AssembleMarketToken(market.StakingTokenId.Value, market) : null;
+            var stakingTokenDto = market.IsStakingMarket ? await AssembleMarketToken(market.StakingTokenId, market) : null;
 
             // Assemble SRC Token
             poolDto.SrcToken = await AssembleMarketToken(pool.SrcTokenId, market);

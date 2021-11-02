@@ -9,7 +9,6 @@ variables:
   location: 'Central US'
   azureSubscription: 'sub-opdex-dev'
   ARTIFACT_NAME: platform-api
-  artifactName: ReleaseArtifact
   releaseTemplate: 'azure-pipelines.release.yml'
 
 stages:

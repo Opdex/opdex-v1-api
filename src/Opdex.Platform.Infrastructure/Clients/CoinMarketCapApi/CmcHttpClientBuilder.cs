@@ -13,18 +13,18 @@ namespace Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi
             client.BaseAddress = new Uri(cmcConfiguration.ApiUrl);
             client.DefaultRequestHeaders.Add(cmcConfiguration.HeaderName, cmcConfiguration.ApiKey);
         }
-        
+
         public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
         {
-            // Circuit break after 25 failures in a row for 30 seconds
+            // Circuit break after 10 failures in a row for 30 seconds
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .CircuitBreakerAsync(10, TimeSpan.FromSeconds(30));
         }
-        
+
         public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
-            // Retry 6 times and exponentially back off by 1.25 seconds each retry
+            // Retry 6 times and exponentially back off by 5 seconds each retry
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)

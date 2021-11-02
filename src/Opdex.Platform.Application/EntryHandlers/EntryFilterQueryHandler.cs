@@ -70,7 +70,7 @@ namespace Opdex.Platform.Application.EntryHandlers
             return dto;
         }
 
-        private int? RemoveAtIndex(PagingDirection pagingDirection, int count, uint limitPlusOne)
+        private static int? RemoveAtIndex(PagingDirection pagingDirection, int count, uint limitPlusOne)
         {
             if (count < limitPlusOne) return null;
 

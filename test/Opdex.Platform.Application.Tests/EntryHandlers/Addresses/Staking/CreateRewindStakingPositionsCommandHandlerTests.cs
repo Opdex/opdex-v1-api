@@ -79,7 +79,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Staking
                 new AddressStaking(2, 2, "P5uJYUcmAsqAEgUXjBJPuCXfcNKdN28FQf", 500, 20, 50)
             };
 
-            var liquidityPool = new LiquidityPool(2, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk", 8, 7, 6, 4, 5);
+            var liquidityPool = new LiquidityPool(2, "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk", "ETH-CRS", 8, 7, 6, 4, 5);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveStakingPositionsByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
                      .ReturnsAsync(stakingPositions);
