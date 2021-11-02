@@ -87,6 +87,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
+using Opdex.Platform.Application.Abstractions.Queries.Routers;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Distribution;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
@@ -148,6 +149,7 @@ using Opdex.Platform.Application.Handlers.Markets;
 using Opdex.Platform.Application.Handlers.Markets.Permissions;
 using Opdex.Platform.Application.Handlers.Markets.Snapshots;
 using Opdex.Platform.Application.Handlers.MiningPools;
+using Opdex.Platform.Application.Handlers.Routers;
 using Opdex.Platform.Application.Handlers.Tokens;
 using Opdex.Platform.Application.Handlers.Tokens.Distribution;
 using Opdex.Platform.Application.Handlers.Tokens.Snapshots;
@@ -414,6 +416,10 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery, LiquidityPool>, RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolByAddressQuery, LiquidityPool>, RetrieveLiquidityPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>, RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler>();
+
+            // Routers
+            services.AddTransient<IRequestHandler<RetrieveSwapAmountInQuery, UInt256>, RetrieveSwapAmountInQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveSwapAmountOutQuery, UInt256>, RetrieveSwapAmountOutQueryHandler>();
 
             // Mining Pools
             services.AddTransient<IRequestHandler<RetrieveMiningPoolsWithFilterQuery, IEnumerable<MiningPool>>, RetrieveMiningPoolsWithFilterQueryHandler>();

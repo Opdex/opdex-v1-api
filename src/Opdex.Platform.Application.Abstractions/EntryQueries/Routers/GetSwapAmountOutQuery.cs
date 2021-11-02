@@ -35,7 +35,5 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Routers
         public Address TokenIn { get; }
         public FixedDecimal TokenInAmount { get; }
         public Address TokenOut { get; }
-
-        public bool IsSingleHopQuery => TokenIn == Address.Cirrus || TokenOut == Address.Cirrus;
     }
 }
