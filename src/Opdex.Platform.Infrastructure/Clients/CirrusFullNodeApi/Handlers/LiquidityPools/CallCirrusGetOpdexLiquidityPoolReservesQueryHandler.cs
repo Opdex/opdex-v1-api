@@ -1,6 +1,5 @@
 using MediatR;
 using Newtonsoft.Json.Linq;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools
 {
-    public class CallCirrusGetOpdexLiquidityPoolReservesQueryHandler : IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, Reserves>
+    public class CallCirrusGetOpdexLiquidityPoolReservesQueryHandler : IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, ReservesReceipt>
     {
         private readonly ISmartContractsModule _smartContractsModule;
 
@@ -21,7 +20,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
             _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
         }
 
-        public async Task<Reserves> Handle(CallCirrusGetOpdexLiquidityPoolReservesQuery request, CancellationToken cancellationToken)
+        public async Task<ReservesReceipt> Handle(CallCirrusGetOpdexLiquidityPoolReservesQuery request, CancellationToken cancellationToken)
         {
             var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Reserves");
             var reservesResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
@@ -29,7 +28,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
 
             if (reserves.Length != 2) return default;
 
-            return new Reserves(ulong.Parse(reserves[0].ToString()), UInt256.Parse(reserves[1].ToString()));
+            return new ReservesReceipt(ulong.Parse(reserves[0].ToString()), UInt256.Parse(reserves[1].ToString()));
         }
     }
 }

@@ -1,13 +1,13 @@
 using Opdex.Platform.Common.Models.UInt;
 
-namespace Opdex.Platform.Common.Models
+namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
 {
     /// <summary>
     /// Represents the reserves of a liquidity pool.
     /// </summary>
-    public readonly struct Reserves
+    public class ReservesReceipt
     {
-        public Reserves(ulong crs, UInt256 src)
+        public ReservesReceipt(ulong crs, UInt256 src)
         {
             Crs = crs;
             Src = src;

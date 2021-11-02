@@ -3,6 +3,7 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Handlers.LiquidityPools;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.LiquidityQuotes;
 using System.Threading;
@@ -30,6 +31,11 @@ namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools.Snapshots
                                                                   new Address("tUHwBBmhHbaBA49hVhuVNUDmreGjSFceuD"));
             var cancellationToken = new CancellationTokenSource().Token;
 
+            var reserves = new ReservesReceipt(50000, 888888888);
+
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetOpdexLiquidityPoolReservesQuery>(), It.IsAny<CancellationToken>()))
+                         .ReturnsAsync(reserves);
+
             // Act
             await _handler.Handle(request, cancellationToken);
 
@@ -45,7 +51,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools.Snapshots
                                                                   new Address("tUHwBBmhHbaBA49hVhuVNUDmreGjSFceuD"));
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var reserves = new Reserves(50000, 888888888);
+            var reserves = new ReservesReceipt(50000, 888888888);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetOpdexLiquidityPoolReservesQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(reserves);
@@ -69,7 +75,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools.Snapshots
                                                                   new Address("tUHwBBmhHbaBA49hVhuVNUDmreGjSFceuD"));
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var reserves = new Reserves(50000, 888888888);
+            var reserves = new ReservesReceipt(50000, 888888888);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetOpdexLiquidityPoolReservesQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(reserves);

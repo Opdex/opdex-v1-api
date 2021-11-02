@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools
@@ -7,7 +8,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
     /// <summary>
     /// Retrieves the CRS and SRC reserve amounts in a liquidity pool.
     /// </summary>
-    public class CallCirrusGetOpdexLiquidityPoolReservesQuery : IRequest<Reserves>
+    public class CallCirrusGetOpdexLiquidityPoolReservesQuery : IRequest<ReservesReceipt>
     {
         /// <summary>
         /// Creates a request to retrieve the CRS and SRC reserve amounts in a liquidity pool.
