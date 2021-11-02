@@ -114,7 +114,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Routers
         private void SetupPools()
         {
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new LiquidityPool(5, new Address("PPK3k64UASByx3168NU1ejXgugbW9PHRG6"), 10, 50, 5, 20, 250));
+                         .ReturnsAsync(new LiquidityPool(5, new Address("PPK3k64UASByx3168NU1ejXgugbW9PHRG6"), "CRS/SRC", 10, 50, 5, 20, 250));
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetOpdexLiquidityPoolReservesQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(new ReservesReceipt(5000, 2319148201));
