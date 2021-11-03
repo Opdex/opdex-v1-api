@@ -32,7 +32,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Routers
 
             UInt256 amountOut = await _mediator.Send(new RetrieveSwapAmountOutQuery(router, tokenIn, tokenInAmount, tokenOut), cancellationToken);
 
-            return amountOut.ToDecimal(tokenIn.Decimals);
+            return amountOut.ToDecimal(tokenOut.Decimals);
         }
     }
 }
