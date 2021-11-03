@@ -23,10 +23,8 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
         {
             var reserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(request.Pool), cancellationToken);
 
-            var reservesCrs = reserves[0];
-            var reservesSrc = reserves[1];
-            var reserveIn = request.TokenIn == Address.Cirrus ? reservesCrs : reservesSrc;
-            var reserveOut = request.TokenIn == Address.Cirrus ? reservesSrc : reservesCrs;
+            var reserveIn = request.TokenIn == Address.Cirrus ? reserves.Crs : reserves.Src;
+            var reserveOut = request.TokenIn == Address.Cirrus ? reserves.Src : reserves.Crs;
 
             return await _mediator.Send(new CallCirrusGetLiquidityAmountInQuoteQuery(request.AmountIn, reserveIn, reserveOut, request.Router), cancellationToken);
         }

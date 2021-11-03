@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Smart
         public async Task<TransactionQuote> Handle(CallCirrusLocalCallSmartContractMethodCommand request, CancellationToken cancellationToken)
         {
             var localCall = new LocalCallRequestDto(request.QuoteRequest.To, request.QuoteRequest.Sender, request.QuoteRequest.Method,
-                                                    request.QuoteRequest.SerializedParameters, amount: request.QuoteRequest.Amount);
+                                                    request.QuoteRequest.MethodParameters, amount: request.QuoteRequest.Amount);
 
             var response = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 

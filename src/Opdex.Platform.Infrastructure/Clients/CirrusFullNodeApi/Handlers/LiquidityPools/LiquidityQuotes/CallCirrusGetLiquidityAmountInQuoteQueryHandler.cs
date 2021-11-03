@@ -1,5 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.LiquidityPools.LiquidityQuotes;
@@ -20,13 +21,19 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Liqui
 
         public async Task<UInt256> Handle(CallCirrusGetLiquidityAmountInQuoteQuery request, CancellationToken cancellationToken)
         {
-            var quoteParams = new[] { $"12#{request.AmountA}", $"12#{request.ReserveA}", $"12#{request.ReserveB}" };
-            var localCall = new LocalCallRequestDto(request.Market, request.Market, "GetLiquidityQuote", quoteParams);
+            var quoteParams = new[]
+            {
+                new SmartContractMethodParameter(request.AmountA),
+                new SmartContractMethodParameter(request.ReserveA),
+                new SmartContractMethodParameter(request.ReserveB),
+            };
+
+            var localCall = new LocalCallRequestDto(request.Router, "GetLiquidityQuote", quoteParams);
             var amountIn = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 
             if (amountIn.ErrorMessage != null)
             {
-                throw new Exception($"Invalid request: {amountIn.ErrorMessage}");
+                throw new Exception($"Invalid request: {amountIn.ErrorMessage.Value}");
             }
 
             return amountIn.DeserializeValue<UInt256>();

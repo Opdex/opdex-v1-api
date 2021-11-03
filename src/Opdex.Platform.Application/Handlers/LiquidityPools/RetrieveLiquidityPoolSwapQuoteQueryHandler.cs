@@ -38,8 +38,8 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
                 var tokenOutReserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(tokenOutPool.Address), cancellationToken);
 
                 return request.TokenInAmount > UInt256.Zero
-                    ? await _mediator.Send(new CallCirrusGetAmountOutMultiHopQuoteQuery(request.Router, request.TokenInAmount, (ulong)tokenInReserves[0], tokenInReserves[1], (ulong)tokenOutReserves[0], tokenOutReserves[1]), cancellationToken)
-                    : await _mediator.Send(new CallCirrusGetAmountInMultiHopQuoteQuery(request.Router, request.TokenOutAmount, (ulong)tokenOutReserves[0], tokenOutReserves[1], (ulong)tokenInReserves[0], tokenInReserves[1]), cancellationToken);
+                    ? await _mediator.Send(new CallCirrusGetAmountOutMultiHopQuoteQuery(request.Router, request.TokenInAmount, tokenInReserves.Crs, tokenInReserves.Src, tokenOutReserves.Crs, tokenOutReserves.Src), cancellationToken)
+                    : await _mediator.Send(new CallCirrusGetAmountInMultiHopQuoteQuery(request.Router, request.TokenOutAmount, tokenOutReserves.Crs, tokenOutReserves.Src, tokenInReserves.Crs, tokenInReserves.Src), cancellationToken);
             }
 
             // Get CrsSrc quote
@@ -47,8 +47,8 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools
             var srcPool = await _mediator.Send(new SelectLiquidityPoolBySrcTokenIdAndMarketIdQuery(srcToken.Id, market.Id), cancellationToken);
             var reserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(srcPool.Address), cancellationToken);
 
-            var reservesIn = isCrsIn ? reserves[0] : reserves[1];
-            var reservesOut = isCrsIn ? reserves[1] : reserves[0];
+            var reservesIn = isCrsIn ? reserves.Crs : reserves.Src;
+            var reservesOut = isCrsIn ? reserves.Src : reserves.Crs;
 
             return request.TokenInAmount > UInt256.Zero
                 ? await _mediator.Send(new CallCirrusGetAmountOutStandardQuoteQuery(request.Router, request.TokenInAmount, reservesIn, reservesOut), cancellationToken)

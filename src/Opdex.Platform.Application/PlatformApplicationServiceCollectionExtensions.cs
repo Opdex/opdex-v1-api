@@ -53,6 +53,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Routers;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
@@ -86,6 +87,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
+using Opdex.Platform.Application.Abstractions.Queries.Routers;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Distribution;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
@@ -115,6 +117,7 @@ using Opdex.Platform.Application.EntryHandlers.Markets.Quotes;
 using Opdex.Platform.Application.EntryHandlers.Markets.Snapshots;
 using Opdex.Platform.Application.EntryHandlers.MiningPools;
 using Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes;
+using Opdex.Platform.Application.EntryHandlers.Routers;
 using Opdex.Platform.Application.EntryHandlers.Tokens;
 using Opdex.Platform.Application.EntryHandlers.Tokens.Quotes;
 using Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots;
@@ -146,6 +149,7 @@ using Opdex.Platform.Application.Handlers.Markets;
 using Opdex.Platform.Application.Handlers.Markets.Permissions;
 using Opdex.Platform.Application.Handlers.Markets.Snapshots;
 using Opdex.Platform.Application.Handlers.MiningPools;
+using Opdex.Platform.Application.Handlers.Routers;
 using Opdex.Platform.Application.Handlers.Tokens;
 using Opdex.Platform.Application.Handlers.Tokens.Attributes;
 using Opdex.Platform.Application.Handlers.Tokens.Distribution;
@@ -205,6 +209,8 @@ namespace Opdex.Platform.Application
             // Liquidity Pools
             services.AddTransient<IRequestHandler<GetLiquidityPoolsWithFilterQuery, LiquidityPoolsDto>, GetLiquidityPoolsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolSwapQuoteQuery, FixedDecimal>, GetLiquidityPoolSwapQuoteQueryHandler>();
+            services.AddTransient<IRequestHandler<GetSwapAmountInQuery, FixedDecimal>, GetSwapAmountInQueryHandler>();
+            services.AddTransient<IRequestHandler<GetSwapAmountOutQuery, FixedDecimal>, GetSwapAmountOutQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityAmountInQuoteQuery, FixedDecimal>, GetLiquidityAmountInQuoteQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshotDto>>, GetLiquidityPoolSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolByAddressQuery, LiquidityPoolDto>, GetLiquidityPoolByAddressQueryHandler>();
@@ -412,6 +418,10 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery, LiquidityPool>, RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolByAddressQuery, LiquidityPool>, RetrieveLiquidityPoolByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>, RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler>();
+
+            // Routers
+            services.AddTransient<IRequestHandler<RetrieveSwapAmountInQuery, UInt256>, RetrieveSwapAmountInQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveSwapAmountOutQuery, UInt256>, RetrieveSwapAmountOutQueryHandler>();
 
             // Mining Pools
             services.AddTransient<IRequestHandler<RetrieveMiningPoolsWithFilterQuery, IEnumerable<MiningPool>>, RetrieveMiningPoolsWithFilterQueryHandler>();

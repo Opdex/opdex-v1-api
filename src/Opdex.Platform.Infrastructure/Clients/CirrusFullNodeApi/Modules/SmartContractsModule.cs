@@ -1,22 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Serialization;
 using Opdex.Platform.Infrastructure.Http;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 {
     public class SmartContractsModule : ApiClientBase, ISmartContractsModule
     {
         public SmartContractsModule(HttpClient httpClient, ILogger<SmartContractsModule> logger)
-            : base(httpClient, logger)
+            : base(httpClient, logger, StratisFullNode.SerializerSettings)
         {
         }
 
@@ -61,7 +62,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
         public async Task<LocalCallResponseDto> LocalCallAsync(LocalCallRequestDto request, CancellationToken cancellationToken)
         {
             const string uri = CirrusUriHelper.SmartContracts.LocalCall;
-            var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(request, uri, HttpMethod.Post);
+            var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(request, uri, HttpMethod.Post, _serializerSettings);
 
             var logDetails = new Dictionary<string, object>
             {
@@ -69,7 +70,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
                 ["Method"] = request.MethodName,
                 ["Sender"] = request.Sender,
                 ["Amount"] = request.Amount,
-                ["Parameters"] = request.Parameters
+                ["Parameters"] = request.Parameters.Select(parameter => parameter.Serialize())
             };
 
             if (request.BlockHeight.HasValue) logDetails.Add("BlockHeight", request.BlockHeight.Value);
@@ -83,7 +84,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
         public async Task<Sha256> CallSmartContractAsync(SmartContractCallRequestDto call, CancellationToken cancellationToken)
         {
             const string uri = CirrusUriHelper.SmartContractWallet.Call;
-            var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(call, uri, HttpMethod.Post);
+            var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(call, uri, HttpMethod.Post, _serializerSettings);
 
             var logDetails = new Dictionary<string, object>
             {
@@ -91,7 +92,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
                 ["Method"] = call.MethodName,
                 ["Sender"] = call.Sender,
                 ["Amount"] = call.Amount,
-                ["Parameters"] = call.Parameters,
+                ["Parameters"] = call.Parameters.Select(parameter => parameter.Serialize()),
                 ["WalletName"] = call.WalletName
             };
 
@@ -105,14 +106,14 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
         public async Task<Sha256> CreateSmartContractAsync(SmartContractCreateRequestDto call, CancellationToken cancellationToken)
         {
             const string uri = CirrusUriHelper.SmartContractWallet.Create;
-            var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(call, uri, HttpMethod.Post);
+            var httpRequest = HttpRequestBuilder.BuildHttpRequestMessage(call, uri, HttpMethod.Post, _serializerSettings);
 
             var logDetails = new Dictionary<string, object>
             {
                 ["ContractCode"] = call.ContractCode,
                 ["Sender"] = call.Sender,
                 ["Amount"] = call.Amount,
-                ["Parameters"] = call.Parameters,
+                ["Parameters"] = call.Parameters.Select(parameter => parameter.Serialize()),
                 ["WalletName"] = call.WalletName
             };
 

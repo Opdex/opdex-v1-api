@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Transactions;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models
@@ -9,15 +10,15 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
     public class LocalCallRequestDto
     {
         public LocalCallRequestDto(Address address, string methodName, ulong? blockHeight = null)
-            : this(address, methodName, Array.Empty<string>(), blockHeight) { }
+            : this(address, methodName, Array.Empty<SmartContractMethodParameter>(), blockHeight) { }
 
-        public LocalCallRequestDto(Address address, string methodName, string[] parameters, ulong? blockHeight = null)
+        public LocalCallRequestDto(Address address, string methodName, SmartContractMethodParameter[] parameters, ulong? blockHeight = null)
             : this(address, address, methodName, parameters, blockHeight) { }
 
         public LocalCallRequestDto(Address address, Address sender, string methodName, ulong? blockHeight = null)
-            : this(address, sender, methodName, Array.Empty<string>(), blockHeight) { }
+            : this(address, sender, methodName, Array.Empty<SmartContractMethodParameter>(), blockHeight) { }
 
-        public LocalCallRequestDto(Address address, Address sender, string methodName, string[] parameters, ulong? blockHeight = null, FixedDecimal? amount = null)
+        public LocalCallRequestDto(Address address, Address sender, string methodName, SmartContractMethodParameter[] parameters, ulong? blockHeight = null, FixedDecimal? amount = null)
         {
             Amount = amount ?? FixedDecimal.Zero;
             GasPrice = 100;
@@ -71,12 +72,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public Address Sender { get; set; }
 
         /// <summary>
-        /// An array of encoded strings containing the parameters (and their type) to pass to the smart contract
-        /// method when it is called. More information on the
-        /// format of a parameter string is available
-        /// <a target="_blank" href="https://academy.stratisplatform.com/SmartContracts/working-with-contracts.html#parameter-serialization">here</a>.
+        /// An array of parameters which get serialized and passed to the smart contract method as arguments for the call.
         /// </summary>
-        public string[] Parameters { get; set; }
+        public SmartContractMethodParameter[] Parameters { get; set; }
 
         /// <summary>
         /// Block height at which to make the call. Setting this makes a point-in-time local call.

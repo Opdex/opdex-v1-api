@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Serialization;
 using Opdex.Platform.Infrastructure.Http;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -11,7 +12,8 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 {
     public class MempoolModule : ApiClientBase, IMempoolModule
     {
-        public MempoolModule(HttpClient httpClient, ILogger<MempoolModule> logger) : base(httpClient, logger)
+        public MempoolModule(HttpClient httpClient, ILogger<MempoolModule> logger)
+            : base(httpClient, logger, StratisFullNode.SerializerSettings)
         {
         }
 

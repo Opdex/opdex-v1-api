@@ -103,10 +103,10 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ma
             const string methodName = StandardMarketConstants.Methods.IsAuthorized;
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var parameters = new []
+            var parameters = new[]
             {
-                new SmartContractMethodParameter(wallet).Serialize(),
-                new SmartContractMethodParameter((byte)permission).Serialize()
+                new SmartContractMethodParameter(wallet),
+                new SmartContractMethodParameter((byte)permission)
             };
 
             // Act

@@ -6,8 +6,18 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Markets
 {
+    /// <summary>
+    /// Determines whether or not an address is authorized with a particular market permission.
+    /// </summary>
     public class CallCirrusGetMarketPermissionAuthorizationQuery : IRequest<bool>
     {
+        /// <summary>
+        /// Creates a request to determine whether an address is authorized with a particular market permission.
+        /// </summary>
+        /// <param name="market">The address of the market contract.</param>
+        /// <param name="wallet">The address to determine permissions.</param>
+        /// <param name="permission">The permission type, either: <see cref="MarketPermissionType.CreatePool" />, <see cref="MarketPermissionType.Provide" />, <see cref="MarketPermissionType.Trade" /> or <see cref="MarketPermissionType.SetPermissions" />.</param>
+        /// <param name="blockHeight">The block height to search at.</param>
         public CallCirrusGetMarketPermissionAuthorizationQuery(Address market, Address wallet, MarketPermissionType permission, ulong blockHeight)
         {
             if (market == Address.Empty)

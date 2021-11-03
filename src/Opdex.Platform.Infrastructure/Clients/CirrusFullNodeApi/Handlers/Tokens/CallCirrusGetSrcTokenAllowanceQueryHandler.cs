@@ -25,8 +25,8 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Token
         {
             var parameters = new[]
             {
-                new SmartContractMethodParameter(request.Owner).Serialize(),
-                new SmartContractMethodParameter(request.Spender).Serialize()
+                new SmartContractMethodParameter(request.Owner),
+                new SmartContractMethodParameter(request.Spender)
             };
 
             var allowanceResponse = await _smartContractsModule.LocalCallAsync(new LocalCallRequestDto(request.Token, request.Spender,

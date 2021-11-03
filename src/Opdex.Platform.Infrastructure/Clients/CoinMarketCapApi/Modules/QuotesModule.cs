@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Modules;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Serialization;
 using Opdex.Platform.Infrastructure.Http;
 using System;
 

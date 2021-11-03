@@ -7,13 +7,14 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modul
 using Opdex.Platform.Infrastructure.Http;
 using System.Collections.Generic;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Serialization;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
 {
     public class BlockStoreModule : ApiClientBase, IBlockStoreModule
     {
         public BlockStoreModule(HttpClient httpClient, ILogger<BlockStoreModule> logger)
-            : base(httpClient, logger)
+            : base(httpClient, logger, StratisFullNode.SerializerSettings)
         {
         }
 

@@ -24,8 +24,9 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balan
         {
             var parameters = new[]
             {
-                new SmartContractMethodParameter(request.Miner).Serialize()
+                new SmartContractMethodParameter(request.Miner)
             };
+
             var localCallRequest = new LocalCallRequestDto(request.MiningPool, MiningPoolConstants.Methods.GetBalance, parameters, request.BlockHeight);
             var response = await _smartContractsModule.LocalCallAsync(localCallRequest, cancellationToken);
             return response.DeserializeValue<UInt256>();

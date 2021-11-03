@@ -1,9 +1,7 @@
 using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Opdex.Platform.Common.Converters;
-using System.Collections.Generic;
+using Opdex.Platform.Common;
 
 namespace Opdex.Platform.Infrastructure.Http
 {
@@ -11,19 +9,9 @@ namespace Opdex.Platform.Infrastructure.Http
     // Any integration specific configurations, should modify these properties
     public static class HttpRequestBuilder
     {
-        public static HttpRequestMessage BuildHttpRequestMessage(object request, string uri, HttpMethod method)
+        public static HttpRequestMessage BuildHttpRequestMessage(object request, string uri, HttpMethod method, JsonSerializerSettings serializerSettings = null)
         {
-            var json = JsonConvert.SerializeObject(request, new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Converters = new List<JsonConverter>
-                {
-                    new AddressConverter(),
-                    new Sha256Converter(),
-                    new UInt128Converter(),
-                    new UInt256Converter()
-                }
-            });
+            var json = JsonConvert.SerializeObject(request, serializerSettings ?? Serialization.DefaultJsonSettings);
 
             return new HttpRequestMessage(method, uri)
             {

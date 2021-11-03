@@ -2,6 +2,7 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +20,10 @@ namespace Opdex.Platform.Application.Handlers.Transactions
 
         public Task<Sha256> Handle(MakeTransactionBroadcastCommand request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(request.QuoteRequest), cancellationToken);
+            var call = new SmartContractCallRequestDto(request.QuoteRequest.To, "cirrusdev", request.QuoteRequest.Sender, "password",
+                                                       request.QuoteRequest.Amount, request.QuoteRequest.Method, request.QuoteRequest.MethodParameters);
+
+            return _mediator.Send(new CallCirrusCallSmartContractMethodCommand(call), cancellationToken);
         }
     }
 }

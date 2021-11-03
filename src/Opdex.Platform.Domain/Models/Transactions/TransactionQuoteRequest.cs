@@ -44,7 +44,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
         public FixedDecimal Amount { get; }
         public string Method { get; }
         public IReadOnlyCollection<TransactionQuoteRequestParameter> Parameters { get; }
-        public string[] SerializedParameters => Parameters.Select(p => p.Value.Serialize()).ToArray();
+        public SmartContractMethodParameter[] MethodParameters => Parameters.Select(p => p.Value).ToArray();
         public string Callback { get; }
     }
 }

@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Markets
 {
-    public class CallCirrusGetMarketPermissionAuthorizationQueryHandler
-        : IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>
+    public class CallCirrusGetMarketPermissionAuthorizationQueryHandler : IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>
     {
         private readonly ISmartContractsModule _smartContractsModule;
         private const string MethodName = StandardMarketConstants.Methods.IsAuthorized;
@@ -23,10 +22,10 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Marke
 
         public async Task<bool> Handle(CallCirrusGetMarketPermissionAuthorizationQuery request, CancellationToken cancellationToken)
         {
-            var parameters = new []
+            var parameters = new[]
             {
-                new SmartContractMethodParameter(request.Wallet).Serialize(),
-                new SmartContractMethodParameter((byte)request.Permission).Serialize()
+                new SmartContractMethodParameter(request.Wallet),
+                new SmartContractMethodParameter((byte)request.Permission)
             };
 
             var localCall = new LocalCallRequestDto(request.Market, request.Market, MethodName, parameters, request.BlockHeight);
