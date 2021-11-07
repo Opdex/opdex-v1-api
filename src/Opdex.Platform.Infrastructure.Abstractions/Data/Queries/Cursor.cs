@@ -15,9 +15,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
     }
 
     /// <summary>
-    /// Can be implemented with queries to a data source, so that data can be retrieved in a paginated manor
+    /// Can be implemented with queries to a data source, so that data can be retrieved in a paginated manor.
     /// </summary>
-    /// <typeparam name="TPointer">Pointer on which to mark location in the data source</typeparam>
+    /// <typeparam name="TPointer">Pointer on which to mark location in the data source.</typeparam>
     public abstract class Cursor<TPointer> : Cursor where TPointer : IEquatable<TPointer>
     {
         protected Cursor(SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, TPointer pointer,
@@ -146,6 +146,10 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
 
                     // Return list of TK enum values
                     values = Parse(results, result => Enum.Parse(typeof(TK), result));
+                }
+                else if (typeof(TK) == typeof(DateTime))
+                {
+                    values = Parse(results, result => DateTimeOffset.FromUnixTimeSeconds(long.Parse(result)).UtcDateTime);
                 }
                 else
                 {

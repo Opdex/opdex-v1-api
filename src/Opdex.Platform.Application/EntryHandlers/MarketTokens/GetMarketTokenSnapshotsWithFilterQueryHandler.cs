@@ -1,7 +1,8 @@
 using AutoMapper;
 using MediatR;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
+using Opdex.Platform.Application.Abstractions.EntryQueries.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
+using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using System;
@@ -9,24 +10,25 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
+namespace Opdex.Platform.Application.EntryHandlers.MarketTokens
 {
-    public class GetTokenSnapshotsWithFilterQueryHandler : EntryFilterQueryHandler<GetTokenSnapshotsWithFilterQuery, TokenSnapshotsDto>
+    public class GetMarketTokenSnapshotsWithFilterQueryHandler : EntryFilterQueryHandler<GetMarketTokenSnapshotsWithFilterQuery, TokenSnapshotsDto>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public GetTokenSnapshotsWithFilterQueryHandler(IMediator mediator, IMapper mapper)
+        public GetMarketTokenSnapshotsWithFilterQueryHandler(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public override async Task<TokenSnapshotsDto> Handle(GetTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
+        public override async Task<TokenSnapshotsDto> Handle(GetMarketTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: true), cancellationToken);
+            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
 
-            var snapshots = await _mediator.Send(new RetrieveTokenSnapshotsWithFilterQuery(token.Id, default, request.Cursor), cancellationToken);
+            var snapshots = await _mediator.Send(new RetrieveTokenSnapshotsWithFilterQuery(token.Id, market.Id, request.Cursor), cancellationToken);
 
             var snapshotsResults = snapshots.ToList();
 

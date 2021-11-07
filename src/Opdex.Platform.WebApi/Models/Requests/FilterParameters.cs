@@ -17,7 +17,7 @@ namespace Opdex.Platform.WebApi.Models.Requests
         public SortDirectionType Direction { get; set; }
 
         /// <summary>
-        /// Number of certificates to take must be greater than 0 and less than 51.
+        /// Number of results to return per page.
         /// </summary>
         public uint Limit { get; set; }
 

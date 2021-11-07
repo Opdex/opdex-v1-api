@@ -1,7 +1,6 @@
-using NJsonSchema.Annotations;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Responses.OHLC;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Tokens
 {
@@ -14,21 +13,9 @@ namespace Opdex.Platform.WebApi.Models.Responses.Tokens
         public OhlcDecimalResponseModel Price { get; set; }
 
         /// <summary>
-        /// The type of snapshot.
+        /// The start time for the snapshot.
         /// </summary>
         [NotNull]
-        public SnapshotType SnapshotType { get; set; }
-
-        /// <summary>
-        /// The start date of the snapshot's time period.
-        /// </summary>
-        [NotNull]
-        public DateTime StartDate { get; set; }
-
-        /// <summary>
-        /// The end date of the snapshot's time period.
-        /// </summary>
-        [NotNull]
-        public DateTime EndDate { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 }

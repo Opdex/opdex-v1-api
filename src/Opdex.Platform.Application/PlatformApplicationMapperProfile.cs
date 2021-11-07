@@ -164,12 +164,8 @@ namespace Opdex.Platform.Application
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TokenSnapshot, TokenSnapshotDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
-                .ForMember(dest => dest.SnapshotType, opt => opt.MapFrom(src => src.SnapshotType))
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
-                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
-                .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => src.ModifiedDate))
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.StartDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketSnapshot, MarketSnapshotDto>()

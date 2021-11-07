@@ -8,7 +8,7 @@ using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
-using Opdex.Platform.WebApi.Models.Responses.Tokens;
+using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;

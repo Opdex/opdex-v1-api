@@ -2,10 +2,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Domain.Models.Tokens;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots;
 
 namespace Opdex.Platform.Application.Handlers.Tokens.Snapshots

@@ -14,6 +14,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Requests;
 using Opdex.Platform.WebApi.Models.Requests.Tokens;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
@@ -97,33 +98,23 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         ///<summary>Get Token History</summary>
-        /// <remarks>Retrieve historical data points for a tokens tracking open, high, low, and close of USD prices.</remarks>
+        /// <remarks>Retrieve historical data points for a token tracking open, high, low, and close of USD prices.</remarks>
         /// <param name="address">The address of the token.</param>
-        /// <param name="candleSpan">"Hourly" or "Daily" determining the time span of each data point. Default is daily.</param>
-        /// <param name="timespan">"1D", "1W", "1M", "1Y" determining how much history to fetch. Default is 1 week.</param>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns><see cref="TokenSnapshotHistoryResponseModel"/> with a list of historical data points.</returns>
+        /// <param name="filters">Filter parameters.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Paged token snapshot data.</returns>
         [HttpGet("{address}/history")]
-        [ProducesResponseType(typeof(TokenSnapshotHistoryResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TokenSnapshotsResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<TokenSnapshotHistoryResponseModel>> TokenHistory([FromRoute] Address address,
-                                                                                        [FromQuery] string candleSpan,
-                                                                                        [FromQuery] string timespan,
-                                                                                        CancellationToken cancellationToken)
+        public async Task<ActionResult<TokenSnapshotsResponseModel>> GetTokenHistory([FromRoute] Address address,
+                                                                                     [FromQuery] SnapshotFilterParameters filters,
+                                                                                     CancellationToken cancellationToken)
         {
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(address), cancellationToken);
+            var tokenSnapshotDtos = await _mediator.Send(new GetTokenSnapshotsWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
 
-            var tokenSnapshotDtos = await _mediator.Send(new GetTokenSnapshotsWithFilterQuery(address,
-                                                                                             _context.Market,
-                                                                                             candleSpan,
-                                                                                             timespan), cancellationToken);
-
-            var response = new TokenSnapshotHistoryResponseModel
-            {
-                Address = token.Address,
-                SnapshotHistory = _mapper.Map<IEnumerable<TokenSnapshotResponseModel>>(tokenSnapshotDtos)
-            };
+            var response = _mapper.Map<TokenSnapshotsResponseModel>(tokenSnapshotDtos);
 
             return Ok(response);
         }

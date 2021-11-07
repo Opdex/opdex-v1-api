@@ -23,6 +23,7 @@ using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using Opdex.Platform.WebApi.Models.Responses.Governances;
 using Opdex.Platform.WebApi.Models.Responses.Markets;
+using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
 using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.OHLC;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
@@ -85,8 +86,12 @@ namespace Opdex.Platform.WebApi.Mappers
 
             CreateMap<TokenSnapshotDto, TokenSnapshotResponseModel>()
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
-                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.Timestamp))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<TokenSnapshotsDto, TokenSnapshotsResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Snapshots))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolDto, LiquidityPoolResponseModel>()
