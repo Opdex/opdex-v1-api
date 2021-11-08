@@ -25,14 +25,14 @@ namespace Opdex.Platform.Application.EntryHandlers.Routers
             var tokenIn = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenIn, findOrThrow: true), cancellationToken);
             var tokenOut = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenOut, findOrThrow: true), cancellationToken);
 
-            var tokenInAmount = request.TokenInAmount.ToSatoshis(tokenOut.Decimals);
+            var tokenInAmount = request.TokenInAmount.ToSatoshis(tokenIn.Decimals);
 
             var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
             var router = await _mediator.Send(new RetrieveActiveMarketRouterByMarketIdQuery(market.Id, findOrThrow: true), cancellationToken);
 
             UInt256 amountOut = await _mediator.Send(new RetrieveSwapAmountOutQuery(router, tokenIn, tokenInAmount, tokenOut), cancellationToken);
 
-            return amountOut.ToDecimal(tokenIn.Decimals);
+            return amountOut.ToDecimal(tokenOut.Decimals);
         }
     }
 }

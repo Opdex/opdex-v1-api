@@ -143,7 +143,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Routers
             var response = await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            response.Should().Be(amountOut.ToDecimal(tokenIn.Decimals));
+            response.Should().Be(amountOut.ToDecimal(tokenOut.Decimals));
         }
 
         private void SetupDomain(Token tokenIn, Token tokenOut, Market market = null)
