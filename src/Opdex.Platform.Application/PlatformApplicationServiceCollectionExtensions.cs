@@ -1,5 +1,3 @@
-
-
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
@@ -64,6 +62,7 @@ using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Admins;
 using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
@@ -234,7 +233,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetTokensWithFilterQuery, TokensDto>, GetTokensWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetMarketTokensWithFilterQuery, MarketTokensDto>, GetMarketTokensWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenSnapshotsWithFilterQuery, TokenSnapshotsDto>, GetTokenSnapshotsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<GetMarketTokenSnapshotsWithFilterQuery, TokenSnapshotsDto>, GetMarketTokenSnapshotsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<GetMarketTokenSnapshotsWithFilterQuery, MarketTokenSnapshotsDto>, GetMarketTokenSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenByAddressQuery, TokenDto>, GetTokenByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetMarketTokenByMarketAndTokenAddressQuery, MarketTokenDto>, GetMarketTokenByMarketAndTokenAddressQueryHandler>();
 

@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MarketTokens;
+using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.MarketTokens
 {
-    public class GetMarketTokenSnapshotsWithFilterQueryHandler : EntryFilterQueryHandler<GetMarketTokenSnapshotsWithFilterQuery, TokenSnapshotsDto>
+    public class GetMarketTokenSnapshotsWithFilterQueryHandler : EntryFilterQueryHandler<GetMarketTokenSnapshotsWithFilterQuery, MarketTokenSnapshotsDto>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -23,7 +24,7 @@ namespace Opdex.Platform.Application.EntryHandlers.MarketTokens
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public override async Task<TokenSnapshotsDto> Handle(GetMarketTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
+        public override async Task<MarketTokenSnapshotsDto> Handle(GetMarketTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: true), cancellationToken);
             var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
@@ -36,7 +37,7 @@ namespace Opdex.Platform.Application.EntryHandlers.MarketTokens
 
             var assembledResults = snapshotsResults.Select(snapshot => _mapper.Map<TokenSnapshotDto>(snapshot)).ToList();
 
-            return new TokenSnapshotsDto { Snapshots = assembledResults, Cursor = cursorDto };
+            return new MarketTokenSnapshotsDto { Market = market.Address, Token = token.Address, Snapshots = assembledResults, Cursor = cursorDto };
         }
     }
 }

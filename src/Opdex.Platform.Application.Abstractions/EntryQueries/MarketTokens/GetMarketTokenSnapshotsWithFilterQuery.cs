@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Models.Tokens;
+using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
@@ -9,7 +9,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.MarketTokens
     /// <summary>
     /// Retrieves snapshot data from a market for a given token.
     /// </summary>
-    public class GetMarketTokenSnapshotsWithFilterQuery : IRequest<TokenSnapshotsDto>
+    public class GetMarketTokenSnapshotsWithFilterQuery : IRequest<MarketTokenSnapshotsDto>
     {
         /// <summary>
         /// Creates a request to retrieve snapshot data from a market for a given token.

@@ -4,13 +4,13 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MarketTokens;
-using Opdex.Platform.Application.Abstractions.Models.Tokens;
+using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests;
-using Opdex.Platform.WebApi.Models.Responses.Tokens;
+using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -74,7 +74,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MarketTokensControllerTests
                 Interval = Interval.OneDay
             };
 
-            var dto = new TokenSnapshotsDto();
+            var dto = new MarketTokenSnapshotsDto();
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMarketTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
 
@@ -82,7 +82,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MarketTokensControllerTests
             await _controller.GetMarketTokenHistory(market, token, filters, CancellationToken.None);
 
             // Assert
-            _mapperMock.Verify(callTo => callTo.Map<TokenSnapshotsResponseModel>(It.IsAny<TokenSnapshotsDto>()), Times.Once);
+            _mapperMock.Verify(callTo => callTo.Map<MarketTokenSnapshotsResponseModel>(It.IsAny<MarketTokenSnapshotsDto>()), Times.Once);
         }
 
         [Fact]
@@ -98,11 +98,11 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MarketTokensControllerTests
                 Interval = Interval.OneDay
             };
 
-            var dto = new TokenSnapshotsDto();
-            var tokenResponse = new TokenSnapshotsResponseModel();
+            var dto = new MarketTokenSnapshotsDto();
+            var tokenResponse = new MarketTokenSnapshotsResponseModel();
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMarketTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
-            _mapperMock.Setup(callTo => callTo.Map<TokenSnapshotsResponseModel>(It.IsAny<TokenSnapshotsDto>())).Returns(tokenResponse);
+            _mapperMock.Setup(callTo => callTo.Map<MarketTokenSnapshotsResponseModel>(It.IsAny<MarketTokenSnapshotsDto>())).Returns(tokenResponse);
 
             // Act
             var response = await _controller.GetMarketTokenHistory(market, token, filters, CancellationToken.None);

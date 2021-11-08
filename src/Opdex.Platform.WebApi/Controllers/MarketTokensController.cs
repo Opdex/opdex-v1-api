@@ -14,7 +14,6 @@ using Opdex.Platform.WebApi.Models.Requests.MarketTokens;
 using Opdex.Platform.WebApi.Models.Requests.Tokens;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
-using Opdex.Platform.WebApi.Models.Responses.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System;
 using System.Threading;
@@ -87,19 +86,19 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paged market snapshot data for the given token.</returns>
         [HttpGet("{tokenAddress}/history")]
-        [ProducesResponseType(typeof(TokenSnapshotsResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MarketTokenSnapshotsResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<TokenSnapshotsResponseModel>> GetMarketTokenHistory([FromRoute] Address marketAddress,
-                                                                                           [FromRoute] Address tokenAddress,
-                                                                                           [FromQuery] SnapshotFilterParameters filters,
-                                                                                           CancellationToken cancellationToken)
+        public async Task<ActionResult<MarketTokenSnapshotsResponseModel>> GetMarketTokenHistory([FromRoute] Address marketAddress,
+                                                                                                 [FromRoute] Address tokenAddress,
+                                                                                                 [FromQuery] SnapshotFilterParameters filters,
+                                                                                                 CancellationToken cancellationToken)
         {
-            var tokenSnapshotsDto = await _mediator.Send(new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress,
-                                                                                                    filters.BuildCursor()), cancellationToken);
+            var marketTokenSnapshotsDto = await _mediator.Send(new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress,
+                                                                                                          filters.BuildCursor()), cancellationToken);
 
-            var response = _mapper.Map<TokenSnapshotsResponseModel>(tokenSnapshotsDto);
+            var response = _mapper.Map<MarketTokenSnapshotsResponseModel>(marketTokenSnapshotsDto);
 
             return Ok(response);
         }
