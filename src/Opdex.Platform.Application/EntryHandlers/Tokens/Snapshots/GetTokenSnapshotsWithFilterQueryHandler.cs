@@ -34,7 +34,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
 
             var assembledResults = snapshotsResults.Select(snapshot => _mapper.Map<TokenSnapshotDto>(snapshot)).ToList();
 
-            return new TokenSnapshotsDto { Token = token.Address, Snapshots = assembledResults, Cursor = cursorDto };
+            return new TokenSnapshotsDto { Snapshots = assembledResults, Cursor = cursorDto };
         }
     }
 }

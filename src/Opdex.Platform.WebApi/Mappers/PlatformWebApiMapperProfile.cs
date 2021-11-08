@@ -80,8 +80,6 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketTokenSnapshotsDto, MarketTokenSnapshotsResponseModel>()
-                .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market))
-                .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
                 .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Snapshots))
                 .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
@@ -98,7 +96,6 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TokenSnapshotsDto, TokenSnapshotsResponseModel>()
-                .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
                 .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Snapshots))
                 .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());

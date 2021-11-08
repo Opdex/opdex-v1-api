@@ -41,7 +41,7 @@ namespace Opdex.Platform.Application.EntryHandlers.MarketTokens
 
             var assembledResults = snapshotsResults.Select(snapshot => _mapper.Map<TokenSnapshotDto>(snapshot)).ToList();
 
-            return new MarketTokenSnapshotsDto { Market = market.Address, Token = token.Address, Snapshots = assembledResults, Cursor = cursorDto };
+            return new MarketTokenSnapshotsDto { Snapshots = assembledResults, Cursor = cursorDto };
         }
     }
 }
