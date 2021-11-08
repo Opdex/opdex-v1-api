@@ -46,6 +46,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using FluentValidation.AspNetCore;
 using Opdex.Platform.WebApi.Validation;
+using AspNetCoreRateLimit;
+using Opdex.Platform.WebApi.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Opdex.Platform.WebApi
 {
@@ -75,6 +78,14 @@ namespace Opdex.Platform.WebApi
                 options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
                 options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
                 options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
+                options.Map<TooManyRequestsException>((context, exception) =>
+                {
+                    context.Response.Headers["Retry-After"] = exception.RetryAfter;
+                    return new StatusCodeProblemDetails(StatusCodes.Status429TooManyRequests)
+                    {
+                        Detail = $"Quota exceeded. Maximum allowed: {exception.Limit} per {exception.Period}. Please try again in {exception.RetryAfter} second(s)."
+                    };
+                });
                 options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
                 options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
                 options.IncludeExceptionDetails = (context, ex) =>
@@ -91,6 +102,8 @@ namespace Opdex.Platform.WebApi
                 {
                     options.ModelBinderProviders.Insert(0, new AddressModelBinderProvider());
                     options.ModelBinderProviders.Insert(1, new Sha256ModelBinderProvider());
+
+                    options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests));
                 })
                 .AddFluentValidation(config =>
                 {
@@ -118,6 +131,21 @@ namespace Opdex.Platform.WebApi
                 mapperConfig.AddProfile<PlatformInfrastructureMapperProfile>();
                 mapperConfig.AddProfile<PlatformWebApiMapperProfile>();
             });
+
+            // Rate Limiting
+            services.AddMemoryCache();
+            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"))
+                    .Configure<IpRateLimitOptions>(options =>
+                    {
+                        options.RequestBlockedBehaviorAsync = (context, identity, rateLimitCounter, rule) =>
+                        {
+                            var retryAfter = rateLimitCounter.Timestamp.RetryAfterFrom(rule);
+                            throw new TooManyRequestsException(rule.Limit, rule.Period, retryAfter);
+                        };
+                    });
+            services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
+            services.AddInMemoryRateLimiting();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
             // Startup Configuration Validation Filters
             services.AddTransient<IStartupFilter, ConfigurationValidationStartupFilter>();
@@ -246,6 +274,7 @@ namespace Opdex.Platform.WebApi
                             .AllowCredentials());
             app.UseSerilogRequestLogging();
             app.UseRouting();
+            app.UseIpRateLimiting();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseOpenApi();
