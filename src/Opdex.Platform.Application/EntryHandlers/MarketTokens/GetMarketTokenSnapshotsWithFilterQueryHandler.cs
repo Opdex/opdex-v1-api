@@ -6,6 +6,8 @@ using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
+using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Linq;
 using System.Threading;
@@ -26,6 +28,8 @@ namespace Opdex.Platform.Application.EntryHandlers.MarketTokens
 
         public override async Task<MarketTokenSnapshotsDto> Handle(GetMarketTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
+            if (request.Token == Address.Cirrus) throw new InvalidDataException("tokenAddress", "Market snapshot history is not collected for the base token.");
+
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: true), cancellationToken);
             var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
 

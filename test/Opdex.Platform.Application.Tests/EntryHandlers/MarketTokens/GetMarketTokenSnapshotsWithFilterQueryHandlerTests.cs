@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Application.EntryHandlers.MarketTokens;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
@@ -38,6 +39,26 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.MarketTokens
             _mapperMock = new Mock<IMapper>();
 
             _handler = new GetMarketTokenSnapshotsWithFilterQueryHandler(_mediatorMock.Object, _mapperMock.Object);
+        }
+
+        [Fact]
+        public async Task Handle_TokenIsCRS_ThrowInvalidDataException()
+        {
+            // Arrange
+            var market = new Address("tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD");
+            var token = Address.Cirrus;
+            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, default, default, PagingDirection.Forward, default);
+            var request = new GetMarketTokenSnapshotsWithFilterQuery(market, token, cursor);
+
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            Task Act() => _handler.Handle(request, cancellationToken);
+
+            // Assert
+            var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
+            exception.PropertyName.Should().Be("tokenAddress");
+            exception.Message.Should().Be("Market snapshot history is not collected for the base token.");
         }
 
         [Fact]
