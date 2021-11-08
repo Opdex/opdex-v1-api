@@ -99,9 +99,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
 
             var snapshots = new TokenSnapshot[]
             {
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z"), DateTime.Parse("2021-11-06T10:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z"), DateTime.Parse("2021-11-06T09:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z"), DateTime.Parse("2021-11-06T08:59:59Z"), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now),
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
 
@@ -125,9 +125,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
 
             var snapshots = new TokenSnapshot[]
             {
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z"), DateTime.Parse("2021-11-06T10:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z"), DateTime.Parse("2021-11-06T09:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z"), DateTime.Parse("2021-11-06T08:59:59Z"), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now),
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<TokenSnapshotDto>(It.IsAny<TokenSnapshot>())).Returns(new TokenSnapshotDto());
@@ -152,9 +152,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
 
             var snapshots = new TokenSnapshot[]
             {
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z"), DateTime.Parse("2021-11-06T10:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z"), DateTime.Parse("2021-11-06T09:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z"), DateTime.Parse("2021-11-06T08:59:59Z"), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now),
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<TokenSnapshotDto>(It.IsAny<TokenSnapshot>())).Returns(new TokenSnapshotDto());
@@ -180,9 +180,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
 
             var snapshots = new TokenSnapshot[]
             {
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z"), DateTime.Parse("2021-11-06T10:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z"), DateTime.Parse("2021-11-06T09:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z"), DateTime.Parse("2021-11-06T08:59:59Z"), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now),
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<TokenSnapshotDto>(It.IsAny<TokenSnapshot>())).Returns(new TokenSnapshotDto());
@@ -208,9 +208,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
 
             var snapshots = new TokenSnapshot[]
             {
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z"), DateTime.Parse("2021-11-06T10:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z"), DateTime.Parse("2021-11-06T09:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z"), DateTime.Parse("2021-11-06T08:59:59Z"), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now),
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<TokenSnapshotDto>(It.IsAny<TokenSnapshot>())).Returns(new TokenSnapshotDto());
@@ -236,9 +236,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
 
             var snapshots = new TokenSnapshot[]
             {
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z"), DateTime.Parse("2021-11-06T10:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z"), DateTime.Parse("2021-11-06T09:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z"), DateTime.Parse("2021-11-06T08:59:59Z"), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now),
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<TokenSnapshotDto>(It.IsAny<TokenSnapshot>())).Returns(new TokenSnapshotDto());
@@ -264,9 +264,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
 
             var snapshots = new TokenSnapshot[]
             {
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z"), DateTime.Parse("2021-11-06T10:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z"), DateTime.Parse("2021-11-06T09:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z"), DateTime.Parse("2021-11-06T08:59:59Z"), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4.5m, 9.5m, 4.5m, 6m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now),
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<TokenSnapshotDto>(It.IsAny<TokenSnapshot>())).Returns(new TokenSnapshotDto());
@@ -292,8 +292,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
 
             var snapshots = new TokenSnapshot[]
             {
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z"), DateTime.Parse("2021-11-06T10:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z"), DateTime.Parse("2021-11-06T09:59:59Z"), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now),
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<TokenSnapshotDto>(It.IsAny<TokenSnapshot>())).Returns(new TokenSnapshotDto());
@@ -319,8 +319,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
 
             var snapshots = new TokenSnapshot[]
             {
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z"), DateTime.Parse("2021-11-06T10:59:59Z"), DateTime.Now),
-                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z"), DateTime.Parse("2021-11-06T09:59:59Z"), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(5m, 6.5m, 2m, 4m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime(), DateTime.Now),
+                new TokenSnapshot(3, 5, 0, new OhlcDecimalSnapshot(4m, 4.5m, 3.75m, 4.5m), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now),
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<TokenSnapshotDto>(It.IsAny<TokenSnapshot>())).Returns(new TokenSnapshotDto());
