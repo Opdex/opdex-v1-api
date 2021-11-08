@@ -11,13 +11,13 @@ namespace Opdex.Platform.WebApi.Validation
         {
             When(filter => filter.Cursor is null, () =>
             {
-                RuleFor(filter => filter.StartTime).NotNull().LessThan(filter => filter.EndTime).WithMessage("Start time must be before end time.");
-                RuleFor(filter => filter.EndTime).NotNull().GreaterThan(filter => filter.StartTime).WithMessage("End time must be after start time.");
+                RuleFor(filter => filter.StartDateTime).NotNull().LessThan(filter => filter.EndDateTime).WithMessage("Start time must be before end time.");
+                RuleFor(filter => filter.EndDateTime).NotNull().GreaterThan(filter => filter.StartDateTime).WithMessage("End time must be after start time.");
                 RuleFor(filter => filter.Interval).MustBeValidEnumValue().DependentRules(() =>
                 {
                     RuleFor(filter => filter.Interval).Must((filter, interval) =>
                         {
-                            var timeDifference = filter.EndTime.Subtract(filter.StartTime);
+                            var timeDifference = filter.EndDateTime.Subtract(filter.StartDateTime);
                             return interval switch
                             {
                                 Interval.OneHour => timeDifference.TotalHours >= 1,

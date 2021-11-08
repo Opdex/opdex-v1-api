@@ -41,8 +41,8 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.TokensControllerTests
             Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             var filters = new SnapshotFilterParameters
             {
-                StartTime = DateTime.UtcNow.AddDays(-5),
-                EndTime = DateTime.UtcNow,
+                StartDateTime = DateTime.UtcNow.AddDays(-5),
+                EndDateTime = DateTime.UtcNow,
                 Interval = Interval.OneDay
             };
 
@@ -52,8 +52,8 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.TokensControllerTests
             await _controller.GetTokenHistory(token, filters, cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetTokenSnapshotsWithFilterQuery>(query => query.Cursor.StartTime == filters.StartTime
-                                                                                                     && query.Cursor.EndTime == filters.EndTime
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetTokenSnapshotsWithFilterQuery>(query => query.Cursor.StartTime == filters.StartDateTime
+                                                                                                     && query.Cursor.EndTime == filters.EndDateTime
                                                                                                      && query.Cursor.Interval == filters.Interval
                                                                                                      && query.Cursor.IsFirstRequest
                                                                                                      && query.Token == token),
@@ -67,8 +67,8 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.TokensControllerTests
             Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             var filters = new SnapshotFilterParameters
             {
-                StartTime = DateTime.UtcNow.AddDays(-5),
-                EndTime = DateTime.UtcNow,
+                StartDateTime = DateTime.UtcNow.AddDays(-5),
+                EndDateTime = DateTime.UtcNow,
                 Interval = Interval.OneDay
             };
 
@@ -90,8 +90,8 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.TokensControllerTests
             Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
             var filters = new SnapshotFilterParameters
             {
-                StartTime = DateTime.UtcNow.AddDays(-5),
-                EndTime = DateTime.UtcNow,
+                StartDateTime = DateTime.UtcNow.AddDays(-5),
+                EndDateTime = DateTime.UtcNow,
                 Interval = Interval.OneDay
             };
 
