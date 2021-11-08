@@ -30,8 +30,8 @@ namespace Opdex.Platform.WebApi.Tests.Validation
             var result = _validator.TestValidate(request);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(request => request.StartDateTime);
-            result.ShouldHaveValidationErrorFor(request => request.EndDateTime);
+            result.ShouldHaveValidationErrorFor(request => request.StartDateTime).WithErrorMessage("Start time must be before end time.");
+            result.ShouldHaveValidationErrorFor(request => request.EndDateTime).WithErrorMessage("End time must be after start time.");
         }
 
         [Fact]
@@ -49,8 +49,8 @@ namespace Opdex.Platform.WebApi.Tests.Validation
             var result = _validator.TestValidate(request);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(request => request.StartDateTime);
-            result.ShouldHaveValidationErrorFor(request => request.EndDateTime);
+            result.ShouldHaveValidationErrorFor(request => request.StartDateTime).WithErrorMessage("Start time must be before end time.");
+            result.ShouldHaveValidationErrorFor(request => request.EndDateTime).WithErrorMessage("End time must be after start time.");
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace Opdex.Platform.WebApi.Tests.Validation
             var result = _validator.TestValidate(request);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Interval);
+            result.ShouldHaveValidationErrorFor(request => request.Interval).WithErrorMessage("Value must be valid for the the enumeration values.");
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace Opdex.Platform.WebApi.Tests.Validation
             var result = _validator.TestValidate(request);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Interval);
+            result.ShouldHaveValidationErrorFor(request => request.Interval).WithErrorMessage("Interval cannot be larger than the given time frame.");
         }
 
         [Theory]
@@ -138,7 +138,7 @@ namespace Opdex.Platform.WebApi.Tests.Validation
             var result = _validator.TestValidate(request);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Limit);
+            result.ShouldHaveValidationErrorFor(request => request.Limit).WithErrorMessage("'Limit' must be less than or equal to '750'.");
         }
 
         [Fact]
