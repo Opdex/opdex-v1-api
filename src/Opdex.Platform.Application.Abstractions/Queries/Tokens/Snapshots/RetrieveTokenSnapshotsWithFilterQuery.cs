@@ -20,8 +20,6 @@ namespace Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots
         public RetrieveTokenSnapshotsWithFilterQuery(ulong tokenId, ulong marketId, SnapshotCursor cursor)
         {
             if (tokenId < 1) throw new ArgumentOutOfRangeException(nameof(tokenId));
-            // 0 is valid
-            if (marketId < 0) throw new ArgumentOutOfRangeException(nameof(marketId), "Market id must be greater or equal to zero.");
             if (cursor is null) throw new ArgumentNullException(nameof(cursor));
 
             TokenId = tokenId;
