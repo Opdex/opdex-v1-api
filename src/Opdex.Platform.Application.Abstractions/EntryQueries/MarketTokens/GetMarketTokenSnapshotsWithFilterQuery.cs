@@ -19,8 +19,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.MarketTokens
         /// <param name="cursor">The snapshot cursor filter.</param>
         public GetMarketTokenSnapshotsWithFilterQuery(Address market, Address token, SnapshotCursor cursor)
         {
-            if (market == Address.Empty) throw new ArgumentNullException(nameof(market));
-            if (token == Address.Empty) throw new ArgumentNullException(nameof(token));
+            if (market == Address.Empty) throw new ArgumentNullException(nameof(market), "Market address must not be empty.");
+            if (token == Address.Empty) throw new ArgumentNullException(nameof(token), "Token address must not be empty.");
             if (cursor is null) throw new ArgumentNullException(nameof(cursor));
 
             Market = market;

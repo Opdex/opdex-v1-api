@@ -18,7 +18,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots
         /// <param name="cursor">The snapshot cursor filter.</param>
         public GetTokenSnapshotsWithFilterQuery(Address token, SnapshotCursor cursor)
         {
-            if (token == Address.Empty) throw new ArgumentNullException(nameof(token));
+            if (token == Address.Empty) throw new ArgumentNullException(nameof(token), "Token address must not be empty.");
             if (cursor is null) throw new ArgumentNullException(nameof(cursor));
 
             Token = token;
