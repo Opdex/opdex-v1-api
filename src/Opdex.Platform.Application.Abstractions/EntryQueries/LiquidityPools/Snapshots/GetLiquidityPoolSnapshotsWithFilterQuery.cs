@@ -1,38 +1,33 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
-using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
-using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots
 {
-    public class GetLiquidityPoolSnapshotsWithFilterQuery : IRequest<IEnumerable<LiquidityPoolSnapshotDto>>
+    /// <summary>
+    /// Get snapshot data for a given liquidity pool.
+    /// </summary>
+    public class GetLiquidityPoolSnapshotsWithFilterQuery : IRequest<LiquidityPoolSnapshotsDto>
     {
-        public GetLiquidityPoolSnapshotsWithFilterQuery(Address liquidityPoolAddress, string candleSpan, string timeSpan)
+        /// <summary>
+        /// Creates a request to retrieve snapshot data for a given liquidity pool.
+        /// </summary>
+        /// <param name="liquidityPool">The address of the liquidity pool.</param>
+        /// <param name="cursor">The snapshot cursor filter.</param>
+        public GetLiquidityPoolSnapshotsWithFilterQuery(Address liquidityPool, SnapshotCursor cursor)
         {
-            if (liquidityPoolAddress == Address.Empty)
+            if (liquidityPool == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(liquidityPoolAddress));
+                throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool address must not be empty.");
             }
 
-            timeSpan = timeSpan.HasValue() ? timeSpan : "1W";
-            candleSpan = candleSpan.HasValue() ? candleSpan : "Daily";
-
-            if (!Enum.TryParse<SnapshotType>(candleSpan, out var snapshotType) ||
-                (snapshotType != SnapshotType.Daily && snapshotType != SnapshotType.Hourly))
-            {
-                throw new ArgumentOutOfRangeException(nameof(snapshotType));
-            }
-
-            SnapshotType = snapshotType;
-            TimeSpan = timeSpan;
-            LiquidityPoolAddress = liquidityPoolAddress;
+            LiquidityPool = liquidityPool;
+            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor));
         }
 
-        public Address LiquidityPoolAddress { get; }
-        public SnapshotType SnapshotType { get; }
-        public string TimeSpan { get; }
+        public Address LiquidityPool { get; }
+        public SnapshotCursor Cursor { get; }
     }
 }

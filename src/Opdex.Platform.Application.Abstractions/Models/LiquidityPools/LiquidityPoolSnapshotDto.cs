@@ -13,9 +13,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
         public VolumeDto Volume { get; set; }
         public CostDto Cost { get; set; }
         public int SnapshotTypeId { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
+        public DateTime Timestamp { get; set; }
         public int SrcTokenDecimals { get; set; }
     }
 }

@@ -5,7 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
 using Xunit;
 
-namespace Opdex.Platform.Application.Abstractions.Tests.EntryQueries.MarketTokens
+namespace Opdex.Platform.Application.Abstractions.Tests.EntryQueries.MarketTokens.Snapshots
 {
     public class GetMarketTokenSnapshotsWithFilterQueryTests
     {

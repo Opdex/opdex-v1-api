@@ -4,17 +4,14 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapsh
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
-using Opdex.Platform.Common.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
 {
-    public class GetLiquidityPoolSnapshotsWithFilterQueryHandler
-        : IRequestHandler<GetLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshotDto>>
+    public class GetLiquidityPoolSnapshotsWithFilterQueryHandler : EntryFilterQueryHandler<GetLiquidityPoolSnapshotsWithFilterQuery, LiquidityPoolSnapshotsDto>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -25,17 +22,19 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<LiquidityPoolSnapshotDto>> Handle(GetLiquidityPoolSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
+        public override async Task<LiquidityPoolSnapshotsDto> Handle(GetLiquidityPoolSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var now = DateTime.UtcNow;
-            var start = now.StartDateOfDuration(request.TimeSpan).ToStartOf(request.SnapshotType);
-            var end = DateTime.UtcNow.ToEndOf(request.SnapshotType);
+            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool), cancellationToken);
 
-            var pool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPoolAddress), cancellationToken);
+            var snapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id, request.Cursor), cancellationToken);
 
-            var poolSnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id, start, end, request.SnapshotType), cancellationToken);
+            var snapshotsResults = snapshots.ToList();
 
-            return _mapper.Map<IEnumerable<LiquidityPoolSnapshotDto>>(poolSnapshots.OrderBy(p => p.StartDate));
+            var cursorDto = BuildCursorDto(snapshotsResults, request.Cursor, pointerSelector: result => (result.StartDate, result.Id));
+
+            var assembledResults = snapshotsResults.Select(snapshot => _mapper.Map<LiquidityPoolSnapshotDto>(snapshot)).ToList();
+
+            return new LiquidityPoolSnapshotsDto { Snapshots = assembledResults, Cursor = cursorDto };
         }
     }
 }

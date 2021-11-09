@@ -20,6 +20,7 @@ using System.Linq;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 
 namespace Opdex.Platform.Application.Assemblers
 {
@@ -72,7 +73,8 @@ namespace Opdex.Platform.Application.Assemblers
             poolDto.LpToken = await AssembleMarketToken(pool.LpTokenId, market);
 
             // LP pool snapshot details
-            var liquidityPoolSnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id, yesterday, now, SnapshotType));
+            var cursor = new SnapshotCursor(Interval.OneDay, yesterday, now, SortDirectionType.DESC, 2, PagingDirection.Forward, default);
+            var liquidityPoolSnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id, cursor));
             var poolSnapshots = liquidityPoolSnapshots.ToList();
 
             // Get the current snapshot from the list, when null, retrieve the last possible snapshot or a new one entirely

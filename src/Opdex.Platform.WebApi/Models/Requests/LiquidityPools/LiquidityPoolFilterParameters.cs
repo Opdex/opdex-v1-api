@@ -60,7 +60,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.LiquidityPools
         {
             if (Cursor is null) return new LiquidityPoolsCursor(Keyword, Markets, LiquidityPools, Tokens, StakingFilter, NominationFilter, MiningFilter,
                                                                 OrderBy, Direction, Limit, PagingDirection.Forward, default);
-            Cursor.TryBase64Decode(out var decodedCursor);
+            Base64Extensions.TryBase64Decode(Cursor, out var decodedCursor);
             LiquidityPoolsCursor.TryParse(decodedCursor, out var cursor);
 
             return cursor;

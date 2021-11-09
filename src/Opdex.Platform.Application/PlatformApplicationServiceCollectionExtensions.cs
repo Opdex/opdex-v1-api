@@ -213,7 +213,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetSwapAmountInQuery, FixedDecimal>, GetSwapAmountInQueryHandler>();
             services.AddTransient<IRequestHandler<GetSwapAmountOutQuery, FixedDecimal>, GetSwapAmountOutQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityAmountInQuoteQuery, FixedDecimal>, GetLiquidityAmountInQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<GetLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshotDto>>, GetLiquidityPoolSnapshotsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<GetLiquidityPoolSnapshotsWithFilterQuery, LiquidityPoolSnapshotsDto>, GetLiquidityPoolSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetLiquidityPoolByAddressQuery, LiquidityPoolDto>, GetLiquidityPoolByAddressQueryHandler>();
 
             // Mining Pools

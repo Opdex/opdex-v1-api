@@ -142,8 +142,12 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => MapStaking(src.Staking, src.Staking != null)))
                 .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => MapVolume(src.Volume, src.SrcTokenDecimals)))
                 .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => MapCost(src.Cost, src.SrcTokenDecimals)))
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
-                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.Timestamp))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<LiquidityPoolSnapshotsDto, LiquidityPoolSnapshotsResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Snapshots))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MiningPoolDto, MiningPoolResponseModel>()

@@ -117,9 +117,7 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
                 .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => src.Cost))
                 .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
-                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
-                .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => src.ModifiedDate))
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.StartDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<RewardsSnapshot, RewardsDto>()
