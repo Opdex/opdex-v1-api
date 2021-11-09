@@ -4,15 +4,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Quotes;
+using Opdex.Platform.Application.Abstractions.EntryQueries.MarketTokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Routers;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
+using Opdex.Platform.WebApi.Models.Requests;
 using Opdex.Platform.WebApi.Models.Requests.MarketTokens;
 using Opdex.Platform.WebApi.Models.Requests.Tokens;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
-using Opdex.Platform.WebApi.Models.Responses.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System;
 using System.Threading;
@@ -72,6 +73,32 @@ namespace Opdex.Platform.WebApi.Controllers
             var result = await _mediator.Send(new GetMarketTokenByMarketAndTokenAddressQuery(marketAddress, tokenAddress), cancellationToken);
 
             var response = _mapper.Map<MarketTokenResponseModel>(result);
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Get Market Token History
+        /// </summary>
+        /// <param name="marketAddress">The address of the market contract.</param>
+        /// <param name="tokenAddress">The address of the token contract.</param>
+        /// <param name="filters">Filter parameters.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Paged market snapshot data for the given token.</returns>
+        [HttpGet("{tokenAddress}/history")]
+        [ProducesResponseType(typeof(MarketTokenSnapshotsResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<MarketTokenSnapshotsResponseModel>> GetMarketTokenHistory([FromRoute] Address marketAddress,
+                                                                                                 [FromRoute] Address tokenAddress,
+                                                                                                 [FromQuery] SnapshotFilterParameters filters,
+                                                                                                 CancellationToken cancellationToken)
+        {
+            var marketTokenSnapshotsDto = await _mediator.Send(new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress,
+                                                                                                          filters.BuildCursor()), cancellationToken);
+
+            var response = _mapper.Map<MarketTokenSnapshotsResponseModel>(marketTokenSnapshotsDto);
 
             return Ok(response);
         }

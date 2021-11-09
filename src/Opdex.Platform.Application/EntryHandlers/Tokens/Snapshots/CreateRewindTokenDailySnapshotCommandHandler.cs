@@ -7,6 +7,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
 using System.Linq;
 using System.Threading;
@@ -30,9 +31,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
                                                                                                       request.StartDate, SnapshotType.Daily));
 
             // Get existing hourly snapshots for the token
-            var srcTokenHourlySnapshots = await _mediator.Send(new RetrieveTokenSnapshotsWithFilterQuery(request.TokenId, request.MarketId,
-                                                                                                         request.StartDate, request.EndDate,
-                                                                                                         SnapshotType.Hourly));
+            var cursor = new SnapshotCursor(Interval.OneHour, request.StartDate, request.EndDate, default, 24, PagingDirection.Forward, default);
+            var srcTokenHourlySnapshots = await _mediator.Send(new RetrieveTokenSnapshotsWithFilterQuery(request.TokenId, request.MarketId, cursor));
 
             // If the rewind block is within the first hour of the day, that hourly snapshot will be deleted and none will exist.
             // Need to always reuse the latest state of the most recent found liquidity pool snapshot. Sometimes we might need to

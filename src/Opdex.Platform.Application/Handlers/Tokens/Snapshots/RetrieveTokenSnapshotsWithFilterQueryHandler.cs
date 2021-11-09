@@ -20,11 +20,7 @@ namespace Opdex.Platform.Application.Handlers.Tokens.Snapshots
 
         public Task<IEnumerable<TokenSnapshot>> Handle(RetrieveTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectTokenSnapshotsWithFilterQuery(request.TokenId,
-                                                                                         request.MarketId,
-                                                                                         request.StartDate,
-                                                                                         request.EndDate,
-                                                                                         request.SnapshotType), cancellationToken);
+            return _mediator.Send(new SelectTokenSnapshotsWithFilterQuery(request.TokenId, request.MarketId, request.Cursor), cancellationToken);
         }
     }
 }

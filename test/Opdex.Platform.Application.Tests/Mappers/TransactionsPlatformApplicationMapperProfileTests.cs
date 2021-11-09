@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Opdex.Platform.Application.Tests.Mappers
 {
-    public class TransactionsPlatformApplicationMapperProfile : PlatformApplicationMapperProfileTests
+    public class TransactionsPlatformApplicationMapperProfileTests : PlatformApplicationMapperProfileTests
     {
         [Fact]
         public void From_TransactionQuote_To_TransactionQuoteDto()

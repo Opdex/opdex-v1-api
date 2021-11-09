@@ -4,6 +4,7 @@ using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
@@ -23,6 +24,7 @@ using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using Opdex.Platform.WebApi.Models.Responses.Governances;
 using Opdex.Platform.WebApi.Models.Responses.Markets;
+using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
 using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.OHLC;
 using Opdex.Platform.WebApi.Models.Responses.Pools;
@@ -77,6 +79,11 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
+            CreateMap<MarketTokenSnapshotsDto, MarketTokenSnapshotsResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Snapshots))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<TokenSummaryDto, TokenSummaryResponseModel>()
                 .ForMember(dest => dest.PriceUsd, opt => opt.MapFrom(src => src.PriceUsd))
                 .ForMember(dest => dest.DailyPriceChangePercent, opt => opt.MapFrom(src => src.DailyPriceChangePercent))
@@ -85,8 +92,12 @@ namespace Opdex.Platform.WebApi.Mappers
 
             CreateMap<TokenSnapshotDto, TokenSnapshotResponseModel>()
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
-                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.Timestamp))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<TokenSnapshotsDto, TokenSnapshotsResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Snapshots))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolDto, LiquidityPoolResponseModel>()

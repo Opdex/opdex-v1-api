@@ -5,6 +5,7 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots;
 using System;
@@ -32,7 +33,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Snapshots
         [Fact]
         public async Task SelectTokenSnapshotsWithFilter_Success()
         {
-            const  ulong tokenId = 8;
+            const ulong tokenId = 8;
             const ulong marketId = 4;
             var startDate = new DateTime(2021, 6, 21, 12, 0, 0);
             var endDate = new DateTime(2021, 6, 21, 15, 0, 0);
@@ -50,9 +51,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Snapshots
                 Price = new OhlcDecimalEntity { Open = 1.23m, High = 9.87m, Low = 1.1m, Close = 4.87m },
             };
 
-            var entities = new List<TokenSnapshotEntity> {expectedEntity};
+            var entities = new List<TokenSnapshotEntity> { expectedEntity };
 
-            var command = new SelectTokenSnapshotsWithFilterQuery(tokenId, marketId, startDate, endDate, snapshotType);
+            var cursor = new SnapshotCursor(Interval.OneHour, startDate, endDate, default, default, PagingDirection.Forward, default);
+            var command = new SelectTokenSnapshotsWithFilterQuery(tokenId, marketId, cursor);
 
             _dbContext.Setup(db => db.ExecuteQueryAsync<TokenSnapshotEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(entities.AsEnumerable()));
@@ -68,7 +70,6 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Snapshots
                 result.Id.Should().Be(expectedEntity.Id);
                 result.TokenId.Should().Be(tokenId);
                 result.MarketId.Should().Be(marketId);
-                result.SnapshotType.Should().Be(snapshotType);
                 result.Price.Open.Should().Be(expectedEntity.Price.Open);
                 result.Price.High.Should().Be(expectedEntity.Price.High);
                 result.Price.Low.Should().Be(expectedEntity.Price.Low);
@@ -82,13 +83,13 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Snapshots
         [Fact]
         public async Task SelectTokenSnapshotsWithFilter_Returns_EmptyList()
         {
-            const ulong liquidityPoolId = 1;
+            const ulong tokenId = 1;
             const ulong marketId = 2;
             var startDate = new DateTime(2021, 6, 21, 12, 0, 0);
             var endDate = new DateTime(2021, 6, 21, 15, 0, 0);
-            const SnapshotType snapshotType = SnapshotType.Daily;
 
-            var command = new SelectTokenSnapshotsWithFilterQuery(liquidityPoolId, marketId, startDate, endDate, snapshotType);
+            var cursor = new SnapshotCursor(Interval.OneDay, startDate, endDate, default, default, PagingDirection.Forward, default);
+            var command = new SelectTokenSnapshotsWithFilterQuery(tokenId, marketId, cursor);
 
             _dbContext.Setup(db => db.ExecuteQueryAsync<TokenSnapshotEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<IEnumerable<TokenSnapshotEntity>>(null));

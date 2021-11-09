@@ -2,21 +2,16 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
-using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
 {
-    public class GetTokenSnapshotsWithFilterQueryHandler
-        : IRequestHandler<GetTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshotDto>>
+    public class GetTokenSnapshotsWithFilterQueryHandler : EntryFilterQueryHandler<GetTokenSnapshotsWithFilterQuery, TokenSnapshotsDto>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -27,26 +22,19 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<TokenSnapshotDto>> Handle(GetTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
+        public override async Task<TokenSnapshotsDto> Handle(GetTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var now = DateTime.UtcNow;
-            var start = now.StartDateOfDuration(request.TimeSpan).ToStartOf(request.SnapshotType);
-            var end = DateTime.UtcNow.ToEndOf(request.SnapshotType);
+            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token, findOrThrow: true), cancellationToken);
 
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenAddress), cancellationToken);
+            var snapshots = await _mediator.Send(new RetrieveTokenSnapshotsWithFilterQuery(token.Id, default, request.Cursor), cancellationToken);
 
-            var market = token.Address == Address.Cirrus
-                    ? null
-                    : await _mediator.Send(new RetrieveMarketByAddressQuery(request.MarketAddress), cancellationToken);
+            var snapshotsResults = snapshots.ToList();
 
+            var cursorDto = BuildCursorDto(snapshotsResults, request.Cursor, pointerSelector: result => (result.StartDate, result.Id));
 
-            var snapshots = await _mediator.Send(new RetrieveTokenSnapshotsWithFilterQuery(token.Id,
-                                                                                           market?.Id ?? 0,
-                                                                                           start,
-                                                                                           end,
-                                                                                           request.SnapshotType), cancellationToken);
+            var assembledResults = snapshotsResults.Select(snapshot => _mapper.Map<TokenSnapshotDto>(snapshot)).ToList();
 
-            return _mapper.Map<IEnumerable<TokenSnapshotDto>>(snapshots.OrderBy(p => p.StartDate));
+            return new TokenSnapshotsDto { Snapshots = assembledResults, Cursor = cursorDto };
         }
     }
 }

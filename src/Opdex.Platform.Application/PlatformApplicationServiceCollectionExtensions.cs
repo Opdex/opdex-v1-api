@@ -1,5 +1,3 @@
-
-
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
@@ -52,6 +50,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Governances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
+using Opdex.Platform.Application.Abstractions.EntryQueries.MarketTokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Routers;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
@@ -63,6 +62,7 @@ using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Admins;
 using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
@@ -115,6 +115,7 @@ using Opdex.Platform.Application.EntryHandlers.Markets;
 using Opdex.Platform.Application.EntryHandlers.Markets.Permissions;
 using Opdex.Platform.Application.EntryHandlers.Markets.Quotes;
 using Opdex.Platform.Application.EntryHandlers.Markets.Snapshots;
+using Opdex.Platform.Application.EntryHandlers.MarketTokens;
 using Opdex.Platform.Application.EntryHandlers.MiningPools;
 using Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes;
 using Opdex.Platform.Application.EntryHandlers.Routers;
@@ -231,7 +232,8 @@ namespace Opdex.Platform.Application
             // Tokens
             services.AddTransient<IRequestHandler<GetTokensWithFilterQuery, TokensDto>, GetTokensWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetMarketTokensWithFilterQuery, MarketTokensDto>, GetMarketTokensWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<GetTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshotDto>>, GetTokenSnapshotsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<GetTokenSnapshotsWithFilterQuery, TokenSnapshotsDto>, GetTokenSnapshotsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<GetMarketTokenSnapshotsWithFilterQuery, MarketTokenSnapshotsDto>, GetMarketTokenSnapshotsWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetTokenByAddressQuery, TokenDto>, GetTokenByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetMarketTokenByMarketAndTokenAddressQuery, MarketTokenDto>, GetMarketTokenByMarketAndTokenAddressQueryHandler>();
 

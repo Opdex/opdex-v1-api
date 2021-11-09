@@ -1,7 +1,8 @@
 using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Models.Responses.Tokens;
 
-namespace Opdex.Platform.WebApi.Models.Responses.Tokens
+namespace Opdex.Platform.WebApi.Models.Responses.MarketTokens
 {
     public class MarketTokenResponseModel : TokenResponseModel
     {
