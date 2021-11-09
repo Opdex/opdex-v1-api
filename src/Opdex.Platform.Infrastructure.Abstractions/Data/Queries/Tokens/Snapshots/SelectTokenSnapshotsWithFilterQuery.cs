@@ -18,12 +18,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapsho
         /// <param name="cursor">The snapshot cursor filter.</param>
         public SelectTokenSnapshotsWithFilterQuery(ulong tokenId, ulong marketId, SnapshotCursor cursor)
         {
-            if (tokenId < 1) throw new ArgumentOutOfRangeException(nameof(tokenId));
-            if (cursor is null) throw new ArgumentNullException(nameof(cursor));
-
-            TokenId = tokenId;
             MarketId = marketId;
-            Cursor = cursor;
+            TokenId = tokenId > 0 ? tokenId : throw new ArgumentOutOfRangeException(nameof(tokenId));
+            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor));
         }
 
         public ulong TokenId { get; }

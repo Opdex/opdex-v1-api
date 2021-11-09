@@ -5,6 +5,7 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots;
 using System;
@@ -36,6 +37,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
             var startDate = new DateTime(2021, 6, 21, 12, 0, 0);
             var endDate = new DateTime(2021, 6, 21, 15, 0, 0);
             const SnapshotType snapshotType = SnapshotType.Daily;
+            var cursor = new SnapshotCursor(Interval.OneDay, startDate, endDate, SortDirectionType.ASC, 10, PagingDirection.Forward, default);
 
             var expectedEntity = new LiquidityPoolSnapshotEntity
             {
@@ -59,7 +61,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
 
             var entities = new List<LiquidityPoolSnapshotEntity> { expectedEntity };
 
-            var command = new SelectLiquidityPoolSnapshotsWithFilterQuery(liquidityPoolId, startDate, endDate, snapshotType);
+            var command = new SelectLiquidityPoolSnapshotsWithFilterQuery(liquidityPoolId, cursor);
 
             _dbContext.Setup(db => db.ExecuteQueryAsync<LiquidityPoolSnapshotEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult(entities.AsEnumerable()));
@@ -112,9 +114,8 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
             const ulong liquidityPoolId = 1;
             var startDate = new DateTime(2021, 6, 21, 12, 0, 0);
             var endDate = new DateTime(2021, 6, 21, 15, 0, 0);
-            const SnapshotType snapshotType = SnapshotType.Daily;
-
-            var command = new SelectLiquidityPoolSnapshotsWithFilterQuery(liquidityPoolId, startDate, endDate, snapshotType);
+            var cursor = new SnapshotCursor(Interval.OneDay, startDate, endDate, SortDirectionType.ASC, 10, PagingDirection.Forward, default);
+            var command = new SelectLiquidityPoolSnapshotsWithFilterQuery(liquidityPoolId, cursor);
 
             _dbContext.Setup(db => db.ExecuteQueryAsync<LiquidityPoolSnapshotEntity>(It.IsAny<DatabaseQuery>()))
                 .Returns(() => Task.FromResult<IEnumerable<LiquidityPoolSnapshotEntity>>(null));

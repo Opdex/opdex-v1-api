@@ -25,7 +25,7 @@ namespace Opdex.Platform.WebApi.Models.Requests
         protected override SnapshotCursor InternalBuildCursor()
         {
             if (Cursor is null) return new SnapshotCursor(Interval, StartDateTime, EndDateTime, Direction, Limit, PagingDirection.Forward, default);
-            Base64Extensions.TryBase64Decode(Cursor, out var decodedCursor);
+            Cursor.TryBase64Decode(out var decodedCursor);
             SnapshotCursor.TryParse(decodedCursor, out var cursor);
             return cursor;
         }

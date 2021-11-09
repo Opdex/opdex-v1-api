@@ -30,8 +30,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
             var srcTokenDailySnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(request.TokenId, request.MarketId,
                                                                                                       request.StartDate, SnapshotType.Daily));
 
-            // Get existing hourly snapshots for the token
-            var cursor = new SnapshotCursor(Interval.OneHour, request.StartDate, request.EndDate, default, 24, PagingDirection.Forward, default);
+            // Get existing hourly snapshots for the token in DESC order
+            var cursor = new SnapshotCursor(Interval.OneHour, request.StartDate, request.EndDate, SortDirectionType.ASC, 24, PagingDirection.Forward, default);
             var srcTokenHourlySnapshots = await _mediator.Send(new RetrieveTokenSnapshotsWithFilterQuery(request.TokenId, request.MarketId, cursor));
 
             // If the rewind block is within the first hour of the day, that hourly snapshot will be deleted and none will exist.

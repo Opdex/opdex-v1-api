@@ -7,6 +7,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
 using System.Linq;
 using System.Threading;
@@ -31,11 +32,9 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                                                                                                           SnapshotType.Daily));
 
             // Get hourly liquidity pool snapshots to rebuild the daily
-            var poolHourlySnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(request.LiquidityPoolId,
-                                                                                                             request.StartDate,
-                                                                                                             request.EndDate,
-                                                                                                             SnapshotType.Hourly));
-            var poolHourlySnapshotsList = poolHourlySnapshots.OrderBy(p => p.EndDate).ToList(); // ASC order
+            var cursor = new SnapshotCursor(Interval.OneHour, request.StartDate, request.EndDate, SortDirectionType.ASC, 24, PagingDirection.Forward, default);
+            var poolHourlySnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(request.LiquidityPoolId, cursor));
+            var poolHourlySnapshotsList = poolHourlySnapshots.ToList(); // ASC order
 
             // If the rewind block is within the first hour of the day, that hourly snapshot will be deleted and none will exist.
             // Need to always reuse the latest state of the most recent found daily liquidity pool snapshot. Sometimes we might need to

@@ -19,13 +19,9 @@ namespace Opdex.Platform.Application.Handlers.LiquidityPools.Snapshots
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<IEnumerable<LiquidityPoolSnapshot>> Handle(RetrieveLiquidityPoolSnapshotsWithFilterQuery request,
-                                                               CancellationToken cancellationToken)
+        public Task<IEnumerable<LiquidityPoolSnapshot>> Handle(RetrieveLiquidityPoolSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectLiquidityPoolSnapshotsWithFilterQuery(request.LiquidityPoolId,
-                                                                                  request.StartDate,
-                                                                                  request.EndDate,
-                                                                                  request.SnapshotType), cancellationToken);
+            return _mediator.Send(new SelectLiquidityPoolSnapshotsWithFilterQuery(request.LiquidityPoolId, request.Cursor), cancellationToken);
         }
     }
 }

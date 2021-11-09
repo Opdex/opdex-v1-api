@@ -34,8 +34,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
             WHERE
                 {nameof(TokenSnapshotEntity.TokenId)} = @{nameof(SqlParams.TokenId)} AND
                 {nameof(TokenSnapshotEntity.MarketId)} = @{nameof(SqlParams.MarketId)} AND
-                {nameof(TokenSnapshotEntity.StartDate)} BETWEEN @{nameof(SqlParams.StartDate)} AND @{nameof(TokenSnapshotEntity.EndDate)} AND
-                {nameof(TokenSnapshotEntity.SnapshotTypeId)} = @{nameof(TokenSnapshotEntity.SnapshotTypeId)}
+                {nameof(TokenSnapshotEntity.StartDate)} BETWEEN @{nameof(SqlParams.StartDate)} AND @{nameof(SqlParams.EndDate)} AND
+                {nameof(TokenSnapshotEntity.SnapshotTypeId)} = @{nameof(SqlParams.SnapshotTypeId)}
             {WhereFilter}
             {OrderBy}
             {Limit}".RemoveExcessWhitespace();
@@ -56,7 +56,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
 
         public async Task<IEnumerable<TokenSnapshot>> Handle(SelectTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var queryParams = new SqlParams(request.TokenId, request.MarketId, request.Cursor.StartTime, request.Cursor.EndTime, ConvertToSnapshotType(request.Cursor.Interval), request.Cursor.Pointer);
+            var queryParams = new SqlParams(request.TokenId, request.MarketId, request.Cursor.StartTime, request.Cursor.EndTime,
+                                            ConvertToSnapshotType(request.Cursor.Interval), request.Cursor.Pointer);
 
             var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
@@ -116,7 +117,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots
         }
 
         // consider better solution, likely need to reuse
-        private SnapshotType ConvertToSnapshotType(Interval interval)
+        private static SnapshotType ConvertToSnapshotType(Interval interval)
         {
             return interval switch
             {
