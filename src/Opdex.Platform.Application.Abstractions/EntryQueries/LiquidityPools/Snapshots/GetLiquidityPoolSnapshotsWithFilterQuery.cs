@@ -18,11 +18,13 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Sn
         /// <param name="cursor">The snapshot cursor filter.</param>
         public GetLiquidityPoolSnapshotsWithFilterQuery(Address liquidityPool, SnapshotCursor cursor)
         {
-            if (liquidityPool == Address.Empty) throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool address must not be empty.");
-            if (cursor is null) throw new ArgumentNullException(nameof(cursor));
+            if (liquidityPool == Address.Empty)
+            {
+                throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool address must not be empty.");
+            }
 
             LiquidityPool = liquidityPool;
-            Cursor = cursor;
+            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor));
         }
 
         public Address LiquidityPool { get; }

@@ -39,7 +39,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
         }
 
         [Fact]
-        public async Task Handle_RetreiveTokenByAddressQuery_Send()
+        public async Task Handle_RetrieveTokenByAddressQuery_Send()
         {
             // Arrange
             var token = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");

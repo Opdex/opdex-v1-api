@@ -145,8 +145,8 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.Timestamp))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<LiquidityPoolsDto, LiquidityPoolsResponseModel>()
-                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.LiquidityPools))
+            CreateMap<LiquidityPoolSnapshotsDto, LiquidityPoolSnapshotsResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Snapshots))
                 .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
