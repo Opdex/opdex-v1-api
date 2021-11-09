@@ -589,7 +589,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<Interval, SnapshotType>()
-                .ConstructUsing((src, ctx) =>
+                .ConvertUsing((src, ctx) =>
                 {
                     return src switch
                     {
