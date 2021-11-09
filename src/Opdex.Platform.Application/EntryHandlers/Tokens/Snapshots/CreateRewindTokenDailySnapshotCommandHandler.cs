@@ -30,7 +30,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
             var srcTokenDailySnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(request.TokenId, request.MarketId,
                                                                                                       request.StartDate, SnapshotType.Daily));
 
-            // Get existing hourly snapshots for the token in DESC order
+            // Get existing hourly snapshots for the token in ASC order
             var cursor = new SnapshotCursor(Interval.OneHour, request.StartDate, request.EndDate, SortDirectionType.ASC, 24, PagingDirection.Forward, default);
             var srcTokenHourlySnapshots = await _mediator.Send(new RetrieveTokenSnapshotsWithFilterQuery(request.TokenId, request.MarketId, cursor));
 

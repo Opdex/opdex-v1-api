@@ -35,6 +35,8 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.Transa
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using System;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -585,6 +587,17 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
                 .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<Interval, SnapshotType>()
+                .ConstructUsing((src, ctx) =>
+                {
+                    return src switch
+                    {
+                        Interval.OneDay => SnapshotType.Daily,
+                        Interval.OneHour => SnapshotType.Hourly,
+                        _ => throw new ArgumentOutOfRangeException("Interval", "Invalid Interval to Snapshot type")
+                    };
+                });
         }
     }
 }

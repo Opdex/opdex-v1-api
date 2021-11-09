@@ -56,7 +56,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots
         public async Task<IEnumerable<LiquidityPoolSnapshot>> Handle(SelectLiquidityPoolSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
             var queryParams = new SqlParams(request.LiquidityPoolId, request.Cursor.StartTime, request.Cursor.EndTime,
-                                            ConvertToSnapshotType(request.Cursor.Interval), request.Cursor.Pointer);
+                                            _mapper.Map<SnapshotType>(request.Cursor.Interval), request.Cursor.Pointer);
 
             var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
@@ -113,17 +113,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots
             // re-sort back into requested order
             return PagingBackwardQuery.Replace(InnerQuery, query)
                                       .Replace(SortDirection, Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection));
-        }
-
-        // consider better solution, likely need to reuse
-        private static SnapshotType ConvertToSnapshotType(Interval interval)
-        {
-            return interval switch
-            {
-                Interval.OneHour => SnapshotType.Hourly,
-                Interval.OneDay => SnapshotType.Daily,
-                _ => throw new ArgumentOutOfRangeException(nameof(interval))
-            };
         }
 
         private sealed class SqlParams

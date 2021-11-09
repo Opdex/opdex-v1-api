@@ -37,7 +37,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Tokens
         protected override TokensCursor InternalBuildCursor()
         {
             if (Cursor is null) return new TokensCursor(Keyword, Tokens, Provisional, OrderBy, Direction, Limit, PagingDirection.Forward, default);
-            Cursor.TryBase64Decode(out var decodedCursor);
+            Base64Extensions.TryBase64Decode(Cursor, out var decodedCursor);
             TokensCursor.TryParse(decodedCursor, out var cursor);
             return cursor;
         }
