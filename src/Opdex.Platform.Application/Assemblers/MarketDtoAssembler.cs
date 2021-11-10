@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
@@ -10,6 +11,7 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.Tokens;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,7 +49,8 @@ namespace Opdex.Platform.Application.Assemblers
                 : null;
 
             // Get yesterday and today's snapshots
-            var marketSnapshots = await _mediator.Send(new RetrieveMarketSnapshotsWithFilterQuery(market.Id, yesterday, now, SnapshotType));
+            var cursor = new SnapshotCursor(Interval.OneDay, yesterday, now, SortDirectionType.DESC, 2, PagingDirection.Forward, default);
+            var marketSnapshots = await _mediator.Send(new RetrieveMarketSnapshotsWithFilterQuery(market.Id, cursor));
             var marketSnapshotList = marketSnapshots.ToList();
             var currentMarketSnapshot = marketSnapshotList.FirstOrDefault();
             var previousMarketSnapshot = marketSnapshotList.LastOrDefault();

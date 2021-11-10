@@ -86,6 +86,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                 {
                     // Retrieves the snapshot in range, the most recent one prior, or a newly instantiated snapshot
                     var snapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id, blockTime, snapshotType));
+
                     // Update a stale snapshot if it is older than what was requested
                     if (snapshot.EndDate < blockTime)
                     {
@@ -125,8 +126,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                             snapshot.ProcessSwapLog((SwapLog)poolLog, crsUsd, srcSnapshot.Price.Close, srcToken.Sats,
                                                     market.IsStakingMarket, market.TransactionFee, market.MarketFeeEnabled);
                         }
-                        else if (poolLog.LogType == TransactionLogType.StartStakingLog ||
-                                 poolLog.LogType == TransactionLogType.StopStakingLog)
+                        else if (poolLog.LogType == TransactionLogType.StartStakingLog || poolLog.LogType == TransactionLogType.StopStakingLog)
                         {
                             // Process Staking Weight
                             snapshot.ProcessStakingLog((StakeLog)poolLog, stakingTokenUsd);

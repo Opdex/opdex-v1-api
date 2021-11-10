@@ -4,6 +4,7 @@ using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.OHLC;
@@ -177,8 +178,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
                 .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => MapStaking(src.Staking, src.Staking != null)))
                 .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => MapRewards(src.Rewards)))
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
-                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.Timestamp))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketDto, MarketResponseModel>()
@@ -193,6 +193,11 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
                 .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<MarketSnapshotsDto, MarketSnapshotsResponseModel>()
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Snapshots))
+                .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<AddressAllowanceDto, ApprovedAllowanceResponseModel>()

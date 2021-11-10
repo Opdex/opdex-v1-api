@@ -3,6 +3,7 @@ using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Admins;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs;
@@ -173,8 +174,7 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
                 .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
                 .ForMember(dest => dest.SnapshotType, opt => opt.MapFrom(src => src.SnapshotType))
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
-                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.StartDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<AddressAllowance, AddressAllowanceDto>()

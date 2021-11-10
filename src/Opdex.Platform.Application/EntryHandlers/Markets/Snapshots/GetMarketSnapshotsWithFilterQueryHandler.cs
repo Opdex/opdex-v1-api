@@ -2,19 +2,18 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
 {
-    public class GetMarketSnapshotsWithFilterQueryHandler : IRequestHandler<GetMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshotDto>>
+    public class GetMarketSnapshotsWithFilterQueryHandler : EntryFilterQueryHandler<GetMarketSnapshotsWithFilterQuery, MarketSnapshotsDto>
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -26,19 +25,19 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<MarketSnapshotDto>> Handle(GetMarketSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
+        public override async Task<MarketSnapshotsDto> Handle(GetMarketSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.MarketAddress));
+            var pool = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market), cancellationToken);
 
-            var from = request.From ?? new DateTime(2021, 01, 01);
-            var to = request.To ?? DateTime.UtcNow.ToEndOf(SnapshotType);
+            var snapshots = await _mediator.Send(new RetrieveMarketSnapshotsWithFilterQuery(pool.Id, request.Cursor), cancellationToken);
 
-            var result = await _mediator.Send(new RetrieveMarketSnapshotsWithFilterQuery(market.Id,
-                                                                                         from,
-                                                                                         to,
-                                                                                         SnapshotType), cancellationToken);
+            var snapshotsResults = snapshots.ToList();
 
-            return _mapper.Map<IEnumerable<MarketSnapshotDto>>(result.OrderBy(s => s.StartDate));
+            var cursorDto = BuildCursorDto(snapshotsResults, request.Cursor, pointerSelector: result => (result.StartDate, result.Id));
+
+            var assembledResults = snapshotsResults.Select(snapshot => _mapper.Map<MarketSnapshotDto>(snapshot)).ToList();
+
+            return new MarketSnapshotsDto { Snapshots = assembledResults, Cursor = cursorDto };
         }
     }
 }

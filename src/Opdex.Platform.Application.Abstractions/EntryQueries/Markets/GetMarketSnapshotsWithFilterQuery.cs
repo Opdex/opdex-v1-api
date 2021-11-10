@@ -1,27 +1,32 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models;
+using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.Abstractions.EntryQueries.Markets
 {
-    public class GetMarketSnapshotsWithFilterQuery : IRequest<IEnumerable<MarketSnapshotDto>>
+    public class GetMarketSnapshotsWithFilterQuery : IRequest<MarketSnapshotsDto>
     {
-        public GetMarketSnapshotsWithFilterQuery(Address marketAddress, DateTime? from, DateTime? to)
+        /// <summary>
+        /// Creates a request to retrieve snapshot data for a given liquidity pool.
+        /// </summary>
+        /// <param name="market">The address of the market.</param>
+        /// <param name="cursor">The snapshot cursor filter.</param>
+        public GetMarketSnapshotsWithFilterQuery(Address market, SnapshotCursor cursor)
         {
-            if (marketAddress == Address.Empty)
+            if (market == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(marketAddress), $"{nameof(marketAddress)} must be provided.");
+                throw new ArgumentNullException(nameof(market), "Liquidity pool address must not be empty.");
             }
 
-            MarketAddress = marketAddress;
-            From = from;
-            To = to;
+            Market = market;
+            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor));
         }
 
-        public Address MarketAddress { get; }
-        public DateTime? From { get; }
-        public DateTime? To { get; }
+        public Address Market { get; }
+        public SnapshotCursor Cursor { get; }
     }
 }

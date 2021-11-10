@@ -1,7 +1,7 @@
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Common.Models;
 
-namespace Opdex.Platform.Application.Abstractions.Models
+namespace Opdex.Platform.Application.Abstractions.Models.Markets
 {
     public class MarketDto
     {

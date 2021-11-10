@@ -10,7 +10,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.Markets
         public decimal Volume { get; set; }
         public StakingResponseModel Staking { get; set; }
         public RewardsResponseModel Rewards { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 }

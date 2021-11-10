@@ -2,7 +2,7 @@ using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Common.Extensions;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.Models
+namespace Opdex.Platform.Application.Abstractions.Models.Markets
 {
     public class MarketSnapshotDto
     {
@@ -14,8 +14,7 @@ namespace Opdex.Platform.Application.Abstractions.Models
         public StakingDto Staking { get; set; }
         public RewardsDto Rewards { get; set; }
         public int SnapshotType { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime Timestamp { get; set; }
 
         public void SetLiquidityDailyChange(decimal previousLiquidity)
         {
