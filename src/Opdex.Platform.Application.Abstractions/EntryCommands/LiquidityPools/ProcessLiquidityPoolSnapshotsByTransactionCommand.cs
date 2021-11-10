@@ -22,8 +22,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
             TransactionLogType.SwapLog,
             TransactionLogType.StartStakingLog,
             TransactionLogType.StopStakingLog,
-            TransactionLogType.CollectStakingRewardsLog,
-            TransactionLogType.CreateLiquidityPoolLog
+            TransactionLogType.CollectStakingRewardsLog
         };
 
         public readonly IReadOnlyList<SnapshotType> SnapshotTypes = new[]
