@@ -9,7 +9,7 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
-using Opdex.Platform.WebApi.Models.Requests;
+using Opdex.Platform.WebApi.Models.Requests.Markets;
 using Opdex.Platform.WebApi.Models.Responses.Markets;
 using System;
 using System.Threading;
@@ -38,11 +38,10 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MarketsControllerTests
         {
             // Arrange
             Address market = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            var filters = new SnapshotFilterParameters
+            var filters = new MarketSnapshotFilterParameters
             {
                 StartDateTime = DateTime.UtcNow.AddDays(-5),
-                EndDateTime = DateTime.UtcNow,
-                Interval = Interval.OneDay
+                EndDateTime = DateTime.UtcNow
             };
 
             var cancellationToken = new CancellationTokenSource().Token;
@@ -53,7 +52,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MarketsControllerTests
             // Assert
             _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetMarketSnapshotsWithFilterQuery>(query => query.Cursor.StartTime == filters.StartDateTime
                                                                                                      && query.Cursor.EndTime == filters.EndDateTime
-                                                                                                     && query.Cursor.Interval == filters.Interval
+                                                                                                     && query.Cursor.Interval == Interval.OneDay
                                                                                                      && query.Cursor.IsFirstRequest
                                                                                                      && query.Market == market),
                                                        cancellationToken), Times.Once);
@@ -64,11 +63,10 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MarketsControllerTests
         {
             // Arrange
             Address market = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            var filters = new SnapshotFilterParameters
+            var filters = new MarketSnapshotFilterParameters
             {
                 StartDateTime = DateTime.UtcNow.AddDays(-5),
-                EndDateTime = DateTime.UtcNow,
-                Interval = Interval.OneDay
+                EndDateTime = DateTime.UtcNow
             };
 
             var dto = new MarketSnapshotsDto();
@@ -87,11 +85,10 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MarketsControllerTests
         {
             // Arrange
             Address market = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            var filters = new SnapshotFilterParameters
+            var filters = new MarketSnapshotFilterParameters
             {
                 StartDateTime = DateTime.UtcNow.AddDays(-5),
-                EndDateTime = DateTime.UtcNow,
-                Interval = Interval.OneDay
+                EndDateTime = DateTime.UtcNow
             };
 
             var dto = new MarketSnapshotsDto();

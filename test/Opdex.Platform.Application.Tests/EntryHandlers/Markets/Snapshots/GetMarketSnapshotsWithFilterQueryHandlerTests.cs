@@ -42,7 +42,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
         {
             // Arrange
             var market = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, default, default, PagingDirection.Forward, default);
+            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, default, default, PagingDirection.Forward, default);
             var request = new GetMarketSnapshotsWithFilterQuery(market, cursor);
 
             var cancellationToken = new CancellationTokenSource().Token;
@@ -64,7 +64,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
         {
             // Arrange
             var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, default, default, PagingDirection.Forward, default);
+            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, default, default, PagingDirection.Forward, default);
             var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
             var cancellationToken = new CancellationTokenSource().Token;
@@ -89,7 +89,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
         {
             // Arrange
             var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 10, PagingDirection.Forward, default);
+            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 10, PagingDirection.Forward, default);
             var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
             var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
@@ -115,7 +115,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
         {
             // Arrange
             var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 3, PagingDirection.Forward, (DateTime.UtcNow, 10));
+            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 3, PagingDirection.Forward, (DateTime.UtcNow, 10));
             var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
             var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
@@ -142,7 +142,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
         {
             // Arrange
             var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 10));
+            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 10));
             var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
             var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
@@ -170,7 +170,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
         {
             // Arrange
             var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 10));
+            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 10));
             var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
             var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
@@ -198,7 +198,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
         {
             // Arrange
             var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
+            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
             var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
             var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
@@ -226,7 +226,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
         {
             // Arrange
             var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
+            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
             var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
             var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
@@ -254,7 +254,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
         {
             // Arrange
             var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
+            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
             var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
             var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
@@ -282,7 +282,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
         {
             // Arrange
             var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
+            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
             var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
             var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
@@ -309,7 +309,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
         {
             // Arrange
             var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
+            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
             var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
             var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);

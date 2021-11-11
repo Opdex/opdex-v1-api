@@ -39,7 +39,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
         {
             var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.Transaction.BlockHeight));
             var crsToken = await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus));
-            var crsSummary = await _mediator.Send(new RetrieveTokenSummaryByMarketAndTokenIdQuery(default, crsToken.Id));
+            var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crsToken.Id, default, block.MedianTime, SnapshotType.Minute));
 
             // Create dictionaries in memory to reduce redundant calls to the db
             var markets = new Dictionary<ulong, Market>();
@@ -65,19 +65,23 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                         var snapshot = new LiquidityPoolSnapshot(liquidityPool.Id, snapshotType, block.MedianTime);
 
                         await _mediator.Send(new ProcessSrcTokenSnapshotCommand(liquidityPool.MarketId, srcToken, snapshotType, block.MedianTime,
-                                                                                crsSummary.PriceUsd, default, UInt256.Zero, block.Height));
+                                                                                crsSnapshot.Price.Close, default, UInt256.Zero, block.Height));
 
                         await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(snapshot, block.Height));
                     }));
                 }));
             }
 
+            // Get the pool snapshot type logs and reserves logs separately so we can always process reserves last
+            // Processing reserves last ensures that volume and other costs are associated with the reserves as
+            // they were prior to the transaction. V1 contracts log reserve changes first so processing in
+            // direct sort order here would incorrectly affect prices associated with the transaction.
+            var poolLogs = request.Transaction.LogsOfTypes(request.PoolTransactionSnapshotTypes).ToList();
+            var reservesLogs = request.Transaction.LogsOfType<ReservesLog>(TransactionLogType.ReservesLog);
+            poolLogs.AddRange(reservesLogs);
+
             // Each qualifying log that is from a liquidity pool
-            // Todo: Swap logs are logged after updated reserves logs, the order of those processed logs should be reversed.
-            // Processing swaps first gives more accurate USD totals of the swap prior to the reserves change however, we should technically
-            // update potentially stale *current* reserves which would update the pool's SRC USD price, then process swap transaction w/ volume
-            // and rewards, then process the new reserve totals
-            foreach (var log in request.Transaction.LogsOfTypes(request.PoolSnapshotLogTypes))
+            foreach (var log in poolLogs)
             {
                 var foundLiquidityPool = liquidityPools.TryGetValue(log.Contract, out var liquidityPool);
                 if (!foundLiquidityPool)
@@ -125,19 +129,20 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
 
                         var crsPerSrc = stakingTokenPoolSnapshot.Cost.CrsPerSrc.Close;
 
-                        stakingTokenSnapshot.ResetStaleSnapshot(crsPerSrc, crsSummary.PriceUsd, block.MedianTime);
+                        stakingTokenSnapshot.ResetStaleSnapshot(crsPerSrc, crsSnapshot.Price.Close, block.MedianTime);
                     }
 
                     stakingTokenUsd = stakingTokenSnapshot.Price.Close;
                     stakingTokensUsd.TryAdd(market.StakingTokenId, stakingTokenUsd);
                 }
 
-                // Try to get any previously adjusted snapshots from other logs without querying the database
-                liquidityPoolSnapshots.TryGetValue(liquidityPool.Id, out var foundSnapshots);
-
                 // Each snapshot type for liquidity pools (hourly and daily)
+                // This should never be done with Task.WhenAll as it could conflict with the reading/writing of liquidityPoolSnapshots
                 foreach(var snapshotType in request.SnapshotTypes)
                 {
+                    // Try to get any previously adjusted snapshots from other logs without querying the database
+                    liquidityPoolSnapshots.TryGetValue(liquidityPool.Id, out var foundSnapshots);
+
                     var snapshot = foundSnapshots?.FirstOrDefault(snapshot => snapshot.SnapshotType == snapshotType) ??
                                    await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id, block.MedianTime, snapshotType));
 
@@ -145,20 +150,20 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                     if (snapshot.EndDate < block.MedianTime)
                     {
                         var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(liquidityPool.MarketId, srcToken, snapshotType, snapshot.EndDate,
-                                                                                             crsSummary.PriceUsd, snapshot.Reserves.Crs, snapshot.Reserves.Src,
+                                                                                             crsSnapshot.Price.Close, snapshot.Reserves.Crs, snapshot.Reserves.Src,
                                                                                              block.Height));
 
-                        snapshot.ResetStaleSnapshot(crsSummary.PriceUsd, srcUsd, stakingTokenUsd, srcToken.Sats, block.MedianTime);
+                        snapshot.ResetStaleSnapshot(crsSnapshot.Price.Close, srcUsd, stakingTokenUsd, srcToken.Sats, block.MedianTime);
                     }
 
                     if (log.LogType == TransactionLogType.ReservesLog)
                     {
                         var reservesLog = (ReservesLog)log;
                         var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(liquidityPool.MarketId, srcToken, snapshotType,
-                                                                                             block.MedianTime, crsSummary.PriceUsd, reservesLog.ReserveCrs,
+                                                                                             block.MedianTime, crsSnapshot.Price.Close, reservesLog.ReserveCrs,
                                                                                              reservesLog.ReserveSrc, block.Height));
 
-                        snapshot.ProcessReservesLog(reservesLog, crsSummary.PriceUsd, srcUsd, srcToken.Sats);
+                        snapshot.ProcessReservesLog(reservesLog, crsSnapshot.Price.Close, srcUsd, srcToken.Sats);
 
                         await _mediator.Send(new ProcessLpTokenSnapshotCommand(liquidityPool.MarketId, lpToken, snapshot.Reserves.Usd, snapshotType,
                                                                                block.MedianTime, block.Height));
@@ -167,7 +172,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                     {
                         var srcSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(srcToken.Id, market.Id, block.MedianTime, SnapshotType.Hourly));
 
-                        snapshot.ProcessSwapLog((SwapLog)log, crsSummary.PriceUsd, srcSnapshot.Price.Close, srcToken.Sats,  market.IsStakingMarket,
+                        snapshot.ProcessSwapLog((SwapLog)log, crsSnapshot.Price.Close, srcSnapshot.Price.Close, srcToken.Sats,  market.IsStakingMarket,
                                                 market.TransactionFee, market.MarketFeeEnabled);
                     }
                     else if (log.LogType == TransactionLogType.StartStakingLog || log.LogType == TransactionLogType.StopStakingLog)
@@ -187,18 +192,14 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                 }
             }
 
-            // Todo: Bug somewhere in here, this code is persisting liquidty pool summaries and token snapshots just fine w/ swap transactions
-            // pool_liquidity_snapshots are not persisting and no errors are being thrown
-            //
             // Persist all snapshot updates at once
-            await Task.WhenAll(liquidityPoolSnapshots.Values.Select(async poolSnapshots =>
-            {
-                await Task.WhenAll(poolSnapshots.Select(async snapshot =>
-                {
-                    snapshot.IncrementTransactionCount();
-                    await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(snapshot, block.Height));
-                }));
-            }));
+            await Task.WhenAll(liquidityPoolSnapshots.Values
+                                   .SelectMany(liquidityPool => liquidityPool)
+                                   .Select(async snapshot =>
+                                   {
+                                       snapshot.IncrementTransactionCount();
+                                       return await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(snapshot, block.Height));
+                                   }));
 
             return Unit.Value;
         }

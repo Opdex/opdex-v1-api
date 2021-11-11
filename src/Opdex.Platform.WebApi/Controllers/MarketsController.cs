@@ -9,12 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Responses.Markets;
-using System.Collections.Generic;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Requests.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.WebApi.Models.Requests;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -99,7 +97,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpGet("{address}/history")]
         [ProducesResponseType(typeof(MarketSnapshotsResponseModel), StatusCodes.Status200OK)]
         public async Task<ActionResult<MarketSnapshotsResponseModel>> GetMarketHistory([FromRoute] Address address,
-                                                                                       [FromQuery] SnapshotFilterParameters filters,
+                                                                                       [FromQuery] MarketSnapshotFilterParameters filters,
                                                                                        CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetMarketSnapshotsWithFilterQuery(address, filters.BuildCursor()), cancellationToken);

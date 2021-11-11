@@ -16,9 +16,8 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
 
         public Transaction Transaction { get; }
 
-        public readonly IReadOnlyList<TransactionLogType> PoolSnapshotLogTypes = new[]
+        public readonly IReadOnlyList<TransactionLogType> PoolTransactionSnapshotTypes = new[]
         {
-            TransactionLogType.ReservesLog,
             TransactionLogType.SwapLog,
             TransactionLogType.StartStakingLog,
             TransactionLogType.StopStakingLog,
