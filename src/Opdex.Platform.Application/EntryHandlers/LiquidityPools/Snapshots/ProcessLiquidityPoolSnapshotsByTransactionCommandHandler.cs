@@ -60,12 +60,18 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                     var srcToken = await _mediator.Send(new RetrieveTokenByAddressQuery(createPoolLog.Token));
                     tokens[srcToken.Id] = srcToken;
 
+                    var lpToken = await _mediator.Send(new RetrieveTokenByAddressQuery(createPoolLog.Pool));
+                    tokens[lpToken.Id] = lpToken;
+
                     await Task.WhenAll(request.SnapshotTypes.Select(async snapshotType =>
                     {
                         var snapshot = new LiquidityPoolSnapshot(liquidityPool.Id, snapshotType, block.MedianTime);
 
                         await _mediator.Send(new ProcessSrcTokenSnapshotCommand(liquidityPool.MarketId, srcToken, snapshotType, block.MedianTime,
                                                                                 crsSnapshot.Price.Close, default, UInt256.Zero, block.Height));
+
+                        await _mediator.Send(new ProcessLpTokenSnapshotCommand(liquidityPool.MarketId, lpToken, snapshot.Reserves.Usd, snapshotType,
+                                                                               block.MedianTime, block.Height));
 
                         await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(snapshot, block.Height));
                     }));
