@@ -33,55 +33,74 @@ namespace Opdex.Platform.WebApi
             var started = false;
             var unavailable = false;
 
+            IMediator mediator;
             using var scope = _services.CreateScope();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
-            while (!cancellationToken.IsCancellationRequested)
             {
-                if (started)
-                {
-                    // delay 30 seconds when indexing services are unavailable (db flag off)
-                    // delay 8 to 12 seconds when indexing is available
-                    var seconds = unavailable ? 30 : new Random().Next(8, 13);
+                mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+            }
 
-                    await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken);
-                }
-
-                try
+            using (_logger.BeginScope("Indexer"))
+            {
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    var indexLock = await mediator.Send(new RetrieveIndexerLockQuery(), cancellationToken);
-                    if (!indexLock.Available)
+                    if (started)
                     {
-                        _logger.LogWarning("Indexing services unavailable");
-                        unavailable = true;
-                        continue;
+                        // delay 30 seconds when indexing services are unavailable (db flag off)
+                        // delay 8 to 12 seconds when indexing is available
+                        var seconds = unavailable ? 30 : new Random().Next(8, 13);
+
+                        await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken);
                     }
 
-                    if (indexLock.Locked)
+                    try
                     {
-                        _logger.LogWarning(IndexingAlreadyRunningLog);
-                        continue;
+                        var indexLock = await mediator.Send(new RetrieveIndexerLockQuery(), cancellationToken);
+                        if (!indexLock.Available)
+                        {
+                            _logger.LogWarning("Indexing services unavailable");
+                            unavailable = true;
+                            continue;
+                        }
+
+                        if (indexLock.Locked)
+                        {
+                            if (indexLock.InstanceId != _opdexConfiguration.InstanceId)
+                            {
+                                _logger.LogWarning(IndexingAlreadyRunningLog);
+                                continue;
+                            }
+                            
+                            // Todo: If this is somehow the "fix" for the locking indexer bug seen occasionally consider a rewind after unlock
+                            // Rewind would go back to block prior to the previous locking timestamp to ensure all transactions and blocks were processed
+                            await mediator.Send(new MakeIndexerUnlockCommand());
+                            _logger.LogWarning("Indexer forcefully unlocked");
+                        }
+
+                        await mediator.Send(new MakeIndexerLockCommand());
+
+                        try
+                        {
+                            await mediator.Send(new ProcessLatestBlocksCommand(_opdexConfiguration.Network), cancellationToken);
+                        }
+                        finally
+                        {
+                            await mediator.Send(new MakeIndexerUnlockCommand());
+                        }
+
+                        unavailable = false;
                     }
-
-                    await mediator.Send(new MakeIndexerLockCommand());
-
-                    await mediator.Send(new ProcessLatestBlocksCommand(_opdexConfiguration.Network), cancellationToken);
-
-                    await mediator.Send(new MakeIndexerUnlockCommand());
-
-                    unavailable = false;
-                }
-                catch (IndexingAlreadyRunningException ex)
-                {
-                    _logger.LogError(ex, IndexingAlreadyRunningLog);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failure to process Cirrus blocks");
-                }
-                finally
-                {
-                    started = true;
+                    catch (IndexingAlreadyRunningException ex)
+                    {
+                        _logger.LogError(ex, IndexingAlreadyRunningLog);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failure to process Cirrus blocks");
+                    }
+                    finally
+                    {
+                        started = true;
+                    }
                 }
             }
         }
