@@ -20,14 +20,16 @@ namespace Opdex.Platform.WebApi.Tests
     {
         private readonly Mock<IMediator> _mediator;
         private readonly IndexerBackgroundService _indexerService;
-        private readonly string Identity;
+        private readonly string _primaryIdentity;
+        private readonly string _otherIdentity;
 
         public IndexerBackgroundServiceTests()
         {
             _mediator = new Mock<IMediator>();
 
             var opdexConfiguration = new OpdexConfiguration {Network = NetworkType.DEVNET};
-            Identity = opdexConfiguration.InstanceId;
+            _primaryIdentity = opdexConfiguration.InstanceId;
+            _otherIdentity = Guid.NewGuid().ToString();
 
             var logger = new NullLogger<IndexerBackgroundService>();
             var serviceCollection = new ServiceCollection();
@@ -55,7 +57,7 @@ namespace Opdex.Platform.WebApi.Tests
         {
             // Arrange
             var token = new CancellationTokenSource().Token;
-            var indexLock = new IndexLock(false, false, Identity, DateTime.UtcNow);
+            var indexLock = new IndexLock(false, false, _primaryIdentity, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
 
@@ -74,7 +76,8 @@ namespace Opdex.Platform.WebApi.Tests
         {
             // Arrange
             var token = new CancellationTokenSource().Token;
-            var indexLock = new IndexLock(true, true, Identity, DateTime.UtcNow);
+            // _primaryIdentity trying to index when _otherIdentity already is
+            var indexLock = new IndexLock(true, true, _otherIdentity, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
 
@@ -93,7 +96,7 @@ namespace Opdex.Platform.WebApi.Tests
         {
             // Arrange
             var token = new CancellationTokenSource().Token;
-            var indexLock = new IndexLock(true, false, Identity, DateTime.UtcNow);
+            var indexLock = new IndexLock(true, false, _primaryIdentity, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
             _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>()))
@@ -114,7 +117,7 @@ namespace Opdex.Platform.WebApi.Tests
         {
             // Arrange
             var token = new CancellationTokenSource().Token;
-            var indexLock = new IndexLock(true, false, Identity, DateTime.UtcNow);
+            var indexLock = new IndexLock(true, false, _primaryIdentity, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
 
@@ -146,7 +149,7 @@ namespace Opdex.Platform.WebApi.Tests
         {
             // Arrange
             var token = new CancellationTokenSource().Token;
-            var indexLock = new IndexLock(true, false, Identity, DateTime.UtcNow);
+            var indexLock = new IndexLock(true, false, _primaryIdentity, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
 
@@ -161,9 +164,8 @@ namespace Opdex.Platform.WebApi.Tests
         public async Task StopAsync_DoesNotSend_MakeIndexerUnlockCommand_DifferentInstance()
         {
             // Arrange
-            var newIdentity = Guid.NewGuid().ToString();
             var token = new CancellationTokenSource().Token;
-            var indexLock = new IndexLock(true, true, newIdentity, DateTime.UtcNow);
+            var indexLock = new IndexLock(true, true, _otherIdentity, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
 
@@ -179,7 +181,7 @@ namespace Opdex.Platform.WebApi.Tests
         {
             // Arrange
             var token = new CancellationTokenSource().Token;
-            var indexLock = new IndexLock(true, true, Identity, DateTime.UtcNow);
+            var indexLock = new IndexLock(true, true, _primaryIdentity, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
 
