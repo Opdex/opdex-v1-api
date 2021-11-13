@@ -39,7 +39,17 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
         {
             var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.Transaction.BlockHeight));
             var crsToken = await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus));
-            var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crsToken.Id, default, block.MedianTime, SnapshotType.Minute));
+
+            // Try get CRS snapshot for USD pricing
+            var crsSnapshotQuery = new RetrieveTokenSnapshotWithFilterQuery(crsToken.Id, default, block.MedianTime, SnapshotType.Minute);
+            var crsSnapshot = await _mediator.Send(crsSnapshotQuery);
+
+            // If it doesn't exist or is stale, refresh
+            if (crsSnapshot.Id == 0 || crsSnapshot.EndDate < block.MedianTime)
+            {
+                await _mediator.Send(new CreateCrsTokenSnapshotsCommand(block.MedianTime, block.Height));
+                crsSnapshot = await _mediator.Send(crsSnapshotQuery);
+            }
 
             // Create dictionaries in memory to reduce redundant calls to the db
             var markets = new Dictionary<ulong, Market>();

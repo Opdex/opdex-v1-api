@@ -19,7 +19,7 @@ namespace Opdex.Platform.Application.Abstractions.EntryQueries.Markets
         {
             if (market == Address.Empty)
             {
-                throw new ArgumentNullException(nameof(market), "Liquidity pool address must not be empty.");
+                throw new ArgumentNullException(nameof(market), "Market address must not be empty.");
             }
 
             Market = market;

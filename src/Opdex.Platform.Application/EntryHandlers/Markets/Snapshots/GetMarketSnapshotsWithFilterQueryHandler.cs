@@ -1,7 +1,6 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
@@ -27,9 +26,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
 
         public override async Task<MarketSnapshotsDto> Handle(GetMarketSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            var pool = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market), cancellationToken);
+            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market), cancellationToken);
 
-            var snapshots = await _mediator.Send(new RetrieveMarketSnapshotsWithFilterQuery(pool.Id, request.Cursor), cancellationToken);
+            var snapshots = await _mediator.Send(new RetrieveMarketSnapshotsWithFilterQuery(market.Id, request.Cursor), cancellationToken);
 
             var snapshotsResults = snapshots.ToList();
 
