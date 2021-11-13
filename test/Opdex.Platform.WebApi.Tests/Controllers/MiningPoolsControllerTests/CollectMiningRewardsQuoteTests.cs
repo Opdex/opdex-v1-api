@@ -3,7 +3,6 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Common.Models;
@@ -13,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
+namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsControllerTests
 {
     public class CollectMiningRewardsQuoteTests
     {

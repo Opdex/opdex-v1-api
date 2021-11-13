@@ -57,11 +57,11 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Admins;
 using Opdex.Platform.Application.Abstractions.Models.Governances;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
@@ -205,7 +205,7 @@ namespace Opdex.Platform.Application
 
             // Markets
             services.AddTransient<IRequestHandler<GetMarketByAddressQuery, MarketDto>, GetMarketByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<GetMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshotDto>>, GetMarketSnapshotsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<GetMarketSnapshotsWithFilterQuery, MarketSnapshotsDto>, GetMarketSnapshotsWithFilterQueryHandler>();
 
             // Liquidity Pools
             services.AddTransient<IRequestHandler<GetLiquidityPoolsWithFilterQuery, LiquidityPoolsDto>, GetLiquidityPoolsWithFilterQueryHandler>();

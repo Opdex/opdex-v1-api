@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Domain.Models.Markets;
@@ -13,17 +12,15 @@ namespace Opdex.Platform.Application.Handlers.Markets.Snapshots
     public class RetrieveMarketSnapshotsWithFilterQueryHandler: IRequestHandler<RetrieveMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshot>>
     {
         private readonly IMediator _mediator;
-        private readonly IMapper _mapper;
 
-        public RetrieveMarketSnapshotsWithFilterQueryHandler(IMediator mediator, IMapper mapper)
+        public RetrieveMarketSnapshotsWithFilterQueryHandler(IMediator mediator)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public Task<IEnumerable<MarketSnapshot>> Handle(RetrieveMarketSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
         {
-            return _mediator.Send(new SelectMarketSnapshotsWithFilterQuery(request.MarketId, request.StartDate, request.EndDate, request.SnapshotType), cancellationToken);
+            return _mediator.Send(new SelectMarketSnapshotsWithFilterQuery(request.MarketId, request.Cursor), cancellationToken);
         }
     }
 }

@@ -13,16 +13,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
+namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsControllerTests
 {
-    public class StartMiningQuoteTests
+    public class StopMiningQuoteTests
     {
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<IMediator> _mediatorMock;
         private readonly Mock<IApplicationContext> _contextMock;
         private readonly WebApi.Controllers.MiningPoolsController _controller;
 
-        public StartMiningQuoteTests()
+        public StopMiningQuoteTests()
         {
             _mapperMock = new Mock<IMapper>();
             _mediatorMock = new Mock<IMediator>();
@@ -32,7 +32,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
         }
 
         [Fact]
-        public async Task StartMining_CreateStartMiningTransactionQuoteCommand_Send()
+        public async Task StopMining_CreateStopMiningTransactionQuoteCommand_Send()
         {
             // Arrange
             Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
@@ -43,15 +43,15 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
 
             // Act
-            await _controller.StartMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
+            await _controller.StopMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateStartMiningTransactionQuoteCommand>(query => query.MiningPool == miningPool
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateStopMiningTransactionQuoteCommand>(query => query.MiningPool == miningPool
                                                                                                        && query.WalletAddress == walletAddress), cancellationToken), Times.Once);
         }
 
         [Fact]
-        public async Task StartMining_CreateStartMiningTransactionQuoteCommandResponse_Map()
+        public async Task StopMining_CreateStopMiningTransactionQuoteCommandResponse_Map()
         {
             // Arrange
             var dto = new TransactionQuoteDto();
@@ -61,17 +61,17 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             var cancellationToken = new CancellationTokenSource().Token;
 
             _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateStartMiningTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateStopMiningTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
 
             // Act
-            await _controller.StartMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
+            await _controller.StopMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
 
             // Assert
             _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(dto), Times.Once);
         }
 
         [Fact]
-        public async Task StartMining_CreateStartMiningTransactionQuoteCommandResponse_ReturnOk()
+        public async Task StopMining_CreateStopMiningTransactionQuoteCommandResponse_ReturnOk()
         {
             // Arrange
             var quoteResponse = new TransactionQuoteResponseModel();
@@ -81,11 +81,11 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
             var cancellationToken = new CancellationTokenSource().Token;
 
             _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateStartMiningTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new TransactionQuoteDto());
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateStopMiningTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new TransactionQuoteDto());
             _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(quoteResponse);
 
             // Act
-            var response = await _controller.StartMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
+            var response = await _controller.StopMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
 
             // Act
             response.Result.Should().BeOfType<OkObjectResult>();

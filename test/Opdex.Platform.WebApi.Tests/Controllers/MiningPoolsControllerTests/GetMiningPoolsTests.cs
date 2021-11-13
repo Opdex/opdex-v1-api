@@ -12,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsController
+namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsControllerTests
 {
     public class GetMiningPoolsTests
     {
