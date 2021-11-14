@@ -64,7 +64,7 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<ActionResult<TransactionQuoteResponseModel>> CreateLiquidityPool(CreateLiquidityPoolRequest request,
                                                                                            CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(new CreateCreateLiquidityPoolTransactionQuoteCommand(_context.Market, _context.Wallet,
+            var response = await _mediator.Send(new CreateCreateLiquidityPoolTransactionQuoteCommand(request.Market, _context.Wallet,
                                                                                                      request.Token), cancellationToken);
 
             var quote = _mapper.Map<TransactionQuoteResponseModel>(response);

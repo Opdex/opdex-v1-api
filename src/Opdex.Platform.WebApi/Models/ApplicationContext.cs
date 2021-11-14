@@ -13,17 +13,7 @@ namespace Opdex.Platform.WebApi.Models
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Address Market => GetMarket();
-
         public Address Wallet => GetWallet();
-
-        private Address GetMarket()
-        {
-            var subject = _httpContextAccessor.HttpContext
-                .User.Claims.FirstOrDefault(claim => claim.Type == "market");
-
-            return new Address(subject?.Value);
-        }
 
         private Address GetWallet()
         {

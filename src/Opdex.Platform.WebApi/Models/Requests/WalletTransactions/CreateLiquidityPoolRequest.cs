@@ -10,5 +10,11 @@ namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
         /// </summary>
         [Required]
         public Address Token { get; set; }
+
+        /// <summary>
+        /// The address of the market contract to add a liquidity pool to.
+        /// </summary>
+        [Required]
+        public Address Market { get; set; }
     }
 }

@@ -5,10 +5,8 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.WebApi.Auth;
 using System.Net;
-using System.Threading.Tasks;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -28,14 +26,13 @@ namespace Opdex.Platform.WebApi.Controllers
 
         /// <summary>Authorize</summary>
         /// <remarks>Authorizes access to a specific market</remarks>
-        /// <param name="market">The market contract address to request access to</param>
         /// <param name="wallet">The wallet public key of the user</param>
         /// <returns>An access token</returns>
         [HttpPost("authorize")]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public async Task<IActionResult> Authorize([FromQuery] Address market, [FromQuery] Address wallet)
+        public IActionResult Authorize([FromQuery] Address wallet)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.Opdex.SigningKey));
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -53,19 +50,10 @@ namespace Opdex.Platform.WebApi.Controllers
             }
 
             // Validate Admin
-            var hasKey = Request.Headers.TryGetValue("OPDEX_ADMIN", out var adminKey);
-            var validAdmin = hasKey && _authConfiguration.AdminKey == adminKey;
-            if (validAdmin) tokenDescriptor.Subject.AddClaim(new Claim("admin", "true"));
-
-            // Market is optional for admins, required otherwise
-            if (!validAdmin && market == Address.Empty) return Unauthorized();
-
-            // If the market is included, validate and include it
-            if (market != Address.Empty)
+            if (Request.Headers.TryGetValue("OPDEX_ADMIN", out var adminKey))
             {
-                // Throws NotFoundException if not found
-                _ = await _mediator.Send(new GetMarketByAddressQuery(market));
-                tokenDescriptor.Subject.AddClaim(new Claim("market", market.ToString()));
+                if (_authConfiguration.AdminKey == adminKey) tokenDescriptor.Subject.AddClaim(new Claim("admin", "true"));
+                else return Unauthorized();
             }
 
             var jwt = tokenHandler.CreateToken(tokenDescriptor);
