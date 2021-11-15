@@ -185,7 +185,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             var parameter = new SmartContractMethodParameter(value);
 
             // Assert
-            parameter.Value.Should().Be(BitConverter.ToString(value));
+            parameter.Value.Should().Be("64F1351C048282");
             parameter.Type.Should().Be(SmartContractParameterType.ByteArray);
         }
 
@@ -231,7 +231,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
         }
 
         [Fact]
-        public void Deserialize()
+        public void Deserialize_Address()
         {
             // Arrange
             var address = new Address("PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy");
@@ -243,6 +243,22 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             // Assert
             parameter.Type.Should().Be(SmartContractParameterType.Address);
             parameter.Value.Should().Be(address.ToString());
+        }
+
+        [Fact]
+        public void Deserialize_ByteArray()
+        {
+            // Arrange
+            byte[] value = new byte[] { 100, 241, 53, 28, 4, 130, 130 };
+            var serialized = new SmartContractMethodParameter(value).Serialize();
+
+            // Act
+            var parameter = SmartContractMethodParameter.Deserialize(serialized);
+
+            // Assert
+            parameter.Type.Should().Be(SmartContractParameterType.ByteArray);
+            parameter.Value.Should().Be("64F1351C048282");
+
         }
 
         [Fact]

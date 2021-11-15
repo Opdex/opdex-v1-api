@@ -5,6 +5,7 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using System;
+using System.Linq;
 
 namespace Opdex.Platform.Domain.Models.Transactions
 {
@@ -75,7 +76,7 @@ namespace Opdex.Platform.Domain.Models.Transactions
         public SmartContractMethodParameter(byte[] value)
         {
             if (value is null) throw new ArgumentNullException(nameof(value), "Byte array value must not be null.");
-            Value = BitConverter.ToString(value);
+            Value = BitConverter.ToString(value).Replace("-", "");
             Type = SmartContractParameterType.ByteArray;
         }
 
@@ -133,7 +134,9 @@ namespace Opdex.Platform.Domain.Models.Transactions
                 SmartContractParameterType.UInt64 => new SmartContractMethodParameter(ulong.Parse(values[1])),
                 SmartContractParameterType.Int64 => new SmartContractMethodParameter(long.Parse(values[1])),
                 SmartContractParameterType.Address => new SmartContractMethodParameter(new Address(values[1])),
-                SmartContractParameterType.ByteArray => new SmartContractMethodParameter(Array.ConvertAll(values[1].Split('-'), s => Convert.ToByte(s, 16))),
+                SmartContractParameterType.ByteArray => new SmartContractMethodParameter(Enumerable.Range(0, values[1].Length / 2)
+                                                                                                   .Select(x => Convert.ToByte(values[1].Substring(x * 2, 2), 16))
+                                                                                                   .ToArray()),
                 SmartContractParameterType.UInt128 => new SmartContractMethodParameter(UInt128.Parse(values[1])),
                 SmartContractParameterType.UInt256 => new SmartContractMethodParameter(UInt256.Parse(values[1])),
                 _ => throw new ArgumentException("Serialized parameter is not a recognized type."),
