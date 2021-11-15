@@ -1,6 +1,7 @@
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,18 +11,18 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Bala
 {
     public class AddressBalancesCursor : Cursor<ulong>
     {
-        public AddressBalancesCursor(IEnumerable<Address> tokens, bool includeLpTokens, bool includeZeroBalances,
+        public AddressBalancesCursor(IEnumerable<Address> tokens, TokenProvisionalFilter tokenType, bool includeZeroBalances,
                                      SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection,
                                      ulong pointer)
             : base(sortDirection, limit, pagingDirection, pointer)
         {
             Tokens = tokens ?? Enumerable.Empty<Address>();
-            IncludeLpTokens = includeLpTokens;
+            TokenType = tokenType;
             IncludeZeroBalances = includeZeroBalances;
         }
 
         public IEnumerable<Address> Tokens { get; }
-        public bool IncludeLpTokens { get; }
+        public TokenProvisionalFilter TokenType { get; }
         public bool IncludeZeroBalances { get; }
 
         /// <inheritdoc />
@@ -33,7 +34,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Bala
             var sb = new StringBuilder();
             sb.AppendFormat("direction:{0};limit:{1};paging:{2};", SortDirection, Limit, PagingDirection);
             foreach (var token in Tokens) sb.AppendFormat("tokens:{0};", token);
-            sb.AppendFormat("includeLpTokens:{0};", IncludeLpTokens);
+            sb.AppendFormat("tokenType:{0};", TokenType);
             sb.AppendFormat("includeZeroBalances:{0};", IncludeZeroBalances);
             sb.AppendFormat("pointer:{0};", encodedPointer);
             return sb.ToString();
@@ -45,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Bala
             if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
             if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-            return new AddressBalancesCursor(Tokens, IncludeLpTokens, IncludeZeroBalances, SortDirection, Limit, direction, pointer);
+            return new AddressBalancesCursor(Tokens, TokenType, IncludeZeroBalances, SortDirection, Limit, direction, pointer);
         }
 
         /// <inheritdoc />
@@ -67,7 +68,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Bala
 
             TryGetCursorProperties<Address>(values, "tokens", out var tokens);
 
-            if (!TryGetCursorProperty<bool>(values, "includeLpTokens", out var includeLpTokens)) return false;
+            if (!TryGetCursorProperty<TokenProvisionalFilter>(values, "tokenType", out var tokenType)) return false;
 
             if (!TryGetCursorProperty<bool>(values, "includeZeroBalances", out var includeZeroBalances)) return false;
 
@@ -85,7 +86,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Bala
 
             try
             {
-                cursor = new AddressBalancesCursor(tokens, includeLpTokens, includeZeroBalances, direction, limit, paging, pointer);
+                cursor = new AddressBalancesCursor(tokens, tokenType, includeZeroBalances, direction, limit, paging, pointer);
             }
             catch (Exception)
             {

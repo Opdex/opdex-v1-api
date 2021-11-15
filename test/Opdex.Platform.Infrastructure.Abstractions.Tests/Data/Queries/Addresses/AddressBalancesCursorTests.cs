@@ -2,8 +2,8 @@ using FluentAssertions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Balances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using System;
 using System.Linq;
 using Xunit;
@@ -17,7 +17,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         {
             // Arrange
             // Act
-            static void Act() => new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
+            static void Act() => new AddressBalancesCursor(Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, SortDirectionType.ASC, 50 + 1, PagingDirection.Forward, 0);
 
             // Assert
             Assert.Throws<ArgumentOutOfRangeException>("limit", Act);
@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         {
             // Arrange
             // Act
-            void Act() => new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 25, pagingDirection, pointer);
+            void Act() => new AddressBalancesCursor(Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, SortDirectionType.ASC, 25, pagingDirection, pointer);
 
             // Assert
             Assert.Throws<ArgumentException>("pointer", Act);
@@ -40,7 +40,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         {
             // Arrange
             // Act
-            var cursor = new AddressBalancesCursor(null, true, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+            var cursor = new AddressBalancesCursor(null, TokenProvisionalFilter.All, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
             // Assert
             cursor.Tokens.Should().BeEmpty();
@@ -50,7 +50,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         public void ToString_StringifiesCursor_FormatCorrectly()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", "P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8" }, true, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+            var cursor = new AddressBalancesCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", "P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8" }, TokenProvisionalFilter.Provisional, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
             // Act
             var result = cursor.ToString();
@@ -58,7 +58,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
             // Assert
             result.Should().Contain("tokens:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;");
             result.Should().Contain("tokens:P8bB9yPr3vVByqfmM5KXftyGckAtAdu6f8;");
-            result.Should().Contain("includeLpTokens:True;");
+            result.Should().Contain("tokenType:Provisional;");
             result.Should().Contain("includeZeroBalances:False;");
             result.Should().Contain("direction:ASC;");
             result.Should().Contain("limit:25;");
@@ -70,7 +70,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         public void Turn_NonIdenticalPointer_ReturnAnotherCursor()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L" }, true, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
+            var cursor = new AddressBalancesCursor(new Address[] { "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L" }, TokenProvisionalFilter.Provisional, false, SortDirectionType.ASC, 25, PagingDirection.Forward, 500);
 
             // Act
             var result = cursor.Turn(PagingDirection.Backward, 567);
@@ -79,7 +79,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
             result.Should().BeOfType<AddressBalancesCursor>();
             var adjacentCursor = (AddressBalancesCursor)result;
             adjacentCursor.Tokens.Should().BeEquivalentTo(cursor.Tokens);
-            adjacentCursor.IncludeLpTokens.Should().Be(cursor.IncludeLpTokens);
+            adjacentCursor.TokenType.Should().Be(cursor.TokenType);
             adjacentCursor.IncludeZeroBalances.Should().Be(cursor.IncludeZeroBalances);
             adjacentCursor.SortDirection.Should().Be(cursor.SortDirection);
             adjacentCursor.Limit.Should().Be(cursor.Limit);
@@ -90,20 +90,20 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         [Theory]
         [ClassData(typeof(NullOrWhitespaceStringData))]
         [InlineData(";:;;;;;::;;;:::;;;:::;;:::;;")]
-        [InlineData("includeLpTokens:Maybe;includeZeroBalances:True;direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // invalid includeLpTokens
-        [InlineData("includeZeroBalances:True;direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // missing includeLpTokens
-        [InlineData("includeLpTokens:True;includeZeroBalances:Maybe;direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // invalid includeZeroBalances
-        [InlineData("includeLpTokens:True;direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // missing includeZeroBalances
-        [InlineData("includeLpTokens:True;includeZeroBalances:False;direction:Invalid;limit:50;paging:Forward;pointer:NTAw;")] // invalid orderBy
-        [InlineData("includeLpTokens:True;includeZeroBalances:False;limit:50;paging:Forward;pointer:NTAw;")] // missing orderBy
-        [InlineData("includeLpTokens:True;includeZeroBalances:False;direction:ASC;limit:51;paging:Forward;pointer:NTAw;")] // over max limit
-        [InlineData("includeLpTokens:True;includeZeroBalances:False;direction:ASC;paging:Forward;pointer:NTAw;")] // missing limit
-        [InlineData("includeLpTokens:True;includeZeroBalances:False;direction:ASC;limit:50;paging:Invalid;pointer:NTAw;")] // invalid paging direction
-        [InlineData("includeLpTokens:True;includeZeroBalances:False;direction:ASC;limit:50;pointer:NTAw;")] // missing paging direction
-        [InlineData("includeLpTokens:True;includeZeroBalances:False;direction:ASC;limit:50;paging:Forward;pointer:LTE=;")] // pointer: -1;
-        [InlineData("includeLpTokens:True;includeZeroBalances:False;direction:ASC;limit:50;paging:Forward;pointer:YWJj")] // pointer: abc;
-        [InlineData("includeLpTokens:True;includeZeroBalances:False;direction:ASC;limit:50;paging:Forward;pointer:10")] // pointer not valid base64
-        [InlineData("includeLpTokens:True;includeZeroBalances:False;direction:ASC;limit:50;paging:Forward;")] // pointer missing
+        [InlineData("tokenType:Unknown;includeZeroBalances:True;direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // invalid tokenType
+        [InlineData("includeZeroBalances:True;direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // missing tokenType
+        [InlineData("tokenType:All;includeZeroBalances:Maybe;direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // invalid includeZeroBalances
+        [InlineData("tokenType:All;direction:ASC;limit:50;paging:Forward;pointer:NTAw;")] // missing includeZeroBalances
+        [InlineData("tokenType:All;includeZeroBalances:False;direction:Invalid;limit:50;paging:Forward;pointer:NTAw;")] // invalid orderBy
+        [InlineData("tokenType:All;includeZeroBalances:False;limit:50;paging:Forward;pointer:NTAw;")] // missing orderBy
+        [InlineData("tokenType:All;includeZeroBalances:False;direction:ASC;limit:51;paging:Forward;pointer:NTAw;")] // over max limit
+        [InlineData("tokenType:All;includeZeroBalances:False;direction:ASC;paging:Forward;pointer:NTAw;")] // missing limit
+        [InlineData("tokenType:All;includeZeroBalances:False;direction:ASC;limit:50;paging:Invalid;pointer:NTAw;")] // invalid paging direction
+        [InlineData("tokenType:All;includeZeroBalances:False;direction:ASC;limit:50;pointer:NTAw;")] // missing paging direction
+        [InlineData("tokenType:All;includeZeroBalances:False;direction:ASC;limit:50;paging:Forward;pointer:LTE=;")] // pointer: -1;
+        [InlineData("tokenType:All;includeZeroBalances:False;direction:ASC;limit:50;paging:Forward;pointer:YWJj")] // pointer: abc;
+        [InlineData("tokenType:All;includeZeroBalances:False;direction:ASC;limit:50;paging:Forward;pointer:10")] // pointer not valid base64
+        [InlineData("tokenType:All;includeZeroBalances:False;direction:ASC;limit:50;paging:Forward;")] // pointer missing
         public void TryParse_InvalidCursor_ReturnFalse(string stringified)
         {
             // Arrange
@@ -119,7 +119,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
         public void TryParse_ValidCursor_ReturnTrue()
         {
             // Arrange
-            var stringified = "tokens:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;includeLpTokens:True;includeZeroBalances:False;direction:ASC;limit:50;paging:Forward;pointer:MTA=;"; // pointer: 10;
+            var stringified = "tokens:PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L;tokenType:NonProvisional;includeZeroBalances:False;direction:ASC;limit:50;paging:Forward;pointer:MTA=;"; // pointer: 10;
 
             // Act
             var canParse = AddressBalancesCursor.TryParse(stringified, out var cursor);
@@ -127,7 +127,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Addresse
             // Assert
             canParse.Should().Be(true);
             cursor.Tokens.Should().ContainSingle(token => token == "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L");
-            cursor.IncludeLpTokens.Should().Be(true);
+            cursor.TokenType.Should().Be(TokenProvisionalFilter.NonProvisional);
             cursor.IncludeZeroBalances.Should().Be(false);
             cursor.SortDirection.Should().Be(SortDirectionType.ASC);
             cursor.Limit.Should().Be(50);
