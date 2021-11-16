@@ -21,14 +21,14 @@ namespace Opdex.Platform.WebApi.Tests.Validation
             // Arrange
             var request = new NullFilterParameters
             {
-                Cursor = "INVALID_CURSOR"
+                EncodedCursor = "INVALID_CURSOR"
             };
 
             // Act
             var result = _validator.TestValidate(request);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Cursor);
+            result.ShouldHaveValidationErrorFor(request => request.EncodedCursor);
         }
 
         [Fact]
@@ -37,14 +37,14 @@ namespace Opdex.Platform.WebApi.Tests.Validation
             // Arrange
             var request = new WellFormedFilterParameters
             {
-                Cursor = "VALID_CURSOR"
+                EncodedCursor = "VALID_CURSOR"
             };
 
             // Act
             var result = _validator.TestValidate(request);
 
             // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Cursor);
+            result.ShouldNotHaveValidationErrorFor(request => request.EncodedCursor);
         }
     }
 

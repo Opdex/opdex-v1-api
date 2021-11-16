@@ -19,6 +19,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.LiquidityPools
         /// <summary>
         /// A generic keyword search against liquidity pool addresses and names.
         /// </summary>
+        [NotNull]
         public string Keyword { get; set; }
 
         /// <summary>
@@ -62,9 +63,9 @@ namespace Opdex.Platform.WebApi.Models.Requests.LiquidityPools
         /// <inheritdoc />
         protected override LiquidityPoolsCursor InternalBuildCursor()
         {
-            if (Cursor is null) return new LiquidityPoolsCursor(Keyword, Markets, LiquidityPools, Tokens, StakingFilter, NominationFilter, MiningFilter,
-                                                                OrderBy, Direction, Limit, PagingDirection.Forward, default);
-            Base64Extensions.TryBase64Decode(Cursor, out var decodedCursor);
+            if (EncodedCursor is null) return new LiquidityPoolsCursor(Keyword, Markets, LiquidityPools, Tokens, StakingFilter, NominationFilter, MiningFilter,
+                                                                       OrderBy, Direction, Limit, PagingDirection.Forward, default);
+            Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
             LiquidityPoolsCursor.TryParse(decodedCursor, out var cursor);
 
             return cursor;

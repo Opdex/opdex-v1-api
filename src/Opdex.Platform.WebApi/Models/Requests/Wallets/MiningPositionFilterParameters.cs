@@ -37,8 +37,8 @@ namespace Opdex.Platform.WebApi.Models.Requests.Wallets
         /// <inheritdoc />
         protected override MiningPositionsCursor InternalBuildCursor()
         {
-            if (Cursor is null) return new MiningPositionsCursor(LiquidityPools, MiningPools, IncludeZeroAmounts, Direction, Limit, PagingDirection.Forward, default);
-            Base64Extensions.TryBase64Decode(Cursor, out var decodedCursor);
+            if (EncodedCursor is null) return new MiningPositionsCursor(LiquidityPools, MiningPools, IncludeZeroAmounts, Direction, Limit, PagingDirection.Forward, default);
+            Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
             MiningPositionsCursor.TryParse(decodedCursor, out var cursor);
             return cursor;
         }

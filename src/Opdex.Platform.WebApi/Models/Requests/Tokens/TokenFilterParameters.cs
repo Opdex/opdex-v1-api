@@ -1,3 +1,4 @@
+using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -21,23 +22,25 @@ namespace Opdex.Platform.WebApi.Models.Requests.Tokens
         /// <summary>
         /// The type of token to filter for, liquidity pool tokens or not.
         /// </summary>
-        public TokenProvisionalFilter Provisional { get; set; }
+        public TokenProvisionalFilter TokenType { get; set; }
 
         /// <summary>
         /// Tokens to filter specifically for.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> Tokens { get; set; }
 
         /// <summary>
         /// A generic keyword search against token addresses, names and ticker symbols.
         /// </summary>
+        [NotNull]
         public string Keyword { get; set; }
 
         /// <inheritdoc />
         protected override TokensCursor InternalBuildCursor()
         {
-            if (Cursor is null) return new TokensCursor(Keyword, Tokens, Provisional, OrderBy, Direction, Limit, PagingDirection.Forward, default);
-            Base64Extensions.TryBase64Decode(Cursor, out var decodedCursor);
+            if (EncodedCursor is null) return new TokensCursor(Keyword, Tokens, TokenType, OrderBy, Direction, Limit, PagingDirection.Forward, default);
+            Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
             TokensCursor.TryParse(decodedCursor, out var cursor);
             return cursor;
         }

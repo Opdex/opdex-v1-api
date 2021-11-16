@@ -28,8 +28,8 @@ namespace Opdex.Platform.WebApi.Models.Requests.Wallets
         /// <inheritdoc />
         protected override StakingPositionsCursor InternalBuildCursor()
         {
-            if (Cursor is null) return new StakingPositionsCursor(LiquidityPools, IncludeZeroAmounts, Direction, Limit, PagingDirection.Forward, default);
-            Base64Extensions.TryBase64Decode(Cursor, out var decodedCursor);
+            if (EncodedCursor is null) return new StakingPositionsCursor(LiquidityPools, IncludeZeroAmounts, Direction, Limit, PagingDirection.Forward, default);
+            Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
             StakingPositionsCursor.TryParse(decodedCursor, out var cursor);
             return cursor;
         }

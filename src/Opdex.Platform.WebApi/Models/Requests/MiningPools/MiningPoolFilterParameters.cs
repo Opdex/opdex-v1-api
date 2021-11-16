@@ -28,8 +28,8 @@ namespace Opdex.Platform.WebApi.Models.Requests.MiningPools
         /// <inheritdoc />
         protected override MiningPoolsCursor InternalBuildCursor()
         {
-            if (Cursor is null) return new MiningPoolsCursor(LiquidityPools, MiningStatus, Direction, Limit, PagingDirection.Forward, default);
-            Base64Extensions.TryBase64Decode(Cursor, out var decodedCursor);
+            if (EncodedCursor is null) return new MiningPoolsCursor(LiquidityPools, MiningStatus, Direction, Limit, PagingDirection.Forward, default);
+            Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
             MiningPoolsCursor.TryParse(decodedCursor, out var cursor);
             return cursor;
         }

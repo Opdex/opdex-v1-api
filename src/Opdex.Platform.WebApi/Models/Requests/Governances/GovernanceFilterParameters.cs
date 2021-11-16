@@ -15,8 +15,8 @@ namespace Opdex.Platform.WebApi.Models.Requests.Governances
         /// <inheritdoc />
         protected override MiningGovernancesCursor InternalBuildCursor()
         {
-            if (Cursor is null) return new MiningGovernancesCursor(MinedToken, Direction, Limit, PagingDirection.Forward, default);
-            Base64Extensions.TryBase64Decode(Cursor, out var decodedCursor);
+            if (EncodedCursor is null) return new MiningGovernancesCursor(MinedToken, Direction, Limit, PagingDirection.Forward, default);
+            Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
             MiningGovernancesCursor.TryParse(decodedCursor, out var cursor);
             return cursor;
         }

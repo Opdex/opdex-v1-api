@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Mvc;
+using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Requests
 {
@@ -19,12 +21,16 @@ namespace Opdex.Platform.WebApi.Models.Requests
         /// <summary>
         /// Number of results to return per page.
         /// </summary>
-        public uint Limit { get; set; }
+        // virtual is used to be able to override the attribute
+        [Range(1, Cursor.DefaultMaxLimit)]
+        public virtual uint Limit { get; set; }
 
         /// <summary>
         /// The cursor when paging.
         /// </summary>
-        public string Cursor { get; set; }
+        [NotNull]
+        [FromQuery(Name = "cursor")]
+        public string EncodedCursor { get; set; }
 
         /// <summary>
         /// Builds a cursor filter used for querying.
