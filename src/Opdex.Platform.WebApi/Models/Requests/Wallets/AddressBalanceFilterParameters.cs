@@ -1,3 +1,4 @@
+using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -17,6 +18,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Wallets
         /// <summary>
         /// Specific tokens to lookup.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> Tokens { get; set; }
 
         /// <summary>

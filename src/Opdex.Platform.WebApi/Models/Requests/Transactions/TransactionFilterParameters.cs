@@ -1,3 +1,4 @@
+using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
@@ -23,11 +24,13 @@ namespace Opdex.Platform.WebApi.Models.Requests.Transactions
         /// <summary>
         /// Optional list of smart contract addresses to filter transactions by.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> Contracts { get; set; }
 
         /// <summary>
         /// Filter transactions based on event types included.
         /// </summary>
+        [NotNull]
         public IEnumerable<TransactionEventType> EventTypes { get; set; }
 
         protected override TransactionsCursor InternalBuildCursor()

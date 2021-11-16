@@ -1,9 +1,9 @@
+using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Staking;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Opdex.Platform.WebApi.Models.Requests.Wallets
 {
@@ -17,6 +17,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Wallets
         /// <summary>
         /// The specific liquidity pools to include.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> LiquidityPools { get; set; }
 
         /// <summary>

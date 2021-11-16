@@ -1,3 +1,4 @@
+using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -16,6 +17,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.MiningPools
         /// <summary>
         /// The liquidity pools used for mining.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> LiquidityPools { get; set; }
 
         /// <summary>

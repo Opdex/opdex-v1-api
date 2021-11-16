@@ -1,3 +1,4 @@
+using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -23,16 +24,19 @@ namespace Opdex.Platform.WebApi.Models.Requests.LiquidityPools
         /// <summary>
         /// Markets to search liquidity pools within.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> Markets { get; set; }
 
         /// <summary>
         /// Liquidity pools to filter specifically for.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> LiquidityPools { get; set; }
 
         /// <summary>
         /// Tokens to filter specifically for.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> Tokens { get; set; }
 
         /// <summary>
