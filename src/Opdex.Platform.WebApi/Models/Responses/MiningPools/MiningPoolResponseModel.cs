@@ -1,5 +1,6 @@
 using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.MiningPools
 {
@@ -15,6 +16,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.MiningPools
         public Address LiquidityPool { get; set; }
 
         [NotNull]
+        [Range(1, double.MaxValue)]
         public ulong MiningPeriodEndBlock { get; set; }
 
         [NotNull]

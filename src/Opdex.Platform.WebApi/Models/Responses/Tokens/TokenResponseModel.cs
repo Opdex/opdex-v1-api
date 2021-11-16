@@ -1,5 +1,6 @@
 using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Tokens
 {
@@ -27,12 +28,14 @@ namespace Opdex.Platform.WebApi.Models.Responses.Tokens
         /// The total number of decimal places the token has.
         /// </summary>
         [NotNull]
+        [Range(0, double.MaxValue)]
         public int Decimals { get; set; }
 
         /// <summary>
         /// The total number of satoshis per full token.
         /// </summary>
         [NotNull]
+        [Range(0, double.MaxValue)]
         public ulong Sats { get; set; }
 
         /// <summary>
