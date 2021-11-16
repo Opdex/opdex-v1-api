@@ -108,6 +108,7 @@ namespace Opdex.Platform.WebApi
                 })
                 .AddFluentValidation(config =>
                 {
+                    config.DisableDataAnnotationsValidation = true;
                     config.RegisterValidatorsFromAssemblyContaining<Startup>();
                 })
                 .AddNetworkActionHidingConvention()

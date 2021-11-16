@@ -29,7 +29,7 @@ namespace Opdex.Platform.WebApi.Models.Requests
         /// The cursor when paging.
         /// </summary>
         [NotNull]
-        [FromQuery(Name = "cursor")]
+        [FromQuery(Name = "Cursor")]
         public string EncodedCursor { get; set; }
 
         /// <summary>
