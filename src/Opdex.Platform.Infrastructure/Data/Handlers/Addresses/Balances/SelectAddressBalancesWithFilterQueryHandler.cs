@@ -8,8 +8,8 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Balances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +58,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
         {
             var balanceId = request.Cursor.Pointer;
 
-            var queryParams = new SqlParams(balanceId, request.Address, request.Cursor.Tokens, request.Cursor.IncludeLpTokens);
+            var queryParams = new SqlParams(balanceId, request.Address, request.Cursor.Tokens, request.Cursor.TokenType == TokenProvisionalFilter.Provisional);
 
             var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
@@ -72,7 +72,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
             var whereFilter = $"WHERE ab.{nameof(AddressBalanceEntity.Owner)} = @{nameof(SqlParams.Wallet)}";
             var tableJoins = string.Empty;
 
-            if (request.Cursor.Tokens.Any() || !request.Cursor.IncludeLpTokens)
+            if (request.Cursor.Tokens.Any() || request.Cursor.TokenType != TokenProvisionalFilter.All)
             {
                 tableJoins += $" JOIN token t ON t.{nameof(TokenEntity.Id)} = ab.{nameof(AddressBalanceEntity.TokenId)}";
             }
@@ -101,9 +101,9 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
                 whereFilter += $" AND t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}";
             }
 
-            if (!request.Cursor.IncludeLpTokens)
+            if (request.Cursor.TokenType != TokenProvisionalFilter.All)
             {
-                whereFilter += $" AND t.{nameof(TokenEntity.IsLpt)} = @{nameof(SqlParams.IncludeLpTokens)}";
+                whereFilter += $" AND t.{nameof(TokenEntity.IsLpt)} = @{nameof(SqlParams.IsLpt)}";
             }
 
             if (!request.Cursor.IncludeZeroBalances)
@@ -140,18 +140,18 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
 
         private sealed class SqlParams
         {
-            internal SqlParams(ulong balanceId, Address wallet, IEnumerable<Address> tokens, bool includeLpTokens)
+            internal SqlParams(ulong balanceId, Address wallet, IEnumerable<Address> tokens, bool isLpt)
             {
                 BalanceId = balanceId;
                 Wallet = wallet;
                 Tokens = tokens.Select(token => token.ToString());
-                IncludeLpTokens = includeLpTokens;
+                IsLpt = isLpt;
             }
 
             public ulong BalanceId { get; }
             public Address Wallet { get; }
             public IEnumerable<string> Tokens { get; }
-            public bool IncludeLpTokens { get; }
+            public bool IsLpt { get; }
         }
     }
 }

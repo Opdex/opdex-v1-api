@@ -40,7 +40,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         public async Task Handle_RetrieveAddressBalancesWithFilterQuery_Send()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), default, false, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
             var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -60,7 +60,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         public async Task Handle_BalancesRetrieved_MapResults()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), default, false, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
             var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var balance = new AddressBalance(5, 10, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10000000000, 500, 505);
@@ -78,7 +78,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), default, false, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
             var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var balances = new AddressBalance[]
@@ -101,7 +101,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), default, false, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
             var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var balances = new AddressBalance[]
@@ -125,7 +125,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), default, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
             var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var balances = new AddressBalance[]
@@ -149,7 +149,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), default, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
             var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var balances = new AddressBalance[]
@@ -173,7 +173,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), default, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
             var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var balances = new AddressBalance[]
@@ -197,7 +197,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), default, false, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
             var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var balances = new AddressBalance[]
@@ -221,7 +221,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         public async Task Handle_PagingForwardLastPage_ReturnCursor()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), default, false, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
             var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var balances = new AddressBalance[]
@@ -244,7 +244,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Addresses.Balances
         public async Task Handle_PagingBackwardLastPage_ReturnCursor()
         {
             // Arrange
-            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), false, false, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+            var cursor = new AddressBalancesCursor(Enumerable.Empty<Address>(), default, false, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
             var request = new GetAddressBalancesWithFilterQuery("PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", cursor);
 
             var balances = new AddressBalance[]
