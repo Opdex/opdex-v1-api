@@ -234,12 +234,10 @@ namespace Opdex.Platform.WebApi
                 settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Address), schema => schema.Type = JsonObjectType.String));
                 settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema =>
                 {
-                    schema.IsNullableRaw = false;
                     schema.Type = JsonObjectType.String;
                 }));
                 settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Sha256), schema =>
                 {
-                    schema.IsNullableRaw = false;
                     schema.Type = JsonObjectType.String;
                     schema.Pattern = @"^[0-9a-fA-F]{64}$";
                 }));
