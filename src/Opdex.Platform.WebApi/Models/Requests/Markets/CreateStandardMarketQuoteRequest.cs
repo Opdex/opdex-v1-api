@@ -12,7 +12,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Markets
         public Address MarketOwner { get; set; }
 
         [Required]
-        [Range(0, double.MaxValue)]
+        [Range(0, 10)]
         public uint TransactionFee { get; set; }
 
         [Required]
