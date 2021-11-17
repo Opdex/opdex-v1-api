@@ -58,7 +58,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
         {
             var balanceId = request.Cursor.Pointer;
 
-            var queryParams = new SqlParams(balanceId, request.Address, request.Cursor.Tokens, request.Cursor.TokenType == TokenProvisionalFilter.Provisional);
+            var queryParams = new SqlParams(balanceId, request.Address, request.Cursor.Tokens);
 
             var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
@@ -103,7 +103,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
 
             if (request.Cursor.TokenType != TokenProvisionalFilter.All)
             {
-                whereFilter += $" AND t.{nameof(TokenEntity.IsLpt)} = @{nameof(SqlParams.IsLpt)}";
+                var isLpt = request.Cursor.TokenType == TokenProvisionalFilter.Provisional;
+                whereFilter += $" AND t.{nameof(TokenEntity.IsLpt)} = {isLpt.ToString().ToLower()}";
             }
 
             if (!request.Cursor.IncludeZeroBalances)
@@ -140,18 +141,16 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
 
         private sealed class SqlParams
         {
-            internal SqlParams(ulong balanceId, Address wallet, IEnumerable<Address> tokens, bool isLpt)
+            internal SqlParams(ulong balanceId, Address wallet, IEnumerable<Address> tokens)
             {
                 BalanceId = balanceId;
                 Wallet = wallet;
                 Tokens = tokens.Select(token => token.ToString());
-                IsLpt = isLpt;
             }
 
             public ulong BalanceId { get; }
             public Address Wallet { get; }
             public IEnumerable<string> Tokens { get; }
-            public bool IsLpt { get; }
         }
     }
 }

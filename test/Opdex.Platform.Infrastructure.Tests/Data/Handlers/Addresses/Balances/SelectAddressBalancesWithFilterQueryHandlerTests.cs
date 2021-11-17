@@ -91,7 +91,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Balances
             _dbContext.Verify(callTo =>
                                   callTo.ExecuteQueryAsync<AddressBalanceEntity>(
                                       It.Is<DatabaseQuery>(q => q.Sql.Contains("JOIN token t") &&
-                                                                q.Sql.Contains("t.IsLpt = @IsLpt"))), Times.Once);
+                                                                q.Sql.Contains("t.IsLpt = true"))), Times.Once);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Balances
             _dbContext.Verify(callTo =>
                                   callTo.ExecuteQueryAsync<AddressBalanceEntity>(
                                       It.Is<DatabaseQuery>(q => q.Sql.Contains("JOIN token t") &&
-                                                                q.Sql.Contains("t.IsLpt = @IsLpt"))), Times.Once);
+                                                                q.Sql.Contains("t.IsLpt = false"))), Times.Once);
         }
 
         [Fact]
