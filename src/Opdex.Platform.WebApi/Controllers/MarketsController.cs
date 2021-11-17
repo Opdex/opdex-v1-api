@@ -13,6 +13,8 @@ using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Requests.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Quotes;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Enums;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -89,7 +91,7 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Market History</summary>
-        /// <summary>Retrieves the history of a market.</summary>
+        /// <remarks>Retrieves the history of a market.</remarks>
         /// <param name="address">The market address to retrieve history of.</param>
         /// <param name="filters">Snapshot filters.</param>
         /// <param name="cancellationToken">Cancellation Token</param>
@@ -165,6 +167,22 @@ namespace Opdex.Platform.WebApi.Controllers
             var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
 
             return Ok(quote);
+        }
+
+        /// <summary>Get Permissions</summary>
+        /// <remarks>Retrieves the permissions for an address within a standard market.</remarks>
+        /// <param name="marketAddress">The address of the standard market.</param>
+        /// <param name="walletAddress">The address for which to retrieve permissions.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A list of all market permissions for the wallet address.</returns>
+        /// <response code="404">The market address could not be found.</response>
+        [HttpGet("{marketAddress}/standard/permissions/{walletAddress}")]
+        [ProducesResponseType(typeof(IEnumerable<MarketPermissionType>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<MarketPermissionType>>> GetPermissions([FromRoute] Address marketAddress, [FromRoute] Address walletAddress, CancellationToken cancellationToken)
+        {
+            var permissions = await _mediator.Send(new GetMarketPermissionsForAddressQuery(marketAddress, walletAddress), cancellationToken);
+            return Ok(permissions);
         }
 
         /// <summary>Collect Fees Quote</summary>
