@@ -8,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using Opdex.Platform.WebApi.Auth;
 using System.Net;
 using Opdex.Platform.Common.Models;
+using System.Threading;
+using Opdex.Platform.WebApi.Models.Requests.Auth;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -22,6 +24,17 @@ namespace Opdex.Platform.WebApi.Controllers
         {
             _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+
+        [HttpPost]
+        public IActionResult WalletCallback([FromQuery] StratisOpenAuthProtocolRequestQueryParameters query,
+                                            [FromBody] StratisOpenAuthProtocolRequestBody body, CancellationToken cancellationToken)
+        {
+            if (query.Exp >= DateTime.UtcNow) return BadRequest("Signature expired.");
+
+            // validate the signature
+            
+            return Ok();
         }
 
         /// <summary>Authorize</summary>
