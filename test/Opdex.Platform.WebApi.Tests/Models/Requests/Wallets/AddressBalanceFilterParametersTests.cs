@@ -56,7 +56,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Wallets
         public void BuildCursor_NotABase64CursorString_ReturnNull()
         {
             // Arrange
-            var filters = new AddressBalanceFilterParameters { Cursor = "NOT_BASE_64_****" };
+            var filters = new AddressBalanceFilterParameters { EncodedCursor = "NOT_BASE_64_****" };
 
             // Act
             var cursor = filters.BuildCursor();
@@ -69,7 +69,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Wallets
         public void BuildCursor_NotAValidCursorString_ReturnNull()
         {
             // Arrange
-            var filters = new AddressBalanceFilterParameters { Cursor = "Tk9UX1ZBTElE" };
+            var filters = new AddressBalanceFilterParameters { EncodedCursor = "Tk9UX1ZBTElE" };
 
             // Act
             var cursor = filters.BuildCursor();
@@ -82,7 +82,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Wallets
         public void BuildCursor_ValidCursorString_ReturnCursor()
         {
             // Arrange
-            var filters = new AddressBalanceFilterParameters { Cursor = "ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MjtwYWdpbmc6Rm9yd2FyZDt0b2tlblR5cGU6UHJvdmlzaW9uYWw7aW5jbHVkZVplcm9CYWxhbmNlczpGYWxzZTtwb2ludGVyOk9EWT07" };
+            var filters = new AddressBalanceFilterParameters { EncodedCursor = "ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MjtwYWdpbmc6Rm9yd2FyZDt0b2tlblR5cGU6UHJvdmlzaW9uYWw7aW5jbHVkZVplcm9CYWxhbmNlczpGYWxzZTtwb2ludGVyOk9EWT07" };
 
             // Act
             var cursor = filters.BuildCursor();

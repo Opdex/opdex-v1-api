@@ -18,7 +18,7 @@ namespace Opdex.Platform.WebApi.Validation.Tokens
                 .WithMessage("Keyword must consist of letters, numbers and spaces only.");
 
             RuleFor(filter => filter.OrderBy).MustBeValidEnumValue();
-            RuleFor(filter => filter.Provisional).MustBeValidEnumValue();
+            RuleFor(filter => filter.TokenType).MustBeValidEnumValue();
             RuleForEach(filter => filter.Tokens).MustBeNetworkAddress();
             RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit);
         }

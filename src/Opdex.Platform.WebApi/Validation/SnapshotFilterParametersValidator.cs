@@ -9,7 +9,7 @@ namespace Opdex.Platform.WebApi.Validation
     {
         public SnapshotFilterParametersValidator()
         {
-            When(filter => filter.Cursor is null, () =>
+            When(filter => filter.EncodedCursor is null, () =>
             {
                 RuleFor(filter => filter.StartDateTime).NotNull().LessThan(filter => filter.EndDateTime).WithMessage("Start time must be before end time.");
                 RuleFor(filter => filter.EndDateTime).NotNull().GreaterThan(filter => filter.StartDateTime).WithMessage("End time must be after start time.");

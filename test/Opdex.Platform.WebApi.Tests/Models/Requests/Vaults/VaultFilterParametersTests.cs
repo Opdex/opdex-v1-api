@@ -49,7 +49,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults
         public void BuildCursor_NotABase64CursorString_ReturnNull()
         {
             // Arrange
-            var filters = new VaultFilterParameters { Cursor = "NOT_BASE_64_****" };
+            var filters = new VaultFilterParameters { EncodedCursor = "NOT_BASE_64_****" };
 
             // Act
             var cursor = filters.BuildCursor();
@@ -62,7 +62,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults
         public void BuildCursor_NotAValidCursorString_ReturnNull()
         {
             // Arrange
-            var filters = new VaultFilterParameters { Cursor = "Tk9UX1ZBTElE" };
+            var filters = new VaultFilterParameters { EncodedCursor = "Tk9UX1ZBTElE" };
 
             // Act
             var cursor = filters.BuildCursor();
@@ -75,7 +75,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults
         public void BuildCursor_ValidCursorString_ReturnCursor()
         {
             // Arrange
-            var filters = new VaultFilterParameters { Cursor = "ZGlyZWN0aW9uOkRFU0M7bGltaXQ6NTtwYWdpbmc6Rm9yd2FyZDtwb2ludGVyOk13PT07" };
+            var filters = new VaultFilterParameters { EncodedCursor = "ZGlyZWN0aW9uOkRFU0M7bGltaXQ6NTtwYWdpbmc6Rm9yd2FyZDtwb2ludGVyOk13PT07" };
 
             // Act
             var cursor = filters.BuildCursor();
