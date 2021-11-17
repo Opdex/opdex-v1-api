@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots
 {
@@ -6,6 +7,6 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.
     {
         public ulong Crs { get; set; }
         public UInt256 Src { get; set; }
-        public decimal Usd { get; set; }
+        public OhlcDecimalEntity Usd { get; set; }
     }
 }

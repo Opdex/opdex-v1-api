@@ -1,10 +1,9 @@
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 {
@@ -14,7 +13,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         {
             Crs = 0;
             Src = UInt256.Zero;
-            Usd = 0.00000000m;
+            Usd = new OhlcDecimalSnapshot();
         }
 
         public ReservesSnapshot(ReservesSnapshot snapshots)
@@ -24,40 +23,34 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Usd = snapshots.Usd;
         }
 
-        public ReservesSnapshot(ulong reserveCrs, UInt256 reserveSrc, decimal reserveUsd)
+        public ReservesSnapshot(ulong reserveCrs, UInt256 reserveSrc, OhlcDecimalSnapshot reserveUsd)
         {
-            if (reserveUsd < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(reserveUsd), $"{nameof(reserveUsd)} must be greater or equal to 0.");
-            }
-
             Crs = reserveCrs;
             Src = reserveSrc;
-            Usd = reserveUsd;
+            Usd = reserveUsd ?? new OhlcDecimalSnapshot();
         }
 
         public ulong Crs { get; private set; }
         public UInt256 Src { get; private set; }
-        public decimal Usd { get; private set; }
+        public OhlcDecimalSnapshot Usd { get; }
 
-        internal void SetReserves(ReservesLog log, decimal crsUsd, decimal srcUsd, ulong srcSats)
+        internal void SetReserves(ReservesLog log, decimal crsUsd)
         {
             Crs = log.ReserveCrs;
             Src = log.ReserveSrc;
-            Usd = CalculateReservesUsd(crsUsd, srcUsd, srcSats);
+            UpdateUsdReserves(crsUsd);
         }
 
-        internal void RefreshReserves(decimal crsUsd, decimal srcUsd, ulong srcSats)
+        internal void RefreshReserves(decimal crsUsd)
         {
-            Usd = CalculateReservesUsd(crsUsd, srcUsd, srcSats);
+            UpdateUsdReserves(crsUsd);
         }
 
-        private decimal CalculateReservesUsd(decimal crsUsd, decimal srcUsd, ulong srcSats)
+        private void UpdateUsdReserves(decimal crsUsd)
         {
-            var totalCrsUsd = Crs.TotalFiat(crsUsd, TokenConstants.Cirrus.Sats);
-            var totalSrcUsd = Src.TotalFiat(srcUsd, srcSats);
-
-            return totalCrsUsd + totalSrcUsd;
+            var totalCrsUsd = MathExtensions.TotalFiat(Crs, crsUsd, TokenConstants.Cirrus.Sats);
+            var totalUsd = Math.Round(totalCrsUsd * 2, TokenConstants.Cirrus.Decimals);
+            Usd.Update(totalUsd);
         }
     }
 }

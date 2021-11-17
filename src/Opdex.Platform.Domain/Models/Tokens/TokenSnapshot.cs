@@ -114,9 +114,8 @@ namespace Opdex.Platform.Domain.Models.Tokens
         /// <param name="srcSats">The total number of sats per SRC token this snapshot represents.</param>
         public void UpdatePrice(ulong reserveCrs, UInt256 reserveSrc, decimal crsUsd, ulong srcSats)
         {
-            var price = reserveCrs
-                .Token0PerToken1(reserveSrc, srcSats)
-                .TotalFiat(crsUsd, TokenConstants.Cirrus.Sats);
+            var crsPerSrc = reserveCrs.Token0PerToken1(reserveSrc, srcSats);
+            var price = MathExtensions.TotalFiat(crsPerSrc, crsUsd, TokenConstants.Cirrus.Sats);
 
             UpdatePriceExecute(price, false);
         }
@@ -132,7 +131,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
         {
             Id = 0;
 
-            UpdatePriceExecute(crsPerSrc.TotalFiat(crsUsd, TokenConstants.Cirrus.Sats), true);
+            UpdatePriceExecute(MathExtensions.TotalFiat(crsPerSrc, crsUsd, TokenConstants.Cirrus.Sats), true);
 
             StartDate = blockTime.ToStartOf(SnapshotType);
             EndDate = blockTime.ToEndOf(SnapshotType);

@@ -36,7 +36,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools
                 return request.Cursor.OrderBy switch
                 {
                     LiquidityPoolOrderByType.Liquidity => (result.Summary.Reserves.Usd.ToString(), result.Id),
-                    LiquidityPoolOrderByType.Volume => (result.Summary.Volume.Usd.ToString(), result.Id),
+                    LiquidityPoolOrderByType.Volume => (result.Summary.Volume.DailyUsd.ToString(), result.Id),
                     LiquidityPoolOrderByType.StakingWeight => (result.Summary.Staking?.Weight.ToString(), result.Id),
                     LiquidityPoolOrderByType.Name => (result.Name, result.Id),
                     _ => (string.Empty, result.Id)

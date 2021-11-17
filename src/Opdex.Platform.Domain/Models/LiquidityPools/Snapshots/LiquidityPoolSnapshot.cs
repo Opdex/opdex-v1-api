@@ -74,11 +74,10 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         /// such as staking totals, reserves, token costs etc.
         /// </summary>
         /// <param name="crsUsd">The USD price of a single CRS token.</param>
-        /// <param name="srcUsd">The USD cost of a single SRC token in the pool.</param>
         /// <param name="stakingTokenUsd">The USD cost of a single staking token in the pool.</param>
         /// <param name="srcSats">The total sats per single full SRC token in the pool.</param>
         /// <param name="blockTime">The block time that represents this new snapshot.</param>
-        public void ResetStaleSnapshot(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, ulong srcSats, DateTime blockTime)
+        public void ResetStaleSnapshot(decimal crsUsd, decimal stakingTokenUsd, ulong srcSats, DateTime blockTime)
         {
             // Reset Id for new Insert
             Id = 0;
@@ -96,7 +95,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Cost.SetCost(Reserves.Crs, Reserves.Src, srcSats, true);
 
             // Refresh reserves (USD amounts)
-            Reserves.RefreshReserves(crsUsd, srcUsd, srcSats);
+            Reserves.RefreshReserves(crsUsd);
 
             TransactionCount = 0;
 
@@ -162,16 +161,14 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         /// Takes current USD token prices and using updates the USD pricing of staking and pool reserves accordingly.
         /// </summary>
         /// <param name="crsUsd">The USD cost of a single CRS token.</param>
-        /// <param name="srcUsd">The USD cost of a single SRC token in the pool.</param>
         /// <param name="stakingTokenUsd">The USD cost of a single staking token in the pool.</param>
-        /// <param name="srcSats">The total sats per single full SRC token in the pool.</param>
-        public void RefreshSnapshotFiatAmounts(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, ulong srcSats)
+        public void RefreshSnapshotFiatAmounts(decimal crsUsd, decimal stakingTokenUsd)
         {
             // Refresh staking USD amounts
             Staking.RefreshStaking(stakingTokenUsd);
 
             // Refresh reserve USD amounts
-            Reserves.RefreshReserves(crsUsd, srcUsd, srcSats);
+            Reserves.RefreshReserves(crsUsd);
         }
 
         /// <summary>
@@ -195,11 +192,10 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         /// </summary>
         /// <param name="log">The reserves log to process.</param>
         /// <param name="crsUsd">The USD cost of a single CRS token.</param>
-        /// <param name="srcUsd">The USD cost of a single SRC token in the pool.</param>
         /// <param name="srcSats">The total sats per single full SRC token in the pool.</param>
-        public void ProcessReservesLog(ReservesLog log, decimal crsUsd, decimal srcUsd, ulong srcSats)
+        public void ProcessReservesLog(ReservesLog log, decimal crsUsd, ulong srcSats)
         {
-            Reserves.SetReserves(log, crsUsd, srcUsd, srcSats);
+            Reserves.SetReserves(log, crsUsd);
             Cost.SetCost(log.ReserveCrs, log.ReserveSrc, srcSats);
         }
 

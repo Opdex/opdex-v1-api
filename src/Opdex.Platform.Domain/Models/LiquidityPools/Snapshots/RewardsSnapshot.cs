@@ -1,3 +1,4 @@
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
 using System;
 using System.Collections.Generic;
@@ -40,21 +41,11 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 
         internal void SetRewards(decimal volumeUsd, UInt256 stakingWeight, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
         {
-            var fee = transactionFee / (decimal)1000;
-            var totalRewards = Math.Round(volumeUsd * fee, 2, MidpointRounding.AwayFromZero);
+            (decimal providerUsd, decimal marketUsd) = MathExtensions.VolumeBasedRewards(volumeUsd, stakingWeight, isStakingPool,
+                                                                                         transactionFee, marketFeeEnabled);
 
-            // Zero staking weight, all fees to providers
-            var emptyStakingPool = isStakingPool && stakingWeight == UInt256.Zero;
-
-            if (emptyStakingPool || !marketFeeEnabled)
-            {
-                ProviderUsd = totalRewards;
-            }
-            else // Split rewards
-            {
-                MarketUsd = Math.Round(totalRewards / 6, 2, MidpointRounding.AwayFromZero); // 1/6
-                ProviderUsd = totalRewards - MarketUsd; // 5/6
-            }
+            ProviderUsd = providerUsd;
+            MarketUsd = marketUsd;
         }
     }
 }

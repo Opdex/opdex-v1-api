@@ -38,7 +38,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         {
             if (stakingTokenUsd > 0)
             {
-                Usd = log.TotalStaked.TotalFiat(stakingTokenUsd, TokenConstants.Opdex.Sats);
+                Usd = MathExtensions.TotalFiat(log.TotalStaked, stakingTokenUsd, TokenConstants.Opdex.Sats);
             }
 
             Weight = log.TotalStaked;
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         internal void RefreshStaking(decimal stakingTokenUsd)
         {
             Usd = stakingTokenUsd > 0
-                ? Weight.TotalFiat(stakingTokenUsd, TokenConstants.Opdex.Sats)
+                ? MathExtensions.TotalFiat(Weight, stakingTokenUsd, TokenConstants.Opdex.Sats)
                 : 0m;
         }
     }

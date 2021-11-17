@@ -47,8 +47,8 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             var volumeSrc = log.AmountSrcIn + log.AmountSrcOut;
             Src += volumeSrc;
 
-            var crsVolume = log.AmountCrsIn.TotalFiat(crsUsd, TokenConstants.Cirrus.Sats);
-            var srcVolume = log.AmountSrcIn.TotalFiat(srcUsd, srcSats);
+            var crsVolume = MathExtensions.TotalFiat(log.AmountCrsIn, crsUsd, TokenConstants.Cirrus.Sats);
+            var srcVolume = MathExtensions.TotalFiat(log.AmountSrcIn, srcUsd, srcSats);
 
             Usd += Math.Round(crsVolume + srcVolume, 2, MidpointRounding.AwayFromZero);
         }

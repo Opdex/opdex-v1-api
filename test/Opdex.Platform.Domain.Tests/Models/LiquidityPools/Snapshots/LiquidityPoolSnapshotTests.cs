@@ -92,7 +92,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             const ulong id = 12345;
             const ulong liquidityPoolId = 124;
             const long transactionCount = 1;
-            var reserves = new ReservesSnapshot(100_000_000, 200000000, 3.00m); // 1 crs, 2 src,
+            var reserves = new ReservesSnapshot(100_000_000, 200000000, new OhlcDecimalSnapshot(3.00m, 3.00m, 3.00m, 3.00m)); // 1 crs, 2 src,
             var rewards = new RewardsSnapshot(5.00m, 1.00m);
             var staking = new StakingSnapshot(50000000, 10.00m);
             var volume = new VolumeSnapshot(100, 300, 515.23m);
@@ -104,7 +104,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount, reserves, rewards, staking, volume, cost,
                                                            snapshotType, startDate, endDate, startDate);
 
-            snapshot.ResetStaleSnapshot(10.00m, 1.25m, .50m, TokenConstants.Cirrus.Sats, startDate.AddDays(1));
+            snapshot.ResetStaleSnapshot(10.00m, .50m, TokenConstants.Cirrus.Sats, startDate.AddDays(1));
 
             snapshot.Id.Should().Be(0L);
             snapshot.Volume.Should().BeEquivalentTo(new VolumeSnapshot());
@@ -113,8 +113,10 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Staking.Weight.Should().Be(staking.Weight);
             snapshot.Cost.CrsPerSrc.Open.Should().Be(cost.CrsPerSrc.Close); // Rolls close to open
             snapshot.Cost.SrcPerCrs.Open.Should().Be(cost.SrcPerCrs.Close); // Rolls close to open
-            snapshot.Reserves.Usd.Should().Be(12.50m); // (1 crs * $10) + (2 src * $1.25)
-            snapshot.Reserves.Crs.Should().Be(reserves.Crs);
+            snapshot.Reserves.Usd.Open.Should().Be(3m);
+            snapshot.Reserves.Usd.High.Should().Be(20m);
+            snapshot.Reserves.Usd.Low.Should().Be(3m);
+            snapshot.Reserves.Usd.Close.Should().Be(20m);
             snapshot.Reserves.Src.Should().Be(reserves.Src);
             snapshot.TransactionCount.Should().Be(0L);
             snapshot.StartDate.Should().Be(startDate.AddDays(1).ToStartOf(snapshotType));
@@ -162,8 +164,11 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             UInt256 volumeSrc = 300;
             const decimal volumeUsd = 515.23m;
 
+            const decimal crsPrice = 10m;
+            const decimal stakingTokenPrice = .5m;
+
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount,
-                                                     new ReservesSnapshot(reserveCrs, reserveSrc, reserveUsd),
+                                                     new ReservesSnapshot(reserveCrs, reserveSrc, new OhlcDecimalSnapshot(reserveUsd, reserveUsd, reserveUsd, reserveUsd)),
                                                      new RewardsSnapshot(rewardsProviderUsd, rewardsMarketUsd),
                                                      new StakingSnapshot(stakingWeight, stakingUsd),
                                                      new VolumeSnapshot(volumeCrs, volumeSrc, volumeUsd),
@@ -172,7 +177,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
                                                      snapshotType, startDate, endDate, startDate);
 
             // Act
-            snapshot.RefreshSnapshotFiatAmounts(10.00m, 1.25m, .50m, TokenConstants.Cirrus.Sats);
+            snapshot.RefreshSnapshotFiatAmounts(crsPrice, stakingTokenPrice);
 
             // Assert
             snapshot.Id.Should().Be(id);
@@ -193,7 +198,10 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Cost.CrsPerSrc.Close.Should().Be(crsPerSrcClose);
             snapshot.Reserves.Crs.Should().Be(reserveCrs);
             snapshot.Reserves.Src.Should().Be(reserveSrc);
-            snapshot.Reserves.Usd.Should().Be(12.50m); // (1 crs * $10) + (2 src * $1.25)
+            snapshot.Reserves.Usd.Open.Should().Be(reserveUsd);
+            snapshot.Reserves.Usd.High.Should().Be(20m);
+            snapshot.Reserves.Usd.Low.Should().Be(reserveUsd);
+            snapshot.Reserves.Usd.Close.Should().Be(20m);
             snapshot.TransactionCount.Should().Be(transactionCount);
             snapshot.StartDate.Should().Be(startDate);
             snapshot.EndDate.Should().Be(endDate);
@@ -206,7 +214,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             const ulong id = 12345;
             const ulong liquidityPoolId = 124;
             const long transactionCount = 1;
-            var reserves = new ReservesSnapshot(100_000_000, 200000000, 3.00m); // 1 crs, 2 src,
+            var reserves = new ReservesSnapshot(100_000_000, 200000000, new OhlcDecimalSnapshot(3.00m, 3.00m, 3.00m, 3.00m)); // 1 crs, 2 src,
             var rewards = new RewardsSnapshot(.50m, .10m);
             var staking = new StakingSnapshot(50000000, 10.00m);
             var volume = new VolumeSnapshot(100, 300, 515.23m);
@@ -295,7 +303,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             var reservesLog = new ReservesLog(txReservesLog, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 1);
 
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount,
-                                                     new ReservesSnapshot(reserveCrs, reserveSrc, reserveUsd),
+                                                     new ReservesSnapshot(reserveCrs, reserveSrc, new OhlcDecimalSnapshot(reserveUsd, reserveUsd, reserveUsd, reserveUsd)),
                                                      new RewardsSnapshot(rewardsProviderUsd, rewardsMarketUsd),
                                                      new StakingSnapshot(stakingWeight, stakingUsd),
                                                      new VolumeSnapshot(volumeCrs, volumeSrc, volumeUsd),
@@ -304,7 +312,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
                                                      snapshotType, startDate, endDate, startDate);
 
             // Act
-            snapshot.ProcessReservesLog(reservesLog, 10.00m, 1.25m, TokenConstants.Cirrus.Sats);
+            snapshot.ProcessReservesLog(reservesLog, 10.00m, TokenConstants.Cirrus.Sats);
 
             // Assert
             snapshot.Id.Should().Be(id);
@@ -319,7 +327,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Cost.CrsPerSrc.Close.Should().NotBe(crsPerSrcOpen).And.NotBe(crsPerSrcClose);
             snapshot.Reserves.Crs.Should().Be(reserveCrs);
             snapshot.Reserves.Src.Should().Be(reserveSrc);
-            snapshot.Reserves.Usd.Should().BeGreaterThan(reserveUsd);
+            snapshot.Reserves.Usd.Close.Should().BeGreaterThan(reserveUsd);
             snapshot.TransactionCount.Should().Be(transactionCount);
             snapshot.StartDate.Should().Be(startDate);
             snapshot.EndDate.Should().Be(endDate);
@@ -380,7 +388,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             var stakingLog = new StartStakingLog(txStakingLog, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 1);
 
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount,
-                                                     new ReservesSnapshot(reserveCrs, reserveSrc, reserveUsd),
+                                                     new ReservesSnapshot(reserveCrs, reserveSrc, new OhlcDecimalSnapshot(reserveUsd, reserveUsd, reserveUsd, reserveUsd)),
                                                      new RewardsSnapshot(rewardsProviderUsd, rewardsMarketUsd),
                                                      new StakingSnapshot(stakingWeight, stakingUsd),
                                                      new VolumeSnapshot(volumeCrs, volumeSrc, volumeUsd),
@@ -410,7 +418,10 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Cost.CrsPerSrc.Close.Should().Be(crsPerSrcClose);
             snapshot.Reserves.Crs.Should().Be(reserveCrs);
             snapshot.Reserves.Src.Should().Be(reserveSrc);
-            snapshot.Reserves.Usd.Should().Be(reserveUsd);
+            snapshot.Reserves.Usd.Open.Should().Be(reserveUsd);
+            snapshot.Reserves.Usd.High.Should().Be(reserveUsd);
+            snapshot.Reserves.Usd.Low.Should().Be(reserveUsd);
+            snapshot.Reserves.Usd.Close.Should().Be(reserveUsd);
             snapshot.TransactionCount.Should().Be(transactionCount);
             snapshot.StartDate.Should().Be(startDate);
             snapshot.EndDate.Should().Be(endDate);

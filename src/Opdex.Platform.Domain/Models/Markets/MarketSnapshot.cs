@@ -132,7 +132,7 @@ namespace Opdex.Platform.Domain.Models.Markets
                 throw new Exception("Market and liquidity pool snapshot dates do not match.");
             }
 
-            Liquidity += poolSnapshot.Reserves.Usd;
+            Liquidity += poolSnapshot.Reserves.Usd.Close;
             Volume += poolSnapshot.Volume.Usd;
 
             var stakingUsd = Staking.Usd + poolSnapshot.Staking.Usd;

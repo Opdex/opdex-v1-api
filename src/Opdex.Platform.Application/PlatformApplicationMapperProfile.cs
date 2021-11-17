@@ -3,6 +3,7 @@ using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Admins;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
@@ -121,29 +122,29 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.StartDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<RewardsSnapshot, RewardsDto>()
+            CreateMap<RewardsSnapshot, RewardsSnapshotDto>()
                 .ForMember(dest => dest.ProviderUsd, opt => opt.MapFrom(src => src.ProviderUsd))
                 .ForMember(dest => dest.MarketUsd, opt => opt.MapFrom(src => src.MarketUsd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<ReservesSnapshot, ReservesDto>()
+            CreateMap<ReservesSnapshot, ReservesSnapshotDto>()
                 .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
                 .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src))
                 .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<VolumeSnapshot, VolumeDto>()
+            CreateMap<VolumeSnapshot, VolumeSnapshotDto>()
                 .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
                 .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src))
                 .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<StakingSnapshot, StakingDto>()
+            CreateMap<StakingSnapshot, StakingSnapshotDto>()
                 .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
                 .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<CostSnapshot, CostDto>()
+            CreateMap<CostSnapshot, CostSnapshotDto>()
                 .ForMember(dest => dest.CrsPerSrc, opt => opt.MapFrom(src => src.CrsPerSrc))
                 .ForMember(dest => dest.SrcPerCrs, opt => opt.MapFrom(src => src.SrcPerCrs))
                 .ForAllOtherMembers(opt => opt.Ignore());

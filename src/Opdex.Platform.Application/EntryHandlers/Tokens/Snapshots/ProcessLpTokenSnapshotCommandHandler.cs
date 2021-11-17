@@ -20,7 +20,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
 
         public async Task<decimal> Handle(ProcessLpTokenSnapshotCommand request, CancellationToken cancellationToken)
         {
-            var lptUsd = request.LpToken.TotalSupply.FiatPerToken(request.ReservesUsd, request.LpToken.Sats);
+            var lptUsd = MathExtensions.FiatPerToken(request.LpToken.TotalSupply, request.ReservesUsd, request.LpToken.Sats);
             var tokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(request.LpToken.Id, request.MarketId,
                                                                                               request.BlockTime, request.SnapshotType));
 

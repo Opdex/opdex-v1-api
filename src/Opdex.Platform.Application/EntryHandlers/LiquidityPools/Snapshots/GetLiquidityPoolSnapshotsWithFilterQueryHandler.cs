@@ -1,7 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
-using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using System;

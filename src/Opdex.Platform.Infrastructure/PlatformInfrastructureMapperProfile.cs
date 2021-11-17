@@ -94,7 +94,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotReservesEntity, ReservesSnapshot>()
-                .ConstructUsing(src => new ReservesSnapshot(src.Crs, src.Src, src.Usd))
+                .ConstructUsing((src, ctx) => new ReservesSnapshot(src.Crs, src.Src, ctx.Mapper.Map<OhlcDecimalSnapshot>(src.Usd)))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotRewardsEntity, RewardsSnapshot>()

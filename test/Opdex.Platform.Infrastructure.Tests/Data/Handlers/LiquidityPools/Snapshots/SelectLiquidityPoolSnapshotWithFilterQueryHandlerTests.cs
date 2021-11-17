@@ -46,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
                 EndDate = new DateTime(2021, 6, 21, 23, 59, 59),
                 ModifiedDate = DateTime.UtcNow,
                 Rewards = new SnapshotRewardsEntity { MarketUsd = 1.23m, ProviderUsd = 9.87m },
-                Reserves = new SnapshotReservesEntity { Crs = 123, Src = 987, Usd = 7.65m },
+                Reserves = new SnapshotReservesEntity { Crs = 123, Src = 987, Usd = new OhlcDecimalEntity {Open = 7.65m, High = 7.65m, Low = 7.65m, Close = 7.65m} },
                 Volume = new SnapshotVolumeEntity { Crs = 876, Src = 654, Usd = 2.34m },
                 Staking = new SnapshotStakingEntity { Usd = 9.12m, Weight = 648 },
                 Cost = new SnapshotCostEntity
@@ -73,7 +73,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
 
             result.Reserves.Crs.Should().Be(expectedEntity.Reserves.Crs);
             result.Reserves.Src.Should().Be(expectedEntity.Reserves.Src);
-            result.Reserves.Usd.Should().Be(expectedEntity.Reserves.Usd);
+            result.Reserves.Usd.Open.Should().Be(expectedEntity.Reserves.Usd.Open);
+            result.Reserves.Usd.High.Should().Be(expectedEntity.Reserves.Usd.High);
+            result.Reserves.Usd.Low.Should().Be(expectedEntity.Reserves.Usd.Low);
+            result.Reserves.Usd.Close.Should().Be(expectedEntity.Reserves.Usd.Close);
 
             result.Rewards.ProviderUsd.Should().Be(expectedEntity.Rewards.ProviderUsd);
             result.Rewards.MarketUsd.Should().Be(expectedEntity.Rewards.MarketUsd);
@@ -119,7 +122,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
 
             result.Reserves.Crs.Should().Be(0ul);
             result.Reserves.Src.Should().Be(UInt256.Zero);
-            result.Reserves.Usd.Should().Be(0.00m);
+            result.Reserves.Usd.Should().BeEquivalentTo(new OhlcDecimalEntity());
 
             result.Rewards.ProviderUsd.Should().Be(0.00m);
             result.Rewards.MarketUsd.Should().Be(0.00m);

@@ -39,7 +39,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
 
         public void Update(LiquidityPoolSnapshot snapshot, ulong blockHeight)
         {
-            LiquidityUsd = snapshot.Reserves.Usd;
+            LiquidityUsd = snapshot.Reserves.Usd.Close;
             VolumeUsd = snapshot.Volume.Usd;
             StakingWeight = (ulong)snapshot.Staking.Weight;
             LockedCrs = snapshot.Reserves.Crs;

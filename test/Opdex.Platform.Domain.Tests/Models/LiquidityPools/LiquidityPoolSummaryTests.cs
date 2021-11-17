@@ -69,7 +69,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
             summary.Update(snapshot, modifiedBlock);
 
             // Assert
-            summary.LiquidityUsd.Should().Be(snapshot.Reserves.Usd);
+            summary.LiquidityUsd.Should().Be(snapshot.Reserves.Usd.Close);
             summary.VolumeUsd.Should().Be(snapshot.Volume.Usd);
             summary.StakingWeight.Should().Be((ulong)snapshot.Staking.Weight);
             summary.LockedCrs.Should().Be(snapshot.Reserves.Crs);
@@ -80,7 +80,7 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
         {
             const ulong id = 12345;
             const long transactionCount = 1;
-            var reserves = new ReservesSnapshot(100_000_000, 200000000, 3.00m); // 1 crs, 2 src,
+            var reserves = new ReservesSnapshot(100_000_000, 200000000, new OhlcDecimalSnapshot(3m, 3m, 3m, 3m)); // 1 crs, 2 src,
             var rewards = new RewardsSnapshot(5.00m, 1.00m);
             var staking = new StakingSnapshot(50000000, 10.00m);
             var volume = new VolumeSnapshot(100, 300, 515.23m);
