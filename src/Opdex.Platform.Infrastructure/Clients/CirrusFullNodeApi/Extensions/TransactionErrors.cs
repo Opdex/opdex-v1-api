@@ -5,7 +5,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions
 {
     public static class TransactionErrors
     {
-        private static readonly Regex MethodDefinitionRegex = new Regex(@"(?<=at\s).+?(\(.+?\))", RegexOptions.Compiled, TimeSpan.FromMilliseconds(500));
+        private static readonly Regex MethodDefinitionRegex = new Regex(@"(?<=at\s).+?(\(.*?\))", RegexOptions.Compiled, TimeSpan.FromMilliseconds(500));
 
         /// <summary>
         /// Attempts to match the last method definition in a transaction error.
@@ -124,10 +124,10 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions
             // Smart contract methods
             private const string DeployerSetOwnership = "OpdexMarketDeployer.SetPendingOwnership(Address pendingOwner)";
             private const string DeployerClaimOwnership = "OpdexMarketDeployer.ClaimPendingOwnership()";
-            private const string DeployerCreateStandardMarket = "OpdexMarketDeployer.CreateStandardMarket(Address marketOwner, uint transactionFee, bool authPoolCreators, bool authProviders, bool authTraders, bool enableMarketFee)";
+            private const string DeployerCreateStandardMarket = "OpdexMarketDeployer.CreateStandardMarket(Address marketOwner, UInt32 transactionFee, Boolean authPoolCreators, Boolean authProviders, Boolean authTraders, Boolean enableMarketFee)";
             private const string DeployerCreateStakingMarket = "OpdexMarketDeployer.CreateStakingMarket(Address stakingToken)";
 
-            private const string StandardMarketAuthorize = "OpdexStandardMarket.Authorize(Address address, byte permission, bool authorize)";
+            private const string StandardMarketAuthorize = "OpdexStandardMarket.Authorize(Address address, byte permission, Boolean authorize)";
             private const string StandardMarketSetOwnership = "OpdexStandardMarket.SetPendingOwnership(Address pendingOwner)";
             private const string StandardMarketClaimOwnership = "OpdexStandardMarket.ClaimPendingOwnership()";
             private const string StandardMarketCreatePool = "OpdexStandardMarket.CreatePool(Address token)";
@@ -151,16 +151,16 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions
 
             private const string StandardPoolMint = "OpdexStandardPool.Mint(Address to)";
             private const string StandardPoolBurn = "OpdexStandardPool.Burn(Address to)";
-            private const string StandardPoolSwap = "OpdexStandardPool.Swap(UInt64 amountCrsOut, UInt256 amountSrcOut, Address to, byte[] data)";
+            private const string StandardPoolSwap = "OpdexStandardPool.Swap(UInt64 amountCrsOut, UInt256 amountSrcOut, Address to, Byte[] data)";
             private const string StandardPoolSkim = "OpdexStandardPool.Skim(Address to)";
             private const string StandardPoolSync = "OpdexStandardPool.Sync()";
 
             private const string StakingPoolStartStaking = "OpdexStakingPool.StartStaking(UInt256 amount)";
-            private const string StakingPoolCollectStakingRewards = "OpdexStakingPool.CollectStakingRewards(bool liquidate)";
-            private const string StakingPoolStopStaking = "OpdexStakingPool.StopStaking(UInt256 amount, bool liquidate)";
+            private const string StakingPoolCollectStakingRewards = "OpdexStakingPool.CollectStakingRewards(Boolean liquidate)";
+            private const string StakingPoolStopStaking = "OpdexStakingPool.StopStaking(UInt256 amount, Boolean liquidate)";
             private const string StakingPoolMint = "OpdexStakingPool.Mint(Address to)";
             private const string StakingPoolBurn = "OpdexStakingPool.Burn(Address to)";
-            private const string StakingPoolSwap = "OpdexStakingPool.Swap(UInt64 amountCrsOut, UInt256 amountSrcOut, Address to, byte[] data)";
+            private const string StakingPoolSwap = "OpdexStakingPool.Swap(UInt64 amountCrsOut, UInt256 amountSrcOut, Address to, Byte[] data)";
             private const string StakingPoolSkim = "OpdexStakingPool.Skim(Address to)";
             private const string StakingPoolSync = "OpdexStakingPool.Sync()";
 
