@@ -6,13 +6,13 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands
 {
     public class NotifyUserOfSuccessfulAuthenticationCommand : IRequest
     {
-        public NotifyUserOfSuccessfulAuthenticationCommand(Guid connectionId, string bearerToken)
+        public NotifyUserOfSuccessfulAuthenticationCommand(string connectionId, string bearerToken)
         {
-            ConnectionId = connectionId != Guid.Empty ? connectionId : throw new ArgumentNullException(nameof(connectionId), "Connection id must be set.");
+            ConnectionId = connectionId.HasValue() ? connectionId : throw new ArgumentNullException(nameof(connectionId), "Connection id must be set.");
             BearerToken = bearerToken.HasValue() ? bearerToken : throw new ArgumentNullException(nameof(bearerToken), "Bearer token must be set.");
         }
 
-        public Guid ConnectionId { get; }
+        public string ConnectionId { get; }
         public string BearerToken { get; }
     }
 }

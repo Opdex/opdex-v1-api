@@ -72,7 +72,7 @@ namespace Opdex.Platform.WebApi.Controllers
             var jwt = tokenHandler.CreateToken(tokenDescriptor);
             var bearerToken = tokenHandler.WriteToken(jwt);
 
-            await _mediator.Send(new NotifyUserOfSuccessfulAuthenticationCommand(Guid.Parse(expectedId.Uid), bearerToken));
+            await _mediator.Send(new NotifyUserOfSuccessfulAuthenticationCommand(expectedId.Uid, bearerToken));
             
             return Ok();
         }

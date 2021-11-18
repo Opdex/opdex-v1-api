@@ -32,7 +32,7 @@ namespace Opdex.Platform.Infrastructure.Tests.SignalRTests.Handlers
         public async Task Handle_NotifyUser_WithTransactionHash()
         {
             // Arrange
-            var request = new NotifyUserOfSuccessfulAuthenticationCommand(Guid.NewGuid(), "SECRET_BEARER_TOKEN");
+            var request = new NotifyUserOfSuccessfulAuthenticationCommand(Guid.NewGuid().ToString(), "SECRET_BEARER_TOKEN");
 
             // Act
             await _handler.Handle(request, CancellationToken.None);

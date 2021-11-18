@@ -18,7 +18,7 @@ namespace Opdex.Platform.Infrastructure.Clients.SignalR.Handlers
 
         protected override async Task Handle(NotifyUserOfSuccessfulAuthenticationCommand request, CancellationToken cancellationToken)
         {
-            await _hubContext.Clients.Client(request.ConnectionId.ToString()).OnAuthenticated(request.BearerToken);
+            await _hubContext.Clients.Client(request.ConnectionId).OnAuthenticated(request.BearerToken);
         }
     }
 }
