@@ -8,7 +8,7 @@ namespace Opdex.Platform.WebApi.Auth
     {
         public AuthProvider Opdex { get; set; }
         public string AdminKey { get; set; }
-        public StratisOpenAuthConfiguration StratisOpenAuthProtcol { get; set; }
+        public StratisOpenAuthConfiguration StratisOpenAuthProtocol { get; set; }
 
         public class AuthProvider
         {

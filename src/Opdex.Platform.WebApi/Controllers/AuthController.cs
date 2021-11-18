@@ -48,7 +48,7 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<IActionResult> StratisOpenAuthCallback([FromQuery] StratisOpenAuthCallbackQuery query,
                                                                  [FromBody] StratisOpenAuthCallbackBody body, CancellationToken cancellationToken)
         {
-            var expectedCallbackPath = System.IO.Path.Combine(_authConfiguration.StratisOpenAuthProtcol.CallbackBase, AuthPath);
+            var expectedCallbackPath = System.IO.Path.Combine(_authConfiguration.StratisOpenAuthProtocol.CallbackBase, AuthPath);
             var expectedId = new StratisId(expectedCallbackPath, query.Uid, query.Exp);
 
             if (expectedId.Expired) throw new InvalidDataException("exp", "Expiry exceeded.");

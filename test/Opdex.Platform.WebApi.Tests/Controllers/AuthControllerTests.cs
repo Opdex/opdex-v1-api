@@ -26,7 +26,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
                 {
                     SigningKey = "SECRET_SIGNING_KEY"
                 },
-                StratisOpenAuthProtcol = new StratisOpenAuthConfiguration
+                StratisOpenAuthProtocol = new StratisOpenAuthConfiguration
                 {
                     CallbackBase = "api.opdex.com/auth",
                 }
