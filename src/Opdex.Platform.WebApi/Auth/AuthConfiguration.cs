@@ -8,10 +8,16 @@ namespace Opdex.Platform.WebApi.Auth
     {
         public AuthProvider Opdex { get; set; }
         public string AdminKey { get; set; }
+        public StratisOpenAuthConfiguration StratisOpenAuthProtcol { get; set; }
 
         public class AuthProvider
         {
             public string SigningKey { get; set; }
+        }
+
+        public class StratisOpenAuthConfiguration
+        {
+            public string CallbackBase { get; set; }
         }
 
         public void Validate()
