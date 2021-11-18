@@ -1,6 +1,5 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
-using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Assemblers;
