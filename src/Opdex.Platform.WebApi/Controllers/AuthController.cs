@@ -12,6 +12,9 @@ using System.Threading;
 using Opdex.Platform.WebApi.Models.Requests.Auth;
 using Microsoft.AspNetCore.Http;
 using Opdex.Platform.Common.Exceptions;
+using System.Threading.Tasks;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -42,8 +45,8 @@ namespace Opdex.Platform.WebApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult StratisOpenAuthCallback([FromQuery] StratisOpenAuthCallbackQuery query,
-                                                     [FromBody] StratisOpenAuthCallbackBody body, CancellationToken cancellationToken)
+        public async Task<IActionResult> StratisOpenAuthCallback([FromQuery] StratisOpenAuthCallbackQuery query,
+                                                                 [FromBody] StratisOpenAuthCallbackBody body, CancellationToken cancellationToken)
         {
             var expectedCallbackPath = System.IO.Path.Combine(_authConfiguration.StratisOpenAuthProtcol.CallbackBase, AuthPath);
             var expectedId = new StratisId(expectedCallbackPath, query.Uid, query.Exp);
@@ -51,6 +54,25 @@ namespace Opdex.Platform.WebApi.Controllers
             if (expectedId.Expired) throw new InvalidDataException("exp", "Expiry exceeded.");
 
             // if (!Message.Verify(expectedId.Callback, body.PublicKey.ToString(), body.Signature)) throw new InvalidDataException("Invalid signature.");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.Opdex.SigningKey));
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(),
+                Expires = DateTime.UtcNow.AddHours(1),
+                IssuedAt = DateTime.UtcNow,
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            tokenDescriptor.Subject.AddClaim(new Claim("wallet", body.PublicKey.ToString()));
+            var admin = await _mediator.Send(new GetAdminByAddressQuery(body.PublicKey, findOrThrow: false), cancellationToken);
+            if (admin != null) tokenDescriptor.Subject.AddClaim(new Claim("admin", "true"));
+
+            var jwt = tokenHandler.CreateToken(tokenDescriptor);
+            var bearerToken = tokenHandler.WriteToken(jwt);
+
+            await _mediator.Send(new NotifyUserOfSuccessfulAuthenticationCommand(Guid.Parse(expectedId.Uid), bearerToken));
             
             return Ok();
         }

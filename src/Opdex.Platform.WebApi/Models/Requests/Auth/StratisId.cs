@@ -28,6 +28,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Auth
         /// <param name="exp">A unix timestamp that specifies when the signature should expire.</param>
         public StratisId(string callbackPath, string uid, long? exp = null)
         {
+            Uid = uid;
             var expectedQueryParams = new Dictionary<string, string>{{ UidKey, uid }};
 
             if (exp.HasValue)
@@ -43,6 +44,11 @@ namespace Opdex.Platform.WebApi.Models.Requests.Auth
         /// Protocol-relative callback URL to which the signer sends a HTTPS request.
         /// </summary>
         public string Callback { get; }
+
+        /// <summary>
+        /// A unique identifier for a request.
+        /// </summary>
+        public string Uid { get; }
         
         /// <summary>
         /// Returns true if the Stratis ID URI is expired relative to the current UTC time; otherwise false.

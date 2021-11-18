@@ -8,6 +8,7 @@ using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models.Requests.Auth;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using static Opdex.Platform.WebApi.Auth.AuthConfiguration;
 
@@ -21,9 +22,13 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         {
             var configuration = new AuthConfiguration
             {
+                Opdex = new AuthProvider
+                {
+                    SigningKey = "SECRET_SIGNING_KEY"
+                },
                 StratisOpenAuthProtcol = new StratisOpenAuthConfiguration
                 {
-                    CallbackBase = "api.opdex.com/auth"
+                    CallbackBase = "api.opdex.com/auth",
                 }
             };
 
@@ -31,7 +36,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
         }
 
         [Fact]
-        public void StratisOpenAuthCallback_Expired_ThrowInvalidDataException()
+        public async Task StratisOpenAuthCallback_Expired_ThrowInvalidDataException()
         {
             // Arrange
             var query = new StratisOpenAuthCallbackQuery
@@ -46,10 +51,10 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             };
 
             // Act
-            void Act() => _controller.StratisOpenAuthCallback(query, body, CancellationToken.None);
+            Task Act() => _controller.StratisOpenAuthCallback(query, body, CancellationToken.None);
 
             // Assert
-            var exception = Assert.Throws<InvalidDataException>(Act);
+            var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
             exception.PropertyName.Should().Be("exp");
         }
     }

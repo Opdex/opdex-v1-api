@@ -8,6 +8,14 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Auth
     public class StratisIdTests
     {
         [Fact]
+        public void ToString_SchemeAndCallback_Combine()
+        {
+            var stratisId = new StratisId("api.opdex.com/auth", "123456789", 1635200000);
+
+            stratisId.ToString().Should().Be("sid:api.opdex.com/auth?uid=123456789&exp=1635200000");
+        }
+
+        [Fact]
         public void Callback_WithoutExp_Combine()
         {
             var stratisId = new StratisId("api.opdex.com/auth", "123456789");
@@ -24,11 +32,11 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Auth
         }
 
         [Fact]
-        public void ToString_SchemeAndCallback_Combine()
+        public void Uid_Constructor_Set()
         {
             var stratisId = new StratisId("api.opdex.com/auth", "123456789", 1635200000);
 
-            stratisId.ToString().Should().Be("sid:api.opdex.com/auth?uid=123456789&exp=1635200000");
+            stratisId.Uid.Should().Be("123456789");
         }
 
         [Fact]
