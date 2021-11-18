@@ -75,7 +75,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Quotes
             Task Act() => _handler.Handle(command, cancellationToken);
 
             // Assert
-            var exception = await Assert.ThrowsAsync<NotFoundException>(Act);
+            var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
+            exception.PropertyName.Should().Be("marketAddress");
             exception.Message.Should().Be("Market address must represent a standard market.");
         }
 

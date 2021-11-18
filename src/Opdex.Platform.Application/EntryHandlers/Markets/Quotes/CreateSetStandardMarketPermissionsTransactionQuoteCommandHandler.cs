@@ -29,7 +29,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Quotes
         public override async Task<TransactionQuoteDto> Handle(CreateSetStandardMarketPermissionsTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
             var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
-            if (market.IsStakingMarket) throw new NotFoundException("Market address must represent a standard market.");
+            if (market.IsStakingMarket) throw new InvalidDataException("marketAddress", "Market address must represent a standard market.");
 
             if (!market.AuthPoolCreators && request.Permission == MarketPermissionType.CreatePool)
                 throw new InvalidDataException("Permission", "Market does not enforce authorization for pool creation.");

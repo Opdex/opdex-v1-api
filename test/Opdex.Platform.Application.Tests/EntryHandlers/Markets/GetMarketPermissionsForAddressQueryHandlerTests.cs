@@ -48,7 +48,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
         }
 
         [Fact]
-        public async Task Handle_MarketIsStakingMarket_ThrowNotFoundException()
+        public async Task Handle_MarketIsStakingMarket_ThrowInvalidDataException()
         {
             // Arrange
             Address marketAddress = "PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3";
@@ -63,7 +63,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets
             Task Act() => _handler.Handle(query, cancellationToken);
 
             // Assert
-            var exception = await Assert.ThrowsAsync<NotFoundException>(Act);
+            var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
+            exception.PropertyName.Should().Be("marketAddress");
             exception.Message.Should().Be("Market address must represent a standard market.");
         }
 
