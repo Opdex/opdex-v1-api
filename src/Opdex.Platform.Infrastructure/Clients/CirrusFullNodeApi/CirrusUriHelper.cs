@@ -39,5 +39,10 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi
         {
             public const string GetRawMempool = "Mempool/getrawmempool";
         }
+
+        public static class Wallet
+        {
+            public const string VerifyMessage = "Wallet/verifymessage";
+        }
     }
 }

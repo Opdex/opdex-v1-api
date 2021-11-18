@@ -11,7 +11,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Auth
         /// <summary>
         /// Signed Stratis ID callback.
         /// </summary>
-        /// <example></example>
+        /// <example>H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc=</example>
         [Required]
         public string Signature { get; set; }
 

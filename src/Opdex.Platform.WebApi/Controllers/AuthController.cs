@@ -15,6 +15,7 @@ using Opdex.Platform.Common.Exceptions;
 using System.Threading.Tasks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -53,7 +54,8 @@ namespace Opdex.Platform.WebApi.Controllers
 
             if (expectedId.Expired) throw new InvalidDataException("exp", "Expiry exceeded.");
 
-            // if (!Message.Verify(expectedId.Callback, body.PublicKey.ToString(), body.Signature)) throw new InvalidDataException("Invalid signature.");
+            var verified = await _mediator.Send(new CallCirrusVerifyMessageQuery(expectedId.Callback, body.PublicKey, body.Signature), cancellationToken);
+            if (!verified) throw new InvalidDataException("signature", "Invalid signature.");
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.Opdex.SigningKey));
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -71,6 +73,8 @@ namespace Opdex.Platform.WebApi.Controllers
 
             var jwt = tokenHandler.CreateToken(tokenDescriptor);
             var bearerToken = tokenHandler.WriteToken(jwt);
+
+            // todo: Decrypt UID
 
             await _mediator.Send(new NotifyUserOfSuccessfulAuthenticationCommand(expectedId.Uid, bearerToken));
             
