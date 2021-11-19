@@ -3,7 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Domain.Models.OHLC;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
@@ -46,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Snapshots
         [Fact]
         public async Task PersistsTokenSnapshot_Update_Success()
         {
-            var snapshot = new TokenSnapshot(1, 2, 3, new OhlcDecimalSnapshot(), SnapshotType.Daily, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow);
+            var snapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow);
 
             var command = new PersistTokenSnapshotCommand(snapshot);
 

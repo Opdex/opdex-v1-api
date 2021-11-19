@@ -1,6 +1,6 @@
-namespace Opdex.Platform.Application.Abstractions.Models.OHLC
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models
 {
-    public class OhlcDto<T>
+    public class OhlcEntity<T>
     {
         public T Open { get; set; }
         public T High { get; set; }

@@ -1,3 +1,5 @@
+using Opdex.Platform.Common.Constants;
+using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
@@ -32,8 +34,10 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
         public ulong Id { get; }
         public ulong LiquidityPoolId { get; }
         public decimal LiquidityUsd { get; private set; }
+        public decimal DailyLiquidityUsdChangePercent { get; private set; }
         public decimal VolumeUsd { get; private set; }
         public ulong StakingWeight { get; private set; }
+        public ulong DailyStakingWeightChangePercent { get; private set; }
         public ulong LockedCrs { get; private set; }
         public UInt256 LockedSrc { get; private set; }
 
@@ -41,9 +45,12 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools
         {
             LiquidityUsd = snapshot.Reserves.Usd.Close;
             VolumeUsd = snapshot.Volume.Usd;
-            StakingWeight = (ulong)snapshot.Staking.Weight;
-            LockedCrs = snapshot.Reserves.Crs;
-            LockedSrc = snapshot.Reserves.Src;
+            StakingWeight = (ulong)snapshot.Staking.Weight.Close;
+            LockedCrs = snapshot.Reserves.Crs.Close;
+            LockedSrc = snapshot.Reserves.Src.Close;
+            DailyLiquidityUsdChangePercent = MathExtensions.PercentChange(snapshot.Reserves.Usd.Close, snapshot.Reserves.Usd.Open);
+            DailyLiquidityUsdChangePercent = MathExtensions.PercentChange(snapshot.Staking.Weight.Close, snapshot.Staking.Weight.Open,
+                                                                          TokenConstants.Opdex.Sats);
             SetModifiedBlock(blockHeight);
         }
     }

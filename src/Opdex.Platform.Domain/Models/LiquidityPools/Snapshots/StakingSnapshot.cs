@@ -10,8 +10,8 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
     {
         public StakingSnapshot()
         {
-            Weight = 0;
-            Usd = 0.00000000m;
+            Weight = new Ohlc<UInt256>();
+            Usd = new Ohlc<decimal>();
         }
 
         public StakingSnapshot(StakingSnapshot snapshot)
@@ -20,35 +20,29 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Usd = snapshot.Usd;
         }
 
-        public StakingSnapshot(UInt256 stakingWeight, decimal stakingUsd)
+        public StakingSnapshot(Ohlc<UInt256> stakingWeight, Ohlc<decimal> stakingUsd)
         {
-            if (stakingUsd < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(stakingUsd), $"{nameof(stakingUsd)} must be greater or equal to 0.");
-            }
-
-            Weight = stakingWeight;
-            Usd = stakingUsd;
+            Weight = stakingWeight ?? throw new ArgumentNullException(nameof(stakingWeight), "Staking weight must be provided.");
+            Usd = stakingUsd ?? throw new ArgumentNullException(nameof(stakingUsd), "Staking USD must be provided.");;
         }
 
-        public UInt256 Weight { get; private set; }
-        public decimal Usd { get; private set; }
+        public Ohlc<UInt256> Weight { get; }
+        public Ohlc<decimal> Usd { get; }
 
         internal void SetStaking(StakeLog log, decimal stakingTokenUsd)
         {
-            if (stakingTokenUsd > 0)
-            {
-                Usd = MathExtensions.TotalFiat(log.TotalStaked, stakingTokenUsd, TokenConstants.Opdex.Sats);
-            }
-
-            Weight = log.TotalStaked;
+            UpdateUsd(log.TotalStaked, stakingTokenUsd);
+            Weight.Update(log.TotalStaked);
         }
 
         internal void RefreshStaking(decimal stakingTokenUsd)
         {
-            Usd = stakingTokenUsd > 0
-                ? MathExtensions.TotalFiat(Weight, stakingTokenUsd, TokenConstants.Opdex.Sats)
-                : 0m;
+            UpdateUsd(Weight.Close, stakingTokenUsd);
+        }
+
+        private void UpdateUsd(UInt256 weight, decimal stakingTokenUsd)
+        {
+            Usd.Update(MathExtensions.TotalFiat(weight, stakingTokenUsd, TokenConstants.Opdex.Sats));
         }
     }
 }

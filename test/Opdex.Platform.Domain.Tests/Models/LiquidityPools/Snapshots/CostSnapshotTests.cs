@@ -1,6 +1,7 @@
 using FluentAssertions;
+using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
-using Opdex.Platform.Domain.Models.OHLC;
 using System;
 using Xunit;
 
@@ -12,8 +13,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void CreateCostSnapshot_InvalidCrsPerSrc_ThrowsArgumentNullException()
         {
             // Arrange
-            OhlcBigIntSnapshot crsPerSrc = null;
-            var srcPerCrs = new OhlcBigIntSnapshot();
+            Ohlc<UInt256> crsPerSrc = null;
+            var srcPerCrs = new Ohlc<UInt256>();
 
             // Act
             void Act() => new CostSnapshot(crsPerSrc, srcPerCrs);
@@ -26,8 +27,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void CreateCostSnapshot_InvalidCostUsd_ThrowsArgumentNullException()
         {
             // Arrange
-            var crsPerSrc = new OhlcBigIntSnapshot();
-            OhlcBigIntSnapshot srcPerCrs = null;
+            var crsPerSrc = new Ohlc<UInt256>();
+            Ohlc<UInt256> srcPerCrs = null;
 
             // Act
             void Act() => new CostSnapshot(crsPerSrc, srcPerCrs);
@@ -40,8 +41,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void CreateCostSnapshot_Success()
         {
             // Arrange
-            var crsPerSrc = new OhlcBigIntSnapshot();
-            var srcPerCrs = new OhlcBigIntSnapshot();
+            var crsPerSrc = new Ohlc<UInt256>();
+            var srcPerCrs = new Ohlc<UInt256>();
 
             // Act
             var snapshot = new CostSnapshot(crsPerSrc, srcPerCrs);

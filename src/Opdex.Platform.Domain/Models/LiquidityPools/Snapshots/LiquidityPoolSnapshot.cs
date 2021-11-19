@@ -92,7 +92,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Staking.RefreshStaking(stakingTokenUsd);
 
             // Refresh costs (mainly reset OHLC)
-            Cost.SetCost(Reserves.Crs, Reserves.Src, srcSats, true);
+            Cost.SetCost(Reserves.Crs.Close, Reserves.Src.Close, srcSats, true);
 
             // Refresh reserves (USD amounts)
             Reserves.RefreshReserves(crsUsd);
@@ -184,7 +184,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         public void ProcessSwapLog(SwapLog log, decimal crsUsd, decimal srcUsd, ulong srcSats, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
         {
             Volume.SetVolume(log, crsUsd, srcUsd, srcSats);
-            Rewards.SetRewards(Volume.Usd, Staking.Weight, isStakingPool, transactionFee, marketFeeEnabled);
+            Rewards.SetRewards(Volume.Usd, Staking.Weight.Close, isStakingPool, transactionFee, marketFeeEnabled);
         }
 
         /// <summary>

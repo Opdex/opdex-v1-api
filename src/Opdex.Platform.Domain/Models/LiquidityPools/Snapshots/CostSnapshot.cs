@@ -1,7 +1,6 @@
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
-using Opdex.Platform.Domain.Models.OHLC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,24 +11,24 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
     {
         public CostSnapshot()
         {
-            CrsPerSrc = new OhlcBigIntSnapshot();
-            SrcPerCrs = new OhlcBigIntSnapshot();
+            CrsPerSrc = new Ohlc<UInt256>();
+            SrcPerCrs = new Ohlc<UInt256>();
         }
 
         public CostSnapshot(IList<CostSnapshot> snapshots)
         {
-            CrsPerSrc = new OhlcBigIntSnapshot(snapshots.Select(snapshot => snapshot.CrsPerSrc).ToList());
-            SrcPerCrs = new OhlcBigIntSnapshot(snapshots.Select(snapshot => snapshot.SrcPerCrs).ToList());
+            CrsPerSrc = new Ohlc<UInt256>(snapshots.Select(snapshot => snapshot.CrsPerSrc).ToList());
+            SrcPerCrs = new Ohlc<UInt256>(snapshots.Select(snapshot => snapshot.SrcPerCrs).ToList());
         }
 
-        public CostSnapshot(OhlcBigIntSnapshot crsPerSrc, OhlcBigIntSnapshot srcPerCrs)
+        public CostSnapshot(Ohlc<UInt256> crsPerSrc, Ohlc<UInt256> srcPerCrs)
         {
             CrsPerSrc = crsPerSrc ?? throw new ArgumentNullException(nameof(crsPerSrc), $"{nameof(crsPerSrc)} cannot be null.");
             SrcPerCrs = srcPerCrs ?? throw new ArgumentNullException(nameof(srcPerCrs), $"{nameof(srcPerCrs)} cannot be null.");
         }
 
-        public OhlcBigIntSnapshot CrsPerSrc { get; }
-        public OhlcBigIntSnapshot SrcPerCrs { get; }
+        public Ohlc<UInt256> CrsPerSrc { get; }
+        public Ohlc<UInt256> SrcPerCrs { get; }
 
         internal void SetCost(ulong reserveCrs, UInt256 reserveSrc, ulong srcSats, bool reset = false)
         {

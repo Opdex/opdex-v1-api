@@ -1,4 +1,3 @@
-using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots

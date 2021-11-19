@@ -1,7 +1,6 @@
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
-using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
 
@@ -11,9 +10,9 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
     {
         public ReservesSnapshot()
         {
-            Crs = 0;
-            Src = UInt256.Zero;
-            Usd = new OhlcDecimalSnapshot();
+            Crs = new Ohlc<ulong>();
+            Src = new Ohlc<UInt256>();
+            Usd = new Ohlc<decimal>();
         }
 
         public ReservesSnapshot(ReservesSnapshot snapshots)
@@ -23,21 +22,21 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Usd = snapshots.Usd;
         }
 
-        public ReservesSnapshot(ulong reserveCrs, UInt256 reserveSrc, OhlcDecimalSnapshot reserveUsd)
+        public ReservesSnapshot(Ohlc<ulong> reserveCrs, Ohlc<UInt256> reserveSrc, Ohlc<decimal> reserveUsd)
         {
             Crs = reserveCrs;
             Src = reserveSrc;
-            Usd = reserveUsd ?? new OhlcDecimalSnapshot();
+            Usd = reserveUsd ?? throw new ArgumentNullException(nameof(reserveUsd), "Reserves USD cannot be null.");
         }
 
-        public ulong Crs { get; private set; }
-        public UInt256 Src { get; private set; }
-        public OhlcDecimalSnapshot Usd { get; }
+        public Ohlc<ulong> Crs { get; }
+        public Ohlc<UInt256> Src { get; }
+        public Ohlc<decimal> Usd { get; }
 
         internal void SetReserves(ReservesLog log, decimal crsUsd)
         {
-            Crs = log.ReserveCrs;
-            Src = log.ReserveSrc;
+            Crs.Update(log.ReserveCrs);
+            Src.Update(log.ReserveSrc);
             UpdateUsdReserves(crsUsd);
         }
 
@@ -48,7 +47,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 
         private void UpdateUsdReserves(decimal crsUsd)
         {
-            var totalCrsUsd = MathExtensions.TotalFiat(Crs, crsUsd, TokenConstants.Cirrus.Sats);
+            var totalCrsUsd = MathExtensions.TotalFiat(Crs.Close, crsUsd, TokenConstants.Cirrus.Sats);
             var totalUsd = Math.Round(totalCrsUsd * 2, TokenConstants.Cirrus.Decimals);
             Usd.Update(totalUsd);
         }

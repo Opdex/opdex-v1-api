@@ -4,7 +4,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshot
 {
     public class StakingSnapshotDto
     {
-        public FixedDecimal Weight { get; set; }
-        public decimal Usd { get; set; }
+        public OhlcDto<FixedDecimal> Weight { get; set; }
+        public OhlcDto<decimal> Usd { get; set; }
     }
 }

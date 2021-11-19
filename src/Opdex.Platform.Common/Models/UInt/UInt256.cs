@@ -6,7 +6,7 @@ namespace Opdex.Platform.Common.Models.UInt
     /// <summary>
     /// Borrowed and referencing https://github.com/stratisproject/Stratis.SmartContracts/blob/master/Stratis.SmartContracts/UInt256.cs
     /// </summary>
-    public struct UInt256 : IComparable
+    public struct UInt256 : IComparable, IComparable<UInt256>
     {
         const int WIDTH = 32;
 
@@ -227,6 +227,11 @@ namespace Opdex.Platform.Common.Models.UInt
         public override string ToString()
         {
             return this.value.ToString();
+        }
+
+        public int CompareTo(UInt256 other)
+        {
+            return value.CompareTo(other.value);
         }
     }
 }

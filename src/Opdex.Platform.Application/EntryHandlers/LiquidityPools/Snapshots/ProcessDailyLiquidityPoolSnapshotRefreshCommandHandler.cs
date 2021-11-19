@@ -27,8 +27,8 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
 
             // Process new token snapshot
             var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(request.MarketId, request.SrcToken, request.SnapshotType,
-                                                                                 request.BlockTime, request.CrsUsd, lpSnapshot.Reserves.Crs,
-                                                                                 lpSnapshot.Reserves.Src, request.BlockHeight));
+                                                                                 request.BlockTime, request.CrsUsd, lpSnapshot.Reserves.Crs.Close,
+                                                                                 lpSnapshot.Reserves.Src.Close, request.BlockHeight));
 
             // When processing a liquidity pool of a staking token, use the srcUsd value instead.
             var stakingUsd = request.StakingTokenUsd ?? srcUsd;

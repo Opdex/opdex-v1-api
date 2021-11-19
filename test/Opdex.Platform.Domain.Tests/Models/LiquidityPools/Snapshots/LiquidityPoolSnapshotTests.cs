@@ -3,8 +3,8 @@ using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
-using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
 using System.Collections.Generic;
@@ -92,11 +92,14 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             const ulong id = 12345;
             const ulong liquidityPoolId = 124;
             const long transactionCount = 1;
-            var reserves = new ReservesSnapshot(100_000_000, 200000000, new OhlcDecimalSnapshot(3.00m, 3.00m, 3.00m, 3.00m)); // 1 crs, 2 src,
+            var reserves = new ReservesSnapshot(new Ohlc<ulong>(100_000_000, 100_000_000, 100_000_000, 100_000_000),
+                                                new Ohlc<UInt256>(200000000, 200000000, 200000000, 200000000),
+                                                new Ohlc<decimal>(3.00m, 3.00m, 3.00m, 3.00m)); // 1 crs, 2 src,
             var rewards = new RewardsSnapshot(5.00m, 1.00m);
-            var staking = new StakingSnapshot(50000000, 10.00m);
+            var staking = new StakingSnapshot(new Ohlc<UInt256>(50000000, 50000000, 50000000, 50000000),
+                                              new Ohlc<decimal>(10.00m, 10.00m, 10.00m, 10.00m));
             var volume = new VolumeSnapshot(100, 300, 515.23m);
-            var cost = new CostSnapshot(new OhlcBigIntSnapshot(10, 100, 9, 50), new OhlcBigIntSnapshot(50, 125, 50, 100));
+            var cost = new CostSnapshot(new Ohlc<UInt256>(10, 100, 9, 50), new Ohlc<UInt256>(50, 125, 50, 100));
             const SnapshotType snapshotType = SnapshotType.Daily;
             var startDate = new DateTime(2021, 6, 21);
             var endDate = new DateTime(2021, 6, 21, 23, 59, 59);
@@ -109,8 +112,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Id.Should().Be(0L);
             snapshot.Volume.Should().BeEquivalentTo(new VolumeSnapshot());
             snapshot.Rewards.Should().BeEquivalentTo(new RewardsSnapshot());
-            snapshot.Staking.Usd.Should().Be(.25m); // .5 staking * .5
-            snapshot.Staking.Weight.Should().Be(staking.Weight);
+            snapshot.Staking.Usd.Should().BeEquivalentTo(new Ohlc<decimal>(staking.Usd.Open, staking.Usd.High, .25m, .25m)); // .5 staking * .5
+            snapshot.Staking.Weight.Should().BeEquivalentTo(new Ohlc<UInt256>(staking.Weight.Close, staking.Weight.Close, staking.Weight.Close, staking.Weight.Close));
             snapshot.Cost.CrsPerSrc.Open.Should().Be(cost.CrsPerSrc.Close); // Rolls close to open
             snapshot.Cost.SrcPerCrs.Open.Should().Be(cost.SrcPerCrs.Close); // Rolls close to open
             snapshot.Reserves.Usd.Open.Should().Be(3m);
@@ -168,12 +171,14 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             const decimal stakingTokenPrice = .5m;
 
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount,
-                                                     new ReservesSnapshot(reserveCrs, reserveSrc, new OhlcDecimalSnapshot(reserveUsd, reserveUsd, reserveUsd, reserveUsd)),
-                                                     new RewardsSnapshot(rewardsProviderUsd, rewardsMarketUsd),
-                                                     new StakingSnapshot(stakingWeight, stakingUsd),
+                                                     new ReservesSnapshot(new Ohlc<ulong>(reserveCrs, reserveCrs, reserveCrs, reserveCrs),
+                                                                          new Ohlc<UInt256>(reserveSrc, reserveSrc, reserveSrc, reserveSrc),
+                                                                          new Ohlc<decimal>(reserveUsd, reserveUsd, reserveUsd, reserveUsd)),                                                     new RewardsSnapshot(rewardsProviderUsd, rewardsMarketUsd),
+                                                     new StakingSnapshot(new Ohlc<UInt256>(stakingWeight, stakingWeight, stakingWeight, stakingWeight),
+                                                                         new Ohlc<decimal>(stakingUsd, stakingUsd, stakingUsd, stakingUsd)),
                                                      new VolumeSnapshot(volumeCrs, volumeSrc, volumeUsd),
-                                                     new CostSnapshot(new OhlcBigIntSnapshot(crsPerSrcOpen, crsPerSrcHigh, crsPerSrcLow, crsPerSrcClose),
-                                                                      new OhlcBigIntSnapshot(srcPerCrsOpen, srcPerCrsHigh, srcPerCrsLow, srcPerCrsClose)),
+                                                     new CostSnapshot(new Ohlc<UInt256>(crsPerSrcOpen, crsPerSrcHigh, crsPerSrcLow, crsPerSrcClose),
+                                                                      new Ohlc<UInt256>(srcPerCrsOpen, srcPerCrsHigh, srcPerCrsLow, srcPerCrsClose)),
                                                      snapshotType, startDate, endDate, startDate);
 
             // Act
@@ -186,8 +191,14 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Volume.Usd.Should().Be(volumeUsd);
             snapshot.Rewards.ProviderUsd.Should().Be(rewardsProviderUsd);
             snapshot.Rewards.MarketUsd.Should().Be(rewardsMarketUsd);
-            snapshot.Staking.Weight.Should().Be(stakingWeight);
-            snapshot.Staking.Usd.Should().Be(.25m); // .5 staking * .5
+            snapshot.Staking.Weight.Open.Should().Be(stakingWeight);
+            snapshot.Staking.Weight.High.Should().Be(stakingWeight);
+            snapshot.Staking.Weight.Low.Should().Be(stakingWeight);
+            snapshot.Staking.Weight.Close.Should().Be(stakingWeight);
+            snapshot.Staking.Usd.Open.Should().Be(stakingUsd);
+            snapshot.Staking.Usd.High.Should().Be(stakingUsd);
+            snapshot.Staking.Usd.Low.Should().Be(.25m); // .5 staking * .5
+            snapshot.Staking.Usd.Close.Should().Be(.25m); // .5 staking * .5
             snapshot.Cost.SrcPerCrs.Open.Should().Be(srcPerCrsOpen);
             snapshot.Cost.SrcPerCrs.High.Should().Be(srcPerCrsHigh);
             snapshot.Cost.SrcPerCrs.Low.Should().Be(srcPerCrsLow);
@@ -196,8 +207,14 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Cost.CrsPerSrc.High.Should().Be(crsPerSrcHigh);
             snapshot.Cost.CrsPerSrc.Low.Should().Be(crsPerSrcLow);
             snapshot.Cost.CrsPerSrc.Close.Should().Be(crsPerSrcClose);
-            snapshot.Reserves.Crs.Should().Be(reserveCrs);
-            snapshot.Reserves.Src.Should().Be(reserveSrc);
+            snapshot.Reserves.Crs.Open.Should().Be(reserveCrs);
+            snapshot.Reserves.Crs.High.Should().Be(reserveCrs);
+            snapshot.Reserves.Crs.Low.Should().Be(reserveCrs);
+            snapshot.Reserves.Crs.Close.Should().Be(reserveCrs);
+            snapshot.Reserves.Src.Open.Should().Be(reserveSrc);
+            snapshot.Reserves.Src.High.Should().Be(reserveSrc);
+            snapshot.Reserves.Src.Low.Should().Be(reserveSrc);
+            snapshot.Reserves.Src.Close.Should().Be(reserveSrc);
             snapshot.Reserves.Usd.Open.Should().Be(reserveUsd);
             snapshot.Reserves.Usd.High.Should().Be(20m);
             snapshot.Reserves.Usd.Low.Should().Be(reserveUsd);
@@ -214,11 +231,14 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             const ulong id = 12345;
             const ulong liquidityPoolId = 124;
             const long transactionCount = 1;
-            var reserves = new ReservesSnapshot(100_000_000, 200000000, new OhlcDecimalSnapshot(3.00m, 3.00m, 3.00m, 3.00m)); // 1 crs, 2 src,
+            var reserves = new ReservesSnapshot(new Ohlc<ulong>(100_000_000, 100_000_000, 100_000_000, 100_000_000),
+                                                new Ohlc<UInt256>(200000000, 200000000, 200000000, 200000000),
+                                                new Ohlc<decimal>(3.00m, 3.00m, 3.00m, 3.00m)); // 1 crs, 2 src,
             var rewards = new RewardsSnapshot(.50m, .10m);
-            var staking = new StakingSnapshot(50000000, 10.00m);
+            var staking = new StakingSnapshot(new Ohlc<UInt256>(50000000, 50000000, 50000000, 50000000),
+                                              new Ohlc<decimal>(10.00m, 10.00m, 10.00m, 10.00m));
             var volume = new VolumeSnapshot(100, 300, 515.23m);
-            var cost = new CostSnapshot(new OhlcBigIntSnapshot(10, 100, 9, 50), new OhlcBigIntSnapshot(50, 125, 50, 100));
+            var cost = new CostSnapshot(new Ohlc<UInt256>(10, 100, 9, 50), new Ohlc<UInt256>(50, 125, 50, 100));
             const SnapshotType snapshotType = SnapshotType.Daily;
             var startDate = new DateTime(2021, 6, 21);
             var endDate = new DateTime(2021, 6, 21, 23, 59, 59);
@@ -303,12 +323,15 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             var reservesLog = new ReservesLog(txReservesLog, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 1);
 
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount,
-                                                     new ReservesSnapshot(reserveCrs, reserveSrc, new OhlcDecimalSnapshot(reserveUsd, reserveUsd, reserveUsd, reserveUsd)),
+                                                     new ReservesSnapshot(new Ohlc<ulong>(reserveCrs, reserveCrs, reserveCrs, reserveCrs),
+                                                                          new Ohlc<UInt256>(reserveSrc, reserveSrc, reserveSrc, reserveSrc),
+                                                                          new Ohlc<decimal>(reserveUsd, reserveUsd, reserveUsd, reserveUsd)),
                                                      new RewardsSnapshot(rewardsProviderUsd, rewardsMarketUsd),
-                                                     new StakingSnapshot(stakingWeight, stakingUsd),
+                                                     new StakingSnapshot(new Ohlc<UInt256>(stakingWeight, stakingWeight, stakingWeight, stakingWeight),
+                                                                         new Ohlc<decimal>(stakingUsd, stakingUsd, stakingUsd, stakingUsd)),
                                                      new VolumeSnapshot(volumeCrs, volumeSrc, volumeUsd),
-                                                     new CostSnapshot(new OhlcBigIntSnapshot(crsPerSrcOpen, crsPerSrcHigh, crsPerSrcLow, crsPerSrcClose),
-                                                                      new OhlcBigIntSnapshot(srcPerCrsOpen, srcPerCrsHigh, srcPerCrsLow, srcPerCrsClose)),
+                                                     new CostSnapshot(new Ohlc<UInt256>(crsPerSrcOpen, crsPerSrcHigh, crsPerSrcLow, crsPerSrcClose),
+                                                                      new Ohlc<UInt256>(srcPerCrsOpen, srcPerCrsHigh, srcPerCrsLow, srcPerCrsClose)),
                                                      snapshotType, startDate, endDate, startDate);
 
             // Act
@@ -321,12 +344,12 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Volume.Usd.Should().Be(volumeUsd);
             snapshot.Rewards.ProviderUsd.Should().Be(rewardsProviderUsd);
             snapshot.Rewards.MarketUsd.Should().Be(rewardsMarketUsd);
-            snapshot.Staking.Weight.Should().Be(stakingWeight);
-            snapshot.Staking.Usd.Should().Be(stakingUsd);
+            snapshot.Staking.Weight.Should().BeEquivalentTo(new Ohlc<UInt256>(stakingWeight, stakingWeight, stakingWeight, stakingWeight));
+            snapshot.Staking.Usd.Should().BeEquivalentTo(new Ohlc<decimal>(stakingUsd, stakingUsd, stakingUsd, stakingUsd));
             snapshot.Cost.SrcPerCrs.Close.Should().NotBe(srcPerCrsOpen).And.NotBe(srcPerCrsClose);
             snapshot.Cost.CrsPerSrc.Close.Should().NotBe(crsPerSrcOpen).And.NotBe(crsPerSrcClose);
-            snapshot.Reserves.Crs.Should().Be(reserveCrs);
-            snapshot.Reserves.Src.Should().Be(reserveSrc);
+            snapshot.Reserves.Crs.Should().BeEquivalentTo(new Ohlc<ulong>(reserveCrs, reserveCrs, reserveCrs, reserveCrs));
+            snapshot.Reserves.Src.Should().BeEquivalentTo(new Ohlc<UInt256>(reserveSrc, reserveSrc, reserveSrc, reserveSrc));
             snapshot.Reserves.Usd.Close.Should().BeGreaterThan(reserveUsd);
             snapshot.TransactionCount.Should().Be(transactionCount);
             snapshot.StartDate.Should().Be(startDate);
@@ -388,12 +411,14 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             var stakingLog = new StartStakingLog(txStakingLog, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 1);
 
             var snapshot = new LiquidityPoolSnapshot(id, liquidityPoolId, transactionCount,
-                                                     new ReservesSnapshot(reserveCrs, reserveSrc, new OhlcDecimalSnapshot(reserveUsd, reserveUsd, reserveUsd, reserveUsd)),
-                                                     new RewardsSnapshot(rewardsProviderUsd, rewardsMarketUsd),
-                                                     new StakingSnapshot(stakingWeight, stakingUsd),
+                                                     new ReservesSnapshot(new Ohlc<ulong>(reserveCrs, reserveCrs, reserveCrs, reserveCrs),
+                                                                          new Ohlc<UInt256>(reserveSrc, reserveSrc, reserveSrc, reserveSrc),
+                                                                          new Ohlc<decimal>(reserveUsd, reserveUsd, reserveUsd, reserveUsd)),                                                     new RewardsSnapshot(rewardsProviderUsd, rewardsMarketUsd),
+                                                     new StakingSnapshot(new Ohlc<UInt256>(stakingWeight, stakingWeight, stakingWeight, stakingWeight),
+                                                                         new Ohlc<decimal>(stakingUsd, stakingUsd, stakingUsd, stakingUsd)),
                                                      new VolumeSnapshot(volumeCrs, volumeSrc, volumeUsd),
-                                                     new CostSnapshot(new OhlcBigIntSnapshot(crsPerSrcOpen, crsPerSrcHigh, crsPerSrcLow, crsPerSrcClose),
-                                                                      new OhlcBigIntSnapshot(srcPerCrsOpen, srcPerCrsHigh, srcPerCrsLow, srcPerCrsClose)),
+                                                     new CostSnapshot(new Ohlc<UInt256>(crsPerSrcOpen, crsPerSrcHigh, crsPerSrcLow, crsPerSrcClose),
+                                                                      new Ohlc<UInt256>(srcPerCrsOpen, srcPerCrsHigh, srcPerCrsLow, srcPerCrsClose)),
                                                      snapshotType, startDate, endDate, startDate);
 
             // Act
@@ -406,8 +431,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Volume.Usd.Should().Be(volumeUsd);
             snapshot.Rewards.ProviderUsd.Should().Be(rewardsProviderUsd);
             snapshot.Rewards.MarketUsd.Should().Be(rewardsMarketUsd);
-            snapshot.Staking.Weight.Should().Be(totalStaked);
-            snapshot.Staking.Usd.Should().Be(100.00m);
+            snapshot.Staking.Weight.Should().BeEquivalentTo(new Ohlc<UInt256>(stakingWeight, totalStaked, stakingWeight, totalStaked));
+            snapshot.Staking.Usd.Should().BeEquivalentTo(new Ohlc<decimal>(10m, 100.00m, 10m, 100.00m));
             snapshot.Cost.SrcPerCrs.Open.Should().Be(srcPerCrsOpen);
             snapshot.Cost.SrcPerCrs.High.Should().Be(srcPerCrsHigh);
             snapshot.Cost.SrcPerCrs.Low.Should().Be(srcPerCrsLow);
@@ -416,8 +441,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Cost.CrsPerSrc.High.Should().Be(crsPerSrcHigh);
             snapshot.Cost.CrsPerSrc.Low.Should().Be(crsPerSrcLow);
             snapshot.Cost.CrsPerSrc.Close.Should().Be(crsPerSrcClose);
-            snapshot.Reserves.Crs.Should().Be(reserveCrs);
-            snapshot.Reserves.Src.Should().Be(reserveSrc);
+            snapshot.Reserves.Crs.Should().BeEquivalentTo(new Ohlc<ulong>(reserveCrs, reserveCrs, reserveCrs, reserveCrs));
+            snapshot.Reserves.Src.Should().BeEquivalentTo(new Ohlc<UInt256>(reserveSrc, reserveSrc, reserveSrc, reserveSrc));
             snapshot.Reserves.Usd.Open.Should().Be(reserveUsd);
             snapshot.Reserves.Usd.High.Should().Be(reserveUsd);
             snapshot.Reserves.Usd.Low.Should().Be(reserveUsd);

@@ -8,7 +8,6 @@ using Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
-using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Deployers;
@@ -218,7 +217,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.MiningPools))
                 .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 
-            CreateMap<OhlcDecimalDto, OhlcDecimalResponseModel>()
+            CreateMap<OhlcDto<decimal>, OhlcDecimalResponseModel>()
                 .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
                 .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
                 .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))

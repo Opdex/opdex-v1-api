@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens
 {
@@ -9,7 +8,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens
         public ulong Id { get; set; }
         public ulong MarketId { get; set; }
         public ulong TokenId { get; set; }
-        public OhlcDecimalEntity Price { get; set; }
+        public OhlcEntity<decimal> Price { get; set; }
         public string Details
         {
             get => SerializeSnapshotDetails();
@@ -23,7 +22,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens
 
         private void DeserializeSnapshotDetails(string details)
         {
-            Price = JsonConvert.DeserializeObject<OhlcDecimalEntity>(details) ??
+            Price = JsonConvert.DeserializeObject<OhlcEntity<decimal>>(details) ??
                     throw new Exception("Invalid token snapshot details.");
         }
     }

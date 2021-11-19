@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
-using Opdex.Platform.Domain.Models.OHLC;
 using Xunit;
 
 namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
@@ -12,9 +12,9 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void CreateReservesSnapshot_Success()
         {
             // Arrange
-            const ulong reserveCrs = 123;
-            UInt256 reserveSrc = 321;
-            var reserveUsd = new OhlcDecimalSnapshot(1.23m, 2.0m, 0.02m, 1.56m);
+            var reserveSrc = new Ohlc<UInt256>(321, 321, 321, 321);
+            var reserveUsd = new Ohlc<decimal>(1.23m, 2.0m, 0.02m, 1.56m);
+            var reserveCrs = new Ohlc<ulong>(123, 123, 123, 123);
 
             // Act
             var snapshot = new ReservesSnapshot(reserveCrs, reserveSrc, reserveUsd);
@@ -33,9 +33,9 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             var snapshot = new ReservesSnapshot();
 
             // Assert
-            snapshot.Crs.Should().Be(0ul);
-            snapshot.Src.Should().Be(UInt256.Zero);
-            snapshot.Usd.Should().BeEquivalentTo(new OhlcDecimalSnapshot());
+            snapshot.Crs.Should().BeEquivalentTo(new Ohlc<ulong>());
+            snapshot.Src.Should().BeEquivalentTo(new Ohlc<UInt256>());
+            snapshot.Usd.Should().BeEquivalentTo(new Ohlc<decimal>());
         }
     }
 }

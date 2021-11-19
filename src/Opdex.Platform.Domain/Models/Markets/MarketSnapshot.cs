@@ -135,10 +135,12 @@ namespace Opdex.Platform.Domain.Models.Markets
             Liquidity += poolSnapshot.Reserves.Usd.Close;
             Volume += poolSnapshot.Volume.Usd;
 
-            var stakingUsd = Staking.Usd + poolSnapshot.Staking.Usd;
-            var stakingWeight = Staking.Weight + poolSnapshot.Staking.Weight;
-
-            Staking = new StakingSnapshot(stakingWeight, stakingUsd);
+            // This isn't exactly going to work correctly with OHLC
+            // var stakingUsd = Staking.Usd.Close + poolSnapshot.Staking.Usd.Close;
+            // var stakingWeight = Staking.Weight.Close + poolSnapshot.Staking.Weight.Close;
+            //
+            // Staking.Usd.Update(stakingUsd);
+            // Staking.Weight.Update(stakingWeight);
 
             var rewardsMarketUsd = Rewards.MarketUsd + poolSnapshot.Rewards.MarketUsd;
             var rewardsProviderUsd = Rewards.ProviderUsd + poolSnapshot.Rewards.ProviderUsd;

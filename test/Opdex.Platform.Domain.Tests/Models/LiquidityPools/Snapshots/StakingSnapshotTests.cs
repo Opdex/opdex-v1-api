@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
-using System;
 using Xunit;
 
 namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
@@ -9,24 +9,11 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
     public class StakingSnapshotTests
     {
         [Fact]
-        public void CreateStakingSnapshot_InvalidUsd_ThrowsArgumentOutOfRangeException()
-        {
-            // Arrange
-            const decimal stakingUsd = -1.00m;
-
-            // Act
-            void Act() => new StakingSnapshot(1234, stakingUsd);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain($"{nameof(stakingUsd)} must be greater or equal to 0.");
-        }
-
-        [Fact]
         public void CreateStakingSnapshot_Success()
         {
             // Arrange
-            UInt256 stakingWeight = 123;
-            const decimal stakingUsd = 1.23m;
+            var stakingUsd = new Ohlc<decimal>(1.23m, 2.0m, 0.02m, 1.56m);
+            var stakingWeight = new Ohlc<UInt256>(123, 123, 123, 123);
 
             // Act
             var snapshot = new StakingSnapshot(stakingWeight, stakingUsd);
@@ -44,8 +31,8 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             var snapshot = new StakingSnapshot();
 
             // Assert
-            snapshot.Weight.Should().Be(UInt256.Zero);
-            snapshot.Usd.Should().Be(0.00m);
+            snapshot.Weight.Should().BeEquivalentTo(new Ohlc<UInt256>());
+            snapshot.Usd.Should().BeEquivalentTo(new Ohlc<decimal>());
         }
     }
 }

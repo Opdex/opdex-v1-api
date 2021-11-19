@@ -2,7 +2,7 @@ using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Models.Responses.OHLC
 {
-    public class OhlcBigIntResponseModel
+    public class OhlcFixedDecimalResponseModel
     {
         public FixedDecimal Open { get; set; }
         public FixedDecimal High { get; set; }

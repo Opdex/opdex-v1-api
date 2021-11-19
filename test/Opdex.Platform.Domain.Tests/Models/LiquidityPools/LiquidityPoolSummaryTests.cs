@@ -1,9 +1,9 @@
 using FluentAssertions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
-using Opdex.Platform.Domain.Models.OHLC;
 using System;
 using Xunit;
 
@@ -71,20 +71,23 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
             // Assert
             summary.LiquidityUsd.Should().Be(snapshot.Reserves.Usd.Close);
             summary.VolumeUsd.Should().Be(snapshot.Volume.Usd);
-            summary.StakingWeight.Should().Be((ulong)snapshot.Staking.Weight);
-            summary.LockedCrs.Should().Be(snapshot.Reserves.Crs);
-            summary.LockedSrc.Should().Be(snapshot.Reserves.Src);
+            summary.StakingWeight.Should().Be((ulong)snapshot.Staking.Weight.Close);
+            summary.LockedCrs.Should().Be(snapshot.Reserves.Crs.Close);
+            summary.LockedSrc.Should().Be(snapshot.Reserves.Src.Close);
         }
 
         private static LiquidityPoolSnapshot GetLiquidityPoolSnapshot(ulong liquidityPoolId)
         {
             const ulong id = 12345;
             const long transactionCount = 1;
-            var reserves = new ReservesSnapshot(100_000_000, 200000000, new OhlcDecimalSnapshot(3m, 3m, 3m, 3m)); // 1 crs, 2 src,
+            var reserves = new ReservesSnapshot(new Ohlc<ulong>(100_000_000, 100_000_000, 100_000_000, 100_000_000),
+                                                new Ohlc<UInt256>(200000000, 200000000, 200000000, 200000000),
+                                                new Ohlc<decimal>(3m, 3m, 3m, 3m)); // 1 crs, 2 src,
+            var staking = new StakingSnapshot(new Ohlc<UInt256>(50000000,50000000,50000000,50000000),
+                                              new Ohlc<decimal>(10.00m, 10.00m, 10.00m, 10.00m));
             var rewards = new RewardsSnapshot(5.00m, 1.00m);
-            var staking = new StakingSnapshot(50000000, 10.00m);
             var volume = new VolumeSnapshot(100, 300, 515.23m);
-            var cost = new CostSnapshot(new OhlcBigIntSnapshot(10, 100, 9, 50), new OhlcBigIntSnapshot(50, 125, 50, 100));
+            var cost = new CostSnapshot(new Ohlc<UInt256>(10, 100, 9, 50), new Ohlc<UInt256>(50, 125, 50, 100));
             const SnapshotType snapshotType = SnapshotType.Daily;
             var startDate = new DateTime(2021, 6, 21);
             var endDate = new DateTime(2021, 6, 21, 23, 59, 59);

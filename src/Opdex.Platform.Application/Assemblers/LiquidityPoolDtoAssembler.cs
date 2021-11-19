@@ -52,8 +52,7 @@ namespace Opdex.Platform.Application.Assemblers
             poolDto.CrsToken = await AssembleToken(Address.Cirrus);
             poolDto.SrcToken = await AssembleMarketToken(pool.SrcTokenId, market);
             poolDto.LpToken = await AssembleMarketToken(pool.LpTokenId, market);
-            var stakingToken = market.IsStakingMarket && pool.SrcTokenId != market.StakingTokenId
-                ? await AssembleMarketToken(market.StakingTokenId, market) : null;
+            var stakingToken = market.IsStakingMarket && pool.SrcTokenId != market.StakingTokenId ? await AssembleMarketToken(market.StakingTokenId, market) : null;
             var stakingEnabled = stakingToken != null;
 
             // Set Transaction Fee - range from 1-10 to output percentage (e.g. 1 output .1 as in .1%)
@@ -66,7 +65,7 @@ namespace Opdex.Platform.Application.Assemblers
                     Crs = new FixedDecimal(summary.LockedCrs, TokenConstants.Cirrus.Decimals),
                     Src = new FixedDecimal(summary.LockedSrc, (byte)poolDto.SrcToken.Decimals),
                     Usd = summary.LiquidityUsd,
-                    DailyUsdChangePercent = 0 // Todo: Get
+                    DailyUsdChangePercent = summary.DailyLiquidityUsdChangePercent
                 },
                 Cost = new CostDto
                 {
@@ -94,7 +93,7 @@ namespace Opdex.Platform.Application.Assemblers
                 Token = stakingToken,
                 Weight = summary.StakingWeight,
                 Usd = MathExtensions.TotalFiat(summary.StakingWeight, stakingToken.Summary.PriceUsd, stakingToken.Sats),
-                DailyWeightChangePercent = 0, // Todo: Get
+                DailyWeightChangePercent = summary.DailyStakingWeightChangePercent,
                 Nominated = nominations.Any(nomination => nomination.LiquidityPoolId == poolDto.Id)
             };
 

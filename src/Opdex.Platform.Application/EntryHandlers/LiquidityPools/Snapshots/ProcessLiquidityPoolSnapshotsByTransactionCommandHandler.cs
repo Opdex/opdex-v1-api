@@ -166,7 +166,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                     if (snapshot.EndDate < block.MedianTime)
                     {
                         await _mediator.Send(new ProcessSrcTokenSnapshotCommand(liquidityPool.MarketId, srcToken, snapshotType, snapshot.EndDate,
-                                                                                crsSnapshot.Price.Close, snapshot.Reserves.Crs, snapshot.Reserves.Src,
+                                                                                crsSnapshot.Price.Close, snapshot.Reserves.Crs.Close, snapshot.Reserves.Src.Close,
                                                                                 block.Height));
 
                         snapshot.ResetStaleSnapshot(crsSnapshot.Price.Close, stakingTokenUsd, srcToken.Sats, block.MedianTime);

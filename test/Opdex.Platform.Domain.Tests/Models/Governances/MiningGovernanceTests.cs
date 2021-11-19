@@ -137,7 +137,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Governances
             // Assert
             governance.NominationPeriodEnd.Should().Be(summary.NominationPeriodEnd);
             governance.MiningPoolsFunded.Should().Be(summary.MiningPoolsFunded);
-            governance.MiningPoolReward.Should().Be(summary.MiningPoolReward);
+            governance.MiningPoolReward.Should().Be(summary.MiningPoolReward.GetValueOrDefault());
             governance.MiningDuration.Should().Be(miningDuration);
             governance.ModifiedBlock.Should().Be(modifiedBlock);
         }
