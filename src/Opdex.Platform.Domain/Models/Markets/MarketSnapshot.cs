@@ -22,7 +22,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             }
 
             MarketId = marketId;
-            Liquidity = 0.00m;
+            Liquidity = new Ohlc<decimal>();
             Volume = 0.00m;
             Staking = new StakingSnapshot();
             Rewards = new RewardsSnapshot();
@@ -31,7 +31,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             EndDate = dateTime.ToEndOf(snapshotType);
         }
 
-        public MarketSnapshot(ulong id, ulong marketId, decimal liquidity, decimal volume, StakingSnapshot staking, RewardsSnapshot rewards,
+        public MarketSnapshot(ulong id, ulong marketId, Ohlc<decimal> liquidity, decimal volume, StakingSnapshot staking, RewardsSnapshot rewards,
                               SnapshotType snapshotType, DateTime startDate, DateTime endDate)
         {
             Id = id;
@@ -47,7 +47,7 @@ namespace Opdex.Platform.Domain.Models.Markets
 
         public ulong Id { get; private set; }
         public ulong MarketId { get; }
-        public decimal Liquidity { get; private set; }
+        public Ohlc<decimal> Liquidity { get; private set; }
         public decimal Volume { get; private set; }
         public StakingSnapshot Staking { get; private set; }
         public RewardsSnapshot Rewards { get; private set; }
@@ -59,7 +59,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         /// Rewinds a daily snapshot using all existing hourly snapshots from the same day.
         /// </summary>
         /// <param name="snapshots">List of all hourly snapshots for the day.</param>
-        public void RewindSnapshot(IList<LiquidityPoolSnapshot> poolSnapshots)
+        public void RewindSnapshot(IList<LiquidityPoolSnapshot> snapshots)
         {
             // This snapshot must be a day
             if (SnapshotType != SnapshotType.Daily)
@@ -68,11 +68,11 @@ namespace Opdex.Platform.Domain.Models.Markets
             }
 
             // All provided snapshots must be valid
-            var allValidSnapshots = poolSnapshots.All(s =>
+            var allValidSnapshots = snapshots.All(s =>
             {
                 var isDailyType = s.SnapshotType == SnapshotType.Daily;
                 var sameDay = s.StartDate.Date == StartDate.Date && s.EndDate.Date == EndDate.Date;
-                var uniquePool = poolSnapshots.Count(p => p.LiquidityPoolId == s.Id) == 1;
+                var uniquePool = snapshots.Count(p => p.LiquidityPoolId == s.Id) == 1;
 
                 return isDailyType && sameDay && uniquePool;
             });
@@ -86,7 +86,7 @@ namespace Opdex.Platform.Domain.Models.Markets
             ResetCurrentSnapshot();
 
             // Rebuild the snapshot
-            foreach (var snapshot in poolSnapshots)
+            foreach (var snapshot in snapshots)
             {
                 Update(snapshot);
             }
@@ -110,7 +110,7 @@ namespace Opdex.Platform.Domain.Models.Markets
         /// </summary>
         public void ResetCurrentSnapshot()
         {
-            Liquidity = 0;
+            Liquidity = new Ohlc<decimal>();
             Volume = 0;
             Staking = new StakingSnapshot();
             Rewards = new RewardsSnapshot();
@@ -119,31 +119,30 @@ namespace Opdex.Platform.Domain.Models.Markets
         /// <summary>
         /// Add to the current snapshot state, updating liquidity, volume, staking and reward amounts.
         /// </summary>
-        /// <param name="poolSnapshot">The liquidity pool snapshot to add.</param>
-        public void Update(LiquidityPoolSnapshot poolSnapshot)
+        /// <param name="snapshot">The liquidity pool snapshot to add.</param>
+        public void Update(LiquidityPoolSnapshot snapshot)
         {
-            if (poolSnapshot.SnapshotType != SnapshotType.Daily)
+            if (snapshot.SnapshotType != SnapshotType.Daily)
             {
                 throw new Exception("Only daily liquidity snapshots can be used.");
             }
 
-            if (poolSnapshot.StartDate.Date != StartDate.Date || poolSnapshot.EndDate.Date != EndDate.Date)
+            if (snapshot.StartDate.Date != StartDate.Date || snapshot.EndDate.Date != EndDate.Date)
             {
                 throw new Exception("Market and liquidity pool snapshot dates do not match.");
             }
 
-            Liquidity += poolSnapshot.Reserves.Usd.Close;
-            Volume += poolSnapshot.Volume.Usd;
+            Liquidity.Update(Liquidity.Close + snapshot.Reserves.Usd.Close);
+            Volume += snapshot.Volume.Usd;
 
-            // This isn't exactly going to work correctly with OHLC
-            // var stakingUsd = Staking.Usd.Close + poolSnapshot.Staking.Usd.Close;
-            // var stakingWeight = Staking.Weight.Close + poolSnapshot.Staking.Weight.Close;
-            //
-            // Staking.Usd.Update(stakingUsd);
-            // Staking.Weight.Update(stakingWeight);
+            var stakingUsd = Staking.Usd.Close + snapshot.Staking.Usd.Close;
+            var stakingWeight = Staking.Weight.Close + snapshot.Staking.Weight.Close;
 
-            var rewardsMarketUsd = Rewards.MarketUsd + poolSnapshot.Rewards.MarketUsd;
-            var rewardsProviderUsd = Rewards.ProviderUsd + poolSnapshot.Rewards.ProviderUsd;
+            Staking.Usd.Update(stakingUsd);
+            Staking.Weight.Update(stakingWeight);
+
+            var rewardsMarketUsd = Rewards.MarketUsd + snapshot.Rewards.MarketUsd;
+            var rewardsProviderUsd = Rewards.ProviderUsd + snapshot.Rewards.ProviderUsd;
 
             Rewards = new RewardsSnapshot(rewardsProviderUsd, rewardsMarketUsd);
         }

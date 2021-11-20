@@ -158,7 +158,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketSnapshotEntity, MarketSnapshot>()
-                .ConstructUsing((src, ctx) => new MarketSnapshot(src.Id, src.MarketId, src.Liquidity, src.Volume,
+                .ConstructUsing((src, ctx) => new MarketSnapshot(src.Id, src.MarketId, ctx.Mapper.Map<Ohlc<decimal>>(src.Liquidity), src.Volume,
                                                                  ctx.Mapper.Map<StakingSnapshot>(src.Staking),
                                                                  ctx.Mapper.Map<RewardsSnapshot>(src.Rewards),
                                                                 (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate))

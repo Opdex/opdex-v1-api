@@ -38,6 +38,10 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
                 marketSnapshot.ResetCurrentSnapshot();
             }
 
+            // Todo: Task.WhenAll in chunks to get all liquidity pool's snapshots
+            // During chunks add to ottal list of snapshots
+            // Update market snapshot at once with agg totals, vs one at a time.
+
             // Each pool in the market
             foreach (var pool in marketPools)
             {

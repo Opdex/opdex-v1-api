@@ -7,7 +7,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets
     {
         public ulong Id { get; set; }
         public ulong MarketId { get; set; }
-        public decimal Liquidity { get; set; }
+        public OhlcEntity<decimal> Liquidity { get; set; }
         public decimal Volume { get; set; }
         public SnapshotStakingEntity Staking { get; set; }
         public SnapshotRewardsEntity Rewards { get; set; }
@@ -42,7 +42,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets
 
     internal struct MarketSnapshotDetailsEntity
     {
-        public decimal Liquidity;
+        public OhlcEntity<decimal> Liquidity;
         public decimal Volume;
         public SnapshotStakingEntity Staking;
         public SnapshotRewardsEntity Rewards;

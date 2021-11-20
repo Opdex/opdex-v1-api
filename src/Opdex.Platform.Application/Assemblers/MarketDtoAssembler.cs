@@ -4,9 +4,11 @@ using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -60,8 +62,11 @@ namespace Opdex.Platform.Application.Assemblers
             marketDto.Summary = _mapper.Map<MarketSnapshotDto>(currentMarketSnapshot);
 
             // Adjust daily change values
-            // marketDto.Summary.Staking.SetDailyChange(previousMarketSnapshot?.Staking?.Weight ?? UInt256.Zero);
-            marketDto.Summary.SetLiquidityDailyChange(previousMarketSnapshot?.Liquidity ?? 0);
+            marketDto.Summary.LiquidityDailyChange = MathExtensions.PercentChange(currentMarketSnapshot.Liquidity.Close,
+                                                                                  previousMarketSnapshot?.Liquidity?.Close ?? 0m);
+            marketDto.Summary.Staking.WeightDailyChange = MathExtensions.PercentChange(currentMarketSnapshot.Staking.Weight.Close,
+                                                                                       previousMarketSnapshot?.Staking?.Weight?.Close ?? UInt256.Zero,
+                                                                                       TokenConstants.Opdex.Sats);
 
             // Assemble tokens
             marketDto.CrsToken = await AssembleToken(Address.Cirrus);
