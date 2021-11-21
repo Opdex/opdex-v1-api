@@ -75,6 +75,18 @@ stages:
   - template: ${{ variables.releaseTemplate }}
     parameters:
       environment: 'test'
+  - job: 
+    displayName: 'ReadMe docs'
+    steps:
+    - task: CmdLine@2
+      displayName: Sync OpenAPI doc
+      inputs:
+        script: |
+          curl https://test-api.opdex.com/swagger/v1/swagger.json > swagger.json
+          npm install rdme
+          npx rdme openapi --id=61161540149ab80029bab5ca --key=$(README_API_KEY)
+      env:
+        README_API_KEY: $(README_API_KEY)
 
 - stage: MAIN
   displayName: 'Release to mainnet (Azure)'
