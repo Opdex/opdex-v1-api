@@ -1,5 +1,6 @@
 using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Models.Responses.OHLC;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots
 {
@@ -9,12 +10,12 @@ namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots
         /// The total number of tokens staking.
         /// </summary>
         [NotNull]
-        public FixedDecimal Weight { get; set; }
+        public OhlcFixedDecimalResponseModel Weight { get; set; }
 
         /// <summary>
         /// The total USD amount staking.
         /// </summary>
         [NotNull]
-        public decimal Usd { get; set; }
+        public OhlcDecimalResponseModel Usd { get; set; }
     }
 }

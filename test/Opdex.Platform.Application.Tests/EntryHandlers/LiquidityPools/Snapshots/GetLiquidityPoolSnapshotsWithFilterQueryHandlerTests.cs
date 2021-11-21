@@ -1,13 +1,12 @@
-using AutoMapper;
 using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Models;
-using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
+using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
@@ -16,6 +15,7 @@ using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,16 +26,16 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
     public class GetLiquidityPoolSnapshotsWithFilterQueryHandlerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
-        private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<IModelAssembler<IList<LiquidityPoolSnapshot>, IEnumerable<LiquidityPoolSnapshotDto>>> _assemblerMock;
 
         private readonly GetLiquidityPoolSnapshotsWithFilterQueryHandler _handler;
 
         public GetLiquidityPoolSnapshotsWithFilterQueryHandlerTests()
         {
             _mediatorMock = new Mock<IMediator>();
-            _mapperMock = new Mock<IMapper>();
+            _assemblerMock = new Mock<IModelAssembler<IList<LiquidityPoolSnapshot>, IEnumerable<LiquidityPoolSnapshotDto>>>();
 
-            _handler = new GetLiquidityPoolSnapshotsWithFilterQueryHandler(_mediatorMock.Object, _mapperMock.Object);
+            _handler = new GetLiquidityPoolSnapshotsWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
         }
 
         [Fact]
-        public async Task Handle_SnapshotsRetrieved_MapResults()
+        public async Task Handle_SnapshotsRetrieved_AssembleResults()
         {
             // Arrange
             var liquidityPoolAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
@@ -108,7 +108,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
             await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            _mapperMock.Verify(callTo => callTo.Map<LiquidityPoolSnapshotDto>(It.IsAny<LiquidityPoolSnapshot>()), Times.Exactly(snapshots.Length));
+            _assemblerMock.Verify(callTo => callTo.Assemble(It.IsAny<IList<LiquidityPoolSnapshot>>()), Times.Once);
         }
 
         [Fact]
@@ -128,8 +128,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
                 new LiquidityPoolSnapshot(2, 1, 3, new ReservesSnapshot(), new RewardsSnapshot(), new StakingSnapshot(), new VolumeSnapshot(), new CostSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now),
                 new LiquidityPoolSnapshot(3, 1, 4, new ReservesSnapshot(), new RewardsSnapshot(), new StakingSnapshot(), new VolumeSnapshot(), new CostSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now)
             };
+
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<LiquidityPoolSnapshotDto>(It.IsAny<LiquidityPoolSnapshot>())).Returns(new LiquidityPoolSnapshotDto());
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<IList<LiquidityPoolSnapshot>>())).ReturnsAsync(new LiquidityPoolSnapshotDto[snapshots.Length]);
 
             // Act
             var dto = await _handler.Handle(request, CancellationToken.None);
@@ -156,13 +157,12 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
                 new LiquidityPoolSnapshot(3, 1, 4, new ReservesSnapshot(), new RewardsSnapshot(), new StakingSnapshot(), new VolumeSnapshot(), new CostSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<LiquidityPoolSnapshotDto>(It.IsAny<LiquidityPoolSnapshot>())).Returns(new LiquidityPoolSnapshotDto());
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<IList<LiquidityPoolSnapshot>>())).ReturnsAsync((new LiquidityPoolSnapshotDto[snapshots.Length - 1]));
 
             // Act
             var dto = await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            _mapperMock.Verify(callTo => callTo.Map<LiquidityPoolSnapshotDto>(snapshots[0]), Times.Never);
             dto.Snapshots.Count().Should().Be(snapshots.Length - 1);
         }
 
@@ -184,13 +184,12 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
                 new LiquidityPoolSnapshot(3, 1, 4, new ReservesSnapshot(), new RewardsSnapshot(), new StakingSnapshot(), new VolumeSnapshot(), new CostSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<LiquidityPoolSnapshotDto>(It.IsAny<LiquidityPoolSnapshot>())).Returns(new LiquidityPoolSnapshotDto());
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<IList<LiquidityPoolSnapshot>>())).ReturnsAsync(new LiquidityPoolSnapshotDto[snapshots.Length - 1]);
 
             // Act
             var dto = await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            _mapperMock.Verify(callTo => callTo.Map<LiquidityPoolSnapshotDto>(snapshots[snapshots.Length - 1]), Times.Never);
             dto.Snapshots.Count().Should().Be(snapshots.Length - 1);
         }
 
@@ -212,7 +211,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
                 new LiquidityPoolSnapshot(3, 1, 4, new ReservesSnapshot(), new RewardsSnapshot(), new StakingSnapshot(), new VolumeSnapshot(), new CostSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<LiquidityPoolSnapshotDto>(It.IsAny<LiquidityPoolSnapshot>())).Returns(new LiquidityPoolSnapshotDto());
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<IList<LiquidityPoolSnapshot>>())).ReturnsAsync(Enumerable.Empty<LiquidityPoolSnapshotDto>);
 
             // Act
             var dto = await _handler.Handle(request, CancellationToken.None);
@@ -240,7 +239,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
                 new LiquidityPoolSnapshot(3, 1, 4, new ReservesSnapshot(), new RewardsSnapshot(), new StakingSnapshot(), new VolumeSnapshot(), new CostSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<LiquidityPoolSnapshotDto>(It.IsAny<LiquidityPoolSnapshot>())).Returns(new LiquidityPoolSnapshotDto());
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<IList<LiquidityPoolSnapshot>>())).ReturnsAsync(Enumerable.Empty<LiquidityPoolSnapshotDto>);
 
             // Act
             var dto = await _handler.Handle(request, CancellationToken.None);
@@ -268,7 +267,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
                 new LiquidityPoolSnapshot(3, 1, 4, new ReservesSnapshot(), new RewardsSnapshot(), new StakingSnapshot(), new VolumeSnapshot(), new CostSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime(), DateTime.Now)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<LiquidityPoolSnapshotDto>(It.IsAny<LiquidityPoolSnapshot>())).Returns(new LiquidityPoolSnapshotDto());
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<IList<LiquidityPoolSnapshot>>())).ReturnsAsync(Enumerable.Empty<LiquidityPoolSnapshotDto>);
 
             // Act
             var dto = await _handler.Handle(request, CancellationToken.None);
@@ -295,7 +294,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
                 new LiquidityPoolSnapshot(2, 1, 3, new ReservesSnapshot(), new RewardsSnapshot(), new StakingSnapshot(), new VolumeSnapshot(), new CostSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<LiquidityPoolSnapshotDto>(It.IsAny<LiquidityPoolSnapshot>())).Returns(new LiquidityPoolSnapshotDto());
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<IList<LiquidityPoolSnapshot>>())).ReturnsAsync(Enumerable.Empty<LiquidityPoolSnapshotDto>);
 
             // Act
             var dto = await _handler.Handle(request, CancellationToken.None);
@@ -322,7 +321,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
                 new LiquidityPoolSnapshot(2, 1, 3, new ReservesSnapshot(), new RewardsSnapshot(), new StakingSnapshot(), new VolumeSnapshot(), new CostSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime(), DateTime.Now)
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<LiquidityPoolSnapshotDto>(It.IsAny<LiquidityPoolSnapshot>())).Returns(new LiquidityPoolSnapshotDto());
+            _assemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<IList<LiquidityPoolSnapshot>>())).ReturnsAsync(Enumerable.Empty<LiquidityPoolSnapshotDto>);
 
             // Act
             var dto = await _handler.Handle(request, CancellationToken.None);
@@ -332,14 +331,14 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.LiquidityPools.Snapshot
             dto.Cursor.Previous.Should().Be(null);
         }
 
-        private void AssertNext(CursorDto dto, (DateTime, ulong) pointer)
+        private static void AssertNext(CursorDto dto, (DateTime, ulong) pointer)
         {
             SnapshotCursor.TryParse(dto.Next.Base64Decode(), out var next).Should().Be(true);
             next.PagingDirection.Should().Be(PagingDirection.Forward);
             next.Pointer.Should().Be(pointer);
         }
 
-        private void AssertPrevious(CursorDto dto, (DateTime, ulong) pointer)
+        private static void AssertPrevious(CursorDto dto, (DateTime, ulong) pointer)
         {
             SnapshotCursor.TryParse(dto.Previous.Base64Decode(), out var next).Should().Be(true);
             next.PagingDirection.Should().Be(PagingDirection.Backward);

@@ -22,8 +22,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
             var marketSnapshot = new MarketSnapshot(marketId, snapshotType, date);
 
             marketSnapshot.MarketId.Should().Be(marketId);
-            marketSnapshot.Liquidity.Should().BeEquivalentTo(new Ohlc<decimal>());
-            marketSnapshot.Volume.Should().Be(0.00m);
+            marketSnapshot.LiquidityUsd.Should().BeEquivalentTo(new Ohlc<decimal>());
+            marketSnapshot.VolumeUsd.Should().Be(0.00m);
             marketSnapshot.Staking.Weight.Should().BeEquivalentTo(new Ohlc<UInt256>());
             marketSnapshot.Staking.Usd.Should().BeEquivalentTo(new Ohlc<decimal>());
             marketSnapshot.Rewards.ProviderUsd.Should().Be(0.00m);
@@ -52,8 +52,8 @@ namespace Opdex.Platform.Domain.Tests.Models.Markets
 
             marketSnapshot.Id.Should().Be(id);
             marketSnapshot.MarketId.Should().Be(marketId);
-            marketSnapshot.Liquidity.Should().BeEquivalentTo(liquidity);
-            marketSnapshot.Volume.Should().Be(volume);
+            marketSnapshot.LiquidityUsd.Should().BeEquivalentTo(liquidity);
+            marketSnapshot.VolumeUsd.Should().Be(volume);
             marketSnapshot.Staking.Usd.Should().BeEquivalentTo(stakingUsd);
             marketSnapshot.Staking.Weight.Should().BeEquivalentTo(stakingWeight);
             marketSnapshot.Rewards.MarketUsd.Should().Be(rewards.MarketUsd);

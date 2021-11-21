@@ -4,7 +4,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshot
 {
     public class ReservesSnapshotDto
     {
-        public OhlcDto<decimal> Crs { get; set; }
+        public OhlcDto<FixedDecimal> Crs { get; set; }
         public OhlcDto<FixedDecimal> Src { get; set; }
         public OhlcDto<decimal> Usd { get; set; }
     }

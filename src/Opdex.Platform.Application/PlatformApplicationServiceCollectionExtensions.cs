@@ -179,6 +179,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.Vaults;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.Application
@@ -560,6 +561,7 @@ namespace Opdex.Platform.Application
 
             // Liquidity Pools
             services.AddTransient<IModelAssembler<LiquidityPool, LiquidityPoolDto>, LiquidityPoolDtoAssembler>();
+            services.AddTransient<IModelAssembler<IList<LiquidityPoolSnapshot>, IEnumerable<LiquidityPoolSnapshotDto>>, LiquidityPoolSnapshotsDtosAssembler>();
 
             // Markets
             services.AddTransient<IModelAssembler<Market, MarketDto>, MarketDtoAssembler>();

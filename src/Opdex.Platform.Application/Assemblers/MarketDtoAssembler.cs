@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
@@ -59,14 +60,25 @@ namespace Opdex.Platform.Application.Assemblers
             currentMarketSnapshot ??= await _mediator.Send(new RetrieveMarketSnapshotWithFilterQuery(market.Id, now, SnapshotType));
 
             // Map snapshot summary
-            marketDto.Summary = _mapper.Map<MarketSnapshotDto>(currentMarketSnapshot);
-
-            // Adjust daily change values
-            marketDto.Summary.LiquidityDailyChange = MathExtensions.PercentChange(currentMarketSnapshot.Liquidity.Close,
-                                                                                  previousMarketSnapshot?.Liquidity?.Close ?? 0m);
-            marketDto.Summary.Staking.WeightDailyChange = MathExtensions.PercentChange(currentMarketSnapshot.Staking.Weight.Close,
-                                                                                       previousMarketSnapshot?.Staking?.Weight?.Close ?? UInt256.Zero,
-                                                                                       TokenConstants.Opdex.Sats);
+            marketDto.Summary = new MarketSummaryDto
+            {
+                LiquidityUsd = currentMarketSnapshot.LiquidityUsd.Close,
+                DailyLiquidityUsdChangePercent = MathExtensions.PercentChange(currentMarketSnapshot.LiquidityUsd.Close,
+                                                                              previousMarketSnapshot?.LiquidityUsd?.Close ?? 0m),
+                VolumeUsd = currentMarketSnapshot.VolumeUsd,
+                StakingWeight = currentMarketSnapshot.Staking.Weight.Close.ToDecimal(TokenConstants.Opdex.Decimals),
+                DailyStakingWeightChangePercent = MathExtensions.PercentChange(currentMarketSnapshot.Staking.Weight.Close,
+                                                                               previousMarketSnapshot?.Staking?.Weight?.Close ?? UInt256.Zero,
+                                                                               TokenConstants.Opdex.Sats),
+                StakingUsd = currentMarketSnapshot.Staking.Usd.Close,
+                DailyStakingUsdChangePercent = MathExtensions.PercentChange(currentMarketSnapshot.Staking.Usd.Close,
+                                                                            previousMarketSnapshot?.Staking?.Usd?.Close ?? 0m),
+                Rewards = new RewardsDto
+                {
+                    ProviderDailyUsd = currentMarketSnapshot.Rewards.ProviderUsd,
+                    MarketDailyUsd = currentMarketSnapshot.Rewards.MarketUsd
+                }
+            };
 
             // Assemble tokens
             marketDto.CrsToken = await AssembleToken(Address.Cirrus);
@@ -78,16 +90,12 @@ namespace Opdex.Platform.Application.Assemblers
         private async Task<MarketTokenDto> AssembleMarketToken(ulong tokenId, Market market)
         {
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(tokenId));
-
-            var marketToken = new MarketToken(market, token);
-
-            return await _marketTokenAssembler.Assemble(marketToken);
+            return await _marketTokenAssembler.Assemble(new MarketToken(market, token));
         }
 
         private async Task<TokenDto> AssembleToken(Address tokenAddress)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress));
-
             return await _tokenAssembler.Assemble(token);
         }
     }

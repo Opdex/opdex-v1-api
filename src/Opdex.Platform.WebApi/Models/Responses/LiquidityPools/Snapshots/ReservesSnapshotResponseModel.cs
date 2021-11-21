@@ -1,5 +1,6 @@
 using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.Models.Responses.OHLC;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots
 {
@@ -9,18 +10,18 @@ namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots
         /// The total amount of locked CRS tokens.
         /// </summary>
         [NotNull]
-        public FixedDecimal Crs { get; set; }
+        public OhlcFixedDecimalResponseModel Crs { get; set; }
 
         /// <summary>
         /// The total amount of locked SRC tokens.
         /// </summary>
         [NotNull]
-        public FixedDecimal Src { get; set; }
+        public OhlcFixedDecimalResponseModel Src { get; set; }
 
         /// <summary>
         /// The total amount of locked reserves.
         /// </summary>
         [NotNull]
-        public decimal Usd { get; set; }
+        public OhlcDecimalResponseModel Usd { get; set; }
     }
 }

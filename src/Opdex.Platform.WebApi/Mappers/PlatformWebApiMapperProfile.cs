@@ -21,6 +21,7 @@ using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using Opdex.Platform.WebApi.Models.Responses.Governances;
@@ -217,6 +218,13 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.MiningPools))
                 .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 
+            CreateMap<OhlcDto<FixedDecimal>, OhlcFixedDecimalResponseModel>()
+                .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
+                .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
+                .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))
+                .ForMember(dest => dest.Close, opt => opt.MapFrom(src => src.Close))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
             CreateMap<OhlcDto<decimal>, OhlcDecimalResponseModel>()
                 .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
                 .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
@@ -225,9 +233,8 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketSnapshotDto, MarketSnapshotResponseModel>()
-                .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
-                .ForMember(dest => dest.LiquidityDailyChange, opt => opt.MapFrom(src => src.LiquidityDailyChange))
-                .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
+                .ForMember(dest => dest.LiquidityUsd, opt => opt.MapFrom(src => src.LiquidityUsd))
+                .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
                 .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
                 .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
                 .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.Timestamp))
@@ -245,6 +252,17 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
                 .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<MarketSummaryDto, MarketSummaryResponseModel>()
+                .ForMember(dest => dest.LiquidityUsd, opt => opt.MapFrom(src => src.LiquidityUsd))
+                .ForMember(dest => dest.DailyLiquidityUsdChangePercent, opt => opt.MapFrom(src => src.DailyLiquidityUsdChangePercent))
+                .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
+                .ForMember(dest => dest.StakingWeight, opt => opt.MapFrom(src => src.StakingWeight))
+                .ForMember(dest => dest.DailyStakingWeightChangePercent, opt => opt.MapFrom(src => src.DailyStakingWeightChangePercent))
+                .ForMember(dest => dest.StakingUsd, opt => opt.MapFrom(src => src.StakingUsd))
+                .ForMember(dest => dest.DailyStakingUsdChangePercent, opt => opt.MapFrom(src => src.DailyStakingUsdChangePercent))
+                .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketSnapshotsDto, MarketSnapshotsResponseModel>()

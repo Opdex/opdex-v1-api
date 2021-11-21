@@ -22,8 +22,8 @@ namespace Opdex.Platform.Domain.Models.Markets
             }
 
             MarketId = marketId;
-            Liquidity = new Ohlc<decimal>();
-            Volume = 0.00m;
+            LiquidityUsd = new Ohlc<decimal>();
+            VolumeUsd = 0.00m;
             Staking = new StakingSnapshot();
             Rewards = new RewardsSnapshot();
             SnapshotType = snapshotType;
@@ -36,8 +36,8 @@ namespace Opdex.Platform.Domain.Models.Markets
         {
             Id = id;
             MarketId = marketId;
-            Liquidity = liquidity;
-            Volume = volume;
+            LiquidityUsd = liquidity;
+            VolumeUsd = volume;
             Staking = staking;
             Rewards = rewards;
             SnapshotType = snapshotType;
@@ -47,8 +47,8 @@ namespace Opdex.Platform.Domain.Models.Markets
 
         public ulong Id { get; private set; }
         public ulong MarketId { get; }
-        public Ohlc<decimal> Liquidity { get; private set; }
-        public decimal Volume { get; private set; }
+        public Ohlc<decimal> LiquidityUsd { get; private set; }
+        public decimal VolumeUsd { get; private set; }
         public StakingSnapshot Staking { get; private set; }
         public RewardsSnapshot Rewards { get; private set; }
         public SnapshotType SnapshotType { get; }
@@ -110,8 +110,8 @@ namespace Opdex.Platform.Domain.Models.Markets
         /// </summary>
         public void ResetCurrentSnapshot()
         {
-            Liquidity = new Ohlc<decimal>();
-            Volume = 0;
+            LiquidityUsd = new Ohlc<decimal>();
+            VolumeUsd = 0;
             Staking = new StakingSnapshot();
             Rewards = new RewardsSnapshot();
         }
@@ -132,8 +132,8 @@ namespace Opdex.Platform.Domain.Models.Markets
                 throw new Exception("Market and liquidity pool snapshot dates do not match.");
             }
 
-            Liquidity.Update(Liquidity.Close + snapshot.Reserves.Usd.Close);
-            Volume += snapshot.Volume.Usd;
+            LiquidityUsd.Update(LiquidityUsd.Close + snapshot.Reserves.Usd.Close);
+            VolumeUsd += snapshot.Volume.Usd;
 
             var stakingUsd = Staking.Usd.Close + snapshot.Staking.Usd.Close;
             var stakingWeight = Staking.Weight.Close + snapshot.Staking.Weight.Close;

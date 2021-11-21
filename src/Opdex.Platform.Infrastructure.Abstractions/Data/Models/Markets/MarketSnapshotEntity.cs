@@ -7,8 +7,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets
     {
         public ulong Id { get; set; }
         public ulong MarketId { get; set; }
-        public OhlcEntity<decimal> Liquidity { get; set; }
-        public decimal Volume { get; set; }
+        public OhlcEntity<decimal> LiquidityUsd { get; set; }
+        public decimal VolumeUsd { get; set; }
         public SnapshotStakingEntity Staking { get; set; }
         public SnapshotRewardsEntity Rewards { get; set; }
 
@@ -22,8 +22,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets
         {
             return JsonConvert.SerializeObject(new
             {
-                Liquidity,
-                Volume,
+                LiquidityUsd,
+                VolumeUsd,
                 Rewards,
                 Staking
             });
@@ -33,8 +33,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets
         {
             var data = JsonConvert.DeserializeObject<MarketSnapshotDetailsEntity>(details);
 
-            Liquidity = data.Liquidity;
-            Volume = data.Volume;
+            LiquidityUsd = data.LiquidityUsd;
+            VolumeUsd = data.VolumeUsd;
             Staking = data.Staking;
             Rewards = data.Rewards;
         }
@@ -42,8 +42,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets
 
     internal struct MarketSnapshotDetailsEntity
     {
-        public OhlcEntity<decimal> Liquidity;
-        public decimal Volume;
+        public OhlcEntity<decimal> LiquidityUsd;
+        public decimal VolumeUsd;
         public SnapshotStakingEntity Staking;
         public SnapshotRewardsEntity Rewards;
     }
