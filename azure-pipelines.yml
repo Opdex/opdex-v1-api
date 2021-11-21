@@ -76,7 +76,7 @@ stages:
     parameters:
       environment: 'test'
   - job: 
-    displayName: 'ReadMe docs'
+    displayName: 'ReadMe Docs'
     steps:
     - task: CmdLine@2
       displayName: Sync OpenAPI doc
@@ -87,6 +87,7 @@ stages:
           npx rdme openapi --id=61161540149ab80029bab5ca --key=$(README_API_KEY)
       env:
         README_API_KEY: $(README_API_KEY)
+    dependsOn: 'test' # template deployment name == parameters.environment
 
 - stage: MAIN
   displayName: 'Release to mainnet (Azure)'
