@@ -15,7 +15,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Auth
         public string Uid { get; set; }
 
         /// <summary>
-        /// Optional expiry date indicating when the signature expires.
+        ///  Unix timestamp indicating when the signature expires.
         /// </summary>
         /// <example>1637244295</example>
         public long Exp { get; set; }

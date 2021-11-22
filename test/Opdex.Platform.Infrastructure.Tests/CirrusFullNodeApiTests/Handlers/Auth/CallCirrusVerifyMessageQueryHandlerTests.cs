@@ -36,7 +36,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Au
             // Assert
             _moduleMock.Verify(callTo => callTo.VerifyMessage(It.Is<VerifyMessageRequestDto>(dto => dto.Message == request.Message
                                                                                                  && dto.Signature == request.Signature
-                                                                                                 && dto.Signer == request.Signer), cancellationToken), Times.Once);
+                                                                                                 && dto.ExternalAddress == request.Signer), cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Au
         {
             // Arrange
             var request = new CallCirrusVerifyMessageQuery("MESSAGE_CONTENT", new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"), "BASE64_SIGNATURE");
-            
+
             _moduleMock.Setup(callTo => callTo.VerifyMessage(It.IsAny<VerifyMessageRequestDto>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             // Act

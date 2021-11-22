@@ -122,6 +122,8 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Auth;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -315,6 +317,10 @@ namespace Opdex.Platform.Infrastructure
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
                 .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
+            services.AddHttpClient<IWalletModule, WalletModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+                .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
+
             // Queries
             services.AddTransient<IRequestHandler<CallCirrusGetBestBlockReceiptQuery, BlockReceipt>, CallCirrusGetBestBlockReceiptQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetBlockReceiptByHashQuery, BlockReceipt>, CallCirrusGetBlockReceiptByHashQueryHandler>();
@@ -339,6 +345,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetSmartContractPropertyQuery, SmartContractMethodParameter>, CallCirrusGetSmartContractPropertyQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetVaultContractCertificateSummariesByOwnerQuery, IEnumerable<VaultContractCertificateSummary>>, CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>, CallCirrusGetMarketPermissionAuthorizationQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusVerifyMessageQuery, bool>, CallCirrusVerifyMessageQueryHandler>();
 
             // Commands
             services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, Sha256>, CallCirrusCallSmartContractMethodCommandHandler>();

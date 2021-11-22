@@ -13,12 +13,12 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.M
         public VerifyMessageRequestDto(string message, Address signer, string signature)
         {
             Message = message;
-            Signer = signer;
+            ExternalAddress = signer;
             Signature = signature;
         }
 
         public string Message { get; set; }
-        public Address Signer { get; set; }
+        public Address ExternalAddress { get; set; }
         public string Signature { get; set; }
     }
 }

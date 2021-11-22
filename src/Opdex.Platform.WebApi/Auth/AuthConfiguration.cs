@@ -17,7 +17,7 @@ namespace Opdex.Platform.WebApi.Auth
 
         public class StratisOpenAuthConfiguration
         {
-            public string CallbackBase { get; set; }
+            public string CallbackPath { get; set; }
         }
 
         public void Validate()

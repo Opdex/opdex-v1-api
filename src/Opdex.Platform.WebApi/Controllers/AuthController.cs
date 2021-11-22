@@ -11,27 +11,37 @@ using Opdex.Platform.Common.Models;
 using System.Threading;
 using Opdex.Platform.WebApi.Models.Requests.Auth;
 using Microsoft.AspNetCore.Http;
-using Opdex.Platform.Common.Exceptions;
 using System.Threading.Tasks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
+using Opdex.Platform.Common.Encryption;
+using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Common.Extensions;
+using System.Security.Cryptography;
+using Microsoft.Extensions.Logging;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
     [ApiController]
-    [Route(AuthPath)]
+    [Route("auth")]
     public class AuthController : ControllerBase
     {
-        private const string AuthPath = "auth";
-
+        private readonly OpdexConfiguration _opdexConfiguration;
         private readonly AuthConfiguration _authConfiguration;
+        private readonly ILogger<AuthController> _logger;
         private readonly IMediator _mediator;
+        private readonly ITwoWayEncryptionProvider _twoWayEncryptionProvider;
 
-        public AuthController(AuthConfiguration authConfiguration, IMediator mediator)
+        public AuthController(OpdexConfiguration opdexConfiguration, AuthConfiguration authConfiguration, ILogger<AuthController> logger,
+                              IMediator mediator, ITwoWayEncryptionProvider twoWayEncryptionProvider)
         {
+            _opdexConfiguration = opdexConfiguration ?? throw new ArgumentNullException(nameof(opdexConfiguration));
             _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
+            _logger = logger;
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _twoWayEncryptionProvider = twoWayEncryptionProvider ?? throw new ArgumentNullException(nameof(twoWayEncryptionProvider));
         }
 
         /// <summary>
@@ -49,7 +59,8 @@ namespace Opdex.Platform.WebApi.Controllers
         public async Task<IActionResult> StratisOpenAuthCallback([FromQuery] StratisOpenAuthCallbackQuery query,
                                                                  [FromBody] StratisOpenAuthCallbackBody body, CancellationToken cancellationToken)
         {
-            var expectedCallbackPath = System.IO.Path.Combine(_authConfiguration.StratisOpenAuthProtocol.CallbackBase, AuthPath);
+            var callbackUri = new Uri(System.IO.Path.Combine(_opdexConfiguration.ApiUrl, _authConfiguration.StratisOpenAuthProtocol.CallbackPath));
+            var expectedCallbackPath = $"{callbackUri.Authority}{callbackUri.AbsolutePath}";
             var expectedId = new StratisId(expectedCallbackPath, query.Uid, query.Exp);
 
             if (expectedId.Expired) throw new InvalidDataException("exp", "Expiry exceeded.");
@@ -74,10 +85,19 @@ namespace Opdex.Platform.WebApi.Controllers
             var jwt = tokenHandler.CreateToken(tokenDescriptor);
             var bearerToken = tokenHandler.WriteToken(jwt);
 
-            // todo: Decrypt UID
+            string connectionId;
+            try
+            {
+                connectionId = _twoWayEncryptionProvider.Decrypt(Base64Extensions.UrlSafeBase64Decode(expectedId.Uid));
+            }
+            catch (CryptographicException exception)
+            {
+                _logger.LogWarning(exception, "Invalid UID.");
+                throw new InvalidDataException("uid", "Malformed UID.");
+            }
 
-            await _mediator.Send(new NotifyUserOfSuccessfulAuthenticationCommand(expectedId.Uid, bearerToken));
-            
+            await _mediator.Send(new NotifyUserOfSuccessfulAuthenticationCommand(connectionId, bearerToken), cancellationToken);
+
             return Ok();
         }
 

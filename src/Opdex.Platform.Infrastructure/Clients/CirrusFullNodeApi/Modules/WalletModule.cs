@@ -24,10 +24,10 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
             var logDetails = new Dictionary<string, object>
             {
                 ["Message"] = request.Message,
-                ["Signer"] = request.Signer,
+                ["Signer"] = request.ExternalAddress,
                 ["Signature"] = request.Signature
             };
-            
+
             using (_logger.BeginScope(logDetails))
             {
                 return await PostAsync<bool>(CirrusUriHelper.Wallet.VerifyMessage, httpRequest.Content, cancellationToken);

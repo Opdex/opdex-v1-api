@@ -47,7 +47,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CoinMarketCapApiTests.Modules
             {
                 var rawBody = await httpRequestMessage.Content.ReadAsStringAsync();
                 var body = JsonConvert.DeserializeObject<VerifyMessageRequestDto>(rawBody, StratisFullNode.SerializerSettings);
-                return body.Message == request.Message && body.Signer == request.Signer && body.Signature == request.Signature;
+                return body.Message == request.Message && body.ExternalAddress == request.ExternalAddress && body.Signature == request.Signature;
             });
         }
     }
