@@ -11,6 +11,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Index
         /// The block number to rewind too.
         /// </summary>
         [Required]
+        [Range(1, double.MaxValue)]
         public ulong Block { get; set; }
     }
 }

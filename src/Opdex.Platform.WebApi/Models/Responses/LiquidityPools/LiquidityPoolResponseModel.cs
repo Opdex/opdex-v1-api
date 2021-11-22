@@ -1,6 +1,7 @@
 using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Summary;
+using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools
 {
@@ -22,6 +23,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools
         /// The transaction fee for swaps.
         /// </summary>
         [NotNull]
+        [Range(0.0, 1.0)]
         public decimal TransactionFee { get; set; }
 
         /// <summary>

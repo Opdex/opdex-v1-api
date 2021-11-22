@@ -55,7 +55,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Wallets
         public void BuildCursor_NotABase64CursorString_ReturnNull()
         {
             // Arrange
-            var filters = new MiningPositionFilterParameters { Cursor = "NOT_BASE_64_****" };
+            var filters = new MiningPositionFilterParameters { EncodedCursor = "NOT_BASE_64_****" };
 
             // Act
             var cursor = filters.BuildCursor();
@@ -68,7 +68,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Wallets
         public void BuildCursor_NotAValidCursorString_ReturnNull()
         {
             // Arrange
-            var filters = new MiningPositionFilterParameters { Cursor = "Tk9UX1ZBTElE" };
+            var filters = new MiningPositionFilterParameters { EncodedCursor = "Tk9UX1ZBTElE" };
 
             // Act
             var cursor = filters.BuildCursor();
@@ -81,7 +81,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.Wallets
         public void BuildCursor_ValidCursorString_ReturnCursor()
         {
             // Arrange
-            var filters = new MiningPositionFilterParameters { Cursor = "ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MjtwYWdpbmc6Rm9yd2FyZDtpbmNsdWRlWmVyb0Ftb3VudHM6RmFsc2U7cG9pbnRlcjpNdz09Ow==" };
+            var filters = new MiningPositionFilterParameters { EncodedCursor = "ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MjtwYWdpbmc6Rm9yd2FyZDtpbmNsdWRlWmVyb0Ftb3VudHM6RmFsc2U7cG9pbnRlcjpNdz09Ow==" };
 
             // Act
             var cursor = filters.BuildCursor();

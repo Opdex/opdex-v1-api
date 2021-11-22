@@ -13,8 +13,8 @@ namespace Opdex.Platform.WebApi.Validation
     {
         public AbstractCursorValidator()
         {
-            When(filter => filter.Cursor.HasValue(),
-                 () => RuleFor(filter => filter.Cursor).Must((filter, cursor) => filter.ValidateWellFormed()).WithMessage("Cursor not formed correctly."));
+            When(filter => filter.EncodedCursor.HasValue(),
+                 () => RuleFor(filter => filter.EncodedCursor).Must((filter, cursor) => filter.ValidateWellFormed()).WithMessage("Cursor not formed correctly."));
         }
 
         public ValidationResult AfterAspNetValidation(ActionContext actionContext, IValidationContext validationContext, ValidationResult result)

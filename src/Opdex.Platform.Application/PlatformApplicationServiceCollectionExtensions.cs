@@ -208,6 +208,7 @@ namespace Opdex.Platform.Application
             // Markets
             services.AddTransient<IRequestHandler<GetMarketByAddressQuery, MarketDto>, GetMarketByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetMarketSnapshotsWithFilterQuery, MarketSnapshotsDto>, GetMarketSnapshotsWithFilterQueryHandler>();
+            services.AddTransient<IRequestHandler<GetMarketPermissionsForAddressQuery, IEnumerable<MarketPermissionType>>, GetMarketPermissionsForAddressQueryHandler>();
 
             // Liquidity Pools
             services.AddTransient<IRequestHandler<GetLiquidityPoolsWithFilterQuery, LiquidityPoolsDto>, GetLiquidityPoolsWithFilterQueryHandler>();

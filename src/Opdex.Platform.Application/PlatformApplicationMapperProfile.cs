@@ -188,14 +188,12 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.TransactionId))
                 .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
-                .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
-                .ForAllOtherMembers(opt => opt.Ignore());
+                .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder));
 
             CreateMap<OwnershipLog, OwnershipEventDto>()
                 .IncludeBase<TransactionLog, TransactionEventDto>()
                 .ForMember(dest => dest.From, opt => opt.MapFrom(src => src.From))
-                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To))
-                .ForAllOtherMembers(opt => opt.Ignore());
+                .ForMember(dest => dest.To, opt => opt.MapFrom(src => src.To));
 
             // Deployer Events
             CreateMap<SetPendingDeployerOwnershipLog, SetPendingDeployerOwnershipEventDto>()

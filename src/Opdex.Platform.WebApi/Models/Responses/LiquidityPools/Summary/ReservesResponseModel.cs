@@ -1,5 +1,6 @@
 using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Summary
 {
@@ -21,12 +22,14 @@ namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Summary
         /// The total amount of locked reserves.
         /// </summary>
         [NotNull]
+        [Range(0, double.MaxValue)]
         public decimal Usd { get; set; }
 
         /// <summary>
         /// The percentage change of liquidity for the day.
         /// </summary>
         [NotNull]
+        [Range(double.MinValue, double.MaxValue)]
         public decimal DailyUsdChangePercent { get; set; }
     }
 }

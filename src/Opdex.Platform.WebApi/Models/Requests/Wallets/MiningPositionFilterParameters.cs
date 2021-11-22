@@ -1,3 +1,4 @@
+using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -19,11 +20,13 @@ namespace Opdex.Platform.WebApi.Models.Requests.Wallets
         /// <summary>
         /// The specific mining pools to include.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> MiningPools { get; set; }
 
         /// <summary>
         /// The specific liquidity pools to include.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> LiquidityPools { get; set; }
 
         /// <summary>
@@ -34,8 +37,8 @@ namespace Opdex.Platform.WebApi.Models.Requests.Wallets
         /// <inheritdoc />
         protected override MiningPositionsCursor InternalBuildCursor()
         {
-            if (Cursor is null) return new MiningPositionsCursor(LiquidityPools, MiningPools, IncludeZeroAmounts, Direction, Limit, PagingDirection.Forward, default);
-            Base64Extensions.TryBase64Decode(Cursor, out var decodedCursor);
+            if (EncodedCursor is null) return new MiningPositionsCursor(LiquidityPools, MiningPools, IncludeZeroAmounts, Direction, Limit, PagingDirection.Forward, default);
+            Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
             MiningPositionsCursor.TryParse(decodedCursor, out var cursor);
             return cursor;
         }

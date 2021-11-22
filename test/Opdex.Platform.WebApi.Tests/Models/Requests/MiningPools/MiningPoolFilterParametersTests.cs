@@ -53,7 +53,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.MiningPools
         public void BuildCursor_NotABase64CursorString_ReturnNull()
         {
             // Arrange
-            var filters = new MiningPoolFilterParameters { Cursor = "NOT_BASE_64_****" };
+            var filters = new MiningPoolFilterParameters { EncodedCursor = "NOT_BASE_64_****" };
 
             // Act
             var cursor = filters.BuildCursor();
@@ -66,7 +66,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.MiningPools
         public void BuildCursor_NotAValidCursorString_ReturnNull()
         {
             // Arrange
-            var filters = new MiningPoolFilterParameters { Cursor = "Tk9UX1ZBTElE" };
+            var filters = new MiningPoolFilterParameters { EncodedCursor = "Tk9UX1ZBTElE" };
 
             // Act
             var cursor = filters.BuildCursor();
@@ -79,7 +79,7 @@ namespace Opdex.Platform.WebApi.Tests.Models.Requests.MiningPools
         public void BuildCursor_ValidCursorString_ReturnCursor()
         {
             // Arrange
-            var filters = new MiningPoolFilterParameters { Cursor = "bWluaW5nU3RhdHVzOkFueTtkaXJlY3Rpb246REVTQztsaW1pdDo1O3BhZ2luZzpGb3J3YXJkO3BvaW50ZXI6TXc9PTs=" };
+            var filters = new MiningPoolFilterParameters { EncodedCursor = "bWluaW5nU3RhdHVzOkFueTtkaXJlY3Rpb246REVTQztsaW1pdDo1O3BhZ2luZzpGb3J3YXJkO3BvaW50ZXI6TXc9PTs=" };
 
             // Act
             var cursor = filters.BuildCursor();

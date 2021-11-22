@@ -74,7 +74,6 @@ namespace Opdex.Platform.WebApi
             {
                 options.ValidationProblemStatusCode = 400;
                 options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
-                options.Map<BadRequestException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
                 options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
                 options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
                 options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
@@ -108,6 +107,7 @@ namespace Opdex.Platform.WebApi
                 })
                 .AddFluentValidation(config =>
                 {
+                    config.DisableDataAnnotationsValidation = true;
                     config.RegisterValidatorsFromAssemblyContaining<Startup>();
                 })
                 .AddNetworkActionHidingConvention()
@@ -234,12 +234,10 @@ namespace Opdex.Platform.WebApi
                 settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Address), schema => schema.Type = JsonObjectType.String));
                 settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema =>
                 {
-                    schema.IsNullableRaw = false;
                     schema.Type = JsonObjectType.String;
                 }));
                 settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Sha256), schema =>
                 {
-                    schema.IsNullableRaw = false;
                     schema.Type = JsonObjectType.String;
                     schema.Pattern = @"^[0-9a-fA-F]{64}$";
                 }));

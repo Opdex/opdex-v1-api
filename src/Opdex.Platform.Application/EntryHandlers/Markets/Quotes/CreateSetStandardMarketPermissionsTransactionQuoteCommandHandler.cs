@@ -6,6 +6,8 @@ using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Constants.SmartContracts.Markets;
+using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System.Collections.Generic;
@@ -26,8 +28,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Quotes
 
         public override async Task<TransactionQuoteDto> Handle(CreateSetStandardMarketPermissionsTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
-            // ensure market exists, if not throw to return 404
-            _ = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
+            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
+            if (market.IsStakingMarket) throw new InvalidDataException("marketAddress", "Market address must represent a standard market.");
+
+            if (!market.AuthPoolCreators && request.Permission == MarketPermissionType.CreatePool)
+                throw new InvalidDataException("Permission", "Market does not enforce authorization for pool creation.");
+            if (!market.AuthProviders && request.Permission == MarketPermissionType.Provide) 
+                throw new InvalidDataException("Permission", "Market does not enforce authorization for providing liquidity.");
+            if (!market.AuthTraders && request.Permission == MarketPermissionType.Trade) 
+                throw new InvalidDataException("Permission", "Market does not enforce authorization for trading.");
 
             var requestParameters = new List<TransactionQuoteRequestParameter>
             {

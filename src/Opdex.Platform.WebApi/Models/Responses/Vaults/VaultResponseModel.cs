@@ -1,5 +1,6 @@
 using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Vaults
 {
@@ -14,6 +15,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Vaults
         public Address Owner { get; set; }
 
         [NotNull]
+        [Range(1, double.MaxValue)]
         public ulong Genesis { get; set; }
 
         [NotNull]

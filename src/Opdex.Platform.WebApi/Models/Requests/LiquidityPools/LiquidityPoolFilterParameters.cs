@@ -1,3 +1,4 @@
+using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -18,21 +19,25 @@ namespace Opdex.Platform.WebApi.Models.Requests.LiquidityPools
         /// <summary>
         /// A generic keyword search against liquidity pool addresses and names.
         /// </summary>
+        [NotNull]
         public string Keyword { get; set; }
 
         /// <summary>
         /// Markets to search liquidity pools within.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> Markets { get; set; }
 
         /// <summary>
         /// Liquidity pools to filter specifically for.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> LiquidityPools { get; set; }
 
         /// <summary>
         /// Tokens to filter specifically for.
         /// </summary>
+        [NotNull]
         public IEnumerable<Address> Tokens { get; set; }
 
         /// <summary>
@@ -58,9 +63,9 @@ namespace Opdex.Platform.WebApi.Models.Requests.LiquidityPools
         /// <inheritdoc />
         protected override LiquidityPoolsCursor InternalBuildCursor()
         {
-            if (Cursor is null) return new LiquidityPoolsCursor(Keyword, Markets, LiquidityPools, Tokens, StakingFilter, NominationFilter, MiningFilter,
-                                                                OrderBy, Direction, Limit, PagingDirection.Forward, default);
-            Base64Extensions.TryBase64Decode(Cursor, out var decodedCursor);
+            if (EncodedCursor is null) return new LiquidityPoolsCursor(Keyword, Markets, LiquidityPools, Tokens, StakingFilter, NominationFilter, MiningFilter,
+                                                                       OrderBy, Direction, Limit, PagingDirection.Forward, default);
+            Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
             LiquidityPoolsCursor.TryParse(decodedCursor, out var cursor);
 
             return cursor;
