@@ -6,7 +6,9 @@ Web API project to aggregate Opdex smart contract transactional data providing a
 
 ### Auth
 
-Add a bearer token signing key to your configuration, by running `dotnet user-secrets set AuthConfiguration:Opdex:SigningKey ~y0Ur%sEcr3T*k3Y~`. The key can be any string of length 16 or more characters.
+Add a bearer token signing key to your configuration, by running `dotnet user-secrets set AuthConfiguration:Opdex:SigningKey ~y0Ur%sEcr3T*k3Y~`. The key can be any UTF-8 string consisting of 16 bytes or more.
+
+You also need to add an additional encryption key for two-way encryption of the SignalR connection id, using `dotnet user-secrets set EncryptionConfiguration:Key SECRET-ENCRYPTION-KEY`. The key should be a 32 byte UTF-8 string, as this will ensure 256-bit encryption. 
 
 
 ### Create DB
