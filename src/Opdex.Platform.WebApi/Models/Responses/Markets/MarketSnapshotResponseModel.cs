@@ -7,7 +7,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.Markets
     public class MarketSnapshotResponseModel
     {
         public OhlcDecimalResponseModel LiquidityUsd { get; set; }
-        // public decimal? LiquidityDailyChange { get; set; }
         public decimal VolumeUsd { get; set; }
         public StakingSnapshotResponseModel Staking { get; set; }
         public RewardsSnapshotResponseModel Rewards { get; set; }

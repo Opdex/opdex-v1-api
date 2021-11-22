@@ -8,7 +8,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.Markets
         public ulong Id { get; set; }
         public ulong MarketId { get; set; }
         public OhlcDto<decimal> LiquidityUsd { get; set; }
-        // public decimal? LiquidityDailyChange { get; set; }
         public decimal VolumeUsd { get; set; }
         public StakingSnapshotDto Staking { get; set; }
         public RewardsSnapshotDto Rewards { get; set; }

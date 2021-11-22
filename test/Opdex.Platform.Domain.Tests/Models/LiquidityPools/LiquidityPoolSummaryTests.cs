@@ -31,16 +31,18 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools
             // Arrange
             const ulong id = 10;
             const ulong liquidityPoolId = 1;
+            const decimal dailyLiquidityChange = 1.5m;
             const decimal liquidity = 2.00m;
             const decimal volume = 3.00m;
             const ulong stakingWeight = 4;
+            const decimal dailyStakingChange = 2.5m;
             const ulong lockedCrs = 5;
             UInt256 lockedSrc = 6;
             const ulong createdBlock = 7;
             const ulong modifiedBlock = 8;
 
             // Act
-            var result = new LiquidityPoolSummary(id, liquidityPoolId, liquidity, volume, stakingWeight, lockedCrs, lockedSrc, createdBlock, modifiedBlock);
+            var result = new LiquidityPoolSummary(id, liquidityPoolId, liquidity, dailyLiquidityChange, volume, stakingWeight, dailyStakingChange, lockedCrs, lockedSrc, createdBlock, modifiedBlock);
 
             // Assert
             result.Id.Should().Be(id);

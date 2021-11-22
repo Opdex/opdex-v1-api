@@ -6,6 +6,5 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshot
     {
         public OhlcDto<FixedDecimal> Weight { get; set; }
         public OhlcDto<decimal> Usd { get; set; }
-        // public decimal? WeightDailyChange { get; set; }
     }
 }

@@ -58,7 +58,7 @@ namespace Opdex.Platform.Common.Extensions
             const ulong fiatOffset = FiatConstants.Usd.Offset;
 
             // Offset the fiat decimal
-            var fiatPerWithOffsetBigInt = Math.Floor(fiatPerToken * fiatOffset).ToString().ToBigInteger();
+            var fiatPerWithOffsetBigInt = UInt256.Parse(Math.Floor(fiatPerToken * fiatOffset).ToString());
 
             // Attempt to parse token * fiatPer / sats as the fiat price including the fiat offset
             if (!decimal.TryParse((tokenAmount * fiatPerWithOffsetBigInt / tokenSats).ToString(), out var fiatWithOffsetDecimal))
@@ -99,7 +99,7 @@ namespace Opdex.Platform.Common.Extensions
             const ulong fiatOffset = FiatConstants.Usd.Offset;
 
             // Offset the fiat decimal
-            var fiatWithOffsetBigInt = Math.Floor(fiatAmount * fiatOffset).ToString().ToBigInteger();
+            var fiatWithOffsetBigInt = UInt256.Parse(Math.Floor(fiatAmount * fiatOffset).ToString());
 
             // Attempt to parse fiatWithOffset * tokenSats / tokenAmount
             if (!decimal.TryParse((fiatWithOffsetBigInt * tokenSats / tokenAmount).ToString(), out var fiatWithOffsetDecimal))
