@@ -8,6 +8,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Vaults
     public class RevokeVaultCertificatesQuoteRequest
     {
         /// <summary>Address of the certificate holder.</summary>
+        /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
         public Address Holder { get; set; }
     }
 }

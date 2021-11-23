@@ -20,7 +20,7 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <summary>
         /// Get Status
         /// </summary>
-        /// <remarks>Includes status details for the running instance of the application.</remarks>
+        /// <remarks>Retrieves status details for the running instance of the application.</remarks>
         /// <returns>Status details.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(StatusResponseModel), StatusCodes.Status200OK)]
