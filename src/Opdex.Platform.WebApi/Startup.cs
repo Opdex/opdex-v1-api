@@ -49,6 +49,7 @@ using Opdex.Platform.WebApi.Validation;
 using AspNetCoreRateLimit;
 using Opdex.Platform.WebApi.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.Common.Encryption;
 
 namespace Opdex.Platform.WebApi
 {
@@ -102,7 +103,7 @@ namespace Opdex.Platform.WebApi
                     options.ModelBinderProviders.Insert(0, new AddressModelBinderProvider());
                     options.ModelBinderProviders.Insert(1, new Sha256ModelBinderProvider());
                     options.ModelBinderProviders.Insert(2, new UtcAwareDateTimeModelBinderProvider());
-                  
+
                     options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests));
                 })
                 .AddFluentValidation(config =>
@@ -158,6 +159,10 @@ namespace Opdex.Platform.WebApi
             // Opdex Configurations
             var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
             services.SetupConfiguration<OpdexConfiguration>(opdexConfig);
+
+            // Encryption Configurations
+            var encryptionConfig = Configuration.GetSection(nameof(EncryptionConfiguration));
+            services.SetupConfiguration<EncryptionConfiguration>(encryptionConfig);
 
             // Database Configurations
             var databaseConfig = Configuration.GetSection(nameof(DatabaseConfiguration));
@@ -253,6 +258,8 @@ namespace Opdex.Platform.WebApi
 
             services.AddSingleton<IUserIdProvider, WalletAddressUserIdProvider>();
             services.AddSingleton<IAuthorizationHandler, AdminOnlyHandler>();
+
+            services.AddTransient<ITwoWayEncryptionProvider, AesCbcProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

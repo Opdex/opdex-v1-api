@@ -54,5 +54,17 @@ namespace Opdex.Platform.Common.Extensions
             plainText = Encoding.UTF8.GetString(decodedBytes[..bytesWritten]);
             return true;
         }
+
+        public static string UrlSafeBase64Encode(ReadOnlySpan<byte> value)
+        {
+            return Convert.ToBase64String(value, Base64FormattingOptions.None).Replace('+', '-').Replace('/', '_').TrimEnd('=');
+        }
+
+        public static ReadOnlySpan<byte> UrlSafeBase64Decode(string value)
+        {
+            value = value.Replace('-', '+').Replace('_', '/');
+            if (value.Length % 4 != 0) value = value.PadRight(value.Length + (4 - (value.Length % 4)), '=');
+            return Convert.FromBase64String(value);
+        }
     }
 }
