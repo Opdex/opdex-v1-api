@@ -9,7 +9,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
     {
         public TransactionQuoteResponseModel()
         {
-            Events = new List<TransactionEventResponseModel>().AsReadOnly();
+            Events = new List<TransactionEvent>().AsReadOnly();
         }
 
         public object Result { get; set; }
@@ -21,7 +21,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
         public uint GasUsed { get; set; }
 
         [NotNull]
-        public IReadOnlyCollection<TransactionEventResponseModel> Events { get; set; }
+        public IReadOnlyCollection<TransactionEvent> Events { get; set; }
 
         [NotNull]
         public string Request { get; set; }

@@ -11,11 +11,11 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
     {
         public TransactionResponseModel()
         {
-            Events = Enumerable.Empty<TransactionEventResponseModel>();
+            Events = Enumerable.Empty<TransactionEvent>();
         }
 
         public bool Success { get; set; }
-        
+
         public Sha256 Hash { get; set; }
 
         public Address NewContractAddress { get; set; }
@@ -24,11 +24,11 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
 
         [Range(0, double.MaxValue)]
         public int GasUsed { get; set; }
-        
+
         public Address From { get; set; }
 
         public Address To { get; set; }
 
-        public IEnumerable<TransactionEventResponseModel> Events { get; set; }
+        public IEnumerable<TransactionEvent> Events { get; set; }
     }
 }
