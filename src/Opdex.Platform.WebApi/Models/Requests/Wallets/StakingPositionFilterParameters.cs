@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Models.Requests.Wallets
 {
-    public class StakingPositionFilterParameters : FilterParameters<StakingPositionsCursor>
+    public sealed class StakingPositionFilterParameters : FilterParameters<StakingPositionsCursor>
     {
         public StakingPositionFilterParameters()
         {
@@ -17,12 +17,14 @@ namespace Opdex.Platform.WebApi.Models.Requests.Wallets
         /// <summary>
         /// The specific liquidity pools to include.
         /// </summary>
+        /// <example>[ "t8WntmWKiLs1BdzoqPGXmPAYzUTpPb3DBw", "tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L" ]</example>
         [NotNull]
         public IEnumerable<Address> LiquidityPools { get; set; }
 
         /// <summary>
         /// Includes zero amounts if true, otherwise filters out zero amounts if false. Default false.
         /// </summary>
+        /// <example>true</example>
         public bool IncludeZeroAmounts { get; set; }
 
         /// <inheritdoc />

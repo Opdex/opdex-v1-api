@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -62,9 +61,9 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<IEnumerable<AddressBalanceResponseModel>>> GetAddressBalances([FromRoute] Address address,
-                                                                                                     [FromQuery] AddressBalanceFilterParameters filters,
-                                                                                                     CancellationToken cancellationToken)
+        public async Task<ActionResult<AddressBalancesResponseModel>> GetAddressBalances([FromRoute] Address address,
+                                                                                         [FromQuery] AddressBalanceFilterParameters filters,
+                                                                                         CancellationToken cancellationToken)
         {
             var balances = await _mediator.Send(new GetAddressBalancesWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
 
@@ -94,19 +93,19 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Mining Positions</summary>
-        /// <remarks>Retrieves the mining position of an address in all mining pools</remarks>
+        /// <remarks>Retrieves the mining position of an address in all mining pools.</remarks>
         /// <param name="address">The address of the wallet.</param>
         /// <param name="filters">Filter parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Staking position summaries</returns>
+        /// <returns>Mining position summaries</returns>
         /// <returns></returns>
         [HttpGet("{address}/mining")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<IEnumerable<StakingPositionResponseModel>>> GetMiningPositions([FromRoute] Address address,
-                                                                                                      [FromQuery] MiningPositionFilterParameters filters,
-                                                                                                      CancellationToken cancellationToken)
+        public async Task<ActionResult<MiningPositionsResponseModel>> GetMiningPositions([FromRoute] Address address,
+                                                                                         [FromQuery] MiningPositionFilterParameters filters,
+                                                                                         CancellationToken cancellationToken)
         {
             var positions = await _mediator.Send(new GetMiningPositionsWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
             var response = _mapper.Map<MiningPositionsResponseModel>(positions);
@@ -114,7 +113,7 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Mining Position</summary>
-        /// <remarks>Retrieves the mining position of an address in a particular pool</remarks>
+        /// <remarks>Retrieves the mining position of an address in a particular pool.</remarks>
         /// <param name="address">The address of the wallet.</param>
         /// <param name="miningPool">The address of the mining pool.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
@@ -133,7 +132,7 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Staking Positions</summary>
-        /// <remarks>Retrieves the staking position of an address in all staking pools</remarks>
+        /// <remarks>Retrieves the staking position of an address in all staking pools.</remarks>
         /// <param name="address">The address of the wallet.</param>
         /// <param name="filters">Filter parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
@@ -142,9 +141,9 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<IEnumerable<StakingPositionResponseModel>>> GetStakingPositions([FromRoute] Address address,
-                                                                                                       [FromQuery] StakingPositionFilterParameters filters,
-                                                                                                       CancellationToken cancellationToken)
+        public async Task<ActionResult<StakingPositionsResponseModel>> GetStakingPositions([FromRoute] Address address,
+                                                                                           [FromQuery] StakingPositionFilterParameters filters,
+                                                                                           CancellationToken cancellationToken)
         {
             var positions = await _mediator.Send(new GetStakingPositionsWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
             var response = _mapper.Map<StakingPositionsResponseModel>(positions);
@@ -152,7 +151,7 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Staking Position</summary>
-        /// <remarks>Retrieves the staking position of an address in a particular pool</remarks>
+        /// <remarks>Retrieves the staking position of an address in a particular pool.</remarks>
         /// <param name="address">Address to lookup</param>
         /// <param name="liquidityPool">Liquidity pool to search</param>
         /// <param name="cancellationToken"></param>
