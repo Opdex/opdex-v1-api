@@ -19,17 +19,20 @@ namespace Opdex.Platform.WebApi.Models.Requests.Transactions
         /// <summary>
         /// Optionally filter transactions by wallet address.
         /// </summary>
+        /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
         public Address Wallet { get; set; }
 
         /// <summary>
         /// Optional list of smart contract addresses to filter transactions by.
         /// </summary>
+        /// <example>[ "tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i" ]</example>
         [NotNull]
         public IEnumerable<Address> Contracts { get; set; }
 
         /// <summary>
         /// Filter transactions based on event types included.
         /// </summary>
+        /// <example>[ "CreateVaultCertificateEvent", "RevokeVaultCertificateEvent", "RedeemVaultCertificateEvent" ]</example>
         [NotNull]
         public IEnumerable<TransactionEventType> EventTypes { get; set; }
 
