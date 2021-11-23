@@ -8,9 +8,11 @@ namespace Opdex.Platform.WebApi.Models.Requests.Vaults
     public class CreateVaultCertificateQuoteRequest
     {
         /// <summary>Address of the certificate holder.</summary>
+        /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
         public Address Holder { get; set; }
 
         /// <summary>Amount of staking tokens to assign.</summary>
+        /// <example>50000.00000000
         public FixedDecimal Amount { get; set; }
     }
 }

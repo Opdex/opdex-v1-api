@@ -8,6 +8,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Vaults
     public class SetVaultOwnerQuoteRequest
     {
         /// <summary>Address of the new owner.</summary>
+        /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
         public Address Owner { get; set; }
     }
 }
