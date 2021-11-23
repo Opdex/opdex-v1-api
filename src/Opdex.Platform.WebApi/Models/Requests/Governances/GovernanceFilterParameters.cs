@@ -10,6 +10,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Governances
         /// <summary>
         /// Address of the mined token.
         /// </summary>
+        /// <example>tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L</example>
         public Address MinedToken { get; set; }
 
         /// <inheritdoc />
