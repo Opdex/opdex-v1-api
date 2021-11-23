@@ -40,7 +40,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         /// <summary>
         /// Amount of SRC tokens output.
         /// </summary>
-        /// <example>0.000500000000000000</example>
+        /// <example>0.000000000000000000</example>
         public FixedDecimal AmountSrcOut { get; set; }
 
         /// <summary>
