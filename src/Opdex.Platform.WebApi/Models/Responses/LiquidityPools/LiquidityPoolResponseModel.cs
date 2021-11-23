@@ -33,7 +33,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools
         public LiquidityPoolTokenGroupResponseModel Token { get; set; }
 
         /// <summary>
-        /// The pool's current sumamry.
+        /// The pool's current summary.
         /// </summary>
         [NotNull]
         public LiquidityPoolSummaryResponseModel Summary { get; set; }

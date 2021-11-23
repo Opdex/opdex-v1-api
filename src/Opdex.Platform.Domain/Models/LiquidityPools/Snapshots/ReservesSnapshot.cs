@@ -15,17 +15,21 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Usd = new Ohlc<decimal>();
         }
 
-        public ReservesSnapshot(ReservesSnapshot snapshots)
+        public ReservesSnapshot(ReservesSnapshot snapshot)
         {
-            Crs = snapshots.Crs;
-            Src = snapshots.Src;
-            Usd = snapshots.Usd;
+            Crs = new Ohlc<ulong>();
+            Src = new Ohlc<UInt256>();
+            Usd = new Ohlc<decimal>();
+
+            Crs.Update(snapshot.Crs.Close, true);
+            Src.Update(snapshot.Src.Close, true);
+            Usd.Update(snapshot.Usd.Close, true);
         }
 
         public ReservesSnapshot(Ohlc<ulong> reserveCrs, Ohlc<UInt256> reserveSrc, Ohlc<decimal> reserveUsd)
         {
-            Crs = reserveCrs;
-            Src = reserveSrc;
+            Crs = reserveCrs ?? throw new ArgumentNullException(nameof(reserveCrs), "Reserves CRS cannot be null.");
+            Src = reserveSrc ?? throw new ArgumentNullException(nameof(reserveSrc), "Reserves SRC cannot be null.");
             Usd = reserveUsd ?? throw new ArgumentNullException(nameof(reserveUsd), "Reserves USD cannot be null.");
         }
 

@@ -55,6 +55,10 @@ namespace Opdex.Platform.Application.Assemblers
             var stakingToken = market.IsStakingMarket && pool.SrcTokenId != market.StakingTokenId ? await AssembleMarketToken(market.StakingTokenId, market) : null;
             var stakingEnabled = stakingToken != null;
 
+            // Calc rewards
+            (decimal providerUsd, decimal marketUsd) = MathExtensions.VolumeBasedRewards(summary.VolumeUsd, summary.StakingWeight, stakingEnabled,
+                                                                                         market.TransactionFee, market.MarketFeeEnabled);
+
             // Set Transaction Fee - range from 1-10 to output percentage (e.g. 1 output .1 as in .1%)
             // Math operations would * 100 to get .001
             poolDto.TransactionFee = market.TransactionFee == 0 ? 0 : Math.Round((decimal)market.TransactionFee / 10, 1);
@@ -71,15 +75,17 @@ namespace Opdex.Platform.Application.Assemblers
                 {
                     CrsPerSrc = new FixedDecimal(summary.LockedCrs.Token0PerToken1(summary.LockedSrc, poolDto.SrcToken.Sats), TokenConstants.Cirrus.Decimals),
                     SrcPerCrs = new FixedDecimal(summary.LockedSrc.Token0PerToken1(summary.LockedCrs, TokenConstants.Cirrus.Sats), (byte)poolDto.SrcToken.Decimals),
+                },
+                Volume = new VolumeDto
+                {
+                    DailyUsd = summary.VolumeUsd
+                },
+                Rewards = new RewardsDto
+                {
+                    ProviderDailyUsd = providerUsd,
+                    MarketDailyUsd = marketUsd
                 }
             };
-
-            (decimal providerUsd, decimal marketUsd) = MathExtensions.VolumeBasedRewards(summary.VolumeUsd, summary.StakingWeight, stakingEnabled,
-                                                                                         market.TransactionFee, market.MarketFeeEnabled);
-
-            poolDto.Summary.Volume.DailyUsd = summary.VolumeUsd;
-            poolDto.Summary.Rewards.ProviderDailyUsd = providerUsd;
-            poolDto.Summary.Rewards.MarketDailyUsd = marketUsd;
 
             if (!stakingEnabled) return poolDto;
 
@@ -91,7 +97,7 @@ namespace Opdex.Platform.Application.Assemblers
             poolDto.Summary.Staking = new StakingDto
             {
                 Token = stakingToken,
-                Weight = summary.StakingWeight,
+                Weight = summary.StakingWeight.ToDecimal(stakingToken.Decimals),
                 Usd = MathExtensions.TotalFiat(summary.StakingWeight, stakingToken.Summary.PriceUsd, stakingToken.Sats),
                 DailyWeightChangePercent = summary.DailyStakingWeightChangePercent,
                 Nominated = nominations.Any(nomination => nomination.LiquidityPoolId == poolDto.Id)

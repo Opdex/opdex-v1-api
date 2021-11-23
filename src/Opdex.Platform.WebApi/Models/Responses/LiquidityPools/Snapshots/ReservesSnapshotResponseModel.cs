@@ -1,5 +1,4 @@
 using NJsonSchema.Annotations;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Responses.OHLC;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots

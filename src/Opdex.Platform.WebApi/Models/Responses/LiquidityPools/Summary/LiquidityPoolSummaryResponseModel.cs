@@ -3,7 +3,7 @@ using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Summary
 {
-    public abstract class LiquidityPoolSummaryResponseModel
+    public class LiquidityPoolSummaryResponseModel
     {
         /// <summary>
         /// The liquidity pool's locked reserves.

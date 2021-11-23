@@ -145,9 +145,11 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Rewards = new RewardsSnapshot(snapshots.Select(snapshot => snapshot.Rewards).ToList());
 
             // Staking takes the latest total
+            // Todo: Bugged, this should track OHLC of all hourly snapshots to create the current
             Staking = new StakingSnapshot(snapshots.Last().Staking);
 
             // Reserves take the latest total
+            // Todo: Bugged, this should track OHLC of all hourly snapshots to create the current
             Reserves = new ReservesSnapshot(snapshots.Last().Reserves);
 
             // Cost is rebuilt for OHLC using all cost snapshots for the day

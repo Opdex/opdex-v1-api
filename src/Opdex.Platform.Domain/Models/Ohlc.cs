@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Opdex.Platform.Domain.Tests")]
 namespace Opdex.Platform.Domain.Models
 {
     public class Ohlc<T> where T : IComparable<T>

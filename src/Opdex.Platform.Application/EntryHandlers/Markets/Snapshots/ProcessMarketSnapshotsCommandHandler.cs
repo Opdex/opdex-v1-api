@@ -5,8 +5,12 @@ using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,22 +42,20 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
                 marketSnapshot.ResetCurrentSnapshot();
             }
 
-            // Todo: Task.WhenAll in chunks to get all liquidity pool's snapshots
-            // During chunks add to ottal list of snapshots
-            // Update market snapshot at once with agg totals, vs one at a time.
+            var poolChunks = marketPools.Chunk(20);
+            var snapshots = new List<LiquidityPoolSnapshot>();
 
-            // Each pool in the market
-            foreach (var pool in marketPools)
+            foreach (var chunk in poolChunks)
             {
-                // Get snapshot
-                var poolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, request.BlockTime, SnapshotType));
-
-                // Skip if the returned snapshot is a new default
-                if (poolSnapshot.Id == 0) continue;
-
-                // Apply LP snapshot to market snapshot
-                marketSnapshot.Update(poolSnapshot);
+                await Task.WhenAll(chunk.Select(async pool =>
+                {
+                    var snapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, request.BlockTime, SnapshotType));
+                    if (snapshot.Id > 0) snapshots.Add(snapshot);
+                }));
             }
+
+            // Apply LP snapshot to market snapshot
+            marketSnapshot.Update(snapshots);
 
             // Persist market snapshot
             await _mediator.Send(new MakeMarketSnapshotCommand(marketSnapshot));
