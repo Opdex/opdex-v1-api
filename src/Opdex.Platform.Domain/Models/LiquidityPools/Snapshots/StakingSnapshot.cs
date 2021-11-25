@@ -3,6 +3,8 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
 {
@@ -14,12 +16,10 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Usd = new Ohlc<decimal>();
         }
 
-        public StakingSnapshot(StakingSnapshot snapshot)
+        public StakingSnapshot(IList<StakingSnapshot> snapshots)
         {
-            Weight = new Ohlc<UInt256>();
-            Usd = new Ohlc<decimal>();
-
-            Refresh(snapshot.Weight.Close, snapshot.Usd.Close);
+            Weight = new Ohlc<UInt256>(snapshots.Select(snapshot => snapshot.Weight).ToList());
+            Usd = new Ohlc<decimal>(snapshots.Select(snapshot => snapshot.Usd).ToList());
         }
 
         public StakingSnapshot(Ohlc<UInt256> stakingWeight, Ohlc<decimal> stakingUsd)
@@ -32,34 +32,60 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         public Ohlc<decimal> Usd { get; }
 
         /// <summary>
-        /// Refreshes the staking snapshot by resetting the OHLC values of properties to equal
-        /// the current closing value. Current Close values set all OHLC values for the reset.
+        /// Update an existing snapshot's values with a new StakeLog.
         /// </summary>
-        internal void Refresh()
+        /// <param name="log">The new Stake Log to process</param>
+        /// <param name="stakingTokenUsd">The staking token USD price at the time of the transaction.</param>
+        internal void Update(StakeLog log, decimal stakingTokenUsd)
         {
-            Refresh(Weight.Close, Usd.Close);
-        }
-
-        internal void SetStaking(StakeLog log, decimal stakingTokenUsd)
-        {
-            UpdateUsd(log.TotalStaked, stakingTokenUsd);
             Weight.Update(log.TotalStaked);
+
+            if (Weight.Close > 0 && stakingTokenUsd == 0)
+            {
+                throw new ArgumentNullException("Update issue");
+            }
+
+            UpdateUsd(log.TotalStaked, stakingTokenUsd, false);
         }
 
-        internal void RefreshStaking(decimal stakingTokenUsd)
+        /// <summary>
+        /// Update an existing snapshot by forcing a refresh of the USD totals.
+        /// </summary>
+        /// <param name="stakingTokenUsd">The staking token USD price to update values with.</param>
+        internal void Update(decimal stakingTokenUsd)
         {
-            UpdateUsd(Weight.Close, stakingTokenUsd);
+            UpdateUsd(Weight.Close, stakingTokenUsd, false);
         }
 
-        private void Refresh(UInt256 weight, decimal usd)
+        /// <summary>
+        /// Refresh and reset a staking snapshot entirely. Rolls over previous closing staking weight and recalculates
+        /// new USD staking values based upon the provided staking token USD price.
+        /// </summary>
+        /// <param name="stakingTokenUsd">The staking token USD price to recalculate USD totals.</param>
+        internal void Refresh(decimal stakingTokenUsd)
         {
-            Weight.Update(weight, true);
-            Usd.Update(usd, true);
+            Weight.Refresh(Weight.Close);
+
+            if (Weight.Close > 0 && stakingTokenUsd == 0)
+            {
+                throw new ArgumentNullException("Refresh issue");
+            }
+
+
+            UpdateUsd(Weight.Close, stakingTokenUsd, true);
         }
 
-        private void UpdateUsd(UInt256 weight, decimal stakingTokenUsd)
+        private void UpdateUsd(UInt256 weight, decimal stakingTokenUsd, bool refresh)
         {
-            Usd.Update(MathExtensions.TotalFiat(weight, stakingTokenUsd, TokenConstants.Opdex.Sats));
+            if (weight > 0 && stakingTokenUsd == 0)
+            {
+                throw new ArgumentNullException("Getting Somewhere");
+            }
+
+            var usd = MathExtensions.TotalFiat(weight, stakingTokenUsd, TokenConstants.Opdex.Sats);
+
+            if (refresh) Usd.Refresh(usd);
+            else Usd.Update(usd);
         }
     }
 }

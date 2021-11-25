@@ -42,7 +42,17 @@ namespace Opdex.Platform.Domain.Models
         public T Low { get; private set; }
         public T Close { get; private set; }
 
-        internal void Update(T value, bool reset = false)
+        internal void Refresh(T value)
+        {
+            Update(value, true);
+        }
+
+        internal void Update(T value)
+        {
+            Update(value, false);
+        }
+
+        private void Update(T value, bool reset)
         {
             if (Open.CompareTo(default) == 0 || reset)
             {

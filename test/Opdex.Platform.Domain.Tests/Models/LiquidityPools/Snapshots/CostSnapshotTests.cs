@@ -13,14 +13,13 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         public void CreateCostSnapshot_InvalidCrsPerSrc_ThrowsArgumentNullException()
         {
             // Arrange
-            Ohlc<UInt256> crsPerSrc = null;
             var srcPerCrs = new Ohlc<UInt256>();
 
             // Act
-            void Act() => new CostSnapshot(crsPerSrc, srcPerCrs);
+            void Act() => new CostSnapshot(null, srcPerCrs);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain($"{nameof(crsPerSrc)} cannot be null.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("crsPerSrc cannot be null.");
         }
 
         [Fact]
@@ -28,13 +27,12 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
         {
             // Arrange
             var crsPerSrc = new Ohlc<UInt256>();
-            Ohlc<UInt256> srcPerCrs = null;
 
             // Act
-            void Act() => new CostSnapshot(crsPerSrc, srcPerCrs);
+            void Act() => new CostSnapshot(crsPerSrc, null);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain($"{nameof(srcPerCrs)} cannot be null.");
+            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("srcPerCrs cannot be null.");
         }
 
         [Fact]

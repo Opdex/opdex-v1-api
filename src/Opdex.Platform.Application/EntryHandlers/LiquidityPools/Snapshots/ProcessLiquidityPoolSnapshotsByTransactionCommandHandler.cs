@@ -128,7 +128,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                 }
 
                 // Lookup staking token pricing info used for liquidity pool staking totals
-                var foundStakingToken = !stakingTokensUsd.TryGetValue(market.StakingTokenId, out var stakingTokenUsd);
+                var foundStakingToken = stakingTokensUsd.TryGetValue(market.StakingTokenId, out var stakingTokenUsd);
                 if (market.IsStakingMarket && !foundStakingToken)
                 {
                     var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(market.StakingTokenId, liquidityPool.MarketId,
@@ -143,9 +143,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                                                                                                                              stakingTokenSnapshot.EndDate,
                                                                                                                              SnapshotType.Hourly));
 
-                        var crsPerSrc = stakingTokenPoolSnapshot.Cost.CrsPerSrc.Close;
-
-                        stakingTokenSnapshot.ResetStaleSnapshot(crsPerSrc, crsSnapshot.Price.Close, block.MedianTime);
+                        stakingTokenSnapshot.ResetStaleSnapshot(stakingTokenPoolSnapshot.Cost.CrsPerSrc.Close, crsSnapshot.Price.Close, block.MedianTime);
                     }
 
                     stakingTokenUsd = stakingTokenSnapshot.Price.Close;

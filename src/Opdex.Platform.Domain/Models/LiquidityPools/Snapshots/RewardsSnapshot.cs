@@ -39,7 +39,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         public decimal ProviderUsd { get; private set; }
         public decimal MarketUsd { get; private set; }
 
-        internal void SetRewards(decimal volumeUsd, UInt256 stakingWeight, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
+        internal void Update(decimal volumeUsd, UInt256 stakingWeight, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
         {
             (decimal providerUsd, decimal marketUsd) = MathExtensions.VolumeBasedRewards(volumeUsd, stakingWeight, isStakingPool,
                                                                                          transactionFee, marketFeeEnabled);

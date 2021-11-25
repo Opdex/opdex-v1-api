@@ -30,10 +30,31 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         public Ohlc<UInt256> CrsPerSrc { get; }
         public Ohlc<UInt256> SrcPerCrs { get; }
 
-        internal void SetCost(ulong reserveCrs, UInt256 reserveSrc, ulong srcSats, bool reset = false)
+        internal void Update(ulong reserveCrs, UInt256 reserveSrc, ulong srcSats)
         {
-            CrsPerSrc.Update(reserveCrs.Token0PerToken1(reserveSrc, srcSats), reset);
-            SrcPerCrs.Update(reserveSrc.Token0PerToken1(reserveCrs, TokenConstants.Cirrus.Sats), reset);
+            Update(reserveCrs, reserveSrc, srcSats, false);
+        }
+
+        internal void Refresh(ulong reserveCrs, UInt256 reserveSrc, ulong srcSats)
+        {
+            Update(reserveCrs, reserveSrc, srcSats, true);
+        }
+
+        private void Update(ulong reserveCrs, UInt256 reserveSrc, ulong srcSats, bool refresh)
+        {
+            var crsPerSrc = reserveCrs.Token0PerToken1(reserveSrc, srcSats);
+            var srcPerCrs = reserveSrc.Token0PerToken1(reserveCrs, TokenConstants.Cirrus.Sats);
+
+            if (refresh)
+            {
+                CrsPerSrc.Refresh(crsPerSrc);
+                SrcPerCrs.Refresh(srcPerCrs);
+            }
+            else
+            {
+                CrsPerSrc.Update(crsPerSrc);
+                SrcPerCrs.Update(srcPerCrs);
+            }
         }
     }
 }

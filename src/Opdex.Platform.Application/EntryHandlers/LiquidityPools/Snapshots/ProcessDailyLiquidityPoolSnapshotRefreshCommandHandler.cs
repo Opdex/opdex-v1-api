@@ -30,8 +30,7 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
                                                                                  request.BlockTime, request.CrsUsd, lpSnapshot.Reserves.Crs.Close,
                                                                                  lpSnapshot.Reserves.Src.Close, request.BlockHeight));
 
-            // When processing a liquidity pool of a staking token, use the srcUsd value instead.
-            var stakingUsd = request.StakingTokenUsd ?? srcUsd;
+            var stakingUsd = request.StakingTokenUsd ?? 0m;
 
             // Reset stale snapshots
             if (lpSnapshot.EndDate < request.BlockTime)

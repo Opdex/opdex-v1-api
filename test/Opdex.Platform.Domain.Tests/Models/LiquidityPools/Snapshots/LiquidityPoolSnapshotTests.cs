@@ -116,9 +116,9 @@ namespace Opdex.Platform.Domain.Tests.Models.LiquidityPools.Snapshots
             snapshot.Staking.Weight.Should().BeEquivalentTo(new Ohlc<UInt256>(staking.Weight.Close, staking.Weight.Close, staking.Weight.Close, staking.Weight.Close));
             snapshot.Cost.CrsPerSrc.Open.Should().Be(cost.CrsPerSrc.Close); // Rolls close to open
             snapshot.Cost.SrcPerCrs.Open.Should().Be(cost.SrcPerCrs.Close); // Rolls close to open
-            snapshot.Reserves.Usd.Open.Should().Be(3m);
+            snapshot.Reserves.Usd.Open.Should().Be(20m);
             snapshot.Reserves.Usd.High.Should().Be(20m);
-            snapshot.Reserves.Usd.Low.Should().Be(3m);
+            snapshot.Reserves.Usd.Low.Should().Be(20m);
             snapshot.Reserves.Usd.Close.Should().Be(20m);
             snapshot.Reserves.Src.Should().Be(reserves.Src);
             snapshot.TransactionCount.Should().Be(0L);

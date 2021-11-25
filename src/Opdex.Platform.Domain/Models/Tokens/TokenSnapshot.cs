@@ -130,7 +130,9 @@ namespace Opdex.Platform.Domain.Models.Tokens
         {
             Id = 0;
 
-            UpdatePriceExecute(MathExtensions.TotalFiat(crsPerSrc, crsUsd, TokenConstants.Cirrus.Sats), true);
+            var price = MathExtensions.TotalFiat(crsPerSrc, crsUsd, TokenConstants.Cirrus.Sats);
+
+            UpdatePriceExecute(price, true);
 
             StartDate = blockTime.ToStartOf(SnapshotType);
             EndDate = blockTime.ToEndOf(SnapshotType);
@@ -151,9 +153,13 @@ namespace Opdex.Platform.Domain.Models.Tokens
             EndDate = blockTime.ToEndOf(SnapshotType);
         }
 
-        private void UpdatePriceExecute(decimal price, bool reset)
+        private void UpdatePriceExecute(decimal price, bool refresh)
         {
-            Price.Update(Math.Round(price, 8, MidpointRounding.AwayFromZero), reset);
+            var rounded = Math.Round(price, 8, MidpointRounding.AwayFromZero);
+
+            if (refresh) Price.Refresh(rounded);
+            else Price.Update(rounded);
+
             ModifiedDate = DateTime.UtcNow;
         }
     }
