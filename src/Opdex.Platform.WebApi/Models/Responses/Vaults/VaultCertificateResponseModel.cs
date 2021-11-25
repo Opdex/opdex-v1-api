@@ -17,7 +17,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Vaults
         /// <summary>
         /// Total value of the certificate, over the duration of the vesting period.
         /// </summary>
-        /// <example>250000.00000000</example>
+        /// <example>"250000.00000000"</example>
         public FixedDecimal Amount { get; set; }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         /// <summary>
         /// Governance token reward amount.
         /// </summary>
-        /// <example>200.00000000</example>
+        /// <example>"200.00000000"</example>
         public FixedDecimal Amount { get; set; }
     }
 }

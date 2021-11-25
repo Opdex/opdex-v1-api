@@ -16,7 +16,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         /// <summary>
         /// Value of the certificate.
         /// </summary>
-        /// <example>25000.00000000</example>
+        /// <example>"25000.00000000"</example>
         public FixedDecimal Amount { get; set; }
 
         /// <summary>

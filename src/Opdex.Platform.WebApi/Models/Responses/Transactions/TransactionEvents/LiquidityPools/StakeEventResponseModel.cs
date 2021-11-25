@@ -16,19 +16,19 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         /// <summary>
         /// Amount of staking tokens transacted.
         /// </summary>
-        /// <example>800.00000000</example>
+        /// <example>"800.00000000"</example>
         public FixedDecimal Amount { get; set; }
 
         /// <summary>
         /// Updated balance of the staker.
         /// </summary>
-        /// <example>1000.00000000</example>
+        /// <example>"1000.00000000"</example>
         public FixedDecimal StakerBalance { get; set; }
 
         /// <summary>
         /// Total staking tokens.
         /// </summary>
-        /// <example>750000000.00000000</example>
+        /// <example>"750000000.00000000"</example>
         public FixedDecimal TotalStaked { get; set; }
     }
 }

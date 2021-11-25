@@ -10,13 +10,13 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         /// <summary>
         /// Amount of governance tokens distributed to the vault.
         /// </summary>
-        /// <example>75000000.00000000</example>
+        /// <example>"75000000.00000000"</example>
         public FixedDecimal VaultAmount { get; set; }
 
         /// <summary>
         /// Amount of governance tokens distributed to mining pools.
         /// </summary>
-        /// <example>225000000.00000000</example>
+        /// <example>"225000000.00000000"</example>
         public FixedDecimal GovernanceAmount { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         /// <summary>
         /// Total amount of governance tokens distributed.
         /// </summary>
-        /// <example>700000000.00000000</example>
+        /// <example>"700000000.00000000"</example>
         public FixedDecimal TotalSupply { get; set; }
 
         /// <summary>

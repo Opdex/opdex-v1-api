@@ -22,25 +22,25 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         /// <summary>
         /// Amount of CRS tokens input.
         /// </summary>
-        /// <example>0.00000000</example>
+        /// <example>"0.00000000"</example>
         public FixedDecimal AmountCrsIn { get; set; }
 
         /// <summary>
         /// Amount of SRC tokens input.
         /// </summary>
-        /// <example>0.000500000000000000</example>
+        /// <example>"0.000500000000000000"</example>
         public FixedDecimal AmountSrcIn { get; set; }
 
         /// <summary>
         /// Amount of CRS tokens output.
         /// </summary>
-        /// <example>2.50000000</example>
+        /// <example>"2.50000000"</example>
         public FixedDecimal AmountCrsOut { get; set; }
 
         /// <summary>
         /// Amount of SRC tokens output.
         /// </summary>
-        /// <example>0.000000000000000000</example>
+        /// <example>"0.000000000000000000"</example>
         public FixedDecimal AmountSrcOut { get; set; }
 
         /// <summary>
