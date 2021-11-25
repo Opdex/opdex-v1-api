@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -30,7 +31,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.IndexControllerTests
 
             var opdexConfiguration = new OpdexConfiguration { Network = NetworkType.DEVNET };
 
-            _controller = new IndexController(_mediator.Object, opdexConfiguration);
+            _controller = new IndexController(Mock.Of<IMapper>(), _mediator.Object, opdexConfiguration);
         }
 
         [Fact]
@@ -45,7 +46,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.IndexControllerTests
             // Act
             try
             {
-                await _controller.Rewind(request, CancellationToken.None);
+                await _controller.Rewind(request);
             }
             catch { }
 
@@ -66,7 +67,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.IndexControllerTests
             // Act
             try
             {
-                var response = await _controller.Rewind(request, CancellationToken.None);
+                var response = await _controller.Rewind(request);
             }
             catch (Exception) { }
 
@@ -88,7 +89,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.IndexControllerTests
             _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
             // Act
-            Task Act() => _controller.Rewind(request, CancellationToken.None);
+            Task Act() => _controller.Rewind(request);
 
             // Assert
             await Assert.ThrowsAnyAsync<Exception>(Act);
@@ -107,7 +108,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.IndexControllerTests
             _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             // Act
-            var response = await _controller.Rewind(request, CancellationToken.None);
+            var response = await _controller.Rewind(request);
 
             // Assert
             response.As<StatusCodeResult>().StatusCode.Should().Be(StatusCodes.Status204NoContent);
@@ -128,7 +129,7 @@ namespace Opdex.Platform.WebApi.Tests.Controllers.IndexControllerTests
             // Act
             try
             {
-                await _controller.Rewind(request, CancellationToken.None);
+                await _controller.Rewind(request);
             }
             catch { }
 
