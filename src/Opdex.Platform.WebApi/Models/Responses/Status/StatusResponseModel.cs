@@ -17,7 +17,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Status
         /// <summary>
         /// Unique identifier for the running instance of the application.
         /// </summary>
-        /// <value>ae89af2a-9774-4956-aa40-507edd38d200</value>
+        /// <example>ae89af2a-9774-4956-aa40-507edd38d200</example>
         [NotNull]
         public string Identifier { get; set; }
     }

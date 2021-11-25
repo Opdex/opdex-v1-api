@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -7,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
@@ -42,6 +42,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(ApprovedAllowanceResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ApprovedAllowanceResponseModel>> GetAllowance([FromRoute] Address address,
                                                                                      [FromRoute] Address token,
                                                                                      [FromRoute] Address spender,
@@ -59,12 +60,12 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A collection of address balance summaries by token.</returns>
         [HttpGet("{address}/balance")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AddressBalancesResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<IEnumerable<AddressBalanceResponseModel>>> GetAddressBalances([FromRoute] Address address,
-                                                                                                     [FromQuery] AddressBalanceFilterParameters filters,
-                                                                                                     CancellationToken cancellationToken)
+        public async Task<ActionResult<AddressBalancesResponseModel>> GetAddressBalances([FromRoute] Address address,
+                                                                                         [FromQuery] AddressBalanceFilterParameters filters,
+                                                                                         CancellationToken cancellationToken)
         {
             var balances = await _mediator.Send(new GetAddressBalancesWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
 
@@ -80,10 +81,10 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns><see cref="AddressBalanceResponseModel"/> balance summary</returns>
         [HttpGet("{address}/balance/{token}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AddressBalanceResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AddressBalanceResponseModel>> GetAddressBalanceByToken([FromRoute] Address address,
                                                                                               [FromRoute] Address token,
                                                                                               CancellationToken cancellationToken)
@@ -93,20 +94,40 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>Refresh Balance</summary>
+        /// <remarks>Retrieves and indexes the latest wallet public key balance for a token.</remarks>
+        /// <param name="address">The address of the wallet.</param>
+        /// <param name="token">The token to get the balance of.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Address balance summary.</returns>
+        [HttpPost("{address}/balance/{token}")]
+        [ProducesResponseType(typeof(AddressBalanceResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AddressBalanceResponseModel>> RefreshAddressBalance([FromRoute] Address address,
+                                                                                           [FromRoute] Address token,
+                                                                                           CancellationToken cancellationToken)
+        {
+            var balance = await _mediator.Send(new CreateRefreshAddressBalanceCommand(address, token), cancellationToken);
+            var response = _mapper.Map<AddressBalanceResponseModel>(balance);
+            return Ok(response);
+        }
+
+
         /// <summary>Get Mining Positions</summary>
-        /// <remarks>Retrieves the mining position of an address in all mining pools</remarks>
+        /// <remarks>Retrieves the mining position of an address in all mining pools.</remarks>
         /// <param name="address">The address of the wallet.</param>
         /// <param name="filters">Filter parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Staking position summaries</returns>
-        /// <returns></returns>
+        /// <returns>Mining position summaries</returns>
         [HttpGet("{address}/mining")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MiningPositionsResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<IEnumerable<StakingPositionResponseModel>>> GetMiningPositions([FromRoute] Address address,
-                                                                                                      [FromQuery] MiningPositionFilterParameters filters,
-                                                                                                      CancellationToken cancellationToken)
+        public async Task<ActionResult<MiningPositionsResponseModel>> GetMiningPositions([FromRoute] Address address,
+                                                                                         [FromQuery] MiningPositionFilterParameters filters,
+                                                                                         CancellationToken cancellationToken)
         {
             var positions = await _mediator.Send(new GetMiningPositionsWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
             var response = _mapper.Map<MiningPositionsResponseModel>(positions);
@@ -114,13 +135,13 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Mining Position</summary>
-        /// <remarks>Retrieves the mining position of an address in a particular pool</remarks>
+        /// <remarks>Retrieves the mining position of an address in a particular pool.</remarks>
         /// <param name="address">The address of the wallet.</param>
         /// <param name="miningPool">The address of the mining pool.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Mining position summary</returns>
         [HttpGet("{address}/mining/{miningPool}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MiningPositionResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<MiningPositionResponseModel>> GetMiningPositionByPool([FromRoute] Address address,
@@ -133,18 +154,18 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Staking Positions</summary>
-        /// <remarks>Retrieves the staking position of an address in all staking pools</remarks>
+        /// <remarks>Retrieves the staking position of an address in all staking pools.</remarks>
         /// <param name="address">The address of the wallet.</param>
         /// <param name="filters">Filter parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Staking position summaries</returns>
         [HttpGet("{address}/staking")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(StakingPositionsResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<IEnumerable<StakingPositionResponseModel>>> GetStakingPositions([FromRoute] Address address,
-                                                                                                       [FromQuery] StakingPositionFilterParameters filters,
-                                                                                                       CancellationToken cancellationToken)
+        public async Task<ActionResult<StakingPositionsResponseModel>> GetStakingPositions([FromRoute] Address address,
+                                                                                           [FromQuery] StakingPositionFilterParameters filters,
+                                                                                           CancellationToken cancellationToken)
         {
             var positions = await _mediator.Send(new GetStakingPositionsWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
             var response = _mapper.Map<StakingPositionsResponseModel>(positions);
@@ -152,13 +173,13 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Get Staking Position</summary>
-        /// <remarks>Retrieves the staking position of an address in a particular pool</remarks>
+        /// <remarks>Retrieves the staking position of an address in a particular pool.</remarks>
         /// <param name="address">Address to lookup</param>
         /// <param name="liquidityPool">Liquidity pool to search</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Staking position summary</returns>
         [HttpGet("{address}/staking/{liquidityPool}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(StakingPositionResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<StakingPositionResponseModel>> GetStakingPositionByPool([FromRoute] Address address,

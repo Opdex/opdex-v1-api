@@ -14,15 +14,15 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Balances
 {
-    public class CallCirrusGetAddressBalanceQueryHandlerTests
+    public class CallCirrusGetAddressCrsBalanceQueryHandlerTests
     {
         private readonly Mock<IBlockStoreModule> _blockStoreModuleMock;
-        private readonly CallCirrusGetAddressBalanceQueryHandler _handler;
+        private readonly CallCirrusGetAddressCrsBalanceQueryHandler _handler;
 
-        public CallCirrusGetAddressBalanceQueryHandlerTests()
+        public CallCirrusGetAddressCrsBalanceQueryHandlerTests()
         {
             _blockStoreModuleMock = new Mock<IBlockStoreModule>();
-            _handler = new CallCirrusGetAddressBalanceQueryHandler(_blockStoreModuleMock.Object);
+            _handler = new CallCirrusGetAddressCrsBalanceQueryHandler(_blockStoreModuleMock.Object);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
             var address = Address.Empty;
 
             // Act
-            void Act() => new CallCirrusGetAddressBalanceQuery(address);
+            void Act() => new CallCirrusGetAddressCrsBalanceQuery(address);
 
             // Assert
             Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("A wallet address must be provided.");
@@ -48,7 +48,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
             // Act
             try
             {
-                await _handler.Handle(new CallCirrusGetAddressBalanceQuery(wallet), token);
+                await _handler.Handle(new CallCirrusGetAddressCrsBalanceQuery(wallet), token);
             }
             catch { }
 
@@ -73,7 +73,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
             _blockStoreModuleMock.Setup(callTo => callTo.GetWalletAddressesBalances(It.IsAny<IEnumerable<Address>>(), token)).ReturnsAsync(fullNodeResponse);
 
             // Act
-            var response = await _handler.Handle(new CallCirrusGetAddressBalanceQuery(wallet), token);
+            var response = await _handler.Handle(new CallCirrusGetAddressCrsBalanceQuery(wallet), token);
 
             // Assert
             response.Should().Be(balance);
@@ -92,7 +92,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
             // Act
             // Assert
             _handler
-                .Invoking(h => h.Handle(new CallCirrusGetAddressBalanceQuery(wallet, findOrThrow: true), token))
+                .Invoking(h => h.Handle(new CallCirrusGetAddressCrsBalanceQuery(wallet, findOrThrow: true), token))
                 .Should()
                 .Throw<Exception>();
         }
@@ -108,7 +108,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
                 .Throws(new Exception());
 
             // Act
-            var response = await _handler.Handle(new CallCirrusGetAddressBalanceQuery(wallet, findOrThrow: false), token);
+            var response = await _handler.Handle(new CallCirrusGetAddressCrsBalanceQuery(wallet, findOrThrow: false), token);
 
             // Assert
             response.Should().Be(0);

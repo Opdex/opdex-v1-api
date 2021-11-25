@@ -33,7 +33,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address owner = Address.Empty;
-            const  ulong tokenId = 2;
+            const ulong tokenId = 2;
 
             void Act() => new RetrieveAddressBalanceByOwnerAndTokenQuery(owner, tokenId);
 
@@ -85,7 +85,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const  ulong tokenId = 2;
+            const ulong tokenId = 2;
             var cancellationToken = new CancellationTokenSource().Token;
 
             // Act
@@ -106,7 +106,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const  ulong tokenId = 2;
+            const ulong tokenId = 2;
             const bool findOrThrow = false;
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -127,7 +127,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const  ulong tokenId = 2;
+            const ulong tokenId = 2;
             const bool findOrThrow = false;
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -150,7 +150,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const  ulong tokenId = 2;
+            const ulong tokenId = 2;
             const bool findOrThrow = false;
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -176,7 +176,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const  ulong tokenId = 2;
+            const ulong tokenId = 2;
             const bool findOrThrow = true;
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -188,7 +188,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
             await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusGetAddressBalanceQuery>(q => q.Address == address &&
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusGetAddressCrsBalanceQuery>(q => q.Address == address &&
                                                                                                     q.FindOrThrow == findOrThrow),
                                                        cancellationToken), Times.Once);
         }
@@ -198,7 +198,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         {
             // Arrange
             Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const  ulong tokenId = 2;
+            const ulong tokenId = 2;
             const bool findOrThrow = true;
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -210,7 +210,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
                 .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
 
             _mediatorMock
-                .Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetAddressBalanceQuery>(), cancellationToken))
+                .Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetAddressCrsBalanceQuery>(), cancellationToken))
                 .ReturnsAsync(expectedBalance);
 
             // Act

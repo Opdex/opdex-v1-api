@@ -7,7 +7,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
     /// <summary>
     /// A query to get a CRS balance of an address.
     /// </summary>
-    public class CallCirrusGetAddressBalanceQuery : FindQuery<ulong>
+    public class CallCirrusGetAddressCrsBalanceQuery : FindQuery<ulong>
     {
         /// <summary>
         /// Constructor building the get address balance query.
@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
         /// <param name="address">The wallet address to get the balance of.</param>
         /// <param name="findOrThrow">Flag to find or throw if not found.</param>
         /// <exception cref="ArgumentNullException">Thrown for invalid query arguments.</exception>
-        public CallCirrusGetAddressBalanceQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
+        public CallCirrusGetAddressCrsBalanceQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
         {
             Address = address != Address.Empty
                 ? address

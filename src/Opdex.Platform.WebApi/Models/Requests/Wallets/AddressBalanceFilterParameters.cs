@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Models.Requests.Wallets
 {
-    public class AddressBalanceFilterParameters : FilterParameters<AddressBalancesCursor>
+    public sealed class AddressBalanceFilterParameters : FilterParameters<AddressBalancesCursor>
     {
         public AddressBalanceFilterParameters()
         {
@@ -19,17 +19,20 @@ namespace Opdex.Platform.WebApi.Models.Requests.Wallets
         /// <summary>
         /// Specific tokens to lookup.
         /// </summary>
+        /// <example>[ "tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3", "tPXUEzDyZDrR8YzQ6LiAJWhVuAKB8RUjyt" ]</example>
         [NotNull]
         public IEnumerable<Address> Tokens { get; set; }
 
         /// <summary>
         /// The type of token to filter by, either provisional or non-provisional.
         /// </summary>
+        /// <example>Provisional</example>
         public TokenProvisionalFilter TokenType { get; set; }
 
         /// <summary>
         /// Includes zero balances if true, otherwise filters out zero balances if false. Default false.
         /// </summary>
+        /// <example>true</example>
         public bool IncludeZeroBalances { get; set; }
 
         /// <inheritdoc />

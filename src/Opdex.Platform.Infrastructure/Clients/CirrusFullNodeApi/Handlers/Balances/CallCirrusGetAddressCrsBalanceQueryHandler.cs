@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balances
 {
-    public class CallCirrusGetAddressBalanceQueryHandler : IRequestHandler<CallCirrusGetAddressBalanceQuery, ulong>
+    public class CallCirrusGetAddressCrsBalanceQueryHandler : IRequestHandler<CallCirrusGetAddressCrsBalanceQuery, ulong>
     {
         private readonly IBlockStoreModule _blockStoreModule;
 
-        public CallCirrusGetAddressBalanceQueryHandler(IBlockStoreModule blockStoreModule)
+        public CallCirrusGetAddressCrsBalanceQueryHandler(IBlockStoreModule blockStoreModule)
         {
             _blockStoreModule = blockStoreModule ?? throw new ArgumentNullException(nameof(blockStoreModule));
         }
 
-        public async Task<ulong> Handle(CallCirrusGetAddressBalanceQuery request, CancellationToken cancellationToken)
+        public async Task<ulong> Handle(CallCirrusGetAddressCrsBalanceQuery request, CancellationToken cancellationToken)
         {
             try
             {
