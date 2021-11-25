@@ -2,6 +2,7 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
+using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.BlockStore;
@@ -24,7 +25,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Addresses.Balances
 
         public async Task<AddressBalanceDto> Handle(CreateRefreshAddressBalanceCommand request, CancellationToken cancellationToken)
         {
-            var block = await _mediator.Send(new CallCirrusGetBestBlockReceiptQuery(), cancellationToken);
+            var block = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
 
             await _mediator.Send(new CreateAddressBalanceCommand(request.Wallet, request.Token, block.Height), cancellationToken);
             var balance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(request.Wallet, tokenAddress: request.Token), cancellationToken);

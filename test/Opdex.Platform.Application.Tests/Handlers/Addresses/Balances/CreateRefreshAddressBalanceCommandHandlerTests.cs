@@ -4,6 +4,7 @@ using Moq;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
+using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.Addresses.Balances;
 using Opdex.Platform.Common.Models;
@@ -32,7 +33,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
         }
 
         [Fact]
-        public async Task Handle_GetLatestBlock_Send()
+        public async Task Handle_RetrieveLatestBlock_Send()
         {
             // Arrange
             var command = new CreateRefreshAddressBalanceCommand(new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
@@ -46,7 +47,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
             catch (Exception) { }
 
             // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<CallCirrusGetBestBlockReceiptQuery>(), cancellationToken), Times.Once);
+            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -56,10 +57,8 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
             var command = new CreateRefreshAddressBalanceCommand(new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var block = new BlockReceipt(Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), 500, DateTime.UtcNow, DateTime.UtcNow,
-                                         null, Sha256.Parse("4f8d100bc001765d5c28dd2c96ee29ddd35522457770aa38d3813b0949a14454"),
-                                         Sha256.Parse("a386631c692a623d30b05bac1f34cf7ca7d4eef3fe2f19df0636118342537687"), Enumerable.Empty<Sha256>());
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
+            var block = new Block(500, Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), DateTime.UtcNow, DateTime.UtcNow);
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
 
             // Act
             await _handler.Handle(command, cancellationToken);
@@ -77,10 +76,8 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
             var command = new CreateRefreshAddressBalanceCommand(new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var block = new BlockReceipt(Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), 500, DateTime.UtcNow, DateTime.UtcNow,
-                                         null, Sha256.Parse("4f8d100bc001765d5c28dd2c96ee29ddd35522457770aa38d3813b0949a14454"),
-                                         Sha256.Parse("a386631c692a623d30b05bac1f34cf7ca7d4eef3fe2f19df0636118342537687"), Enumerable.Empty<Sha256>());
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
+            var block = new Block(500, Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), DateTime.UtcNow, DateTime.UtcNow);
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
 
             // Act
             await _handler.Handle(command, cancellationToken);
@@ -97,10 +94,8 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
             var command = new CreateRefreshAddressBalanceCommand(new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var block = new BlockReceipt(Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), 500, DateTime.UtcNow, DateTime.UtcNow,
-                                         null, Sha256.Parse("4f8d100bc001765d5c28dd2c96ee29ddd35522457770aa38d3813b0949a14454"),
-                                         Sha256.Parse("a386631c692a623d30b05bac1f34cf7ca7d4eef3fe2f19df0636118342537687"), Enumerable.Empty<Sha256>());
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
+            var block = new Block(500, Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), DateTime.UtcNow, DateTime.UtcNow);
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
             var addressBalance = new AddressBalance(10, 10, "t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH", 10000000000, 500, 505);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(addressBalance);
@@ -119,10 +114,8 @@ namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
             var command = new CreateRefreshAddressBalanceCommand(new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH"), new Address("tCVeVYnfcTjtT6UbUFF9SsUYgfT5QUYtGr"));
             var cancellationToken = new CancellationTokenSource().Token;
 
-            var block = new BlockReceipt(Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), 500, DateTime.UtcNow, DateTime.UtcNow,
-                                         null, Sha256.Parse("4f8d100bc001765d5c28dd2c96ee29ddd35522457770aa38d3813b0949a14454"),
-                                         Sha256.Parse("a386631c692a623d30b05bac1f34cf7ca7d4eef3fe2f19df0636118342537687"), Enumerable.Empty<Sha256>());
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
+            var block = new Block(500, Sha256.Parse("21aaa0f833c4a7f81bd9e8862388733a3a67a1b532c077f0d23503abe0b2f3d8"), DateTime.UtcNow, DateTime.UtcNow);
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveAddressBalanceByOwnerAndTokenQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(new AddressBalance(10, 10, "t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH", 10000000000, 500, 505));
             var addressBalanceDto = new AddressBalanceDto();
