@@ -4,6 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Tokens
 {
+    /// <summary>
+    /// Token snapshot details.
+    /// </summary>
     public class TokenSnapshotResponseModel
     {
         /// <summary>
@@ -15,6 +18,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Tokens
         /// <summary>
         /// The start time for the snapshot.
         /// </summary>
+        /// <example>2022-01-01T00:00:00Z</example>
         [NotNull]
         public DateTime Timestamp { get; set; }
     }
