@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
@@ -92,13 +93,33 @@ namespace Opdex.Platform.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>Refresh Balance</summary>
+        /// <remarks>Retrieves and indexes the latest wallet public key balance for a token.</remarks>
+        /// <param name="address">The address of the wallet.</param>
+        /// <param name="token">The token to get the balance of.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Address balance summary.</returns>
+        [HttpPost("{address}/balance/{token}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AddressBalanceResponseModel>> RefreshAddressBalance([FromRoute] Address address,
+                                                                                           [FromRoute] Address token,
+                                                                                           CancellationToken cancellationToken)
+        {
+            var balance = await _mediator.Send(new CreateRefreshAddressBalanceCommand(address, token), cancellationToken);
+            var response = _mapper.Map<AddressBalanceResponseModel>(balance);
+            return Ok(response);
+        }
+
+
         /// <summary>Get Mining Positions</summary>
         /// <remarks>Retrieves the mining position of an address in all mining pools.</remarks>
         /// <param name="address">The address of the wallet.</param>
         /// <param name="filters">Filter parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Mining position summaries</returns>
-        /// <returns></returns>
         [HttpGet("{address}/mining")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]

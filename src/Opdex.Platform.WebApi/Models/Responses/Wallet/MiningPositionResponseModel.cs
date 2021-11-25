@@ -16,7 +16,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Wallet
         /// <summary>
         /// Amount of mining tokens.
         /// </summary>
-        /// <example>500.00000000</example>
+        /// <example>"500.00000000"</example>
         public FixedDecimal Amount { get; set; }
 
         /// <summary>

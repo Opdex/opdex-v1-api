@@ -10,19 +10,19 @@ namespace Opdex.Platform.WebApi.Models.Responses.Wallet
         /// <summary>
         /// Amount of tokens.
         /// </summary>
-        /// <value>10000.00000000</value>
+        /// <example>"10000.00000000"</example>
         public FixedDecimal Balance { get; set; }
 
         /// <summary>
         /// Address of the token balance holder.
         /// </summary>
-        /// <value>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</value>
+        /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
         public Address Address { get; set; }
 
         /// <summary>
         /// Address of the SRC token.
         /// </summary>
-        /// <value>t8WntmWKiLs1BdzoqPGXmPAYzUTpPb3DBw</value>
+        /// <example>t8WntmWKiLs1BdzoqPGXmPAYzUTpPb3DBw</example>
         public Address Token { get; set; }
     }
 }

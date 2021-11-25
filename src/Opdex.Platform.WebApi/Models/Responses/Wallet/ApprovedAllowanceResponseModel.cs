@@ -10,7 +10,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Wallet
         /// <summary>
         /// Amount of SRC tokens.
         /// </summary>
-        /// <example>500.00000000</example>
+        /// <example>"500.00000000"</example>
         public FixedDecimal Allowance { get; set; }
 
         /// <summary>

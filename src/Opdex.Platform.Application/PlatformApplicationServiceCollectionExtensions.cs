@@ -259,6 +259,9 @@ namespace Opdex.Platform.Application
 
         private static IServiceCollection AddEntryCommands(this IServiceCollection services)
         {
+            // Address
+            services.AddTransient<IRequestHandler<CreateRefreshAddressBalanceCommand, AddressBalanceDto>, CreateRefreshAddressBalanceCommandHandler>();
+
             // Indexer
             services.AddTransient<IRequestHandler<ProcessDailySnapshotRefreshCommand, Unit>, ProcessDailySnapshotRefreshCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindSnapshotsCommand, bool>, CreateRewindSnapshotsCommandHandler>();
