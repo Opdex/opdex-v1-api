@@ -12,7 +12,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
     {
         public TransactionQuoteResponseModel()
         {
-            Events = new List<TransactionEventResponseModel>().AsReadOnly();
+            Events = new List<TransactionEvent>().AsReadOnly();
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
         /// Events that occured in the quoted transaction.
         /// </summary>
         [NotNull]
-        public IReadOnlyCollection<TransactionEventResponseModel> Events { get; set; }
+        public IReadOnlyCollection<TransactionEvent> Events { get; set; }
 
         /// <summary>
         /// Encoded transaction request, which can be used to replay or broadcast the transaction.

@@ -14,7 +14,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
     {
         public TransactionResponseModel()
         {
-            Events = Enumerable.Empty<TransactionEventResponseModel>();
+            Events = Enumerable.Empty<TransactionEvent>();
         }
 
         /// <summary>
@@ -62,6 +62,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions
         /// <summary>
         /// Transaction events.
         /// </summary>
-        public IEnumerable<TransactionEventResponseModel> Events { get; set; }
+        public IEnumerable<TransactionEvent> Events { get; set; }
     }
 }
