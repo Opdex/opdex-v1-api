@@ -17,7 +17,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         /// Amount of governance tokens distributed to mining pools.
         /// </summary>
         /// <example>"225000000.00000000"</example>
-        public FixedDecimal GovernanceAmount { get; set; }
+        public FixedDecimal MiningGovernanceAmount { get; set; }
 
         /// <summary>
         /// The distribution number.

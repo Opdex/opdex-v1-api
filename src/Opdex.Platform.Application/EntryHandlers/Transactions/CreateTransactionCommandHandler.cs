@@ -9,7 +9,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Governances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
@@ -17,7 +17,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
-using Opdex.Platform.Application.Abstractions.Queries.Governances;
+using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
@@ -111,8 +111,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(to, findOrThrow));
             if (miningPool != null) return true;
 
-            var governance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(to, findOrThrow));
-            if (governance != null) return true;
+            var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(to, findOrThrow));
+            if (miningGovernance != null) return true;
 
             var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(to, findOrThrow));
             if (vault != null) return true;
@@ -167,7 +167,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                         TransactionLogType.ApprovalLog => await _mediator.Send(new ProcessApprovalLogCommand(log, tx.From, tx.BlockHeight)),
                         TransactionLogType.TransferLog => await _mediator.Send(new ProcessTransferLogCommand(log, tx.From, tx.BlockHeight)),
                         TransactionLogType.DistributionLog => await _mediator.Send(new ProcessDistributionLogCommand(log, tx.From, tx.BlockHeight)),
-                        // Governances
+                        // Mining Governances
                         TransactionLogType.RewardMiningPoolLog => await _mediator.Send(new ProcessRewardMiningPoolLogCommand(log, tx.From, tx.BlockHeight)),
                         TransactionLogType.NominationLog => await _mediator.Send(new ProcessNominationLogCommand(log, tx.From, tx.BlockHeight)),
                         // Vault

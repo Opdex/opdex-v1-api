@@ -1,14 +1,14 @@
 using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Deployers;
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Governances;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
 using Opdex.Platform.Domain.Models.TransactionLogs;
-using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
+using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
@@ -84,7 +84,7 @@ namespace Opdex.Platform.Application.Assemblers.TransactionEvents
                     TransactionLogType.ApprovalLog => await _approvalEventDtoAssembler.Assemble((ApprovalLog)log),
                     TransactionLogType.DistributionLog => _mapper.Map<DistributionEventDto>((DistributionLog)log),
 
-                    // Governances
+                    // Mining Governances
                     TransactionLogType.NominationLog => _mapper.Map<NominationEventDto>((NominationLog)log),
                     TransactionLogType.RewardMiningPoolLog => _mapper.Map<RewardMiningPoolEventDto>((RewardMiningPoolLog)log),
 

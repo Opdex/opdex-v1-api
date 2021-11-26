@@ -2,7 +2,7 @@ using AutoMapper;
 using Newtonsoft.Json;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
-using Opdex.Platform.Application.Abstractions.Models.Governances;
+using Opdex.Platform.Application.Abstractions.Models.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
@@ -11,7 +11,7 @@ using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Deployers;
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Governances;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
@@ -23,7 +23,7 @@ using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Blocks;
-using Opdex.Platform.WebApi.Models.Responses.Governances;
+using Opdex.Platform.WebApi.Models.Responses.MiningGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Markets;
 using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
 using Opdex.Platform.WebApi.Models.Responses.MiningPools;
@@ -33,7 +33,7 @@ using Opdex.Platform.WebApi.Models.Responses.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Deployers;
-using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Governances;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.MiningGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.LiquidityPools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Markets;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.MiningPools;
@@ -248,7 +248,7 @@ namespace Opdex.Platform.WebApi.Mappers
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MiningGovernancesDto, MiningGovernancesResponseModel>()
-                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Governances))
+                .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.MiningGovernances))
                 .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 
             CreateMap<VaultDto, VaultResponseModel>()
@@ -439,12 +439,12 @@ namespace Opdex.Platform.WebApi.Mappers
             CreateMap<DistributionEventDto, DistributionEvent>()
                 .IncludeBase<TransactionEventDto, TransactionEvent>()
                 .ForMember(dest => dest.VaultAmount, opt => opt.MapFrom(src => src.VaultAmount))
-                .ForMember(dest => dest.GovernanceAmount, opt => opt.MapFrom(src => src.GovernanceAmount))
+                .ForMember(dest => dest.MiningGovernanceAmount, opt => opt.MapFrom(src => src.MiningGovernanceAmount))
                 .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex))
                 .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
                 .ForMember(dest => dest.NextDistributionBlock, opt => opt.MapFrom(src => src.NextDistributionBlock));
 
-            // Governance Transaction Events
+            // Mining governance Transaction Events
             CreateMap<RewardMiningPoolEventDto, RewardMiningPoolEvent>()
                 .IncludeBase<TransactionEventDto, TransactionEvent>()
                 .ForMember(dest => dest.StakingPool, opt => opt.MapFrom(src => src.StakingPool))
