@@ -24,6 +24,12 @@ stages:
       BUILD_CONFIGURATION: 'Release'
 
     steps:
+      - task: UseDotNet@2 # https://github.com/dotnet/core/issues/6907
+        inputs:
+          packageType: 'sdk'
+          version: '6.0.x'
+        displayName: Use .NET 6.0
+
       - task: DotNetCoreCLI@2
         inputs:
           command: 'restore'
