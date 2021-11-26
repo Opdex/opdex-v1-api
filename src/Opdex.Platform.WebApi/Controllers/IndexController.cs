@@ -61,12 +61,14 @@ namespace Opdex.Platform.WebApi.Controllers
         /// <param name="request">The mined token and market deployer transaction hashes to look up.</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <response code="204">Indexer resynced.</response>
-        /// <response code="404">No markets exist to resync.</response>
+        /// <response code="400">Markets already indexed.</response>
+        /// <response code="403">You don't have permission to carry out this request.</response>
         [HttpPost("resync-from-deployment")]
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
         {
             // Todo: Spike and implement separate market vs wallet in JWT. Markets are currently required, they should not be.
@@ -77,7 +79,7 @@ namespace Opdex.Platform.WebApi.Controllers
             var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
             if (markets.Any())
             {
-                throw new NotFoundException("No markets exist to resync.");
+                throw new AlreadyIndexedException("Markets already indexed.");
             }
 
             await _mediator.Send(new MakeIndexerLockCommand());
@@ -103,6 +105,7 @@ namespace Opdex.Platform.WebApi.Controllers
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Rewind(RewindRequest request)
         {
             await _mediator.Send(new MakeIndexerLockCommand());
