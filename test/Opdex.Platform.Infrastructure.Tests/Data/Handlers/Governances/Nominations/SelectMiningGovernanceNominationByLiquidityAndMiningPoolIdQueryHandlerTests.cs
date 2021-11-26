@@ -80,7 +80,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Governances.Nominati
             // Assert
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
-                .Throw<NotFoundException>()
+                .ThrowAsync<NotFoundException>()
                 .WithMessage($"{nameof(MiningGovernanceNomination)} not found.");
         }
 

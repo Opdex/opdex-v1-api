@@ -75,7 +75,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
 
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
-                .Throw<NotFoundException>()
+                .ThrowAsync<NotFoundException>()
                 .WithMessage($"{nameof(Token)} not found.");
         }
 

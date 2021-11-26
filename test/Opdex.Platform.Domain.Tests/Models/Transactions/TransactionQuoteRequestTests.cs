@@ -107,7 +107,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Transactions
             request.Method.Should().Be(method);
             request.Callback.Should().Be(callback);
             request.Parameters.Should().BeEquivalentTo(parameters);
-            request.MethodParameters.Should().BeEquivalentTo(new SmartContractMethodParameter((UInt256)10));
+            request.MethodParameters.Should().BeEquivalentTo(new SmartContractMethodParameter[] { new SmartContractMethodParameter((UInt256)10) });
         }
     }
 }

@@ -94,7 +94,7 @@ namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Ba
             _handler
                 .Invoking(h => h.Handle(new CallCirrusGetAddressCrsBalanceQuery(wallet, findOrThrow: true), token))
                 .Should()
-                .Throw<Exception>();
+                .ThrowAsync<Exception>();
         }
 
         [Fact]

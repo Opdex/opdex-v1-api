@@ -29,7 +29,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
         [Fact]
         public async Task SelectLiquidityPoolBySrcTokenIdAndMarketId_Success()
         {
-            const  ulong srcTokenId = 99;
+            const ulong srcTokenId = 99;
             const ulong marketId = 100;
 
             var expectedEntity = new LiquidityPoolEntity
@@ -62,7 +62,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
         [Fact]
         public void SelectLiquidityPoolBySrcTokenIdAndMarketId_Throws_NotFoundException()
         {
-            const  ulong srcTokenId = 99;
+            const ulong srcTokenId = 99;
             const ulong marketId = 100;
 
             var command = new SelectLiquidityPoolBySrcTokenIdAndMarketIdQuery(srcTokenId, marketId);
@@ -72,14 +72,14 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
 
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
-                .Throw<NotFoundException>()
+                .ThrowAsync<NotFoundException>()
                 .WithMessage($"{nameof(LiquidityPool)} not found.");
         }
 
         [Fact]
         public async Task SelectLiquidityPoolBySrcTokenIdAndMarketId_ReturnsNull()
         {
-            const  ulong srcTokenId = 99;
+            const ulong srcTokenId = 99;
             const ulong marketId = 100;
             const bool findOrThrow = false;
 
