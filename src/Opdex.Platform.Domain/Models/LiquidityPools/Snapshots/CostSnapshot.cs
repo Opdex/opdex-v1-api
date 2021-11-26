@@ -30,11 +30,23 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         public Ohlc<UInt256> CrsPerSrc { get; }
         public Ohlc<UInt256> SrcPerCrs { get; }
 
+        /// <summary>
+        /// Updates the cost snapshot with new OHLC close values plus low/high when applicable.
+        /// </summary>
+        /// <param name="reserveCrs">Amount of CRS in reserves.</param>
+        /// <param name="reserveSrc">Amount of SRC in reserves.</param>
+        /// <param name="srcSats">Amount of sats per SRC token.</param>
         internal void Update(ulong reserveCrs, UInt256 reserveSrc, ulong srcSats)
         {
             Update(reserveCrs, reserveSrc, srcSats, false);
         }
 
+        /// <summary>
+        /// Refreshes the cost snapshot to use new OHLC values based in input values.
+        /// </summary>
+        /// <param name="reserveCrs">Amount of CRS in reserves.</param>
+        /// <param name="reserveSrc">Amount of SRC in reserves.</param>
+        /// <param name="srcSats">Amount of sats per SRC token.</param>
         internal void Refresh(ulong reserveCrs, UInt256 reserveSrc, ulong srcSats)
         {
             Update(reserveCrs, reserveSrc, srcSats, true);

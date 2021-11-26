@@ -184,7 +184,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         public void ProcessSwapLog(SwapLog log, decimal crsUsd, decimal srcUsd, ulong srcSats, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
         {
             Volume.Update(log, crsUsd, srcUsd, srcSats);
-            Rewards.Update(Volume.Usd, Staking.Weight.Close, isStakingPool, transactionFee, marketFeeEnabled);
+            Rewards.UpdatePoolRewards(Volume.Usd, Staking.Weight.Close, isStakingPool, transactionFee, marketFeeEnabled);
         }
 
         /// <summary>
