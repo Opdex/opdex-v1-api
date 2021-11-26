@@ -12,7 +12,7 @@ namespace Opdex.Platform.Common.Configurations
 
         public string WalletTransactionCallback
         {
-            get => $"{this.ApiUrl}{this._walletTransactionCallback}";
+            get => $"{ApiUrl}{_walletTransactionCallback}";
             set => _walletTransactionCallback = value;
         }
 

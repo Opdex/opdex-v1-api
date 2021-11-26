@@ -4,29 +4,36 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Tokens
 {
+    /// <summary>
+    /// Token details.
+    /// </summary>
     public class TokenResponseModel
     {
         /// <summary>
-        /// The token's smart contract address.
+        /// Address of the token.
         /// </summary>
+        /// <example>tFPedNjm3q8N9HD7wSVTNK5Kvw96332P1o</example>
         [NotNull]
         public Address Address { get; set; }
 
         /// <summary>
-        /// The token's name.
+        /// Name of the token.
         /// </summary>
+        /// <example>Opdex Fan Token</example>
         [NotNull]
         public string Name { get; set; }
 
         /// <summary>
-        /// The token's ticker symbol.
+        /// Ticker symbol for the token.
         /// </summary>
+        /// <example>OFT</example>
         [NotNull]
         public string Symbol { get; set; }
 
         /// <summary>
         /// The total number of decimal places the token has.
         /// </summary>
+        /// <example>8</example>
         [NotNull]
         [Range(0, double.MaxValue)]
         public int Decimals { get; set; }
@@ -34,6 +41,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Tokens
         /// <summary>
         /// The total number of satoshis per full token.
         /// </summary>
+        /// <example>100000000</example>
         [NotNull]
         [Range(0, double.MaxValue)]
         public ulong Sats { get; set; }
@@ -41,11 +49,12 @@ namespace Opdex.Platform.WebApi.Models.Responses.Tokens
         /// <summary>
         /// The total supply of the token as stored in contract.
         /// </summary>
+        /// <example>"2100000000000000"</example>
         [NotNull]
         public FixedDecimal TotalSupply { get; set; }
 
         /// <summary>
-        /// A summary including the token's USD price and daily price change percentage if exists. Market token's receive
+        /// A summary including the USD price of the token and daily price change percentage if exists. Market tokens receive
         /// pricing specific to that market.
         /// </summary>
         public TokenSummaryResponseModel Summary { get; set; }

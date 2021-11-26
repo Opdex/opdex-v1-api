@@ -49,6 +49,7 @@ using Opdex.Platform.WebApi.Validation;
 using AspNetCoreRateLimit;
 using Opdex.Platform.WebApi.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Opdex.Platform.Common.Encryption;
 
 namespace Opdex.Platform.WebApi
 {
@@ -75,7 +76,7 @@ namespace Opdex.Platform.WebApi
                 options.ValidationProblemStatusCode = 400;
                 options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
                 options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
-                options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
+                options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
                 options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
                 options.Map<TooManyRequestsException>((context, exception) =>
                 {
@@ -86,6 +87,7 @@ namespace Opdex.Platform.WebApi
                     };
                 });
                 options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
+                options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
                 options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
                 options.IncludeExceptionDetails = (context, ex) =>
                 {
@@ -102,7 +104,7 @@ namespace Opdex.Platform.WebApi
                     options.ModelBinderProviders.Insert(0, new AddressModelBinderProvider());
                     options.ModelBinderProviders.Insert(1, new Sha256ModelBinderProvider());
                     options.ModelBinderProviders.Insert(2, new UtcAwareDateTimeModelBinderProvider());
-                  
+
                     options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests));
                 })
                 .AddFluentValidation(config =>
@@ -158,6 +160,10 @@ namespace Opdex.Platform.WebApi
             // Opdex Configurations
             var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
             services.SetupConfiguration<OpdexConfiguration>(opdexConfig);
+
+            // Encryption Configurations
+            var encryptionConfig = Configuration.GetSection(nameof(EncryptionConfiguration));
+            services.SetupConfiguration<EncryptionConfiguration>(encryptionConfig);
 
             // Database Configurations
             var databaseConfig = Configuration.GetSection(nameof(DatabaseConfiguration));
@@ -253,6 +259,8 @@ namespace Opdex.Platform.WebApi
 
             services.AddSingleton<IUserIdProvider, WalletAddressUserIdProvider>();
             services.AddSingleton<IAuthorizationHandler, AdminOnlyHandler>();
+
+            services.AddTransient<ITwoWayEncryptionProvider, AesCbcProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

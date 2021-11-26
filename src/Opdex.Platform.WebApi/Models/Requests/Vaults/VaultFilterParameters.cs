@@ -10,6 +10,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Vaults
         /// <summary>
         /// Address of the locked token.
         /// </summary>
+        /// <example>tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L</example>
         public Address LockedToken { get; set; }
 
         /// <inheritdoc />

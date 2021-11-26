@@ -72,7 +72,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             };
 
             // Act
-            var response = _mapper.Map<StartMiningEventResponseModel>(dto);
+            var response = _mapper.Map<StartMiningEvent>(dto);
 
             // Assert
             response.Contract.Should().Be(dto.Contract);
@@ -101,7 +101,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             };
 
             // Act
-            var response = _mapper.Map<StopMiningEventResponseModel>(dto);
+            var response = _mapper.Map<StopMiningEvent>(dto);
 
             // Assert
             response.Contract.Should().Be(dto.Contract);
@@ -130,7 +130,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             };
 
             // Act
-            var response = _mapper.Map<StartStakingEventResponseModel>(dto);
+            var response = _mapper.Map<StartStakingEvent>(dto);
 
             // Assert
             response.Contract.Should().Be(dto.Contract);
@@ -159,7 +159,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             };
 
             // Act
-            var response = _mapper.Map<StopStakingEventResponseModel>(dto);
+            var response = _mapper.Map<StopStakingEvent>(dto);
 
             // Assert
             response.Contract.Should().Be(dto.Contract);
@@ -190,7 +190,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             };
 
             // Act
-            var response = _mapper.Map<AddLiquidityEventResponseModel>(dto);
+            var response = _mapper.Map<AddLiquidityEvent>(dto);
 
             // Assert
             response.Contract.Should().Be(dto.Contract);
@@ -223,7 +223,7 @@ namespace Opdex.Platform.WebApi.Tests.Mappers
             };
 
             // Act
-            var response = _mapper.Map<RemoveLiquidityEventResponseModel>(dto);
+            var response = _mapper.Map<RemoveLiquidityEvent>(dto);
 
             // Assert
             response.Contract.Should().Be(dto.Contract);
