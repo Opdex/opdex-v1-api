@@ -339,7 +339,7 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, UInt256>, CallCirrusGetSrcTokenBalanceQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetGovernanceNominationsSummaryQuery, IEnumerable<GovernanceContractNominationSummary>>, CallCirrusGetGovernanceNominationsSummaryQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>, CallCirrusLocalCallSmartContractMethodCommandHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetAddressBalanceQuery, ulong>, CallCirrusGetAddressBalanceQueryHandler>();
+            services.AddTransient<IRequestHandler<CallCirrusGetAddressCrsBalanceQuery, ulong>, CallCirrusGetAddressCrsBalanceQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetMiningBalanceForAddressQuery, UInt256>, CallCirrusGetMiningBalanceForAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetStakingWeightForAddressQuery, UInt256>, CallCirrusGetStakingWeightForAddressQueryHandler>();
             services.AddTransient<IRequestHandler<CallCirrusGetSmartContractPropertyQuery, SmartContractMethodParameter>, CallCirrusGetSmartContractPropertyQueryHandler>();

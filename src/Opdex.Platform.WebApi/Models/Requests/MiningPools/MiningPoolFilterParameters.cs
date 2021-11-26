@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi.Models.Requests.MiningPools
 {
-    public class MiningPoolFilterParameters : FilterParameters<MiningPoolsCursor>
+    public sealed class MiningPoolFilterParameters : FilterParameters<MiningPoolsCursor>
     {
         public MiningPoolFilterParameters()
         {
@@ -17,12 +17,14 @@ namespace Opdex.Platform.WebApi.Models.Requests.MiningPools
         /// <summary>
         /// The liquidity pools used for mining.
         /// </summary>
+        /// <example>[ "tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L", "t8WntmWKiLs1BdzoqPGXmPAYzUTpPb3DBw" ]</example>
         [NotNull]
         public IEnumerable<Address> LiquidityPools { get; set; }
 
         /// <summary>
         /// Mining pool activity status.
         /// </summary>
+        /// <example>Active</example>
         public MiningStatusFilter MiningStatus { get; set; }
 
         /// <inheritdoc />

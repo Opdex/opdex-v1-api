@@ -16,19 +16,19 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         /// <summary>
         /// Amount of tokens mined.
         /// </summary>
-        /// <example>500000.00000000</example>
+        /// <example>"500000.00000000"</example>
         public FixedDecimal Amount { get; set; }
 
         /// <summary>
         /// Total supply of mining tokens.
         /// </summary>
-        /// <example>1000000000.00000000</example>
+        /// <example>"1000000000.00000000"</example>
         public FixedDecimal TotalSupply { get; set; }
 
         /// <summary>
         /// Mining token balance of the miner.
         /// </summary>
-        /// <example>2500000.00000000</example>
+        /// <example>"2500000.00000000"</example>
         public FixedDecimal MinerBalance { get; set; }
     }
 }

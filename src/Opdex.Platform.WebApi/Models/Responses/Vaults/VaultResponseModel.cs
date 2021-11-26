@@ -40,14 +40,14 @@ namespace Opdex.Platform.WebApi.Models.Responses.Vaults
         /// <summary>
         /// The total number of tokens locked in the vault.
         /// </summary>
-        /// <example>250000000.00000000</example>
+        /// <example>"250000000.00000000"</example>
         [NotNull]
         public FixedDecimal TokensLocked { get; set; }
 
         /// <summary>
         /// The total number of tokens locked in the vault, that are not assigned to any address.
         /// </summary>
-        /// <example>200000000.00000000</example>
+        /// <example>"200000000.00000000"</example>
         [NotNull]
         public FixedDecimal TokensUnassigned { get; set; }
 

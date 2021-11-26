@@ -22,7 +22,7 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         /// <summary>
         /// Goverenance token weight of the nominated pool.
         /// </summary>
-        /// <example>100000.00000000</example>
+        /// <example>"100000.00000000"</example>
         public FixedDecimal Weight { get; set; }
     }
 }

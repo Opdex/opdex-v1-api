@@ -10,13 +10,13 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.
         /// <summary>
         /// Amount of tokens rewarded to the mining pool for mining.
         /// </summary>
-        /// <example>500000.00000000</example>
+        /// <example>"500000.00000000"</example>
         public FixedDecimal Amount { get; set; }
 
         /// <summary>
         /// Amount of tokens mined per block.
         /// </summary>
-        /// <example>100.00000000</example>
+        /// <example>"100.00000000"</example>
         public FixedDecimal RewardRate { get; set; }
 
         /// <summary>

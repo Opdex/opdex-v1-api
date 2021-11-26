@@ -3,6 +3,7 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
@@ -95,6 +96,44 @@ namespace Opdex.Platform.WebApi.Tests.Controllers
             // Act
             response.Result.Should().BeOfType<OkObjectResult>();
             ((OkObjectResult)response.Result).Value.Should().Be(tokenBalance);
+        }
+
+        [Fact]
+        public async Task RefreshAddressBalance_CreateRefreshAddressBalanceCommand_Send()
+        {
+            // Arrange
+            var walletAddress = new Address("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy");
+            var tokenAddress = new Address("PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5");
+
+            var cancellationToken = new CancellationTokenSource().Token;
+
+            // Act
+            await _controller.RefreshAddressBalance(walletAddress, tokenAddress, cancellationToken);
+
+            // Assert
+            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateRefreshAddressBalanceCommand>(command => command.Wallet == walletAddress
+                                                                                                         && command.Token == tokenAddress), cancellationToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task RefreshAddressBalance_Result_ReturnOk()
+        {
+            // Arrange
+            var walletAddress = new Address("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy");
+            var tokenAddress = new Address("PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5");
+
+            var addressBalanceResponse = new AddressBalanceResponseModel();
+            var addressBalanceDto = new AddressBalanceDto();
+            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateRefreshAddressBalanceCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(addressBalanceDto);
+            _mapperMock.Setup(callTo => callTo.Map<AddressBalanceResponseModel>(addressBalanceDto)).Returns(addressBalanceResponse);
+
+            // Act
+            var response = await _controller.RefreshAddressBalance(walletAddress, tokenAddress, CancellationToken.None);
+
+            // Assert
+
+            response.Result.Should().BeOfType<OkObjectResult>();
+            ((OkObjectResult)response.Result).Value.Should().Be(addressBalanceResponse);
         }
 
         [Fact]
