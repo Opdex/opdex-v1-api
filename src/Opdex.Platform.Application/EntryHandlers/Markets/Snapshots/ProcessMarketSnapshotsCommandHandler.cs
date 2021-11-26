@@ -54,11 +54,12 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
 
             foreach (var chunk in poolChunks)
             {
-                await Task.WhenAll(chunk.Select(async pool =>
+                var chunkSnapshots = await Task.WhenAll(chunk.Select(async pool =>
                 {
-                    var snapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, request.BlockTime, SnapshotType));
-                    if (snapshot.EndDate > request.BlockTime && snapshot.Id > 0) snapshots.Add(snapshot);
+                    return await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, request.BlockTime, SnapshotType));
                 }));
+
+                snapshots.AddRange(chunkSnapshots);
             }
 
             // Apply LP snapshot to market snapshot
