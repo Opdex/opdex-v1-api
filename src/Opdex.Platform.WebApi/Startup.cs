@@ -76,7 +76,7 @@ namespace Opdex.Platform.WebApi
                 options.ValidationProblemStatusCode = 400;
                 options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
                 options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
-                options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
+                options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
                 options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
                 options.Map<TooManyRequestsException>((context, exception) =>
                 {
@@ -87,6 +87,7 @@ namespace Opdex.Platform.WebApi
                     };
                 });
                 options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
+                options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
                 options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
                 options.IncludeExceptionDetails = (context, ex) =>
                 {

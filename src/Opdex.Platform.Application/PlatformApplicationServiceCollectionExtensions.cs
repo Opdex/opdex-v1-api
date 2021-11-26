@@ -57,6 +57,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
+using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Admins;
 using Opdex.Platform.Application.Abstractions.Models.Governances;
@@ -248,6 +249,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetStakingPositionsWithFilterQuery, StakingPositionsDto>, GetStakingPositionsWithFilterQueryHandler>();
 
             // Blocks
+            services.AddTransient<IRequestHandler<GetLatestBlockQuery, BlockDto>, GetLatestBlockQueryHandler>();
             services.AddTransient<IRequestHandler<GetBestBlockReceiptQuery, BlockReceipt>, GetBestBlockReceiptQueryHandler>();
 
             // Transactions

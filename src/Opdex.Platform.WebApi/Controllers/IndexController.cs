@@ -8,12 +8,15 @@ using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Requests.Index;
 using System.Linq;
+using Opdex.Platform.WebApi.Models.Responses.Blocks;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
+using AutoMapper;
+using Opdex.Platform.Common.Exceptions;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -21,26 +24,32 @@ namespace Opdex.Platform.WebApi.Controllers
     [Route("index")]
     public class IndexController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IMediator _mediator;
         private readonly NetworkType _network;
 
-        public IndexController(IMediator mediator, OpdexConfiguration opdexConfiguration)
+        public IndexController(IMapper mapper, IMediator mediator, OpdexConfiguration opdexConfiguration)
         {
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
         }
 
         /// <summary>Get Latest Block</summary>
         /// <remarks>Retrieve the latest synced block.</remarks>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>Block details</returns>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Latest indexed block details.</response>
+        /// <response code="404">No blocks have been indexed.</response>
         [HttpGet("latest-block")]
         [Authorize]
-        public async Task<IActionResult> GetLastSyncedBlock(CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(BlockResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<BlockResponseModel>> GetLastSyncedBlock(CancellationToken cancellationToken)
         {
-            // Todo: Get Query with ResponseModel
-            var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
-            return Ok(latestSyncedBlock);
+            var block = await _mediator.Send(new GetLatestBlockQuery(), cancellationToken);
+
+            return Ok(_mapper.Map<BlockResponseModel>(block));
         }
 
         /// <summary>Resync From Deployment</summary>
@@ -51,11 +60,15 @@ namespace Opdex.Platform.WebApi.Controllers
         /// </remarks>
         /// <param name="request">The mined token and market deployer transaction hashes to look up.</param>
         /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>No Content</returns>
+        /// <response code="204">Indexer resynced.</response>
+        /// <response code="400">Markets already indexed.</response>
+        /// <response code="403">You don't have permission to carry out this request.</response>
         [HttpPost("resync-from-deployment")]
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
         {
             // Todo: Spike and implement separate market vs wallet in JWT. Markets are currently required, they should not be.
@@ -66,7 +79,7 @@ namespace Opdex.Platform.WebApi.Controllers
             var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
             if (markets.Any())
             {
-                throw new Exception("Markets exist");
+                throw new AlreadyIndexedException("Markets already indexed.");
             }
 
             await _mediator.Send(new MakeIndexerLockCommand());
@@ -86,14 +99,14 @@ namespace Opdex.Platform.WebApi.Controllers
         }
 
         /// <summary>Rewind to Block</summary>
-        /// <param name="request">Request object containing the block height ot rewind too.</param>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>No content</returns>
+        /// <param name="request">Request to rewind back to specific block.</param>
+        /// <response code="204">Indexer rewound.</response>
         [HttpPost("rewind")]
         [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> Rewind(RewindRequest request)
         {
             await _mediator.Send(new MakeIndexerLockCommand());
 

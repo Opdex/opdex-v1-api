@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.Blocks
 {
+    /// <summary>
+    /// Details for a block.
+    /// </summary>
     public class BlockResponseModel
     {
         /// <summary>

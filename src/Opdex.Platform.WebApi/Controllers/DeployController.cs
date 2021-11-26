@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
@@ -50,11 +51,14 @@ namespace Opdex.Platform.WebApi.Controllers
         /// </remarks>
         /// <param name="request">The wallet parameters needed for local env smart contract transactions.</param>
         /// <param name="cancellationToken">cancellation token.</param>
-        /// <returns>Success</returns>
+        /// <response code="204">Deployment successful.</response>
+        /// <response code="403">You don't have permission to carry out this request.</response>
         [HttpPost("dev-contracts")]
         [Authorize(Policy = "AdminOnly")]
         [Network(NetworkType.DEVNET)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DeployDevModeEnvironment(LocalWalletCredentials request, CancellationToken cancellationToken)
         {
             var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
@@ -162,7 +166,7 @@ namespace Opdex.Platform.WebApi.Controllers
 
             await _mediator.Send(new MakeIndexerUnlockCommand());
 
-            return Ok("Successful");
+            return NoContent();
         }
 
         private async Task<Transaction> CallAndWait(Func<Task<Sha256>> call)
