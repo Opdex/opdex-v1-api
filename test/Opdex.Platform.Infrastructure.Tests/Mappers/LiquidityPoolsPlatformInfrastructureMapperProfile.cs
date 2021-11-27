@@ -11,7 +11,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Mappers
         public void From_LiquidityPoolSummary_To_LiquidityPoolSummaryEntity()
         {
             // Arrange
-            var model = new LiquidityPoolSummary(100, 1, 2.00m, 3.00m, 4, 5, 6, 7, 8);
+            var model = new LiquidityPoolSummary(100, 1, 2.00m, 4.5m, 3.00m, 4, 6.5m, 5, 6, 7, 8);
 
             // Act
             var entity = _mapper.Map<LiquidityPoolSummaryEntity>(model);
@@ -20,8 +20,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Mappers
             entity.Id.Should().Be(model.Id);
             entity.LiquidityPoolId.Should().Be(model.LiquidityPoolId);
             entity.LiquidityUsd.Should().Be(model.LiquidityUsd);
+            entity.DailyLiquidityUsdChangePercent.Should().Be(model.DailyLiquidityUsdChangePercent);
             entity.VolumeUsd.Should().Be(model.VolumeUsd);
             entity.StakingWeight.Should().Be(model.StakingWeight);
+            entity.DailyStakingWeightChangePercent.Should().Be(model.DailyStakingWeightChangePercent);
             entity.LockedCrs.Should().Be(model.LockedCrs);
             entity.LockedSrc.Should().Be(model.LockedSrc);
             entity.CreatedBlock.Should().Be(model.CreatedBlock);
@@ -37,8 +39,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Mappers
                 Id = 100,
                 LiquidityPoolId = 1,
                 LiquidityUsd = 2.00m,
+                DailyLiquidityUsdChangePercent = 2.50m,
                 VolumeUsd = 3.00m,
                 StakingWeight = 4,
+                DailyStakingWeightChangePercent = 4.5m,
                 LockedCrs = 5,
                 LockedSrc = 6,
                 CreatedBlock = 7,
@@ -49,15 +53,17 @@ namespace Opdex.Platform.Infrastructure.Tests.Mappers
             var model = _mapper.Map<LiquidityPoolSummary>(entity);
 
             // Assert
-            model.Id.Should().Be(entity.Id);
-            model.LiquidityPoolId.Should().Be(entity.LiquidityPoolId);
-            model.LiquidityUsd.Should().Be(entity.LiquidityUsd);
-            model.VolumeUsd.Should().Be(entity.VolumeUsd);
-            model.StakingWeight.Should().Be(entity.StakingWeight);
-            model.LockedCrs.Should().Be(entity.LockedCrs);
-            model.LockedSrc.Should().Be(entity.LockedSrc);
-            model.CreatedBlock.Should().Be(entity.CreatedBlock);
-            model.ModifiedBlock.Should().Be(entity.ModifiedBlock);
+            entity.Id.Should().Be(model.Id);
+            entity.LiquidityPoolId.Should().Be(model.LiquidityPoolId);
+            entity.LiquidityUsd.Should().Be(model.LiquidityUsd);
+            entity.DailyLiquidityUsdChangePercent.Should().Be(model.DailyLiquidityUsdChangePercent);
+            entity.VolumeUsd.Should().Be(model.VolumeUsd);
+            entity.StakingWeight.Should().Be(model.StakingWeight);
+            entity.DailyStakingWeightChangePercent.Should().Be(model.DailyStakingWeightChangePercent);
+            entity.LockedCrs.Should().Be(model.LockedCrs);
+            entity.LockedSrc.Should().Be(model.LockedSrc);
+            entity.CreatedBlock.Should().Be(model.CreatedBlock);
+            entity.ModifiedBlock.Should().Be(model.ModifiedBlock);
         }
     }
 }

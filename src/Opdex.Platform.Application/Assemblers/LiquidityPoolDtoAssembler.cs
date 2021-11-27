@@ -7,20 +7,18 @@ using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Governances;
 using Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations;
-using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
+using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.Tokens;
 using System.Linq;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 
 namespace Opdex.Platform.Application.Assemblers
 {
@@ -31,8 +29,6 @@ namespace Opdex.Platform.Application.Assemblers
         private readonly IModelAssembler<MiningPool, MiningPoolDto> _miningPoolAssembler;
         private readonly IModelAssembler<Token, TokenDto> _tokenAssembler;
         private readonly IModelAssembler<MarketToken, MarketTokenDto> _marketTokenAssembler;
-
-        private const SnapshotType SnapshotType = Common.Enums.SnapshotType.Daily;
 
         public LiquidityPoolDtoAssembler(IMediator mediator, IMapper mapper,
                                          IModelAssembler<MiningPool, MiningPoolDto> miningPoolAssembler,
@@ -48,89 +44,64 @@ namespace Opdex.Platform.Application.Assemblers
 
         public async Task<LiquidityPoolDto> Assemble(LiquidityPool pool)
         {
+            var market = await _mediator.Send(new RetrieveMarketByIdQuery(pool.MarketId));
+            var summary = await _mediator.Send(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(pool.Id));
             var poolDto = _mapper.Map<LiquidityPoolDto>(pool);
 
-            var now = DateTime.UtcNow.ToEndOf(SnapshotType);
-            var yesterday = now.Subtract(TimeSpan.FromDays(1)).ToStartOf(SnapshotType);
-
-            var market = await _mediator.Send(new RetrieveMarketByIdQuery(pool.MarketId));
-
-            // Set the transaction fee for the pool
-            poolDto.TransactionFee = market.TransactionFee == 0
-                ? 0
-                : Math.Round((decimal)market.TransactionFee / 1000, 3); // 1-10 => .01 - .001 as percent
-
-            // Assemble CRS Token
+            // Assemble Tokens
             poolDto.CrsToken = await AssembleToken(Address.Cirrus);
-
-            // Assemble staking token details when required
-            var stakingTokenDto = market.IsStakingMarket ? await AssembleMarketToken(market.StakingTokenId, market) : null;
-
-            // Assemble SRC Token
             poolDto.SrcToken = await AssembleMarketToken(pool.SrcTokenId, market);
-
-            // Assemble LP Token
             poolDto.LpToken = await AssembleMarketToken(pool.LpTokenId, market);
+            var stakingToken = market.IsStakingMarket && pool.SrcTokenId != market.StakingTokenId ? await AssembleMarketToken(market.StakingTokenId, market) : null;
+            var stakingEnabled = stakingToken != null;
 
-            // LP pool snapshot details
-            var cursor = new SnapshotCursor(Interval.OneDay, yesterday, now, SortDirectionType.DESC, 2, PagingDirection.Forward, default);
-            var liquidityPoolSnapshots = await _mediator.Send(new RetrieveLiquidityPoolSnapshotsWithFilterQuery(pool.Id, cursor));
-            var poolSnapshots = liquidityPoolSnapshots.ToList();
+            // Calc rewards
+            (decimal providerUsd, decimal marketUsd) = MathExtensions.VolumeBasedRewards(summary.VolumeUsd, summary.StakingWeight, stakingEnabled,
+                                                                                         market.TransactionFee, market.MarketFeeEnabled);
 
-            // Get the current snapshot from the list, when null, retrieve the last possible snapshot or a new one entirely
-            var currentPoolSnapshot = poolSnapshots.FirstOrDefault();
+            // Set Transaction Fee - range from 1-10 to output percentage (e.g. 1 output .1 as in .1%)
+            // Math operations would * 100 to get .001
+            poolDto.TransactionFee = market.TransactionFee == 0 ? 0 : Math.Round((decimal)market.TransactionFee / 10, 1);
 
-            // If we keep this block, its essentially a fallback for forks/reorgs if today's snapshot (which should exist at all times), doesnt
-            if (currentPoolSnapshot == null)
-            {
-                currentPoolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, now, SnapshotType));
-                if (currentPoolSnapshot.EndDate < now)
+            poolDto.Summary = new LiquidityPoolSummaryDto {
+                Reserves = new ReservesDto
                 {
-                    var stakingTokenPrice = stakingTokenDto?.Summary?.PriceUsd ?? 0.00m;
-                    var crsPrice = poolDto.CrsToken.Summary.PriceUsd;
-                    var srcPrice = poolDto.SrcToken.Summary.PriceUsd;
-
-                    currentPoolSnapshot.ResetStaleSnapshot(crsPrice, srcPrice, stakingTokenPrice, poolDto.SrcToken.Sats, now);
+                    Crs = new FixedDecimal(summary.LockedCrs, TokenConstants.Cirrus.Decimals),
+                    Src = new FixedDecimal(summary.LockedSrc, (byte)poolDto.SrcToken.Decimals),
+                    Usd = summary.LiquidityUsd,
+                    DailyUsdChangePercent = summary.DailyLiquidityUsdChangePercent
+                },
+                Cost = new CostDto
+                {
+                    CrsPerSrc = new FixedDecimal(summary.LockedCrs.Token0PerToken1(summary.LockedSrc, poolDto.SrcToken.Sats), TokenConstants.Cirrus.Decimals),
+                    SrcPerCrs = new FixedDecimal(summary.LockedSrc.Token0PerToken1(summary.LockedCrs, TokenConstants.Cirrus.Sats), (byte)poolDto.SrcToken.Decimals),
+                },
+                Volume = new VolumeDto
+                {
+                    DailyUsd = summary.VolumeUsd
+                },
+                Rewards = new RewardsDto
+                {
+                    ProviderDailyUsd = providerUsd,
+                    MarketDailyUsd = marketUsd
                 }
-            }
+            };
 
-            var previousPoolSnapshot = poolSnapshots.LastOrDefault();
+            if (!stakingEnabled) return poolDto;
 
-            poolDto.Summary = _mapper.Map<LiquidityPoolSnapshotDto>(currentPoolSnapshot);
+            var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(stakingToken.Id));
+            var nominations = await _mediator.Send(new RetrieveActiveGovernanceNominationsByGovernanceIdQuery(governance.Id));
+            var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id));
 
-            // adjust daily change values
-            poolDto.Summary.Reserves.SetUsdDailyChange(previousPoolSnapshot?.Reserves?.Usd ?? 0.00m);
-
-            // Todo: Revisit - sets decimals value, dirty hack to mapping in the web api layer
-            poolDto.Summary.SrcTokenDecimals = poolDto.SrcToken.Decimals;
-
-            // Update mining/staking flags
-            if (stakingTokenDto != null && pool.SrcTokenId != market.StakingTokenId)
+            poolDto.Summary.MiningPool = await _miningPoolAssembler.Assemble(miningPool);
+            poolDto.Summary.Staking = new StakingDto
             {
-                poolDto.StakingEnabled = true;
-
-                // Set assembled staking token
-                poolDto.StakingToken = stakingTokenDto;
-
-                // Set staking daily change
-                poolDto.Summary.Staking.SetDailyChange(previousPoolSnapshot?.Staking?.Weight ?? UInt256.Zero);
-
-                // Set Nomination Status
-                var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(stakingTokenDto.Id));
-                var nominations = await _mediator.Send(new RetrieveActiveGovernanceNominationsByGovernanceIdQuery(governance.Id));
-                poolDto.Summary.Staking.IsNominated = nominations.Any(nomination => nomination.LiquidityPoolId == poolDto.Id);
-
-                // Get mining pool
-                var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id));
-
-                // Assemble mining pool
-                poolDto.MiningPool = await _miningPoolAssembler.Assemble(miningPool);
-            }
-            else
-            {
-                poolDto.Summary.Staking = null;
-                poolDto.MiningPool = null;
-            }
+                Token = stakingToken,
+                Weight = summary.StakingWeight.ToDecimal(stakingToken.Decimals),
+                Usd = MathExtensions.TotalFiat(summary.StakingWeight, stakingToken.Summary.PriceUsd, stakingToken.Sats),
+                DailyWeightChangePercent = summary.DailyStakingWeightChangePercent,
+                Nominated = nominations.Any(nomination => nomination.LiquidityPoolId == poolDto.Id)
+            };
 
             return poolDto;
         }
@@ -138,16 +109,12 @@ namespace Opdex.Platform.Application.Assemblers
         private async Task<MarketTokenDto> AssembleMarketToken(ulong tokenId, Market market)
         {
             var token = await _mediator.Send(new RetrieveTokenByIdQuery(tokenId));
-
-            var marketToken = new MarketToken(market, token);
-
-            return await _marketTokenAssembler.Assemble(marketToken);
+            return await _marketTokenAssembler.Assemble(new MarketToken(market, token));
         }
 
         private async Task<TokenDto> AssembleToken(Address tokenAddress)
         {
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress));
-
             return await _tokenAssembler.Assemble(token);
         }
     }

@@ -40,17 +40,25 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         public UInt256 Src { get; private set; }
         public decimal Usd { get; private set; }
 
-        internal void SetVolume(SwapLog log, decimal crsUsd, decimal srcUsd, ulong srcSats)
+        /// <summary>
+        /// Update the snapshot volume with a Swap Log. Track CRS and SRC volume in addition to USD volume
+        /// by the amount in token and it's USD value.
+        /// </summary>
+        /// <param name="log">The SwapLog to track the volume of.</param>
+        /// <param name="crsUsd">The CRS USD price at the time just prior to the transaction.</param>
+        /// <param name="srcUsd">The SRC USD price at the time just prior to the transaction</param>
+        /// <param name="srcSats">The number of sats within the SRC token.</param>
+        internal void Update(SwapLog log, decimal crsUsd, decimal srcUsd, ulong srcSats)
         {
             Crs += log.AmountCrsIn + log.AmountCrsOut;
 
             var volumeSrc = log.AmountSrcIn + log.AmountSrcOut;
             Src += volumeSrc;
 
-            var crsVolume = log.AmountCrsIn.TotalFiat(crsUsd, TokenConstants.Cirrus.Sats);
-            var srcVolume = log.AmountSrcIn.TotalFiat(srcUsd, srcSats);
+            var crsVolume = MathExtensions.TotalFiat(log.AmountCrsIn, crsUsd, TokenConstants.Cirrus.Sats);
+            var srcVolume = MathExtensions.TotalFiat(log.AmountSrcIn, srcUsd, srcSats);
 
-            Usd += Math.Round(crsVolume + srcVolume, 2, MidpointRounding.AwayFromZero);
+            Usd += Math.Round(crsVolume + srcVolume, 8, MidpointRounding.AwayFromZero);
         }
     }
 }

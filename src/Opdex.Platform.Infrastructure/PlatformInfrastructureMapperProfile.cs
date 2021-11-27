@@ -1,5 +1,7 @@
 using AutoMapper;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.Blocks;
@@ -10,7 +12,6 @@ using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.MiningPools;
-using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
@@ -33,7 +34,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
@@ -61,7 +61,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TokenSnapshotEntity, TokenSnapshot>()
-                .ConstructUsing((src, ctx) => new TokenSnapshot(src.Id, src.TokenId, src.MarketId, ctx.Mapper.Map<OhlcDecimalSnapshot>(src.Price),
+                .ConstructUsing((src, ctx) => new TokenSnapshot(src.Id, src.TokenId, src.MarketId, ctx.Mapper.Map<Ohlc<decimal>>(src.Price),
                                                                 (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate, src.ModifiedDate))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -83,8 +83,9 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolSummaryEntity, LiquidityPoolSummary>()
-                .ConstructUsing(src => new LiquidityPoolSummary(src.Id, src.LiquidityPoolId, src.LiquidityUsd, src.VolumeUsd, src.StakingWeight, src.LockedCrs, src.LockedSrc,
-                                    src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new LiquidityPoolSummary(src.Id, src.LiquidityPoolId, src.LiquidityUsd, src.DailyLiquidityUsdChangePercent,
+                                                                src.VolumeUsd, src.StakingWeight, src.DailyStakingWeightChangePercent, src.LockedCrs,
+                                                                src.LockedSrc, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<LiquidityPoolSnapshotEntity, LiquidityPoolSnapshot>()
@@ -94,7 +95,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotReservesEntity, ReservesSnapshot>()
-                .ConstructUsing(src => new ReservesSnapshot(src.Crs, src.Src, src.Usd))
+                .ConstructUsing((src, ctx) => new ReservesSnapshot(ctx.Mapper.Map<Ohlc<ulong>>(src.Crs), ctx.Mapper.Map<Ohlc<UInt256>>(src.Src), ctx.Mapper.Map<Ohlc<decimal>>(src.Usd)))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotRewardsEntity, RewardsSnapshot>()
@@ -102,7 +103,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotStakingEntity, StakingSnapshot>()
-                .ConstructUsing(src => new StakingSnapshot(src.Weight, src.Usd))
+                .ConstructUsing((src, ctx) => new StakingSnapshot(ctx.Mapper.Map<Ohlc<UInt256>>(src.Weight), ctx.Mapper.Map<Ohlc<decimal>>(src.Usd)))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotVolumeEntity, VolumeSnapshot>()
@@ -110,15 +111,19 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<SnapshotCostEntity, CostSnapshot>()
-                .ConstructUsing((src, ctx) => new CostSnapshot(ctx.Mapper.Map<OhlcBigIntSnapshot>(src.CrsPerSrc), ctx.Mapper.Map<OhlcBigIntSnapshot>(src.SrcPerCrs)))
+                .ConstructUsing((src, ctx) => new CostSnapshot(ctx.Mapper.Map<Ohlc<UInt256>>(src.CrsPerSrc), ctx.Mapper.Map<Ohlc<UInt256>>(src.SrcPerCrs)))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<OhlcBigIntEntity, OhlcBigIntSnapshot>()
-                .ConstructUsing(src => new OhlcBigIntSnapshot(src.Open, src.High, src.Low, src.Close))
+            CreateMap<OhlcEntity<UInt256>, Ohlc<UInt256>>()
+                .ConstructUsing(src => new Ohlc<UInt256>(src.Open, src.High, src.Low, src.Close))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<OhlcDecimalEntity, OhlcDecimalSnapshot>()
-                .ConstructUsing(src => new OhlcDecimalSnapshot(src.Open, src.High, src.Low, src.Close))
+            CreateMap<OhlcEntity<decimal>, Ohlc<decimal>>()
+                .ConstructUsing(src => new Ohlc<decimal>(src.Open, src.High, src.Low, src.Close))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<OhlcEntity<ulong>, Ohlc<ulong>>()
+                .ConstructUsing(src => new Ohlc<ulong>(src.Open, src.High, src.Low, src.Close))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MiningPoolEntity, MiningPool>()
@@ -154,7 +159,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketSnapshotEntity, MarketSnapshot>()
-                .ConstructUsing((src, ctx) => new MarketSnapshot(src.Id, src.MarketId, src.Liquidity, src.Volume,
+                .ConstructUsing((src, ctx) => new MarketSnapshot(src.Id, src.MarketId, ctx.Mapper.Map<Ohlc<decimal>>(src.LiquidityUsd), src.VolumeUsd,
                                                                  ctx.Mapper.Map<StakingSnapshot>(src.Staking),
                                                                  ctx.Mapper.Map<RewardsSnapshot>(src.Rewards),
                                                                 (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate))
@@ -329,8 +334,8 @@ namespace Opdex.Platform.Infrastructure
             CreateMap<MarketSnapshot, MarketSnapshotEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
-                .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
-                .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
+                .ForMember(dest => dest.LiquidityUsd, opt => opt.MapFrom(src => src.LiquidityUsd))
+                .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
                 .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
                 .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
                 .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => (int)src.SnapshotType))
@@ -437,8 +442,10 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.LiquidityPoolId, opt => opt.MapFrom(src => src.LiquidityPoolId))
                 .ForMember(dest => dest.LiquidityUsd, opt => opt.MapFrom(src => src.LiquidityUsd))
+                .ForMember(dest => dest.DailyLiquidityUsdChangePercent, opt => opt.MapFrom(src => src.DailyLiquidityUsdChangePercent))
                 .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
                 .ForMember(dest => dest.StakingWeight, opt => opt.MapFrom(src => src.StakingWeight))
+                .ForMember(dest => dest.DailyStakingWeightChangePercent, opt => opt.MapFrom(src => src.DailyStakingWeightChangePercent))
                 .ForMember(dest => dest.LockedSrc, opt => opt.MapFrom(src => src.LockedSrc))
                 .ForMember(dest => dest.LockedCrs, opt => opt.MapFrom(src => src.LockedCrs))
                 .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
@@ -487,14 +494,21 @@ namespace Opdex.Platform.Infrastructure
                 .ForMember(dest => dest.SrcPerCrs, opt => opt.MapFrom(src => src.SrcPerCrs))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<OhlcBigIntSnapshot, OhlcBigIntEntity>()
+            CreateMap<Ohlc<ulong>, OhlcEntity<ulong>>()
                 .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
                 .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
                 .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))
                 .ForMember(dest => dest.Close, opt => opt.MapFrom(src => src.Close))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<OhlcDecimalSnapshot, OhlcDecimalEntity>()
+            CreateMap<Ohlc<UInt256>, OhlcEntity<UInt256>>()
+                .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
+                .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
+                .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))
+                .ForMember(dest => dest.Close, opt => opt.MapFrom(src => src.Close))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<Ohlc<decimal>, OhlcEntity<decimal>>()
                 .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
                 .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
                 .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))

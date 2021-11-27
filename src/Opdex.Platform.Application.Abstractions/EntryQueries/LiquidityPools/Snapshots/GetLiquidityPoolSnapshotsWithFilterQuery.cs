@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;

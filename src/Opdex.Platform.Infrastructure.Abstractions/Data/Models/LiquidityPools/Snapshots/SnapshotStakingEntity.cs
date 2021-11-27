@@ -4,7 +4,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.
 {
     public class SnapshotStakingEntity
     {
-        public UInt256 Weight { get; set; }
-        public decimal Usd { get; set; }
+        public OhlcEntity<UInt256> Weight { get; set; }
+        public OhlcEntity<decimal> Usd { get; set; }
     }
 }

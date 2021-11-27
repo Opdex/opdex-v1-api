@@ -1,19 +1,14 @@
-using Opdex.Platform.Common.Constants;
-using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Application.Abstractions.Models.Tokens;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
 {
     public class StakingDto
     {
-        public UInt256 Weight { get; set; }
+        public MarketTokenDto Token { get; set; }
+        public FixedDecimal Weight { get; set; }
         public decimal Usd { get; set; }
-        public decimal? WeightDailyChange { get; set; }
-        public bool IsNominated { get; set; }
-
-        public void SetDailyChange(UInt256 previousWeight)
-        {
-            WeightDailyChange = Weight.PercentChange(previousWeight, TokenConstants.Opdex.Sats);
-        }
+        public decimal DailyWeightChangePercent { get; set; }
+        public bool Nominated { get; set; }
     }
 }

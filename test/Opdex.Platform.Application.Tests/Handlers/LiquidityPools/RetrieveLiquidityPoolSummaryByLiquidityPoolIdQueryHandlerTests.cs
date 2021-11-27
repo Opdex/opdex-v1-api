@@ -57,7 +57,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools
             // Arrange
             const ulong id = 100L;
             const ulong liquidityPoolId = 1;
-            var summary = new LiquidityPoolSummary(id, liquidityPoolId, 2.00m, 3.00m, 4, 5, 7, 8, 9);
+            var summary = new LiquidityPoolSummary(id, liquidityPoolId, 2.00m, 2.5m, 3.00m, 4, 4.5m, 5, 7, 8, 9);
 
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery>(), It.IsAny<CancellationToken>()))
                          .ReturnsAsync(summary);

@@ -3,7 +3,6 @@ using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models.UInt;
-using Opdex.Platform.Domain.Models.OHLC;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,12 +25,12 @@ namespace Opdex.Platform.Domain.Models.Tokens
             TokenId = tokenId;
             MarketId = marketId;
             SnapshotType = snapshotType;
-            Price = new OhlcDecimalSnapshot();
+            Price = new Ohlc<decimal>();
             StartDate = dateTime.ToStartOf(snapshotType);
             EndDate = dateTime.ToEndOf(snapshotType);
         }
 
-        public TokenSnapshot(ulong id, ulong tokenId, ulong marketId, OhlcDecimalSnapshot price, SnapshotType snapshotType, DateTime startDate,
+        public TokenSnapshot(ulong id, ulong tokenId, ulong marketId, Ohlc<decimal> price, SnapshotType snapshotType, DateTime startDate,
                              DateTime endDate, DateTime modifiedDate)
         {
             Id = id;
@@ -47,7 +46,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
         public ulong Id { get; private set; }
         public ulong TokenId { get; }
         public ulong MarketId { get; }
-        public OhlcDecimalSnapshot Price { get; private set; }
+        public Ohlc<decimal> Price { get; private set; }
         public SnapshotType SnapshotType { get; }
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
@@ -93,7 +92,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
             // Verify order is correct
             snapshots = snapshots.OrderBy(snapshot => snapshot.EndDate).ToList();
 
-            Price = new OhlcDecimalSnapshot(snapshots.Select(snapshot => snapshot.Price).ToList());
+            Price = new Ohlc<decimal>(snapshots.Select(snapshot => snapshot.Price).ToList());
         }
 
         /// <summary>
@@ -114,9 +113,8 @@ namespace Opdex.Platform.Domain.Models.Tokens
         /// <param name="srcSats">The total number of sats per SRC token this snapshot represents.</param>
         public void UpdatePrice(ulong reserveCrs, UInt256 reserveSrc, decimal crsUsd, ulong srcSats)
         {
-            var price = reserveCrs
-                .Token0PerToken1(reserveSrc, srcSats)
-                .TotalFiat(crsUsd, TokenConstants.Cirrus.Sats);
+            var crsPerSrc = reserveCrs.Token0PerToken1(reserveSrc, srcSats);
+            var price = MathExtensions.TotalFiat(crsPerSrc, crsUsd, TokenConstants.Cirrus.Sats);
 
             UpdatePriceExecute(price, false);
         }
@@ -132,7 +130,9 @@ namespace Opdex.Platform.Domain.Models.Tokens
         {
             Id = 0;
 
-            UpdatePriceExecute(crsPerSrc.TotalFiat(crsUsd, TokenConstants.Cirrus.Sats), true);
+            var price = MathExtensions.TotalFiat(crsPerSrc, crsUsd, TokenConstants.Cirrus.Sats);
+
+            UpdatePriceExecute(price, true);
 
             StartDate = blockTime.ToStartOf(SnapshotType);
             EndDate = blockTime.ToEndOf(SnapshotType);
@@ -153,9 +153,13 @@ namespace Opdex.Platform.Domain.Models.Tokens
             EndDate = blockTime.ToEndOf(SnapshotType);
         }
 
-        private void UpdatePriceExecute(decimal price, bool reset)
+        private void UpdatePriceExecute(decimal price, bool refresh)
         {
-            Price.Update(Math.Round(price, 8, MidpointRounding.AwayFromZero), reset);
+            var rounded = Math.Round(price, 8, MidpointRounding.AwayFromZero);
+
+            if (refresh) Price.Refresh(rounded);
+            else Price.Update(rounded);
+
             ModifiedDate = DateTime.UtcNow;
         }
     }

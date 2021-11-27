@@ -4,8 +4,8 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.
 {
     public class SnapshotReservesEntity
     {
-        public ulong Crs { get; set; }
-        public UInt256 Src { get; set; }
-        public decimal Usd { get; set; }
+        public OhlcEntity<ulong> Crs { get; set; }
+        public OhlcEntity<UInt256> Src { get; set; }
+        public OhlcEntity<decimal> Usd { get; set; }
     }
 }

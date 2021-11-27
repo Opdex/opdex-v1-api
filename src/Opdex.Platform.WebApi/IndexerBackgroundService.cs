@@ -69,7 +69,7 @@ namespace Opdex.Platform.WebApi
                                 _logger.LogWarning(IndexingAlreadyRunningLog);
                                 continue;
                             }
-                            
+
                             // Todo: If this is somehow the "fix" for the locking indexer bug seen occasionally consider a rewind after unlock
                             // Rewind would go back to block prior to the previous locking timestamp to ensure all transactions and blocks were processed
                             await mediator.Send(new MakeIndexerUnlockCommand());
