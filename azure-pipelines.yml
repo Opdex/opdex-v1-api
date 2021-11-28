@@ -62,7 +62,7 @@ stages:
           repository: '$(IMAGE_REPOSITORY)'
           command: 'buildAndPush'
           Dockerfile: '$(DOCKERFILE_PATH)'
-          buildContext: '$(Build.ArtifactStagingDirectory)'
+          buildContext: '$(Build.ArtifactStagingDirectory)/Opdex.Platform.WebApi'
           tags: '$(TAG)'
         displayName: Docker
 
