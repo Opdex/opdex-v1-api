@@ -23,7 +23,7 @@ namespace Opdex.Platform.Application.Handlers.MiningGovernances.Nominations
 
         public async Task<bool> Handle(MakeMiningGovernanceNominationsCommand request, CancellationToken cancellationToken)
         {
-            var dbNominations = await _mediator.Send(new RetrieveActiveMiningGovernanceNominationsByIdQuery(request.MiningGovernance.Id));
+            var dbNominations = await _mediator.Send(new RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(request.MiningGovernance.Id));
 
             var nominationSummaries = await _mediator.Send(new CallCirrusGetMiningGovernanceNominationsSummaryQuery(request.MiningGovernance.Address, request.BlockHeight));
 

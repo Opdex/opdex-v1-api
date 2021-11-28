@@ -72,7 +72,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.MiningGovernances
             catch { }
 
             // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveActiveMiningGovernanceNominationsByIdQuery>(q => q.MiningGovernanceId == miningGovernance.Id),
+            _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery>(q => q.MiningGovernanceId == miningGovernance.Id),
                                                    It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -91,7 +91,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.MiningGovernances
                 new MiningGovernanceNomination(4, 1, 5, 6, true, 14, 3, 4)
             };
 
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveMiningGovernanceNominationsByIdQuery>(), It.IsAny<CancellationToken>()))
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedDbNominations);
 
             // Act
@@ -130,7 +130,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.MiningGovernances
                 new MiningGovernanceContractNominationSummary("PARwmH1iT1GLsU9EMroh6zXXNMjmivLgqq", 999)
             };
 
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveMiningGovernanceNominationsByIdQuery>(), It.IsAny<CancellationToken>()))
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedDbNominations);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetMiningGovernanceNominationsSummaryQuery>(), It.IsAny<CancellationToken>()))
@@ -183,7 +183,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.MiningGovernances
                 new LiquidityPool(5, "PARwmH1iT1GLsU9EMroh6zXXNMjmivLgqq", "RRT-CRS", 26, 27, 1, 3, 4)
             };
 
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveMiningGovernanceNominationsByIdQuery>(), It.IsAny<CancellationToken>()))
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedDbNominations);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetMiningGovernanceNominationsSummaryQuery>(), It.IsAny<CancellationToken>()))
@@ -265,7 +265,7 @@ namespace Opdex.Platform.Application.Tests.Handlers.MiningGovernances
                 new MiningGovernanceNomination(2, 1, 3, 4, false, 12, 3, blockHeight)
             };
 
-            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveMiningGovernanceNominationsByIdQuery>(), It.IsAny<CancellationToken>()))
+            _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedDbNominations);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetMiningGovernanceNominationsSummaryQuery>(), It.IsAny<CancellationToken>()))

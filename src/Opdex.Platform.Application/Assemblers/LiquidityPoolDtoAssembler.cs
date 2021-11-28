@@ -91,7 +91,7 @@ namespace Opdex.Platform.Application.Assemblers
             if (!stakingEnabled) return poolDto;
 
             var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(stakingToken.Id));
-            var nominations = await _mediator.Send(new RetrieveActiveMiningGovernanceNominationsByIdQuery(governance.Id));
+            var nominations = await _mediator.Send(new RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(governance.Id));
             var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id));
 
             poolDto.Summary.MiningPool = await _miningPoolAssembler.Assemble(miningPool);

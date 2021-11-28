@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominations
 {
-    public class SelectActiveMiningGovernanceNominationsByIdQueryHandler
-        : IRequestHandler<SelectActiveMiningGovernanceNominationsByIdQuery, IEnumerable<MiningGovernanceNomination>>
+    public class SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler
+        : IRequestHandler<SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>
     {
         private static readonly string SqlQuery =
             @$"SELECT
@@ -33,13 +33,13 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominati
         private readonly IDbContext _context;
         private readonly IMapper _mapper;
 
-        public SelectActiveMiningGovernanceNominationsByIdQueryHandler(IDbContext context, IMapper mapper)
+        public SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler(IDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<MiningGovernanceNomination>> Handle(SelectActiveMiningGovernanceNominationsByIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<MiningGovernanceNomination>> Handle(SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery request, CancellationToken cancellationToken)
         {
             var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.MiningGovernanceId), cancellationToken);
 

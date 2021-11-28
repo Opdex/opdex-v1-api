@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernances.Nominations
 {
-    public class SelectActiveMiningGovernanceNominationsByIdQuery : IRequest<IEnumerable<MiningGovernanceNomination>>
+    public class SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery : IRequest<IEnumerable<MiningGovernanceNomination>>
     {
-        public SelectActiveMiningGovernanceNominationsByIdQuery(ulong miningGovernanceId)
+        public SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(ulong miningGovernanceId)
         {
             if (miningGovernanceId < 1)
             {

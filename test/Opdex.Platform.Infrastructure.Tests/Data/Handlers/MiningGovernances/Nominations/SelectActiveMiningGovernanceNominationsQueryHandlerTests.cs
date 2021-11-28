@@ -15,14 +15,14 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernances.No
     public class SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandlerTests
     {
         private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectActiveMiningGovernanceNominationsByIdQueryHandler _handler;
+        private readonly SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler _handler;
 
         public SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandlerTests()
         {
             var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
             _dbContext = new Mock<IDbContext>();
-            _handler = new SelectActiveMiningGovernanceNominationsByIdQueryHandler(_dbContext.Object, mapper);
+            _handler = new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler(_dbContext.Object, mapper);
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernances.No
                 }
             }.AsEnumerable();
 
-            var command = new SelectActiveMiningGovernanceNominationsByIdQuery(miningGovernanceId);
+            var command = new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(miningGovernanceId);
 
             _dbContext.Setup(db => db.ExecuteQueryAsync<MiningGovernanceNominationEntity>(It.IsAny<DatabaseQuery>()))
                 .ReturnsAsync(() => expected);
@@ -63,7 +63,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernances.No
         {
             // Arrange
             const ulong miningGovernanceId = 3;
-            var command = new SelectActiveMiningGovernanceNominationsByIdQuery(miningGovernanceId);
+            var command = new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(miningGovernanceId);
 
             _dbContext.Setup(db => db.ExecuteQueryAsync<MiningGovernanceNominationEntity>(It.IsAny<DatabaseQuery>()))
                 .ReturnsAsync(Enumerable.Empty<MiningGovernanceNominationEntity>);
