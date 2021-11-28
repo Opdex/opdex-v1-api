@@ -35,10 +35,7 @@ namespace Opdex.Platform.Domain.Models.Tokens
 
         public void Update(TokenSnapshot snapshot, ulong blockHeight)
         {
-            var openPrice = snapshot.Price.Open;
-            var closePrice = snapshot.Price.Close;
-
-            DailyPriceChangePercent = closePrice.PercentChange(openPrice);
+            DailyPriceChangePercent = MathExtensions.PercentChange(snapshot.Price.Close, snapshot.Price.Open);
             PriceUsd = snapshot.Price.Close;
             SetModifiedBlock(blockHeight);
         }

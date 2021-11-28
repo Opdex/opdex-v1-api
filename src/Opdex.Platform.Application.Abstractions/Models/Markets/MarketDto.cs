@@ -16,6 +16,6 @@ namespace Opdex.Platform.Application.Abstractions.Models.Markets
         public bool AuthTraders { get; set; }
         public uint TransactionFee { get; set; }
         public bool MarketFeeEnabled { get; set; }
-        public MarketSnapshotDto Summary { get; set; }
+        public MarketSummaryDto Summary { get; set; }
     }
 }

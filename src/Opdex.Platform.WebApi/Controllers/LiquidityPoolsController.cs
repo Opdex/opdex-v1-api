@@ -11,11 +11,12 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
-using Opdex.Platform.WebApi.Models.Responses.Pools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Requests;
 using Opdex.Platform.WebApi.Models.Requests.LiquidityPools;
+using Opdex.Platform.WebApi.Models.Responses.LiquidityPools;
+using Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots;
 using System.Net;
 
 namespace Opdex.Platform.WebApi.Controllers
@@ -101,9 +102,9 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(LiquidityPoolSnapshotsResponseModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<LiquidityPoolSnapshotHistoryResponseModel>> GetLiquidityPoolHistory([FromRoute] Address address,
-                                                                                                           [FromQuery] SnapshotFilterParameters filters,
-                                                                                                           CancellationToken cancellationToken)
+        public async Task<ActionResult<LiquidityPoolSnapshotsResponseModel>> GetLiquidityPoolHistory([FromRoute] Address address,
+                                                                                                     [FromQuery] SnapshotFilterParameters filters,
+                                                                                                     CancellationToken cancellationToken)
         {
             var poolSnapshotDtos = await _mediator.Send(new GetLiquidityPoolSnapshotsWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
 

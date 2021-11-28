@@ -11,6 +11,7 @@ using Opdex.Platform.Application.EntryHandlers.Markets.Snapshots;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -97,9 +98,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
 
             var snapshots = new []
             {
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 20m, 30m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 40m, 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 30m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
 
@@ -123,9 +124,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
 
             var snapshots = new []
             {
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 40m, 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
@@ -150,9 +151,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
 
             var snapshots = new []
             {
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 40m, 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
@@ -178,9 +179,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
 
             var snapshots = new []
             {
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 40m, 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
@@ -206,9 +207,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
 
             var snapshots = new []
             {
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 40m, 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
@@ -234,9 +235,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
 
             var snapshots = new []
             {
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 40m, 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
@@ -262,9 +263,9 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
 
             var snapshots = new []
             {
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 40m, 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
@@ -290,8 +291,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
 
             var snapshots = new []
             {
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime())
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime())
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
@@ -317,8 +318,8 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
 
             var snapshots = new []
             {
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, 10m, 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime())
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime())
             };
             _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
             _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());

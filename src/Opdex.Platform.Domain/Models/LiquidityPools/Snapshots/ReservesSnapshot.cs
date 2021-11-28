@@ -12,52 +12,69 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
     {
         public ReservesSnapshot()
         {
-            Crs = 0;
-            Src = UInt256.Zero;
-            Usd = 0.00000000m;
+            Crs = new Ohlc<ulong>();
+            Src = new Ohlc<UInt256>();
+            Usd = new Ohlc<decimal>();
         }
 
-        public ReservesSnapshot(ReservesSnapshot snapshots)
+        public ReservesSnapshot(IList<ReservesSnapshot> snapshots)
         {
-            Crs = snapshots.Crs;
-            Src = snapshots.Src;
-            Usd = snapshots.Usd;
+            Crs = new Ohlc<ulong>(snapshots.Select(snapshot => snapshot.Crs).ToList());
+            Src = new Ohlc<UInt256>(snapshots.Select(snapshot => snapshot.Src).ToList());
+            Usd = new Ohlc<decimal>(snapshots.Select(snapshot => snapshot.Usd).ToList());
         }
 
-        public ReservesSnapshot(ulong reserveCrs, UInt256 reserveSrc, decimal reserveUsd)
+        public ReservesSnapshot(Ohlc<ulong> reserveCrs, Ohlc<UInt256> reserveSrc, Ohlc<decimal> reserveUsd)
         {
-            if (reserveUsd < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(reserveUsd), $"{nameof(reserveUsd)} must be greater or equal to 0.");
-            }
-
-            Crs = reserveCrs;
-            Src = reserveSrc;
-            Usd = reserveUsd;
+            Crs = reserveCrs ?? throw new ArgumentNullException(nameof(reserveCrs), "Reserves CRS cannot be null.");
+            Src = reserveSrc ?? throw new ArgumentNullException(nameof(reserveSrc), "Reserves SRC cannot be null.");
+            Usd = reserveUsd ?? throw new ArgumentNullException(nameof(reserveUsd), "Reserves USD cannot be null.");
         }
 
-        public ulong Crs { get; private set; }
-        public UInt256 Src { get; private set; }
-        public decimal Usd { get; private set; }
+        public Ohlc<ulong> Crs { get; }
+        public Ohlc<UInt256> Src { get; }
+        public Ohlc<decimal> Usd { get; }
 
-        internal void SetReserves(ReservesLog log, decimal crsUsd, decimal srcUsd, ulong srcSats)
+        /// <summary>
+        /// Update an existing snapshot's values with a new ReservesLog.
+        /// </summary>
+        /// <param name="log">The new Reserves Log to process</param>
+        /// <param name="crsUsd">The CRS token USD price at the time of the transaction.</param>
+        internal void Update(ReservesLog log, decimal crsUsd)
         {
-            Crs = log.ReserveCrs;
-            Src = log.ReserveSrc;
-            Usd = CalculateReservesUsd(crsUsd, srcUsd, srcSats);
+            Crs.Update(log.ReserveCrs);
+            Src.Update(log.ReserveSrc);
+            UpdateUsd(crsUsd, false);
         }
 
-        internal void RefreshReserves(decimal crsUsd, decimal srcUsd, ulong srcSats)
+        /// <summary>
+        /// Update an existing snapshot by forcing a refresh of the USD totals.
+        /// </summary>
+        /// <param name="crsUsd">The CRS token USD price to update values with.</param>
+        internal void Update(decimal crsUsd)
         {
-            Usd = CalculateReservesUsd(crsUsd, srcUsd, srcSats);
+            UpdateUsd(crsUsd, false);
         }
 
-        private decimal CalculateReservesUsd(decimal crsUsd, decimal srcUsd, ulong srcSats)
+        /// <summary>
+        /// Refresh and reset a reserves snapshot entirely. Rolls over previous closing values and recalculates
+        /// new USD values based upon the provided CRS token USD price.
+        /// </summary>
+        /// <param name="crsUsd">The CRS token USD price to recalculate USD totals.</param>
+        internal void Refresh(decimal crsUsd)
         {
-            var totalCrsUsd = Crs.TotalFiat(crsUsd, TokenConstants.Cirrus.Sats);
-            var totalSrcUsd = Src.TotalFiat(srcUsd, srcSats);
+            Crs.Refresh(Crs.Close);
+            Src.Refresh(Src.Close);
+            UpdateUsd(crsUsd, true);
+        }
 
-            return totalCrsUsd + totalSrcUsd;
+        private void UpdateUsd(decimal crsUsd, bool refresh)
+        {
+            var totalCrsUsd = MathExtensions.TotalFiat(Crs.Close, crsUsd, TokenConstants.Cirrus.Sats);
+            var totalUsd = Math.Round(totalCrsUsd * 2, TokenConstants.Cirrus.Decimals);
+
+            if (refresh) Usd.Refresh(totalUsd);
+            else Usd.Update(totalUsd);
         }
     }
 }

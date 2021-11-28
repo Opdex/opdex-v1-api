@@ -46,22 +46,18 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
                     ? await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(token.Address))
                     : await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(request.TokenId, request.MarketId));
 
-                var liquidityPoolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id,
-                                                                                                                  request.StartDate,
-                                                                                                                  SnapshotType.Daily));
+                var liquidityPoolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(liquidityPool.Id, request.StartDate, SnapshotType.Daily));
 
                 if (token.IsLpt)
                 {
                     // Calc OLPT price based on total reserves USD / OLPT total supply
-                    var reserves = liquidityPoolSnapshot.Reserves.Usd;
-                    var tokenPrice = token.TotalSupply.FiatPerToken(reserves, token.Sats);
+                    var tokenPrice = MathExtensions.FiatPerToken(token.TotalSupply, liquidityPoolSnapshot.Reserves.Usd.Close, token.Sats);
                     srcTokenDailySnapshot.ResetStaleSnapshot(tokenPrice, request.StartDate);
                 }
                 else
                 {
                     // Calc SRC price based on CrsPerSrc ratio and CRS USD price
-                    srcTokenDailySnapshot.ResetStaleSnapshot(liquidityPoolSnapshot.Cost.CrsPerSrc.Open, request.CrsUsdStartOfDay,
-                                                             request.StartDate);
+                    srcTokenDailySnapshot.ResetStaleSnapshot(liquidityPoolSnapshot.Cost.CrsPerSrc.Open, request.CrsUsdStartOfDay, request.StartDate);
                 }
             }
 

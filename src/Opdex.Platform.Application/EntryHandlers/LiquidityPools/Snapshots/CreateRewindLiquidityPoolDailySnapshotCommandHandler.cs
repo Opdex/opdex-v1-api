@@ -4,9 +4,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
 using System.Linq;
@@ -43,13 +41,8 @@ namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
             {
                 var srcToken = await _mediator.Send(new RetrieveTokenByIdQuery(request.SrcTokenId));
 
-                // Liquidity pools reserves are always 50% USD CRS and 50% USD SRC - use CRS to get the total reserves
-                var halfPoolReservesStartOfDay = poolDailySnapshot.Reserves.Crs.TotalFiat(request.CrsUsdStartOfDay, TokenConstants.Cirrus.Sats);
-                var srcFiatPerTokenStartOfDay = poolDailySnapshot.Reserves.Src.FiatPerToken(halfPoolReservesStartOfDay, srcToken.Sats);
-
                 // Reset the daily snapshot Id and date to be a new instance, carrying over necessary values from the previous snapshot.
-                poolDailySnapshot.ResetStaleSnapshot(request.CrsUsdStartOfDay, srcFiatPerTokenStartOfDay,
-                                                     request.StakingTokenUsdStartOfDay, srcToken.Sats, request.StartDate);
+                poolDailySnapshot.ResetStaleSnapshot(request.CrsUsdStartOfDay, request.StakingTokenUsdStartOfDay, srcToken.Sats, request.StartDate);
             }
 
             // Rewind the daily snapshot using the hourly snapshots

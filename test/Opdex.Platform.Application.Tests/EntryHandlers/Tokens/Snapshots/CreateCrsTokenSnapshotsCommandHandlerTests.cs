@@ -12,7 +12,7 @@ using Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.OHLC;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Tokens;
 using System;
 using System.Threading;
@@ -111,7 +111,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
             DateTime blockTime = DateTime.UtcNow;
             const ulong blockHeight = 10;
             var tokenDto = new TokenDto { Id = 1, Name = "Cirrus", Symbol = "CRS" };
-            var latestSnapshot = new TokenSnapshot(1, 2, 3, new OhlcDecimalSnapshot(), SnapshotType.Daily, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow);
+            var latestSnapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<GetTokenByAddressQuery>(), CancellationToken.None))
                 .ReturnsAsync(tokenDto);
@@ -135,7 +135,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
             DateTime latestSnapshotTime = blockTime.AddMinutes(-5);
             const ulong blockHeight = 10;
             var tokenDto = new TokenDto { Id = 1, Name = "Cirrus", Symbol = "CRS" };
-            var latestSnapshot = new TokenSnapshot(1, 2, 3, new OhlcDecimalSnapshot(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
+            var latestSnapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<GetTokenByAddressQuery>(), CancellationToken.None))
                 .ReturnsAsync(tokenDto);
@@ -162,7 +162,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
             DateTime latestSnapshotTime = blockTime.AddMinutes(-5);
             const ulong blockHeight = 10;
             var tokenDto = new TokenDto { Id = 1, Name = "Cirrus", Symbol = "CRS" };
-            var latestSnapshot = new TokenSnapshot(1, 2, 3, new OhlcDecimalSnapshot(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
+            var latestSnapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<GetTokenByAddressQuery>(), CancellationToken.None))
                 .ReturnsAsync(tokenDto);
@@ -186,7 +186,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
             DateTime latestSnapshotTime = blockTime.AddMinutes(-5);
             const ulong blockHeight = 10;
             var tokenDto = new TokenDto { Id = 1, Name = "Cirrus", Symbol = "CRS" };
-            var latestSnapshot = new TokenSnapshot(1, 2, 3, new OhlcDecimalSnapshot(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
+            var latestSnapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
             const decimal price = 1.1m;
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<GetTokenByAddressQuery>(), CancellationToken.None))
@@ -226,7 +226,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Tokens.Snapshots
             DateTime latestSnapshotTime = blockTime.AddMinutes(-5);
             const ulong blockHeight = 10;
             var tokenDto = new TokenDto { Id = 1, Name = "Cirrus", Symbol = "CRS" };
-            var latestSnapshot = new TokenSnapshot(1, 2, 3, new OhlcDecimalSnapshot(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
+            var latestSnapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, latestSnapshotTime, latestSnapshotTime, latestSnapshotTime);
             const decimal price = 1.1m;
 
             _mediator.Setup(callTo => callTo.Send(It.IsAny<GetTokenByAddressQuery>(), CancellationToken.None))

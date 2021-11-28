@@ -97,9 +97,9 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                         await _mediator.Send(new CreateTransactionCommand(tx));
                     }
 
-                    // Process market snapshots every 5 minutes
+                    // Process market snapshots every 2 minutes
                     if (currentBlock.IsNewMinuteFromPrevious(bestBlock.MedianTime) &&
-                        currentBlock.MedianTime.Minute % 5 == 0)
+                        currentBlock.MedianTime.Minute % 2 == 0)
                     {
                         var markets = await _mediator.Send(new RetrieveAllMarketsQuery());
 

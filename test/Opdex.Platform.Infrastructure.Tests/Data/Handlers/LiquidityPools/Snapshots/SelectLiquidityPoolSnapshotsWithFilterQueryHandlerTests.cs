@@ -2,9 +2,10 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots;
@@ -49,13 +50,22 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
                 EndDate = new DateTime(2021, 6, 21, 23, 59, 59),
                 ModifiedDate = DateTime.UtcNow,
                 Rewards = new SnapshotRewardsEntity { MarketUsd = 1.23m, ProviderUsd = 9.87m },
-                Reserves = new SnapshotReservesEntity { Crs = 123, Src = 987, Usd = 7.65m },
+                Reserves = new SnapshotReservesEntity
+                {
+                    Crs = new OhlcEntity<ulong>{ Open = 123, High = 123, Low = 123, Close = 123 },
+                    Src = new OhlcEntity<UInt256>{ Open = 987, High = 987, Low = 987, Close = 987 },
+                    Usd = new OhlcEntity<decimal>{ Open = 1, High = 9, Low = 1, Close = 4 }
+                },
                 Volume = new SnapshotVolumeEntity { Crs = 876, Src = 654, Usd = 2.34m },
-                Staking = new SnapshotStakingEntity { Usd = 9.12m, Weight = 648 },
+                Staking = new SnapshotStakingEntity
+                {
+                    Usd = new OhlcEntity<decimal>{ Open = 9.12m, High = 9.12m, Low = 9.12m, Close = 9.12m },
+                    Weight = new OhlcEntity<UInt256> { Open = 648, High = 648, Low = 648, Close = 648 }
+                },
                 Cost = new SnapshotCostEntity
                 {
-                    CrsPerSrc = new OhlcBigIntEntity { Open = 1, High = 9, Low = 1, Close = 4 },
-                    SrcPerCrs = new OhlcBigIntEntity { Open = 6, High = 6, Low = 2, Close = 2 }
+                    CrsPerSrc = new OhlcEntity<UInt256> { Open = 1, High = 9, Low = 1, Close = 4 },
+                    SrcPerCrs = new OhlcEntity<UInt256> { Open = 6, High = 6, Low = 2, Close = 2 }
                 }
             };
 
@@ -82,9 +92,20 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
                 result.EndDate.Should().Be(expectedEntity.EndDate);
                 result.ModifiedDate.Should().Be(expectedEntity.ModifiedDate);
 
-                result.Reserves.Crs.Should().Be(expectedEntity.Reserves.Crs);
-                result.Reserves.Src.Should().Be(expectedEntity.Reserves.Src);
-                result.Reserves.Usd.Should().Be(expectedEntity.Reserves.Usd);
+                result.Reserves.Crs.Open.Should().Be(expectedEntity.Reserves.Crs.Open);
+                result.Reserves.Crs.High.Should().Be(expectedEntity.Reserves.Crs.High);
+                result.Reserves.Crs.Low.Should().Be(expectedEntity.Reserves.Crs.Low);
+                result.Reserves.Crs.Close.Should().Be(expectedEntity.Reserves.Crs.Close);
+
+                result.Reserves.Src.Open.Should().Be(expectedEntity.Reserves.Src.Open);
+                result.Reserves.Src.High.Should().Be(expectedEntity.Reserves.Src.High);
+                result.Reserves.Src.Low.Should().Be(expectedEntity.Reserves.Src.Low);
+                result.Reserves.Src.Close.Should().Be(expectedEntity.Reserves.Src.Close);
+
+                result.Reserves.Usd.Open.Should().Be(expectedEntity.Reserves.Usd.Open);
+                result.Reserves.Usd.High.Should().Be(expectedEntity.Reserves.Usd.High);
+                result.Reserves.Usd.Low.Should().Be(expectedEntity.Reserves.Usd.Low);
+                result.Reserves.Usd.Close.Should().Be(expectedEntity.Reserves.Usd.Close);
 
                 result.Rewards.ProviderUsd.Should().Be(expectedEntity.Rewards.ProviderUsd);
                 result.Rewards.MarketUsd.Should().Be(expectedEntity.Rewards.MarketUsd);
@@ -93,8 +114,15 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Snaps
                 result.Volume.Src.Should().Be(expectedEntity.Volume.Src);
                 result.Volume.Usd.Should().Be(expectedEntity.Volume.Usd);
 
-                result.Staking.Weight.Should().Be(expectedEntity.Staking.Weight);
-                result.Staking.Usd.Should().Be(expectedEntity.Staking.Usd);
+                result.Staking.Weight.Open.Should().Be(expectedEntity.Staking.Weight.Open);
+                result.Staking.Weight.High.Should().Be(expectedEntity.Staking.Weight.High);
+                result.Staking.Weight.Low.Should().Be(expectedEntity.Staking.Weight.Low);
+                result.Staking.Weight.Close.Should().Be(expectedEntity.Staking.Weight.Close);
+
+                result.Staking.Usd.Open.Should().Be(expectedEntity.Staking.Usd.Open);
+                result.Staking.Usd.High.Should().Be(expectedEntity.Staking.Usd.High);
+                result.Staking.Usd.Low.Should().Be(expectedEntity.Staking.Usd.Low);
+                result.Staking.Usd.Close.Should().Be(expectedEntity.Staking.Usd.Close);
 
                 result.Cost.CrsPerSrc.Open.Should().Be(expectedEntity.Cost.CrsPerSrc.Open);
                 result.Cost.CrsPerSrc.High.Should().Be(expectedEntity.Cost.CrsPerSrc.High);
