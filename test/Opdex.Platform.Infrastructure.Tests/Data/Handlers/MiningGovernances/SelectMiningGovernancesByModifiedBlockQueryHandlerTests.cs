@@ -51,7 +51,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernances
             // Assert
             _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<MiningGovernanceEntity>(
                                   It.Is<DatabaseQuery>(q => q.Sql.Contains("ModifiedBlock = @ModifiedBlock") &&
-                                                            q.Sql.Contains("FROM governance"))), Times.Once);
+                                                            q.Sql.Contains("FROM mining_governance"))), Times.Once);
         }
 
         [Fact]

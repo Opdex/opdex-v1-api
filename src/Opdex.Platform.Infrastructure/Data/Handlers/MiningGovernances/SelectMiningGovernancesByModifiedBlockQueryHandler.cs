@@ -25,7 +25,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances
                 {nameof(MiningGovernanceEntity.MiningPoolReward)},
                 {nameof(MiningGovernanceEntity.CreatedBlock)},
                 {nameof(MiningGovernanceEntity.ModifiedBlock)}
-            FROM governance
+            FROM mining_governance
             WHERE {nameof(MiningGovernanceEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
 
         private readonly IDbContext _context;

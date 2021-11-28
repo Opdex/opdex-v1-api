@@ -35,7 +35,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances
                 g.{nameof(MiningGovernanceEntity.NominationPeriodEnd)},
                 g.{nameof(MiningGovernanceEntity.CreatedBlock)},
                 g.{nameof(MiningGovernanceEntity.ModifiedBlock)}
-            FROM governance g
+            FROM mining_governance g
             {TableJoins}
             {WhereFilter}
             {OrderBy}

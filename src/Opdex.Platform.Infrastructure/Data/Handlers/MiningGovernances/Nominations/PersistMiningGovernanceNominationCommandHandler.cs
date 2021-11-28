@@ -13,7 +13,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominati
     public class PersistMiningGovernanceNominationCommandHandler : IRequestHandler<PersistMiningGovernanceNominationCommand, ulong>
     {
         private static readonly string InsertSqlCommand =
-            $@"INSERT INTO governance_nomination (
+            $@"INSERT INTO mining_governance_nomination (
                 {nameof(MiningGovernanceNominationEntity.MiningGovernanceId)},
                 {nameof(MiningGovernanceNominationEntity.LiquidityPoolId)},
                 {nameof(MiningGovernanceNominationEntity.MiningPoolId)},
@@ -33,7 +33,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominati
               SELECT LAST_INSERT_ID();";
 
         private static readonly string UpdateSqlCommand =
-            $@"UPDATE governance_nomination
+            $@"UPDATE mining_governance_nomination
                 SET
                     {nameof(MiningGovernanceNominationEntity.Weight)} = @{nameof(MiningGovernanceNominationEntity.Weight)},
                     {nameof(MiningGovernanceNominationEntity.IsNominated)} = @{nameof(MiningGovernanceNominationEntity.IsNominated)},

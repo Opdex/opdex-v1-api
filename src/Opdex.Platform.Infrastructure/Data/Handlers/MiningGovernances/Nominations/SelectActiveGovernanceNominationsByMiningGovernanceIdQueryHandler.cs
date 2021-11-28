@@ -25,7 +25,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominati
                 {nameof(MiningGovernanceNominationEntity.Weight)},
                 {nameof(MiningGovernanceNominationEntity.CreatedBlock)},
                 {nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
-            FROM governance_nomination
+            FROM mining_governance_nomination
             WHERE {nameof(MiningGovernanceNominationEntity.IsNominated)} = true AND
                   {nameof(MiningGovernanceNominationEntity.MiningGovernanceId)} = @{nameof(SqlParams.MiningGovernanceId)}
             LIMIT {MiningGovernanceConstants.MaxNominations};";

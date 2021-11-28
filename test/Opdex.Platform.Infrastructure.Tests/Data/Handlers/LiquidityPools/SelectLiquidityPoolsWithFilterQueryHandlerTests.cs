@@ -228,7 +228,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
                                                   PagingDirection.Forward,
                                                   default);
 
-            const string expectedJoin = " JOIN governance_nomination gn ON gn.LiquidityPoolId = pl.Id";
+            const string expectedJoin = " JOIN mining_governance_nomination gn ON gn.LiquidityPoolId = pl.Id";
             var conditional = filter == LiquidityPoolNominationStatusFilter.Nominated ? "true" : "false";
             string expectedFilter = $"WHERE gn.IsNominated = {conditional}";
 

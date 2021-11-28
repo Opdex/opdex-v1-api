@@ -24,7 +24,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances
                 {nameof(MiningGovernanceEntity.MiningPoolReward)},
                 {nameof(MiningGovernanceEntity.CreatedBlock)},
                 {nameof(MiningGovernanceEntity.ModifiedBlock)}
-            FROM governance
+            FROM mining_governance
             WHERE {nameof(MiningGovernanceEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;";
 
