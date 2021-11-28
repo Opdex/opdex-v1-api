@@ -62,6 +62,7 @@ stages:
           repository: '$(IMAGE_REPOSITORY)'
           command: 'buildAndPush'
           Dockerfile: '$(DOCKERFILE_PATH)'
+          buildContext: '$(Build.ArtifactStagingDirectory)'
           tags: '$(TAG)'
         displayName: Docker
 
