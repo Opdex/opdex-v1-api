@@ -1,14 +1,14 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Commands.Governances;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Governances;
-using Opdex.Platform.Application.Abstractions.Queries.Governances;
-using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
+using Opdex.Platform.Application.Abstractions.Commands.MiningGovernances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
+using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernances;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Governances
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernances
 {
     public class ProcessRewardMiningPoolLogCommandHandler : IRequestHandler<ProcessRewardMiningPoolLogCommand, bool>
     {
@@ -25,15 +25,15 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                var governance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
-                if (governance == null) return false;
+                var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
+                if (miningGovernance == null) return false;
 
-                if (request.BlockHeight < governance.ModifiedBlock)
+                if (request.BlockHeight < miningGovernance.ModifiedBlock)
                 {
                     return true;
                 }
 
-                var updateId = await _mediator.Send(new MakeMiningGovernanceCommand(governance, request.BlockHeight,
+                var updateId = await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance, request.BlockHeight,
                                                                                     refreshMiningPoolReward: true,
                                                                                     refreshNominationPeriodEnd: true,
                                                                                     refreshMiningPoolsFunded: true));

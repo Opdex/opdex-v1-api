@@ -1,13 +1,13 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Governances;
-using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningGovernances;
+using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernances;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Governances
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernances
 {
     public class ProcessNominationLogCommandHandler : IRequestHandler<ProcessNominationLogCommand, bool>
     {
@@ -24,7 +24,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
         {
             try
             {
-                return await _mediator.Send(new CreateGovernanceNominationsCommand(request.Log.Contract, request.BlockHeight));
+                return await _mediator.Send(new CreateMiningGovernanceNominationsCommand(request.Log.Contract, request.BlockHeight));
             }
             catch (Exception ex)
             {

@@ -5,8 +5,8 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
-using Opdex.Platform.Application.Abstractions.Queries.Governances;
-using Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations;
+using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances.Nominations;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
@@ -63,7 +63,8 @@ namespace Opdex.Platform.Application.Assemblers
             // Math operations would * 100 to get .001
             poolDto.TransactionFee = market.TransactionFee == 0 ? 0 : Math.Round((decimal)market.TransactionFee / 10, 1);
 
-            poolDto.Summary = new LiquidityPoolSummaryDto {
+            poolDto.Summary = new LiquidityPoolSummaryDto
+            {
                 Reserves = new ReservesDto
                 {
                     Crs = new FixedDecimal(summary.LockedCrs, TokenConstants.Cirrus.Decimals),
@@ -90,7 +91,7 @@ namespace Opdex.Platform.Application.Assemblers
             if (!stakingEnabled) return poolDto;
 
             var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(stakingToken.Id));
-            var nominations = await _mediator.Send(new RetrieveActiveGovernanceNominationsByGovernanceIdQuery(governance.Id));
+            var nominations = await _mediator.Send(new RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(governance.Id));
             var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id));
 
             poolDto.Summary.MiningPool = await _miningPoolAssembler.Assemble(miningPool);

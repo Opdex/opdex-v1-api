@@ -1,9 +1,9 @@
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
-using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
+using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernances;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Governances
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningGovernances
 {
     public class ProcessNominationLogCommand : ProcessTransactionLogCommand
     {

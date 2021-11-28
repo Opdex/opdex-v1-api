@@ -7,7 +7,7 @@ using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningPools;
@@ -170,7 +170,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
             // Nominated filter
             if (request.Cursor.NominationFilter != LiquidityPoolNominationStatusFilter.Any)
             {
-                tableJoins += $@" JOIN governance_nomination gn ON gn.{nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}";
+                tableJoins += $@" JOIN mining_governance_nomination gn ON gn.{nameof(MiningGovernanceNominationEntity.LiquidityPoolId)} = pl.{nameof(LiquidityPoolEntity.Id)}";
 
                 var prefix = whereFilter.HasValue() ? " AND" : " WHERE";
                 var status = request.Cursor.NominationFilter == LiquidityPoolNominationStatusFilter.Nominated ? "true" : "false";

@@ -6,14 +6,14 @@ using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Deployers;
-using Opdex.Platform.Domain.Models.Governances;
+using Opdex.Platform.Domain.Models.MiningGovernances;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs;
-using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
+using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
@@ -26,7 +26,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Admins;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Governances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
@@ -151,7 +151,7 @@ namespace Opdex.Platform.Infrastructure
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MiningGovernanceNominationEntity, MiningGovernanceNomination>()
-                .ConstructUsing(src => new MiningGovernanceNomination(src.Id, src.GovernanceId, src.LiquidityPoolId, src.MiningPoolId, src.IsNominated, src.Weight, src.CreatedBlock, src.ModifiedBlock))
+                .ConstructUsing(src => new MiningGovernanceNomination(src.Id, src.MiningGovernanceId, src.LiquidityPoolId, src.MiningPoolId, src.IsNominated, src.Weight, src.CreatedBlock, src.ModifiedBlock))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<DeployerEntity, Deployer>()
@@ -221,7 +221,7 @@ namespace Opdex.Platform.Infrastructure
                         (int)TransactionLogType.TransferLog => new TransferLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.DistributionLog => new DistributionLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
-                        // Governances
+                        // Mining Governances
                         (int)TransactionLogType.RewardMiningPoolLog => new RewardMiningPoolLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                         (int)TransactionLogType.NominationLog => new NominationLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
@@ -274,7 +274,7 @@ namespace Opdex.Platform.Infrastructure
                         nameof(TransferLog) => new TransferLog(src.Log.Data, src.Address, src.SortOrder),
                         nameof(DistributionLog) => new DistributionLog(src.Log.Data, src.Address, src.SortOrder),
 
-                        // Governances
+                        // Mining Governances
                         nameof(NominationLog) => new NominationLog(src.Log.Data, src.Address, src.SortOrder),
                         nameof(RewardMiningPoolLog) => new RewardMiningPoolLog(src.Log.Data, src.Address, src.SortOrder),
 
@@ -367,7 +367,7 @@ namespace Opdex.Platform.Infrastructure
 
             CreateMap<MiningGovernanceNomination, MiningGovernanceNominationEntity>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.GovernanceId, opt => opt.MapFrom(src => src.GovernanceId))
+                .ForMember(dest => dest.MiningGovernanceId, opt => opt.MapFrom(src => src.MiningGovernanceId))
                 .ForMember(dest => dest.LiquidityPoolId, opt => opt.MapFrom(src => src.LiquidityPoolId))
                 .ForMember(dest => dest.MiningPoolId, opt => opt.MapFrom(src => src.MiningPoolId))
                 .ForMember(dest => dest.IsNominated, opt => opt.MapFrom(src => src.IsNominated))
