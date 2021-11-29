@@ -30,7 +30,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Tokens.Quotes
 
         public override async Task<TransactionQuoteDto> Handle(CreateApproveAllowanceTransactionQuoteCommand request, CancellationToken cancellationToken)
         {
-            // ensure governance contract exists, throw 404 if not
+            // ensure mining governance contract exists, throw 404 if not
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token), cancellationToken);
 
             var currentAllowance = await _mediator.Send(new RetrieveAddressAllowanceQuery(request.WalletAddress, request.Spender, request.Token), cancellationToken);

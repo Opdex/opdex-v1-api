@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Opdex.Platform.Application.Abstractions.Commands.Addresses;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.Commands.Deployers;
-using Opdex.Platform.Application.Abstractions.Commands.Governances;
+using Opdex.Platform.Application.Abstractions.Commands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.Commands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Commands.Markets;
@@ -18,7 +18,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
@@ -31,7 +31,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Governances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
@@ -46,7 +46,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Governances;
+using Opdex.Platform.Application.Abstractions.EntryQueries.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
@@ -60,8 +60,9 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Admins;
-using Opdex.Platform.Application.Abstractions.Models.Governances;
+using Opdex.Platform.Application.Abstractions.Models.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.MiningPools;
@@ -79,8 +80,8 @@ using Opdex.Platform.Application.Abstractions.Queries.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.Queries.Admins;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
-using Opdex.Platform.Application.Abstractions.Queries.Governances;
-using Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations;
+using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances.Nominations;
 using Opdex.Platform.Application.Abstractions.Queries.Indexer;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
@@ -108,7 +109,7 @@ using Opdex.Platform.Application.EntryHandlers.Addresses.Staking;
 using Opdex.Platform.Application.EntryHandlers.Admins;
 using Opdex.Platform.Application.EntryHandlers.Blocks;
 using Opdex.Platform.Application.EntryHandlers.Deployers;
-using Opdex.Platform.Application.EntryHandlers.Governances;
+using Opdex.Platform.Application.EntryHandlers.MiningGovernances;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes;
 using Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots;
@@ -124,7 +125,7 @@ using Opdex.Platform.Application.EntryHandlers.Tokens;
 using Opdex.Platform.Application.EntryHandlers.Tokens.Quotes;
 using Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots;
 using Opdex.Platform.Application.EntryHandlers.Transactions;
-using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Governances;
+using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernances;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets;
@@ -142,8 +143,8 @@ using Opdex.Platform.Application.Handlers.Addresses.Staking;
 using Opdex.Platform.Application.Handlers.Admins;
 using Opdex.Platform.Application.Handlers.Blocks;
 using Opdex.Platform.Application.Handlers.Deployers;
-using Opdex.Platform.Application.Handlers.Governances;
-using Opdex.Platform.Application.Handlers.Governances.Nominations;
+using Opdex.Platform.Application.Handlers.MiningGovernances;
+using Opdex.Platform.Application.Handlers.MiningGovernances.Nominations;
 using Opdex.Platform.Application.Handlers.Indexer;
 using Opdex.Platform.Application.Handlers.LiquidityPools;
 using Opdex.Platform.Application.Handlers.LiquidityPools.Snapshots;
@@ -168,7 +169,7 @@ using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.Blocks;
 using Opdex.Platform.Domain.Models.Deployers;
-using Opdex.Platform.Domain.Models.Governances;
+using Opdex.Platform.Domain.Models.MiningGovernances;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.Markets;
@@ -179,6 +180,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.Vaults;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.Application
@@ -227,7 +229,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<GetVaultByAddressQuery, VaultDto>, GetVaultByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<GetVaultCertificatesWithFilterQuery, VaultCertificatesDto>, GetVaultCertificatesWithFilterQueryHandler>();
 
-            // Governances
+            // Mining Governances
             services.AddTransient<IRequestHandler<GetMiningGovernancesWithFilterQuery, MiningGovernancesDto>, GetMiningGovernancesWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<GetMiningGovernanceByAddressQuery, MiningGovernanceDto>, GetMiningGovernanceByAddressQueryHandler>();
 
@@ -325,11 +327,11 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<CreateRedeemVaultCertificatesTransactionQuoteCommand, TransactionQuoteDto>, CreateRedeemVaultCertificatesTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRevokeVaultCertificatesTransactionQuoteCommand, TransactionQuoteDto>, CreateRevokeVaultCertificatesTransactionQuoteCommandHandler>();
 
-            // Governances
+            // Mining Governances
             services.AddTransient<IRequestHandler<CreateRewardMiningPoolsTransactionQuoteCommand, TransactionQuoteDto>, CreateRewardMiningPoolsTransactionQuoteCommandHandler>();
             services.AddTransient<IRequestHandler<CreateMiningGovernanceCommand, ulong>, CreateMiningGovernanceCommandHandler>();
             services.AddTransient<IRequestHandler<CreateRewindMiningGovernancesAndNominationsCommand, bool>, CreateRewindMiningGovernancesAndNominationsCommandHandler>();
-            services.AddTransient<IRequestHandler<CreateGovernanceNominationsCommand, bool>, CreateGovernanceNominationsCommandHandler>();
+            services.AddTransient<IRequestHandler<CreateMiningGovernanceNominationsCommand, bool>, CreateMiningGovernanceNominationsCommandHandler>();
 
             // Vaults
             services.AddTransient<IRequestHandler<CreateRewindVaultsCommand, bool>, CreateRewindVaultsCommandHandler>();
@@ -449,10 +451,10 @@ namespace Opdex.Platform.Application
             services.AddTransient<IRequestHandler<RetrieveTokenByAddressQuery, Token>, RetrieveTokenByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, RetrieveTokenSummaryByMarketAndTokenIdQueryHandler>();
 
-            // Governances
+            // Mining Governances
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceContractSummaryByAddressQuery, MiningGovernanceContractSummary>, RetrieveMiningGovernanceContractSummaryByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveActiveGovernanceNominationsByGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>, RetrieveActiveGovernanceNominationsByGovernanceIdQueryHandler>();
-            services.AddTransient<IRequestHandler<RetrieveCirrusMiningGovernanceNominationsQuery, IEnumerable<GovernanceContractNominationSummary>>, RetrieveCirrusMiningGovernanceNominationsQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>, RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler>();
+            services.AddTransient<IRequestHandler<RetrieveCirrusMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceContractNominationSummary>>, RetrieveCirrusMiningGovernanceNominationsQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernancesWithFilterQuery, IEnumerable<MiningGovernance>>, RetrieveMiningGovernancesWithFilterQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceByAddressQuery, MiningGovernance>, RetrieveMiningGovernanceByAddressQueryHandler>();
             services.AddTransient<IRequestHandler<RetrieveMiningGovernanceByTokenIdQuery, MiningGovernance>, RetrieveMiningGovernanceByTokenIdQueryHandler>();
@@ -537,10 +539,10 @@ namespace Opdex.Platform.Application
             // Deployers
             services.AddTransient<IRequestHandler<MakeDeployerCommand, ulong>, MakeDeployerCommandHandler>();
 
-            // Governances
+            // Mining Governances
             services.AddTransient<IRequestHandler<MakeMiningGovernanceCommand, ulong>, MakeMiningGovernanceCommandHandler>();
             services.AddTransient<IRequestHandler<MakeMiningGovernanceNominationCommand, ulong>, MakeMiningGovernanceNominationCommandHandler>();
-            services.AddTransient<IRequestHandler<MakeGovernanceNominationsCommand, bool>, MakeGovernanceNominationsCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeMiningGovernanceNominationsCommand, bool>, MakeMiningGovernanceNominationsCommandHandler>();
 
             // Vaults
             services.AddTransient<IRequestHandler<MakeVaultCommand, ulong>, MakeVaultCommandHandler>();
@@ -565,6 +567,7 @@ namespace Opdex.Platform.Application
 
             // Liquidity Pools
             services.AddTransient<IModelAssembler<LiquidityPool, LiquidityPoolDto>, LiquidityPoolDtoAssembler>();
+            services.AddTransient<IModelAssembler<IList<LiquidityPoolSnapshot>, IEnumerable<LiquidityPoolSnapshotDto>>, LiquidityPoolSnapshotsDtosAssembler>();
 
             // Markets
             services.AddTransient<IModelAssembler<Market, MarketDto>, MarketDtoAssembler>();
@@ -576,7 +579,7 @@ namespace Opdex.Platform.Application
             services.AddTransient<IModelAssembler<Token, TokenDto>, TokenDtoAssembler>();
             services.AddTransient<IModelAssembler<MarketToken, MarketTokenDto>, MarketTokenDtoAssembler>();
 
-            // Governances
+            // Mining Governances
             services.AddTransient<IModelAssembler<MiningGovernance, MiningGovernanceDto>, MiningGovernanceDtoAssembler>();
 
             // Vaults

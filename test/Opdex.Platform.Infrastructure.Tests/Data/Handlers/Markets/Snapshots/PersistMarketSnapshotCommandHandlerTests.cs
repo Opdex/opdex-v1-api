@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Common;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
@@ -47,7 +48,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets.Snapshots
         [Fact]
         public async Task PersistsMarketSnapshot_Update_Success()
         {
-            var snapshot = new MarketSnapshot(1, 2, 3m, 4m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Daily,
+            var snapshot = new MarketSnapshot(1, 2, new Ohlc<decimal>(), 4m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Daily,
                                               DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
 
             var command = new PersistMarketSnapshotCommand(snapshot);

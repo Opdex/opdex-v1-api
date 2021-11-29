@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Application.Abstractions.Commands.Governances;
+using Opdex.Platform.Application.Abstractions.Commands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens.Distribution;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
@@ -11,8 +11,8 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
-using Opdex.Platform.Application.Abstractions.Queries.Governances;
-using Opdex.Platform.Application.Abstractions.Queries.Governances.Nominations;
+using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances.Nominations;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Distribution;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
@@ -42,8 +42,8 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(token.Id, findOrThrow: false));
                 if (vault == null) return false;
 
-                var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id, findOrThrow: false));
-                if (governance == null) return false;
+                var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id, findOrThrow: false));
+                if (miningGovernance == null) return false;
 
                 var latestDistribution = await _mediator.Send(new RetrieveLatestTokenDistributionQuery(findOrThrow: false));
                 if (latestDistribution != null && latestDistribution.PeriodIndex >= request.Log.PeriodIndex)
@@ -55,7 +55,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                                                          request.BlockHeight, request.Log.NextDistributionBlock, request.BlockHeight);
 
                 var madeDistribution = await _mediator.Send(new MakeTokenDistributionCommand(distribution));
-                if (!madeDistribution)  return false;
+                if (!madeDistribution) return false;
 
                 // Process the distributed token total supply updates
                 if (request.BlockHeight >= token.ModifiedBlock)
@@ -73,18 +73,18 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                 // Update mining/nominations on the initial distribution
                 if (initialDistribution)
                 {
-                    var governanceId = await _mediator.Send(new MakeMiningGovernanceCommand(governance, request.BlockHeight,
+                    var miningGovernanceId = await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance, request.BlockHeight,
                                                                                             refreshMiningPoolReward: true,
                                                                                             refreshNominationPeriodEnd: true));
-                    if (governanceId == 0)
+                    if (miningGovernanceId == 0)
                     {
-                        _logger.LogWarning($"Unknown error updating governance {governance.Id} details during initial distribution");
+                        _logger.LogWarning($"Unknown error updating mining governance {miningGovernance.Id} details during initial distribution");
                     }
 
-                    var updatedNominations = await _mediator.Send(new MakeGovernanceNominationsCommand(governance, request.BlockHeight));
+                    var updatedNominations = await _mediator.Send(new MakeMiningGovernanceNominationsCommand(miningGovernance, request.BlockHeight));
                     if (!updatedNominations)
                     {
-                        _logger.LogWarning($"Unknown error updating governance {governance.Id} nominations during initial distribution");
+                        _logger.LogWarning($"Unknown error updating mining governance {miningGovernance.Id} nominations during initial distribution");
                     }
                 }
 
@@ -95,11 +95,11 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.
                     _logger.LogWarning($"Unknown error updating vault {vault.Id} balance during distribution");
                 }
 
-                // try to process governance balances
-                var governanceResult = await _mediator.Send(new CreateAddressBalanceCommand(governance.Address, token.Address, request.BlockHeight));
-                if (governanceResult == 0)
+                // try to process miningGovernance balances
+                var miningGovernanceResult = await _mediator.Send(new CreateAddressBalanceCommand(miningGovernance.Address, token.Address, request.BlockHeight));
+                if (miningGovernanceResult == 0)
                 {
-                    _logger.LogWarning($"Unknown error updating governance {governance.Id} balance during distribution");
+                    _logger.LogWarning($"Unknown error updating mining governance {miningGovernance.Id} balance during distribution");
                 }
 
                 // try to refresh the vault

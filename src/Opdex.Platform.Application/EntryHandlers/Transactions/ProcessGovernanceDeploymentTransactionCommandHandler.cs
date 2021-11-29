@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Blocks;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Governances;
+using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
@@ -70,7 +70,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
                                                                         stakingTokenId, transaction.From, transaction.BlockHeight));
 
                 // Get and/or create mining governance
-                var governanceId = await _mediator.Send(new CreateMiningGovernanceCommand(stakingTokenSummary.MiningGovernance.GetValueOrDefault(),
+                var miningGovernanceId = await _mediator.Send(new CreateMiningGovernanceCommand(stakingTokenSummary.MiningGovernance.GetValueOrDefault(),
                                                                                           stakingTokenId, transaction.BlockHeight));
 
                 if (transaction.Id == 0)
@@ -80,7 +80,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Transactions
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failure processing mined token and governance deployment.");
+                _logger.LogError(ex, "Failure processing mined token and mining governance deployment.");
             }
 
             return Unit.Value;

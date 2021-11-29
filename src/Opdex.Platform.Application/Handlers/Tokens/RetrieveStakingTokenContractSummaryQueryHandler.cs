@@ -44,11 +44,11 @@ namespace Opdex.Platform.Application.Handlers.Tokens
 
             if (request.IncludeMiningGovernance)
             {
-                var governance = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Token,
+                var miningGovernance = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Token,
                                                                                                   StakingTokenConstants.StateKeys.MiningGovernance,
                                                                                                   SmartContractParameterType.Address,
                                                                                                   request.BlockHeight), cancellationToken);
-                summary.SetMiningGovernance(governance);
+                summary.SetMiningGovernance(miningGovernance);
             }
 
             if (request.IncludePeriodIndex)

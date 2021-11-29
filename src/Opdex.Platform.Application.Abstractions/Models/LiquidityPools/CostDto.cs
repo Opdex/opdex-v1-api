@@ -1,10 +1,10 @@
-using Opdex.Platform.Application.Abstractions.Models.OHLC;
+using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
 {
     public class CostDto
     {
-        public OhlcBigIntDto CrsPerSrc { get; set; }
-        public OhlcBigIntDto SrcPerCrs { get; set; }
+        public FixedDecimal CrsPerSrc { get; set; }
+        public FixedDecimal SrcPerCrs { get; set; }
     }
 }

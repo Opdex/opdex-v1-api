@@ -3,7 +3,7 @@ using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots;
@@ -48,7 +48,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Snapshots
                 StartDate = new DateTime(2021, 6, 21),
                 EndDate = new DateTime(2021, 6, 21, 23, 59, 59),
                 ModifiedDate = DateTime.UtcNow,
-                Price = new OhlcDecimalEntity { Open = 1.23m, High = 9.87m, Low = 1.1m, Close = 4.87m },
+                Price = new OhlcEntity<decimal> { Open = 1.23m, High = 9.87m, Low = 1.1m, Close = 4.87m },
             };
 
             var entities = new List<TokenSnapshotEntity> { expectedEntity };

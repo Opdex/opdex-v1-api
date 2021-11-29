@@ -3,15 +3,15 @@ using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Admins;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
+using Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs;
-using Opdex.Platform.Application.Abstractions.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Deployers;
-using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Governances;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
@@ -20,14 +20,16 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
-using Opdex.Platform.Domain.Models.OHLC;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
-using Opdex.Platform.Domain.Models.TransactionLogs.Governances;
+using Opdex.Platform.Domain.Models.TransactionLogs.MiningGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
@@ -108,54 +110,7 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<LiquidityPoolSnapshot, LiquidityPoolSnapshotDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.LiquidityPoolId, opt => opt.MapFrom(src => src.LiquidityPoolId))
-                .ForMember(dest => dest.TransactionCount, opt => opt.MapFrom(src => src.TransactionCount))
-                .ForMember(dest => dest.SnapshotTypeId, opt => opt.MapFrom(src => (int)src.SnapshotType))
-                .ForMember(dest => dest.Reserves, opt => opt.MapFrom(src => src.Reserves))
-                .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
-                .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
-                .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => src.Cost))
-                .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
-                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.StartDate))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<RewardsSnapshot, RewardsDto>()
-                .ForMember(dest => dest.ProviderUsd, opt => opt.MapFrom(src => src.ProviderUsd))
-                .ForMember(dest => dest.MarketUsd, opt => opt.MapFrom(src => src.MarketUsd))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<ReservesSnapshot, ReservesDto>()
-                .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
-                .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src))
-                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<VolumeSnapshot, VolumeDto>()
-                .ForMember(dest => dest.Crs, opt => opt.MapFrom(src => src.Crs))
-                .ForMember(dest => dest.Src, opt => opt.MapFrom(src => src.Src))
-                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<StakingSnapshot, StakingDto>()
-                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
-                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<CostSnapshot, CostDto>()
-                .ForMember(dest => dest.CrsPerSrc, opt => opt.MapFrom(src => src.CrsPerSrc))
-                .ForMember(dest => dest.SrcPerCrs, opt => opt.MapFrom(src => src.SrcPerCrs))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<OhlcBigIntSnapshot, OhlcBigIntDto>()
-                .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
-                .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
-                .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))
-                .ForMember(dest => dest.Close, opt => opt.MapFrom(src => src.Close))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<OhlcDecimalSnapshot, OhlcDecimalDto>()
+            CreateMap<Ohlc<decimal>, OhlcDto<decimal>>()
                 .ForMember(dest => dest.Open, opt => opt.MapFrom(src => src.Open))
                 .ForMember(dest => dest.High, opt => opt.MapFrom(src => src.High))
                 .ForMember(dest => dest.Low, opt => opt.MapFrom(src => src.Low))
@@ -168,13 +123,30 @@ namespace Opdex.Platform.Application
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<MarketSnapshot, MarketSnapshotDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
-                .ForMember(dest => dest.Liquidity, opt => opt.MapFrom(src => src.Liquidity))
-                .ForMember(dest => dest.Volume, opt => opt.MapFrom(src => src.Volume))
+                .ForMember(dest => dest.LiquidityUsd, opt => opt.MapFrom(src => src.LiquidityUsd))
+                .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
                 .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
                 .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
                 .ForMember(dest => dest.SnapshotType, opt => opt.MapFrom(src => src.SnapshotType))
                 .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.StartDate))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<StakingSnapshot, StakingSnapshotDto>()
+                .ForMember(dest => dest.Weight, opt => opt.MapFrom((src, ctx) => new OhlcDto<FixedDecimal>
+                {
+                    Open = src.Weight.Open.ToDecimal(TokenConstants.Opdex.Decimals),
+                    High = src.Weight.High.ToDecimal(TokenConstants.Opdex.Decimals),
+                    Low = src.Weight.Low.ToDecimal(TokenConstants.Opdex.Decimals),
+                    Close = src.Weight.Close.ToDecimal(TokenConstants.Opdex.Decimals)
+                }))
+                .ForMember(dest => dest.Usd, opt => opt.MapFrom(src => src.Usd))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<RewardsSnapshot, RewardsSnapshotDto>()
+                .ForMember(dest => dest.ProviderUsd, opt => opt.MapFrom(src => src.ProviderUsd))
+                .ForMember(dest => dest.MarketUsd, opt => opt.MapFrom(src => src.MarketUsd))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<AddressAllowance, AddressAllowanceDto>()
@@ -310,10 +282,10 @@ namespace Opdex.Platform.Application
                 .ForMember(dest => dest.PeriodIndex, opt => opt.MapFrom(src => src.PeriodIndex))
                 .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply.ToDecimal(TokenConstants.Opdex.Decimals)))
                 .ForMember(dest => dest.NextDistributionBlock, opt => opt.MapFrom(src => src.NextDistributionBlock))
-                .ForMember(dest => dest.GovernanceAmount, opt => opt.MapFrom(src => src.MiningAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+                .ForMember(dest => dest.MiningGovernanceAmount, opt => opt.MapFrom(src => src.MiningAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
                 .ForMember(dest => dest.VaultAmount, opt => opt.MapFrom(src => src.VaultAmount.ToDecimal(TokenConstants.Opdex.Decimals)));
 
-            // Governance Events
+            // Mining Governance Events
             CreateMap<NominationLog, NominationEventDto>()
                 .IncludeBase<TransactionLog, TransactionEventDto>()
                 .ForMember(dest => dest.MiningPool, opt => opt.MapFrom(src => src.MiningPool))

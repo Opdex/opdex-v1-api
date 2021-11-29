@@ -2,7 +2,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools
 {
     public class RewardsDto
     {
-        public decimal ProviderUsd { get; set; }
-        public decimal MarketUsd { get; set; }
+        public decimal ProviderDailyUsd { get; set; }
+        public decimal MarketDailyUsd { get; set; }
     }
 }

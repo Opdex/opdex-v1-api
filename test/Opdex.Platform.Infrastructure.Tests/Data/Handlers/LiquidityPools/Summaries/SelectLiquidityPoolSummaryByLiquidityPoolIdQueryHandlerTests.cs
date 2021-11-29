@@ -36,8 +36,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
                 Id = 1,
                 LiquidityPoolId = 2,
                 LiquidityUsd = 3.00m,
+                DailyLiquidityUsdChangePercent = 3.50m,
                 VolumeUsd = 4.00m,
                 StakingWeight = 5,
+                DailyStakingWeightChangePercent = 4.5m,
                 LockedCrs = 6,
                 LockedSrc = 7,
                 CreatedBlock = 8,
@@ -54,8 +56,10 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
             result.Id.Should().Be(expectedEntity.Id);
             result.LiquidityPoolId.Should().Be(expectedEntity.LiquidityPoolId);
             result.LiquidityUsd.Should().Be(expectedEntity.LiquidityUsd);
+            result.DailyLiquidityUsdChangePercent.Should().Be(expectedEntity.DailyLiquidityUsdChangePercent);
             result.VolumeUsd.Should().Be(expectedEntity.VolumeUsd);
             result.StakingWeight.Should().Be(expectedEntity.StakingWeight);
+            result.DailyStakingWeightChangePercent.Should().Be(expectedEntity.DailyStakingWeightChangePercent);
             result.LockedCrs.Should().Be(expectedEntity.LockedCrs);
             result.LockedSrc.Should().Be(expectedEntity.LockedSrc);
             result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);

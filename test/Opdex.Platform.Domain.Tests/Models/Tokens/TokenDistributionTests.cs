@@ -12,7 +12,7 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         public void CreateTokenDistribution_InvalidTokenId_ThrowsArgumentOutOfRangeException()
         {
             // Arrange
-            const  ulong tokenId = 0;
+            const ulong tokenId = 0;
 
             // Act
             static void Act() => new TokenDistribution(tokenId, 10, 20, 2, 3, 4, 5);
@@ -51,23 +51,23 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         public void CreatesNew_TokenDistribution_Success()
         {
             // Arrange
-            const  ulong tokenId = 1;
+            const ulong tokenId = 1;
             UInt256 vaultDistribution = 10000000;
-            UInt256 governanceDistribution = 3000000;
+            UInt256 miningGovernanceDistribution = 3000000;
             const int periodIndex = 2;
             const ulong distributionBlock = 3;
             const ulong nextDistributionBlock = 4;
             const ulong createdBlock = 5;
 
             // Act
-            var distribution = new TokenDistribution(tokenId, vaultDistribution, governanceDistribution, periodIndex,
+            var distribution = new TokenDistribution(tokenId, vaultDistribution, miningGovernanceDistribution, periodIndex,
                                                      distributionBlock, nextDistributionBlock, createdBlock);
 
             // Assert
             distribution.Id.Should().Be(0);
             distribution.TokenId.Should().Be(tokenId);
             distribution.VaultDistribution.Should().Be(vaultDistribution);
-            distribution.MiningGovernanceDistribution.Should().Be(governanceDistribution);
+            distribution.MiningGovernanceDistribution.Should().Be(miningGovernanceDistribution);
             distribution.PeriodIndex.Should().Be(periodIndex);
             distribution.DistributionBlock.Should().Be(distributionBlock);
             distribution.NextDistributionBlock.Should().Be(nextDistributionBlock);
@@ -80,9 +80,9 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
         {
             // Arrange
             const ulong id = 999;
-            const  ulong tokenId = 1;
+            const ulong tokenId = 1;
             UInt256 vaultDistribution = 10000000;
-            UInt256 governanceDistribution = 3000000;
+            UInt256 miningGovernanceDistribution = 3000000;
             const int periodIndex = 2;
             const ulong distributionBlock = 3;
             const ulong nextDistributionBlock = 4;
@@ -90,14 +90,14 @@ namespace Opdex.Platform.Domain.Tests.Models.Tokens
             const ulong modifiedBlock = 6;
 
             // Act
-            var distribution = new TokenDistribution(id, tokenId, vaultDistribution, governanceDistribution, periodIndex,
+            var distribution = new TokenDistribution(id, tokenId, vaultDistribution, miningGovernanceDistribution, periodIndex,
                                                      distributionBlock, nextDistributionBlock, createdBlock, modifiedBlock);
 
             // Assert
             distribution.Id.Should().Be(id);
             distribution.TokenId.Should().Be(tokenId);
             distribution.VaultDistribution.Should().Be(vaultDistribution);
-            distribution.MiningGovernanceDistribution.Should().Be(governanceDistribution);
+            distribution.MiningGovernanceDistribution.Should().Be(miningGovernanceDistribution);
             distribution.PeriodIndex.Should().Be(periodIndex);
             distribution.DistributionBlock.Should().Be(distributionBlock);
             distribution.NextDistributionBlock.Should().Be(nextDistributionBlock);

@@ -3,7 +3,7 @@ using NJsonSchema.Converters;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Deployers;
-using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Governances;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.MiningGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.LiquidityPools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Markets;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.MiningPools;

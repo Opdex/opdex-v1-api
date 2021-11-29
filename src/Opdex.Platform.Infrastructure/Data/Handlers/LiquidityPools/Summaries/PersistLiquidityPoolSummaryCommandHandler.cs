@@ -18,8 +18,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
             $@"INSERT INTO pool_liquidity_summary (
                 {nameof(LiquidityPoolSummaryEntity.LiquidityPoolId)},
                 {nameof(LiquidityPoolSummaryEntity.LiquidityUsd)},
+                {nameof(LiquidityPoolSummaryEntity.DailyLiquidityUsdChangePercent)},
                 {nameof(LiquidityPoolSummaryEntity.VolumeUsd)},
                 {nameof(LiquidityPoolSummaryEntity.StakingWeight)},
+                {nameof(LiquidityPoolSummaryEntity.DailyStakingWeightChangePercent)},
                 {nameof(LiquidityPoolSummaryEntity.LockedCrs)},
                 {nameof(LiquidityPoolSummaryEntity.LockedSrc)},
                 {nameof(LiquidityPoolSummaryEntity.CreatedBlock)},
@@ -27,8 +29,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
               ) VALUES (
                 @{nameof(LiquidityPoolSummaryEntity.LiquidityPoolId)},
                 @{nameof(LiquidityPoolSummaryEntity.LiquidityUsd)},
+                @{nameof(LiquidityPoolSummaryEntity.DailyLiquidityUsdChangePercent)},
                 @{nameof(LiquidityPoolSummaryEntity.VolumeUsd)},
                 @{nameof(LiquidityPoolSummaryEntity.StakingWeight)},
+                @{nameof(LiquidityPoolSummaryEntity.DailyStakingWeightChangePercent)},
                 @{nameof(LiquidityPoolSummaryEntity.LockedCrs)},
                 @{nameof(LiquidityPoolSummaryEntity.LockedSrc)},
                 @{nameof(LiquidityPoolSummaryEntity.CreatedBlock)},
@@ -40,8 +44,10 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
             $@"UPDATE pool_liquidity_summary
                 SET
                     {nameof(LiquidityPoolSummaryEntity.LiquidityUsd)} = @{nameof(LiquidityPoolSummaryEntity.LiquidityUsd)},
+                    {nameof(LiquidityPoolSummaryEntity.DailyLiquidityUsdChangePercent)} = @{nameof(LiquidityPoolSummaryEntity.DailyLiquidityUsdChangePercent)},
                     {nameof(LiquidityPoolSummaryEntity.VolumeUsd)} = @{nameof(LiquidityPoolSummaryEntity.VolumeUsd)},
                     {nameof(LiquidityPoolSummaryEntity.StakingWeight)} = @{nameof(LiquidityPoolSummaryEntity.StakingWeight)},
+                    {nameof(LiquidityPoolSummaryEntity.DailyStakingWeightChangePercent)} = @{nameof(LiquidityPoolSummaryEntity.DailyStakingWeightChangePercent)},
                     {nameof(LiquidityPoolSummaryEntity.LockedCrs)} = @{nameof(LiquidityPoolSummaryEntity.LockedCrs)},
                     {nameof(LiquidityPoolSummaryEntity.LockedSrc)} = @{nameof(LiquidityPoolSummaryEntity.LockedSrc)},
                     {nameof(LiquidityPoolSummaryEntity.ModifiedBlock)} = @{nameof(LiquidityPoolSummaryEntity.ModifiedBlock)}

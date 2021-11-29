@@ -74,11 +74,10 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         /// such as staking totals, reserves, token costs etc.
         /// </summary>
         /// <param name="crsUsd">The USD price of a single CRS token.</param>
-        /// <param name="srcUsd">The USD cost of a single SRC token in the pool.</param>
         /// <param name="stakingTokenUsd">The USD cost of a single staking token in the pool.</param>
         /// <param name="srcSats">The total sats per single full SRC token in the pool.</param>
         /// <param name="blockTime">The block time that represents this new snapshot.</param>
-        public void ResetStaleSnapshot(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, ulong srcSats, DateTime blockTime)
+        public void ResetStaleSnapshot(decimal crsUsd, decimal stakingTokenUsd, ulong srcSats, DateTime blockTime)
         {
             // Reset Id for new Insert
             Id = 0;
@@ -90,13 +89,13 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Rewards = new RewardsSnapshot();
 
             // Refresh Staking
-            Staking.RefreshStaking(stakingTokenUsd);
+            Staking.Refresh(stakingTokenUsd);
 
             // Refresh costs (mainly reset OHLC)
-            Cost.SetCost(Reserves.Crs, Reserves.Src, srcSats, true);
+            Cost.Refresh(Reserves.Crs.Close, Reserves.Src.Close, srcSats);
 
             // Refresh reserves (USD amounts)
-            Reserves.RefreshReserves(crsUsd, srcUsd, srcSats);
+            Reserves.Refresh(crsUsd);
 
             TransactionCount = 0;
 
@@ -146,10 +145,10 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
             Rewards = new RewardsSnapshot(snapshots.Select(snapshot => snapshot.Rewards).ToList());
 
             // Staking takes the latest total
-            Staking = new StakingSnapshot(snapshots.Last().Staking);
+            Staking = new StakingSnapshot(snapshots.Select(snapshot => snapshot.Staking).ToList());
 
             // Reserves take the latest total
-            Reserves = new ReservesSnapshot(snapshots.Last().Reserves);
+            Reserves = new ReservesSnapshot(snapshots.Select(snapshot => snapshot.Reserves).ToList());
 
             // Cost is rebuilt for OHLC using all cost snapshots for the day
             Cost = new CostSnapshot(snapshots.Select(snapshot => snapshot.Cost).ToList());
@@ -162,16 +161,14 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         /// Takes current USD token prices and using updates the USD pricing of staking and pool reserves accordingly.
         /// </summary>
         /// <param name="crsUsd">The USD cost of a single CRS token.</param>
-        /// <param name="srcUsd">The USD cost of a single SRC token in the pool.</param>
         /// <param name="stakingTokenUsd">The USD cost of a single staking token in the pool.</param>
-        /// <param name="srcSats">The total sats per single full SRC token in the pool.</param>
-        public void RefreshSnapshotFiatAmounts(decimal crsUsd, decimal srcUsd, decimal stakingTokenUsd, ulong srcSats)
+        public void RefreshSnapshotFiatAmounts(decimal crsUsd, decimal stakingTokenUsd)
         {
             // Refresh staking USD amounts
-            Staking.RefreshStaking(stakingTokenUsd);
+            Staking.Update(stakingTokenUsd);
 
             // Refresh reserve USD amounts
-            Reserves.RefreshReserves(crsUsd, srcUsd, srcSats);
+            Reserves.Update(crsUsd);
         }
 
         /// <summary>
@@ -186,8 +183,8 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         /// <param name="marketFeeEnabled">Flat indicating if there is a market fee to the market owners, used to determine rewards.</param>
         public void ProcessSwapLog(SwapLog log, decimal crsUsd, decimal srcUsd, ulong srcSats, bool isStakingPool, uint transactionFee, bool marketFeeEnabled)
         {
-            Volume.SetVolume(log, crsUsd, srcUsd, srcSats);
-            Rewards.SetRewards(Volume.Usd, Staking.Weight, isStakingPool, transactionFee, marketFeeEnabled);
+            Volume.Update(log, crsUsd, srcUsd, srcSats);
+            Rewards.UpdatePoolRewards(Volume.Usd, Staking.Weight.Close, isStakingPool, transactionFee, marketFeeEnabled);
         }
 
         /// <summary>
@@ -195,12 +192,11 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         /// </summary>
         /// <param name="log">The reserves log to process.</param>
         /// <param name="crsUsd">The USD cost of a single CRS token.</param>
-        /// <param name="srcUsd">The USD cost of a single SRC token in the pool.</param>
         /// <param name="srcSats">The total sats per single full SRC token in the pool.</param>
-        public void ProcessReservesLog(ReservesLog log, decimal crsUsd, decimal srcUsd, ulong srcSats)
+        public void ProcessReservesLog(ReservesLog log, decimal crsUsd, ulong srcSats)
         {
-            Reserves.SetReserves(log, crsUsd, srcUsd, srcSats);
-            Cost.SetCost(log.ReserveCrs, log.ReserveSrc, srcSats);
+            Reserves.Update(log, crsUsd);
+            Cost.Update(log.ReserveCrs, log.ReserveSrc, srcSats);
         }
 
         /// <summary>
@@ -210,7 +206,7 @@ namespace Opdex.Platform.Domain.Models.LiquidityPools.Snapshots
         /// <param name="stakingTokenUsd">The USD amount per full staking token.</param>
         public void ProcessStakingLog(StakeLog log, decimal stakingTokenUsd)
         {
-            Staking.SetStaking(log, stakingTokenUsd);
+            Staking.Update(log, stakingTokenUsd);
         }
 
         /// <summary>

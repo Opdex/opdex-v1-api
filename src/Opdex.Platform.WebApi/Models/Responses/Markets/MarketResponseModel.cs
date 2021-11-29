@@ -36,6 +36,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.Markets
         public uint TransactionFee { get; set; }
 
         [NotNull]
-        public MarketSnapshotResponseModel Summary { get; set; }
+        public MarketSummaryResponseModel Summary { get; set; }
     }
 }

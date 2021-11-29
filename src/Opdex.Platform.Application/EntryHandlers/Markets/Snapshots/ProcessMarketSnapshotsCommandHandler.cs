@@ -4,9 +4,14 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Snapshots;
+using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Domain.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,30 +31,39 @@ namespace Opdex.Platform.Application.EntryHandlers.Markets.Snapshots
         {
             var marketPools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(new LiquidityPoolsCursor(request.Market.Address)));
             var marketSnapshot = await _mediator.Send(new RetrieveMarketSnapshotWithFilterQuery(request.Market.Id, request.BlockTime, SnapshotType));
+            var stakingTokenUsdStartOfDay = 0m;
+
+            if (request.Market.IsStakingMarket)
+            {
+                var stakingTokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(request.Market.StakingTokenId,
+                                                                                                         request.Market.Id,
+                                                                                                         request.BlockTime,
+                                                                                                         SnapshotType));
+
+                stakingTokenUsdStartOfDay = stakingTokenSnapshot.Price.Open;
+            }
 
             // Reset stale snapshot if its old
             if (marketSnapshot.EndDate < request.BlockTime)
             {
-                marketSnapshot.ResetStaleSnapshot(request.BlockTime);
+                marketSnapshot.ResetStaleSnapshot(request.BlockTime, stakingTokenUsdStartOfDay);
             }
-            else
+
+            var poolChunks = marketPools.Chunk(20);
+            var snapshots = new List<LiquidityPoolSnapshot>();
+
+            foreach (var chunk in poolChunks)
             {
-                // Snapshots add (+=) LP snapshot values requiring reset each time its values are calculated
-                marketSnapshot.ResetCurrentSnapshot();
+                var chunkSnapshots = await Task.WhenAll(chunk.Select(async pool =>
+                {
+                    return await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, request.BlockTime, SnapshotType));
+                }));
+
+                snapshots.AddRange(chunkSnapshots);
             }
 
-            // Each pool in the market
-            foreach (var pool in marketPools)
-            {
-                // Get snapshot
-                var poolSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, request.BlockTime, SnapshotType));
-
-                // Skip if the returned snapshot is a new default
-                if (poolSnapshot.Id == 0) continue;
-
-                // Apply LP snapshot to market snapshot
-                marketSnapshot.Update(poolSnapshot);
-            }
+            // Apply LP snapshot to market snapshot
+            marketSnapshot.Update(snapshots);
 
             // Persist market snapshot
             await _mediator.Send(new MakeMarketSnapshotCommand(marketSnapshot));

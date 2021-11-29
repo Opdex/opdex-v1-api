@@ -4,7 +4,7 @@ using Moq;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.OHLC;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Snapshots;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Snapshots;
@@ -45,7 +45,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Snapshots
                 StartDate = new DateTime(2021, 6, 21),
                 EndDate = new DateTime(2021, 6, 21, 23, 59, 59),
                 ModifiedDate = DateTime.UtcNow,
-                Price = new OhlcDecimalEntity { Open = 1m, High = 5m, Low = .5m, Close = 4m}
+                Price = new OhlcEntity<decimal> { Open = 1m, High = 5m, Low = .5m, Close = 4m}
             };
 
             var command = new SelectTokenSnapshotWithFilterQuery(tokenId, marketId, blockTime, snapshotType);
