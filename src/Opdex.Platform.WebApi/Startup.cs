@@ -74,7 +74,8 @@ namespace Opdex.Platform.WebApi
             services.AddProblemDetails(options =>
             {
                 options.ValidationProblemStatusCode = 400;
-                options.ShouldLogUnhandledException = (context, exception, problem) => problem.Status >= 400;
+                // Serilog.AspNetCore.RequestLoggingMiddleware does this better
+                options.ShouldLogUnhandledException = (context, exception, problem) => false;
                 options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
                 options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
                 options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });

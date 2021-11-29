@@ -26,16 +26,15 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
         {
             try
             {
-                var command = DatabaseQuery.Create(SqlCommand, CommandType.StoredProcedure, new {rewindHeight = request.Block}, cancellationToken);
+                var command = DatabaseQuery.Create(SqlCommand, CommandType.StoredProcedure, new { rewindHeight = request.Block }, cancellationToken);
 
                 await _context.ExecuteCommandAsync(command);
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, $"Failure rewinding to block {request.Block}.");
-
+                _logger.LogError("Failure rewinding to block {Block}.", request.Block);
                 return false;
             }
         }
