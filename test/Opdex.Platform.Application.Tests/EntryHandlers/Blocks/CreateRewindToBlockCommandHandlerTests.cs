@@ -75,7 +75,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
             // Act
             // Assert
             _handler.Invoking(h => h.Handle(new CreateRewindToBlockCommand(block), CancellationToken.None))
-                .Should().Throw<InvalidDataException>()
+                .Should().ThrowAsync<InvalidDataException>()
                 .WithMessage("Unable to find a block by the provided block number.");
         }
 
@@ -109,7 +109,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
             // Act
             // Assert
             _handler.Invoking(h => h.Handle(new CreateRewindToBlockCommand(rewindBlock.Height), CancellationToken.None))
-                .Should().Throw<ArgumentOutOfRangeException>()
+                .Should().ThrowAsync<ArgumentOutOfRangeException>()
                 .WithMessage("*Rewind request exceeds maximum rewind limit.*");
         }
 

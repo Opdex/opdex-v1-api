@@ -69,7 +69,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Admins
             // Assert
             _handler.Invoking(h => h.Handle(new SelectAdminByAddressQuery(address), CancellationToken.None))
                 .Should()
-                .Throw<NotFoundException>()
+                .ThrowAsync<NotFoundException>()
                 .WithMessage($"{nameof(Admin)} not found.");
         }
 

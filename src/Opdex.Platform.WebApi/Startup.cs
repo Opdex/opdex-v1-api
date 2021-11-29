@@ -103,7 +103,6 @@ namespace Opdex.Platform.WebApi
                 {
                     options.ModelBinderProviders.Insert(0, new AddressModelBinderProvider());
                     options.ModelBinderProviders.Insert(1, new Sha256ModelBinderProvider());
-                    options.ModelBinderProviders.Insert(2, new UtcAwareDateTimeModelBinderProvider());
 
                     options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests));
                 })

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Opdex.Platform.Application.Exceptions;
 using Opdex.Platform.WebApi.Middleware;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,7 +32,7 @@ namespace Opdex.Platform.WebApi.Tests.Middleware
             catch (Exception) { }
 
             // Assert
-            response?.StatusCode.Should().NotBe(StatusCodes.Status303SeeOther);
+            response?.StatusCode.Should().NotBe(HttpStatusCode.SeeOther);
         }
 
         [Fact]
@@ -44,7 +45,7 @@ namespace Opdex.Platform.WebApi.Tests.Middleware
             var response = await host.GetTestClient().GetAsync("/token-already-indexed-exception");
 
             // Assert
-            response.StatusCode.Should().Be(StatusCodes.Status303SeeOther);
+            response.StatusCode.Should().Be(HttpStatusCode.SeeOther);
         }
 
         private async Task<IHost> CreateHost()

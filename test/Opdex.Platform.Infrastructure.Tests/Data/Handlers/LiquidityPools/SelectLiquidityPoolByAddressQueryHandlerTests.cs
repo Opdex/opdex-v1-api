@@ -71,7 +71,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
 
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
-                .Throw<NotFoundException>()
+                .ThrowAsync<NotFoundException>()
                 .WithMessage($"{nameof(LiquidityPool)} not found.");
         }
 

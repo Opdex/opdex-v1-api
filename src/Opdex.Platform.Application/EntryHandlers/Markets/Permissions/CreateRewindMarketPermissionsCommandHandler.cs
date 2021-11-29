@@ -4,7 +4,6 @@ using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Permissions;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions;
-using Opdex.Platform.Common.Extensions;
 using System;
 using System.Linq;
 using System.Threading;

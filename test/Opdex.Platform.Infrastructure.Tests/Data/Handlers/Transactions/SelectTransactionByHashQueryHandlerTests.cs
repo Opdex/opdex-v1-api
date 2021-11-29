@@ -73,7 +73,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
 
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
-                .Throw<NotFoundException>()
+                .ThrowAsync<NotFoundException>()
                 .WithMessage($"{nameof(Transaction)} not found.");
         }
     }

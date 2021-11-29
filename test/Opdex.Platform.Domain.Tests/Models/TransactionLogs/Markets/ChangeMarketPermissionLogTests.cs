@@ -1,6 +1,7 @@
 using System;
 using System.Dynamic;
 using FluentAssertions;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Xunit;
 
@@ -41,7 +42,7 @@ namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Markets
 
             // Assert
             log.Address.Should().Be(txLog.address);
-            log.Permission.Should().Be(txLog.permission);
+            log.Permission.Should().Be((MarketPermissionType)txLog.permission);
             log.IsAuthorized.Should().Be(txLog.isAuthorized);
         }
     }

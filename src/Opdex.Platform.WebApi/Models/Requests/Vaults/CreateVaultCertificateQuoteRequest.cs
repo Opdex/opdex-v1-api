@@ -12,7 +12,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Vaults
         public Address Holder { get; set; }
 
         /// <summary>Amount of staking tokens to assign.</summary>
-        /// <example>50000.00000000
+        /// <example>50000.00000000</example>
         public FixedDecimal Amount { get; set; }
     }
 }

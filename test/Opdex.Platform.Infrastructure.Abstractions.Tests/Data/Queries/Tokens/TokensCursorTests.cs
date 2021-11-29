@@ -116,7 +116,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Tokens
             adjacentCursor.Keyword.Should().Be(cursor.Keyword);
             adjacentCursor.ProvisionalFilter.Should().Be(cursor.ProvisionalFilter);
             adjacentCursor.Tokens.Should().BeEquivalentTo(cursor.Tokens);
-            adjacentCursor.OrderBy.Should().BeEquivalentTo(cursor.OrderBy);
+            adjacentCursor.OrderBy.Should().Be(cursor.OrderBy);
             adjacentCursor.SortDirection.Should().Be(cursor.SortDirection);
             adjacentCursor.Limit.Should().Be(cursor.Limit);
             adjacentCursor.PagingDirection.Should().Be(PagingDirection.Backward);

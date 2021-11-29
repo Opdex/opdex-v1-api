@@ -141,9 +141,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Liquidit
         {
             // Arrange
             var cursor = new LiquidityPoolsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
-                                                  new List<Address> { "PUMpPykkfL3XhYPefjjc9U4kqdSqkCrc4L"},
-                                                  new List<Address> { "Pfjjc9U4kqdSqkUMpPykkfL3XhYPeCrc4L"},
-                                                  new List<Address> { "PU4kqdSqkCrc4LUMpPykkfL3XhYPefjjc9"},
+                                                  new List<Address> { "PUMpPykkfL3XhYPefjjc9U4kqdSqkCrc4L" },
+                                                  new List<Address> { "Pfjjc9U4kqdSqkUMpPykkfL3XhYPeCrc4L" },
+                                                  new List<Address> { "PU4kqdSqkCrc4LUMpPykkfL3XhYPefjjc9" },
                                                   LiquidityPoolStakingStatusFilter.Enabled,
                                                   LiquidityPoolNominationStatusFilter.Any,
                                                   LiquidityPoolMiningStatusFilter.Disabled,
@@ -176,9 +176,9 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Liquidit
         {
             // Arrange
             var cursor = new LiquidityPoolsCursor("PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L",
-                                                  new List<Address> { "PUMpPykkfL3XhYPefjjc9U4kqdSqkCrc4L"},
-                                                  new List<Address> { "Pfjjc9U4kqdSqkUMpPykkfL3XhYPeCrc4L"},
-                                                  new List<Address> { "PU4kqdSqkCrc4LUMpPykkfL3XhYPefjjc9"},
+                                                  new List<Address> { "PUMpPykkfL3XhYPefjjc9U4kqdSqkCrc4L" },
+                                                  new List<Address> { "Pfjjc9U4kqdSqkUMpPykkfL3XhYPeCrc4L" },
+                                                  new List<Address> { "PU4kqdSqkCrc4LUMpPykkfL3XhYPefjjc9" },
                                                   LiquidityPoolStakingStatusFilter.Enabled,
                                                   LiquidityPoolNominationStatusFilter.Any,
                                                   LiquidityPoolMiningStatusFilter.Disabled,
@@ -201,7 +201,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Tests.Data.Queries.Liquidit
             adjacentCursor.StakingFilter.Should().Be(cursor.StakingFilter);
             adjacentCursor.MiningFilter.Should().Be(cursor.MiningFilter);
             adjacentCursor.NominationFilter.Should().Be(cursor.NominationFilter);
-            adjacentCursor.OrderBy.Should().BeEquivalentTo(cursor.OrderBy);
+            adjacentCursor.OrderBy.Should().Be(cursor.OrderBy);
             adjacentCursor.SortDirection.Should().Be(cursor.SortDirection);
             adjacentCursor.Limit.Should().Be(cursor.Limit);
             adjacentCursor.PagingDirection.Should().Be(PagingDirection.Backward);

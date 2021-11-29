@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
 {
     public class SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests
     {
-         private readonly Mock<IDbContext> _dbContext;
+        private readonly Mock<IDbContext> _dbContext;
         private readonly SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler _handler;
 
         public SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests()
@@ -78,7 +78,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summa
 
             _handler.Invoking(h => h.Handle(command, CancellationToken.None))
                 .Should()
-                .Throw<NotFoundException>()
+                .ThrowAsync<NotFoundException>()
                 .WithMessage($"{nameof(LiquidityPoolSummary)} not found.");
         }
 
