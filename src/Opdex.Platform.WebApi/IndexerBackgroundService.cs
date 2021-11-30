@@ -11,6 +11,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Indexer;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.WebApi;
 
@@ -65,18 +66,35 @@ public class IndexerBackgroundService : BackgroundService
 
                     if (indexLock.Locked)
                     {
+                        var stuckDuringRewind = indexLock.Reason == IndexLockReason.Rewind && indexLock.ModifiedDate.AddMinutes(1) < DateTime.UtcNow;
                         var isSameInstanceReprocessing = indexLock.Reason == IndexLockReason.Index && indexLock.InstanceId == _opdexConfiguration.InstanceId;
 
-                        if (!isSameInstanceReprocessing)
+                        var totalSecondsLocked = DateTime.UtcNow.Subtract(indexLock.ModifiedDate).TotalSeconds;
+
+                        if (!stuckDuringRewind && !isSameInstanceReprocessing)
                         {
-                            _logger.LogWarning(IndexingAlreadyRunningLog);
+                            using (_logger.BeginScope(new Dictionary<string, object>()
+                            {
+                                { "TotalSecondsLocked", totalSecondsLocked }
+                            }))
+                            {
+                                _logger.LogWarning(IndexingAlreadyRunningLog);
+                            }
                             continue;
                         }
 
                         // Consider a rewind after unlock.
                         // Rewind would go back to block prior to the previous locking timestamp to ensure all transactions and blocks were processed
                         await mediator.Send(new MakeIndexerUnlockCommand(), CancellationToken.None);
-                        _logger.LogWarning("Indexer forcefully unlocked.");
+
+                        using (_logger.BeginScope(new Dictionary<string, object>()
+                            {
+                                { "TotalSecondsLocked", totalSecondsLocked },
+                                { "LockedReason", indexLock.Reason }
+                            }))
+                        {
+                            _logger.LogWarning("Indexer forcefully unlocked.");
+                        }
                     }
 
                     await mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Index), CancellationToken.None);
