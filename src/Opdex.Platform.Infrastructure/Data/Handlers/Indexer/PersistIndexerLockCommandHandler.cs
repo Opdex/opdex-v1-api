@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
@@ -22,19 +23,28 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
                 WHERE {nameof(IndexLockEntity.Locked)} = 0;";
 
     private readonly IDbContext _context;
+    private readonly ILogger<PersistIndexerLockCommandHandler> _logger;
     private readonly string _instanceId;
 
-    public PersistIndexerLockCommandHandler(IDbContext context, OpdexConfiguration opdexConfiguration)
+    public PersistIndexerLockCommandHandler(IDbContext context, ILogger<PersistIndexerLockCommandHandler> logger, OpdexConfiguration opdexConfiguration)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        _logger = logger;
         _instanceId = opdexConfiguration?.InstanceId ?? throw new ArgumentNullException(nameof(context));
     }
 
     public async Task<bool> Handle(PersistIndexerLockCommand request, CancellationToken cancellationToken)
     {
-        var command = DatabaseQuery.Create(SqlQuery, new SqlParams(_instanceId, request.Reason), CancellationToken.None);
-        var result = await _context.ExecuteCommandAsync(command);
-        return result == 1;
+        try
+        {
+            var command = DatabaseQuery.Create(SqlQuery, new SqlParams(_instanceId, request.Reason), CancellationToken.None);
+            var result = await _context.ExecuteCommandAsync(command);
+            return result == 1;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     private sealed class SqlParams
