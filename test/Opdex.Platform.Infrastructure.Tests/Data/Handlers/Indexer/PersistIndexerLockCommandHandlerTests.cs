@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
 using Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
@@ -31,7 +32,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
             var token = CancellationToken.None;
 
             // Act
-            var result = await _handler.Handle(new PersistIndexerLockCommand(), token);
+            var result = await _handler.Handle(new PersistIndexerLockCommand(IndexLockReason.Deploy), token);
 
             // Assert
             _dbContext.Verify(callTo => callTo.ExecuteCommandAsync(It.Is<DatabaseQuery>(q => q.Token == token)), Times.Once);
@@ -46,7 +47,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
                       .ReturnsAsync(0);
 
             // Act
-            var result = await _handler.Handle(new PersistIndexerLockCommand(), token);
+            var result = await _handler.Handle(new PersistIndexerLockCommand(IndexLockReason.Deploy), token);
 
             // Assert
             result.Should().BeFalse();
@@ -61,7 +62,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
                       .ReturnsAsync(1);
 
             // Act
-            var result = await _handler.Handle(new PersistIndexerLockCommand(), token);
+            var result = await _handler.Handle(new PersistIndexerLockCommand(IndexLockReason.Deploy), token);
 
             // Assert
             result.Should().BeTrue();

@@ -8,38 +8,38 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Indexer
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
+
+public class SelectIndexerLockQueryHandler : IRequestHandler<SelectIndexerLockQuery, IndexLock>
 {
-    public class SelectIndexerLockQueryHandler : IRequestHandler<SelectIndexerLockQuery, IndexLock>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(IndexLockEntity.Available)},
                 {nameof(IndexLockEntity.Locked)},
                 {nameof(IndexLockEntity.InstanceId)},
+                {nameof(IndexLockEntity.Reason)},
                 {nameof(IndexLockEntity.ModifiedDate)}
             FROM index_lock
             LIMIT 1;";
 
-        private readonly IDbContext _context;
+    private readonly IDbContext _context;
 
-        public SelectIndexerLockQueryHandler(IDbContext context)
+    public SelectIndexerLockQueryHandler(IDbContext context)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    public async Task<IndexLock> Handle(SelectIndexerLockQuery request, CancellationToken cancellationToken)
+    {
+        var query = DatabaseQuery.Create(SqlQuery, token: cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<IndexLockEntity>(query);
+
+        if (result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            throw new NotFoundException($"Index lock not found.");
         }
 
-        public async Task<IndexLock> Handle(SelectIndexerLockQuery request, CancellationToken cancellationToken)
-        {
-            var query = DatabaseQuery.Create(SqlQuery, token: cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<IndexLockEntity>(query);
-
-            if (result == null)
-            {
-                throw new NotFoundException($"{nameof(IndexLock)} not found.");
-            }
-
-            return new IndexLock(result.Available, result.Locked, result.InstanceId, result.ModifiedDate);
-        }
+        return new IndexLock(result.Available, result.Locked, result.InstanceId, result.Reason, result.ModifiedDate);
     }
 }
