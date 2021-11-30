@@ -72,7 +72,7 @@ public class IndexerBackgroundServiceTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_RetrievesIndexLock_IndexingAlreadyRunning()
+    public async Task ExecuteAsync_AnotherInstanceLockedIndexer_DoNotIndexOrUnlock()
     {
         // Arrange
         var token = new CancellationTokenSource().Token;
@@ -92,7 +92,64 @@ public class IndexerBackgroundServiceTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_RetrievesIndexLock_ThrowsIndexingAlreadyRunningException()
+    public async Task ExecuteAsync_SameInstanceLockedIndexerForRewind_DoNotIndexOrUnlock()
+    {
+        // Arrange
+        var token = new CancellationTokenSource().Token;
+        var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Rewind, DateTime.UtcNow);
+
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+
+        // Act
+        await _indexerService.StartAsync(token);
+
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>()), Times.Never());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<ProcessLatestBlocksCommand>(), It.IsAny<CancellationToken>()), Times.Never());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), It.IsAny<CancellationToken>()), Times.Never());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_SameInstanceLockedIndexerForDeployment_DoNotIndexOrUnlock()
+    {
+        // Arrange
+        var token = new CancellationTokenSource().Token;
+        var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Deploy, DateTime.UtcNow);
+
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+
+        // Act
+        await _indexerService.StartAsync(token);
+
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>()), Times.Never());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<ProcessLatestBlocksCommand>(), It.IsAny<CancellationToken>()), Times.Never());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), It.IsAny<CancellationToken>()), Times.Never());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_SameInstanceLockedIndexerForIndexing_ForceUnlockAndReprocess()
+    {
+        // Arrange
+        var token = new CancellationTokenSource().Token;
+        var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Index, DateTime.UtcNow);
+
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+
+        // Act
+        await _indexerService.StartAsync(token);
+
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>()), Times.Once());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<ProcessLatestBlocksCommand>(), It.IsAny<CancellationToken>()), Times.Once());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_LockingIndexerFails_ThrowsIndexingAlreadyRunningException()
     {
         // Arrange
         var token = new CancellationTokenSource().Token;
