@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Domain.Models;
@@ -22,7 +23,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
 
             var opdexConfiguration = new OpdexConfiguration();
 
-            _handler = new PersistIndexerLockCommandHandler(_dbContext.Object, opdexConfiguration);
+            _handler = new PersistIndexerLockCommandHandler(_dbContext.Object, Mock.Of<ILogger<PersistIndexerLockCommandHandler>>(), opdexConfiguration);
         }
 
         [Fact]

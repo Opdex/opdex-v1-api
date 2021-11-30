@@ -38,18 +38,5 @@ namespace Opdex.Platform.Application.Tests.Handlers.Indexer
             // Assert
             _mediator.Verify(callTo => callTo.Send(It.IsAny<PersistIndexerUnlockCommand>(), token), Times.Once);
         }
-
-        [Fact]
-        public async Task UnableToUnlockIndexer_ThrowException()
-        {
-            // Arrange
-            var token = CancellationToken.None;
-
-            // Act
-            Task Act() => _handler.Handle(new MakeIndexerUnlockCommand(), token);
-
-            // Assert
-            await Assert.ThrowsAsync<Exception>(Act);
-        }
     }
 }
