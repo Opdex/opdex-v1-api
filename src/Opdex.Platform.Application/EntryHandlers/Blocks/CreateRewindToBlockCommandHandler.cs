@@ -46,8 +46,7 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                 throw new ArgumentOutOfRangeException(nameof(request.Block), "Rewind request exceeds maximum rewind limit.");
             }
 
-            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(1));
-            var rewound = await _mediator.Send(new MakeRewindToBlockCommand(request.Block), cancellationTokenSource.Token);
+            var rewound = await _mediator.Send(new MakeRewindToBlockCommand(request.Block), CancellationToken.None);
             if (!rewound) return false;
 
             _logger.LogTrace("Beginning to refresh stale records.");

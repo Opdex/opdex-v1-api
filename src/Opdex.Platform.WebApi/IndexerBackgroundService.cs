@@ -66,12 +66,11 @@ public class IndexerBackgroundService : BackgroundService
 
                     if (indexLock.Locked)
                     {
-                        var stuckDuringRewind = indexLock.Reason == IndexLockReason.Rewind && indexLock.ModifiedDate.AddMinutes(1) < DateTime.UtcNow;
                         var isSameInstanceReprocessing = indexLock.Reason == IndexLockReason.Index && indexLock.InstanceId == _opdexConfiguration.InstanceId;
 
                         var totalSecondsLocked = DateTime.UtcNow.Subtract(indexLock.ModifiedDate).TotalSeconds;
 
-                        if (!stuckDuringRewind && !isSameInstanceReprocessing)
+                        if (!isSameInstanceReprocessing)
                         {
                             using (_logger.BeginScope(new Dictionary<string, object>()
                             {

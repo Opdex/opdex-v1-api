@@ -18,18 +18,16 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
                 SET
                     {nameof(IndexLockEntity.Locked)} = 1,
                     {nameof(IndexLockEntity.ModifiedDate)} = UTC_TIMESTAMP(),
-                    {nameof(IndexLockEntity.InstanceId)} = @{nameof(SqlParams.InstanceId)}
+                    {nameof(IndexLockEntity.InstanceId)} = @{nameof(SqlParams.InstanceId)},
                     {nameof(IndexLockEntity.Reason)} = @{nameof(SqlParams.Reason)}
                 WHERE {nameof(IndexLockEntity.Locked)} = 0;";
 
     private readonly IDbContext _context;
-    private readonly ILogger<PersistIndexerLockCommandHandler> _logger;
     private readonly string _instanceId;
 
-    public PersistIndexerLockCommandHandler(IDbContext context, ILogger<PersistIndexerLockCommandHandler> logger, OpdexConfiguration opdexConfiguration)
+    public PersistIndexerLockCommandHandler(IDbContext context, OpdexConfiguration opdexConfiguration)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _logger = logger;
         _instanceId = opdexConfiguration?.InstanceId ?? throw new ArgumentNullException(nameof(context));
     }
 

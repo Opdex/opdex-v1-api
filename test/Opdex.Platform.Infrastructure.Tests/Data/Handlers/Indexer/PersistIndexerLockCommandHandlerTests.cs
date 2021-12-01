@@ -23,7 +23,7 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
 
             var opdexConfiguration = new OpdexConfiguration();
 
-            _handler = new PersistIndexerLockCommandHandler(_dbContext.Object, Mock.Of<ILogger<PersistIndexerLockCommandHandler>>(), opdexConfiguration);
+            _handler = new PersistIndexerLockCommandHandler(_dbContext.Object, opdexConfiguration);
         }
 
         [Fact]

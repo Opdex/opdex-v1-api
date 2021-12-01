@@ -146,7 +146,6 @@ namespace Opdex.Platform.WebApi.Tests.Validation.Tokens
         }
 
         [Theory]
-        [InlineData((default))]
         [InlineData(TokenProvisionalFilter.All)]
         [InlineData(TokenProvisionalFilter.Provisional)]
         [InlineData(TokenProvisionalFilter.NonProvisional)]

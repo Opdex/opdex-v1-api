@@ -16,7 +16,7 @@ public class PersistIndexerUnlockCommandHandler : IRequestHandler<PersistIndexer
             SET
                 {nameof(IndexLockEntity.Locked)} = 0,
                 {nameof(IndexLockEntity.ModifiedDate)} = UTC_TIMESTAMP(),
-                {nameof(IndexLockEntity.InstanceId)} = NULL
+                {nameof(IndexLockEntity.InstanceId)} = NULL,
                 {nameof(IndexLockEntity.Reason)} = NULL
             WHERE {nameof(IndexLockEntity.InstanceId)} = @{nameof(IndexLockEntity.InstanceId)};";
 
