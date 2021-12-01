@@ -14,7 +14,7 @@ public class VaultProposalPledgeWithdrawLog : TransactionLog
         ulong withdrawAmount = (ulong)log?.withdrawAmount;
         ulong pledgerAmount = (ulong)log?.pledgerAmount;
         ulong proposalPledgeAmount = (ulong)log?.proposalPledgeAmount;
-        bool voteWithdrawn = (bool)log?.voteWithdrawn;
+        bool pledgeWithdrawn = (bool)log?.pledgeWithdrawn;
 
         if (proposalId < 1) throw new ArgumentOutOfRangeException(nameof(proposalId), "Proposal id must be greater than 0.");
         if (pledger == Address.Empty) throw new ArgumentNullException(nameof(pledger), "Pledger must be set.");
@@ -24,7 +24,7 @@ public class VaultProposalPledgeWithdrawLog : TransactionLog
         WithdrawAmount = withdrawAmount;
         PledgerAmount = pledgerAmount;
         ProposalPledgeAmount = proposalPledgeAmount;
-        VoteWithdrawn = voteWithdrawn;
+        PledgeWithdrawn = pledgeWithdrawn;
     }
 
     public VaultProposalPledgeWithdrawLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
@@ -36,7 +36,7 @@ public class VaultProposalPledgeWithdrawLog : TransactionLog
         WithdrawAmount = logDetails.WithdrawAmount;
         PledgerAmount = logDetails.PledgerAmount;
         ProposalPledgeAmount = logDetails.ProposalPledgeAmount;
-        VoteWithdrawn = logDetails.VoteWithdrawn;
+        PledgeWithdrawn = logDetails.PledgeWithdrawn;
     }
 
     public ulong ProposalId { get; }
@@ -44,7 +44,7 @@ public class VaultProposalPledgeWithdrawLog : TransactionLog
     public ulong WithdrawAmount { get; }
     public ulong PledgerAmount { get; }
     public ulong ProposalPledgeAmount { get; }
-    public bool VoteWithdrawn { get; }
+    public bool PledgeWithdrawn { get; }
 
     private struct LogDetails
     {
@@ -53,7 +53,7 @@ public class VaultProposalPledgeWithdrawLog : TransactionLog
         public ulong WithdrawAmount { get; set; }
         public ulong PledgerAmount { get; set; }
         public ulong ProposalPledgeAmount { get; set; }
-        public bool VoteWithdrawn { get; set; }
+        public bool PledgeWithdrawn { get; set; }
     }
 
     private static LogDetails DeserializeLogDetails(string details)
@@ -70,7 +70,7 @@ public class VaultProposalPledgeWithdrawLog : TransactionLog
             WithdrawAmount = WithdrawAmount,
             PledgerAmount = PledgerAmount,
             ProposalPledgeAmount = ProposalPledgeAmount,
-            VoteWithdrawn = VoteWithdrawn
+            PledgeWithdrawn = PledgeWithdrawn
         });
     }
 }
