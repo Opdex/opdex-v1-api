@@ -22,7 +22,7 @@ public class Proposal : BlockAudit
     }
 
     public Proposal(ulong id, UInt256 amount, Address wallet, string description, VaultProposalType type, VaultProposalStatus status,
-                    ulong expiration, ulong yesAmount, ulong noAmount, ulong createdBlock, ulong modifiedBlock)
+                    ulong expiration, ulong yesAmount, ulong noAmount, ulong pledgeAmount, ulong createdBlock, ulong modifiedBlock)
         : base(createdBlock, modifiedBlock)
     {
         Id = id;
@@ -34,6 +34,7 @@ public class Proposal : BlockAudit
         Expiration = expiration;
         YesAmount = yesAmount;
         NoAmount = noAmount;
+        PledgeAmount = pledgeAmount;
     }
 
     public ulong Id { get; }
@@ -45,5 +46,5 @@ public class Proposal : BlockAudit
     public ulong Expiration { get; }
     public ulong YesAmount { get; }
     public ulong NoAmount { get; }
-    public ulong PledgeAmount => YesAmount + NoAmount;
+    public ulong PledgeAmount { get; }
 }

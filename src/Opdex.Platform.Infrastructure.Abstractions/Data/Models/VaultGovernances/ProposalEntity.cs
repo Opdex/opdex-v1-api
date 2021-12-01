@@ -14,4 +14,5 @@ public class ProposalEntity : AuditEntity
     public ulong Expiration { get; set; }
     public ulong YesAmount { get; set; }
     public ulong NoAmount { get; set; }
+    public ulong PledgeAmount { get; set; }
 }
