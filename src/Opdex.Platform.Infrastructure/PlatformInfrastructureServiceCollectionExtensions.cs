@@ -124,6 +124,8 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Auth;
+using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -196,6 +198,13 @@ namespace Opdex.Platform.Infrastructure
             // Vault
             services.AddTransient<IRequestHandler<PersistVaultCommand, ulong>, PersistVaultCommandHandler>();
             services.AddTransient<IRequestHandler<PersistVaultCertificateCommand, bool>, PersistVaultCertificateCommandHandler>();
+
+            // Vault Governances
+            services.AddTransient<IRequestHandler<PersistVaultGovernanceCommand, ulong>, PersistVaultGovernanceCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistVaultGovernanceCertificateCommand, ulong>, PersistVaultGovernanceCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistVaultProposalCommand, ulong>, PersistVaultProposalCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistVaultProposalPledgeCommand, ulong>, PersistVaultProposalPledgeCommandHandler>();
+            services.AddTransient<IRequestHandler<PersistVaultProposalVoteCommand, ulong>, PersistVaultProposalVoteCommandHandler>();
 
             // Addresses
             services.AddTransient<IRequestHandler<PersistAddressBalanceCommand, ulong>, PersistAddressBalanceCommandHandler>();
