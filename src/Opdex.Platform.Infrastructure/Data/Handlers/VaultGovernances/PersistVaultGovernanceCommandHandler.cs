@@ -37,6 +37,7 @@ public class PersistVaultGovernanceCommandHandler : IRequestHandler<PersistVault
         $@"UPDATE vault_governance
                 SET
                     {nameof(VaultGovernanceEntity.UnassignedSupply)} = @{nameof(VaultGovernanceEntity.UnassignedSupply)},
+                    {nameof(VaultGovernanceEntity.ProposedSupply)} = @{nameof(VaultGovernanceEntity.ProposedSupply)},
                     {nameof(VaultGovernanceEntity.ModifiedBlock)} = @{nameof(VaultGovernanceEntity.ModifiedBlock)}
                 WHERE {nameof(VaultGovernanceEntity.Id)} = @{nameof(VaultGovernanceEntity.Id)};";
 

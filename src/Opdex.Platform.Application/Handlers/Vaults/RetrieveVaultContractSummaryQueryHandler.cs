@@ -28,7 +28,7 @@ namespace Opdex.Platform.Application.Handlers.Vaults
                 var lockedToken = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
                                                                                                    VaultConstants.StateKeys.Token,
                                                                                                    SmartContractParameterType.Address,
-                                                                                                   request.BlockHeight));
+                                                                                                   request.BlockHeight), CancellationToken.None);
 
                 summary.SetLockedToken(lockedToken);
             }
@@ -38,7 +38,7 @@ namespace Opdex.Platform.Application.Handlers.Vaults
                 var pendingOwner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
                                                                                                     VaultConstants.StateKeys.PendingOwner,
                                                                                                     SmartContractParameterType.Address,
-                                                                                                    request.BlockHeight));
+                                                                                                    request.BlockHeight), CancellationToken.None);
 
                 summary.SetPendingOwner(pendingOwner);
             }
@@ -48,7 +48,7 @@ namespace Opdex.Platform.Application.Handlers.Vaults
                 var owner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
                                                                                              VaultConstants.StateKeys.Owner,
                                                                                              SmartContractParameterType.Address,
-                                                                                             request.BlockHeight));
+                                                                                             request.BlockHeight), CancellationToken.None);
 
                 summary.SetOwner(owner);
             }
@@ -68,7 +68,7 @@ namespace Opdex.Platform.Application.Handlers.Vaults
                 var genesis = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
                                                                                                VaultConstants.StateKeys.Genesis,
                                                                                                SmartContractParameterType.UInt64,
-                                                                                               request.BlockHeight));
+                                                                                               request.BlockHeight), CancellationToken.None);
 
                 summary.SetGenesis(genesis);
             }

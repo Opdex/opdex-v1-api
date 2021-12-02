@@ -36,9 +36,18 @@ public class VaultGovernance : BlockAudit
     public ulong Id { get; }
     public Address Address { get; }
     public ulong TokenId { get; }
-    public UInt256 UnassignedSupply { get; }
+    public UInt256 UnassignedSupply { get; private set; }
     public ulong VestingDuration { get; }
-    public UInt256 ProposedSupply { get; }
+    public UInt256 ProposedSupply { get; private set; }
     public ulong PledgeMinimum { get; }
     public ulong ProposalMinimum { get; }
+
+    public void Update(VaultGovernanceContractSummary summary)
+    {
+        if (summary is null) throw new ArgumentNullException(nameof(summary));
+
+        if (summary.UnassignedSupply.HasValue) UnassignedSupply = summary.UnassignedSupply.Value;
+        if (summary.ProposedSupply.HasValue) ProposedSupply = summary.ProposedSupply.Value;
+        SetModifiedBlock(summary.BlockHeight);
+    }
 }
