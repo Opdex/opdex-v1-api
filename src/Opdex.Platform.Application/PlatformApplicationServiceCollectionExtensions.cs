@@ -182,6 +182,8 @@ using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Collections;
 using System.Collections.Generic;
+using Opdex.Platform.Application.Handlers.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
 
 namespace Opdex.Platform.Application
 {
@@ -547,6 +549,13 @@ namespace Opdex.Platform.Application
             // Vaults
             services.AddTransient<IRequestHandler<MakeVaultCommand, ulong>, MakeVaultCommandHandler>();
             services.AddTransient<IRequestHandler<MakeVaultCertificateCommand, bool>, MakeVaultCertificateCommandHandler>();
+
+            // Vault Governances
+            services.AddTransient<IRequestHandler<MakeVaultGovernanceCommand, ulong>, MakeVaultGovernanceCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeVaultGovernanceCertificateCommand, ulong>, MakeVaultGovernanceCertificateCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeVaultProposalCommand, ulong>, MakeVaultProposalCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeVaultProposalPledgeCommand, ulong>, MakeVaultProposalPledgeCommandHandler>();
+            services.AddTransient<IRequestHandler<MakeVaultProposalVoteCommand, ulong>, MakeVaultProposalVoteCommandHandler>();
 
             // Wallet Address
             services.AddTransient<IRequestHandler<MakeAddressBalanceCommand, ulong>, MakeAddressBalanceCommandHandler>();
