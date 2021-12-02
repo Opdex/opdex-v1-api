@@ -17,6 +17,7 @@ using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using AutoMapper;
 using Opdex.Platform.Common.Exceptions;
+using Opdex.Platform.Domain.Models;
 
 namespace Opdex.Platform.WebApi.Controllers
 {
@@ -82,17 +83,17 @@ namespace Opdex.Platform.WebApi.Controllers
                 throw new AlreadyIndexedException("Markets already indexed.");
             }
 
-            await _mediator.Send(new MakeIndexerLockCommand());
+            await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploy), CancellationToken.None);
 
             try
             {
-                await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash));
-                await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash));
-                await _mediator.Send(new ProcessLatestBlocksCommand(_network));
+                await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash), CancellationToken.None);
+                await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash), CancellationToken.None);
+                await _mediator.Send(new ProcessLatestBlocksCommand(_network), CancellationToken.None);
             }
             finally
             {
-                await _mediator.Send(new MakeIndexerUnlockCommand());
+                await _mediator.Send(new MakeIndexerUnlockCommand(), CancellationToken.None);
             }
 
             return NoContent();
@@ -108,16 +109,16 @@ namespace Opdex.Platform.WebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Rewind(RewindRequest request)
         {
-            await _mediator.Send(new MakeIndexerLockCommand());
+            await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewind), CancellationToken.None);
 
             try
             {
-                var rewound = await _mediator.Send(new CreateRewindToBlockCommand(request.Block));
+                var rewound = await _mediator.Send(new CreateRewindToBlockCommand(request.Block), CancellationToken.None);
                 if (!rewound) throw new Exception("Indexer rewind unexpectedly failed.");
             }
             finally
             {
-                await _mediator.Send(new MakeIndexerUnlockCommand());
+                await _mediator.Send(new MakeIndexerUnlockCommand(), CancellationToken.None);
             }
 
             return NoContent();

@@ -218,7 +218,6 @@ namespace Opdex.Platform.WebApi.Tests.Validation.LiquidityPools
         }
 
         [Theory]
-        [InlineData((default))]
         [InlineData(LiquidityPoolStakingStatusFilter.Any)]
         [InlineData(LiquidityPoolStakingStatusFilter.Enabled)]
         [InlineData(LiquidityPoolStakingStatusFilter.Disabled)]
@@ -255,7 +254,6 @@ namespace Opdex.Platform.WebApi.Tests.Validation.LiquidityPools
         }
 
         [Theory]
-        [InlineData((default))]
         [InlineData(LiquidityPoolNominationStatusFilter.Any)]
         [InlineData(LiquidityPoolNominationStatusFilter.Nominated)]
         [InlineData(LiquidityPoolNominationStatusFilter.NonNominated)]
@@ -292,7 +290,6 @@ namespace Opdex.Platform.WebApi.Tests.Validation.LiquidityPools
         }
 
         [Theory]
-        [InlineData((default))]
         [InlineData(LiquidityPoolMiningStatusFilter.Any)]
         [InlineData(LiquidityPoolMiningStatusFilter.Enabled)]
         [InlineData(LiquidityPoolMiningStatusFilter.Disabled)]

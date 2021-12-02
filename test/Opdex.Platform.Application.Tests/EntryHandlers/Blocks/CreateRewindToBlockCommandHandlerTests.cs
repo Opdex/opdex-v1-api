@@ -131,7 +131,7 @@ namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
             catch { }
 
             // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<MakeRewindToBlockCommand>(q => q.Block == rewindBlock.Height), CancellationToken.None));
+            _mediator.Verify(callTo => callTo.Send(It.Is<MakeRewindToBlockCommand>(q => q.Block == rewindBlock.Height), It.IsAny<CancellationToken>()));
         }
 
         [Fact]

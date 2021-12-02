@@ -12,6 +12,7 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
@@ -67,7 +68,7 @@ namespace Opdex.Platform.WebApi.Controllers
                 throw new Exception("Markets already exist");
             }
 
-            await _mediator.Send(new MakeIndexerLockCommand());
+            await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploy), CancellationToken.None);
 
             // Deploy governance token
             var createGovernanceTokenParams = new[]

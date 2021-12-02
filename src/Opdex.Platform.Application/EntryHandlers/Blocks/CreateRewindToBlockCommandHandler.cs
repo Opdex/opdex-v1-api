@@ -46,23 +46,23 @@ namespace Opdex.Platform.Application.EntryHandlers.Blocks
                 throw new ArgumentOutOfRangeException(nameof(request.Block), "Rewind request exceeds maximum rewind limit.");
             }
 
-            var rewound = await _mediator.Send(new MakeRewindToBlockCommand(request.Block));
+            var rewound = await _mediator.Send(new MakeRewindToBlockCommand(request.Block), CancellationToken.None);
             if (!rewound) return false;
 
             _logger.LogTrace("Beginning to refresh stale records.");
 
             // refresh stale records
-            rewound = await _mediator.Send(new CreateRewindAddressBalancesCommand(request.Block)) && rewound;
-            rewound = await _mediator.Send(new CreateRewindMiningPositionsCommand(request.Block)) && rewound;
-            rewound = await _mediator.Send(new CreateRewindStakingPositionsCommand(request.Block)) && rewound;
-            rewound = await _mediator.Send(new CreateRewindDeployersCommand(request.Block)) && rewound;
-            rewound = await _mediator.Send(new CreateRewindMiningGovernancesAndNominationsCommand(request.Block)) && rewound;
-            rewound = await _mediator.Send(new CreateRewindVaultsCommand(request.Block)) && rewound;
-            rewound = await _mediator.Send(new CreateRewindVaultCertificatesCommand(request.Block)) && rewound;
-            rewound = await _mediator.Send(new CreateRewindMiningPoolsCommand(request.Block)) && rewound;
-            rewound = await _mediator.Send(new CreateRewindMarketsCommand(request.Block)) && rewound;
-            rewound = await _mediator.Send(new CreateRewindMarketPermissionsCommand(request.Block)) && rewound;
-            rewound = await _mediator.Send(new CreateRewindSnapshotsCommand(request.Block)) && rewound; // markets/pools/tokens combined
+            rewound = await _mediator.Send(new CreateRewindAddressBalancesCommand(request.Block), CancellationToken.None) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMiningPositionsCommand(request.Block), CancellationToken.None) && rewound;
+            rewound = await _mediator.Send(new CreateRewindStakingPositionsCommand(request.Block), CancellationToken.None) && rewound;
+            rewound = await _mediator.Send(new CreateRewindDeployersCommand(request.Block), CancellationToken.None) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMiningGovernancesAndNominationsCommand(request.Block), CancellationToken.None) && rewound;
+            rewound = await _mediator.Send(new CreateRewindVaultsCommand(request.Block), CancellationToken.None) && rewound;
+            rewound = await _mediator.Send(new CreateRewindVaultCertificatesCommand(request.Block), CancellationToken.None) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMiningPoolsCommand(request.Block), CancellationToken.None) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMarketsCommand(request.Block), CancellationToken.None) && rewound;
+            rewound = await _mediator.Send(new CreateRewindMarketPermissionsCommand(request.Block), CancellationToken.None) && rewound;
+            rewound = await _mediator.Send(new CreateRewindSnapshotsCommand(request.Block), CancellationToken.None) && rewound; // markets/pools/tokens combined
 
             _logger.LogTrace("Refreshing of stale records finished.");
 

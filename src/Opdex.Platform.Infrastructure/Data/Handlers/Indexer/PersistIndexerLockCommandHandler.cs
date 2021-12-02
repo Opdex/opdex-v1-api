@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Configurations;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
@@ -7,32 +9,51 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Indexer
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
+
+public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLockCommand, bool>
 {
-    public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLockCommand, bool>
-    {
-        private static readonly string SqlQuery =
-            @$"UPDATE index_lock
-               SET
+    private static readonly string SqlQuery =
+        @$"UPDATE index_lock
+                SET
                     {nameof(IndexLockEntity.Locked)} = 1,
                     {nameof(IndexLockEntity.ModifiedDate)} = UTC_TIMESTAMP(),
-                    {nameof(IndexLockEntity.InstanceId)} = @{nameof(IndexLockEntity.InstanceId)}
+                    {nameof(IndexLockEntity.InstanceId)} = @{nameof(SqlParams.InstanceId)},
+                    {nameof(IndexLockEntity.Reason)} = @{nameof(SqlParams.Reason)}
                 WHERE {nameof(IndexLockEntity.Locked)} = 0;";
 
-        private readonly IDbContext _context;
-        private readonly string _instanceId;
+    private readonly IDbContext _context;
+    private readonly string _instanceId;
 
-        public PersistIndexerLockCommandHandler(IDbContext context, OpdexConfiguration opdexConfiguration)
-        {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _instanceId = opdexConfiguration?.InstanceId ?? throw new ArgumentNullException(nameof(context));
-        }
+    public PersistIndexerLockCommandHandler(IDbContext context, OpdexConfiguration opdexConfiguration)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _instanceId = opdexConfiguration?.InstanceId ?? throw new ArgumentNullException(nameof(context));
+    }
 
-        public async Task<bool> Handle(PersistIndexerLockCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(PersistIndexerLockCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            var command = DatabaseQuery.Create(SqlQuery, new { InstanceId = _instanceId });
+            var command = DatabaseQuery.Create(SqlQuery, new SqlParams(_instanceId, request.Reason), CancellationToken.None);
             var result = await _context.ExecuteCommandAsync(command);
             return result == 1;
         }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(string instanceId, IndexLockReason reason)
+        {
+            InstanceId = instanceId;
+            Reason = reason;
+        }
+
+        public string InstanceId { get; }
+        public IndexLockReason Reason { get; }
     }
 }

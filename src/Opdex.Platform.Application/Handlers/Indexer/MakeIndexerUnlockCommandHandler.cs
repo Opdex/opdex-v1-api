@@ -21,11 +21,10 @@ namespace Opdex.Platform.Application.Handlers.Indexer
 
         public async Task<Unit> Handle(MakeIndexerUnlockCommand request, CancellationToken cancellationToken)
         {
-            var unlocked = await _mediator.Send(new PersistIndexerUnlockCommand());
+            var unlocked = await _mediator.Send(new PersistIndexerUnlockCommand(), CancellationToken.None);
             if (!unlocked)
             {
                 _logger.LogCritical("Unable to unlock indexer.");
-                throw new Exception("Indexer was unable to be unlocked.");
             }
 
             _logger.LogDebug("Indexer unlocked.");
