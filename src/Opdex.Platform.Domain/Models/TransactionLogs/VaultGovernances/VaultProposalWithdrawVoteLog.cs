@@ -4,10 +4,10 @@ using System;
 
 namespace Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 
-public class VaultProposalVoteWithdrawLog : TransactionLog
+public class VaultProposalWithdrawVoteLog : TransactionLog
 {
-    public VaultProposalVoteWithdrawLog(dynamic log, Address address, int sortOrder)
-        : base(TransactionLogType.VaultProposalVoteWithdrawLog, address, sortOrder)
+    public VaultProposalWithdrawVoteLog(dynamic log, Address address, int sortOrder)
+        : base(TransactionLogType.VaultProposalWithdrawVoteLog, address, sortOrder)
     {
         ulong proposalId = (ulong)log?.proposalId;
         Address voter = (string)log?.voter;
@@ -29,8 +29,8 @@ public class VaultProposalVoteWithdrawLog : TransactionLog
         VoteWithdrawn = voteWithdrawn;
     }
 
-    public VaultProposalVoteWithdrawLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
-        : base(TransactionLogType.VaultProposalVoteWithdrawLog, id, transactionId, address, sortOrder)
+    public VaultProposalWithdrawVoteLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
+        : base(TransactionLogType.VaultProposalWithdrawVoteLog, id, transactionId, address, sortOrder)
     {
         var logDetails = DeserializeLogDetails(details);
         ProposalId = logDetails.ProposalId;

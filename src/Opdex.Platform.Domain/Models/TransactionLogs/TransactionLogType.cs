@@ -52,8 +52,8 @@ namespace Opdex.Platform.Domain.Models.TransactionLogs
         CompleteVaultProposalLog = 29,
         CreateVaultProposalLog = 30,
         VaultProposalPledgeLog = 31,
-        VaultProposalPledgeWithdrawLog = 32,
+        VaultProposalWithdrawPledgeLog = 32,
         VaultProposalVoteLog = 33,
-        VaultProposalVoteWithdrawLog = 34
+        VaultProposalWithdrawVoteLog = 34
     }
 }
