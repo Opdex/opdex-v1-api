@@ -68,7 +68,7 @@ public class PersistVaultProposalVoteCommandHandler : IRequestHandler<PersistVau
         }
         catch (Exception)
         {
-            // TODO: We don't need to log here, this is already done by DbContext. Exception becomes obsolete if DbContext were to return default
+            // TODO: PAPI-276
             return 0;
         }
     }
