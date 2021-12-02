@@ -8,7 +8,7 @@ public class PersistVaultProposalPledgeCommand : IRequest<ulong>
 {
     public PersistVaultProposalPledgeCommand(VaultProposalPledge pledge)
     {
-        Pledge = pledge ?? throw new ArgumentNullException(nameof(pledge));
+        Pledge = pledge ?? throw new ArgumentNullException(nameof(pledge), "Vault pledge must be provided.");
     }
 
     public VaultProposalPledge Pledge { get; }

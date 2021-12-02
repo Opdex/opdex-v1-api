@@ -8,7 +8,7 @@ public class PersistVaultProposalVoteCommand : IRequest<ulong>
 {
     public PersistVaultProposalVoteCommand(VaultProposalVote vote)
     {
-        Vote = vote ?? throw new ArgumentNullException(nameof(vote));
+        Vote = vote ?? throw new ArgumentNullException(nameof(vote), "Vault vote must be provided.");
     }
 
     public VaultProposalVote Vote { get; }

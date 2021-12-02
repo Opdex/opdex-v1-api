@@ -119,6 +119,7 @@ using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes;
@@ -126,6 +127,15 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Auth;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Certificates;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Pledges;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Proposals;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Votes;
+using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Certificates;
+using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Pledges;
+using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Proposals;
+using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Votes;
 
 namespace Opdex.Platform.Infrastructure
 {
@@ -291,6 +301,14 @@ namespace Opdex.Platform.Infrastructure
             services.AddTransient<IRequestHandler<SelectVaultsByModifiedBlockQuery, IEnumerable<Vault>>, SelectVaultsByModifiedBlockQueryHandler>();
             services.AddTransient<IRequestHandler<SelectVaultCertificatesByModifiedBlockQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesByModifiedBlockQueryHandler>();
             services.AddTransient<IRequestHandler<SelectVaultByIdQuery, Vault>, SelectVaultByIdQueryHandler>();
+
+            // Vault Governance
+            services.AddTransient<IRequestHandler<SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery, IEnumerable<VaultGovernanceCertificate>>, SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery, VaultProposalPledge>, SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery, VaultProposalVote>, SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectVaultProposalByVaultIdAndPublicIdQuery, VaultProposal>, SelectVaultProposalByVaultIdAndPublicIdQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectVaultGovernanceByAddressQuery, VaultGovernance>, SelectVaultGovernanceByAddressQueryHandler>();
+            services.AddTransient<IRequestHandler<SelectVaultGovernanceByIdQuery, VaultGovernance>, SelectVaultGovernanceByIdQueryHandler>();
 
             // Addresses
             services.AddTransient<IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>, SelectAddressBalanceByOwnerAndTokenIdQueryHandler>();

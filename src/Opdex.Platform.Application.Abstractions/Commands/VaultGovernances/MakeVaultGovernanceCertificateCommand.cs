@@ -8,7 +8,7 @@ public class MakeVaultGovernanceCertificateCommand : IRequest<ulong>
 {
     public MakeVaultGovernanceCertificateCommand(VaultGovernanceCertificate certificate)
     {
-        Certificate = certificate ?? throw new ArgumentNullException(nameof(certificate));
+        Certificate = certificate ?? throw new ArgumentNullException(nameof(certificate), "Vault certificate must be provided.");
     }
 
     public VaultGovernanceCertificate Certificate { get; }

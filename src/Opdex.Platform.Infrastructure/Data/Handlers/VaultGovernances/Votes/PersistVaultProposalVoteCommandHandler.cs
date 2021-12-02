@@ -2,12 +2,13 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
+namespace Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Votes;
 
 public class PersistVaultProposalVoteCommandHandler : IRequestHandler<PersistVaultProposalVoteCommand, ulong>
 {
@@ -31,7 +32,7 @@ public class PersistVaultProposalVoteCommandHandler : IRequestHandler<PersistVau
                 @{nameof(VaultProposalVoteEntity.CreatedBlock)},
                 @{nameof(VaultProposalVoteEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID()";
+              SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE vault_proposal_vote
@@ -40,7 +41,7 @@ public class PersistVaultProposalVoteCommandHandler : IRequestHandler<PersistVau
                     {nameof(VaultProposalVoteEntity.Balance)} = @{nameof(VaultProposalVoteEntity.Balance)},
                     {nameof(VaultProposalVoteEntity.InFavor)} = @{nameof(VaultProposalVoteEntity.InFavor)},
                     {nameof(VaultProposalVoteEntity.ModifiedBlock)} = @{nameof(VaultProposalVoteEntity.ModifiedBlock)}
-                WHERE {nameof(VaultProposalVoteEntity.Id)} = @{nameof(VaultProposalVoteEntity.Id)};";
+                WHERE {nameof(VaultProposalVoteEntity.Id)} = @{nameof(VaultProposalVoteEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

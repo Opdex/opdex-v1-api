@@ -2,12 +2,13 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
+namespace Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Certificates;
 
 public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<PersistVaultGovernanceCertificateCommand, ulong>
 {
@@ -31,7 +32,7 @@ public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<P
                 @{nameof(VaultGovernanceCertificateEntity.CreatedBlock)},
                 @{nameof(VaultGovernanceCertificateEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID()";
+              SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE vault_governance_certificate
@@ -40,7 +41,7 @@ public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<P
                     {nameof(VaultGovernanceCertificateEntity.Revoked)} = @{nameof(VaultGovernanceCertificateEntity.Revoked)},
                     {nameof(VaultGovernanceCertificateEntity.Redeemed)} = @{nameof(VaultGovernanceCertificateEntity.Redeemed)},
                     {nameof(VaultGovernanceCertificateEntity.ModifiedBlock)} = @{nameof(VaultGovernanceCertificateEntity.ModifiedBlock)}
-                WHERE {nameof(VaultGovernanceCertificateEntity.Id)} = @{nameof(VaultGovernanceCertificateEntity.Id)};";
+                WHERE {nameof(VaultGovernanceCertificateEntity.Id)} = @{nameof(VaultGovernanceCertificateEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

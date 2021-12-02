@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.VaultGovernances;
+namespace Opdex.Platform.Application.Handlers.VaultGovernances.Certificates;
 
 public class MakeVaultGovernanceCertificateCommandHandler : IRequestHandler<MakeVaultGovernanceCertificateCommand, ulong>
 {
@@ -16,8 +16,8 @@ public class MakeVaultGovernanceCertificateCommandHandler : IRequestHandler<Make
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<ulong> Handle(MakeVaultGovernanceCertificateCommand request, CancellationToken cancellationToken)
+    public Task<ulong> Handle(MakeVaultGovernanceCertificateCommand request, CancellationToken cancellationToken)
     {
-        return await _mediator.Send(new PersistVaultGovernanceCertificateCommand(request.Certificate), CancellationToken.None);
+        return _mediator.Send(new PersistVaultGovernanceCertificateCommand(request.Certificate), CancellationToken.None);
     }
 }

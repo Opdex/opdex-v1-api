@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.VaultGovernances;
+namespace Opdex.Platform.Application.Handlers.VaultGovernances.Proposals;
 
 public class MakeVaultProposalCommandHandler : IRequestHandler<MakeVaultProposalCommand, ulong>
 {
@@ -16,8 +16,8 @@ public class MakeVaultProposalCommandHandler : IRequestHandler<MakeVaultProposal
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<ulong> Handle(MakeVaultProposalCommand request, CancellationToken cancellationToken)
+    public Task<ulong> Handle(MakeVaultProposalCommand request, CancellationToken cancellationToken)
     {
-        return await _mediator.Send(new PersistVaultProposalCommand(request.Proposal), CancellationToken.None);
+        return _mediator.Send(new PersistVaultProposalCommand(request.Proposal), CancellationToken.None);
     }
 }

@@ -2,12 +2,13 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
+namespace Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Proposals;
 
 public class PersistVaultProposalCommandHandler : IRequestHandler<PersistVaultProposalCommand, ulong>
 {
@@ -43,7 +44,7 @@ public class PersistVaultProposalCommandHandler : IRequestHandler<PersistVaultPr
                 @{nameof(VaultProposalEntity.CreatedBlock)},
                 @{nameof(VaultProposalEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID()";
+              SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE vault_proposal
@@ -54,7 +55,7 @@ public class PersistVaultProposalCommandHandler : IRequestHandler<PersistVaultPr
                     {nameof(VaultProposalEntity.NoAmount)} = @{nameof(VaultProposalEntity.NoAmount)},
                     {nameof(VaultProposalEntity.PledgeAmount)} = @{nameof(VaultProposalEntity.PledgeAmount)},
                     {nameof(VaultProposalEntity.ModifiedBlock)} = @{nameof(VaultProposalEntity.ModifiedBlock)}
-                WHERE {nameof(VaultProposalEntity.Id)} = @{nameof(VaultProposalEntity.Id)};";
+                WHERE {nameof(VaultProposalEntity.Id)} = @{nameof(VaultProposalEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;

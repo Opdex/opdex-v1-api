@@ -6,6 +6,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
+using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Votes;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

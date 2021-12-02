@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using System;
 using System.Threading;
@@ -18,6 +19,7 @@ public class PersistVaultGovernanceCommandHandler : IRequestHandler<PersistVault
                 {nameof(VaultGovernanceEntity.UnassignedSupply)},
                 {nameof(VaultGovernanceEntity.VestingDuration)},
                 {nameof(VaultGovernanceEntity.ProposedSupply)},
+                {nameof(VaultGovernanceEntity.PledgeMinimum)},
                 {nameof(VaultGovernanceEntity.ProposalMinimum)},
                 {nameof(VaultGovernanceEntity.CreatedBlock)},
                 {nameof(VaultGovernanceEntity.ModifiedBlock)}
@@ -27,19 +29,22 @@ public class PersistVaultGovernanceCommandHandler : IRequestHandler<PersistVault
                 @{nameof(VaultGovernanceEntity.UnassignedSupply)},
                 @{nameof(VaultGovernanceEntity.VestingDuration)},
                 @{nameof(VaultGovernanceEntity.ProposedSupply)},
+                @{nameof(VaultGovernanceEntity.PledgeMinimum)},
                 @{nameof(VaultGovernanceEntity.ProposalMinimum)},
                 @{nameof(VaultGovernanceEntity.CreatedBlock)},
                 @{nameof(VaultGovernanceEntity.ModifiedBlock)}
               );
-              SELECT LAST_INSERT_ID()";
+              SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE vault_governance
                 SET
                     {nameof(VaultGovernanceEntity.UnassignedSupply)} = @{nameof(VaultGovernanceEntity.UnassignedSupply)},
                     {nameof(VaultGovernanceEntity.ProposedSupply)} = @{nameof(VaultGovernanceEntity.ProposedSupply)},
+                    {nameof(VaultGovernanceEntity.PledgeMinimum)} = @{nameof(VaultGovernanceEntity.PledgeMinimum)},
+                    {nameof(VaultGovernanceEntity.ProposalMinimum)} = @{nameof(VaultGovernanceEntity.ProposalMinimum)},
                     {nameof(VaultGovernanceEntity.ModifiedBlock)} = @{nameof(VaultGovernanceEntity.ModifiedBlock)}
-                WHERE {nameof(VaultGovernanceEntity.Id)} = @{nameof(VaultGovernanceEntity.Id)};";
+                WHERE {nameof(VaultGovernanceEntity.Id)} = @{nameof(VaultGovernanceEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
