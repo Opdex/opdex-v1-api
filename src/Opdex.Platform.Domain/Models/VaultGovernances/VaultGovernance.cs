@@ -5,6 +5,9 @@ using System;
 
 namespace Opdex.Platform.Domain.Models.VaultGovernances;
 
+/// <summary>
+/// Vault that CRS holders can vote on proposals for the allocation of vested certificates. Certificates entitle the holder to Opdex governance upon completion of the vesting period.
+/// </summary>
 public class VaultGovernance : BlockAudit
 {
     public VaultGovernance(Address address, ulong tokenId, ulong vestingDuration, ulong pledgeMinimum, ulong proposalMinimum, ulong createdBlock)

@@ -7,6 +7,9 @@ using System;
 
 namespace Opdex.Platform.Domain.Models.VaultGovernances;
 
+/// <summary>
+/// Entitles the certificate holder to an amount of Opdex governance tokens.
+/// </summary>
 public class VaultGovernanceCertificate : BlockAudit
 {
     public VaultGovernanceCertificate(ulong vaultGovernanceId, Address owner, UInt256 amount, ulong vestedBlock, ulong createdBlock) : base(createdBlock)
