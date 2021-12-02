@@ -9,8 +9,8 @@ public class VaultGovernanceEntity : AuditEntity
     public ulong TokenId { get; set; }
     public Address Address { get; set; }
     public UInt256 UnassignedSupply { get; set; }
-    public ulong VestingDuration { get; set; }
     public UInt256 ProposedSupply { get; set; }
+    public ulong VestingDuration { get; set; }
     public ulong PledgeMinimum { get; set; }
     public ulong ProposalMinimum { get; set; }
 }

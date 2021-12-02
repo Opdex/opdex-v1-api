@@ -3,9 +3,12 @@ using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 
-public class ProposalEntity : AuditEntity
+public class VaultProposalEntity : AuditEntity
 {
     public ulong Id { get; set; }
+    public ulong PublicId { get; set; }
+    public ulong VaultGovernanceId { get; set; }
+    public Address Creator { get; set; }
     public Address Wallet { get; set; }
     public UInt256 Amount { get; set; }
     public string Description { get; set; }

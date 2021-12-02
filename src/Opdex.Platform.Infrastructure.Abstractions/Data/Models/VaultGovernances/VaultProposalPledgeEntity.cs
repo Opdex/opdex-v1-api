@@ -1,14 +1,13 @@
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Common.Models.UInt;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 
-public class ProposalVoteEntity : AuditEntity
+public class VaultProposalPledgeEntity : AuditEntity
 {
     public ulong Id { get; set; }
     public ulong VaultGovernanceId { get; set; }
     public ulong ProposalId { get; set; }
-    public Address Voter { get; set; }
-    public UInt256 Amount { get; set; }
-    public bool InFavor { get; set; }
+    public Address Pledger { get; set; }
+    public ulong Pledge { get; set; }
+    public ulong Balance { get; set; }
 }
