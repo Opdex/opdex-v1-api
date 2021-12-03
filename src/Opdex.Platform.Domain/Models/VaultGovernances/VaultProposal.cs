@@ -2,6 +2,7 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
+using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using System;
 
 namespace Opdex.Platform.Domain.Models.VaultGovernances;
@@ -53,9 +54,43 @@ public class VaultProposal : BlockAudit
     public UInt256 Amount { get; }
     public string Description { get; }
     public VaultProposalType Type { get; }
-    public VaultProposalStatus Status { get; }
-    public ulong Expiration { get; }
-    public ulong YesAmount { get; }
-    public ulong NoAmount { get; }
-    public ulong PledgeAmount { get; }
+    public VaultProposalStatus Status { get; private set; }
+    // Todo: Add to logs or watch for status changes
+    public ulong Expiration { get; private set; }
+    public ulong YesAmount { get; private set; }
+    public ulong NoAmount { get; private set; }
+    public ulong PledgeAmount { get; private set; }
+
+    public void Update(VaultProposalVoteLog log, ulong blockHeight)
+    {
+        Status = VaultProposalStatus.Vote;
+        YesAmount = log.ProposalYesAmount;
+        NoAmount = log.ProposalNoAmount;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(VaultProposalPledgeLog log, ulong blockHeight)
+    {
+        PledgeAmount = log.ProposalPledgeAmount;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(VaultProposalWithdrawVoteLog log, ulong blockHeight)
+    {
+        YesAmount = log.ProposalYesAmount;
+        NoAmount = log.ProposalNoAmount;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(VaultProposalWithdrawPledgeLog log, ulong blockHeight)
+    {
+        PledgeAmount = log.ProposalPledgeAmount;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(CompleteVaultProposalLog log, ulong blockHeight)
+    {
+        Status = VaultProposalStatus.Complete;
+        SetModifiedBlock(blockHeight);
+    }
 }

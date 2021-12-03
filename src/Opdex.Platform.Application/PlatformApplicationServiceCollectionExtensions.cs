@@ -38,6 +38,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults.Quotes;
@@ -137,6 +138,7 @@ using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Mark
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens;
+using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.EntryHandlers.Vaults;
 using Opdex.Platform.Application.EntryHandlers.Vaults.Certificates;
@@ -391,6 +393,12 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<ProcessRedeemVaultCertificateLogCommand, bool>, ProcessRedeemVaultCertificateLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessClaimPendingDeployerOwnershipLogCommand, bool>, ProcessClaimPendingDeployerOwnershipLogCommandHandler>();
         services.AddTransient<IRequestHandler<ProcessSetPendingDeployerOwnershipLogCommand, bool>, ProcessSetPendingDeployerOwnershipLogCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessCompleteVaultProposalLogCommand, bool>, ProcessCompleteVaultProposalLogCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessCreateVaultProposalLogCommand, bool>, ProcessCreateVaultProposalLogCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessVaultProposalPledgeLogCommand, bool>, ProcessVaultProposalPledgeLogCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessVaultProposalVoteLogCommand, bool>, ProcessVaultProposalVoteLogCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessVaultProposalWithdrawPledgeLogCommand, bool>, ProcessVaultProposalWithdrawPledgeLogCommandHandler>();
+        services.AddTransient<IRequestHandler<ProcessVaultProposalWithdrawVoteLogCommand, bool>, ProcessVaultProposalWithdrawVoteLogCommandHandler>();
 
         return services;
     }

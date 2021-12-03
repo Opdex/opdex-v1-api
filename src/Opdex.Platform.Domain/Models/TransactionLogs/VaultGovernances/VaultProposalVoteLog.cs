@@ -28,7 +28,7 @@ public class VaultProposalVoteLog : TransactionLog
         VoterAmount = voterAmount;
         ProposalYesAmount = proposalYesAmount;
         ProposalNoAmount = proposalNoAmount;
-        InFavour = inFavor;
+        InFavor = inFavor;
     }
 
     public VaultProposalVoteLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
@@ -41,7 +41,7 @@ public class VaultProposalVoteLog : TransactionLog
         VoterAmount = logDetails.VoterAmount;
         ProposalYesAmount = logDetails.ProposalYesAmount;
         ProposalNoAmount = logDetails.ProposalNoAmount;
-        InFavour = logDetails.InFavour;
+        InFavor = logDetails.InFavor;
     }
 
     public ulong ProposalId { get; }
@@ -50,7 +50,7 @@ public class VaultProposalVoteLog : TransactionLog
     public ulong VoterAmount { get; }
     public ulong ProposalYesAmount { get; }
     public ulong ProposalNoAmount { get; }
-    public bool InFavour { get; }
+    public bool InFavor { get; }
 
     private struct LogDetails
     {
@@ -60,7 +60,7 @@ public class VaultProposalVoteLog : TransactionLog
         public ulong VoterAmount { get; set; }
         public ulong ProposalYesAmount { get; set; }
         public ulong ProposalNoAmount { get; set; }
-        public bool InFavour { get; set; }
+        public bool InFavor { get; set; }
     }
 
     private static LogDetails DeserializeLogDetails(string details)
@@ -78,7 +78,7 @@ public class VaultProposalVoteLog : TransactionLog
             VoterAmount = VoterAmount,
             ProposalYesAmount = ProposalYesAmount,
             ProposalNoAmount = ProposalNoAmount,
-            InFavour = InFavour
+            InFavor = InFavor
         });
     }
 }

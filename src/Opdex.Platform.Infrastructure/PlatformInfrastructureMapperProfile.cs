@@ -19,6 +19,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
+using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.VaultGovernances;
@@ -262,6 +263,14 @@ public class PlatformInfrastructureMapperProfile : Profile
                     (int)TransactionLogType.RevokeVaultCertificateLog => new RevokeVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.RedeemVaultCertificateLog => new RedeemVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
+                    // Vault Governance
+                    (int)TransactionLogType.CompleteVaultProposalLog => new CompleteVaultProposalLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                    (int)TransactionLogType.CreateVaultProposalLog => new CreateVaultProposalLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                    (int)TransactionLogType.VaultProposalPledgeLog => new VaultProposalPledgeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                    (int)TransactionLogType.VaultProposalWithdrawPledgeLog => new VaultProposalWithdrawPledgeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                    (int)TransactionLogType.VaultProposalVoteLog => new VaultProposalVoteLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                    (int)TransactionLogType.VaultProposalWithdrawVoteLog => new VaultProposalWithdrawVoteLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+
                     // Else
                     _ => null
                 };
@@ -314,6 +323,14 @@ public class PlatformInfrastructureMapperProfile : Profile
                     nameof(CreateVaultCertificateLog) => new CreateVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(RevokeVaultCertificateLog) => new RevokeVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(RedeemVaultCertificateLog) => new RedeemVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
+
+                    // Vault Governance
+                    nameof(CompleteVaultProposalLog) => new CompleteVaultProposalLog(src.Log.Data, src.Address, src.SortOrder),
+                    nameof(CreateVaultProposalLog) => new CreateVaultProposalLog(src.Log.Data, src.Address, src.SortOrder),
+                    nameof(VaultProposalPledgeLog) => new VaultProposalPledgeLog(src.Log.Data, src.Address, src.SortOrder),
+                    nameof(VaultProposalWithdrawPledgeLog) => new VaultProposalWithdrawPledgeLog(src.Log.Data, src.Address, src.SortOrder),
+                    nameof(VaultProposalVoteLog) => new VaultProposalVoteLog(src.Log.Data, src.Address, src.SortOrder),
+                    nameof(VaultProposalWithdrawVoteLog) => new VaultProposalWithdrawVoteLog(src.Log.Data, src.Address, src.SortOrder),
 
                     // Else
                     _ => null
