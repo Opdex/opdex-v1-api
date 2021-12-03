@@ -10,61 +10,60 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Markets.Permissions
+namespace Opdex.Platform.Application.Tests.Handlers.Markets.Permissions;
+
+public class MakeMarketPermissionCommandHandlerTests
 {
-    public class MakeMarketPermissionCommandHandlerTests
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly MakeMarketPermissionCommandHandler _handler;
+
+    public MakeMarketPermissionCommandHandlerTests()
     {
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly MakeMarketPermissionCommandHandler _handler;
+        _mediatorMock = new Mock<IMediator>();
+        _handler = new MakeMarketPermissionCommandHandler(_mediatorMock.Object);
+    }
 
-        public MakeMarketPermissionCommandHandlerTests()
-        {
-            _mediatorMock = new Mock<IMediator>();
-            _handler = new MakeMarketPermissionCommandHandler(_mediatorMock.Object);
-        }
+    [Fact]
+    public async Task Handle_MediatorPersistMarketPermissionCommand_Send()
+    {
+        // Arrange
+        var marketPermission = new MarketPermission(5,
+                                                    "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+                                                    MarketPermissionType.Trade,
+                                                    true,
+                                                    "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+                                                    500);
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        [Fact]
-        public async Task Handle_MediatorPersistMarketPermissionCommand_Send()
-        {
-            // Arrange
-            var marketPermission = new MarketPermission(5,
-                                                        "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        MarketPermissionType.Trade,
-                                                        true,
-                                                        "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        500);
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Act
+        await _handler.Handle(new MakeMarketPermissionCommand(marketPermission), cancellationToken);
 
-            // Act
-            await _handler.Handle(new MakeMarketPermissionCommand(marketPermission), cancellationToken);
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(
+                                 It.Is<PersistMarketPermissionCommand>(command => command.MarketPermission == marketPermission),
+                                 cancellationToken
+                             ), Times.Once);
+    }
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(
-                It.Is<PersistMarketPermissionCommand>(command => command.MarketPermission == marketPermission),
-                cancellationToken
-            ), Times.Once);
-        }
+    [Fact]
+    public async Task Handle_MediatorPersistMarketPermissionCommand_Return()
+    {
+        // Arrange
+        var id = 5ul;
+        var marketPermission = new MarketPermission(5,
+                                                    "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+                                                    MarketPermissionType.Trade,
+                                                    true,
+                                                    "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
+                                                    500);
 
-        [Fact]
-        public async Task Handle_MediatorPersistMarketPermissionCommand_Return()
-        {
-            // Arrange
-            var id = 5ul;
-            var marketPermission = new MarketPermission(5,
-                                                        "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        MarketPermissionType.Trade,
-                                                        true,
-                                                        "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj",
-                                                        500);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistMarketPermissionCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(id);
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<PersistMarketPermissionCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(id);
+        // Act
+        var response = await _handler.Handle(new MakeMarketPermissionCommand(marketPermission), default);
 
-            // Act
-            var response = await _handler.Handle(new MakeMarketPermissionCommand(marketPermission), default);
-
-            // Assert
-            response.Should().Be(id);
-        }
+        // Assert
+        response.Should().Be(id);
     }
 }

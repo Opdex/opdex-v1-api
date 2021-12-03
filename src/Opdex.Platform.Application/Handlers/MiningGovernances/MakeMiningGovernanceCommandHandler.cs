@@ -6,31 +6,30 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.MiningGovernances
+namespace Opdex.Platform.Application.Handlers.MiningGovernances;
+
+public class MakeMiningGovernanceCommandHandler : IRequestHandler<MakeMiningGovernanceCommand, ulong>
 {
-    public class MakeMiningGovernanceCommandHandler : IRequestHandler<MakeMiningGovernanceCommand, ulong>
+    private readonly IMediator _mediator;
+
+    public MakeMiningGovernanceCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeMiningGovernanceCommandHandler(IMediator mediator)
+    public async Task<ulong> Handle(MakeMiningGovernanceCommand request, CancellationToken cancellationToken)
+    {
+        if (request.Refresh)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            var summary = await _mediator.Send(new RetrieveMiningGovernanceContractSummaryByAddressQuery(request.MiningGovernance.Address,
+                                                                                                         request.BlockHeight,
+                                                                                                         includeMiningPoolsFunded: request.RefreshMiningPoolsFunded,
+                                                                                                         includeNominationPeriodEnd: request.RefreshNominationPeriodEnd,
+                                                                                                         includeMiningPoolReward: request.RefreshMiningPoolReward));
+
+            request.MiningGovernance.Update(summary);
         }
 
-        public async Task<ulong> Handle(MakeMiningGovernanceCommand request, CancellationToken cancellationToken)
-        {
-            if (request.Refresh)
-            {
-                var summary = await _mediator.Send(new RetrieveMiningGovernanceContractSummaryByAddressQuery(request.MiningGovernance.Address,
-                                                                                                             request.BlockHeight,
-                                                                                                             includeMiningPoolsFunded: request.RefreshMiningPoolsFunded,
-                                                                                                             includeNominationPeriodEnd: request.RefreshNominationPeriodEnd,
-                                                                                                             includeMiningPoolReward: request.RefreshMiningPoolReward));
-
-                request.MiningGovernance.Update(summary);
-            }
-
-            return await _mediator.Send(new PersistMiningGovernanceCommand(request.MiningGovernance), cancellationToken);
-        }
+        return await _mediator.Send(new PersistMiningGovernanceCommand(request.MiningGovernance), cancellationToken);
     }
 }

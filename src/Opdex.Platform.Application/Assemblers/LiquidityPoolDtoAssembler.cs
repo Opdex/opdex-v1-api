@@ -20,103 +20,102 @@ using System.Linq;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 
-namespace Opdex.Platform.Application.Assemblers
+namespace Opdex.Platform.Application.Assemblers;
+
+public class LiquidityPoolDtoAssembler : IModelAssembler<LiquidityPool, LiquidityPoolDto>
 {
-    public class LiquidityPoolDtoAssembler : IModelAssembler<LiquidityPool, LiquidityPoolDto>
+    private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
+    private readonly IModelAssembler<MiningPool, MiningPoolDto> _miningPoolAssembler;
+    private readonly IModelAssembler<Token, TokenDto> _tokenAssembler;
+    private readonly IModelAssembler<MarketToken, MarketTokenDto> _marketTokenAssembler;
+
+    public LiquidityPoolDtoAssembler(IMediator mediator, IMapper mapper,
+                                     IModelAssembler<MiningPool, MiningPoolDto> miningPoolAssembler,
+                                     IModelAssembler<Token, TokenDto> tokenAssembler,
+                                     IModelAssembler<MarketToken, MarketTokenDto> marketTokenAssembler)
     {
-        private readonly IMediator _mediator;
-        private readonly IMapper _mapper;
-        private readonly IModelAssembler<MiningPool, MiningPoolDto> _miningPoolAssembler;
-        private readonly IModelAssembler<Token, TokenDto> _tokenAssembler;
-        private readonly IModelAssembler<MarketToken, MarketTokenDto> _marketTokenAssembler;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _miningPoolAssembler = miningPoolAssembler ?? throw new ArgumentNullException(nameof(miningPoolAssembler));
+        _tokenAssembler = tokenAssembler ?? throw new ArgumentNullException(nameof(tokenAssembler));
+        _marketTokenAssembler = marketTokenAssembler ?? throw new ArgumentNullException(nameof(marketTokenAssembler));
+    }
 
-        public LiquidityPoolDtoAssembler(IMediator mediator, IMapper mapper,
-                                         IModelAssembler<MiningPool, MiningPoolDto> miningPoolAssembler,
-                                         IModelAssembler<Token, TokenDto> tokenAssembler,
-                                         IModelAssembler<MarketToken, MarketTokenDto> marketTokenAssembler)
+    public async Task<LiquidityPoolDto> Assemble(LiquidityPool pool)
+    {
+        var market = await _mediator.Send(new RetrieveMarketByIdQuery(pool.MarketId));
+        var summary = await _mediator.Send(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(pool.Id));
+        var poolDto = _mapper.Map<LiquidityPoolDto>(pool);
+
+        // Assemble Tokens
+        poolDto.CrsToken = await AssembleToken(Address.Cirrus);
+        poolDto.SrcToken = await AssembleMarketToken(pool.SrcTokenId, market);
+        poolDto.LpToken = await AssembleMarketToken(pool.LpTokenId, market);
+        var stakingToken = market.IsStakingMarket && pool.SrcTokenId != market.StakingTokenId ? await AssembleMarketToken(market.StakingTokenId, market) : null;
+        var stakingEnabled = stakingToken != null;
+
+        // Calc rewards
+        (decimal providerUsd, decimal marketUsd) = MathExtensions.VolumeBasedRewards(summary.VolumeUsd, summary.StakingWeight, stakingEnabled,
+                                                                                     market.TransactionFee, market.MarketFeeEnabled);
+
+        // Set Transaction Fee - range from 1-10 to output percentage (e.g. 1 output .1 as in .1%)
+        // Math operations would * 100 to get .001
+        poolDto.TransactionFee = market.TransactionFee == 0 ? 0 : Math.Round((decimal)market.TransactionFee / 10, 1);
+
+        poolDto.Summary = new LiquidityPoolSummaryDto
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _miningPoolAssembler = miningPoolAssembler ?? throw new ArgumentNullException(nameof(miningPoolAssembler));
-            _tokenAssembler = tokenAssembler ?? throw new ArgumentNullException(nameof(tokenAssembler));
-            _marketTokenAssembler = marketTokenAssembler ?? throw new ArgumentNullException(nameof(marketTokenAssembler));
-        }
-
-        public async Task<LiquidityPoolDto> Assemble(LiquidityPool pool)
-        {
-            var market = await _mediator.Send(new RetrieveMarketByIdQuery(pool.MarketId));
-            var summary = await _mediator.Send(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(pool.Id));
-            var poolDto = _mapper.Map<LiquidityPoolDto>(pool);
-
-            // Assemble Tokens
-            poolDto.CrsToken = await AssembleToken(Address.Cirrus);
-            poolDto.SrcToken = await AssembleMarketToken(pool.SrcTokenId, market);
-            poolDto.LpToken = await AssembleMarketToken(pool.LpTokenId, market);
-            var stakingToken = market.IsStakingMarket && pool.SrcTokenId != market.StakingTokenId ? await AssembleMarketToken(market.StakingTokenId, market) : null;
-            var stakingEnabled = stakingToken != null;
-
-            // Calc rewards
-            (decimal providerUsd, decimal marketUsd) = MathExtensions.VolumeBasedRewards(summary.VolumeUsd, summary.StakingWeight, stakingEnabled,
-                                                                                         market.TransactionFee, market.MarketFeeEnabled);
-
-            // Set Transaction Fee - range from 1-10 to output percentage (e.g. 1 output .1 as in .1%)
-            // Math operations would * 100 to get .001
-            poolDto.TransactionFee = market.TransactionFee == 0 ? 0 : Math.Round((decimal)market.TransactionFee / 10, 1);
-
-            poolDto.Summary = new LiquidityPoolSummaryDto
+            Reserves = new ReservesDto
             {
-                Reserves = new ReservesDto
-                {
-                    Crs = new FixedDecimal(summary.LockedCrs, TokenConstants.Cirrus.Decimals),
-                    Src = new FixedDecimal(summary.LockedSrc, (byte)poolDto.SrcToken.Decimals),
-                    Usd = summary.LiquidityUsd,
-                    DailyUsdChangePercent = summary.DailyLiquidityUsdChangePercent
-                },
-                Cost = new CostDto
-                {
-                    CrsPerSrc = new FixedDecimal(summary.LockedCrs.Token0PerToken1(summary.LockedSrc, poolDto.SrcToken.Sats), TokenConstants.Cirrus.Decimals),
-                    SrcPerCrs = new FixedDecimal(summary.LockedSrc.Token0PerToken1(summary.LockedCrs, TokenConstants.Cirrus.Sats), (byte)poolDto.SrcToken.Decimals),
-                },
-                Volume = new VolumeDto
-                {
-                    DailyUsd = summary.VolumeUsd
-                },
-                Rewards = new RewardsDto
-                {
-                    ProviderDailyUsd = providerUsd,
-                    MarketDailyUsd = marketUsd
-                }
-            };
-
-            if (!stakingEnabled) return poolDto;
-
-            var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(stakingToken.Id));
-            var nominations = await _mediator.Send(new RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(governance.Id));
-            var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id));
-
-            poolDto.Summary.MiningPool = await _miningPoolAssembler.Assemble(miningPool);
-            poolDto.Summary.Staking = new StakingDto
+                Crs = new FixedDecimal(summary.LockedCrs, TokenConstants.Cirrus.Decimals),
+                Src = new FixedDecimal(summary.LockedSrc, (byte)poolDto.SrcToken.Decimals),
+                Usd = summary.LiquidityUsd,
+                DailyUsdChangePercent = summary.DailyLiquidityUsdChangePercent
+            },
+            Cost = new CostDto
             {
-                Token = stakingToken,
-                Weight = summary.StakingWeight.ToDecimal(stakingToken.Decimals),
-                Usd = MathExtensions.TotalFiat(summary.StakingWeight, stakingToken.Summary.PriceUsd, stakingToken.Sats),
-                DailyWeightChangePercent = summary.DailyStakingWeightChangePercent,
-                Nominated = nominations.Any(nomination => nomination.LiquidityPoolId == poolDto.Id)
-            };
+                CrsPerSrc = new FixedDecimal(summary.LockedCrs.Token0PerToken1(summary.LockedSrc, poolDto.SrcToken.Sats), TokenConstants.Cirrus.Decimals),
+                SrcPerCrs = new FixedDecimal(summary.LockedSrc.Token0PerToken1(summary.LockedCrs, TokenConstants.Cirrus.Sats), (byte)poolDto.SrcToken.Decimals),
+            },
+            Volume = new VolumeDto
+            {
+                DailyUsd = summary.VolumeUsd
+            },
+            Rewards = new RewardsDto
+            {
+                ProviderDailyUsd = providerUsd,
+                MarketDailyUsd = marketUsd
+            }
+        };
 
-            return poolDto;
-        }
+        if (!stakingEnabled) return poolDto;
 
-        private async Task<MarketTokenDto> AssembleMarketToken(ulong tokenId, Market market)
+        var governance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(stakingToken.Id));
+        var nominations = await _mediator.Send(new RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(governance.Id));
+        var miningPool = await _mediator.Send(new RetrieveMiningPoolByLiquidityPoolIdQuery(pool.Id));
+
+        poolDto.Summary.MiningPool = await _miningPoolAssembler.Assemble(miningPool);
+        poolDto.Summary.Staking = new StakingDto
         {
-            var token = await _mediator.Send(new RetrieveTokenByIdQuery(tokenId));
-            return await _marketTokenAssembler.Assemble(new MarketToken(market, token));
-        }
+            Token = stakingToken,
+            Weight = summary.StakingWeight.ToDecimal(stakingToken.Decimals),
+            Usd = MathExtensions.TotalFiat(summary.StakingWeight, stakingToken.Summary.PriceUsd, stakingToken.Sats),
+            DailyWeightChangePercent = summary.DailyStakingWeightChangePercent,
+            Nominated = nominations.Any(nomination => nomination.LiquidityPoolId == poolDto.Id)
+        };
 
-        private async Task<TokenDto> AssembleToken(Address tokenAddress)
-        {
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress));
-            return await _tokenAssembler.Assemble(token);
-        }
+        return poolDto;
+    }
+
+    private async Task<MarketTokenDto> AssembleMarketToken(ulong tokenId, Market market)
+    {
+        var token = await _mediator.Send(new RetrieveTokenByIdQuery(tokenId));
+        return await _marketTokenAssembler.Assemble(new MarketToken(market, token));
+    }
+
+    private async Task<TokenDto> AssembleToken(Address tokenAddress)
+    {
+        var token = await _mediator.Send(new RetrieveTokenByAddressQuery(tokenAddress));
+        return await _tokenAssembler.Assemble(token);
     }
 }

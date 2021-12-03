@@ -1,15 +1,14 @@
 using System;
 
-namespace Opdex.Platform.Common.Exceptions
-{
-    public class NotFoundException : Exception
-    {
-        public NotFoundException()
-        {
-        }
+namespace Opdex.Platform.Common.Exceptions;
 
-        public NotFoundException(string message) : base(message)
-        {
-        }
+public class NotFoundException : Exception
+{
+    public NotFoundException()
+    {
+    }
+
+    public NotFoundException(string message) : base(message)
+    {
     }
 }

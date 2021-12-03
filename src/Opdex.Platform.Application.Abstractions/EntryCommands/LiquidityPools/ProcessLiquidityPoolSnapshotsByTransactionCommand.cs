@@ -5,29 +5,28 @@ using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools;
+
+public class ProcessLiquidityPoolSnapshotsByTransactionCommand : IRequest<Unit>
 {
-    public class ProcessLiquidityPoolSnapshotsByTransactionCommand : IRequest<Unit>
+    public ProcessLiquidityPoolSnapshotsByTransactionCommand(Transaction transaction)
     {
-        public ProcessLiquidityPoolSnapshotsByTransactionCommand(Transaction transaction)
-        {
-            Transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
-        }
-
-        public Transaction Transaction { get; }
-
-        public readonly IReadOnlyList<TransactionLogType> PoolTransactionSnapshotTypes = new[]
-        {
-            TransactionLogType.SwapLog,
-            TransactionLogType.StartStakingLog,
-            TransactionLogType.StopStakingLog,
-            TransactionLogType.CollectStakingRewardsLog
-        };
-
-        public readonly IReadOnlyList<SnapshotType> SnapshotTypes = new[]
-        {
-            SnapshotType.Hourly,
-            SnapshotType.Daily
-        };
+        Transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
     }
+
+    public Transaction Transaction { get; }
+
+    public readonly IReadOnlyList<TransactionLogType> PoolTransactionSnapshotTypes = new[]
+    {
+        TransactionLogType.SwapLog,
+        TransactionLogType.StartStakingLog,
+        TransactionLogType.StopStakingLog,
+        TransactionLogType.CollectStakingRewardsLog
+    };
+
+    public readonly IReadOnlyList<SnapshotType> SnapshotTypes = new[]
+    {
+        SnapshotType.Hourly,
+        SnapshotType.Daily
+    };
 }

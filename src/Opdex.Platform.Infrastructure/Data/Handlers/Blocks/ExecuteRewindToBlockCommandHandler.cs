@@ -7,36 +7,35 @@ using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
+
+public class ExecuteRewindToBlockCommandHandler : IRequestHandler<ExecuteRewindToBlockCommand, bool>
 {
-    public class ExecuteRewindToBlockCommandHandler : IRequestHandler<ExecuteRewindToBlockCommand, bool>
+    private const string SqlCommand = "RewindToBlock";
+
+    private readonly IDbContext _context;
+    private readonly ILogger _logger;
+
+    public ExecuteRewindToBlockCommandHandler(IDbContext context, ILogger<ExecuteRewindToBlockCommandHandler> logger)
     {
-        private const string SqlCommand = "RewindToBlock";
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        private readonly IDbContext _context;
-        private readonly ILogger _logger;
-
-        public ExecuteRewindToBlockCommandHandler(IDbContext context, ILogger<ExecuteRewindToBlockCommandHandler> logger)
+    public async Task<bool> Handle(ExecuteRewindToBlockCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var command = DatabaseQuery.Create(SqlCommand, CommandType.StoredProcedure, new { rewindHeight = request.Block }, cancellationToken);
+
+            await _context.ExecuteCommandAsync(command);
+
+            return true;
         }
-
-        public async Task<bool> Handle(ExecuteRewindToBlockCommand request, CancellationToken cancellationToken)
+        catch (Exception)
         {
-            try
-            {
-                var command = DatabaseQuery.Create(SqlCommand, CommandType.StoredProcedure, new { rewindHeight = request.Block }, cancellationToken);
-
-                await _context.ExecuteCommandAsync(command);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                _logger.LogError("Failure rewinding to block {Block}.", request.Block);
-                return false;
-            }
+            _logger.LogError("Failure rewinding to block {Block}.", request.Block);
+            return false;
         }
     }
 }

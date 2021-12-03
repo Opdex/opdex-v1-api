@@ -9,12 +9,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining;
+
+public class PersistAddressMiningCommandHandler : IRequestHandler<PersistAddressMiningCommand, ulong>
 {
-    public class PersistAddressMiningCommandHandler : IRequestHandler<PersistAddressMiningCommand, ulong>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO address_mining (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO address_mining (
                 {nameof(AddressMiningEntity.Id)},
                 {nameof(AddressMiningEntity.MiningPoolId)},
                 {nameof(AddressMiningEntity.Owner)},
@@ -31,55 +31,54 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Mining
               );
               SELECT LAST_INSERT_ID()";
 
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE address_mining
+    private static readonly string UpdateSqlCommand =
+        $@"UPDATE address_mining
                 SET
                     {nameof(AddressMiningEntity.Balance)} = @{nameof(AddressMiningEntity.Balance)},
                     {nameof(AddressMiningEntity.ModifiedBlock)} = @{nameof(AddressMiningEntity.ModifiedBlock)}
                 WHERE {nameof(AddressMiningEntity.Id)} = @{nameof(AddressMiningEntity.Id)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistAddressMiningCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistAddressMiningCommandHandler> logger)
+    public PersistAddressMiningCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistAddressMiningCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<ulong> Handle(PersistAddressMiningCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var entity = _mapper.Map<AddressMiningEntity>(request.AddressMining);
+
+            var isUpdate = entity.Id >= 1;
+
+            var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+
+            var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+
+            var result = await _context.ExecuteScalarAsync<ulong>(command);
+
+            return isUpdate ? entity.Id : result;
         }
-
-        public async Task<ulong> Handle(PersistAddressMiningCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
+            using (_logger.BeginScope(new Dictionary<string, object>
+                   {
+                       ["MiningPoolId"] = request.AddressMining.MiningPoolId,
+                       ["Owner"] = request.AddressMining.Owner,
+                       ["Balance"] = request.AddressMining.Balance,
+                       ["BlockHeight"] = request.AddressMining.ModifiedBlock
+                   }))
             {
-                var entity = _mapper.Map<AddressMiningEntity>(request.AddressMining);
-
-                var isUpdate = entity.Id >= 1;
-
-                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-
-                var result = await _context.ExecuteScalarAsync<ulong>(command);
-
-                return isUpdate ? entity.Id : result;
+                _logger.LogError(ex, $"Failure persisting mining position.");
             }
-            catch (Exception ex)
-            {
-                using (_logger.BeginScope(new Dictionary<string, object>
-                {
-                    ["MiningPoolId"] = request.AddressMining.MiningPoolId,
-                    ["Owner"] = request.AddressMining.Owner,
-                    ["Balance"] = request.AddressMining.Balance,
-                    ["BlockHeight"] = request.AddressMining.ModifiedBlock
-                }))
-                {
-                    _logger.LogError(ex, $"Failure persisting mining position.");
-                }
 
-                return 0;
-            }
+            return 0;
         }
     }
 }

@@ -8,25 +8,24 @@ using Opdex.Platform.Domain.Models.Addresses;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Addresses.Balances
+namespace Opdex.Platform.Application.EntryHandlers.Addresses.Balances;
+
+public class GetAddressBalanceByTokenQueryHandler : IRequestHandler<GetAddressBalanceByTokenQuery, AddressBalanceDto>
 {
-    public class GetAddressBalanceByTokenQueryHandler : IRequestHandler<GetAddressBalanceByTokenQuery, AddressBalanceDto>
+    private readonly IMediator _mediator;
+    private readonly IModelAssembler<AddressBalance, AddressBalanceDto> _assembler;
+
+    public GetAddressBalanceByTokenQueryHandler(IMediator mediator, IModelAssembler<AddressBalance, AddressBalanceDto> assembler)
     {
-        private readonly IMediator _mediator;
-        private readonly IModelAssembler<AddressBalance, AddressBalanceDto> _assembler;
+        _mediator = mediator;
+        _assembler = assembler;
+    }
 
-        public GetAddressBalanceByTokenQueryHandler(IMediator mediator, IModelAssembler<AddressBalance, AddressBalanceDto> assembler)
-        {
-            _mediator = mediator;
-            _assembler = assembler;
-        }
+    public async Task<AddressBalanceDto> Handle(GetAddressBalanceByTokenQuery request, CancellationToken cancellationToken)
+    {
+        var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(request.WalletAddress,
+                                                                                                 tokenAddress: request.TokenAddress), cancellationToken);
 
-        public async Task<AddressBalanceDto> Handle(GetAddressBalanceByTokenQuery request, CancellationToken cancellationToken)
-        {
-            var addressBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(request.WalletAddress,
-                                                                                                     tokenAddress: request.TokenAddress), cancellationToken);
-
-            return await _assembler.Assemble(addressBalance);
-        }
+        return await _assembler.Assemble(addressBalance);
     }
 }

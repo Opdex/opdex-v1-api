@@ -6,20 +6,19 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.MiningPools
+namespace Opdex.Platform.Application.Handlers.MiningPools;
+
+public class RetrieveMiningPoolByLiquidityPoolIdQueryHandler : IRequestHandler<RetrieveMiningPoolByLiquidityPoolIdQuery, MiningPool>
 {
-    public class RetrieveMiningPoolByLiquidityPoolIdQueryHandler : IRequestHandler<RetrieveMiningPoolByLiquidityPoolIdQuery, MiningPool>
+    private readonly IMediator _mediator;
+
+    public RetrieveMiningPoolByLiquidityPoolIdQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveMiningPoolByLiquidityPoolIdQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<MiningPool> Handle(RetrieveMiningPoolByLiquidityPoolIdQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectMiningPoolByLiquidityPoolIdQuery(request.LiquidityPoolId, request.FindOrThrow), cancellationToken);
-        }
+    public Task<MiningPool> Handle(RetrieveMiningPoolByLiquidityPoolIdQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectMiningPoolByLiquidityPoolIdQuery(request.LiquidityPoolId, request.FindOrThrow), cancellationToken);
     }
 }

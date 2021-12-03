@@ -1,9 +1,8 @@
 using Opdex.Platform.Common.Enums;
 
-namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools
+namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
+
+public class StartMiningEventDto : MineEventDto
 {
-    public class StartMiningEventDto : MineEventDto
-    {
-        public override TransactionEventType EventType => TransactionEventType.StartMiningEvent;
-    }
+    public override TransactionEventType EventType => TransactionEventType.StartMiningEvent;
 }

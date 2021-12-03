@@ -11,87 +11,86 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens;
+
+public class SelectTokenByIdQueryHandlerTests
 {
-    public class SelectTokenByIdQueryHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly SelectTokenByIdQueryHandler _handler;
+
+    public SelectTokenByIdQueryHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectTokenByIdQueryHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-        public SelectTokenByIdQueryHandlerTests()
+        _dbContext = new Mock<IDbContext>();
+        _handler = new SelectTokenByIdQueryHandler(_dbContext.Object, mapper);
+    }
+
+    [Fact]
+    public async Task SelectTokenById_Success()
+    {
+        const ulong id = 99ul;
+
+        var expectedEntity = new TokenEntity
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+            Id = id,
+            Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
+            IsLpt = true,
+            Name = "SomeName",
+            Symbol = "SomeSymbol",
+            Sats = 987689076,
+            Decimals = 18,
+            TotalSupply = 98765434567898765,
+            CreatedBlock = 1,
+            ModifiedBlock = 2
+        };
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new SelectTokenByIdQueryHandler(_dbContext.Object, mapper);
-        }
+        var command = new SelectTokenByIdQuery(id);
 
-        [Fact]
-        public async Task SelectTokenById_Success()
-        {
-            const ulong id = 99ul;
+        _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(expectedEntity));
 
-            var expectedEntity = new TokenEntity
-            {
-                Id = id,
-                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
-                IsLpt = true,
-                Name = "SomeName",
-                Symbol = "SomeSymbol",
-                Sats = 987689076,
-                Decimals = 18,
-                TotalSupply = 98765434567898765,
-                CreatedBlock = 1,
-                ModifiedBlock = 2
-            };
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var command = new SelectTokenByIdQuery(id);
+        result.Id.Should().Be(expectedEntity.Id);
+        result.Address.Should().Be(expectedEntity.Address);
+        result.IsLpt.Should().Be(expectedEntity.IsLpt);
+        result.Name.Should().Be(expectedEntity.Name);
+        result.Symbol.Should().Be(expectedEntity.Symbol);
+        result.Sats.Should().Be(expectedEntity.Sats);
+        result.Decimals.Should().Be(expectedEntity.Decimals);
+        result.TotalSupply.Should().Be(expectedEntity.TotalSupply);
+    }
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedEntity));
+    [Fact]
+    public void SelectTokenById_Throws_NotFoundException()
+    {
+        const ulong id = 99ul;
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        var command = new SelectTokenByIdQuery(id);
 
-            result.Id.Should().Be(expectedEntity.Id);
-            result.Address.Should().Be(expectedEntity.Address);
-            result.IsLpt.Should().Be(expectedEntity.IsLpt);
-            result.Name.Should().Be(expectedEntity.Name);
-            result.Symbol.Should().Be(expectedEntity.Symbol);
-            result.Sats.Should().Be(expectedEntity.Sats);
-            result.Decimals.Should().Be(expectedEntity.Decimals);
-            result.TotalSupply.Should().Be(expectedEntity.TotalSupply);
-        }
+        _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<TokenEntity>(null));
 
-        [Fact]
-        public void SelectTokenById_Throws_NotFoundException()
-        {
-            const ulong id = 99ul;
+        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+            .Should()
+            .ThrowAsync<NotFoundException>()
+            .WithMessage($"{nameof(Token)} not found.");
+    }
 
-            var command = new SelectTokenByIdQuery(id);
+    [Fact]
+    public async Task SelectTokenById_ReturnsNull()
+    {
+        const ulong id = 99ul;
+        const bool findOrThrow = false;
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<TokenEntity>(null));
+        var command = new SelectTokenByIdQuery(id, findOrThrow);
 
-            _handler.Invoking(h => h.Handle(command, CancellationToken.None))
-                .Should()
-                .ThrowAsync<NotFoundException>()
-                .WithMessage($"{nameof(Token)} not found.");
-        }
+        _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<TokenEntity>(null));
 
-        [Fact]
-        public async Task SelectTokenById_ReturnsNull()
-        {
-            const ulong id = 99ul;
-            const bool findOrThrow = false;
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var command = new SelectTokenByIdQuery(id, findOrThrow);
-
-            _dbContext.Setup(db => db.ExecuteFindAsync<TokenEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<TokenEntity>(null));
-
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            result.Should().BeNull();
-        }
+        result.Should().BeNull();
     }
 }

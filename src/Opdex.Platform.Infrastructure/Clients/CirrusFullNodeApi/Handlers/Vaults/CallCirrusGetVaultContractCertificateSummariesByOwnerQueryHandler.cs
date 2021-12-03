@@ -10,28 +10,27 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Vaults;
+
+public class CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler
+    : IRequestHandler<CallCirrusGetVaultContractCertificateSummariesByOwnerQuery, IEnumerable<VaultContractCertificateSummary>>
 {
-    public class CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler
-        : IRequestHandler<CallCirrusGetVaultContractCertificateSummariesByOwnerQuery, IEnumerable<VaultContractCertificateSummary>>
+    private readonly ISmartContractsModule _smartContractsModule;
+    private const string MethodName = VaultConstants.Methods.GetCertificates;
+
+    public CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler(ISmartContractsModule smartContractsModule)
     {
-        private readonly ISmartContractsModule _smartContractsModule;
-        private const string MethodName = VaultConstants.Methods.GetCertificates;
+        _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+    }
 
-        public CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler(ISmartContractsModule smartContractsModule)
-        {
-            _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-        }
+    public async Task<IEnumerable<VaultContractCertificateSummary>> Handle(CallCirrusGetVaultContractCertificateSummariesByOwnerQuery request,
+                                                                           CancellationToken cancellationToken)
+    {
+        var parameters = new[] { new SmartContractMethodParameter(request.Owner) };
+        var balanceRequest = new LocalCallRequestDto(request.Vault, request.Owner, MethodName, parameters, request.BlockHeight);
 
-        public async Task<IEnumerable<VaultContractCertificateSummary>> Handle(CallCirrusGetVaultContractCertificateSummariesByOwnerQuery request,
-                                                                               CancellationToken cancellationToken)
-        {
-            var parameters = new[] { new SmartContractMethodParameter(request.Owner) };
-            var balanceRequest = new LocalCallRequestDto(request.Vault, request.Owner, MethodName, parameters, request.BlockHeight);
+        var response = await _smartContractsModule.LocalCallAsync(balanceRequest, cancellationToken);
 
-            var response = await _smartContractsModule.LocalCallAsync(balanceRequest, cancellationToken);
-
-            return response.DeserializeValue<IEnumerable<VaultContractCertificateSummary>>();
-        }
+        return response.DeserializeValue<IEnumerable<VaultContractCertificateSummary>>();
     }
 }

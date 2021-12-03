@@ -7,31 +7,30 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernances
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernances;
+
+public class ProcessNominationLogCommandHandler : IRequestHandler<ProcessNominationLogCommand, bool>
 {
-    public class ProcessNominationLogCommandHandler : IRequestHandler<ProcessNominationLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessNominationLogCommandHandler> _logger;
+
+    public ProcessNominationLogCommandHandler(IMediator mediator, ILogger<ProcessNominationLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessNominationLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessNominationLogCommandHandler(IMediator mediator, ILogger<ProcessNominationLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessNominationLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            return await _mediator.Send(new CreateMiningGovernanceNominationsCommand(request.Log.Contract, request.BlockHeight));
         }
-
-        public async Task<bool> Handle(ProcessNominationLogCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                return await _mediator.Send(new CreateMiningGovernanceNominationsCommand(request.Log.Contract, request.BlockHeight));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(NominationLog)}");
+            _logger.LogError(ex, $"Failure processing {nameof(NominationLog)}");
 
-                return false;
-            }
+            return false;
         }
     }
 }

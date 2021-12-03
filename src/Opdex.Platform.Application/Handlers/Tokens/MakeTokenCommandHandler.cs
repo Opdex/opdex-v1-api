@@ -6,29 +6,28 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 using System.Threading;
 
-namespace Opdex.Platform.Application.Handlers.Tokens
+namespace Opdex.Platform.Application.Handlers.Tokens;
+
+public class MakeTokenCommandHandler : IRequestHandler<MakeTokenCommand, ulong>
 {
-    public class MakeTokenCommandHandler : IRequestHandler<MakeTokenCommand, ulong>
+    private readonly IMediator _mediator;
+
+    public MakeTokenCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeTokenCommandHandler(IMediator mediator)
+    public async Task<ulong> Handle(MakeTokenCommand request, CancellationToken cancellationToken)
+    {
+        if (request.Refresh)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            var summary = await _mediator.Send(new CallCirrusGetStandardTokenContractSummaryQuery(request.Token.Address,
+                                                                                                  request.BlockHeight,
+                                                                                                  includeTotalSupply: request.RefreshTotalSupply));
+
+            request.Token.Update(summary);
         }
 
-        public async Task<ulong> Handle(MakeTokenCommand request, CancellationToken cancellationToken)
-        {
-            if (request.Refresh)
-            {
-                var summary = await _mediator.Send(new CallCirrusGetStandardTokenContractSummaryQuery(request.Token.Address,
-                                                                                                      request.BlockHeight,
-                                                                                                      includeTotalSupply: request.RefreshTotalSupply));
-
-                request.Token.Update(summary);
-            }
-
-            return await _mediator.Send(new PersistTokenCommand(request.Token));
-        }
+        return await _mediator.Send(new PersistTokenCommand(request.Token));
     }
 }

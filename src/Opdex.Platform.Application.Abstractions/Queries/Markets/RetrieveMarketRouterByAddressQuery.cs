@@ -3,20 +3,19 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Markets;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Markets
-{
-    public class RetrieveMarketRouterByAddressQuery : FindQuery<MarketRouter>
-    {
-        public RetrieveMarketRouterByAddressQuery(Address routerAddress, bool findOrThrow = true) : base(findOrThrow)
-        {
-            if (routerAddress == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(routerAddress));
-            }
+namespace Opdex.Platform.Application.Abstractions.Queries.Markets;
 
-            RouterAddress = routerAddress;
+public class RetrieveMarketRouterByAddressQuery : FindQuery<MarketRouter>
+{
+    public RetrieveMarketRouterByAddressQuery(Address routerAddress, bool findOrThrow = true) : base(findOrThrow)
+    {
+        if (routerAddress == Address.Empty)
+        {
+            throw new ArgumentNullException(nameof(routerAddress));
         }
 
-        public Address RouterAddress { get; }
+        RouterAddress = routerAddress;
     }
+
+    public Address RouterAddress { get; }
 }

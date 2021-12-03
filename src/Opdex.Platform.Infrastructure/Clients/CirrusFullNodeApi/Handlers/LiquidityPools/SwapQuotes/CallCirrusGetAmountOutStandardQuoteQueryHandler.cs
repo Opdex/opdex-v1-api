@@ -8,29 +8,28 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools.SwapQuotes
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools.SwapQuotes;
+
+public class CallCirrusGetAmountOutStandardQuoteQueryHandler : IRequestHandler<CallCirrusGetAmountOutStandardQuoteQuery, UInt256>
 {
-    public class CallCirrusGetAmountOutStandardQuoteQueryHandler : IRequestHandler<CallCirrusGetAmountOutStandardQuoteQuery, UInt256>
+    private readonly ISmartContractsModule _smartContractsModule;
+
+    public CallCirrusGetAmountOutStandardQuoteQueryHandler(ISmartContractsModule smartContractsModule)
     {
-        private readonly ISmartContractsModule _smartContractsModule;
+        _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+    }
 
-        public CallCirrusGetAmountOutStandardQuoteQueryHandler(ISmartContractsModule smartContractsModule)
+    public async Task<UInt256> Handle(CallCirrusGetAmountOutStandardQuoteQuery request, CancellationToken cancellationToken)
+    {
+        var quoteParams = new[]
         {
-            _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-        }
+            new SmartContractMethodParameter(request.AmountIn),
+            new SmartContractMethodParameter(request.ReserveIn),
+            new SmartContractMethodParameter(request.ReserveOut)
+        };
 
-        public async Task<UInt256> Handle(CallCirrusGetAmountOutStandardQuoteQuery request, CancellationToken cancellationToken)
-        {
-            var quoteParams = new[]
-            {
-                new SmartContractMethodParameter(request.AmountIn),
-                new SmartContractMethodParameter(request.ReserveIn),
-                new SmartContractMethodParameter(request.ReserveOut)
-            };
-
-            var localCall = new LocalCallRequestDto(request.Router, request.Router, "GetAmountOut", quoteParams);
-            var amountIn = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-            return amountIn.DeserializeValue<UInt256>();
-        }
+        var localCall = new LocalCallRequestDto(request.Router, request.Router, "GetAmountOut", quoteParams);
+        var amountIn = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
+        return amountIn.DeserializeValue<UInt256>();
     }
 }

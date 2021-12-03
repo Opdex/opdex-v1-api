@@ -17,153 +17,152 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.SmartContracts
+namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.SmartContracts;
+
+public class CallCirrusLocalCallSmartContractMethodCommandHandlerTests
 {
-    public class CallCirrusLocalCallSmartContractMethodCommandHandlerTests
+    private readonly Mock<ISmartContractsModule> _smartContractsModuleMock;
+    private readonly CallCirrusLocalCallSmartContractMethodCommandHandler _handler;
+
+    public CallCirrusLocalCallSmartContractMethodCommandHandlerTests()
     {
-        private readonly Mock<ISmartContractsModule> _smartContractsModuleMock;
-        private readonly CallCirrusLocalCallSmartContractMethodCommandHandler _handler;
+        _smartContractsModuleMock = new Mock<ISmartContractsModule>();
 
-        public CallCirrusLocalCallSmartContractMethodCommandHandlerTests()
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+
+        _handler = new CallCirrusLocalCallSmartContractMethodCommandHandler(_smartContractsModuleMock.Object, mapper, new NullLoggerFactory());
+    }
+
+    [Fact]
+    public void CallCirrusLocalCallSmartContractMethodCommand_InvalidQuoteRequest_ThrowArgumentNullException()
+    {
+        // Arrange
+        // Act
+        void Act() => new CallCirrusLocalCallSmartContractMethodCommand(null);
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Quote request must be provided.");
+    }
+
+    [Fact]
+    public async Task CallCirrusLocalCallSmartContractMethodCommandHandler_Sends_LocalCallAsync()
+    {
+        // Arrange
+        Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+        Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+        FixedDecimal amount = FixedDecimal.Parse("1.1");
+        const string method = "Swap";
+        const string callback = "https://dev-api.opdex.com/transactions";
+
+        var parameters = new List<TransactionQuoteRequestParameter>()
         {
-            _smartContractsModuleMock = new Mock<ISmartContractsModule>();
+            new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
+        };
 
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+        var cancellationToken = new CancellationTokenSource().Token;
+        var request = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);
 
-            _handler = new CallCirrusLocalCallSmartContractMethodCommandHandler(_smartContractsModuleMock.Object, mapper, new NullLoggerFactory());
+        // Act
+        try
+        {
+            await _handler.Handle(new CallCirrusLocalCallSmartContractMethodCommand(request), cancellationToken);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public void CallCirrusLocalCallSmartContractMethodCommand_InvalidQuoteRequest_ThrowArgumentNullException()
+        // Assert
+        _smartContractsModuleMock.Verify(callTo => callTo.LocalCallAsync(It.Is<LocalCallRequestDto>(
+                                                                             requestDto => requestDto.ContractAddress == to
+                                                                                           && requestDto.MethodName == method
+                                                                                           && requestDto.Sender == sender
+                                                                                           && requestDto.Amount == amount
+                                                                                           && requestDto.Parameters.Length == parameters.Count
+                                                                         ), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CallCirrusLocalCallSmartContractMethodCommandHandler_Returns_TransactionQuote_Success()
+    {
+        // Arrange
+        Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+        Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+        FixedDecimal amount = FixedDecimal.Parse("1.1");
+        const string method = "Swap";
+        const string callback = "https://dev-api.opdex.com/transactions";
+
+        var parameters = new List<TransactionQuoteRequestParameter>
         {
-            // Arrange
-            // Act
-            void Act() => new CallCirrusLocalCallSmartContractMethodCommand(null);
+            new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
+        };
 
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Quote request must be provided.");
-        }
+        var request = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);
 
-        [Fact]
-        public async Task CallCirrusLocalCallSmartContractMethodCommandHandler_Sends_LocalCallAsync()
+        dynamic txLog = new ExpandoObject();
+        txLog.reserveCrs = 1ul;
+        txLog.reserveSrc = "957488";
+
+        var logOutputDto = new TransactionLogEventDto { Event = "ReservesLog", Data = txLog };
+
+        var dtoResponse = new LocalCallResponseDto
         {
-            // Arrange
-            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            FixedDecimal amount = FixedDecimal.Parse("1.1");
-            const string method = "Swap";
-            const string callback = "https://dev-api.opdex.com/transactions";
-
-            var parameters = new List<TransactionQuoteRequestParameter>()
+            ErrorMessage = new Error { Value = null },
+            GasConsumed = new GasConsumed { Value = 10000 },
+            Logs = new List<TransactionLogSummaryDto>
             {
-                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
-            };
-
-            var cancellationToken = new CancellationTokenSource().Token;
-            var request = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);
-
-            // Act
-            try
-            {
-                await _handler.Handle(new CallCirrusLocalCallSmartContractMethodCommand(request), cancellationToken);
+                new TransactionLogSummaryDto { Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", Data = "Data", Log = logOutputDto, SortOrder = 0, Topics = new [] { "52657365727665734C6F67" }}
             }
-            catch (Exception) { }
+        };
 
-            // Assert
-            _smartContractsModuleMock.Verify(callTo => callTo.LocalCallAsync(It.Is<LocalCallRequestDto>(
-                                                                                 requestDto => requestDto.ContractAddress == to
-                                                                                            && requestDto.MethodName == method
-                                                                                            && requestDto.Sender == sender
-                                                                                            && requestDto.Amount == amount
-                                                                                            && requestDto.Parameters.Length == parameters.Count
-                                                                             ), It.IsAny<CancellationToken>()), Times.Once);
-        }
+        _smartContractsModuleMock
+            .Setup(callTo => callTo.LocalCallAsync(It.IsAny<LocalCallRequestDto>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dtoResponse);
 
-        [Fact]
-        public async Task CallCirrusLocalCallSmartContractMethodCommandHandler_Returns_TransactionQuote_Success()
+        // Act
+        var response = await _handler.Handle(new CallCirrusLocalCallSmartContractMethodCommand(request), CancellationToken.None);
+
+        // Assert
+        response.Error.Should().BeNull();
+        response.Request.Should().BeEquivalentTo(request);
+        response.Result.Should().BeNull();
+        response.Logs.Count.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task CallCirrusLocalCallSmartContractMethodCommandHandler_Returns_TransactionQuote_Fail()
+    {
+        // Arrange
+        Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+        Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+        FixedDecimal amount = FixedDecimal.Parse("1.1");
+        const string method = "Swap";
+        const string callback = "https://dev-api.opdex.com/transactions";
+
+        var parameters = new List<TransactionQuoteRequestParameter>
         {
-            // Arrange
-            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            FixedDecimal amount = FixedDecimal.Parse("1.1");
-            const string method = "Swap";
-            const string callback = "https://dev-api.opdex.com/transactions";
+            new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
+        };
 
-            var parameters = new List<TransactionQuoteRequestParameter>
-            {
-                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
-            };
+        var request = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);
 
-            var request = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);
+        const string error = "Error";
 
-            dynamic txLog = new ExpandoObject();
-            txLog.reserveCrs = 1ul;
-            txLog.reserveSrc = "957488";
-
-            var logOutputDto = new TransactionLogEventDto { Event = "ReservesLog", Data = txLog };
-
-            var dtoResponse = new LocalCallResponseDto
-            {
-                ErrorMessage = new Error { Value = null },
-                GasConsumed = new GasConsumed { Value = 10000 },
-                Logs = new List<TransactionLogSummaryDto>
-                {
-                    new TransactionLogSummaryDto { Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", Data = "Data", Log = logOutputDto, SortOrder = 0, Topics = new [] { "52657365727665734C6F67" }}
-                }
-            };
-
-            _smartContractsModuleMock
-                .Setup(callTo => callTo.LocalCallAsync(It.IsAny<LocalCallRequestDto>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(dtoResponse);
-
-            // Act
-            var response = await _handler.Handle(new CallCirrusLocalCallSmartContractMethodCommand(request), CancellationToken.None);
-
-            // Assert
-            response.Error.Should().BeNull();
-            response.Request.Should().BeEquivalentTo(request);
-            response.Result.Should().BeNull();
-            response.Logs.Count.Should().Be(1);
-        }
-
-        [Fact]
-        public async Task CallCirrusLocalCallSmartContractMethodCommandHandler_Returns_TransactionQuote_Fail()
+        var dtoResponse = new LocalCallResponseDto
         {
-            // Arrange
-            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            FixedDecimal amount = FixedDecimal.Parse("1.1");
-            const string method = "Swap";
-            const string callback = "https://dev-api.opdex.com/transactions";
+            ErrorMessage = new Error { Value = "Error" },
+            GasConsumed = new GasConsumed { Value = 10000 },
+            Logs = new List<TransactionLogSummaryDto>()
+        };
 
-            var parameters = new List<TransactionQuoteRequestParameter>
-            {
-                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
-            };
+        _smartContractsModuleMock
+            .Setup(callTo => callTo.LocalCallAsync(It.IsAny<LocalCallRequestDto>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dtoResponse);
 
-            var request = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);
+        // Act
+        var response = await _handler.Handle(new CallCirrusLocalCallSmartContractMethodCommand(request), CancellationToken.None);
 
-            const string error = "Error";
-
-            var dtoResponse = new LocalCallResponseDto
-            {
-                ErrorMessage = new Error { Value = "Error" },
-                GasConsumed = new GasConsumed { Value = 10000 },
-                Logs = new List<TransactionLogSummaryDto>()
-            };
-
-            _smartContractsModuleMock
-                .Setup(callTo => callTo.LocalCallAsync(It.IsAny<LocalCallRequestDto>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(dtoResponse);
-
-            // Act
-            var response = await _handler.Handle(new CallCirrusLocalCallSmartContractMethodCommand(request), CancellationToken.None);
-
-            // Assert
-            response.Error.Should().NotBe(error);
-            response.Request.Should().BeEquivalentTo(request);
-            response.Result.Should().BeNull();
-            response.Logs.Should().BeEmpty();
-        }
+        // Assert
+        response.Error.Should().NotBe(error);
+        response.Request.Should().BeEquivalentTo(request);
+        response.Result.Should().BeNull();
+        response.Logs.Should().BeEmpty();
     }
 }

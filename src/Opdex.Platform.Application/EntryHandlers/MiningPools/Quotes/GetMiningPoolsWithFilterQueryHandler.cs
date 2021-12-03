@@ -9,30 +9,29 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes
+namespace Opdex.Platform.Application.EntryHandlers.MiningPools.Quotes;
+
+public class GetMiningPoolsWithFilterQueryHandler : EntryFilterQueryHandler<GetMiningPoolsWithFilterQuery, MiningPoolsDto>
 {
-    public class GetMiningPoolsWithFilterQueryHandler : EntryFilterQueryHandler<GetMiningPoolsWithFilterQuery, MiningPoolsDto>
+    private readonly IMediator _mediator;
+    private readonly IModelAssembler<MiningPool, MiningPoolDto> _miningPoolAssembler;
+
+    public GetMiningPoolsWithFilterQueryHandler(IMediator mediator, IModelAssembler<MiningPool, MiningPoolDto> miningPoolAssembler)
     {
-        private readonly IMediator _mediator;
-        private readonly IModelAssembler<MiningPool, MiningPoolDto> _miningPoolAssembler;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _miningPoolAssembler = miningPoolAssembler ?? throw new ArgumentNullException(nameof(miningPoolAssembler));
+    }
 
-        public GetMiningPoolsWithFilterQueryHandler(IMediator mediator, IModelAssembler<MiningPool, MiningPoolDto> miningPoolAssembler)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _miningPoolAssembler = miningPoolAssembler ?? throw new ArgumentNullException(nameof(miningPoolAssembler));
-        }
+    public override async Task<MiningPoolsDto> Handle(GetMiningPoolsWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        var miningPools = await _mediator.Send(new RetrieveMiningPoolsWithFilterQuery(request.Cursor), cancellationToken);
 
-        public override async Task<MiningPoolsDto> Handle(GetMiningPoolsWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            var miningPools = await _mediator.Send(new RetrieveMiningPoolsWithFilterQuery(request.Cursor), cancellationToken);
+        var miningPoolsResults = miningPools.ToList();
 
-            var miningPoolsResults = miningPools.ToList();
+        var cursorDto = BuildCursorDto(miningPoolsResults, request.Cursor, pointerSelector: result => result.Id);
 
-            var cursorDto = BuildCursorDto(miningPoolsResults, request.Cursor, pointerSelector: result => result.Id);
+        var assembledResults = await Task.WhenAll(miningPoolsResults.Select(miningPool => _miningPoolAssembler.Assemble(miningPool)));
 
-            var assembledResults = await Task.WhenAll(miningPoolsResults.Select(miningPool => _miningPoolAssembler.Assemble(miningPool)));
-
-            return new MiningPoolsDto { MiningPools = assembledResults, Cursor = cursorDto };
-        }
+        return new MiningPoolsDto { MiningPools = assembledResults, Cursor = cursorDto };
     }
 }

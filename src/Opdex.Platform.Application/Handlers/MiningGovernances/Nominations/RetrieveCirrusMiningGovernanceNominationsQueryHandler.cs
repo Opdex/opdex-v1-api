@@ -8,21 +8,20 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.MiningGovernances.Nominations
+namespace Opdex.Platform.Application.Handlers.MiningGovernances.Nominations;
+
+public class RetrieveCirrusMiningGovernanceNominationsQueryHandler
+    : IRequestHandler<RetrieveCirrusMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceContractNominationSummary>>
 {
-    public class RetrieveCirrusMiningGovernanceNominationsQueryHandler
-        : IRequestHandler<RetrieveCirrusMiningGovernanceNominationsQuery, IEnumerable<MiningGovernanceContractNominationSummary>>
+    private readonly IMediator _mediator;
+
+    public RetrieveCirrusMiningGovernanceNominationsQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveCirrusMiningGovernanceNominationsQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<IEnumerable<MiningGovernanceContractNominationSummary>> Handle(RetrieveCirrusMiningGovernanceNominationsQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new CallCirrusGetMiningGovernanceNominationsSummaryQuery(request.Address, request.BlockHeight), cancellationToken);
-        }
+    public Task<IEnumerable<MiningGovernanceContractNominationSummary>> Handle(RetrieveCirrusMiningGovernanceNominationsQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new CallCirrusGetMiningGovernanceNominationsSummaryQuery(request.Address, request.BlockHeight), cancellationToken);
     }
 }

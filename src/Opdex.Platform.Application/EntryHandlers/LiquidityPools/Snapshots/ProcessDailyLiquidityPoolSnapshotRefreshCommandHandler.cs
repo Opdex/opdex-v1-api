@@ -7,49 +7,48 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots
+namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Snapshots;
+
+public class ProcessDailyLiquidityPoolSnapshotRefreshCommandHandler : IRequestHandler<ProcessDailyLiquidityPoolSnapshotRefreshCommand, Unit>
 {
-    public class ProcessDailyLiquidityPoolSnapshotRefreshCommandHandler : IRequestHandler<ProcessDailyLiquidityPoolSnapshotRefreshCommand, Unit>
+    private readonly IMediator _mediator;
+
+    public ProcessDailyLiquidityPoolSnapshotRefreshCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public ProcessDailyLiquidityPoolSnapshotRefreshCommandHandler(IMediator mediator)
+    public async Task<Unit> Handle(ProcessDailyLiquidityPoolSnapshotRefreshCommand request, CancellationToken cancellationToken)
+    {
+        // Retrieve liquidity pool snapshot
+        var lpSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(request.LiquidityPoolId,
+                                                                                               request.BlockTime,
+                                                                                               request.SnapshotType));
+
+        // Process new token snapshot
+        var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(request.MarketId, request.SrcToken, request.SnapshotType,
+                                                                             request.BlockTime, request.CrsUsd, lpSnapshot.Reserves.Crs.Close,
+                                                                             lpSnapshot.Reserves.Src.Close, request.BlockHeight));
+
+        var stakingUsd = request.StakingTokenUsd ?? 0m;
+
+        // Reset stale snapshots
+        if (lpSnapshot.EndDate < request.BlockTime)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            // Process latest lp snapshot
+            lpSnapshot.ResetStaleSnapshot(request.CrsUsd, stakingUsd, request.SrcToken.Sats, request.BlockTime);
+        }
+        else // refresh existing snapshot USD amounts
+        {
+            lpSnapshot.RefreshSnapshotFiatAmounts(request.CrsUsd, stakingUsd);
         }
 
-        public async Task<Unit> Handle(ProcessDailyLiquidityPoolSnapshotRefreshCommand request, CancellationToken cancellationToken)
-        {
-            // Retrieve liquidity pool snapshot
-            var lpSnapshot = await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(request.LiquidityPoolId,
-                                                                                                   request.BlockTime,
-                                                                                                   request.SnapshotType));
+        await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(lpSnapshot, request.BlockHeight));
 
-            // Process new token snapshot
-            var srcUsd = await _mediator.Send(new ProcessSrcTokenSnapshotCommand(request.MarketId, request.SrcToken, request.SnapshotType,
-                                                                                 request.BlockTime, request.CrsUsd, lpSnapshot.Reserves.Crs.Close,
-                                                                                 lpSnapshot.Reserves.Src.Close, request.BlockHeight));
+        // Process latest lp token snapshot
+        var lptUsd = await _mediator.Send(new ProcessLpTokenSnapshotCommand(request.MarketId, request.LpToken, lpSnapshot.Reserves.Usd.Close,
+                                                                            request.SnapshotType, request.BlockTime, request.BlockHeight));
 
-            var stakingUsd = request.StakingTokenUsd ?? 0m;
-
-            // Reset stale snapshots
-            if (lpSnapshot.EndDate < request.BlockTime)
-            {
-                // Process latest lp snapshot
-                lpSnapshot.ResetStaleSnapshot(request.CrsUsd, stakingUsd, request.SrcToken.Sats, request.BlockTime);
-            }
-            else // refresh existing snapshot USD amounts
-            {
-                lpSnapshot.RefreshSnapshotFiatAmounts(request.CrsUsd, stakingUsd);
-            }
-
-            await _mediator.Send(new MakeLiquidityPoolSnapshotCommand(lpSnapshot, request.BlockHeight));
-
-            // Process latest lp token snapshot
-            var lptUsd = await _mediator.Send(new ProcessLpTokenSnapshotCommand(request.MarketId, request.LpToken, lpSnapshot.Reserves.Usd.Close,
-                                                                                request.SnapshotType, request.BlockTime, request.BlockHeight));
-
-            return Unit.Value;
-        }
+        return Unit.Value;
     }
 }

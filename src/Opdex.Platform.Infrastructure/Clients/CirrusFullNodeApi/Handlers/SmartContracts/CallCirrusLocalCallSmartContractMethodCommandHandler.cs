@@ -11,53 +11,52 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modul
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts;
+
+public class CallCirrusLocalCallSmartContractMethodCommandHandler : IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>
 {
-    public class CallCirrusLocalCallSmartContractMethodCommandHandler : IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>
+    private readonly ISmartContractsModule _smartContractsModule;
+    private readonly IMapper _mapper;
+    private readonly ILoggerFactory _loggerFactory;
+
+    public CallCirrusLocalCallSmartContractMethodCommandHandler(ISmartContractsModule smartContractsModule, IMapper mapper, ILoggerFactory loggerFactory)
     {
-        private readonly ISmartContractsModule _smartContractsModule;
-        private readonly IMapper _mapper;
-        private readonly ILoggerFactory _loggerFactory;
+        _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+    }
 
-        public CallCirrusLocalCallSmartContractMethodCommandHandler(ISmartContractsModule smartContractsModule, IMapper mapper, ILoggerFactory loggerFactory)
+    public async Task<TransactionQuote> Handle(CallCirrusLocalCallSmartContractMethodCommand request, CancellationToken cancellationToken)
+    {
+        var localCall = new LocalCallRequestDto(request.QuoteRequest.To, request.QuoteRequest.Sender, request.QuoteRequest.Method,
+                                                request.QuoteRequest.MethodParameters, amount: request.QuoteRequest.Amount);
+
+        var response = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
+
+        string error = null;
+        if (!(response.ErrorMessage?.Value is null))
         {
-            _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            var errorProcessor = new TransactionErrorProcessor(_loggerFactory.CreateLogger<TransactionErrorProcessor>());
+            error = errorProcessor.ProcessOpdexTransactionError(response.ErrorMessage.Value);
         }
 
-        public async Task<TransactionQuote> Handle(CallCirrusLocalCallSmartContractMethodCommand request, CancellationToken cancellationToken)
+        var transactionLogs = new List<TransactionLog>();
+        for (var i = 0; i < response.Logs.Count; i++)
         {
-            var localCall = new LocalCallRequestDto(request.QuoteRequest.To, request.QuoteRequest.Sender, request.QuoteRequest.Method,
-                                                    request.QuoteRequest.MethodParameters, amount: request.QuoteRequest.Amount);
-
-            var response = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-
-            string error = null;
-            if (!(response.ErrorMessage?.Value is null))
+            response.Logs[i].SortOrder = i;
+            try
             {
-                var errorProcessor = new TransactionErrorProcessor(_loggerFactory.CreateLogger<TransactionErrorProcessor>());
-                error = errorProcessor.ProcessOpdexTransactionError(response.ErrorMessage.Value);
+                var log = _mapper.Map<TransactionLog>(response.Logs[i]);
+                if (log != null) transactionLogs.Add(log);
             }
-
-            var transactionLogs = new List<TransactionLog>();
-            for (var i = 0; i < response.Logs.Count; i++)
+            catch (Exception ex)
             {
-                response.Logs[i].SortOrder = i;
-                try
-                {
-                    var log = _mapper.Map<TransactionLog>(response.Logs[i]);
-                    if (log != null) transactionLogs.Add(log);
-                }
-                catch (Exception ex)
-                {
-                    // Ignored, a transaction log's name may have matched but not the schema
-                    var logger = _loggerFactory.CreateLogger<TransactionErrorProcessor>();
-                    logger.LogDebug(ex, "Incorrect transaction log schema in transaction quote");
-                }
+                // Ignored, a transaction log's name may have matched but not the schema
+                var logger = _loggerFactory.CreateLogger<TransactionErrorProcessor>();
+                logger.LogDebug(ex, "Incorrect transaction log schema in transaction quote");
             }
-
-            return new TransactionQuote(response.Return, error, response.GasConsumed.Value, transactionLogs, request.QuoteRequest);
         }
+
+        return new TransactionQuote(response.Return, error, response.GasConsumed.Value, transactionLogs, request.QuoteRequest);
     }
 }

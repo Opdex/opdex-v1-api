@@ -4,20 +4,19 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Markets.Permissions
+namespace Opdex.Platform.Application.Handlers.Markets.Permissions;
+
+public class MakeMarketPermissionCommandHandler : IRequestHandler<MakeMarketPermissionCommand, ulong>
 {
-    public class MakeMarketPermissionCommandHandler : IRequestHandler<MakeMarketPermissionCommand, ulong>
+    private readonly IMediator _mediator;
+
+    public MakeMarketPermissionCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator;
+    }
 
-        public MakeMarketPermissionCommandHandler(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
-        public Task<ulong> Handle(MakeMarketPermissionCommand request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new PersistMarketPermissionCommand(request.MarketPermission), cancellationToken);
-        }
+    public Task<ulong> Handle(MakeMarketPermissionCommand request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new PersistMarketPermissionCommand(request.MarketPermission), cancellationToken);
     }
 }

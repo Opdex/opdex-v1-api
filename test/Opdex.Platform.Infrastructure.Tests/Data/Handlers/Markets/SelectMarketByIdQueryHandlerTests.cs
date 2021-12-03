@@ -11,89 +11,88 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets;
+
+public class SelectMarketByIdQueryHandlerTests
 {
-    public class SelectMarketByIdQueryHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly SelectMarketByIdQueryHandler _handler;
+
+    public SelectMarketByIdQueryHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectMarketByIdQueryHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-        public SelectMarketByIdQueryHandlerTests()
+        _dbContext = new Mock<IDbContext>();
+        _handler = new SelectMarketByIdQueryHandler(_dbContext.Object, mapper);
+    }
+
+    [Fact]
+    public async Task SelectMarketById_Success()
+    {
+        const ulong id = 99ul;
+
+        var expectedEntity = new MarketEntity
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+            Id = 123454,
+            Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
+            Owner = "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN",
+            AuthPoolCreators = false,
+            AuthProviders = true,
+            AuthTraders = true,
+            DeployerId = 4,
+            MarketFeeEnabled = true,
+            CreatedBlock = 1,
+            ModifiedBlock = 2
+        };
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new SelectMarketByIdQueryHandler(_dbContext.Object, mapper);
-        }
+        var command = new SelectMarketByIdQuery(id);
 
-        [Fact]
-        public async Task SelectMarketById_Success()
-        {
-            const ulong id = 99ul;
+        _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(expectedEntity));
 
-            var expectedEntity = new MarketEntity
-            {
-                Id = 123454,
-                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
-                Owner = "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN",
-                AuthPoolCreators = false,
-                AuthProviders = true,
-                AuthTraders = true,
-                DeployerId = 4,
-                MarketFeeEnabled = true,
-                CreatedBlock = 1,
-                ModifiedBlock = 2
-            };
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var command = new SelectMarketByIdQuery(id);
+        result.Id.Should().Be(expectedEntity.Id);
+        result.Address.Should().Be(expectedEntity.Address);
+        result.Owner.Should().Be(expectedEntity.Owner);
+        result.AuthPoolCreators.Should().Be(expectedEntity.AuthPoolCreators);
+        result.AuthProviders.Should().Be(expectedEntity.AuthProviders);
+        result.AuthTraders.Should().Be(expectedEntity.AuthTraders);
+        result.DeployerId.Should().Be(expectedEntity.DeployerId);
+        result.MarketFeeEnabled.Should().Be(expectedEntity.MarketFeeEnabled);
+        result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);
+        result.ModifiedBlock.Should().Be(expectedEntity.ModifiedBlock);
+    }
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedEntity));
+    [Fact]
+    public void SelectMarketById_Throws_NotFoundException()
+    {
+        const ulong id = 99ul;
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        var command = new SelectMarketByIdQuery(id);
 
-            result.Id.Should().Be(expectedEntity.Id);
-            result.Address.Should().Be(expectedEntity.Address);
-            result.Owner.Should().Be(expectedEntity.Owner);
-            result.AuthPoolCreators.Should().Be(expectedEntity.AuthPoolCreators);
-            result.AuthProviders.Should().Be(expectedEntity.AuthProviders);
-            result.AuthTraders.Should().Be(expectedEntity.AuthTraders);
-            result.DeployerId.Should().Be(expectedEntity.DeployerId);
-            result.MarketFeeEnabled.Should().Be(expectedEntity.MarketFeeEnabled);
-            result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);
-            result.ModifiedBlock.Should().Be(expectedEntity.ModifiedBlock);
-        }
+        _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<MarketEntity>(null));
 
-        [Fact]
-        public void SelectMarketById_Throws_NotFoundException()
-        {
-            const ulong id = 99ul;
+        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+            .Should()
+            .ThrowAsync<NotFoundException>()
+            .WithMessage($"{nameof(Market)} not found.");
+    }
 
-            var command = new SelectMarketByIdQuery(id);
+    [Fact]
+    public async Task SelectMarketById_ReturnsNull()
+    {
+        const ulong id = 99ul;
+        const bool findOrThrow = false;
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<MarketEntity>(null));
+        var command = new SelectMarketByIdQuery(id, findOrThrow);
 
-            _handler.Invoking(h => h.Handle(command, CancellationToken.None))
-                .Should()
-                .ThrowAsync<NotFoundException>()
-                .WithMessage($"{nameof(Market)} not found.");
-        }
+        _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<MarketEntity>(null));
 
-        [Fact]
-        public async Task SelectMarketById_ReturnsNull()
-        {
-            const ulong id = 99ul;
-            const bool findOrThrow = false;
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var command = new SelectMarketByIdQuery(id, findOrThrow);
-
-            _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<MarketEntity>(null));
-
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            result.Should().BeNull();
-        }
+        result.Should().BeNull();
     }
 }

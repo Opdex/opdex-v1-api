@@ -9,12 +9,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.Transa
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs;
+
+public class PersistTransactionLogCommandHandler : IRequestHandler<PersistTransactionLogCommand, bool>
 {
-    public class PersistTransactionLogCommandHandler : IRequestHandler<PersistTransactionLogCommand, bool>
-    {
-        private static readonly string SqlCommand =
-            $@"INSERT INTO transaction_log (
+    private static readonly string SqlCommand =
+        $@"INSERT INTO transaction_log (
                 {nameof(TransactionLogEntity.TransactionId)},
                 {nameof(TransactionLogEntity.LogTypeId)},
                 {nameof(TransactionLogEntity.Contract)},
@@ -28,34 +28,33 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLo
                 @{nameof(TransactionLogEntity.Details)}
               );".RemoveExcessWhitespace();
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistTransactionLogCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistTransactionLogCommandHandler> logger)
+    public PersistTransactionLogCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistTransactionLogCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<bool> Handle(PersistTransactionLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var approvalLogEntity = _mapper.Map<TransactionLogEntity>(request.TransactionLog);
+
+            var command = DatabaseQuery.Create(SqlCommand, approvalLogEntity, cancellationToken);
+
+            var result = await _context.ExecuteCommandAsync(command);
+
+            return result > 0;
         }
-
-        public async Task<bool> Handle(PersistTransactionLogCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var approvalLogEntity = _mapper.Map<TransactionLogEntity>(request.TransactionLog);
-
-                var command = DatabaseQuery.Create(SqlCommand, approvalLogEntity, cancellationToken);
-
-                var result = await _context.ExecuteCommandAsync(command);
-
-                return result > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Unable to persist {nameof(TransactionLogEntity)}");
-                return false;
-            }
+            _logger.LogError(ex, $"Unable to persist {nameof(TransactionLogEntity)}");
+            return false;
         }
     }
 }

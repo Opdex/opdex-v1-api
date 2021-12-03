@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
+
+public class SelectVaultCertificatesByOwnerAddressQueryHandler : IRequestHandler<SelectVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>
 {
-    public class SelectVaultCertificatesByOwnerAddressQueryHandler : IRequestHandler<SelectVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>
-    {
-        private static readonly string SqlQuery =
-            $@"SELECT
+    private static readonly string SqlQuery =
+        $@"SELECT
                 {nameof(VaultCertificateEntity.Id)},
                 {nameof(VaultCertificateEntity.VaultId)},
                 {nameof(VaultCertificateEntity.Owner)},
@@ -28,33 +28,32 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates
             FROM vault_certificate
             WHERE {nameof(VaultCertificateEntity.Owner)} = @{nameof(SqlParams.Owner)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectVaultCertificatesByOwnerAddressQueryHandler(IDbContext context, IMapper mapper)
+    public SelectVaultCertificatesByOwnerAddressQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<IEnumerable<VaultCertificate>> Handle(SelectVaultCertificatesByOwnerAddressQuery request, CancellationToken cancellationToken)
+    {
+        var queryParams = new SqlParams(request.OwnerAddress);
+        var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
+
+        var result = await _context.ExecuteQueryAsync<VaultCertificateEntity>(query);
+
+        return _mapper.Map<IEnumerable<VaultCertificate>>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(Address owner)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            Owner = owner;
         }
 
-        public async Task<IEnumerable<VaultCertificate>> Handle(SelectVaultCertificatesByOwnerAddressQuery request, CancellationToken cancellationToken)
-        {
-            var queryParams = new SqlParams(request.OwnerAddress);
-            var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
-
-            var result = await _context.ExecuteQueryAsync<VaultCertificateEntity>(query);
-
-            return _mapper.Map<IEnumerable<VaultCertificate>>(result);
-        }
-
-        private sealed class SqlParams
-        {
-            internal SqlParams(Address owner)
-            {
-                Owner = owner;
-            }
-
-            public Address Owner { get; }
-        }
+        public Address Owner { get; }
     }
 }

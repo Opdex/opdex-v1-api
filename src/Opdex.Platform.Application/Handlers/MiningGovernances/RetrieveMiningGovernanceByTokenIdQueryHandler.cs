@@ -6,20 +6,19 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.MiningGovernances
+namespace Opdex.Platform.Application.Handlers.MiningGovernances;
+
+public class RetrieveMiningGovernanceByTokenIdQueryHandler : IRequestHandler<RetrieveMiningGovernanceByTokenIdQuery, MiningGovernance>
 {
-    public class RetrieveMiningGovernanceByTokenIdQueryHandler : IRequestHandler<RetrieveMiningGovernanceByTokenIdQuery, MiningGovernance>
+    private readonly IMediator _mediator;
+
+    public RetrieveMiningGovernanceByTokenIdQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveMiningGovernanceByTokenIdQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<MiningGovernance> Handle(RetrieveMiningGovernanceByTokenIdQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectMiningGovernanceByTokenIdQuery(request.TokenId, request.FindOrThrow), cancellationToken);
-        }
+    public Task<MiningGovernance> Handle(RetrieveMiningGovernanceByTokenIdQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectMiningGovernanceByTokenIdQuery(request.TokenId, request.FindOrThrow), cancellationToken);
     }
 }

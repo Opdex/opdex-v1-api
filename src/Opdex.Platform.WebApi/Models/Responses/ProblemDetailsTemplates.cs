@@ -3,27 +3,26 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.WebApi.Models.Responses
+namespace Opdex.Platform.WebApi.Models.Responses;
+
+public static class ProblemDetailsTemplates
 {
-    public static class ProblemDetailsTemplates
+    public static ValidationProblemDetails CreateValidationProblemDetails(string key, params string[] value) => CreateValidationProblemDetails(new Dictionary<string, string[]> { { key, value } });
+
+    private static ValidationProblemDetails CreateValidationProblemDetails(IDictionary<string, string[]> errors)
     {
-        public static ValidationProblemDetails CreateValidationProblemDetails(string key, params string[] value) => CreateValidationProblemDetails(new Dictionary<string, string[]> { { key, value } });
+        if (errors is null || errors.Count == 0) throw new ArgumentNullException(nameof(errors), "Must have one or more errors.");
 
-        private static ValidationProblemDetails CreateValidationProblemDetails(IDictionary<string, string[]> errors)
+        var problemDetails = new ValidationProblemDetails
         {
-            if (errors is null || errors.Count == 0) throw new ArgumentNullException(nameof(errors), "Must have one or more errors.");
+            Title = "Bad Request",
+            Status = StatusCodes.Status400BadRequest,
+            Detail = "A validation error occurred.",
+            Type = "https://httpstatuses.com/400"
+        };
 
-            var problemDetails = new ValidationProblemDetails
-            {
-                Title = "Bad Request",
-                Status = StatusCodes.Status400BadRequest,
-                Detail = "A validation error occurred.",
-                Type = "https://httpstatuses.com/400"
-            };
+        foreach (var pair in errors) problemDetails.Errors.Add(pair);
 
-            foreach (var pair in errors) problemDetails.Errors.Add(pair);
-
-            return problemDetails;
-        }
+        return problemDetails;
     }
 }

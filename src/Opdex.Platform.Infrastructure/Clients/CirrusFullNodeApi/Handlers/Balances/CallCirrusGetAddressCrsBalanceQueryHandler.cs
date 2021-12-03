@@ -5,34 +5,33 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balances
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balances;
+
+public class CallCirrusGetAddressCrsBalanceQueryHandler : IRequestHandler<CallCirrusGetAddressCrsBalanceQuery, ulong>
 {
-    public class CallCirrusGetAddressCrsBalanceQueryHandler : IRequestHandler<CallCirrusGetAddressCrsBalanceQuery, ulong>
+    private readonly IBlockStoreModule _blockStoreModule;
+
+    public CallCirrusGetAddressCrsBalanceQueryHandler(IBlockStoreModule blockStoreModule)
     {
-        private readonly IBlockStoreModule _blockStoreModule;
+        _blockStoreModule = blockStoreModule ?? throw new ArgumentNullException(nameof(blockStoreModule));
+    }
 
-        public CallCirrusGetAddressCrsBalanceQueryHandler(IBlockStoreModule blockStoreModule)
+    public async Task<ulong> Handle(CallCirrusGetAddressCrsBalanceQuery request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _blockStoreModule = blockStoreModule ?? throw new ArgumentNullException(nameof(blockStoreModule));
+            var response = await _blockStoreModule.GetWalletAddressesBalances(new[] { request.Address }, cancellationToken);
+            return response.Balances[0].Balance;
         }
-
-        public async Task<ulong> Handle(CallCirrusGetAddressCrsBalanceQuery request, CancellationToken cancellationToken)
+        catch (Exception)
         {
-            try
+            // Already logged previous in ApiClientBase
+            if (request.FindOrThrow)
             {
-                var response = await _blockStoreModule.GetWalletAddressesBalances(new[] { request.Address }, cancellationToken);
-                return response.Balances[0].Balance;
+                throw;
             }
-            catch (Exception)
-            {
-                // Already logged previous in ApiClientBase
-                if (request.FindOrThrow)
-                {
-                    throw;
-                }
 
-                return 0;
-            }
+            return 0;
         }
     }
 }

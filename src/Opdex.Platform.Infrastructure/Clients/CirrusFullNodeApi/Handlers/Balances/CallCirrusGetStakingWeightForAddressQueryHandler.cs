@@ -9,27 +9,26 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balances
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Balances;
+
+public class CallCirrusGetStakingWeightForAddressQueryHandler : IRequestHandler<CallCirrusGetStakingWeightForAddressQuery, UInt256>
 {
-    public class CallCirrusGetStakingWeightForAddressQueryHandler : IRequestHandler<CallCirrusGetStakingWeightForAddressQuery, UInt256>
+    private readonly ISmartContractsModule _smartContractsModule;
+
+    public CallCirrusGetStakingWeightForAddressQueryHandler(ISmartContractsModule smartContractsModule)
     {
-        private readonly ISmartContractsModule _smartContractsModule;
+        _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+    }
 
-        public CallCirrusGetStakingWeightForAddressQueryHandler(ISmartContractsModule smartContractsModule)
+    public async Task<UInt256> Handle(CallCirrusGetStakingWeightForAddressQuery request, CancellationToken cancellationToken)
+    {
+        var parameters = new[]
         {
-            _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-        }
+            new SmartContractMethodParameter(request.Staker)
+        };
 
-        public async Task<UInt256> Handle(CallCirrusGetStakingWeightForAddressQuery request, CancellationToken cancellationToken)
-        {
-            var parameters = new[]
-            {
-                new SmartContractMethodParameter(request.Staker)
-            };
-
-            var localCallRequest = new LocalCallRequestDto(request.StakingPool, StakingPoolConstants.Methods.GetStakedBalance, parameters, request.BlockHeight);
-            var response = await _smartContractsModule.LocalCallAsync(localCallRequest, cancellationToken);
-            return response.DeserializeValue<UInt256>();
-        }
+        var localCallRequest = new LocalCallRequestDto(request.StakingPool, StakingPoolConstants.Methods.GetStakedBalance, parameters, request.BlockHeight);
+        var response = await _smartContractsModule.LocalCallAsync(localCallRequest, cancellationToken);
+        return response.DeserializeValue<UInt256>();
     }
 }

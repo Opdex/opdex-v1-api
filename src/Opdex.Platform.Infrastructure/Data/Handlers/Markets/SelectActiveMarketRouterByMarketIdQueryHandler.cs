@@ -9,12 +9,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets;
+
+public class SelectActiveMarketRouterByMarketIdQueryHandler : IRequestHandler<SelectActiveMarketRouterByMarketIdQuery, MarketRouter>
 {
-    public class SelectActiveMarketRouterByMarketIdQueryHandler : IRequestHandler<SelectActiveMarketRouterByMarketIdQuery, MarketRouter>
-    {
-        private static readonly string SqlCommand =
-            $@"SELECT
+    private static readonly string SqlCommand =
+        $@"SELECT
                 {nameof(MarketRouterEntity.Id)},
                 {nameof(MarketRouterEntity.Address)},
                 {nameof(MarketRouterEntity.MarketId)},
@@ -26,39 +26,38 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 AND {nameof(MarketRouterEntity.IsActive)} = true
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectActiveMarketRouterByMarketIdQueryHandler(IDbContext context, IMapper mapper)
+    public SelectActiveMarketRouterByMarketIdQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<MarketRouter> Handle(SelectActiveMarketRouterByMarketIdQuery request, CancellationToken cancellationToken)
+    {
+        var queryParams = new SqlParams(request.MarketId);
+
+        var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
+
+        var result =  await _context.ExecuteFindAsync<MarketRouterEntity>(command);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(Market)} not found.");
         }
 
-        public async Task<MarketRouter> Handle(SelectActiveMarketRouterByMarketIdQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<MarketRouter>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong marketId)
         {
-            var queryParams = new SqlParams(request.MarketId);
-
-            var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
-
-            var result =  await _context.ExecuteFindAsync<MarketRouterEntity>(command);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(Market)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<MarketRouter>(result);
+            MarketId = marketId;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong marketId)
-            {
-                MarketId = marketId;
-            }
-
-            public ulong MarketId { get; }
-        }
+        public ulong MarketId { get; }
     }
 }

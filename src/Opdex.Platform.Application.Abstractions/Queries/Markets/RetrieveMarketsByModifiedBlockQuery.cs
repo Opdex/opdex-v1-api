@@ -3,20 +3,19 @@ using Opdex.Platform.Domain.Models.Markets;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Markets
-{
-    public class RetrieveMarketsByModifiedBlockQuery : IRequest<IEnumerable<Market>>
-    {
-        public RetrieveMarketsByModifiedBlockQuery(ulong blockHeight)
-        {
-            if (blockHeight < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-            }
+namespace Opdex.Platform.Application.Abstractions.Queries.Markets;
 
-            BlockHeight = blockHeight;
+public class RetrieveMarketsByModifiedBlockQuery : IRequest<IEnumerable<Market>>
+{
+    public RetrieveMarketsByModifiedBlockQuery(ulong blockHeight)
+    {
+        if (blockHeight < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
         }
 
-        public ulong BlockHeight { get; }
+        BlockHeight = blockHeight;
     }
+
+    public ulong BlockHeight { get; }
 }

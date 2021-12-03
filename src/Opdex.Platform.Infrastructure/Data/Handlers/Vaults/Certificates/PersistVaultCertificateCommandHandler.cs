@@ -8,12 +8,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
+
+public class PersistVaultCertificateCommandHandler : IRequestHandler<PersistVaultCertificateCommand, bool>
 {
-    public class PersistVaultCertificateCommandHandler : IRequestHandler<PersistVaultCertificateCommand, bool>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO vault_certificate (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO vault_certificate (
                 {nameof(VaultCertificateEntity.VaultId)},
                 {nameof(VaultCertificateEntity.Owner)},
                 {nameof(VaultCertificateEntity.Amount)},
@@ -33,8 +33,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates
                 @{nameof(VaultCertificateEntity.ModifiedBlock)}
               );";
 
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE vault_certificate
+    private static readonly string UpdateSqlCommand =
+        $@"UPDATE vault_certificate
                 SET
                     {nameof(VaultCertificateEntity.Amount)} = @{nameof(VaultCertificateEntity.Amount)},
                     {nameof(VaultCertificateEntity.Redeemed)} = @{nameof(VaultCertificateEntity.Redeemed)},
@@ -42,36 +42,35 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates
                     {nameof(VaultCertificateEntity.ModifiedBlock)} = @{nameof(VaultCertificateEntity.ModifiedBlock)}
                 WHERE {nameof(VaultCertificateEntity.Id)} = @{nameof(VaultCertificateEntity.Id)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistVaultCertificateCommandHandler(IDbContext context, IMapper mapper,
-            ILogger<PersistVaultCertificateCommandHandler> logger)
+    public PersistVaultCertificateCommandHandler(IDbContext context, IMapper mapper,
+                                                 ILogger<PersistVaultCertificateCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<bool> Handle(PersistVaultCertificateCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var entity = _mapper.Map<VaultCertificateEntity>(request.VaultCertificate);
+
+            var sql = entity.Id < 1 ? InsertSqlCommand : UpdateSqlCommand;
+
+            var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+
+            return await _context.ExecuteCommandAsync(command) >= 1;
         }
-
-        public async Task<bool> Handle(PersistVaultCertificateCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var entity = _mapper.Map<VaultCertificateEntity>(request.VaultCertificate);
+            _logger.LogError(ex, $"Failure persisting {nameof(request.VaultCertificate)}.");
 
-                var sql = entity.Id < 1 ? InsertSqlCommand : UpdateSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-
-                return await _context.ExecuteCommandAsync(command) >= 1;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure persisting {nameof(request.VaultCertificate)}.");
-
-                return false;
-            }
+            return false;
         }
     }
 }

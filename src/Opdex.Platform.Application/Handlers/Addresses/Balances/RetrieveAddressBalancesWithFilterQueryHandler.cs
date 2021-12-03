@@ -7,20 +7,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Addresses.Balances
+namespace Opdex.Platform.Application.Handlers.Addresses.Balances;
+
+public class RetrieveAddressBalancesWithFilterQueryHandler : IRequestHandler<RetrieveAddressBalancesWithFilterQuery, IEnumerable<AddressBalance>>
 {
-    public class RetrieveAddressBalancesWithFilterQueryHandler : IRequestHandler<RetrieveAddressBalancesWithFilterQuery, IEnumerable<AddressBalance>>
+    private readonly IMediator _mediator;
+
+    public RetrieveAddressBalancesWithFilterQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveAddressBalancesWithFilterQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<IEnumerable<AddressBalance>> Handle(RetrieveAddressBalancesWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectAddressBalancesWithFilterQuery(request.Address, request.Cursor), cancellationToken);
-        }
+    public Task<IEnumerable<AddressBalance>> Handle(RetrieveAddressBalancesWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectAddressBalancesWithFilterQuery(request.Address, request.Cursor), cancellationToken);
     }
 }

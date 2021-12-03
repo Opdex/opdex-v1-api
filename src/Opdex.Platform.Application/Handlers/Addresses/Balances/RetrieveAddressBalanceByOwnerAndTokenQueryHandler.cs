@@ -9,39 +9,38 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Addresses.Balances
+namespace Opdex.Platform.Application.Handlers.Addresses.Balances;
+
+public class RetrieveAddressBalanceByOwnerAndTokenQueryHandler
+    : IRequestHandler<RetrieveAddressBalanceByOwnerAndTokenQuery, AddressBalance>
 {
-    public class RetrieveAddressBalanceByOwnerAndTokenQueryHandler
-        : IRequestHandler<RetrieveAddressBalanceByOwnerAndTokenQuery, AddressBalance>
+    private readonly IMediator _mediator;
+
+    public RetrieveAddressBalanceByOwnerAndTokenQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveAddressBalanceByOwnerAndTokenQueryHandler(IMediator mediator)
+    public async Task<AddressBalance> Handle(RetrieveAddressBalanceByOwnerAndTokenQuery request, CancellationToken cancellationToken)
+    {
+        var token = request.TokenAddress != Address.Empty
+            ? await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenAddress, request.FindOrThrow), cancellationToken)
+            : await _mediator.Send(new RetrieveTokenByIdQuery(request.TokenId.GetValueOrDefault(), request.FindOrThrow), cancellationToken);
+
+        if (token == null)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            return null;
         }
 
-        public async Task<AddressBalance> Handle(RetrieveAddressBalanceByOwnerAndTokenQuery request, CancellationToken cancellationToken)
+        if (token.Address != Address.Cirrus)
         {
-            var token = request.TokenAddress != Address.Empty
-                ? await _mediator.Send(new RetrieveTokenByAddressQuery(request.TokenAddress, request.FindOrThrow), cancellationToken)
-                : await _mediator.Send(new RetrieveTokenByIdQuery(request.TokenId.GetValueOrDefault(), request.FindOrThrow), cancellationToken);
-
-            if (token == null)
-            {
-                return null;
-            }
-
-            if (token.Address != Address.Cirrus)
-            {
-                return await _mediator.Send(new SelectAddressBalanceByOwnerAndTokenIdQuery(request.Owner,
-                                                                                           token.Id,
-                                                                                           request.FindOrThrow), cancellationToken);
-            }
-
-            var balance = await _mediator.Send(new CallCirrusGetAddressCrsBalanceQuery(request.Owner, request.FindOrThrow), cancellationToken);
-
-            return new AddressBalance(token.Id, request.Owner, balance, 1);
+            return await _mediator.Send(new SelectAddressBalanceByOwnerAndTokenIdQuery(request.Owner,
+                                                                                       token.Id,
+                                                                                       request.FindOrThrow), cancellationToken);
         }
+
+        var balance = await _mediator.Send(new CallCirrusGetAddressCrsBalanceQuery(request.Owner, request.FindOrThrow), cancellationToken);
+
+        return new AddressBalance(token.Id, request.Owner, balance, 1);
     }
 }

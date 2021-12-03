@@ -16,104 +16,103 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Assemblers
+namespace Opdex.Platform.Application.Tests.Assemblers;
+
+public class StakingPositionDtoAssemblerTests
 {
-    public class StakingPositionDtoAssemblerTests
+    private readonly Mock<IMediator> _mediatorMock;
+
+    private readonly StakingPositionDtoAssembler _assembler;
+
+    public StakingPositionDtoAssemblerTests()
     {
-        private readonly Mock<IMediator> _mediatorMock;
+        _mediatorMock = new Mock<IMediator>();
 
-        private readonly StakingPositionDtoAssembler _assembler;
+        _assembler = new StakingPositionDtoAssembler(_mediatorMock.Object);
+    }
 
-        public StakingPositionDtoAssemblerTests()
+    [Fact]
+    public async Task Assemble_RetrieveLiquidityPoolByIdQuery_Send()
+    {
+        // Arrange
+        var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("50000000"), 500, 505);
+
+        // Act
+        try
         {
-            _mediatorMock = new Mock<IMediator>();
-
-            _assembler = new StakingPositionDtoAssembler(_mediatorMock.Object);
+            await _assembler.Assemble(addressStaking);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task Assemble_RetrieveLiquidityPoolByIdQuery_Send()
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveLiquidityPoolByIdQuery>(query => query.LiquidityPoolId == addressStaking.LiquidityPoolId), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Assemble_RetrieveMarketByIdQuery_Send()
+    {
+        // Arrange
+        var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("50000000"), 500, 505);
+
+        var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "BTC-CRS", 5, 15, 25, 500, 505);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
+
+        // Act
+        try
         {
-            // Arrange
-            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("50000000"), 500, 505);
-
-            // Act
-            try
-            {
-                await _assembler.Assemble(addressStaking);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveLiquidityPoolByIdQuery>(query => query.LiquidityPoolId == addressStaking.LiquidityPoolId), It.IsAny<CancellationToken>()), Times.Once);
+            await _assembler.Assemble(addressStaking);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task Assemble_RetrieveMarketByIdQuery_Send()
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveMarketByIdQuery>(query => query.MarketId == liquidityPool.MarketId), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Assemble_RetrieveTokenByIdQuery_Send()
+    {
+        // Arrange
+        var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("50000000"), 500, 505);
+
+        var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "BTC-CRS", 5, 15, 25, 500, 505);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
+
+        var market = new Market(5, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", 10, 50, Address.Empty, "PCiNwuLQemjMk63A6r5mS2Ma9Kskki6HZK", false, false, false, 1, true, 500, 505);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+
+        // Act
+        try
         {
-            // Arrange
-            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("50000000"), 500, 505);
-
-            var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "BTC-CRS", 5, 15, 25, 500, 505);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
-
-            // Act
-            try
-            {
-                await _assembler.Assemble(addressStaking);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveMarketByIdQuery>(query => query.MarketId == liquidityPool.MarketId), It.IsAny<CancellationToken>()), Times.Once);
+            await _assembler.Assemble(addressStaking);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task Assemble_RetrieveTokenByIdQuery_Send()
-        {
-            // Arrange
-            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("50000000"), 500, 505);
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByIdQuery>(query => query.TokenId == market.StakingTokenId), It.IsAny<CancellationToken>()), Times.Once);
+    }
 
-            var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "BTC-CRS", 5, 15, 25, 500, 505);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
+    [Fact]
+    public async Task Assemble_HappyPath_Map()
+    {
+        // Arrange
+        var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("5000000000"), 500, 505);
 
-            var market = new Market(5, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", 10, 50, Address.Empty, "PCiNwuLQemjMk63A6r5mS2Ma9Kskki6HZK", false, false, false, 1, true, 500, 505);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+        var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "BTC-CRS", 5, 15, 25, 500, 505);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
 
-            // Act
-            try
-            {
-                await _assembler.Assemble(addressStaking);
-            }
-            catch (Exception) { }
+        var market = new Market(5, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", 10, 50, Address.Empty, "PCiNwuLQemjMk63A6r5mS2Ma9Kskki6HZK", false, false, false, 1, true, 500, 505);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByIdQuery>(query => query.TokenId == market.StakingTokenId), It.IsAny<CancellationToken>()), Times.Once);
-        }
+        var token = new Token(50, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, "Governance Token", "GOV", 8, 8, UInt256.Parse("10000000000000000000"), 500, 505);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
-        [Fact]
-        public async Task Assemble_HappyPath_Map()
-        {
-            // Arrange
-            var addressStaking = new AddressStaking(5, 10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", UInt256.Parse("5000000000"), 500, 505);
+        // Act
+        var response = await _assembler.Assemble(addressStaking);
 
-            var liquidityPool = new LiquidityPool(10, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "BTC-CRS", 5, 15, 25, 500, 505);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(liquidityPool);
-
-            var market = new Market(5, "PNvzq4pxJ5v3pp9kDaZyifKNspGD79E4qM", 10, 50, Address.Empty, "PCiNwuLQemjMk63A6r5mS2Ma9Kskki6HZK", false, false, false, 1, true, 500, 505);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
-
-            var token = new Token(50, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", true, "Governance Token", "GOV", 8, 8, UInt256.Parse("10000000000000000000"), 500, 505);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
-
-            // Act
-            var response = await _assembler.Assemble(addressStaking);
-
-            // Assert
-            response.Address.Should().Be(addressStaking.Owner);
-            response.Amount.Should().Be(FixedDecimal.Parse("50.00000000"));
-            response.LiquidityPool.Should().Be(liquidityPool.Address);
-            response.StakingToken.Should().Be(token.Address);
-        }
+        // Assert
+        response.Address.Should().Be(addressStaking.Owner);
+        response.Amount.Should().Be(FixedDecimal.Parse("50.00000000"));
+        response.LiquidityPool.Should().Be(liquidityPool.Address);
+        response.StakingToken.Should().Be(token.Address);
     }
 }

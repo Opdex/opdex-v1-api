@@ -11,65 +11,64 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Staking
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Addresses.Staking;
+
+public class PersistAddressStakingCommandHandlerTests
 {
-    public class PersistAddressStakingCommandHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly PersistAddressStakingCommandHandler _handler;
+
+    public PersistAddressStakingCommandHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly PersistAddressStakingCommandHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+        var logger = new NullLogger<PersistAddressStakingCommandHandler>();
 
-        public PersistAddressStakingCommandHandlerTests()
-        {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            var logger = new NullLogger<PersistAddressStakingCommandHandler>();
+        _dbContext = new Mock<IDbContext>();
+        _handler = new PersistAddressStakingCommandHandler(_dbContext.Object, mapper, logger);
+    }
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new PersistAddressStakingCommandHandler(_dbContext.Object, mapper, logger);
-        }
+    [Fact]
+    public async Task Insert_AddressStaking_Success()
+    {
+        const ulong expectedId = 10ul;
+        var staking = new AddressStaking(1, "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm", 100000000, 3);
+        var command = new PersistAddressStakingCommand(staking);
 
-        [Fact]
-        public async Task Insert_AddressStaking_Success()
-        {
-            const ulong expectedId = 10ul;
-            var staking = new AddressStaking(1, "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm", 100000000, 3);
-            var command = new PersistAddressStakingCommand(staking);
+        _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(expectedId));
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedId));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Should().Be(expectedId);
+    }
 
-            result.Should().Be(expectedId);
-        }
+    [Fact]
+    public async Task Update_AddressStaking_Success()
+    {
+        const ulong expectedId = 10ul;
+        var staking = new AddressStaking(expectedId, 1, "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm", 100000000, 3, 4);
+        var command = new PersistAddressStakingCommand(staking);
 
-        [Fact]
-        public async Task Update_AddressStaking_Success()
-        {
-            const ulong expectedId = 10ul;
-            var staking = new AddressStaking(expectedId, 1, "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm", 100000000, 3, 4);
-            var command = new PersistAddressStakingCommand(staking);
+        _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(expectedId));
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedId));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Should().Be(expectedId);
+    }
 
-            result.Should().Be(expectedId);
-        }
+    [Fact]
+    public async Task PersistsAddressStaking_Fail()
+    {
+        const ulong expectedId = 0;
+        var staking = new AddressStaking(expectedId, 1, "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm", 100000000, 3, 4);
+        var command = new PersistAddressStakingCommand(staking);
 
-        [Fact]
-        public async Task PersistsAddressStaking_Fail()
-        {
-            const ulong expectedId = 0;
-            var staking = new AddressStaking(expectedId, 1, "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm", 100000000, 3, 4);
-            var command = new PersistAddressStakingCommand(staking);
+        _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+            .Throws(new Exception("Some SQL Exception"));
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
-                .Throws(new Exception("Some SQL Exception"));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            result.Should().Be(expectedId);
-        }
+        result.Should().Be(expectedId);
     }
 }

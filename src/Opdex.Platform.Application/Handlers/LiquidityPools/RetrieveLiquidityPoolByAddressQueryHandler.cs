@@ -6,20 +6,19 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.LiquidityPools
+namespace Opdex.Platform.Application.Handlers.LiquidityPools;
+
+public class RetrieveLiquidityPoolByAddressQueryHandler : IRequestHandler<RetrieveLiquidityPoolByAddressQuery, LiquidityPool>
 {
-    public class RetrieveLiquidityPoolByAddressQueryHandler : IRequestHandler<RetrieveLiquidityPoolByAddressQuery, LiquidityPool>
+    private readonly IMediator _mediator;
+
+    public RetrieveLiquidityPoolByAddressQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveLiquidityPoolByAddressQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public async Task<LiquidityPool> Handle(RetrieveLiquidityPoolByAddressQuery request, CancellationToken cancellationToken)
-        {
-            return await _mediator.Send(new SelectLiquidityPoolByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
-        }
+    public async Task<LiquidityPool> Handle(RetrieveLiquidityPoolByAddressQuery request, CancellationToken cancellationToken)
+    {
+        return await _mediator.Send(new SelectLiquidityPoolByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
     }
 }

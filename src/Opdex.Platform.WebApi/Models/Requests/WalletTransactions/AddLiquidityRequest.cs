@@ -2,45 +2,44 @@ using Opdex.Platform.Common.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions
+namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+
+public class AddLiquidityRequest
 {
-    public class AddLiquidityRequest
-    {
-        /// <summary>
-        /// Decimal amount of CRS to deposit.
-        /// </summary>
-        [Required]
-        public FixedDecimal AmountCrs { get; set; }
+    /// <summary>
+    /// Decimal amount of CRS to deposit.
+    /// </summary>
+    [Required]
+    public FixedDecimal AmountCrs { get; set; }
 
-        /// <summary>
-        /// Decimal amount of SRC to deposit.
-        /// </summary>
-        [Required]
-        public FixedDecimal AmountSrc { get; set; }
+    /// <summary>
+    /// Decimal amount of SRC to deposit.
+    /// </summary>
+    [Required]
+    public FixedDecimal AmountSrc { get; set; }
 
-        /// <summary>
-        /// The minimum amount of SRC tokens acceptable to provide.
-        /// </summary>
-        [Required]
-        public FixedDecimal AmountSrcMin { get; set; }
+    /// <summary>
+    /// The minimum amount of SRC tokens acceptable to provide.
+    /// </summary>
+    [Required]
+    public FixedDecimal AmountSrcMin { get; set; }
 
-        /// <summary>
-        /// The minimum amount of CRS tokens acceptable to provide.
-        /// </summary>
-        [Required]
-        public FixedDecimal AmountCrsMin { get; set; }
+    /// <summary>
+    /// The minimum amount of CRS tokens acceptable to provide.
+    /// </summary>
+    [Required]
+    public FixedDecimal AmountCrsMin { get; set; }
 
-        /// <summary>
-        /// The recipient of the liquidity pool tokens.
-        /// </summary>
-        [Required]
-        public Address Recipient { get; set; }
+    /// <summary>
+    /// The recipient of the liquidity pool tokens.
+    /// </summary>
+    [Required]
+    public Address Recipient { get; set; }
 
-        /// <summary>
-        /// The block number limit that the transaction is valid through.
-        /// </summary>
-        /// <remarks>A 0 deadline is equivalent to no deadline. Anything else must be greater than the current chain height.</remarks>
-        [Range(0, double.MaxValue)]
-        public ulong Deadline { get; set; }
-    }
+    /// <summary>
+    /// The block number limit that the transaction is valid through.
+    /// </summary>
+    /// <remarks>A 0 deadline is equivalent to no deadline. Anything else must be greater than the current chain height.</remarks>
+    [Range(0, double.MaxValue)]
+    public ulong Deadline { get; set; }
 }

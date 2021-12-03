@@ -10,69 +10,68 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernances.Nominations
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningGovernances.Nominations;
+
+public class SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandlerTests
 {
-    public class SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler _handler;
+
+    public SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-        public SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandlerTests()
+        _dbContext = new Mock<IDbContext>();
+        _handler = new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler(_dbContext.Object, mapper);
+    }
+
+    [Fact]
+    public async Task SelectActiveMiningGovernanceNominations_Success()
+    {
+        // Arrange
+        const ulong miningGovernanceId = 3;
+
+        var expected = new[]
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-
-            _dbContext = new Mock<IDbContext>();
-            _handler = new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler(_dbContext.Object, mapper);
-        }
-
-        [Fact]
-        public async Task SelectActiveMiningGovernanceNominations_Success()
-        {
-            // Arrange
-            const ulong miningGovernanceId = 3;
-
-            var expected = new[]
+            new MiningGovernanceNominationEntity
             {
-                new MiningGovernanceNominationEntity
-                {
-                    Id = 123454,
-                    MiningGovernanceId = miningGovernanceId,
-                    LiquidityPoolId = 4,
-                    MiningPoolId = 5,
-                    IsNominated = true,
-                    Weight = 10000000,
-                    CreatedBlock = 1,
-                    ModifiedBlock = 2
-                }
-            }.AsEnumerable();
+                Id = 123454,
+                MiningGovernanceId = miningGovernanceId,
+                LiquidityPoolId = 4,
+                MiningPoolId = 5,
+                IsNominated = true,
+                Weight = 10000000,
+                CreatedBlock = 1,
+                ModifiedBlock = 2
+            }
+        }.AsEnumerable();
 
-            var command = new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(miningGovernanceId);
+        var command = new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(miningGovernanceId);
 
-            _dbContext.Setup(db => db.ExecuteQueryAsync<MiningGovernanceNominationEntity>(It.IsAny<DatabaseQuery>()))
-                .ReturnsAsync(() => expected);
+        _dbContext.Setup(db => db.ExecuteQueryAsync<MiningGovernanceNominationEntity>(It.IsAny<DatabaseQuery>()))
+            .ReturnsAsync(() => expected);
 
-            // Act
-            var results = await _handler.Handle(command, CancellationToken.None);
+        // Act
+        var results = await _handler.Handle(command, CancellationToken.None);
 
-            // Assert
-            results.Should().BeEquivalentTo(expected);
-        }
+        // Assert
+        results.Should().BeEquivalentTo(expected);
+    }
 
-        [Fact]
-        public async Task SelectActiveMiningGovernanceNominations_ReturnsEmpty()
-        {
-            // Arrange
-            const ulong miningGovernanceId = 3;
-            var command = new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(miningGovernanceId);
+    [Fact]
+    public async Task SelectActiveMiningGovernanceNominations_ReturnsEmpty()
+    {
+        // Arrange
+        const ulong miningGovernanceId = 3;
+        var command = new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(miningGovernanceId);
 
-            _dbContext.Setup(db => db.ExecuteQueryAsync<MiningGovernanceNominationEntity>(It.IsAny<DatabaseQuery>()))
-                .ReturnsAsync(Enumerable.Empty<MiningGovernanceNominationEntity>);
+        _dbContext.Setup(db => db.ExecuteQueryAsync<MiningGovernanceNominationEntity>(It.IsAny<DatabaseQuery>()))
+            .ReturnsAsync(Enumerable.Empty<MiningGovernanceNominationEntity>);
 
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            // Assert
-            result.Should().BeEmpty();
-        }
+        // Assert
+        result.Should().BeEmpty();
     }
 }

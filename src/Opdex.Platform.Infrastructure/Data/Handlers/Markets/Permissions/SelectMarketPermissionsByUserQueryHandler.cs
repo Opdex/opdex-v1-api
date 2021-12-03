@@ -9,12 +9,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
+
+public class SelectMarketPermissionsByUserQueryHandler : IRequestHandler<SelectMarketPermissionsByUserQuery, IEnumerable<MarketPermissionType>>
 {
-    public class SelectMarketPermissionsByUserQueryHandler : IRequestHandler<SelectMarketPermissionsByUserQuery, IEnumerable<MarketPermissionType>>
-    {
-        private static readonly string SqlCommand =
-            $@"SELECT
+    private static readonly string SqlCommand =
+        $@"SELECT
                 {nameof(MarketPermissionEntity.Permission)}
             FROM market_permission
             WHERE {nameof(MarketPermissionEntity.MarketId)} = @{nameof(SqlParams.MarketId)}
@@ -22,32 +22,31 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions
                 AND {nameof(MarketPermissionEntity.IsAuthorized)} = true
             LIMIT 4;";
 
-        private readonly IDbContext _context;
+    private readonly IDbContext _context;
 
-        public SelectMarketPermissionsByUserQueryHandler(IDbContext context)
+    public SelectMarketPermissionsByUserQueryHandler(IDbContext context)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    public async Task<IEnumerable<MarketPermissionType>> Handle(SelectMarketPermissionsByUserQuery request, CancellationToken cancellationToken)
+    {
+        var queryParams = new SqlParams(request.MarketId, request.User);
+
+        var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
+
+        return await _context.ExecuteQueryAsync<MarketPermissionType>(command);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong marketId, Address user)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            MarketId = marketId;
+            User = user;
         }
 
-        public async Task<IEnumerable<MarketPermissionType>> Handle(SelectMarketPermissionsByUserQuery request, CancellationToken cancellationToken)
-        {
-            var queryParams = new SqlParams(request.MarketId, request.User);
-
-            var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
-
-            return await _context.ExecuteQueryAsync<MarketPermissionType>(command);
-        }
-
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong marketId, Address user)
-            {
-                MarketId = marketId;
-                User = user;
-            }
-
-            public ulong MarketId { get; }
-            public Address User { get; }
-        }
+        public ulong MarketId { get; }
+        public Address User { get; }
     }
 }

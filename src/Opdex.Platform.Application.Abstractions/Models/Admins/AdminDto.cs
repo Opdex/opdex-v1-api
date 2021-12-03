@@ -1,10 +1,9 @@
 using Opdex.Platform.Common.Models;
 
-namespace Opdex.Platform.Application.Abstractions.Models.Admins
+namespace Opdex.Platform.Application.Abstractions.Models.Admins;
+
+public class AdminDto
 {
-    public class AdminDto
-    {
-        public ulong Id { get; set; }
-        public Address Address { get; set; }
-    }
+    public ulong Id { get; set; }
+    public Address Address { get; set; }
 }

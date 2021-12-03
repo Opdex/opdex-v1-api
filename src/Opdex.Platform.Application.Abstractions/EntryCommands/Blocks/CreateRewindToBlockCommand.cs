@@ -1,20 +1,19 @@
 using MediatR;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.Blocks
-{
-    public class CreateRewindToBlockCommand : IRequest<bool>
-    {
-        public CreateRewindToBlockCommand(ulong block)
-        {
-            if (block < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(block), "Block number must be greater than 0.");
-            }
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 
-            Block = block;
+public class CreateRewindToBlockCommand : IRequest<bool>
+{
+    public CreateRewindToBlockCommand(ulong block)
+    {
+        if (block < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(block), "Block number must be greater than 0.");
         }
 
-        public ulong Block { get; }
+        Block = block;
     }
+
+    public ulong Block { get; }
 }

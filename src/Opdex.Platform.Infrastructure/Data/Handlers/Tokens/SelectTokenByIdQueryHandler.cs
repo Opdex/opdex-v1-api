@@ -9,12 +9,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
+
+public class SelectTokenByIdQueryHandler: IRequestHandler<SelectTokenByIdQuery, Token>
 {
-    public class SelectTokenByIdQueryHandler: IRequestHandler<SelectTokenByIdQuery, Token>
-    {
-        private static readonly string SqlQuery =
-            @$"Select
+    private static readonly string SqlQuery =
+        @$"Select
                 {nameof(TokenEntity.Id)},
                 {nameof(TokenEntity.Address)},
                 {nameof(TokenEntity.IsLpt)},
@@ -28,38 +28,37 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens
             FROM token
             WHERE {nameof(TokenEntity.Id)} = @{nameof(SqlParams.Id)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectTokenByIdQueryHandler(IDbContext context, IMapper mapper)
+    public SelectTokenByIdQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<Token> Handle(SelectTokenByIdQuery request, CancellationToken cancellationToken)
+    {
+        var queryParams = new SqlParams(request.TokenId);
+        var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<TokenEntity>(query);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(Token)} not found.");
         }
 
-        public async Task<Token> Handle(SelectTokenByIdQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<Token>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong id)
         {
-            var queryParams = new SqlParams(request.TokenId);
-            var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<TokenEntity>(query);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(Token)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<Token>(result);
+            Id = id;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong id)
-            {
-                Id = id;
-            }
-
-            public ulong Id { get; }
-        }
+        public ulong Id { get; }
     }
 }

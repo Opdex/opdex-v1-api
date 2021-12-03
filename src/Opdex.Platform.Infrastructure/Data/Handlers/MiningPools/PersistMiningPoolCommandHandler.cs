@@ -8,12 +8,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools
+namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools;
+
+public class PersistMiningPoolCommandHandler : IRequestHandler<PersistMiningPoolCommand, ulong>
 {
-    public class PersistMiningPoolCommandHandler : IRequestHandler<PersistMiningPoolCommand, ulong>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO pool_mining (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO pool_mining (
                 {nameof(MiningPoolEntity.LiquidityPoolId)},
                 {nameof(MiningPoolEntity.Address)},
                 {nameof(MiningPoolEntity.RewardPerBlock)},
@@ -32,8 +32,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools
               );
               SELECT LAST_INSERT_ID();";
 
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE pool_mining
+    private static readonly string UpdateSqlCommand =
+        $@"UPDATE pool_mining
                 SET
                   {nameof(MiningPoolEntity.RewardPerBlock)} = @{nameof(MiningPoolEntity.RewardPerBlock)},
                   {nameof(MiningPoolEntity.RewardPerLpt)} = @{nameof(MiningPoolEntity.RewardPerLpt)},
@@ -42,39 +42,38 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools
                 WHERE
                   {nameof(MiningPoolEntity.Id)} = @{nameof(MiningPoolEntity.Id)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistMiningPoolCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMiningPoolCommandHandler> logger)
+    public PersistMiningPoolCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMiningPoolCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<ulong> Handle(PersistMiningPoolCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var poolEntity = _mapper.Map<MiningPoolEntity>(request.MiningPool);
+
+            var isUpdate = poolEntity.Id >= 1;
+
+            var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+
+            var command = DatabaseQuery.Create(sql, poolEntity, cancellationToken);
+
+            var result = await _context.ExecuteScalarAsync<ulong>(command);
+
+            return isUpdate ? poolEntity.Id : result;
         }
-
-        public async Task<ulong> Handle(PersistMiningPoolCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var poolEntity = _mapper.Map<MiningPoolEntity>(request.MiningPool);
+            _logger.LogError(ex, $"Unable to persist {request.MiningPool}");
 
-                var isUpdate = poolEntity.Id >= 1;
-
-                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, poolEntity, cancellationToken);
-
-                var result = await _context.ExecuteScalarAsync<ulong>(command);
-
-                return isUpdate ? poolEntity.Id : result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Unable to persist {request.MiningPool}");
-
-                return 0;
-            }
+            return 0;
         }
     }
 }

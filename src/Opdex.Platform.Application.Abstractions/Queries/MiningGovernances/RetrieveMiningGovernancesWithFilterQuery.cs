@@ -4,15 +4,14 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningGovernances;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.MiningGovernances
-{
-    public class RetrieveMiningGovernancesWithFilterQuery : IRequest<IEnumerable<MiningGovernance>>
-    {
-        public RetrieveMiningGovernancesWithFilterQuery(MiningGovernancesCursor cursor)
-        {
-            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor), "Cursor must be set.");
-        }
+namespace Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
 
-        public MiningGovernancesCursor Cursor { get; }
+public class RetrieveMiningGovernancesWithFilterQuery : IRequest<IEnumerable<MiningGovernance>>
+{
+    public RetrieveMiningGovernancesWithFilterQuery(MiningGovernancesCursor cursor)
+    {
+        Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor), "Cursor must be set.");
     }
+
+    public MiningGovernancesCursor Cursor { get; }
 }

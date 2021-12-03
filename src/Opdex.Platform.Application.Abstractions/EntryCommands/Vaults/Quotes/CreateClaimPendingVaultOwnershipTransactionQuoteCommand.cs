@@ -2,23 +2,22 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Common.Models;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults.Quotes
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults.Quotes;
+
+/// <summary>
+/// Quote a transaction to claim pending vault ownership.
+/// </summary>
+public class CreateClaimPendingVaultOwnershipTransactionQuoteCommand : BaseTransactionQuoteCommand
 {
     /// <summary>
-    /// Quote a transaction to claim pending vault ownership.
+    /// Creates a claim pending vault ownership quote command.
     /// </summary>
-    public class CreateClaimPendingVaultOwnershipTransactionQuoteCommand : BaseTransactionQuoteCommand
+    /// <param name="vault">The address of the vault.</param>
+    /// <param name="pendingOwner">The address of the pending owner.</param>
+    public CreateClaimPendingVaultOwnershipTransactionQuoteCommand(Address vault, Address pendingOwner) : base(pendingOwner)
     {
-        /// <summary>
-        /// Creates a claim pending vault ownership quote command.
-        /// </summary>
-        /// <param name="vault">The address of the vault.</param>
-        /// <param name="pendingOwner">The address of the pending owner.</param>
-        public CreateClaimPendingVaultOwnershipTransactionQuoteCommand(Address vault, Address pendingOwner) : base(pendingOwner)
-        {
-            Vault = vault != Address.Empty ? vault : throw new ArgumentNullException("Vault address must be provided.", nameof(vault));
-        }
-
-        public Address Vault { get; }
+        Vault = vault != Address.Empty ? vault : throw new ArgumentNullException("Vault address must be provided.", nameof(vault));
     }
+
+    public Address Vault { get; }
 }

@@ -7,337 +7,336 @@ using Opdex.Platform.WebApi.Validation.LiquidityPools;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.LiquidityPools
+namespace Opdex.Platform.WebApi.Tests.Validation.LiquidityPools;
+
+public class LiquidityPoolFilterParametersValidatorTests
 {
-    public class LiquidityPoolFilterParametersValidatorTests
+    private readonly LiquidityPoolFilterParametersValidator _validator;
+
+    public LiquidityPoolFilterParametersValidatorTests()
     {
-        private readonly LiquidityPoolFilterParametersValidator _validator;
+        _validator = new LiquidityPoolFilterParametersValidator();
+    }
 
-        public LiquidityPoolFilterParametersValidatorTests()
+    [Theory]
+    [InlineData("*")]
+    [InlineData("?")]
+    [InlineData(":")]
+    [InlineData("asdf;")]
+    public void Keyword_Invalid(string keyword)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            _validator = new LiquidityPoolFilterParametersValidator();
-        }
+            Keyword = keyword
+        };
 
-        [Theory]
-        [InlineData("*")]
-        [InlineData("?")]
-        [InlineData(":")]
-        [InlineData("asdf;")]
-        public void Keyword_Invalid(string keyword)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.Keyword).WithErrorMessage("Keyword must consist of letters, numbers and spaces only.");
+    }
+
+    [Theory]
+    [InlineData("asdf")]
+    [InlineData("fda")]
+    [InlineData("89df7g78eh5qehgn8943hg3")]
+    [InlineData("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc")]
+    [InlineData("Bitcoin Wrapped")]
+    public void Keyword_Valid(string keyword)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                Keyword = keyword
-            };
+            Keyword = keyword
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.Keyword).WithErrorMessage("Keyword must consist of letters, numbers and spaces only.");
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.Keyword);
+    }
 
-        [Theory]
-        [InlineData("asdf")]
-        [InlineData("fda")]
-        [InlineData("89df7g78eh5qehgn8943hg3")]
-        [InlineData("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc")]
-        [InlineData("Bitcoin Wrapped")]
-        public void Keyword_Valid(string keyword)
+    [Fact]
+    public void OrderBy_Invalid()
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                Keyword = keyword
-            };
+            OrderBy = (LiquidityPoolOrderByType)10000
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.Keyword);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.OrderBy);
+    }
 
-        [Fact]
-        public void OrderBy_Invalid()
+    [Theory]
+    [InlineData(LiquidityPoolOrderByType.Liquidity)]
+    [InlineData(LiquidityPoolOrderByType.Volume)]
+    [InlineData(LiquidityPoolOrderByType.StakingWeight)]
+    [InlineData(LiquidityPoolOrderByType.Name)]
+    public void OrderBy_Valid(LiquidityPoolOrderByType orderBy)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                OrderBy = (LiquidityPoolOrderByType)10000
-            };
+            OrderBy = orderBy
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.OrderBy);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.OrderBy);
+    }
 
-        [Theory]
-        [InlineData(LiquidityPoolOrderByType.Liquidity)]
-        [InlineData(LiquidityPoolOrderByType.Volume)]
-        [InlineData(LiquidityPoolOrderByType.StakingWeight)]
-        [InlineData(LiquidityPoolOrderByType.Name)]
-        public void OrderBy_Valid(LiquidityPoolOrderByType orderBy)
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void LiquidityPools_LiquidityPools_Invalid(Address address)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                OrderBy = orderBy
-            };
+            LiquidityPools = new List<Address> { address }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.OrderBy);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.LiquidityPools);
+    }
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void LiquidityPools_LiquidityPools_Invalid(Address address)
+    [Fact]
+    public void LiquidityPools_LiquidityPools_Valid()
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                LiquidityPools = new List<Address> { address }
-            };
+            LiquidityPools = new List<Address> { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.LiquidityPools);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.LiquidityPools);
+    }
 
-        [Fact]
-        public void LiquidityPools_LiquidityPools_Valid()
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void LiquidityPools_Tokens_Invalid(Address address)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                LiquidityPools = new List<Address> { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
-            };
+            Tokens = new List<Address> { address }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.LiquidityPools);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.Tokens);
+    }
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void LiquidityPools_Tokens_Invalid(Address address)
+    [Fact]
+    public void LiquidityPools_Tokens_Valid()
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                Tokens = new List<Address> { address }
-            };
+            Tokens = new List<Address> { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.Tokens);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.Tokens);
+    }
 
-        [Fact]
-        public void LiquidityPools_Tokens_Valid()
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void LiquidityPools_Markets_Invalid(Address address)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                Tokens = new List<Address> { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
-            };
+            Markets = new List<Address> { address }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.Tokens);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.Markets);
+    }
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void LiquidityPools_Markets_Invalid(Address address)
+    [Fact]
+    public void LiquidityPools_Markets_Valid()
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                Markets = new List<Address> { address }
-            };
+            Markets = new List<Address> { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.Markets);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.Markets);
+    }
 
-        [Fact]
-        public void LiquidityPools_Markets_Valid()
+    [Theory]
+    [InlineData((LiquidityPoolStakingStatusFilter)1000)]
+    public void ProvisionalFilter_StakingFilter_Invalid(LiquidityPoolStakingStatusFilter filter)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                Markets = new List<Address> { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
-            };
+            StakingFilter = filter
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.Markets);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.StakingFilter);
+    }
 
-        [Theory]
-        [InlineData((LiquidityPoolStakingStatusFilter)1000)]
-        public void ProvisionalFilter_StakingFilter_Invalid(LiquidityPoolStakingStatusFilter filter)
+    [Theory]
+    [InlineData(LiquidityPoolStakingStatusFilter.Any)]
+    [InlineData(LiquidityPoolStakingStatusFilter.Enabled)]
+    [InlineData(LiquidityPoolStakingStatusFilter.Disabled)]
+    public void ProvisionalFilter_StakingFilterValid(LiquidityPoolStakingStatusFilter filter)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                StakingFilter = filter
-            };
+            StakingFilter = filter
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.StakingFilter);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.StakingFilter);
+    }
 
-        [Theory]
-        [InlineData(LiquidityPoolStakingStatusFilter.Any)]
-        [InlineData(LiquidityPoolStakingStatusFilter.Enabled)]
-        [InlineData(LiquidityPoolStakingStatusFilter.Disabled)]
-        public void ProvisionalFilter_StakingFilterValid(LiquidityPoolStakingStatusFilter filter)
+    [Theory]
+    [InlineData((LiquidityPoolNominationStatusFilter)1000)]
+    public void ProvisionalFilter_NominationFilter_Invalid(LiquidityPoolNominationStatusFilter filter)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                StakingFilter = filter
-            };
+            NominationFilter = filter
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.StakingFilter);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.NominationFilter);
+    }
 
-        [Theory]
-        [InlineData((LiquidityPoolNominationStatusFilter)1000)]
-        public void ProvisionalFilter_NominationFilter_Invalid(LiquidityPoolNominationStatusFilter filter)
+    [Theory]
+    [InlineData(LiquidityPoolNominationStatusFilter.Any)]
+    [InlineData(LiquidityPoolNominationStatusFilter.Nominated)]
+    [InlineData(LiquidityPoolNominationStatusFilter.NonNominated)]
+    public void ProvisionalFilter_NominationFilterValid(LiquidityPoolNominationStatusFilter filter)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                NominationFilter = filter
-            };
+            NominationFilter = filter
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.NominationFilter);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.NominationFilter);
+    }
 
-        [Theory]
-        [InlineData(LiquidityPoolNominationStatusFilter.Any)]
-        [InlineData(LiquidityPoolNominationStatusFilter.Nominated)]
-        [InlineData(LiquidityPoolNominationStatusFilter.NonNominated)]
-        public void ProvisionalFilter_NominationFilterValid(LiquidityPoolNominationStatusFilter filter)
+    [Theory]
+    [InlineData((LiquidityPoolMiningStatusFilter)1000)]
+    public void ProvisionalFilter_MiningFilter_Invalid(LiquidityPoolMiningStatusFilter filter)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                NominationFilter = filter
-            };
+            MiningFilter = filter
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.NominationFilter);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.MiningFilter);
+    }
 
-        [Theory]
-        [InlineData((LiquidityPoolMiningStatusFilter)1000)]
-        public void ProvisionalFilter_MiningFilter_Invalid(LiquidityPoolMiningStatusFilter filter)
+    [Theory]
+    [InlineData(LiquidityPoolMiningStatusFilter.Any)]
+    [InlineData(LiquidityPoolMiningStatusFilter.Enabled)]
+    [InlineData(LiquidityPoolMiningStatusFilter.Disabled)]
+    public void ProvisionalFilter_MiningFilterValid(LiquidityPoolMiningStatusFilter filter)
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                MiningFilter = filter
-            };
+            MiningFilter = filter
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.MiningFilter);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.MiningFilter);
+    }
 
-        [Theory]
-        [InlineData(LiquidityPoolMiningStatusFilter.Any)]
-        [InlineData(LiquidityPoolMiningStatusFilter.Enabled)]
-        [InlineData(LiquidityPoolMiningStatusFilter.Disabled)]
-        public void ProvisionalFilter_MiningFilterValid(LiquidityPoolMiningStatusFilter filter)
+    [Fact]
+    public void Limit_Invalid()
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                MiningFilter = filter
-            };
+            Limit = Cursor.DefaultMaxLimit + 1
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.MiningFilter);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.Limit);
+    }
 
-        [Fact]
-        public void Limit_Invalid()
+    [Fact]
+    public void Limit_Valid()
+    {
+        // Arrange
+        var request = new LiquidityPoolFilterParameters
         {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit + 1
-            };
+            Limit = Cursor.DefaultMaxLimit
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.Limit);
-        }
-
-        [Fact]
-        public void Limit_Valid()
-        {
-            // Arrange
-            var request = new LiquidityPoolFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.Limit);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.Limit);
     }
 }

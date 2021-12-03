@@ -12,32 +12,31 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Vaults.Quotes
+namespace Opdex.Platform.Application.EntryHandlers.Vaults.Quotes;
+
+public class CreateSetPendingVaultOwnershipTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateSetPendingVaultOwnershipTransactionQuoteCommand>
 {
-    public class CreateSetPendingVaultOwnershipTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateSetPendingVaultOwnershipTransactionQuoteCommand>
+    private const string MethodName = VaultConstants.Methods.SetPendingOwnership;
+    private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+
+    public CreateSetPendingVaultOwnershipTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
+                                                                        IMediator mediator,
+                                                                        OpdexConfiguration config) : base(quoteAssembler, mediator, config)
     {
-        private const string MethodName = VaultConstants.Methods.SetPendingOwnership;
-        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+    }
 
-        public CreateSetPendingVaultOwnershipTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                                            IMediator mediator,
-                                                                            OpdexConfiguration config) : base(quoteAssembler, mediator, config)
+    public override async Task<TransactionQuoteDto> Handle(CreateSetPendingVaultOwnershipTransactionQuoteCommand request, CancellationToken cancellationToken)
+    {
+        // ensure vault exists, if not throw to return 404
+        _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
+
+        var requestParameters = new List<TransactionQuoteRequestParameter>
         {
-        }
+            new TransactionQuoteRequestParameter("New Owner", new SmartContractMethodParameter(request.NewOwner))
+        };
 
-        public override async Task<TransactionQuoteDto> Handle(CreateSetPendingVaultOwnershipTransactionQuoteCommand request, CancellationToken cancellationToken)
-        {
-            // ensure vault exists, if not throw to return 404
-            _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
+        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
 
-            var requestParameters = new List<TransactionQuoteRequestParameter>
-            {
-                new TransactionQuoteRequestParameter("New Owner", new SmartContractMethodParameter(request.NewOwner))
-            };
-
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
-
-            return await ExecuteAsync(quoteRequest, cancellationToken);
-        }
+        return await ExecuteAsync(quoteRequest, cancellationToken);
     }
 }

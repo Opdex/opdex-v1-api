@@ -11,46 +11,45 @@ using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools;
+
+public class ProcessStakeLogCommandHandler : IRequestHandler<ProcessStakeLogCommand, bool>
 {
-    public class ProcessStakeLogCommandHandler : IRequestHandler<ProcessStakeLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessStakeLogCommandHandler> _logger;
+
+    public ProcessStakeLogCommandHandler(IMediator mediator, ILogger<ProcessStakeLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessStakeLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessStakeLogCommandHandler(IMediator mediator, ILogger<ProcessStakeLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessStakeLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (liquidityPool == null) return false;
+
+            var stakingBalance = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liquidityPool.Id,
+                                                                                                               request.Log.Staker,
+                                                                                                               findOrThrow: false))
+                                 ?? new AddressStaking(liquidityPool.Id, request.Log.Staker, UInt256.Zero, request.BlockHeight);
+
+            if (request.BlockHeight < stakingBalance.ModifiedBlock)
+            {
+                return true;
+            }
+
+            stakingBalance.SetWeight(request.Log.StakerBalance, request.BlockHeight);
+
+            return await _mediator.Send(new MakeAddressStakingCommand(stakingBalance)) > 0;
         }
-
-        public async Task<bool> Handle(ProcessStakeLogCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: false));
-                if (liquidityPool == null) return false;
+            _logger.LogError(ex, $"Failure processing {nameof(StakeLog)}");
 
-                var stakingBalance = await _mediator.Send(new RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery(liquidityPool.Id,
-                                                                                                                   request.Log.Staker,
-                                                                                                                   findOrThrow: false))
-                                     ?? new AddressStaking(liquidityPool.Id, request.Log.Staker, UInt256.Zero, request.BlockHeight);
-
-                if (request.BlockHeight < stakingBalance.ModifiedBlock)
-                {
-                    return true;
-                }
-
-                stakingBalance.SetWeight(request.Log.StakerBalance, request.BlockHeight);
-
-                return await _mediator.Send(new MakeAddressStakingCommand(stakingBalance)) > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(StakeLog)}");
-
-                return false;
-            }
+            return false;
         }
     }
 }

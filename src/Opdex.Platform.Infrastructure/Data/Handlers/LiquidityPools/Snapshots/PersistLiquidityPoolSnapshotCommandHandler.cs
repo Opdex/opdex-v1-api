@@ -8,12 +8,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots
+namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots;
+
+public class PersistLiquidityPoolSnapshotCommandHandler : IRequestHandler<PersistLiquidityPoolSnapshotCommand, bool>
 {
-    public class PersistLiquidityPoolSnapshotCommandHandler : IRequestHandler<PersistLiquidityPoolSnapshotCommand, bool>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO pool_liquidity_snapshot (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO pool_liquidity_snapshot (
                 {nameof(LiquidityPoolSnapshotEntity.LiquidityPoolId)},
                 {nameof(LiquidityPoolSnapshotEntity.SnapshotTypeId)},
                 {nameof(LiquidityPoolSnapshotEntity.TransactionCount)},
@@ -31,43 +31,42 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Snapshots
                 UTC_TIMESTAMP()
               );";
 
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE pool_liquidity_snapshot
+    private static readonly string UpdateSqlCommand =
+        $@"UPDATE pool_liquidity_snapshot
                 SET
                     {nameof(LiquidityPoolSnapshotEntity.TransactionCount)} = @{nameof(LiquidityPoolSnapshotEntity.TransactionCount)},
                     {nameof(LiquidityPoolSnapshotEntity.Details)} = @{nameof(LiquidityPoolSnapshotEntity.Details)},
                     {nameof(LiquidityPoolSnapshotEntity.ModifiedDate)} = UTC_TIMESTAMP()
                 WHERE {nameof(LiquidityPoolSnapshotEntity.Id)} = @{nameof(LiquidityPoolSnapshotEntity.Id)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistLiquidityPoolSnapshotCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistLiquidityPoolSnapshotCommandHandler> logger)
+    public PersistLiquidityPoolSnapshotCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistLiquidityPoolSnapshotCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<bool> Handle(PersistLiquidityPoolSnapshotCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var entity = _mapper.Map<LiquidityPoolSnapshotEntity>(request.Snapshot);
+
+            var sql = entity.Id < 1 ? InsertSqlCommand : UpdateSqlCommand;
+
+            var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+
+            return await _context.ExecuteCommandAsync(command) >= 1;
         }
-
-        public async Task<bool> Handle(PersistLiquidityPoolSnapshotCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var entity = _mapper.Map<LiquidityPoolSnapshotEntity>(request.Snapshot);
+            _logger.LogError(ex, $"Failure persisting liquidity pool snapshot for poolId {request?.Snapshot?.LiquidityPoolId}.");
 
-                var sql = entity.Id < 1 ? InsertSqlCommand : UpdateSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-
-                return await _context.ExecuteCommandAsync(command) >= 1;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure persisting liquidity pool snapshot for poolId {request?.Snapshot?.LiquidityPoolId}.");
-
-                return false;
-            }
+            return false;
         }
     }
 }

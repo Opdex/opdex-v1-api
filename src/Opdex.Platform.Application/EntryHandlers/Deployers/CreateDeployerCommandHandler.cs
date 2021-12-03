@@ -7,26 +7,25 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Deployers
+namespace Opdex.Platform.Application.EntryHandlers.Deployers;
+
+public class CreateDeployerCommandHandler : IRequestHandler<CreateDeployerCommand, ulong>
 {
-    public class CreateDeployerCommandHandler : IRequestHandler<CreateDeployerCommand, ulong>
+    private readonly IMediator _mediator;
+
+    public CreateDeployerCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public CreateDeployerCommandHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
+    public async Task<ulong> Handle(CreateDeployerCommand request, CancellationToken cancellationToken)
+    {
+        var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Deployer, findOrThrow: false));
 
-        public async Task<ulong> Handle(CreateDeployerCommand request, CancellationToken cancellationToken)
-        {
-            var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Deployer, findOrThrow: false));
+        if (!(deployer is null)) return deployer.Id;
 
-            if (!(deployer is null)) return deployer.Id;
+        deployer = new Deployer(request.Deployer, request.Owner, isActive: true, request.BlockHeight);
 
-            deployer = new Deployer(request.Deployer, request.Owner, isActive: true, request.BlockHeight);
-
-            return await _mediator.Send(new MakeDeployerCommand(deployer, request.BlockHeight));
-        }
+        return await _mediator.Send(new MakeDeployerCommand(deployer, request.BlockHeight));
     }
 }

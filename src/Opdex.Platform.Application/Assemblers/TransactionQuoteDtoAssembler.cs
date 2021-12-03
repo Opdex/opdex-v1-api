@@ -7,28 +7,27 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Assemblers
+namespace Opdex.Platform.Application.Assemblers;
+
+public class TransactionQuoteDtoAssembler : IModelAssembler<TransactionQuote, TransactionQuoteDto>
 {
-    public class TransactionQuoteDtoAssembler : IModelAssembler<TransactionQuote, TransactionQuoteDto>
+    private readonly IMapper _mapper;
+    private readonly IModelAssembler<IEnumerable<TransactionLog>, IReadOnlyCollection<TransactionEventDto>> _eventsAssembler;
+
+    public TransactionQuoteDtoAssembler(IMapper mapper,
+                                        IModelAssembler<IEnumerable<TransactionLog>, IReadOnlyCollection<TransactionEventDto>> eventsAssembler)
     {
-        private readonly IMapper _mapper;
-        private readonly IModelAssembler<IEnumerable<TransactionLog>, IReadOnlyCollection<TransactionEventDto>> _eventsAssembler;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _eventsAssembler = eventsAssembler ?? throw new ArgumentNullException(nameof(eventsAssembler));
+    }
 
-        public TransactionQuoteDtoAssembler(IMapper mapper,
-                                            IModelAssembler<IEnumerable<TransactionLog>, IReadOnlyCollection<TransactionEventDto>> eventsAssembler)
-        {
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _eventsAssembler = eventsAssembler ?? throw new ArgumentNullException(nameof(eventsAssembler));
-        }
+    public async Task<TransactionQuoteDto> Assemble(TransactionQuote quote)
+    {
+        var transactionQuote = _mapper.Map<TransactionQuoteDto>(quote);
 
-        public async Task<TransactionQuoteDto> Assemble(TransactionQuote quote)
-        {
-            var transactionQuote = _mapper.Map<TransactionQuoteDto>(quote);
+        // Todo: This is shard so we can show events in rich context, however, we may want to quote users exclusively using Cirrus FN
+        transactionQuote.Events = await _eventsAssembler.Assemble(quote.Logs);
 
-            // Todo: This is shard so we can show events in rich context, however, we may want to quote users exclusively using Cirrus FN
-            transactionQuote.Events = await _eventsAssembler.Assemble(quote.Logs);
-
-            return transactionQuote;
-        }
+        return transactionQuote;
     }
 }

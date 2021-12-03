@@ -10,12 +10,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets;
+
+public class SelectMarketByIdQueryHandler : IRequestHandler<SelectMarketByIdQuery, Market>
 {
-    public class SelectMarketByIdQueryHandler : IRequestHandler<SelectMarketByIdQuery, Market>
-    {
-        private static readonly string SqlCommand =
-            $@"SELECT
+    private static readonly string SqlCommand =
+        $@"SELECT
                 {nameof(MarketEntity.Id)},
                 {nameof(MarketEntity.Address)},
                 {nameof(MarketEntity.DeployerId)},
@@ -33,39 +33,38 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
             WHERE {nameof(MarketEntity.Id)} = @{nameof(SqlParams.MarketId)}
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectMarketByIdQueryHandler(IDbContext context, IMapper mapper)
+    public SelectMarketByIdQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<Market> Handle(SelectMarketByIdQuery request, CancellationToken cancellationToken)
+    {
+        var queryParams = new SqlParams(request.MarketId);
+
+        var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<MarketEntity>(command);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(Market)} not found.");
         }
 
-        public async Task<Market> Handle(SelectMarketByIdQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<Market>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong marketId)
         {
-            var queryParams = new SqlParams(request.MarketId);
-
-            var command = DatabaseQuery.Create(SqlCommand, queryParams, cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<MarketEntity>(command);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(Market)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<Market>(result);
+            MarketId = marketId;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong marketId)
-            {
-                MarketId = marketId;
-            }
-
-            public ulong MarketId { get; }
-        }
+        public ulong MarketId { get; }
     }
 }

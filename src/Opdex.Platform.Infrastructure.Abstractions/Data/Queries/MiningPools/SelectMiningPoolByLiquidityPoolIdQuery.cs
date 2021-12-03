@@ -2,20 +2,19 @@ using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.MiningPools;
 using System;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningPools
-{
-    public class SelectMiningPoolByLiquidityPoolIdQuery : FindQuery<MiningPool>
-    {
-        public SelectMiningPoolByLiquidityPoolIdQuery(ulong liquidityPoolId, bool findOrThrow = true) : base(findOrThrow)
-        {
-            if (liquidityPoolId < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
-            }
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.MiningPools;
 
-            LiquidityPoolId = liquidityPoolId;
+public class SelectMiningPoolByLiquidityPoolIdQuery : FindQuery<MiningPool>
+{
+    public SelectMiningPoolByLiquidityPoolIdQuery(ulong liquidityPoolId, bool findOrThrow = true) : base(findOrThrow)
+    {
+        if (liquidityPoolId < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
         }
 
-        public ulong LiquidityPoolId { get; }
+        LiquidityPoolId = liquidityPoolId;
     }
+
+    public ulong LiquidityPoolId { get; }
 }

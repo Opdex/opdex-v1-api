@@ -1,27 +1,26 @@
 using MediatR;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Mining;
+
+/// <summary>
+/// Command to rewind mining address details
+/// </summary>
+public class CreateRewindMiningPositionsCommand : IRequest<bool>
 {
     /// <summary>
-    /// Command to rewind mining address details
+    /// Creates a command to rewind mining address details
     /// </summary>
-    public class CreateRewindMiningPositionsCommand : IRequest<bool>
+    /// <param name="rewindHeight">The block height to rewind applicable records back to.</param>
+    public CreateRewindMiningPositionsCommand(ulong rewindHeight)
     {
-        /// <summary>
-        /// Creates a command to rewind mining address details
-        /// </summary>
-        /// <param name="rewindHeight">The block height to rewind applicable records back to.</param>
-        public CreateRewindMiningPositionsCommand(ulong rewindHeight)
+        if (rewindHeight < 1)
         {
-            if (rewindHeight < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(rewindHeight), "Rewind height must be greater than 0.");
-            }
-
-            RewindHeight = rewindHeight;
+            throw new ArgumentOutOfRangeException(nameof(rewindHeight), "Rewind height must be greater than 0.");
         }
 
-        public ulong RewindHeight { get; }
+        RewindHeight = rewindHeight;
     }
+
+    public ulong RewindHeight { get; }
 }

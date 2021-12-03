@@ -7,27 +7,26 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Tokens.Attributes
+namespace Opdex.Platform.Application.Handlers.Tokens.Attributes;
+
+public class MakeTokenAttributeCommandHandler : IRequestHandler<MakeTokenAttributeCommand, bool>
 {
-    public class MakeTokenAttributeCommandHandler : IRequestHandler<MakeTokenAttributeCommand, bool>
+    private readonly IMediator _mediator;
+
+    public MakeTokenAttributeCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeTokenAttributeCommandHandler(IMediator mediator)
+    public async Task<bool> Handle(MakeTokenAttributeCommand request, CancellationToken cancellationToken)
+    {
+        var attributes = await _mediator.Send(new SelectTokenAttributesByTokenIdQuery(request.TokenAttribute.TokenId));
+
+        if (attributes.All(a => a.AttributeType != (request.TokenAttribute.AttributeType)))
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            return await _mediator.Send(new PersistTokenAttributeCommand(request.TokenAttribute));
         }
 
-        public async Task<bool> Handle(MakeTokenAttributeCommand request, CancellationToken cancellationToken)
-        {
-            var attributes = await _mediator.Send(new SelectTokenAttributesByTokenIdQuery(request.TokenAttribute.TokenId));
-
-            if (attributes.All(a => a.AttributeType != (request.TokenAttribute.AttributeType)))
-            {
-                return await _mediator.Send(new PersistTokenAttributeCommand(request.TokenAttribute));
-            }
-
-            return true;
-        }
+        return true;
     }
 }

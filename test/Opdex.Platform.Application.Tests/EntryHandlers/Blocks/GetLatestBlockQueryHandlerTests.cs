@@ -14,78 +14,77 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks
+namespace Opdex.Platform.Application.Tests.EntryHandlers.Blocks;
+
+public class GetLatestBlockQueryHandlerTests
 {
-    public class GetLatestBlockQueryHandlerTests
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly GetLatestBlockQueryHandler _handler;
+
+    public GetLatestBlockQueryHandlerTests()
     {
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly GetLatestBlockQueryHandler _handler;
+        _mapperMock = new Mock<IMapper>();
+        _mediatorMock = new Mock<IMediator>();
 
-        public GetLatestBlockQueryHandlerTests()
+        _handler = new GetLatestBlockQueryHandler(_mapperMock.Object, _mediatorMock.Object);
+    }
+
+    [Fact]
+    public async Task Handle_RetrieveLatestBlockQuery_Send()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        // Act
+        try
         {
-            _mapperMock = new Mock<IMapper>();
-            _mediatorMock = new Mock<IMediator>();
-
-            _handler = new GetLatestBlockQueryHandler(_mapperMock.Object, _mediatorMock.Object);
+            await _handler.Handle(new GetLatestBlockQuery(), cancellationToken);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task Handle_RetrieveLatestBlockQuery_Send()
-        {
-            // Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveLatestBlockQuery>(query => !query.FindOrThrow), cancellationToken), Times.Once);
+    }
 
-            // Act
-            try
-            {
-                await _handler.Handle(new GetLatestBlockQuery(), cancellationToken);
-            }
-            catch (Exception) { }
+    [Fact]
+    public async Task Handle_NoBlockFound_ThrowNotFound()
+    {
+        // Arrange
+        // Act
+        Task Act() => _handler.Handle(new GetLatestBlockQuery(), CancellationToken.None);
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveLatestBlockQuery>(query => !query.FindOrThrow), cancellationToken), Times.Once);
-        }
+        // Assert
+        await Assert.ThrowsAsync<NotFoundException>(Act);
+    }
 
-        [Fact]
-        public async Task Handle_NoBlockFound_ThrowNotFound()
-        {
-            // Arrange
-            // Act
-            Task Act() => _handler.Handle(new GetLatestBlockQuery(), CancellationToken.None);
+    [Fact]
+    public async Task Handle_Found_Map()
+    {
+        // Arrange
+        var block = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
 
-            // Assert
-            await Assert.ThrowsAsync<NotFoundException>(Act);
-        }
+        // Act
+        await _handler.Handle(new GetLatestBlockQuery(), CancellationToken.None);
 
-        [Fact]
-        public async Task Handle_Found_Map()
-        {
-            // Arrange
-            var block = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
+        // Assert
+        _mapperMock.Verify(callTo => callTo.Map<BlockDto>(block), Times.Once);
+    }
 
-            // Act
-            await _handler.Handle(new GetLatestBlockQuery(), CancellationToken.None);
+    [Fact]
+    public async Task Handle_Found_ReturnMapped()
+    {
+        // Arrange
+        var blockDto = new BlockDto();
+        var block = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
+        _mapperMock.Setup(callTo => callTo.Map<BlockDto>(block)).Returns(blockDto);
 
-            // Assert
-            _mapperMock.Verify(callTo => callTo.Map<BlockDto>(block), Times.Once);
-        }
+        // Act
+        var response = await _handler.Handle(new GetLatestBlockQuery(), CancellationToken.None);
 
-        [Fact]
-        public async Task Handle_Found_ReturnMapped()
-        {
-            // Arrange
-            var blockDto = new BlockDto();
-            var block = new Block(10, Sha256.Parse("18236e42c337ee0b8a23df39523a904853ac9a1e42120a5086420ecf9c79b147"), DateTime.UtcNow, DateTime.UtcNow);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(block);
-            _mapperMock.Setup(callTo => callTo.Map<BlockDto>(block)).Returns(blockDto);
-
-            // Act
-            var response = await _handler.Handle(new GetLatestBlockQuery(), CancellationToken.None);
-
-            // Assert
-            response.Should().Be(blockDto);
-        }
+        // Assert
+        response.Should().Be(blockDto);
     }
 }

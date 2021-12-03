@@ -3,27 +3,26 @@ using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Addresses;
 using System;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Staking
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Staking;
+
+public class SelectAddressStakingByLiquidityPoolIdAndOwnerQuery : FindQuery<AddressStaking>
 {
-    public class SelectAddressStakingByLiquidityPoolIdAndOwnerQuery : FindQuery<AddressStaking>
+    public SelectAddressStakingByLiquidityPoolIdAndOwnerQuery(ulong liquidityPoolId, Address owner, bool findOrThrow = true) : base(findOrThrow)
     {
-        public SelectAddressStakingByLiquidityPoolIdAndOwnerQuery(ulong liquidityPoolId, Address owner, bool findOrThrow = true) : base(findOrThrow)
+        if (liquidityPoolId < 1)
         {
-            if (liquidityPoolId < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
-            }
-
-            if (owner == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(owner));
-            }
-
-            LiquidityPoolId = liquidityPoolId;
-            Owner = owner;
+            throw new ArgumentOutOfRangeException(nameof(liquidityPoolId));
         }
 
-        public ulong LiquidityPoolId { get; }
-        public Address Owner { get; }
+        if (owner == Address.Empty)
+        {
+            throw new ArgumentNullException(nameof(owner));
+        }
+
+        LiquidityPoolId = liquidityPoolId;
+        Owner = owner;
     }
+
+    public ulong LiquidityPoolId { get; }
+    public Address Owner { get; }
 }

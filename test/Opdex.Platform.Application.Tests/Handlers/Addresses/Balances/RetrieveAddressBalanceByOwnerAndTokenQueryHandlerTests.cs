@@ -15,209 +15,208 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances
+namespace Opdex.Platform.Application.Tests.Handlers.Addresses.Balances;
+
+public class RetrieveAddressBalanceByOwnerAndTokenQueryHandlerTests
 {
-    public class RetrieveAddressBalanceByOwnerAndTokenQueryHandlerTests
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly RetrieveAddressBalanceByOwnerAndTokenQueryHandler _handler;
+
+    public RetrieveAddressBalanceByOwnerAndTokenQueryHandlerTests()
     {
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly RetrieveAddressBalanceByOwnerAndTokenQueryHandler _handler;
+        _mediatorMock = new Mock<IMediator>();
+        _handler = new RetrieveAddressBalanceByOwnerAndTokenQueryHandler(_mediatorMock.Object);
+    }
 
-        public RetrieveAddressBalanceByOwnerAndTokenQueryHandlerTests()
+    [Fact]
+    public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentNullException_InvalidOwner()
+    {
+        // Arrange
+        Address owner = Address.Empty;
+        const ulong tokenId = 2;
+
+        void Act() => new RetrieveAddressBalanceByOwnerAndTokenQuery(owner, tokenId);
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner address must be set.");
+    }
+
+    [Theory]
+    [InlineData(null, null)]
+    [InlineData(null, 0ul)]
+    [InlineData("", null)]
+    [InlineData("", 0ul)]
+    [InlineData(" ", null)]
+    [InlineData(" ", 0ul)]
+    public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentException_InvalidTokenIdAndAddress(string owner, ulong? tokenId)
+    {
+        // Arrange
+
+        // Act
+        void Act() => new RetrieveAddressBalanceByOwnerAndTokenQuery(owner, tokenId);
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner address must be set.");
+    }
+
+    [Fact]
+    public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_RetrieveTokenByAddressQuery()
+    {
+        // Arrange
+        Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        // Act
+        try
         {
-            _mediatorMock = new Mock<IMediator>();
-            _handler = new RetrieveAddressBalanceByOwnerAndTokenQueryHandler(_mediatorMock.Object);
+            await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenAddress: token), cancellationToken);
         }
+        catch { }
 
-        [Fact]
-        public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentNullException_InvalidOwner()
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(q => q.Address == token &&
+                                                                                           q.FindOrThrow),
+                                                   cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_RetrieveTokenByIdQuery()
+    {
+        // Arrange
+        Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const ulong tokenId = 2;
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        // Act
+        try
         {
-            // Arrange
-            Address owner = Address.Empty;
-            const ulong tokenId = 2;
-
-            void Act() => new RetrieveAddressBalanceByOwnerAndTokenQuery(owner, tokenId);
-
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner address must be set.");
+            await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId), cancellationToken);
         }
+        catch { }
 
-        [Theory]
-        [InlineData(null, null)]
-        [InlineData(null, 0ul)]
-        [InlineData("", null)]
-        [InlineData("", 0ul)]
-        [InlineData(" ", null)]
-        [InlineData(" ", 0ul)]
-        public void SelectAddressBalanceByOwnerAndTokenId_ThrowsArgumentException_InvalidTokenIdAndAddress(string owner, ulong? tokenId)
-        {
-            // Arrange
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByIdQuery>(q => q.TokenId == tokenId &&
+                                                                                      q.FindOrThrow),
+                                                   cancellationToken), Times.Once);
+    }
 
-            // Act
-            void Act() => new RetrieveAddressBalanceByOwnerAndTokenQuery(owner, tokenId);
+    [Fact]
+    public async Task SelectAddressBalanceByOwnerAndTokenId_TokenNotFound_FindOrThrowFalse_ReturnsNull()
+    {
+        // Arrange
+        Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const ulong tokenId = 2;
+        const bool findOrThrow = false;
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner address must be set.");
-        }
+        // Act
+        var response = await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId,
+                                                                                            findOrThrow: findOrThrow), cancellationToken);
 
-        [Fact]
-        public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_RetrieveTokenByAddressQuery()
-        {
-            // Arrange
-            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByIdQuery>(q => q.TokenId == tokenId &&
+                                                                                      q.FindOrThrow == findOrThrow),
+                                                   cancellationToken), Times.Once);
 
-            // Act
-            try
-            {
-                await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenAddress: token), cancellationToken);
-            }
-            catch { }
+        response.Should().Be(null);
+    }
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(q => q.Address == token &&
-                                                                                               q.FindOrThrow),
-                                                       cancellationToken), Times.Once);
-        }
+    [Fact]
+    public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_SelectAddressBalanceByOwnerAndTokenIdQuery()
+    {
+        // Arrange
+        Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const ulong tokenId = 2;
+        const bool findOrThrow = false;
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        [Fact]
-        public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_RetrieveTokenByIdQuery()
-        {
-            // Arrange
-            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const ulong tokenId = 2;
-            var cancellationToken = new CancellationTokenSource().Token;
+        _mediatorMock
+            .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
+            .ReturnsAsync(new Token(tokenId, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
 
-            // Act
-            try
-            {
-                await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId), cancellationToken);
-            }
-            catch { }
+        // Act
+        await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByIdQuery>(q => q.TokenId == tokenId &&
-                                                                                          q.FindOrThrow),
-                                                       cancellationToken), Times.Once);
-        }
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<SelectAddressBalanceByOwnerAndTokenIdQuery>(q => q.Owner == address &&
+                                                                                                          q.TokenId == tokenId &&
+                                                                                                          q.FindOrThrow == findOrThrow),
+                                                   cancellationToken), Times.Once);
+    }
 
-        [Fact]
-        public async Task SelectAddressBalanceByOwnerAndTokenId_TokenNotFound_FindOrThrowFalse_ReturnsNull()
-        {
-            // Arrange
-            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const ulong tokenId = 2;
-            const bool findOrThrow = false;
-            var cancellationToken = new CancellationTokenSource().Token;
+    [Fact]
+    public async Task SelectAddressBalanceByOwnerAndTokenId_ReturnsSrcTokenAddressBalance()
+    {
+        // Arrange
+        Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const ulong tokenId = 2;
+        const bool findOrThrow = false;
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            // Act
-            var response = await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId,
-                                                                                                findOrThrow: findOrThrow), cancellationToken);
+        var expectedResult = new AddressBalance(tokenId, address, 100, 1);
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByIdQuery>(q => q.TokenId == tokenId &&
-                                                                                          q.FindOrThrow == findOrThrow),
-                                                       cancellationToken), Times.Once);
+        _mediatorMock
+            .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
+            .ReturnsAsync(new Token(tokenId, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
 
-            response.Should().Be(null);
-        }
+        _mediatorMock
+            .Setup(callTo => callTo.Send(It.IsAny<SelectAddressBalanceByOwnerAndTokenIdQuery>(), cancellationToken))
+            .ReturnsAsync(expectedResult);
 
-        [Fact]
-        public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_SelectAddressBalanceByOwnerAndTokenIdQuery()
-        {
-            // Arrange
-            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const ulong tokenId = 2;
-            const bool findOrThrow = false;
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Act
+        var response = await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
 
-            _mediatorMock
-                .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-                .ReturnsAsync(new Token(tokenId, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
+        // Assert
+        response.Should().BeEquivalentTo(expectedResult);
+    }
 
-            // Act
-            await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
+    [Fact]
+    public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_CallCirrusGetAddressBalanceQuery()
+    {
+        // Arrange
+        Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const ulong tokenId = 2;
+        const bool findOrThrow = true;
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<SelectAddressBalanceByOwnerAndTokenIdQuery>(q => q.Owner == address &&
-                                                                                                              q.TokenId == tokenId &&
-                                                                                                              q.FindOrThrow == findOrThrow),
-                                                       cancellationToken), Times.Once);
-        }
+        _mediatorMock
+            .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
+            .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, 100, 1, 2));
 
-        [Fact]
-        public async Task SelectAddressBalanceByOwnerAndTokenId_ReturnsSrcTokenAddressBalance()
-        {
-            // Arrange
-            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const ulong tokenId = 2;
-            const bool findOrThrow = false;
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Act
+        await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
 
-            var expectedResult = new AddressBalance(tokenId, address, 100, 1);
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusGetAddressCrsBalanceQuery>(q => q.Address == address &&
+                                                                                                   q.FindOrThrow == findOrThrow),
+                                                   cancellationToken), Times.Once);
+    }
 
-            _mediatorMock
-                .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-                .ReturnsAsync(new Token(tokenId, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
+    [Fact]
+    public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_ReturnsCrsTokenAddressBalance()
+    {
+        // Arrange
+        Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const ulong tokenId = 2;
+        const bool findOrThrow = true;
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            _mediatorMock
-                .Setup(callTo => callTo.Send(It.IsAny<SelectAddressBalanceByOwnerAndTokenIdQuery>(), cancellationToken))
-                .ReturnsAsync(expectedResult);
+        const ulong expectedBalance = 20;
+        var expectedResult = new AddressBalance(tokenId, address, expectedBalance, 1);
 
-            // Act
-            var response = await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
+        _mediatorMock
+            .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
+            .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
 
-            // Assert
-            response.Should().BeEquivalentTo(expectedResult);
-        }
+        _mediatorMock
+            .Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetAddressCrsBalanceQuery>(), cancellationToken))
+            .ReturnsAsync(expectedBalance);
 
-        [Fact]
-        public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_CallCirrusGetAddressBalanceQuery()
-        {
-            // Arrange
-            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const ulong tokenId = 2;
-            const bool findOrThrow = true;
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Act
+        var response = await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
 
-            _mediatorMock
-                .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-                .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, 100, 1, 2));
-
-            // Act
-            await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusGetAddressCrsBalanceQuery>(q => q.Address == address &&
-                                                                                                    q.FindOrThrow == findOrThrow),
-                                                       cancellationToken), Times.Once);
-        }
-
-        [Fact]
-        public async Task SelectAddressBalanceByOwnerAndTokenId_Sends_ReturnsCrsTokenAddressBalance()
-        {
-            // Arrange
-            Address address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const ulong tokenId = 2;
-            const bool findOrThrow = true;
-            var cancellationToken = new CancellationTokenSource().Token;
-
-            const ulong expectedBalance = 20;
-            var expectedResult = new AddressBalance(tokenId, address, expectedBalance, 1);
-
-            _mediatorMock
-                .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-                .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
-
-            _mediatorMock
-                .Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetAddressCrsBalanceQuery>(), cancellationToken))
-                .ReturnsAsync(expectedBalance);
-
-            // Act
-            var response = await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
-
-            // Assert
-            response.Should().BeEquivalentTo(expectedResult);
-        }
+        // Assert
+        response.Should().BeEquivalentTo(expectedResult);
     }
 }

@@ -8,44 +8,43 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernances
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningGovernances;
+
+public class ProcessRewardMiningPoolLogCommandHandler : IRequestHandler<ProcessRewardMiningPoolLogCommand, bool>
 {
-    public class ProcessRewardMiningPoolLogCommandHandler : IRequestHandler<ProcessRewardMiningPoolLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessRewardMiningPoolLogCommandHandler> _logger;
+
+    public ProcessRewardMiningPoolLogCommandHandler(IMediator mediator, ILogger<ProcessRewardMiningPoolLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessRewardMiningPoolLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessRewardMiningPoolLogCommandHandler(IMediator mediator, ILogger<ProcessRewardMiningPoolLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessRewardMiningPoolLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (miningGovernance == null) return false;
+
+            if (request.BlockHeight < miningGovernance.ModifiedBlock)
+            {
+                return true;
+            }
+
+            var updateId = await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance, request.BlockHeight,
+                                                                                refreshMiningPoolReward: true,
+                                                                                refreshNominationPeriodEnd: true,
+                                                                                refreshMiningPoolsFunded: true));
+
+            return updateId > 0;
         }
-
-        public async Task<bool> Handle(ProcessRewardMiningPoolLogCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
-                if (miningGovernance == null) return false;
+            _logger.LogError(ex, $"Failure processing {nameof(RewardMiningPoolLog)}");
 
-                if (request.BlockHeight < miningGovernance.ModifiedBlock)
-                {
-                    return true;
-                }
-
-                var updateId = await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance, request.BlockHeight,
-                                                                                    refreshMiningPoolReward: true,
-                                                                                    refreshNominationPeriodEnd: true,
-                                                                                    refreshMiningPoolsFunded: true));
-
-                return updateId > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(RewardMiningPoolLog)}");
-
-                return false;
-            }
+            return false;
         }
     }
 }

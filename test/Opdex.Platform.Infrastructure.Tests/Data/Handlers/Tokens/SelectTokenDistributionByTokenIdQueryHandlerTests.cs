@@ -11,65 +11,64 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distributio
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens;
+
+public class SelectLatestTokenDistributionQueryHandlerTests
 {
-    public class SelectLatestTokenDistributionQueryHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly SelectLatestTokenDistributionQueryHandler _handler;
+
+    public SelectLatestTokenDistributionQueryHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectLatestTokenDistributionQueryHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-        public SelectLatestTokenDistributionQueryHandlerTests()
+        _dbContext = new Mock<IDbContext>();
+        _handler = new SelectLatestTokenDistributionQueryHandler(_dbContext.Object, mapper);
+    }
+
+    [Fact]
+    public async Task SelectTokenDistributionByTokenId_Success()
+    {
+        var expectedEntity = new TokenDistributionEntity
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+            Id = 123454,
+            TokenId = 99999,
+            VaultDistribution = 10000,
+            MiningGovernanceDistribution = 10000000,
+            DistributionBlock = 87654,
+            NextDistributionBlock = 19876543,
+            PeriodIndex = 1,
+            CreatedBlock = 1,
+            ModifiedBlock = 1
+        };
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new SelectLatestTokenDistributionQueryHandler(_dbContext.Object, mapper);
-        }
+        var command = new SelectLatestTokenDistributionQuery();
 
-        [Fact]
-        public async Task SelectTokenDistributionByTokenId_Success()
-        {
-            var expectedEntity = new TokenDistributionEntity
-            {
-                Id = 123454,
-                TokenId = 99999,
-                VaultDistribution = 10000,
-                MiningGovernanceDistribution = 10000000,
-                DistributionBlock = 87654,
-                NextDistributionBlock = 19876543,
-                PeriodIndex = 1,
-                CreatedBlock = 1,
-                ModifiedBlock = 1
-            };
+        _dbContext.Setup(db => db.ExecuteFindAsync<TokenDistributionEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(expectedEntity));
 
-            var command = new SelectLatestTokenDistributionQuery();
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<TokenDistributionEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedEntity));
+        result.Id.Should().Be(expectedEntity.Id);
+        result.TokenId.Should().Be(expectedEntity.TokenId);
+        result.VaultDistribution.Should().Be(expectedEntity.VaultDistribution);
+        result.MiningGovernanceDistribution.Should().Be(expectedEntity.MiningGovernanceDistribution);
+        result.DistributionBlock.Should().Be(expectedEntity.DistributionBlock);
+        result.NextDistributionBlock.Should().Be(expectedEntity.NextDistributionBlock);
+        result.PeriodIndex.Should().Be(expectedEntity.PeriodIndex);
+    }
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+    [Fact]
+    public void SelectTokenDistributionByTokenId_Throws_NotFoundException()
+    {
+        var command = new SelectLatestTokenDistributionQuery();
 
-            result.Id.Should().Be(expectedEntity.Id);
-            result.TokenId.Should().Be(expectedEntity.TokenId);
-            result.VaultDistribution.Should().Be(expectedEntity.VaultDistribution);
-            result.MiningGovernanceDistribution.Should().Be(expectedEntity.MiningGovernanceDistribution);
-            result.DistributionBlock.Should().Be(expectedEntity.DistributionBlock);
-            result.NextDistributionBlock.Should().Be(expectedEntity.NextDistributionBlock);
-            result.PeriodIndex.Should().Be(expectedEntity.PeriodIndex);
-        }
+        _dbContext.Setup(db => db.ExecuteFindAsync<TokenDistributionEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<TokenDistributionEntity>(null));
 
-        [Fact]
-        public void SelectTokenDistributionByTokenId_Throws_NotFoundException()
-        {
-            var command = new SelectLatestTokenDistributionQuery();
-
-            _dbContext.Setup(db => db.ExecuteFindAsync<TokenDistributionEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<TokenDistributionEntity>(null));
-
-            _handler.Invoking(h => h.Handle(command, CancellationToken.None))
-                .Should()
-                .ThrowAsync<NotFoundException>()
-                .WithMessage($"{nameof(TokenDistribution)} not found.");
-        }
+        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+            .Should()
+            .ThrowAsync<NotFoundException>()
+            .WithMessage($"{nameof(TokenDistribution)} not found.");
     }
 }

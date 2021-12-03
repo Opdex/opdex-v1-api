@@ -9,26 +9,25 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Tokens;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Tokens;
+
+public class CallCirrusGetSrcTokenBalanceQueryHandler : IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, UInt256>
 {
-    public class CallCirrusGetSrcTokenBalanceQueryHandler : IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, UInt256>
+    private readonly ISmartContractsModule _smartContractsModule;
+    private const string MethodName = StandardTokenConstants.Methods.GetBalance;
+
+    public CallCirrusGetSrcTokenBalanceQueryHandler(ISmartContractsModule smartContractsModule)
     {
-        private readonly ISmartContractsModule _smartContractsModule;
-        private const string MethodName = StandardTokenConstants.Methods.GetBalance;
+        _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+    }
 
-        public CallCirrusGetSrcTokenBalanceQueryHandler(ISmartContractsModule smartContractsModule)
-        {
-            _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-        }
+    public async Task<UInt256> Handle(CallCirrusGetSrcTokenBalanceQuery request, CancellationToken cancellationToken)
+    {
+        var parameters = new[] { new SmartContractMethodParameter(request.Owner) };
+        var balanceRequest = new LocalCallRequestDto(request.Token, request.Owner, MethodName, parameters, request.BlockHeight);
 
-        public async Task<UInt256> Handle(CallCirrusGetSrcTokenBalanceQuery request, CancellationToken cancellationToken)
-        {
-            var parameters = new[] { new SmartContractMethodParameter(request.Owner) };
-            var balanceRequest = new LocalCallRequestDto(request.Token, request.Owner, MethodName, parameters, request.BlockHeight);
+        var response = await _smartContractsModule.LocalCallAsync(balanceRequest, cancellationToken);
 
-            var response = await _smartContractsModule.LocalCallAsync(balanceRequest, cancellationToken);
-
-            return response.DeserializeValue<UInt256>();
-        }
+        return response.DeserializeValue<UInt256>();
     }
 }

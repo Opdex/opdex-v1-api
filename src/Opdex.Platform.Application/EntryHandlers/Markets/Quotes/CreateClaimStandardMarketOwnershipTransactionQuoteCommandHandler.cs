@@ -11,26 +11,25 @@ using Opdex.Platform.Domain.Models.Transactions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Markets.Quotes
+namespace Opdex.Platform.Application.EntryHandlers.Markets.Quotes;
+
+public class CreateClaimStandardMarketOwnershipTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateClaimStandardMarketOwnershipTransactionQuoteCommand>
 {
-    public class CreateClaimStandardMarketOwnershipTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateClaimStandardMarketOwnershipTransactionQuoteCommand>
+    private const string MethodName = StandardMarketConstants.Methods.ClaimPendingOwnership;
+    private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+
+    public CreateClaimStandardMarketOwnershipTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
+                                                                            IMediator mediator, OpdexConfiguration config) : base(quoteAssembler, mediator, config)
     {
-        private const string MethodName = StandardMarketConstants.Methods.ClaimPendingOwnership;
-        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+    }
 
-        public CreateClaimStandardMarketOwnershipTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                                                IMediator mediator, OpdexConfiguration config) : base(quoteAssembler, mediator, config)
-        {
-        }
+    public override async Task<TransactionQuoteDto> Handle(CreateClaimStandardMarketOwnershipTransactionQuoteCommand request, CancellationToken cancellationToken)
+    {
+        // ensure market exists, if not throw to return 404
+        _ = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
 
-        public override async Task<TransactionQuoteDto> Handle(CreateClaimStandardMarketOwnershipTransactionQuoteCommand request, CancellationToken cancellationToken)
-        {
-            // ensure market exists, if not throw to return 404
-            _ = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market, findOrThrow: true), cancellationToken);
+        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Market, CrsToSend, MethodName, _callbackEndpoint);
 
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Market, CrsToSend, MethodName, _callbackEndpoint);
-
-            return await ExecuteAsync(quoteRequest, cancellationToken);
-        }
+        return await ExecuteAsync(quoteRequest, cancellationToken);
     }
 }

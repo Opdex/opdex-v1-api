@@ -10,12 +10,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances
+namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances;
+
+public class SelectMiningGovernanceByAddressQueryHandler : IRequestHandler<SelectMiningGovernanceByAddressQuery, MiningGovernance>
 {
-    public class SelectMiningGovernanceByAddressQueryHandler : IRequestHandler<SelectMiningGovernanceByAddressQuery, MiningGovernance>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(MiningGovernanceEntity.Id)},
                 {nameof(MiningGovernanceEntity.Address)},
                 {nameof(MiningGovernanceEntity.TokenId)},
@@ -29,37 +29,36 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances
             WHERE {nameof(MiningGovernanceEntity.Address)} = @{nameof(SqlParams.Address)}
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectMiningGovernanceByAddressQueryHandler(IDbContext context, IMapper mapper)
+    public SelectMiningGovernanceByAddressQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<MiningGovernance> Handle(SelectMiningGovernanceByAddressQuery request, CancellationToken cancellationToken)
+    {
+        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.Address), cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<MiningGovernanceEntity>(query);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(MiningGovernance)} not found.");
         }
 
-        public async Task<MiningGovernance> Handle(SelectMiningGovernanceByAddressQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<MiningGovernance>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(Address address)
         {
-            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.Address), cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<MiningGovernanceEntity>(query);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(MiningGovernance)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<MiningGovernance>(result);
+            Address = address;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(Address address)
-            {
-                Address = address;
-            }
-
-            public Address Address { get; }
-        }
+        public Address Address { get; }
     }
 }

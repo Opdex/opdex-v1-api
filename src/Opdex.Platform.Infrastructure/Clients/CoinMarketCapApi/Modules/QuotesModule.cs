@@ -9,24 +9,23 @@ using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Serialization;
 using Opdex.Platform.Infrastructure.Http;
 using System;
 
-namespace Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi.Modules
+namespace Opdex.Platform.Infrastructure.Clients.CoinMarketCapApi.Modules;
+
+public class QuotesModule : ApiClientBase, IQuotesModule
 {
-    public class QuotesModule : ApiClientBase, IQuotesModule
+    public QuotesModule(HttpClient httpClient, ILogger<QuotesModule> logger) : base(httpClient, logger, Serialization.SnakeCasedJsonSettings)
     {
-        public QuotesModule(HttpClient httpClient, ILogger<QuotesModule> logger) : base(httpClient, logger, Serialization.SnakeCasedJsonSettings)
-        {
-        }
+    }
 
-        public Task<CmcLatestQuote> GetLatestQuoteAsync(int tokenId, CancellationToken cancellationToken)
-        {
-            var uri = string.Format(CmcUriHelper.Quotes.Latest, tokenId);
-            return GetAsync<CmcLatestQuote>(uri, cancellationToken);
-        }
+    public Task<CmcLatestQuote> GetLatestQuoteAsync(int tokenId, CancellationToken cancellationToken)
+    {
+        var uri = string.Format(CmcUriHelper.Quotes.Latest, tokenId);
+        return GetAsync<CmcLatestQuote>(uri, cancellationToken);
+    }
 
-        public Task<CmcHistoricalQuote> GetHistoricalQuoteAsync(int tokenId, DateTime dateTime, CancellationToken cancellationToken)
-        {
-            var uri = string.Format(CmcUriHelper.Quotes.Historical, tokenId, dateTime);
-            return GetAsync<CmcHistoricalQuote>(uri, cancellationToken);
-        }
+    public Task<CmcHistoricalQuote> GetHistoricalQuoteAsync(int tokenId, DateTime dateTime, CancellationToken cancellationToken)
+    {
+        var uri = string.Format(CmcUriHelper.Quotes.Historical, tokenId, dateTime);
+        return GetAsync<CmcHistoricalQuote>(uri, cancellationToken);
     }
 }

@@ -8,41 +8,40 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets;
+
+public class ProcessClaimPendingMarketOwnershipLogCommandHandler : IRequestHandler<ProcessClaimPendingMarketOwnershipLogCommand, bool>
 {
-    public class ProcessClaimPendingMarketOwnershipLogCommandHandler : IRequestHandler<ProcessClaimPendingMarketOwnershipLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessClaimPendingMarketOwnershipLogCommandHandler> _logger;
+
+    public ProcessClaimPendingMarketOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessClaimPendingMarketOwnershipLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessClaimPendingMarketOwnershipLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessClaimPendingMarketOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessClaimPendingMarketOwnershipLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessClaimPendingMarketOwnershipLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (market == null) return false;
+
+            if (request.BlockHeight < market.ModifiedBlock)
+            {
+                return true;
+            }
+
+            market.SetOwnershipClaimed(request.Log, request.BlockHeight);
+
+            return await _mediator.Send(new MakeMarketCommand(market, request.BlockHeight)) > 0;
         }
-
-        public async Task<bool> Handle(ProcessClaimPendingMarketOwnershipLogCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: false));
-                if (market == null) return false;
+            _logger.LogError(ex, $"Failure processing {nameof(ClaimPendingMarketOwnershipLog)}");
 
-                if (request.BlockHeight < market.ModifiedBlock)
-                {
-                    return true;
-                }
-
-                market.SetOwnershipClaimed(request.Log, request.BlockHeight);
-
-                return await _mediator.Send(new MakeMarketCommand(market, request.BlockHeight)) > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(ClaimPendingMarketOwnershipLog)}");
-
-                return false;
-            }
+            return false;
         }
     }
 }

@@ -2,20 +2,19 @@ using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using System;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Summaries
-{
-    public class SelectLiquidityPoolSummaryByLiquidityPoolIdQuery : FindQuery<LiquidityPoolSummary>
-    {
-        public SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(ulong liquidityPoolId, bool findOrThrow = true) : base(findOrThrow)
-        {
-            if (liquidityPoolId < 1)
-            {
-                throw new ArgumentNullException(nameof(liquidityPoolId), "LiquidityPoolId must be greater than 0.");
-            }
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.LiquidityPools.Summaries;
 
-            LiquidityPoolId = liquidityPoolId;
+public class SelectLiquidityPoolSummaryByLiquidityPoolIdQuery : FindQuery<LiquidityPoolSummary>
+{
+    public SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(ulong liquidityPoolId, bool findOrThrow = true) : base(findOrThrow)
+    {
+        if (liquidityPoolId < 1)
+        {
+            throw new ArgumentNullException(nameof(liquidityPoolId), "LiquidityPoolId must be greater than 0.");
         }
 
-        public ulong LiquidityPoolId { get; }
+        LiquidityPoolId = liquidityPoolId;
     }
+
+    public ulong LiquidityPoolId { get; }
 }

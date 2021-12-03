@@ -6,20 +6,19 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Admins
+namespace Opdex.Platform.Application.Handlers.Admins;
+
+public class RetrieveAdminByAddressQueryHandler : IRequestHandler<RetrieveAdminByAddressQuery, Admin>
 {
-    public class RetrieveAdminByAddressQueryHandler : IRequestHandler<RetrieveAdminByAddressQuery, Admin>
+    private readonly IMediator _mediator;
+
+    public RetrieveAdminByAddressQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveAdminByAddressQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<Admin> Handle(RetrieveAdminByAddressQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectAdminByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
-        }
+    public Task<Admin> Handle(RetrieveAdminByAddressQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectAdminByAddressQuery(request.Address, request.FindOrThrow), cancellationToken);
     }
 }

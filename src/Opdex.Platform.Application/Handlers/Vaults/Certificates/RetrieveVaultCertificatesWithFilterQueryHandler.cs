@@ -7,20 +7,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Vaults.Certificates
+namespace Opdex.Platform.Application.Handlers.Vaults.Certificates;
+
+public class RetrieveVaultCertificatesWithFilterQueryHandler : IRequestHandler<RetrieveVaultCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>
 {
-    public class RetrieveVaultCertificatesWithFilterQueryHandler : IRequestHandler<RetrieveVaultCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>
+    private readonly IMediator _mediator;
+
+    public RetrieveVaultCertificatesWithFilterQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveVaultCertificatesWithFilterQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public async Task<IEnumerable<VaultCertificate>> Handle(RetrieveVaultCertificatesWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            return await _mediator.Send(new SelectVaultCertificatesWithFilterQuery(request.VaultId, request.Cursor), cancellationToken);
-        }
+    public async Task<IEnumerable<VaultCertificate>> Handle(RetrieveVaultCertificatesWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        return await _mediator.Send(new SelectVaultCertificatesWithFilterQuery(request.VaultId, request.Cursor), cancellationToken);
     }
 }

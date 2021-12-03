@@ -3,48 +3,47 @@ using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
 
-namespace Opdex.Platform.Domain.Models.MiningPools
+namespace Opdex.Platform.Domain.Models.MiningPools;
+
+public class MiningPoolContractSummary
 {
-    public class MiningPoolContractSummary
+    public MiningPoolContractSummary(ulong blockHeight)
     {
-        public MiningPoolContractSummary(ulong blockHeight)
+        if (blockHeight == 0)
         {
-            if (blockHeight == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-            }
-
-            BlockHeight = blockHeight;
+            throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
         }
 
-        public ulong BlockHeight { get; }
-        public UInt256? RewardRate { get; private set; }
-        public ulong? MiningPeriodEnd { get; private set; }
-        public UInt256? RewardPerLpt { get; private set; }
+        BlockHeight = blockHeight;
+    }
 
-        public void SetRewardRate(SmartContractMethodParameter value)
+    public ulong BlockHeight { get; }
+    public UInt256? RewardRate { get; private set; }
+    public ulong? MiningPeriodEnd { get; private set; }
+    public UInt256? RewardPerLpt { get; private set; }
+
+    public void SetRewardRate(SmartContractMethodParameter value)
+    {
+        if (value.Type != SmartContractParameterType.UInt256)
         {
-            if (value.Type != SmartContractParameterType.UInt256)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "Reward rate value must be of UInt256 type.");
-            }
-
-            RewardRate = value.Parse<UInt256>();
+            throw new ArgumentOutOfRangeException(nameof(value), "Reward rate value must be of UInt256 type.");
         }
 
-        public void SetMiningPeriodEnd(SmartContractMethodParameter value)
-        {
-            if (value.Type != SmartContractParameterType.UInt64)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "Mining period end value must be of ulong type.");
-            }
+        RewardRate = value.Parse<UInt256>();
+    }
 
-            MiningPeriodEnd = value.Parse<ulong>();
+    public void SetMiningPeriodEnd(SmartContractMethodParameter value)
+    {
+        if (value.Type != SmartContractParameterType.UInt64)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value), "Mining period end value must be of ulong type.");
         }
 
-        public void SetRewardPerLpt(UInt256 reward)
-        {
-            RewardPerLpt = reward;
-        }
+        MiningPeriodEnd = value.Parse<ulong>();
+    }
+
+    public void SetRewardPerLpt(UInt256 reward)
+    {
+        RewardPerLpt = reward;
     }
 }

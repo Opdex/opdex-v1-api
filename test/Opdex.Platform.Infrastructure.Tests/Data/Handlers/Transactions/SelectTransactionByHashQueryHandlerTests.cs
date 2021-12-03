@@ -12,69 +12,68 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Transactions;
+
+public class SelectTransactionByHashQueryHandlerTests
 {
-    public class SelectTransactionByHashQueryHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly SelectTransactionByHashQueryHandler _handler;
+
+    public SelectTransactionByHashQueryHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectTransactionByHashQueryHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-        public SelectTransactionByHashQueryHandlerTests()
+        _dbContext = new Mock<IDbContext>();
+        _handler = new SelectTransactionByHashQueryHandler(_dbContext.Object, mapper);
+    }
+
+    [Fact]
+    public async Task SelectTransactionByHash_Success()
+    {
+        Sha256 hash = new Sha256(95840954890);
+        var expectedResponse = new TransactionEntity
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+            Id = 23423,
+            Block = 123432,
+            From = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT",
+            To = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW",
+            GasUsed = 60923,
+            Hash = hash,
+            Success = true,
+            NewContractAddress = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh"
+        };
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new SelectTransactionByHashQueryHandler(_dbContext.Object, mapper);
-        }
+        var command = new SelectTransactionByHashQuery(hash);
 
-        [Fact]
-        public async Task SelectTransactionByHash_Success()
-        {
-            Sha256 hash = new Sha256(95840954890);
-            var expectedResponse = new TransactionEntity
-            {
-                Id = 23423,
-                Block = 123432,
-                From = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT",
-                To = "PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW",
-                GasUsed = 60923,
-                Hash = hash,
-                Success = true,
-                NewContractAddress = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh"
-            };
+        _dbContext.Setup(db => db.ExecuteFindAsync<TransactionEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(expectedResponse));
 
-            var command = new SelectTransactionByHashQuery(hash);
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<TransactionEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedResponse));
+        result.Id.Should().Be(expectedResponse.Id);
+        result.BlockHeight.Should().Be(expectedResponse.Block);
+        result.Hash.Should().Be(expectedResponse.Hash);
+        result.From.Should().Be(expectedResponse.From);
+        result.To.Should().Be(expectedResponse.To);
+        result.GasUsed.Should().Be(expectedResponse.GasUsed);
+        result.Success.Should().Be(expectedResponse.Success);
+        result.NewContractAddress.Should().Be(expectedResponse.NewContractAddress);
+        result.Logs.Should().BeEmpty();
+    }
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+    [Fact]
+    public void SelectTransactionByHash_Throws_NotFoundException()
+    {
+        Sha256 hash = new Sha256(95840954890);
 
-            result.Id.Should().Be(expectedResponse.Id);
-            result.BlockHeight.Should().Be(expectedResponse.Block);
-            result.Hash.Should().Be(expectedResponse.Hash);
-            result.From.Should().Be(expectedResponse.From);
-            result.To.Should().Be(expectedResponse.To);
-            result.GasUsed.Should().Be(expectedResponse.GasUsed);
-            result.Success.Should().Be(expectedResponse.Success);
-            result.NewContractAddress.Should().Be(expectedResponse.NewContractAddress);
-            result.Logs.Should().BeEmpty();
-        }
+        var command = new SelectTransactionByHashQuery(hash);
 
-        [Fact]
-        public void SelectTransactionByHash_Throws_NotFoundException()
-        {
-            Sha256 hash = new Sha256(95840954890);
+        _dbContext.Setup(db => db.ExecuteFindAsync<TransactionEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<TransactionEntity>(null));
 
-            var command = new SelectTransactionByHashQuery(hash);
-
-            _dbContext.Setup(db => db.ExecuteFindAsync<TransactionEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<TransactionEntity>(null));
-
-            _handler.Invoking(h => h.Handle(command, CancellationToken.None))
-                .Should()
-                .ThrowAsync<NotFoundException>()
-                .WithMessage($"{nameof(Transaction)} not found.");
-        }
+        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+            .Should()
+            .ThrowAsync<NotFoundException>()
+            .WithMessage($"{nameof(Transaction)} not found.");
     }
 }

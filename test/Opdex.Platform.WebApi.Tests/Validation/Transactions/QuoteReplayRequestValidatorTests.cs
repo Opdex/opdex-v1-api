@@ -3,54 +3,53 @@ using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Validation.Transactions;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.Transactions
+namespace Opdex.Platform.WebApi.Tests.Validation.Transactions;
+
+public class QuoteReplayRequestValidatorTests
 {
-    public class QuoteReplayRequestValidatorTests
+    private readonly QuoteReplayRequestValidator _validator;
+
+    public QuoteReplayRequestValidatorTests()
     {
-        private readonly QuoteReplayRequestValidator _validator;
+        _validator = new QuoteReplayRequestValidator();
+    }
 
-        public QuoteReplayRequestValidatorTests()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("@%$£$£()*d")]
+    [InlineData("==")]
+    public void Quote_Invalid(string quote)
+    {
+        // Arrange
+        var request = new QuoteReplayRequest
         {
-            _validator = new QuoteReplayRequestValidator();
-        }
+            Quote = quote
+        };
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData("@%$£$£()*d")]
-        [InlineData("==")]
-        public void Quote_Invalid(string quote)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Quote);
+    }
+
+    [Theory]
+    [InlineData("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")]
+    [InlineData("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/AB==")]
+    public void Quote_Valid(string quote)
+    {
+        // Arrange
+        var request = new QuoteReplayRequest
         {
-            // Arrange
-            var request = new QuoteReplayRequest
-            {
-                Quote = quote
-            };
+            Quote = quote
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Quote);
-        }
-
-        [Theory]
-        [InlineData("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")]
-        [InlineData("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/AB==")]
-        public void Quote_Valid(string quote)
-        {
-            // Arrange
-            var request = new QuoteReplayRequest
-            {
-                Quote = quote
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Quote);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Quote);
     }
 }

@@ -15,79 +15,78 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Assemblers
+namespace Opdex.Platform.Application.Tests.Assemblers;
+
+public class VaultDtoAssemblerTests
 {
-    public class VaultDtoAssemblerTests
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IMediator> _mediatorMock;
+
+    private readonly VaultDtoAssembler _assembler;
+
+    public VaultDtoAssemblerTests()
     {
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IMediator> _mediatorMock;
+        _mapperMock = new Mock<IMapper>();
+        _mediatorMock = new Mock<IMediator>();
 
-        private readonly VaultDtoAssembler _assembler;
+        _assembler = new VaultDtoAssembler(_mapperMock.Object, _mediatorMock.Object);
+    }
 
-        public VaultDtoAssemblerTests()
+    [Fact]
+    public async Task Assemble_VaultDto_Map()
+    {
+        // Arrange
+        var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, Address.Empty, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, UInt256.Parse("100000000"), 505, 510);
+
+        // Act
+        try
         {
-            _mapperMock = new Mock<IMapper>();
-            _mediatorMock = new Mock<IMediator>();
-
-            _assembler = new VaultDtoAssembler(_mapperMock.Object, _mediatorMock.Object);
+            await _assembler.Assemble(vault);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task Assemble_VaultDto_Map()
+        // Assert
+        _mapperMock.Verify(callTo => callTo.Map<VaultDto>(vault), Times.Once);
+    }
+
+    [Fact]
+    public async Task Assemble_RetrieveTokenByIdQuery_Send()
+    {
+        // Arrange
+        var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, Address.Empty, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, UInt256.Parse("100000000"), 505, 510);
+
+        // Act
+        try
         {
-            // Arrange
-            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, Address.Empty, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, UInt256.Parse("100000000"), 505, 510);
-
-            // Act
-            try
-            {
-                await _assembler.Assemble(vault);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mapperMock.Verify(callTo => callTo.Map<VaultDto>(vault), Times.Once);
+            await _assembler.Assemble(vault);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task Assemble_RetrieveTokenByIdQuery_Send()
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByIdQuery>(query => query.TokenId == vault.TokenId && query.FindOrThrow),
+                                                   It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Assemble_RetrieveAddressBalanceByTokenAddressAndOwnerQuery_Send()
+    {
+        // Arrange
+        var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, Address.Empty, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, UInt256.Parse("100000000"), 505, 510);
+        var token = new Token(15, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
+
+        // Act
+        try
         {
-            // Arrange
-            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, Address.Empty, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, UInt256.Parse("100000000"), 505, 510);
-
-            // Act
-            try
-            {
-                await _assembler.Assemble(vault);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByIdQuery>(query => query.TokenId == vault.TokenId && query.FindOrThrow),
-                                                       It.IsAny<CancellationToken>()), Times.Once);
+            await _assembler.Assemble(vault);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task Assemble_RetrieveAddressBalanceByTokenAddressAndOwnerQuery_Send()
-        {
-            // Arrange
-            var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, Address.Empty, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, UInt256.Parse("100000000"), 505, 510);
-            var token = new Token(15, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
-
-            // Act
-            try
-            {
-                await _assembler.Assemble(vault);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveAddressBalanceByOwnerAndTokenQuery>(query => query.TokenId == token.Id
-                                                                                                                  && query.Owner == vault.Address
-                                                                                                                  && query.FindOrThrow == false),
-                                                       It.IsAny<CancellationToken>()), Times.Once);
-        }
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveAddressBalanceByOwnerAndTokenQuery>(query => query.TokenId == token.Id
+                                                                                                              && query.Owner == vault.Address
+                                                                                                              && query.FindOrThrow == false),
+                                                   It.IsAny<CancellationToken>()), Times.Once);
     }
 }

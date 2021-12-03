@@ -6,22 +6,21 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Blocks
+namespace Opdex.Platform.Application.Handlers.Blocks;
+
+public class RetrieveBlockByMedianTimeQueryHandler : IRequestHandler<RetrieveBlockByMedianTimeQuery, Block>
 {
-    public class RetrieveBlockByMedianTimeQueryHandler : IRequestHandler<RetrieveBlockByMedianTimeQuery, Block>
+    private readonly IMediator _mediator;
+
+    public RetrieveBlockByMedianTimeQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveBlockByMedianTimeQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
+    public Task<Block> Handle(RetrieveBlockByMedianTimeQuery request, CancellationToken cancellationToken)
+    {
+        var query = new SelectBlockByMedianTimeQuery(request.MedianTime, request.FindOrThrow);
 
-        public Task<Block> Handle(RetrieveBlockByMedianTimeQuery request, CancellationToken cancellationToken)
-        {
-            var query = new SelectBlockByMedianTimeQuery(request.MedianTime, request.FindOrThrow);
-
-            return _mediator.Send(query, cancellationToken);
-        }
+        return _mediator.Send(query, cancellationToken);
     }
 }

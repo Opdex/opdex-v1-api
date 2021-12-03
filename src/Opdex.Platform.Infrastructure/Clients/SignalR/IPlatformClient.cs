@@ -1,11 +1,10 @@
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.SignalR
+namespace Opdex.Platform.Infrastructure.Clients.SignalR;
+
+public interface IPlatformClient
 {
-    public interface IPlatformClient
-    {
-        Task OnAuthenticated(string bearerToken);
-        Task OnTransactionBroadcast(string txHash);
-        Task OnTransactionMined(string txHash);
-    }
+    Task OnAuthenticated(string bearerToken);
+    Task OnTransactionBroadcast(string txHash);
+    Task OnTransactionMined(string txHash);
 }

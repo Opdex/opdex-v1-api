@@ -4,20 +4,19 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.SignalR.Handlers
+namespace Opdex.Platform.Infrastructure.Clients.SignalR.Handlers;
+
+public class NotifyUserOfMinedTransactionCommandHandler : AsyncRequestHandler<NotifyUserOfMinedTransactionCommand>
 {
-    public class NotifyUserOfMinedTransactionCommandHandler : AsyncRequestHandler<NotifyUserOfMinedTransactionCommand>
+    private readonly IHubContext<PlatformHub, IPlatformClient> _hubContext;
+
+    public NotifyUserOfMinedTransactionCommandHandler(IHubContext<PlatformHub, IPlatformClient> hubContext)
     {
-        private readonly IHubContext<PlatformHub, IPlatformClient> _hubContext;
+        _hubContext = hubContext;
+    }
 
-        public NotifyUserOfMinedTransactionCommandHandler(IHubContext<PlatformHub, IPlatformClient> hubContext)
-        {
-            _hubContext = hubContext;
-        }
-
-        protected override async Task Handle(NotifyUserOfMinedTransactionCommand request, CancellationToken cancellationToken)
-        {
-            await _hubContext.Clients.User(request.User.ToString()).OnTransactionMined(request.TxHash.ToString());
-        }
+    protected override async Task Handle(NotifyUserOfMinedTransactionCommand request, CancellationToken cancellationToken)
+    {
+        await _hubContext.Clients.User(request.User.ToString()).OnTransactionMined(request.TxHash.ToString());
     }
 }

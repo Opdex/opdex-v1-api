@@ -8,20 +8,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Transactions
+namespace Opdex.Platform.Application.Handlers.Transactions;
+
+public class RetrieveTransactionsWithFilterQueryHandler : IRequestHandler<RetrieveTransactionsWithFilterQuery, IEnumerable<Transaction>>
 {
-    public class RetrieveTransactionsWithFilterQueryHandler : IRequestHandler<RetrieveTransactionsWithFilterQuery, IEnumerable<Transaction>>
+    private readonly IMediator _mediator;
+
+    public RetrieveTransactionsWithFilterQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveTransactionsWithFilterQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<IEnumerable<Transaction>> Handle(RetrieveTransactionsWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectTransactionsWithFilterQuery(request.Cursor), cancellationToken);
-        }
+    public Task<IEnumerable<Transaction>> Handle(RetrieveTransactionsWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectTransactionsWithFilterQuery(request.Cursor), cancellationToken);
     }
 }

@@ -8,12 +8,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers;
+
+public class PersistDeployerCommandHandler : IRequestHandler<PersistDeployerCommand, ulong>
 {
-    public class PersistDeployerCommandHandler : IRequestHandler<PersistDeployerCommand, ulong>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO market_deployer (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO market_deployer (
                 {nameof(DeployerEntity.Address)},
                 {nameof(DeployerEntity.PendingOwner)},
                 {nameof(DeployerEntity.Owner)},
@@ -30,8 +30,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
               );
               SELECT LAST_INSERT_ID();";
 
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE market_deployer
+    private static readonly string UpdateSqlCommand =
+        $@"UPDATE market_deployer
                 SET
                     {nameof(DeployerEntity.PendingOwner)} = @{nameof(DeployerEntity.PendingOwner)},
                     {nameof(DeployerEntity.Owner)} = @{nameof(DeployerEntity.Owner)},
@@ -39,39 +39,38 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
                     {nameof(DeployerEntity.ModifiedBlock)} = @{nameof(DeployerEntity.ModifiedBlock)}
                 WHERE {nameof(DeployerEntity.Id)} = @{nameof(DeployerEntity.Id)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistDeployerCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistDeployerCommandHandler> logger)
+    public PersistDeployerCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistDeployerCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<ulong> Handle(PersistDeployerCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var entity = _mapper.Map<DeployerEntity>(request.Deployer);
+
+            var isUpdate = entity.Id >= 1;
+
+            var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+
+            var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+
+            var result = await _context.ExecuteScalarAsync<ulong>(command);
+
+            return isUpdate ? entity.Id : result;
         }
-
-        public async Task<ulong> Handle(PersistDeployerCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var entity = _mapper.Map<DeployerEntity>(request.Deployer);
+            _logger.LogError(ex, $"Failure persisting {request.Deployer}.");
 
-                var isUpdate = entity.Id >= 1;
-
-                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-
-                var result = await _context.ExecuteScalarAsync<ulong>(command);
-
-                return isUpdate ? entity.Id : result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure persisting {request.Deployer}.");
-
-                return 0;
-            }
+            return 0;
         }
     }
 }

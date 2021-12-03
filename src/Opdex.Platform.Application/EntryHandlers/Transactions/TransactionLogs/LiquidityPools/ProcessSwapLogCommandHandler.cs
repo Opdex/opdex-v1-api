@@ -7,33 +7,32 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.LiquidityPools;
+
+public class ProcessSwapLogCommandHandler : IRequestHandler<ProcessSwapLogCommand, bool>
 {
-    public class ProcessSwapLogCommandHandler : IRequestHandler<ProcessSwapLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessSwapLogCommandHandler> _logger;
+
+    public ProcessSwapLogCommandHandler(IMediator mediator, ILogger<ProcessSwapLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessSwapLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessSwapLogCommandHandler(IMediator mediator, ILogger<ProcessSwapLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessSwapLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+            var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: false));
+            return liquidityPool != null;
         }
-
-        public async Task<bool> Handle(ProcessSwapLogCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
+            _logger.LogError(ex, $"Failure processing {nameof(SwapLog)}");
 
-                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.Log.Contract, findOrThrow: false));
-                return liquidityPool != null;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(SwapLog)}");
-
-                return false;
-            }
+            return false;
         }
     }
 }

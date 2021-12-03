@@ -11,57 +11,56 @@ using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers;
+
+public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreateMarketLogCommand, bool>
 {
-    public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreateMarketLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessCreateMarketLogCommandHandler> _logger;
+
+    public ProcessCreateMarketLogCommandHandler(IMediator mediator, ILogger<ProcessCreateMarketLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessCreateMarketLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessCreateMarketLogCommandHandler(IMediator mediator, ILogger<ProcessCreateMarketLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessCreateMarketLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            // Get deployer
+            var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (deployer == null) return false;
+
+            // Check if market exists, skip if so
+            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Market, findOrThrow: false));
+            if (market != null) return true;
+
+            // Get potential market staking token
+            var stakingToken = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.StakingToken, findOrThrow: false));
+            var stakingTokenId = stakingToken?.Id ?? 0;
+
+            // Create market
+            market = new Market(request.Log.Market, deployer.Id, stakingTokenId, request.Log.Owner, request.Log.AuthPoolCreators,
+                                request.Log.AuthProviders, request.Log.AuthTraders, request.Log.TransactionFee,
+                                request.Log.EnableMarketFee, request.BlockHeight);
+
+            var marketId = await _mediator.Send(new MakeMarketCommand(market, request.BlockHeight));
+            if (marketId == 0) return false;
+
+            // Create Router
+            var router = await _mediator.Send(new RetrieveMarketRouterByAddressQuery(request.Log.Router, findOrThrow: false));
+            if (router != null) return true;
+
+            router = new MarketRouter(request.Log.Router, marketId, true, request.BlockHeight);
+            return await _mediator.Send(new MakeMarketRouterCommand(router), CancellationToken.None);
+
         }
-
-        public async Task<bool> Handle(ProcessCreateMarketLogCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                // Get deployer
-                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: false));
-                if (deployer == null) return false;
+            _logger.LogError(ex, $"Failure processing {nameof(CreateMarketLog)}");
 
-                // Check if market exists, skip if so
-                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Market, findOrThrow: false));
-                if (market != null) return true;
-
-                // Get potential market staking token
-                var stakingToken = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.StakingToken, findOrThrow: false));
-                var stakingTokenId = stakingToken?.Id ?? 0;
-
-                // Create market
-                market = new Market(request.Log.Market, deployer.Id, stakingTokenId, request.Log.Owner, request.Log.AuthPoolCreators,
-                                    request.Log.AuthProviders, request.Log.AuthTraders, request.Log.TransactionFee,
-                                    request.Log.EnableMarketFee, request.BlockHeight);
-
-                var marketId = await _mediator.Send(new MakeMarketCommand(market, request.BlockHeight));
-                if (marketId == 0) return false;
-
-                // Create Router
-                var router = await _mediator.Send(new RetrieveMarketRouterByAddressQuery(request.Log.Router, findOrThrow: false));
-                if (router != null) return true;
-
-                router = new MarketRouter(request.Log.Router, marketId, true, request.BlockHeight);
-                return await _mediator.Send(new MakeMarketRouterCommand(router), CancellationToken.None);
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(CreateMarketLog)}");
-
-                return false;
-            }
+            return false;
         }
     }
 }

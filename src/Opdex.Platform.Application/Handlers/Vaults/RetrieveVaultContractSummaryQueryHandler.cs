@@ -8,8 +8,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Vaults
-{
+namespace Opdex.Platform.Application.Handlers.Vaults;
+
     public class RetrieveVaultContractSummaryQueryHandler : IRequestHandler<RetrieveVaultContractSummaryQuery, VaultContractSummary>
     {
         private readonly IMediator _mediator;

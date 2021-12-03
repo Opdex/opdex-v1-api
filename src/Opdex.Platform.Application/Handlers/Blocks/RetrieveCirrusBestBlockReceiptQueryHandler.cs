@@ -6,20 +6,19 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Domain.Models.Blocks;
 
-namespace Opdex.Platform.Application.Handlers.Blocks
+namespace Opdex.Platform.Application.Handlers.Blocks;
+
+public class RetrieveCirrusBestBlockReceiptQueryHandler : IRequestHandler<RetrieveCirrusBestBlockReceiptQuery, BlockReceipt>
 {
-    public class RetrieveCirrusBestBlockReceiptQueryHandler : IRequestHandler<RetrieveCirrusBestBlockReceiptQuery, BlockReceipt>
+    private readonly IMediator _mediator;
+
+    public RetrieveCirrusBestBlockReceiptQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveCirrusBestBlockReceiptQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<BlockReceipt> Handle(RetrieveCirrusBestBlockReceiptQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new CallCirrusGetBestBlockReceiptQuery(), cancellationToken);
-        }
+    public Task<BlockReceipt> Handle(RetrieveCirrusBestBlockReceiptQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new CallCirrusGetBestBlockReceiptQuery(), cancellationToken);
     }
 }

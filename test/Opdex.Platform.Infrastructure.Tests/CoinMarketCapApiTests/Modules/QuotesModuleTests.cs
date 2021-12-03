@@ -11,55 +11,54 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.CoinMarketCapApiTests.Modules
+namespace Opdex.Platform.Infrastructure.Tests.CoinMarketCapApiTests.Modules;
+
+public class QuotesModuleTests
 {
-    public class QuotesModuleTests
+    private readonly Mock<HttpMessageHandler> _handler;
+    private readonly IQuotesModule _quotesModule;
+
+    private const string BaseAddress = "https://pro-api.coinmarketcap.com/v2/cryptocurrency/";
+
+    public QuotesModuleTests()
     {
-        private readonly Mock<HttpMessageHandler> _handler;
-        private readonly IQuotesModule _quotesModule;
+        _handler = new Mock<HttpMessageHandler>();
+        var logger = NullLogger<QuotesModule>.Instance;
 
-        private const string BaseAddress = "https://pro-api.coinmarketcap.com/v2/cryptocurrency/";
+        var httpClient = _handler.CreateClient();
+        httpClient.BaseAddress = new Uri(BaseAddress);
 
-        public QuotesModuleTests()
-        {
-            _handler = new Mock<HttpMessageHandler>();
-            var logger = NullLogger<QuotesModule>.Instance;
+        _quotesModule = new QuotesModule(httpClient, logger);
+    }
 
-            var httpClient = _handler.CreateClient();
-            httpClient.BaseAddress = new Uri(BaseAddress);
+    [Fact]
+    public async Task LatestQuote_SendRequest()
+    {
+        // arrange
+        const int tokenId = CmcTokens.STRAX;
 
-            _quotesModule = new QuotesModule(httpClient, logger);
-        }
+        _handler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "");
 
-        [Fact]
-        public async Task LatestQuote_SendRequest()
-        {
-            // arrange
-            const int tokenId = CmcTokens.STRAX;
+        // act
+        await _quotesModule.GetLatestQuoteAsync(tokenId, CancellationToken.None);
 
-            _handler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "");
+        // assert
+        _handler.VerifyRequest(HttpMethod.Get, $"{BaseAddress}quotes/latest?id={tokenId}");
+    }
 
-            // act
-            await _quotesModule.GetLatestQuoteAsync(tokenId, CancellationToken.None);
+    [Fact]
+    public async Task HistoricalQuote_SendRequest()
+    {
+        // arrange
+        const int tokenId = CmcTokens.STRAX;
+        var time = DateTime.UtcNow;
 
-            // assert
-            _handler.VerifyRequest(HttpMethod.Get, $"{BaseAddress}quotes/latest?id={tokenId}");
-        }
+        _handler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "");
 
-        [Fact]
-        public async Task HistoricalQuote_SendRequest()
-        {
-            // arrange
-            const int tokenId = CmcTokens.STRAX;
-            var time = DateTime.UtcNow;
+        // act
+        await _quotesModule.GetHistoricalQuoteAsync(tokenId, time, CancellationToken.None);
 
-            _handler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "");
-
-            // act
-            await _quotesModule.GetHistoricalQuoteAsync(tokenId, time, CancellationToken.None);
-
-            // assert
-            _handler.VerifyRequest(HttpMethod.Get, $"{BaseAddress}quotes/historical?id={tokenId}&time_start={time}&interval=5m&count=1");
-        }
+        // assert
+        _handler.VerifyRequest(HttpMethod.Get, $"{BaseAddress}quotes/historical?id={tokenId}&time_start={time}&interval=5m&count=1");
     }
 }

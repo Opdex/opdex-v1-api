@@ -13,194 +13,193 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Tokens
+namespace Opdex.Platform.Application.Tests.Handlers.Tokens;
+
+public class RetrieveStakingTokenContractSummaryQueryHandlerTests
 {
-    public class RetrieveStakingTokenContractSummaryQueryHandlerTests
+    private readonly Mock<IMediator> _mediator;
+    private readonly  RetrieveStakingTokenContractSummaryQueryHandler _handler;
+
+    public  RetrieveStakingTokenContractSummaryQueryHandlerTests()
     {
-        private readonly Mock<IMediator> _mediator;
-        private readonly  RetrieveStakingTokenContractSummaryQueryHandler _handler;
+        _mediator = new Mock<IMediator>();
+        _handler = new  RetrieveStakingTokenContractSummaryQueryHandler(_mediator.Object);
+    }
 
-        public  RetrieveStakingTokenContractSummaryQueryHandlerTests()
+    [Fact]
+    public void RetrieveStakingTokenContractSummaryQuery_InvalidToken_ThrowsArgumentNullException()
+    {
+        // Arrange
+        Address tokenAddress = Address.Empty;
+        const ulong blockHeight = 10;
+
+        // Act
+        void Act() => new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight);
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(Act).Message.Contains("Token address must be provided.");
+    }
+
+    [Fact]
+    public void RetrieveStakingTokenContractSummaryQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
+        const ulong blockHeight = 0;
+
+        // Act
+        void Act() => new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight);
+
+        // Assert
+        Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
+    }
+
+    [Fact]
+    public async Task RetrieveStakingTokenContractSummaryQuery_IncludeGenesis_Sends_CallCirrusGetSmartContractPropertyQuery()
+    {
+        // Arrange
+        Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
+        const ulong blockHeight = 10;
+
+        // Act
+        try
         {
-            _mediator = new Mock<IMediator>();
-            _handler = new  RetrieveStakingTokenContractSummaryQueryHandler(_mediator.Object);
+            await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, includeGenesis: true), CancellationToken.None);
         }
+        catch { }
 
-        [Fact]
-        public void RetrieveStakingTokenContractSummaryQuery_InvalidToken_ThrowsArgumentNullException()
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.Contract == tokenAddress &&
+                                                                                                   q.BlockHeight == blockHeight &&
+                                                                                                   q.PropertyType == SmartContractParameterType.UInt64 &&
+                                                                                                   q.PropertyStateKey == StakingTokenConstants.StateKeys.Genesis),
+                                               It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task RetrieveStakingTokenContractSummaryQuery_IncludePeriodDuration_Sends_CallCirrusGetSmartContractPropertyQuery()
+    {
+        // Arrange
+        Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
+        const ulong blockHeight = 10;
+
+        // Act
+        try
         {
-            // Arrange
-            Address tokenAddress = Address.Empty;
-            const ulong blockHeight = 10;
-
-            // Act
-            void Act() => new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight);
-
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Contains("Token address must be provided.");
+            await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, includePeriodDuration: true), CancellationToken.None);
         }
+        catch { }
 
-        [Fact]
-        public void RetrieveStakingTokenContractSummaryQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.Contract == tokenAddress &&
+                                                                                                   q.BlockHeight == blockHeight &&
+                                                                                                   q.PropertyType == SmartContractParameterType.UInt64 &&
+                                                                                                   q.PropertyStateKey == StakingTokenConstants.StateKeys.PeriodDuration),
+                                               It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task RetrieveStakingTokenContractSummaryQuery_IncludePeriodIndex_Sends_CallCirrusGetSmartContractPropertyQuery()
+    {
+        // Arrange
+        Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
+        const ulong blockHeight = 10;
+
+        // Act
+        try
         {
-            // Arrange
-            Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const ulong blockHeight = 0;
-
-            // Act
-            void Act() => new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
+            await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, includePeriodIndex: true), CancellationToken.None);
         }
+        catch { }
 
-        [Fact]
-        public async Task RetrieveStakingTokenContractSummaryQuery_IncludeGenesis_Sends_CallCirrusGetSmartContractPropertyQuery()
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.Contract == tokenAddress &&
+                                                                                                   q.BlockHeight == blockHeight &&
+                                                                                                   q.PropertyType == SmartContractParameterType.UInt32 &&
+                                                                                                   q.PropertyStateKey == StakingTokenConstants.StateKeys.PeriodIndex),
+                                               It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task RetrieveStakingTokenContractSummaryQuery_IncludeVault_Sends_CallCirrusGetSmartContractPropertyQuery()
+    {
+        // Arrange
+        Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
+        const ulong blockHeight = 10;
+
+        // Act
+        try
         {
-            // Arrange
-            Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const ulong blockHeight = 10;
-
-            // Act
-            try
-            {
-                await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, includeGenesis: true), CancellationToken.None);
-            }
-            catch { }
-
-            // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.Contract == tokenAddress &&
-                                                                                                       q.BlockHeight == blockHeight &&
-                                                                                                       q.PropertyType == SmartContractParameterType.UInt64 &&
-                                                                                                       q.PropertyStateKey == StakingTokenConstants.StateKeys.Genesis),
-                                                   It.IsAny<CancellationToken>()), Times.Once);
+            await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, includeVault: true), CancellationToken.None);
         }
+        catch { }
 
-        [Fact]
-        public async Task RetrieveStakingTokenContractSummaryQuery_IncludePeriodDuration_Sends_CallCirrusGetSmartContractPropertyQuery()
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.Contract == tokenAddress &&
+                                                                                                   q.BlockHeight == blockHeight &&
+                                                                                                   q.PropertyType == SmartContractParameterType.Address &&
+                                                                                                   q.PropertyStateKey == StakingTokenConstants.StateKeys.Vault),
+                                               It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task RetrieveStakingTokenContractSummaryQuery_IncludeMiningGovernance_Sends_CallCirrusGetSmartContractPropertyQuery()
+    {
+        // Arrange
+        Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
+        const ulong blockHeight = 10;
+
+        // Act
+        try
         {
-            // Arrange
-            Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const ulong blockHeight = 10;
-
-            // Act
-            try
-            {
-                await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, includePeriodDuration: true), CancellationToken.None);
-            }
-            catch { }
-
-            // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.Contract == tokenAddress &&
-                                                                                                       q.BlockHeight == blockHeight &&
-                                                                                                       q.PropertyType == SmartContractParameterType.UInt64 &&
-                                                                                                       q.PropertyStateKey == StakingTokenConstants.StateKeys.PeriodDuration),
-                                                   It.IsAny<CancellationToken>()), Times.Once);
+            await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, includeMiningGovernance: true), CancellationToken.None);
         }
+        catch { }
 
-        [Fact]
-        public async Task RetrieveStakingTokenContractSummaryQuery_IncludePeriodIndex_Sends_CallCirrusGetSmartContractPropertyQuery()
-        {
-            // Arrange
-            Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const ulong blockHeight = 10;
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.Contract == tokenAddress &&
+                                                                                                   q.BlockHeight == blockHeight &&
+                                                                                                   q.PropertyType == SmartContractParameterType.Address &&
+                                                                                                   q.PropertyStateKey == StakingTokenConstants.StateKeys.MiningGovernance),
+                                               It.IsAny<CancellationToken>()), Times.Once);
+    }
 
-            // Act
-            try
-            {
-                await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, includePeriodIndex: true), CancellationToken.None);
-            }
-            catch { }
+    [Fact]
+    public async Task RetrieveStakingTokenContractSummaryQuery_Returns_StakingTokenContractSummary()
+    {
+        // Arrange
+        Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
+        const ulong blockHeight = 10;
 
-            // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.Contract == tokenAddress &&
-                                                                                                       q.BlockHeight == blockHeight &&
-                                                                                                       q.PropertyType == SmartContractParameterType.UInt32 &&
-                                                                                                       q.PropertyStateKey == StakingTokenConstants.StateKeys.PeriodIndex),
-                                                   It.IsAny<CancellationToken>()), Times.Once);
-        }
+        Address miningGovernance = "P8q87nq2KGFTtoSPBDh2WUa8E7FiEUNG9X";
+        Address vault = "P2WUa8E7BDhFiEUNG9X8q87nq2KGFTtoSP";
+        const uint periodIndex = 1;
+        const ulong periodDuration = 100;
+        const ulong genesis = 50;
 
-        [Fact]
-        public async Task RetrieveStakingTokenContractSummaryQuery_IncludeVault_Sends_CallCirrusGetSmartContractPropertyQuery()
-        {
-            // Arrange
-            Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const ulong blockHeight = 10;
+        _mediator.Setup(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.PropertyStateKey == StakingTokenConstants.StateKeys.MiningGovernance),
+                                              It.IsAny<CancellationToken>())).ReturnsAsync(new SmartContractMethodParameter(miningGovernance));
 
-            // Act
-            try
-            {
-                await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, includeVault: true), CancellationToken.None);
-            }
-            catch { }
+        _mediator.Setup(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.PropertyStateKey == StakingTokenConstants.StateKeys.Vault),
+                                              It.IsAny<CancellationToken>())).ReturnsAsync(new SmartContractMethodParameter(vault));
 
-            // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.Contract == tokenAddress &&
-                                                                                                       q.BlockHeight == blockHeight &&
-                                                                                                       q.PropertyType == SmartContractParameterType.Address &&
-                                                                                                       q.PropertyStateKey == StakingTokenConstants.StateKeys.Vault),
-                                                   It.IsAny<CancellationToken>()), Times.Once);
-        }
+        _mediator.Setup(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.PropertyStateKey == StakingTokenConstants.StateKeys.PeriodDuration),
+                                              It.IsAny<CancellationToken>())).ReturnsAsync(new SmartContractMethodParameter(periodDuration));
 
-        [Fact]
-        public async Task RetrieveStakingTokenContractSummaryQuery_IncludeMiningGovernance_Sends_CallCirrusGetSmartContractPropertyQuery()
-        {
-            // Arrange
-            Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const ulong blockHeight = 10;
+        _mediator.Setup(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.PropertyStateKey == StakingTokenConstants.StateKeys.PeriodIndex),
+                                              It.IsAny<CancellationToken>())).ReturnsAsync(new SmartContractMethodParameter(periodIndex));
 
-            // Act
-            try
-            {
-                await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, includeMiningGovernance: true), CancellationToken.None);
-            }
-            catch { }
+        _mediator.Setup(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.PropertyStateKey == StakingTokenConstants.StateKeys.Genesis),
+                                              It.IsAny<CancellationToken>())).ReturnsAsync(new SmartContractMethodParameter(genesis));
 
-            // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.Contract == tokenAddress &&
-                                                                                                       q.BlockHeight == blockHeight &&
-                                                                                                       q.PropertyType == SmartContractParameterType.Address &&
-                                                                                                       q.PropertyStateKey == StakingTokenConstants.StateKeys.MiningGovernance),
-                                                   It.IsAny<CancellationToken>()), Times.Once);
-        }
+        // Act
+        var response = await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, true, true, true, true, true), CancellationToken.None);
 
-        [Fact]
-        public async Task RetrieveStakingTokenContractSummaryQuery_Returns_StakingTokenContractSummary()
-        {
-            // Arrange
-            Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
-            const ulong blockHeight = 10;
-
-            Address miningGovernance = "P8q87nq2KGFTtoSPBDh2WUa8E7FiEUNG9X";
-            Address vault = "P2WUa8E7BDhFiEUNG9X8q87nq2KGFTtoSP";
-            const uint periodIndex = 1;
-            const ulong periodDuration = 100;
-            const ulong genesis = 50;
-
-            _mediator.Setup(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.PropertyStateKey == StakingTokenConstants.StateKeys.MiningGovernance),
-                                                   It.IsAny<CancellationToken>())).ReturnsAsync(new SmartContractMethodParameter(miningGovernance));
-
-            _mediator.Setup(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.PropertyStateKey == StakingTokenConstants.StateKeys.Vault),
-                                                  It.IsAny<CancellationToken>())).ReturnsAsync(new SmartContractMethodParameter(vault));
-
-            _mediator.Setup(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.PropertyStateKey == StakingTokenConstants.StateKeys.PeriodDuration),
-                                                  It.IsAny<CancellationToken>())).ReturnsAsync(new SmartContractMethodParameter(periodDuration));
-
-            _mediator.Setup(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.PropertyStateKey == StakingTokenConstants.StateKeys.PeriodIndex),
-                                                  It.IsAny<CancellationToken>())).ReturnsAsync(new SmartContractMethodParameter(periodIndex));
-
-            _mediator.Setup(callTo => callTo.Send(It.Is<CallCirrusGetSmartContractPropertyQuery>(q => q.PropertyStateKey == StakingTokenConstants.StateKeys.Genesis),
-                                                  It.IsAny<CancellationToken>())).ReturnsAsync(new SmartContractMethodParameter(genesis));
-
-            // Act
-            var response = await _handler.Handle(new RetrieveStakingTokenContractSummaryQuery(tokenAddress, blockHeight, true, true, true, true, true), CancellationToken.None);
-
-            // Assert
-            response.Genesis.Should().Be(genesis);
-            response.PeriodDuration.Should().Be(periodDuration);
-            response.PeriodIndex.Should().Be(periodIndex);
-            response.Vault.Should().Be(vault);
-            response.MiningGovernance.Should().Be(miningGovernance);
-        }
+        // Assert
+        response.Genesis.Should().Be(genesis);
+        response.PeriodDuration.Should().Be(periodDuration);
+        response.PeriodIndex.Should().Be(periodIndex);
+        response.Vault.Should().Be(vault);
+        response.MiningGovernance.Should().Be(miningGovernance);
     }
 }

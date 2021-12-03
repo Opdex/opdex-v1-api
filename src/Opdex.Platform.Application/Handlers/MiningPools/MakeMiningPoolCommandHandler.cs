@@ -6,31 +6,30 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.MiningPools
+namespace Opdex.Platform.Application.Handlers.MiningPools;
+
+public class MakeMiningPoolCommandHandler : IRequestHandler<MakeMiningPoolCommand, ulong>
 {
-    public class MakeMiningPoolCommandHandler : IRequestHandler<MakeMiningPoolCommand, ulong>
+    private readonly IMediator _mediator;
+
+    public MakeMiningPoolCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeMiningPoolCommandHandler(IMediator mediator)
+    public async Task<ulong> Handle(MakeMiningPoolCommand request, CancellationToken cancellationToken)
+    {
+        if (request.Refresh)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            var summary = await _mediator.Send(new RetrieveMiningPoolContractSummaryQuery(request.MiningPool.Address,
+                                                                                          request.BlockHeight,
+                                                                                          includeRewardPerBlock: request.RefreshRewardPerBlock,
+                                                                                          includeRewardPerLpt: request.RefreshRewardPerLpt,
+                                                                                          includeMiningPeriodEndBlock: request.RefreshMiningPeriodEndBlock));
+
+            request.MiningPool.Update(summary);
         }
 
-        public async Task<ulong> Handle(MakeMiningPoolCommand request, CancellationToken cancellationToken)
-        {
-            if (request.Refresh)
-            {
-                var summary = await _mediator.Send(new RetrieveMiningPoolContractSummaryQuery(request.MiningPool.Address,
-                                                                                              request.BlockHeight,
-                                                                                              includeRewardPerBlock: request.RefreshRewardPerBlock,
-                                                                                              includeRewardPerLpt: request.RefreshRewardPerLpt,
-                                                                                              includeMiningPeriodEndBlock: request.RefreshMiningPeriodEndBlock));
-
-                request.MiningPool.Update(summary);
-            }
-
-            return await _mediator.Send(new PersistMiningPoolCommand(request.MiningPool));
-        }
+        return await _mediator.Send(new PersistMiningPoolCommand(request.MiningPool));
     }
 }

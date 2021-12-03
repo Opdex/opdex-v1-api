@@ -3,20 +3,19 @@ using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.LiquidityPools;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
-{
-    public class RetrieveLiquidityPoolByAddressQuery : FindQuery<LiquidityPool>
-    {
-        public RetrieveLiquidityPoolByAddressQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
-        {
-            if (address == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(address));
-            }
+namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
 
-            Address = address;
+public class RetrieveLiquidityPoolByAddressQuery : FindQuery<LiquidityPool>
+{
+    public RetrieveLiquidityPoolByAddressQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
+    {
+        if (address == Address.Empty)
+        {
+            throw new ArgumentNullException(nameof(address));
         }
 
-        public Address Address { get; }
+        Address = address;
     }
+
+    public Address Address { get; }
 }

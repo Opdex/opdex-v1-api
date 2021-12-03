@@ -9,12 +9,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets;
+
+public class SelectAllMarketsQueryHandler : IRequestHandler<SelectAllMarketsQuery, IEnumerable<Market>>
 {
-    public class SelectAllMarketsQueryHandler : IRequestHandler<SelectAllMarketsQuery, IEnumerable<Market>>
-    {
-        private static readonly string SqlCommand =
-            $@"SELECT
+    private static readonly string SqlCommand =
+        $@"SELECT
                 {nameof(MarketEntity.Id)},
                 {nameof(MarketEntity.Address)},
                 {nameof(MarketEntity.DeployerId)},
@@ -30,22 +30,21 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
                 {nameof(MarketEntity.ModifiedBlock)}
             FROM market;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectAllMarketsQueryHandler(IDbContext context, IMapper mapper)
-        {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        }
+    public SelectAllMarketsQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
 
-        public async Task<IEnumerable<Market>> Handle(SelectAllMarketsQuery request, CancellationToken cancellationToken)
-        {
-            var command = DatabaseQuery.Create(SqlCommand, cancellationToken);
+    public async Task<IEnumerable<Market>> Handle(SelectAllMarketsQuery request, CancellationToken cancellationToken)
+    {
+        var command = DatabaseQuery.Create(SqlCommand, cancellationToken);
 
-            var result = await _context.ExecuteQueryAsync<MarketEntity>(command);
+        var result = await _context.ExecuteQueryAsync<MarketEntity>(command);
 
-            return _mapper.Map<IEnumerable<Market>>(result);
-        }
+        return _mapper.Map<IEnumerable<Market>>(result);
     }
 }
