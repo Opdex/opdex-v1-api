@@ -39,7 +39,7 @@ public class ProcessCreateVaultProposalLogCommandHandler : IRequestHandler<Proce
                 return true;
             }
 
-            return await _mediator.Send(new MakeVaultProposalCommand(proposal)) > 0;
+            return await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight)) > 0;
         }
         catch (Exception ex)
         {

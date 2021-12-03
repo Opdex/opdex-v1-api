@@ -55,11 +55,20 @@ public class VaultProposal : BlockAudit
     public string Description { get; }
     public VaultProposalType Type { get; }
     public VaultProposalStatus Status { get; private set; }
-    // Todo: Add to logs or watch for status changes
     public ulong Expiration { get; private set; }
     public ulong YesAmount { get; private set; }
     public ulong NoAmount { get; private set; }
     public ulong PledgeAmount { get; private set; }
+
+    public void Update(VaultProposalSummary summary, ulong blockHeight)
+    {
+        Status = summary.Status;
+        Expiration = summary.Expiration;
+        YesAmount = summary.YesAmount;
+        NoAmount = summary.NoAmount;
+        PledgeAmount = summary.PledgeAmount;
+        SetModifiedBlock(blockHeight);
+    }
 
     public void Update(VaultProposalVoteLog log, ulong blockHeight)
     {
@@ -71,6 +80,7 @@ public class VaultProposal : BlockAudit
 
     public void Update(VaultProposalPledgeLog log, ulong blockHeight)
     {
+        if (log.PledgeMinimumMet) Status = VaultProposalStatus.Vote;
         PledgeAmount = log.ProposalPledgeAmount;
         SetModifiedBlock(blockHeight);
     }

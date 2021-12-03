@@ -1,5 +1,7 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 using System;
 using System.Threading;
@@ -16,8 +18,19 @@ public class MakeVaultProposalCommandHandler : IRequestHandler<MakeVaultProposal
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public Task<ulong> Handle(MakeVaultProposalCommand request, CancellationToken cancellationToken)
+    public async Task<ulong> Handle(MakeVaultProposalCommand request, CancellationToken cancellationToken)
     {
-        return _mediator.Send(new PersistVaultProposalCommand(request.Proposal), CancellationToken.None);
+        if (request.RefreshProposal)
+        {
+            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(request.Proposal.VaultGovernanceId));
+
+            var summary = await _mediator.Send(new CallCirrusGetVaultProposalSummaryByProposalIdQuery(vault.Address,
+                                                                                                      request.Proposal.PublicId,
+                                                                                                      request.BlockHeight));
+
+            request.Proposal.Update(summary, request.BlockHeight);
+        }
+
+        return await _mediator.Send(new PersistVaultProposalCommand(request.Proposal), CancellationToken.None);
     }
 }

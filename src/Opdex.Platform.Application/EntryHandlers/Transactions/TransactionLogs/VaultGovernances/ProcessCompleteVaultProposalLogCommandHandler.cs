@@ -30,22 +30,13 @@ public class ProcessCompleteVaultProposalLogCommandHandler : IRequestHandler<Pro
             if (vault == null) return false;
 
             var proposal = await _mediator.Send(new RetrieveVaultProposalByVaultIdAndPublicIdQuery(vault.Id, request.Log.ProposalId, findOrThrow: false));
+            if (proposal == null) return false;
 
-            if (proposal == null)
-            {
-                // Todo: We missed something, retrieve the proposal summary and build a new one
-            }
-            else
-            {
-                if (request.BlockHeight < proposal.ModifiedBlock)
-                {
-                    return true;
-                }
+            if (request.BlockHeight < proposal.ModifiedBlock) return true;
 
-                proposal.Update(request.Log, request.BlockHeight);
-            }
+            proposal.Update(request.Log, request.BlockHeight);
 
-            return await _mediator.Send(new MakeVaultProposalCommand(proposal)) > 0;
+            return await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight)) > 0;
         }
         catch (Exception ex)
         {

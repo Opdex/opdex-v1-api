@@ -124,6 +124,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.VaultGovernances;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Auth;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
@@ -132,6 +133,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.C
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Pledges;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Votes;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.VaultGovernances;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Certificates;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Pledges;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Proposals;
@@ -373,6 +375,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<CallCirrusGetVaultContractCertificateSummariesByOwnerQuery, IEnumerable<VaultContractCertificateSummary>>, CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>, CallCirrusGetMarketPermissionAuthorizationQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusVerifyMessageQuery, bool>, CallCirrusVerifyMessageQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetVaultProposalSummaryByProposalIdQuery, VaultProposalSummary>, CallCirrusGetVaultProposalSummaryByProposalIdQueryHandler>();
 
         // Commands
         services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, Sha256>, CallCirrusCallSmartContractMethodCommandHandler>();

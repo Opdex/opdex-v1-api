@@ -38,6 +38,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
+using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Linq;
 
@@ -335,8 +336,10 @@ public class PlatformApplicationMapperProfile : Profile
             .IncludeBase<TransactionLog, TransactionEventDto>()
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Wallet, opt => opt.MapFrom(src => src.Wallet))
-            // Sometimes is staking token sometimes is CRS, both have 8 decimals
-            .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.ToDecimal(src.Type == VaultProposalType.Create ||
+                                                                                           src.Type == VaultProposalType.Revoke
+                                                                                               ? TokenConstants.Opdex.Decimals
+                                                                                               : TokenConstants.Cirrus.Decimals)))
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
             .ForMember(dest => dest.Expiration, opt => opt.MapFrom(src => src.Expiration))
