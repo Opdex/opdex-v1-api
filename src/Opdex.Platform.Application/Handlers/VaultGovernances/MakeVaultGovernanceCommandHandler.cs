@@ -24,8 +24,8 @@ public class MakeVaultGovernanceCommandHandler : IRequestHandler<MakeVaultGovern
             var summary = await _mediator.Send(new RetrieveVaultGovernanceContractSummaryQuery(request.Vault.Address, request.BlockHeight,
                                                                                                includeUnassignedSupply: request.RefreshUnassignedSupply,
                                                                                                includeProposedSupply: request.RefreshProposedSupply,
-                                                                                               includePledgeMinimum: request.RefreshPledgeMinimum,
-                                                                                               includeProposalMinimum: request.RefreshProposalMinimum), CancellationToken.None);
+                                                                                               includeTotalPledgeMinimum: request.RefreshTotalPledgeMinimum,
+                                                                                               includeTotalVoteMinimum: request.RefreshTotalVoteMinimum), CancellationToken.None);
 
             request.Vault.Update(summary);
         }

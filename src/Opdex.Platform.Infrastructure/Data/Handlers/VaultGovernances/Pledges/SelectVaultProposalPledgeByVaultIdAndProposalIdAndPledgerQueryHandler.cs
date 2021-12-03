@@ -26,7 +26,7 @@ public class SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandl
                 {nameof(VaultProposalPledgeEntity.Balance)},
                 {nameof(VaultProposalPledgeEntity.CreatedBlock)},
                 {nameof(VaultProposalPledgeEntity.ModifiedBlock)}
-            FROM vault_proposal_vote
+            FROM vault_proposal_pledge
             WHERE {nameof(VaultProposalPledgeEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}
                 AND {nameof(VaultProposalPledgeEntity.ProposalId)} = @{nameof(SqlParams.ProposalId)}
                 AND {nameof(VaultProposalPledgeEntity.Pledger)} = @{nameof(SqlParams.Pledger)}

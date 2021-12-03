@@ -13,8 +13,8 @@ public static class VaultGovernanceConstants
         public const string Proposal = "VG";
         public const string ProposalVote = "VH";
         public const string ProposalPledge = "VI";
-        public const string PledgeMinimum = "VJ";
-        public const string ProposalMinimum = "VK";
+        public const string TotalPledgeMinimum = "VJ";
+        public const string TotalVoteMinimum = "VK";
         public const string ProposalIdByRecipient = "VL";
     }
 
@@ -25,8 +25,8 @@ public static class VaultGovernanceConstants
         public const string VestingDuration = nameof(StateKeys.VestingDuration);
         public const string NextProposalId = nameof(StateKeys.NextProposalId);
         public const string TotalProposedAmount = nameof(StateKeys.TotalProposedAmount);
-        public const string PledgeMinimum = nameof(StateKeys.PledgeMinimum);
-        public const string ProposalMinimum = nameof(StateKeys.ProposalMinimum);
+        public const string TotalPledgeMinimum = nameof(StateKeys.TotalPledgeMinimum);
+        public const string ProposalIdByRecipient = nameof(StateKeys.ProposalIdByRecipient);
     }
 
     public static class Methods
@@ -40,8 +40,8 @@ public static class VaultGovernanceConstants
         public const string RedeemCertificate = nameof(RedeemCertificate);
         public const string CreateNewCertificateProposal = nameof(CreateNewCertificateProposal);
         public const string CreateRevokeCertificateProposal = nameof(CreateRevokeCertificateProposal);
-        public const string CreatePledgeMinimumProposal = nameof(CreatePledgeMinimumProposal);
-        public const string CreateProposalMinimumProposal = nameof(CreateProposalMinimumProposal);
+        public const string CreateTotalPledgeMinimumProposal = nameof(CreateTotalPledgeMinimumProposal);
+        public const string CreateTotalVoteMinimumProposal = nameof(CreateTotalVoteMinimumProposal);
         public const string Pledge = nameof(Pledge);
         public const string Vote = nameof(Vote);
         public const string WithdrawVote = nameof(WithdrawVote);

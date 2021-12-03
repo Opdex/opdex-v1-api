@@ -43,24 +43,24 @@ public class RetrieveVaultGovernanceContractSummaryQueryHandler : IRequestHandle
             summary.SetProposedSupply(proposedSupply);
         }
 
-        if (request.IncludePledgeMinimum)
+        if (request.IncludeTotalPledgeMinimum)
         {
-            var pledgeMinimum = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
-                                                                                                 VaultGovernanceConstants.StateKeys.PledgeMinimum,
-                                                                                                 SmartContractParameterType.UInt64,
-                                                                                                 request.BlockHeight), cancellationToken);
+            var totalPledgeMinimum = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
+                                                                                                      VaultGovernanceConstants.StateKeys.TotalPledgeMinimum,
+                                                                                                      SmartContractParameterType.UInt64,
+                                                                                                      request.BlockHeight), cancellationToken);
 
-            summary.SetPledgeMinimum(pledgeMinimum);
+            summary.SetTotalPledgeMinimum(totalPledgeMinimum);
         }
 
-        if (request.IncludeProposalMinimum)
+        if (request.IncludeTotalVoteMinimum)
         {
-            var proposalMinimum = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
-                                                                                                   VaultGovernanceConstants.StateKeys.ProposalMinimum,
+            var totalVoteMinimum = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
+                                                                                                   VaultGovernanceConstants.StateKeys.TotalVoteMinimum,
                                                                                                    SmartContractParameterType.UInt64,
                                                                                                    request.BlockHeight), cancellationToken);
 
-            summary.SetPledgeMinimum(proposalMinimum);
+            summary.SetTotalVoteMinimum(totalVoteMinimum);
         }
 
         return summary;

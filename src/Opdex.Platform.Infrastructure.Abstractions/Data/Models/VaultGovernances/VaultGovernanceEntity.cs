@@ -11,6 +11,6 @@ public class VaultGovernanceEntity : AuditEntity
     public UInt256 UnassignedSupply { get; set; }
     public UInt256 ProposedSupply { get; set; }
     public ulong VestingDuration { get; set; }
-    public ulong PledgeMinimum { get; set; }
-    public ulong ProposalMinimum { get; set; }
+    public ulong TotalPledgeMinimum { get; set; }
+    public ulong TotalVoteMinimum { get; set; }
 }

@@ -19,8 +19,8 @@ public class PersistVaultGovernanceCommandHandler : IRequestHandler<PersistVault
                 {nameof(VaultGovernanceEntity.UnassignedSupply)},
                 {nameof(VaultGovernanceEntity.VestingDuration)},
                 {nameof(VaultGovernanceEntity.ProposedSupply)},
-                {nameof(VaultGovernanceEntity.PledgeMinimum)},
-                {nameof(VaultGovernanceEntity.ProposalMinimum)},
+                {nameof(VaultGovernanceEntity.TotalPledgeMinimum)},
+                {nameof(VaultGovernanceEntity.TotalVoteMinimum)},
                 {nameof(VaultGovernanceEntity.CreatedBlock)},
                 {nameof(VaultGovernanceEntity.ModifiedBlock)}
               ) VALUES (
@@ -29,8 +29,8 @@ public class PersistVaultGovernanceCommandHandler : IRequestHandler<PersistVault
                 @{nameof(VaultGovernanceEntity.UnassignedSupply)},
                 @{nameof(VaultGovernanceEntity.VestingDuration)},
                 @{nameof(VaultGovernanceEntity.ProposedSupply)},
-                @{nameof(VaultGovernanceEntity.PledgeMinimum)},
-                @{nameof(VaultGovernanceEntity.ProposalMinimum)},
+                @{nameof(VaultGovernanceEntity.TotalPledgeMinimum)},
+                @{nameof(VaultGovernanceEntity.TotalVoteMinimum)},
                 @{nameof(VaultGovernanceEntity.CreatedBlock)},
                 @{nameof(VaultGovernanceEntity.ModifiedBlock)}
               );
@@ -41,8 +41,8 @@ public class PersistVaultGovernanceCommandHandler : IRequestHandler<PersistVault
                 SET
                     {nameof(VaultGovernanceEntity.UnassignedSupply)} = @{nameof(VaultGovernanceEntity.UnassignedSupply)},
                     {nameof(VaultGovernanceEntity.ProposedSupply)} = @{nameof(VaultGovernanceEntity.ProposedSupply)},
-                    {nameof(VaultGovernanceEntity.PledgeMinimum)} = @{nameof(VaultGovernanceEntity.PledgeMinimum)},
-                    {nameof(VaultGovernanceEntity.ProposalMinimum)} = @{nameof(VaultGovernanceEntity.ProposalMinimum)},
+                    {nameof(VaultGovernanceEntity.TotalPledgeMinimum)} = @{nameof(VaultGovernanceEntity.TotalPledgeMinimum)},
+                    {nameof(VaultGovernanceEntity.TotalVoteMinimum)} = @{nameof(VaultGovernanceEntity.TotalVoteMinimum)},
                     {nameof(VaultGovernanceEntity.ModifiedBlock)} = @{nameof(VaultGovernanceEntity.ModifiedBlock)}
                 WHERE {nameof(VaultGovernanceEntity.Id)} = @{nameof(VaultGovernanceEntity.Id)};".RemoveExcessWhitespace();
 

@@ -10,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
 public class MakeVaultGovernanceCommand : IRequest<ulong>
 {
     public MakeVaultGovernanceCommand(VaultGovernance vault, ulong blockHeight, bool refreshUnassignedSupply = false, bool refreshProposedSupply = false,
-                                      bool refreshPledgeMinimum = false, bool refreshProposalMinimum = false)
+                                      bool refreshTotalPledgeMinimum = false, bool refreshTotalVoteMinimum = false)
     {
         if (blockHeight == 0) throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height cannot be zero.");
 
@@ -18,15 +18,15 @@ public class MakeVaultGovernanceCommand : IRequest<ulong>
         BlockHeight = blockHeight;
         RefreshUnassignedSupply = refreshUnassignedSupply;
         RefreshProposedSupply = refreshProposedSupply;
-        RefreshPledgeMinimum = refreshPledgeMinimum;
-        RefreshProposalMinimum = refreshProposalMinimum;
+        RefreshTotalPledgeMinimum = refreshTotalPledgeMinimum;
+        RefreshTotalVoteMinimum = refreshTotalVoteMinimum;
     }
 
     public VaultGovernance Vault { get; }
     public ulong BlockHeight { get; }
     public bool RefreshProposedSupply { get; }
     public bool RefreshUnassignedSupply { get; }
-    public bool RefreshPledgeMinimum { get; }
-    public bool RefreshProposalMinimum { get; }
-    public bool Refresh => RefreshProposedSupply || RefreshUnassignedSupply || RefreshPledgeMinimum || RefreshProposalMinimum;
+    public bool RefreshTotalPledgeMinimum { get; }
+    public bool RefreshTotalVoteMinimum { get; }
+    public bool Refresh => RefreshProposedSupply || RefreshUnassignedSupply || RefreshTotalPledgeMinimum || RefreshTotalVoteMinimum;
 }

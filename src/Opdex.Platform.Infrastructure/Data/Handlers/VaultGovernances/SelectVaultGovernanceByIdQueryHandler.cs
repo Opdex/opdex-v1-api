@@ -22,8 +22,8 @@ public class SelectVaultGovernanceByIdQueryHandler : IRequestHandler<SelectVault
                 {nameof(VaultGovernanceEntity.UnassignedSupply)},
                 {nameof(VaultGovernanceEntity.ProposedSupply)},
                 {nameof(VaultGovernanceEntity.VestingDuration)},
-                {nameof(VaultGovernanceEntity.PledgeMinimum)},
-                {nameof(VaultGovernanceEntity.ProposalMinimum)},
+                {nameof(VaultGovernanceEntity.TotalPledgeMinimum)},
+                {nameof(VaultGovernanceEntity.TotalVoteMinimum)},
                 {nameof(VaultGovernanceEntity.CreatedBlock)},
                 {nameof(VaultGovernanceEntity.ModifiedBlock)}
             FROM vault_governance

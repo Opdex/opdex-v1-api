@@ -10,18 +10,18 @@ namespace Opdex.Platform.Domain.Models.VaultGovernances;
 /// </summary>
 public class VaultGovernance : BlockAudit
 {
-    public VaultGovernance(Address address, ulong tokenId, ulong vestingDuration, ulong pledgeMinimum, ulong proposalMinimum, ulong createdBlock)
+    public VaultGovernance(Address address, ulong tokenId, ulong vestingDuration, ulong totalPledgeMinimum, ulong totalVoteMinimum, ulong createdBlock)
         : base(createdBlock)
     {
         Address = address != Address.Empty ? address : throw new ArgumentNullException(nameof(address), "Address must be set.");
         TokenId = tokenId > 0 ? tokenId : throw new ArgumentOutOfRangeException(nameof(tokenId), "TokenId must be greater than zero.");
         VestingDuration = vestingDuration > 0 ? vestingDuration : throw new ArgumentOutOfRangeException(nameof(vestingDuration), "Vesting duration must be greater than zero.");
-        PledgeMinimum = pledgeMinimum;
-        ProposalMinimum = proposalMinimum;
+        TotalPledgeMinimum = totalPledgeMinimum;
+        TotalVoteMinimum = totalVoteMinimum;
     }
 
     public VaultGovernance(ulong id, Address address, ulong tokenId, UInt256 unassignedSupply, ulong vestingDuration, UInt256 proposedSupply,
-                           ulong pledgeMinimum, ulong proposalMinimum, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+                           ulong totalPledgeMinimum, ulong totalVoteMinimum, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
     {
         Id = id;
         Address = address;
@@ -29,8 +29,8 @@ public class VaultGovernance : BlockAudit
         UnassignedSupply = unassignedSupply;
         VestingDuration = vestingDuration;
         ProposedSupply = proposedSupply;
-        PledgeMinimum = pledgeMinimum;
-        ProposalMinimum = proposalMinimum;
+        TotalPledgeMinimum = totalPledgeMinimum;
+        TotalVoteMinimum = totalVoteMinimum;
     }
 
     public ulong Id { get; }
@@ -39,8 +39,8 @@ public class VaultGovernance : BlockAudit
     public ulong VestingDuration { get; }
     public UInt256 UnassignedSupply { get; private set; }
     public UInt256 ProposedSupply { get; private set; }
-    public ulong PledgeMinimum { get; private set; }
-    public ulong ProposalMinimum { get; private set; }
+    public ulong TotalPledgeMinimum { get; private set; }
+    public ulong TotalVoteMinimum { get; private set; }
 
     public void Update(VaultGovernanceContractSummary summary)
     {
@@ -49,8 +49,8 @@ public class VaultGovernance : BlockAudit
         if (summary.UnassignedSupply.HasValue) UnassignedSupply = summary.UnassignedSupply.Value;
         if (summary.ProposedSupply.HasValue) ProposedSupply = summary.ProposedSupply.Value;
         if (summary.ProposedSupply.HasValue) ProposedSupply = summary.ProposedSupply.Value;
-        if (summary.PledgeMinimum.HasValue) PledgeMinimum = summary.PledgeMinimum.Value;
-        if (summary.ProposalMinimum.HasValue) ProposalMinimum = summary.ProposalMinimum.Value;
+        if (summary.TotalPledgeMinimum.HasValue) TotalPledgeMinimum = summary.TotalPledgeMinimum.Value;
+        if (summary.TotalVoteMinimum.HasValue) TotalVoteMinimum = summary.TotalVoteMinimum.Value;
         SetModifiedBlock(summary.BlockHeight);
     }
 }

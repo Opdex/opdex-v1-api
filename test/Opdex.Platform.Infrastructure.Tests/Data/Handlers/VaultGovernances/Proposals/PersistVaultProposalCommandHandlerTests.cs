@@ -5,14 +5,13 @@ using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
-using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Proposals;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.VaultGovernances;
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.VaultGovernances.Proposals;
 
 public class PersistVaultProposalCommandHandlerTests
 {

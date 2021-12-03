@@ -12,7 +12,7 @@ public class RetrieveVaultGovernanceContractSummaryQuery : IRequest<VaultGoverna
 {
     public RetrieveVaultGovernanceContractSummaryQuery(Address vaultGovernance, ulong blockHeight,
                                                        bool includeUnassignedSupply = false, bool includeProposedSupply = false,
-                                                       bool includePledgeMinimum = false, bool includeProposalMinimum = false)
+                                                       bool includeTotalPledgeMinimum = false, bool includeTotalVoteMinimum = false)
     {
         if (vaultGovernance == Address.Empty) throw new ArgumentNullException(nameof(vaultGovernance), "Vault governance address must be provided.");
         if (blockHeight == 0) throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
@@ -21,14 +21,14 @@ public class RetrieveVaultGovernanceContractSummaryQuery : IRequest<VaultGoverna
         BlockHeight = blockHeight;
         IncludeUnassignedSupply = includeUnassignedSupply;
         IncludeProposedSupply = includeProposedSupply;
-        IncludePledgeMinimum = includePledgeMinimum;
-        IncludeProposalMinimum = includeProposalMinimum;
+        IncludeTotalPledgeMinimum = includeTotalPledgeMinimum;
+        IncludeTotalVoteMinimum = includeTotalVoteMinimum;
     }
 
     public Address VaultGovernance { get; }
     public ulong BlockHeight { get; }
     public bool IncludeUnassignedSupply { get; }
     public bool IncludeProposedSupply { get; }
-    public bool IncludePledgeMinimum { get; }
-    public bool IncludeProposalMinimum { get; }
+    public bool IncludeTotalPledgeMinimum { get; }
+    public bool IncludeTotalVoteMinimum { get; }
 }

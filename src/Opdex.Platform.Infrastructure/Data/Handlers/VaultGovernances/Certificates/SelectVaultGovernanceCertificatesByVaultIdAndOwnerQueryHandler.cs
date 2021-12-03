@@ -28,7 +28,7 @@ public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler
                 {nameof(VaultGovernanceCertificateEntity.VestedBlock)},
                 {nameof(VaultGovernanceCertificateEntity.CreatedBlock)},
                 {nameof(VaultGovernanceCertificateEntity.ModifiedBlock)}
-            FROM vault_proposal_vote
+            FROM vault_governance_certificate
             WHERE {nameof(VaultGovernanceCertificateEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}
                 AND {nameof(VaultGovernanceCertificateEntity.Owner)} = @{nameof(SqlParams.Owner)}".RemoveExcessWhitespace();
 

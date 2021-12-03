@@ -15,8 +15,8 @@ public class VaultGovernanceContractSummary
     public ulong BlockHeight { get; }
     public UInt256? UnassignedSupply { get; private set; }
     public UInt256? ProposedSupply { get; private set; }
-    public ulong? PledgeMinimum { get; private set; }
-    public ulong? ProposalMinimum { get; private set; }
+    public ulong? TotalPledgeMinimum { get; private set; }
+    public ulong? TotalVoteMinimum { get; private set; }
 
     public void SetUnassignedSupply(SmartContractMethodParameter unassignedSupplyParameter)
     {
@@ -30,15 +30,15 @@ public class VaultGovernanceContractSummary
         ProposedSupply = proposedSupplyParameter.Parse<UInt256>();
     }
 
-    public void SetPledgeMinimum(SmartContractMethodParameter pledgeMinimum)
+    public void SetTotalPledgeMinimum(SmartContractMethodParameter totalPledgeMinimum)
     {
-        if (pledgeMinimum is null) throw new ArgumentNullException(nameof(pledgeMinimum));
-        PledgeMinimum = pledgeMinimum.Parse<ulong>();
+        if (totalPledgeMinimum is null) throw new ArgumentNullException(nameof(totalPledgeMinimum));
+        TotalPledgeMinimum = totalPledgeMinimum.Parse<ulong>();
     }
 
-    public void SetProposalMinimum(SmartContractMethodParameter proposalMinimum)
+    public void SetTotalVoteMinimum(SmartContractMethodParameter totalVoteMinimum)
     {
-        if (proposalMinimum is null) throw new ArgumentNullException(nameof(proposalMinimum));
-        ProposalMinimum = proposalMinimum.Parse<ulong>();
+        if (totalVoteMinimum is null) throw new ArgumentNullException(nameof(totalVoteMinimum));
+        TotalVoteMinimum = totalVoteMinimum.Parse<ulong>();
     }
 }
