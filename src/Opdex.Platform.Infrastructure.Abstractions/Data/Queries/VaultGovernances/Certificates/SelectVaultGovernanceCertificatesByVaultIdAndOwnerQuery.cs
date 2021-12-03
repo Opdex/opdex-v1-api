@@ -1,12 +1,13 @@
 using MediatR;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.VaultGovernances;
+using Opdex.Platform.Domain.Models.Vaults;
 using System;
 using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Certificates;
 
-public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery : IRequest<IEnumerable<VaultGovernanceCertificate>>
+public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery : IRequest<IEnumerable<VaultCertificate>>
 {
     public SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery(ulong vaultId, Address owner)
     {

@@ -39,19 +39,11 @@ public class ProcessVaultProposalWithdrawPledgeLogCommandHandler : IRequestHandl
                                                                                                                    request.Log.Pledger,
                                                                                                                    findOrThrow: false));
 
-            if (pledge == null)
-            {
-                // Todo: We missed something, retrieve the pledge summary and build a new one
-            }
-            else
-            {
-                if (request.BlockHeight < pledge.ModifiedBlock)
-                {
-                    return true;
-                }
+            if (pledge == null) return false;
 
-                pledge.Update(request.Log, request.BlockHeight);
-            }
+            if (request.BlockHeight < pledge.ModifiedBlock) return true;
+
+            pledge.Update(request.Log, request.BlockHeight);
 
             var persistedProposal = await _mediator.Send(new MakeVaultProposalCommand(proposal)) > 0;
             var persistedWithdraw = await _mediator.Send(new MakeVaultProposalPledgeCommand(pledge)) > 0;

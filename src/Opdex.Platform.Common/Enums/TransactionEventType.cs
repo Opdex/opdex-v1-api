@@ -44,8 +44,8 @@ public enum TransactionEventType
     ClaimPendingVaultOwnershipEvent = 27,
 
     // VaultGovernance
-    CompleteVaultProposalEvent = 28,
-    CreateVaultProposalEvent = 29,
+    CreateVaultProposalEvent = 28,
+    CompleteVaultProposalEvent = 29,
     VaultProposalPledgeEvent = 30,
     VaultProposalWithdrawPledgeEvent = 31,
     VaultProposalVoteEvent = 32,

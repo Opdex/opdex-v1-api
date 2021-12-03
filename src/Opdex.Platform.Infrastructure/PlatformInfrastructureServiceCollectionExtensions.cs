@@ -303,7 +303,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectVaultByIdQuery, Vault>, SelectVaultByIdQueryHandler>();
 
         // Vault Governance
-        services.AddTransient<IRequestHandler<SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery, IEnumerable<VaultGovernanceCertificate>>, SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery, IEnumerable<VaultCertificate>>, SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery, VaultProposalPledge>, SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery, VaultProposalVote>, SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultProposalByVaultIdAndPublicIdQuery, VaultProposal>, SelectVaultProposalByVaultIdAndPublicIdQueryHandler>();

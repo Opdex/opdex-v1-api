@@ -9,6 +9,7 @@ using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Mark
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Vault;
+using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.VaultGovernances;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
@@ -45,6 +46,12 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents;
 [KnownType(typeof(CreateVaultCertificateEvent))]
 [KnownType(typeof(RedeemVaultCertificateEvent))]
 [KnownType(typeof(RevokeVaultCertificateEvent))]
+[KnownType(typeof(CompleteVaultProposalEvent))]
+[KnownType(typeof(CreateVaultProposalEvent))]
+[KnownType(typeof(VaultProposalPledgeEvent))]
+[KnownType(typeof(VaultProposalWithdrawPledgeEvent))]
+[KnownType(typeof(VaultProposalVoteEvent))]
+[KnownType(typeof(VaultProposalWithdrawVoteEvent))]
 public abstract class TransactionEvent
 {
     /// <summary>

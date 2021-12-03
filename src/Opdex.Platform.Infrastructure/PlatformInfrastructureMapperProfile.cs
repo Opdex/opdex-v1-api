@@ -206,11 +206,6 @@ public class PlatformInfrastructureMapperProfile : Profile
                                                          src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        CreateMap<VaultGovernanceCertificateEntity, VaultGovernanceCertificate>()
-            .ConstructUsing(src => new VaultGovernanceCertificate(src.Id, src.VaultGovernanceId, src.Owner, src.Amount, src.VestedBlock, src.Redeemed,
-                                                                  src.Revoked, src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
-
         CreateMap<VaultGovernanceEntity, VaultGovernance>()
             .ConstructUsing(src => new VaultGovernance(src.Id, src.Address, src.TokenId, src.UnassignedSupply, src.VestingDuration, src.ProposedSupply,
                                                        src.TotalPledgeMinimum, src.TotalVoteMinimum, src.CreatedBlock, src.ModifiedBlock))
@@ -686,18 +681,6 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Vote, opt => opt.MapFrom(src => src.Vote))
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
             .ForMember(dest => dest.InFavor, opt => opt.MapFrom(src => src.InFavor))
-            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
-            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
-
-        CreateMap<VaultGovernanceCertificate, VaultGovernanceCertificateEntity>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.VaultGovernanceId, opt => opt.MapFrom(src => src.VaultGovernanceId))
-            .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
-            .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
-            .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock))
-            .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
-            .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());

@@ -50,6 +50,8 @@ public class ProcessVaultProposalPledgeLogCommandHandler : IRequestHandler<Proce
 
             pledge.Update(request.Log, request.BlockHeight);
 
+            // Todo: Use the reset to trigger the proposal be refreshed from Cirrus to get the expiration
+            var resetExpiration = request.Log.PledgeMinimumMet && proposal.Status == VaultProposalStatus.Pledge;
             var persistedProposal = await _mediator.Send(new MakeVaultProposalCommand(proposal)) > 0;
             var persistedPledge = await _mediator.Send(new MakeVaultProposalPledgeCommand(pledge)) > 0;
 

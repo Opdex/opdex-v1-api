@@ -39,19 +39,11 @@ public class ProcessVaultProposalWithdrawVoteLogCommandHandler : IRequestHandler
                                                                                                              request.Log.Voter,
                                                                                                              findOrThrow: false));
 
-            if (vote == null)
-            {
-                // Todo: We missed something, retrieve the vote summary and build a new one
-            }
-            else
-            {
-                if (request.BlockHeight < vote.ModifiedBlock)
-                {
-                    return true;
-                }
+            if (vote == null) return false;
 
-                vote.Update(request.Log, request.BlockHeight);
-            }
+            if (request.BlockHeight < vote.ModifiedBlock) return true;
+
+            vote.Update(request.Log, request.BlockHeight);
 
             var persistedProposal = await _mediator.Send(new MakeVaultProposalCommand(proposal)) > 0;
             var persistedWithdraw = await _mediator.Send(new MakeVaultProposalVoteCommand(vote)) > 0;

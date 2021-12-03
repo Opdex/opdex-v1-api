@@ -49,8 +49,8 @@ public enum TransactionLogType : uint
     ClaimPendingVaultOwnershipLog = 28,
 
     // Vault governance logs
-    CompleteVaultProposalLog = 29,
-    CreateVaultProposalLog = 30,
+    CreateVaultProposalLog = 29,
+    CompleteVaultProposalLog = 30,
     VaultProposalPledgeLog = 31,
     VaultProposalWithdrawPledgeLog = 32,
     VaultProposalVoteLog = 33,
