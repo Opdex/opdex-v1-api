@@ -2,7 +2,6 @@ using FluentAssertions;
 using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
-using Opdex.Platform.Application.Handlers.VaultGovernances;
 using Opdex.Platform.Application.Handlers.VaultGovernances.Votes;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
@@ -27,9 +26,10 @@ public class MakeVaultProposalVoteCommandHandlerTests
     public async Task Handle_HappyPath_Persist()
     {
         // Arrange
+        const ulong blockHeight = 50;
         using var cancellationTokenSource = new CancellationTokenSource();
-        var vote = new VaultProposalVote(5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, true, 50);
-        var request = new MakeVaultProposalVoteCommand(vote);
+        var vote = new VaultProposalVote(5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, true, blockHeight);
+        var request = new MakeVaultProposalVoteCommand(vote, blockHeight);
 
         // Act
         await _handler.Handle(request, cancellationTokenSource.Token);
@@ -42,8 +42,9 @@ public class MakeVaultProposalVoteCommandHandlerTests
     public async Task Handle_OncePersisted_ReturnResult()
     {
         // Arrange
-        var vote = new VaultProposalVote(5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, true, 50);
-        var request = new MakeVaultProposalVoteCommand(vote);
+        const ulong blockHeight = 50;
+        var vote = new VaultProposalVote(5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, true, blockHeight);
+        var request = new MakeVaultProposalVoteCommand(vote, blockHeight);
 
         ulong result = 25;
         _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistVaultProposalVoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(result);

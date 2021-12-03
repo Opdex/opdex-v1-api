@@ -3,7 +3,6 @@ using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using System;
 using System.Threading;

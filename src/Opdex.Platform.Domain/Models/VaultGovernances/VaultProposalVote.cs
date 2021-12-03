@@ -41,6 +41,13 @@ public class VaultProposalVote : BlockAudit
     public ulong Balance { get; private set; }
     public bool InFavor { get; private set; }
 
+    public void Update(VaultProposalVoteSummary summary, ulong blockHeight)
+    {
+        InFavor = summary.InFavor;
+        Balance = summary.Amount;
+        SetModifiedBlock(blockHeight);
+    }
+
     public void Update(VaultProposalVoteLog log, ulong blockHeight)
     {
         Vote += log.VoteAmount;

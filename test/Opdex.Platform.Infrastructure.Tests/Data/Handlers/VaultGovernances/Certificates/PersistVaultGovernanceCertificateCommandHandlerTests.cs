@@ -1,15 +1,11 @@
 using AutoMapper;
 using FluentAssertions;
 using Moq;
-using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Certificates;
-using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

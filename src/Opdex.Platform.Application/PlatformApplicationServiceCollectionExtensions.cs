@@ -500,7 +500,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery, VaultProposalPledge>, RetrieveVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveVaultProposalByVaultIdAndPublicIdQuery, VaultProposal>, RetrieveVaultProposalByVaultIdAndPublicIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQuery, IEnumerable<VaultCertificate>>, RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler>();
-
+        services.AddTransient<IRequestHandler<RetrieveVaultProposalByIdQuery, VaultProposal>, RetrieveVaultProposalByIdQueryHandler>();
 
         // Transactions
         services.AddTransient<IRequestHandler<RetrieveCirrusTransactionByHashQuery, Transaction>, RetrieveCirrusTransactionByHashQueryHandler>();

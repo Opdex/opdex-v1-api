@@ -311,6 +311,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectVaultProposalByVaultIdAndPublicIdQuery, VaultProposal>, SelectVaultProposalByVaultIdAndPublicIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultGovernanceByAddressQuery, VaultGovernance>, SelectVaultGovernanceByAddressQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultGovernanceByIdQuery, VaultGovernance>, SelectVaultGovernanceByIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultProposalByIdQuery, VaultProposal>, SelectVaultProposalByIdQueryHandler>();
 
         // Addresses
         services.AddTransient<IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>, SelectAddressBalanceByOwnerAndTokenIdQueryHandler>();
@@ -376,6 +377,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>, CallCirrusGetMarketPermissionAuthorizationQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusVerifyMessageQuery, bool>, CallCirrusVerifyMessageQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetVaultProposalSummaryByProposalIdQuery, VaultProposalSummary>, CallCirrusGetVaultProposalSummaryByProposalIdQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetVaultProposalVoteSummaryByProposalIdAndVoterQuery, VaultProposalVoteSummary>, CallCirrusGetVaultProposalVoteSummaryByProposalIdAndVoterQueryHandler>();
 
         // Commands
         services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, Sha256>, CallCirrusCallSmartContractMethodCommandHandler>();

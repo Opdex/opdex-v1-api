@@ -51,7 +51,7 @@ public class ProcessVaultProposalVoteLogCommandHandler : IRequestHandler<Process
             vote.Update(request.Log, request.BlockHeight);
 
             var persistedProposal = await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight)) > 0;
-            var persistedVote = await _mediator.Send(new MakeVaultProposalVoteCommand(vote)) > 0;
+            var persistedVote = await _mediator.Send(new MakeVaultProposalVoteCommand(vote, request.BlockHeight)) > 0;
 
             return persistedProposal && persistedVote;
         }

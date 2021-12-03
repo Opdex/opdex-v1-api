@@ -1,5 +1,8 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 using System;
 using System.Threading;
@@ -16,8 +19,20 @@ public class MakeVaultProposalVoteCommandHandler : IRequestHandler<MakeVaultProp
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public Task<ulong> Handle(MakeVaultProposalVoteCommand request, CancellationToken cancellationToken)
+    public async Task<ulong> Handle(MakeVaultProposalVoteCommand request, CancellationToken cancellationToken)
     {
-        return _mediator.Send(new PersistVaultProposalVoteCommand(request.Vote), CancellationToken.None);
+        if (request.RefreshVote)
+        {
+            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(request.Vote.VaultGovernanceId));
+            var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(request.Vote.ProposalId));
+            var summary = await _mediator.Send(new CallCirrusGetVaultProposalVoteSummaryByProposalIdAndVoterQuery(vault.Address,
+                                                                                                                  proposal.PublicId,
+                                                                                                                  request.Vote.Voter,
+                                                                                                                  request.BlockHeight));
+
+            request.Vote.Update(summary, request.BlockHeight);
+        }
+
+        return await _mediator.Send(new PersistVaultProposalVoteCommand(request.Vote), CancellationToken.None);
     }
 }

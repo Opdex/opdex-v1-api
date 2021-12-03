@@ -1,12 +1,9 @@
 using AutoMapper;
 using MediatR;
-using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Certificates;
 using System;
