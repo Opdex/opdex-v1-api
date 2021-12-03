@@ -10,6 +10,6 @@ public class VaultGovernanceCertificateEntity : AuditEntity
     public Address Owner { get; set; }
     public UInt256 Amount { get; set; }
     public bool Revoked { get; set; }
-    public ulong VestedBlock { get; set; }
     public bool Redeemed { get; set; }
+    public ulong VestedBlock { get; set; }
 }

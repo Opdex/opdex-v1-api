@@ -10,70 +10,69 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Vaults;
 
-    public class RetrieveVaultContractSummaryQueryHandler : IRequestHandler<RetrieveVaultContractSummaryQuery, VaultContractSummary>
+public class RetrieveVaultContractSummaryQueryHandler : IRequestHandler<RetrieveVaultContractSummaryQuery, VaultContractSummary>
+{
+    private readonly IMediator _mediator;
+
+    public RetrieveVaultContractSummaryQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveVaultContractSummaryQueryHandler(IMediator mediator)
+    public async Task<VaultContractSummary> Handle(RetrieveVaultContractSummaryQuery request, CancellationToken cancellationToken)
+    {
+        var summary = new VaultContractSummary(request.BlockHeight);
+
+        if (request.IncludeLockedToken)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            var lockedToken = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
+                                                                                               VaultConstants.StateKeys.Token,
+                                                                                               SmartContractParameterType.Address,
+                                                                                               request.BlockHeight), CancellationToken.None);
+
+            summary.SetLockedToken(lockedToken);
         }
 
-        public async Task<VaultContractSummary> Handle(RetrieveVaultContractSummaryQuery request, CancellationToken cancellationToken)
+        if (request.IncludePendingOwner)
         {
-            var summary = new VaultContractSummary(request.BlockHeight);
+            var pendingOwner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
+                                                                                                VaultConstants.StateKeys.PendingOwner,
+                                                                                                SmartContractParameterType.Address,
+                                                                                                request.BlockHeight), CancellationToken.None);
 
-            if (request.IncludeLockedToken)
-            {
-                var lockedToken = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
-                                                                                                   VaultConstants.StateKeys.Token,
-                                                                                                   SmartContractParameterType.Address,
-                                                                                                   request.BlockHeight));
-
-                summary.SetLockedToken(lockedToken);
-            }
-
-            if (request.IncludePendingOwner)
-            {
-                var pendingOwner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
-                                                                                                    VaultConstants.StateKeys.PendingOwner,
-                                                                                                    SmartContractParameterType.Address,
-                                                                                                    request.BlockHeight));
-
-                summary.SetPendingOwner(pendingOwner);
-            }
-
-            if (request.IncludeOwner)
-            {
-                var owner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
-                                                                                             VaultConstants.StateKeys.Owner,
-                                                                                             SmartContractParameterType.Address,
-                                                                                             request.BlockHeight));
-
-                summary.SetOwner(owner);
-            }
-
-            if (request.IncludeSupply)
-            {
-                var supply = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
-                                                                                              VaultConstants.StateKeys.TotalSupply,
-                                                                                              SmartContractParameterType.UInt256,
-                                                                                              request.BlockHeight));
-
-                summary.SetUnassignedSupply(supply);
-            }
-
-            if (request.IncludeGenesis)
-            {
-                var genesis = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
-                                                                                               VaultConstants.StateKeys.Genesis,
-                                                                                               SmartContractParameterType.UInt64,
-                                                                                               request.BlockHeight));
-
-                summary.SetGenesis(genesis);
-            }
-
-            return summary;
+            summary.SetPendingOwner(pendingOwner);
         }
+
+        if (request.IncludeOwner)
+        {
+            var owner = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
+                                                                                         VaultConstants.StateKeys.Owner,
+                                                                                         SmartContractParameterType.Address,
+                                                                                         request.BlockHeight), CancellationToken.None);
+
+            summary.SetOwner(owner);
+        }
+
+        if (request.IncludeSupply)
+        {
+            var supply = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
+                                                                                          VaultConstants.StateKeys.TotalSupply,
+                                                                                          SmartContractParameterType.UInt256,
+                                                                                          request.BlockHeight));
+
+            summary.SetUnassignedSupply(supply);
+        }
+
+        if (request.IncludeGenesis)
+        {
+            var genesis = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.Vault,
+                                                                                           VaultConstants.StateKeys.Genesis,
+                                                                                           SmartContractParameterType.UInt64,
+                                                                                           request.BlockHeight), CancellationToken.None);
+
+            summary.SetGenesis(genesis);
+        }
+
+        return summary;
     }
 }

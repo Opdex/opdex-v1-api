@@ -4,6 +4,9 @@ using System;
 
 namespace Opdex.Platform.Domain.Models.VaultGovernances;
 
+/// <summary>
+/// The pledge position of an address for a proposal.
+/// </summary>
 public class VaultProposalPledge : BlockAudit
 {
     public VaultProposalPledge(ulong vaultGovernanceId, ulong proposalId, Address pledger, ulong pledge, ulong balance, ulong createdBlock)

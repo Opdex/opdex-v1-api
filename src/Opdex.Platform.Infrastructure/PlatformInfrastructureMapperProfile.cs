@@ -212,7 +212,7 @@ public class PlatformInfrastructureMapperProfile : Profile
 
         CreateMap<VaultGovernanceEntity, VaultGovernance>()
             .ConstructUsing(src => new VaultGovernance(src.Id, src.Address, src.TokenId, src.UnassignedSupply, src.VestingDuration, src.ProposedSupply,
-                                                       src.PledgeMinimum, src.ProposalMinimum, src.CreatedBlock, src.ModifiedBlock))
+                                                       src.TotalPledgeMinimum, src.TotalVoteMinimum, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TransactionLogEntity, TransactionLog>()
@@ -692,8 +692,8 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.UnassignedSupply, opt => opt.MapFrom(src => src.UnassignedSupply))
             .ForMember(dest => dest.VestingDuration, opt => opt.MapFrom(src => src.VestingDuration))
             .ForMember(dest => dest.ProposedSupply, opt => opt.MapFrom(src => src.ProposedSupply))
-            .ForMember(dest => dest.PledgeMinimum, opt => opt.MapFrom(src => src.PledgeMinimum))
-            .ForMember(dest => dest.ProposalMinimum, opt => opt.MapFrom(src => src.ProposalMinimum))
+            .ForMember(dest => dest.TotalPledgeMinimum, opt => opt.MapFrom(src => src.TotalPledgeMinimum))
+            .ForMember(dest => dest.TotalVoteMinimum, opt => opt.MapFrom(src => src.TotalVoteMinimum))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());

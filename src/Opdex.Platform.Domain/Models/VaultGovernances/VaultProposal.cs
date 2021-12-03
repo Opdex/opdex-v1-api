@@ -6,6 +6,9 @@ using System;
 
 namespace Opdex.Platform.Domain.Models.VaultGovernances;
 
+/// <summary>
+/// Proposal to either create or revoke a certificate in the vault, or modify the governance of a vault.
+/// </summary>
 public class VaultProposal : BlockAudit
 {
     public VaultProposal(ulong publicId, ulong vaultGovernanceId, Address creator, Address wallet, UInt256 amount, string description,
@@ -22,7 +25,7 @@ public class VaultProposal : BlockAudit
         Expiration = expiration > 0 ? expiration : throw new ArgumentOutOfRangeException(nameof(expiration), "Expiration must be greater than zero.");
     }
 
-    public VaultProposal(ulong id, ulong publicId, ulong vaultGovernanceId, Address creator, Address wallet, UInt256 amount,  string description,
+    public VaultProposal(ulong id, ulong publicId, ulong vaultGovernanceId, Address creator, Address wallet, UInt256 amount, string description,
                          VaultProposalType type, VaultProposalStatus status, ulong expiration, ulong yesAmount, ulong noAmount, ulong pledgeAmount,
                          ulong createdBlock, ulong modifiedBlock)
         : base(createdBlock, modifiedBlock)
