@@ -12,120 +12,119 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.CoinMarketCapApiTests.Handlers
+namespace Opdex.Platform.Infrastructure.Tests.CoinMarketCapApiTests.Handlers;
+
+public class CallCmcGetStraxHistoricalQuoteQueryHandlerTests
 {
-    public class CallCmcGetStraxHistoricalQuoteQueryHandlerTests
+    private readonly Mock<IQuotesModule> _quotesModule;
+    private readonly Mock<ILogger<CallCmcGetStraxHistoricalQuoteQueryHandler>> _logger;
+    private readonly CallCmcGetStraxHistoricalQuoteQueryHandler _handler;
+
+    public CallCmcGetStraxHistoricalQuoteQueryHandlerTests()
     {
-        private readonly Mock<IQuotesModule> _quotesModule;
-        private readonly Mock<ILogger<CallCmcGetStraxHistoricalQuoteQueryHandler>> _logger;
-        private readonly CallCmcGetStraxHistoricalQuoteQueryHandler _handler;
+        _quotesModule = new Mock<IQuotesModule>();
+        _logger = new Mock<ILogger<CallCmcGetStraxHistoricalQuoteQueryHandler>>();
+        _handler = new CallCmcGetStraxHistoricalQuoteQueryHandler(_quotesModule.Object, _logger.Object);
+    }
 
-        public CallCmcGetStraxHistoricalQuoteQueryHandlerTests()
+    [Fact]
+    public void CallCmcGetStraxHistoricalQuoteQuery_InvalidDateTime_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        // Act
+        void Act() => new CallCmcGetStraxHistoricalQuoteQuery(default);
+
+        // Assert
+        Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("CMC quote datetime must be set.");
+    }
+
+    [Fact]
+    public async Task CallCmcGetStraxHistoricalQuoteQuery_Sends_GetHistoricalQuoteAsync()
+    {
+        // Arrange
+        var dateTime = DateTime.UtcNow;
+
+        // Act
+        try
         {
-            _quotesModule = new Mock<IQuotesModule>();
-            _logger = new Mock<ILogger<CallCmcGetStraxHistoricalQuoteQueryHandler>>();
-            _handler = new CallCmcGetStraxHistoricalQuoteQueryHandler(_quotesModule.Object, _logger.Object);
+            await _handler.Handle(new CallCmcGetStraxHistoricalQuoteQuery(dateTime), CancellationToken.None);
         }
+        catch { }
 
-        [Fact]
-        public void CallCmcGetStraxHistoricalQuoteQuery_InvalidDateTime_ThrowsArgumentOutOfRangeException()
+        // Assert
+        _quotesModule.Verify(callTo => callTo.GetHistoricalQuoteAsync(CmcTokens.STRAX, dateTime, CancellationToken.None), Times.Once);
+    }
+
+    [Fact]
+    public async Task CallCmcGetStraxHistoricalQuoteQuery_ReturnsZero_FiatPricesAreNull()
+    {
+        // Arrange
+        var dateTime = DateTime.UtcNow;
+
+        _quotesModule.Setup(callTo => callTo.GetHistoricalQuoteAsync(CmcTokens.STRAX, dateTime, CancellationToken.None))
+            .ReturnsAsync(() => null);
+
+        // Act
+        var response = await _handler.Handle(new CallCmcGetStraxHistoricalQuoteQuery(dateTime), CancellationToken.None);
+
+        // Assert
+        response.Should().Be(0m);
+    }
+
+    [Fact]
+    public async Task CallCmcGetStraxHistoricalQuoteQuery_ReturnsZero_UsdPriceIsNull()
+    {
+        // Arrange
+        var dateTime = DateTime.UtcNow;
+        var quote = new CmcHistoricalQuote
         {
-            // Arrange
-            // Act
-            void Act() => new CallCmcGetStraxHistoricalQuoteQuery(default);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("CMC quote datetime must be set.");
-        }
-
-        [Fact]
-        public async Task CallCmcGetStraxHistoricalQuoteQuery_Sends_GetHistoricalQuoteAsync()
-        {
-            // Arrange
-            var dateTime = DateTime.UtcNow;
-
-            // Act
-            try
+            Data = new HistoricalQuoteData
             {
-                await _handler.Handle(new CallCmcGetStraxHistoricalQuoteQuery(dateTime), CancellationToken.None);
+                Quotes = new List<HistoricalQuoteTimeframe>
+                {
+                    new HistoricalQuoteTimeframe { Quote = new Dictionary<string, HistoricalQuotePrice>() }
+                }
             }
-            catch { }
+        };
 
-            // Assert
-            _quotesModule.Verify(callTo => callTo.GetHistoricalQuoteAsync(CmcTokens.STRAX, dateTime, CancellationToken.None), Times.Once);
-        }
+        _quotesModule.Setup(callTo => callTo.GetHistoricalQuoteAsync(CmcTokens.STRAX, dateTime, CancellationToken.None))
+            .ReturnsAsync(quote);
 
-        [Fact]
-        public async Task CallCmcGetStraxHistoricalQuoteQuery_ReturnsZero_FiatPricesAreNull()
+        // Act
+        var response = await _handler.Handle(new CallCmcGetStraxHistoricalQuoteQuery(dateTime), CancellationToken.None);
+
+        // Assert
+        response.Should().Be(0m);
+    }
+
+    [Fact]
+    public async Task CallCmcGetStraxHistoricalQuoteQuery_ReturnsPrice()
+    {
+        // Arrange
+        var dateTime = DateTime.UtcNow;
+        const decimal price = 1.1m;
+
+        var quote = new CmcHistoricalQuote
         {
-            // Arrange
-            var dateTime = DateTime.UtcNow;
-
-            _quotesModule.Setup(callTo => callTo.GetHistoricalQuoteAsync(CmcTokens.STRAX, dateTime, CancellationToken.None))
-                .ReturnsAsync(() => null);
-
-            // Act
-            var response = await _handler.Handle(new CallCmcGetStraxHistoricalQuoteQuery(dateTime), CancellationToken.None);
-
-            // Assert
-            response.Should().Be(0m);
-        }
-
-        [Fact]
-        public async Task CallCmcGetStraxHistoricalQuoteQuery_ReturnsZero_UsdPriceIsNull()
-        {
-            // Arrange
-            var dateTime = DateTime.UtcNow;
-            var quote = new CmcHistoricalQuote
+            Data = new HistoricalQuoteData
             {
-                Data = new HistoricalQuoteData
+                Quotes = new List<HistoricalQuoteTimeframe>
                 {
-                    Quotes = new List<HistoricalQuoteTimeframe>
+                    new HistoricalQuoteTimeframe
                     {
-                        new HistoricalQuoteTimeframe { Quote = new Dictionary<string, HistoricalQuotePrice>() }
+                        Quote = new Dictionary<string, HistoricalQuotePrice> { { "USD", new HistoricalQuotePrice { Price = price } } }
                     }
                 }
-            };
+            }
+        };
 
-            _quotesModule.Setup(callTo => callTo.GetHistoricalQuoteAsync(CmcTokens.STRAX, dateTime, CancellationToken.None))
-                .ReturnsAsync(quote);
+        _quotesModule.Setup(callTo => callTo.GetHistoricalQuoteAsync(CmcTokens.STRAX, dateTime, CancellationToken.None))
+            .ReturnsAsync(quote);
 
-            // Act
-            var response = await _handler.Handle(new CallCmcGetStraxHistoricalQuoteQuery(dateTime), CancellationToken.None);
+        // Act
+        var response = await _handler.Handle(new CallCmcGetStraxHistoricalQuoteQuery(dateTime), CancellationToken.None);
 
-            // Assert
-            response.Should().Be(0m);
-        }
-
-        [Fact]
-        public async Task CallCmcGetStraxHistoricalQuoteQuery_ReturnsPrice()
-        {
-            // Arrange
-            var dateTime = DateTime.UtcNow;
-            const decimal price = 1.1m;
-
-            var quote = new CmcHistoricalQuote
-            {
-                Data = new HistoricalQuoteData
-                {
-                    Quotes = new List<HistoricalQuoteTimeframe>
-                    {
-                        new HistoricalQuoteTimeframe
-                        {
-                            Quote = new Dictionary<string, HistoricalQuotePrice> { { "USD", new HistoricalQuotePrice { Price = price } } }
-                        }
-                    }
-                }
-            };
-
-            _quotesModule.Setup(callTo => callTo.GetHistoricalQuoteAsync(CmcTokens.STRAX, dateTime, CancellationToken.None))
-                .ReturnsAsync(quote);
-
-            // Act
-            var response = await _handler.Handle(new CallCmcGetStraxHistoricalQuoteQuery(dateTime), CancellationToken.None);
-
-            // Assert
-            response.Should().Be(price);
-        }
+        // Assert
+        response.Should().Be(price);
     }
 }

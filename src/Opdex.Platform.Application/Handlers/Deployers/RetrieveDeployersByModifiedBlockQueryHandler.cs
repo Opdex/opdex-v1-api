@@ -7,20 +7,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Deployers
+namespace Opdex.Platform.Application.Handlers.Deployers;
+
+public class RetrieveDeployersByModifiedBlockQueryHandler : IRequestHandler<RetrieveDeployersByModifiedBlockQuery, IEnumerable<Deployer>>
 {
-    public class RetrieveDeployersByModifiedBlockQueryHandler : IRequestHandler<RetrieveDeployersByModifiedBlockQuery, IEnumerable<Deployer>>
+    private readonly IMediator _mediator;
+
+    public RetrieveDeployersByModifiedBlockQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveDeployersByModifiedBlockQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<IEnumerable<Deployer>> Handle(RetrieveDeployersByModifiedBlockQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectDeployersByModifiedBlockQuery(request.BlockHeight), cancellationToken);
-        }
+    public Task<IEnumerable<Deployer>> Handle(RetrieveDeployersByModifiedBlockQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectDeployersByModifiedBlockQuery(request.BlockHeight), cancellationToken);
     }
 }

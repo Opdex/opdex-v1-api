@@ -12,88 +12,87 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.MiningPools
+namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.MiningPools;
+
+public class CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandlerTests
 {
-    public class CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandlerTests
+    private readonly Mock<ISmartContractsModule> _smartContractsModuleMock;
+    private readonly CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler _handler;
+
+    public CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandlerTests()
     {
-        private readonly Mock<ISmartContractsModule> _smartContractsModuleMock;
-        private readonly CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler _handler;
+        _smartContractsModuleMock = new Mock<ISmartContractsModule>();
 
-        public CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandlerTests()
+        _handler = new CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler(_smartContractsModuleMock.Object);
+    }
+
+    [Fact]
+    public void CallCirrusGetMiningPoolRewardPerTokenMiningQuery_InvalidMiningPool_ThrowsArgumentNullException()
+    {
+        // Arrange
+        Address miningPool = Address.Empty;
+        const ulong blockHeight = 10;
+
+        // Act
+        void Act() => new CallCirrusGetMiningPoolRewardPerTokenMiningQuery(miningPool, blockHeight);
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(Act).Message.Contains("Mining pool address must be provided.");
+    }
+
+    [Fact]
+    public void CallCirrusGetMiningPoolRewardPerTokenMiningQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        Address miningPool = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const ulong blockHeight = 0;
+
+        // Act
+        void Act() => new CallCirrusGetMiningPoolRewardPerTokenMiningQuery(miningPool, blockHeight);
+
+        // Assert
+        Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
+    }
+
+    [Fact]
+    public async Task CallCirrusGetMiningPoolRewardPerTokenMiningQuery_Sends_LocalCallAsync()
+    {
+        // Arrange
+        Address miningPool = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const ulong blockHeight = 10;
+        const string methodName = MiningPoolConstants.Methods.GetRewardPerStakedToken;
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        // Act
+        try
         {
-            _smartContractsModuleMock = new Mock<ISmartContractsModule>();
-
-            _handler = new CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler(_smartContractsModuleMock.Object);
+            await _handler.Handle(new CallCirrusGetMiningPoolRewardPerTokenMiningQuery(miningPool, blockHeight), cancellationToken);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public void CallCirrusGetMiningPoolRewardPerTokenMiningQuery_InvalidMiningPool_ThrowsArgumentNullException()
-        {
-            // Arrange
-            Address miningPool = Address.Empty;
-            const ulong blockHeight = 10;
+        // Assert
+        _smartContractsModuleMock.Verify(callTo => callTo.LocalCallAsync(It.Is<LocalCallRequestDto>(q => q.ContractAddress == miningPool &&
+                                                                                                         q.MethodName == methodName &&
+                                                                                                         q.BlockHeight == blockHeight),
+                                                                         cancellationToken), Times.Once);
+    }
 
-            // Act
-            void Act() => new CallCirrusGetMiningPoolRewardPerTokenMiningQuery(miningPool, blockHeight);
+    [Fact]
+    public async Task CallCirrusGetMiningPoolRewardPerTokenMiningQuery_Returns()
+    {
+        // Arrange
+        Address miningPool = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const ulong blockHeight = 10;
+        var cancellationToken = new CancellationTokenSource().Token;
+        UInt256 returnValue = 100;
 
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Contains("Mining pool address must be provided.");
-        }
+        _smartContractsModuleMock.Setup(callTo => callTo.LocalCallAsync(It.IsAny<LocalCallRequestDto>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new LocalCallResponseDto { Return = returnValue });
 
-        [Fact]
-        public void CallCirrusGetMiningPoolRewardPerTokenMiningQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
-        {
-            // Arrange
-            Address miningPool = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const ulong blockHeight = 0;
+        // Act
+        var response = await _handler.Handle(new CallCirrusGetMiningPoolRewardPerTokenMiningQuery(miningPool, blockHeight), cancellationToken);
 
-            // Act
-            void Act() => new CallCirrusGetMiningPoolRewardPerTokenMiningQuery(miningPool, blockHeight);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
-        }
-
-        [Fact]
-        public async Task CallCirrusGetMiningPoolRewardPerTokenMiningQuery_Sends_LocalCallAsync()
-        {
-            // Arrange
-            Address miningPool = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const ulong blockHeight = 10;
-            const string methodName = MiningPoolConstants.Methods.GetRewardPerStakedToken;
-            var cancellationToken = new CancellationTokenSource().Token;
-
-            // Act
-            try
-            {
-                await _handler.Handle(new CallCirrusGetMiningPoolRewardPerTokenMiningQuery(miningPool, blockHeight), cancellationToken);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _smartContractsModuleMock.Verify(callTo => callTo.LocalCallAsync(It.Is<LocalCallRequestDto>(q => q.ContractAddress == miningPool &&
-                                                                                                             q.MethodName == methodName &&
-                                                                                                             q.BlockHeight == blockHeight),
-                                                                             cancellationToken), Times.Once);
-        }
-
-        [Fact]
-        public async Task CallCirrusGetMiningPoolRewardPerTokenMiningQuery_Returns()
-        {
-            // Arrange
-            Address miningPool = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const ulong blockHeight = 10;
-            var cancellationToken = new CancellationTokenSource().Token;
-            UInt256 returnValue = 100;
-
-            _smartContractsModuleMock.Setup(callTo => callTo.LocalCallAsync(It.IsAny<LocalCallRequestDto>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new LocalCallResponseDto { Return = returnValue });
-
-            // Act
-            var response = await _handler.Handle(new CallCirrusGetMiningPoolRewardPerTokenMiningQuery(miningPool, blockHeight), cancellationToken);
-
-            // Assert
-            response.Should().Be(returnValue);
-        }
+        // Assert
+        response.Should().Be(returnValue);
     }
 }

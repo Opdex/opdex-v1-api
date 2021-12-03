@@ -10,13 +10,13 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominations
+namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominations;
+
+public class SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler
+    : IRequestHandler<SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>
 {
-    public class SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler
-        : IRequestHandler<SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(MiningGovernanceNominationEntity.Id)},
                 {nameof(MiningGovernanceNominationEntity.MiningGovernanceId)},
                 {nameof(MiningGovernanceNominationEntity.LiquidityPoolId)},
@@ -30,32 +30,31 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominati
                   {nameof(MiningGovernanceNominationEntity.MiningGovernanceId)} = @{nameof(SqlParams.MiningGovernanceId)}
             LIMIT {MiningGovernanceConstants.MaxNominations};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler(IDbContext context, IMapper mapper)
+    public SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<IEnumerable<MiningGovernanceNomination>> Handle(SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery request, CancellationToken cancellationToken)
+    {
+        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.MiningGovernanceId), cancellationToken);
+
+        var result = await _context.ExecuteQueryAsync<MiningGovernanceNominationEntity>(query);
+
+        return _mapper.Map<IEnumerable<MiningGovernanceNomination>>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong miningGovernanceId)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            MiningGovernanceId = miningGovernanceId;
         }
 
-        public async Task<IEnumerable<MiningGovernanceNomination>> Handle(SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery request, CancellationToken cancellationToken)
-        {
-            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.MiningGovernanceId), cancellationToken);
-
-            var result = await _context.ExecuteQueryAsync<MiningGovernanceNominationEntity>(query);
-
-            return _mapper.Map<IEnumerable<MiningGovernanceNomination>>(result);
-        }
-
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong miningGovernanceId)
-            {
-                MiningGovernanceId = miningGovernanceId;
-            }
-
-            public ulong MiningGovernanceId { get; }
-        }
+        public ulong MiningGovernanceId { get; }
     }
 }

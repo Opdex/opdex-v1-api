@@ -8,12 +8,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots;
+
+public class PersistMarketSnapshotCommandHandler : IRequestHandler<PersistMarketSnapshotCommand, bool>
 {
-    public class PersistMarketSnapshotCommandHandler : IRequestHandler<PersistMarketSnapshotCommand, bool>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO market_snapshot (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO market_snapshot (
                 {nameof(MarketSnapshotEntity.MarketId)},
                 {nameof(MarketSnapshotEntity.Details)},
                 {nameof(MarketSnapshotEntity.SnapshotTypeId)},
@@ -29,42 +29,41 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Snapshots
                 UTC_TIMESTAMP()
               );";
 
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE market_snapshot
+    private static readonly string UpdateSqlCommand =
+        $@"UPDATE market_snapshot
                 SET
                     {nameof(MarketSnapshotEntity.Details)} = @{nameof(MarketSnapshotEntity.Details)},
                     {nameof(MarketSnapshotEntity.ModifiedDate)} = UTC_TIMESTAMP()
                 WHERE {nameof(MarketSnapshotEntity.Id)} = @{nameof(MarketSnapshotEntity.Id)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistMarketSnapshotCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMarketSnapshotCommandHandler> logger)
+    public PersistMarketSnapshotCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMarketSnapshotCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<bool> Handle(PersistMarketSnapshotCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var entity = _mapper.Map<MarketSnapshotEntity>(request.Snapshot);
+
+            var sql = entity.Id < 1 ? InsertSqlCommand : UpdateSqlCommand;
+
+            var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+
+            return await _context.ExecuteCommandAsync(command) >= 1;
         }
-
-        public async Task<bool> Handle(PersistMarketSnapshotCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var entity = _mapper.Map<MarketSnapshotEntity>(request.Snapshot);
+            _logger.LogError(ex, $"Failure persisting market snapshot for marketId {request?.Snapshot?.MarketId} and type {request?.Snapshot?.SnapshotType}");
 
-                var sql = entity.Id < 1 ? InsertSqlCommand : UpdateSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-
-                return await _context.ExecuteCommandAsync(command) >= 1;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure persisting market snapshot for marketId {request?.Snapshot?.MarketId} and type {request?.Snapshot?.SnapshotType}");
-
-                return false;
-            }
+            return false;
         }
     }
 }

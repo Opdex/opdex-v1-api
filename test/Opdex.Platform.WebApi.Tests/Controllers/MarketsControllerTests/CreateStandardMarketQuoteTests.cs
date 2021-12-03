@@ -15,116 +15,115 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers.MarketsControllerTests
+namespace Opdex.Platform.WebApi.Tests.Controllers.MarketsControllerTests;
+
+public class CreateStandardMarketQuoteTests
 {
-    public class CreateStandardMarketQuoteTests
+    private readonly Mock<IApplicationContext> _applicationContextMock;
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly MarketsController _controller;
+
+    public CreateStandardMarketQuoteTests()
     {
-        private readonly Mock<IApplicationContext> _applicationContextMock;
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly MarketsController _controller;
+        _applicationContextMock = new Mock<IApplicationContext>();
+        _mapperMock = new Mock<IMapper>();
+        _mediatorMock = new Mock<IMediator>();
+        _controller = new MarketsController(_mediatorMock.Object, _mapperMock.Object, _applicationContextMock.Object);
+    }
 
-        public CreateStandardMarketQuoteTests()
+    [Fact]
+    public async Task CreateStandardMarketQuote_CreateCreateStandardMarketTransactionQuoteCommand_Send()
+    {
+        // Arrange
+        Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+
+        var request = new CreateStandardMarketQuoteRequest
         {
-            _applicationContextMock = new Mock<IApplicationContext>();
-            _mapperMock = new Mock<IMapper>();
-            _mediatorMock = new Mock<IMediator>();
-            _controller = new MarketsController(_mediatorMock.Object, _mapperMock.Object, _applicationContextMock.Object);
-        }
+            MarketOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
+            TransactionFee = 5,
+            AuthLiquidityProviders = true,
+            AuthTraders = false,
+            AuthPoolCreators = false,
+            EnableMarketFee = true
+        };
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        [Fact]
-        public async Task CreateStandardMarketQuote_CreateCreateStandardMarketTransactionQuoteCommand_Send()
+        // Act
+        await _controller.CreateStandardMarketQuote(request, cancellationToken);
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCreateStandardMarketTransactionQuoteCommand>(command
+                                                                                                                => command.WalletAddress == walletAddress
+                                                                                                                   && command.Owner == request.MarketOwner
+                                                                                                                   && command.TransactionFee == request.TransactionFee
+                                                                                                                   && command.AuthLiquidityProviders == request.AuthLiquidityProviders
+                                                                                                                   && command.AuthTraders == request.AuthTraders
+                                                                                                                   && command.AuthPoolCreators == request.AuthPoolCreators
+                                                                                                                   && command.EnableMarketFee == request.EnableMarketFee
+                                                   ), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateStandardMarketQuote_Result_Map()
+    {
+        // Arrange
+        Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+
+        var quote = new TransactionQuoteDto();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStandardMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(quote);
+
+        var request = new CreateStandardMarketQuoteRequest
         {
-            // Arrange
-            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+            MarketOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
+            TransactionFee = 5,
+            AuthLiquidityProviders = true,
+            AuthTraders = false,
+            AuthPoolCreators = false,
+            EnableMarketFee = true
+        };
 
-            var request = new CreateStandardMarketQuoteRequest
-            {
-                MarketOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
-                TransactionFee = 5,
-                AuthLiquidityProviders = true,
-                AuthTraders = false,
-                AuthPoolCreators = false,
-                EnableMarketFee = true
-            };
-            var cancellationToken = new CancellationTokenSource().Token;
-
-            // Act
-            await _controller.CreateStandardMarketQuote(request, cancellationToken);
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCreateStandardMarketTransactionQuoteCommand>(command
-                => command.WalletAddress == walletAddress
-                && command.Owner == request.MarketOwner
-                && command.TransactionFee == request.TransactionFee
-                && command.AuthLiquidityProviders == request.AuthLiquidityProviders
-                && command.AuthTraders == request.AuthTraders
-                && command.AuthPoolCreators == request.AuthPoolCreators
-                && command.EnableMarketFee == request.EnableMarketFee
-            ), cancellationToken), Times.Once);
-        }
-
-        [Fact]
-        public async Task CreateStandardMarketQuote_Result_Map()
+        // Act
+        try
         {
-            // Arrange
-            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
-
-            var quote = new TransactionQuoteDto();
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStandardMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(quote);
-
-            var request = new CreateStandardMarketQuoteRequest
-            {
-                MarketOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
-                TransactionFee = 5,
-                AuthLiquidityProviders = true,
-                AuthTraders = false,
-                AuthPoolCreators = false,
-                EnableMarketFee = true
-            };
-
-            // Act
-            try
-            {
-                await _controller.CreateStandardMarketQuote(request, CancellationToken.None);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
+            await _controller.CreateStandardMarketQuote(request, CancellationToken.None);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task CreateStandardMarketQuote_Success_ReturnOk()
+        // Assert
+        _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateStandardMarketQuote_Success_ReturnOk()
+    {
+        // Arrange
+        Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+
+        var responseModel = new TransactionQuoteResponseModel();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStandardMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new TransactionQuoteDto());
+        _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
+
+        var request = new CreateStandardMarketQuoteRequest
         {
-            // Arrange
-            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+            MarketOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
+            TransactionFee = 5,
+            AuthLiquidityProviders = true,
+            AuthTraders = false,
+            AuthPoolCreators = false,
+            EnableMarketFee = true
+        };
 
-            var responseModel = new TransactionQuoteResponseModel();
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStandardMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new TransactionQuoteDto());
-            _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
+        // Act
+        var response = await _controller.CreateStandardMarketQuote(request, CancellationToken.None);
 
-            var request = new CreateStandardMarketQuoteRequest
-            {
-                MarketOwner = "PUFLuoW2K4PgJZ4nt5fEUHfvQXyQWKG9hm",
-                TransactionFee = 5,
-                AuthLiquidityProviders = true,
-                AuthTraders = false,
-                AuthPoolCreators = false,
-                EnableMarketFee = true
-            };
-
-            // Act
-            var response = await _controller.CreateStandardMarketQuote(request, CancellationToken.None);
-
-            // Act
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
-        }
+        // Act
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
     }
 }

@@ -11,77 +11,76 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools;
+
+public class PersistLiquidityPoolCommandHandlerTests
 {
-    public class PersistLiquidityPoolCommandHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly PersistLiquidityPoolCommandHandler _handler;
+
+    public PersistLiquidityPoolCommandHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly PersistLiquidityPoolCommandHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+        var logger = new NullLogger<PersistLiquidityPoolCommandHandler>();
 
-        public PersistLiquidityPoolCommandHandlerTests()
-        {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            var logger = new NullLogger<PersistLiquidityPoolCommandHandler>();
+        _dbContext = new Mock<IDbContext>();
+        _handler = new PersistLiquidityPoolCommandHandler(_dbContext.Object, mapper, logger);
+    }
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new PersistLiquidityPoolCommandHandler(_dbContext.Object, mapper, logger);
-        }
+    [Fact]
+    public async Task InsertLiquidityPool_Success()
+    {
+        var pool = new LiquidityPool("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "ETH-CRS", 1, 4, 1, 2);
+        var command = new PersistLiquidityPoolCommand(pool);
 
-        [Fact]
-        public async Task InsertLiquidityPool_Success()
-        {
-            var pool = new LiquidityPool("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "ETH-CRS", 1, 4, 1, 2);
-            var command = new PersistLiquidityPoolCommand(pool);
+        _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(1234UL));
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(1234UL));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Should().Be(1234);
+    }
 
-            result.Should().Be(1234);
-        }
+    [Fact]
+    public async Task UpdateLiquidityPool_Success()
+    {
+        const ulong id = 99ul;
 
-        [Fact]
-        public async Task UpdateLiquidityPool_Success()
-        {
-            const ulong id = 99ul;
+        var pool = new LiquidityPool(id, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", "ETH-CRS", 2, 3, 4, 5, 6);
+        var command = new PersistLiquidityPoolCommand(pool);
 
-            var pool = new LiquidityPool(id, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", "ETH-CRS", 2, 3, 4, 5, 6);
-            var command = new PersistLiquidityPoolCommand(pool);
+        _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(id));
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(id));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Should().Be(id);
+    }
 
-            result.Should().Be(id);
-        }
+    [Fact]
+    public async Task InsertLiquidityPool_Fail()
+    {
+        var pool = new LiquidityPool("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "ETH-CRS", 1, 4, 1, 2);
+        var command = new PersistLiquidityPoolCommand(pool);
 
-        [Fact]
-        public async Task InsertLiquidityPool_Fail()
-        {
-            var pool = new LiquidityPool("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "ETH-CRS", 1, 4, 1, 2);
-            var command = new PersistLiquidityPoolCommand(pool);
+        _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(0ul));
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(0ul));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Should().Be(0);
+    }
 
-            result.Should().Be(0);
-        }
+    [Fact]
+    public async Task InsertMiningPool_Throws()
+    {
+        var pool = new LiquidityPool("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "ETH-CRS", 1, 4, 1, 2);
+        var command = new PersistLiquidityPoolCommand(pool);
 
-        [Fact]
-        public async Task InsertMiningPool_Throws()
-        {
-            var pool = new LiquidityPool("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh", "ETH-CRS", 1, 4, 1, 2);
-            var command = new PersistLiquidityPoolCommand(pool);
+        _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).Throws<Exception>();
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).Throws<Exception>();
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            result.Should().Be(0);
-        }
+        result.Should().Be(0);
     }
 }

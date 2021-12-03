@@ -6,24 +6,23 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Addresses.Allowances
+namespace Opdex.Platform.Application.Handlers.Addresses.Allowances;
+
+public class RetrieveAddressAllowanceQueryHandler : IRequestHandler<RetrieveAddressAllowanceQuery, AddressAllowance>
 {
-    public class RetrieveAddressAllowanceQueryHandler : IRequestHandler<RetrieveAddressAllowanceQuery, AddressAllowance>
+    private readonly IMediator _mediator;
+
+    public RetrieveAddressAllowanceQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator;
+    }
 
-        public RetrieveAddressAllowanceQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
+    public async Task<AddressAllowance> Handle(RetrieveAddressAllowanceQuery request, CancellationToken cancellationToken)
+    {
+        var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token), cancellationToken);
 
-        public async Task<AddressAllowance> Handle(RetrieveAddressAllowanceQuery request, CancellationToken cancellationToken)
-        {
-            var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Token), cancellationToken);
+        var allowanceResponse = await _mediator.Send(new CallCirrusGetSrcTokenAllowanceQuery(request.Token, request.Owner, request.Spender), cancellationToken);
 
-            var allowanceResponse = await _mediator.Send(new CallCirrusGetSrcTokenAllowanceQuery(request.Token, request.Owner, request.Spender), cancellationToken);
-
-            return new AddressAllowance(token.Id, request.Owner, request.Spender, allowanceResponse, 1);
-        }
+        return new AddressAllowance(token.Id, request.Owner, request.Spender, allowanceResponse, 1);
     }
 }

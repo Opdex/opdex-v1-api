@@ -5,20 +5,19 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Vaults
+namespace Opdex.Platform.Application.Handlers.Vaults;
+
+public class RetrieveVaultByIdQueryHandler : IRequestHandler<RetrieveVaultByIdQuery, Vault>
 {
-    public class RetrieveVaultByIdQueryHandler : IRequestHandler<RetrieveVaultByIdQuery, Vault>
+    private readonly IMediator _mediator;
+
+    public RetrieveVaultByIdQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator;
+    }
 
-        public RetrieveVaultByIdQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
-        public Task<Vault> Handle(RetrieveVaultByIdQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectVaultByIdQuery(request.VaultId, request.FindOrThrow), cancellationToken);
-        }
+    public Task<Vault> Handle(RetrieveVaultByIdQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectVaultByIdQuery(request.VaultId, request.FindOrThrow), cancellationToken);
     }
 }

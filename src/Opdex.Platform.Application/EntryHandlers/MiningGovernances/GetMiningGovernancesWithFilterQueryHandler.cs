@@ -9,30 +9,29 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.MiningGovernances
+namespace Opdex.Platform.Application.EntryHandlers.MiningGovernances;
+
+public class GetMiningGovernancesWithFilterQueryHandler : EntryFilterQueryHandler<GetMiningGovernancesWithFilterQuery, MiningGovernancesDto>
 {
-    public class GetMiningGovernancesWithFilterQueryHandler : EntryFilterQueryHandler<GetMiningGovernancesWithFilterQuery, MiningGovernancesDto>
+    private readonly IMediator _mediator;
+    private readonly IModelAssembler<MiningGovernance, MiningGovernanceDto> _miningGovernanceAssembler;
+
+    public GetMiningGovernancesWithFilterQueryHandler(IMediator mediator, IModelAssembler<MiningGovernance, MiningGovernanceDto> vaultAssembler)
     {
-        private readonly IMediator _mediator;
-        private readonly IModelAssembler<MiningGovernance, MiningGovernanceDto> _miningGovernanceAssembler;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _miningGovernanceAssembler = vaultAssembler ?? throw new ArgumentNullException(nameof(vaultAssembler));
+    }
 
-        public GetMiningGovernancesWithFilterQueryHandler(IMediator mediator, IModelAssembler<MiningGovernance, MiningGovernanceDto> vaultAssembler)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _miningGovernanceAssembler = vaultAssembler ?? throw new ArgumentNullException(nameof(vaultAssembler));
-        }
+    public override async Task<MiningGovernancesDto> Handle(GetMiningGovernancesWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        var miningGovernances = await _mediator.Send(new RetrieveMiningGovernancesWithFilterQuery(request.Cursor), cancellationToken);
 
-        public override async Task<MiningGovernancesDto> Handle(GetMiningGovernancesWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            var miningGovernances = await _mediator.Send(new RetrieveMiningGovernancesWithFilterQuery(request.Cursor), cancellationToken);
+        var miningGovernancesResults = miningGovernances.ToList();
 
-            var miningGovernancesResults = miningGovernances.ToList();
+        var cursorDto = BuildCursorDto(miningGovernancesResults, request.Cursor, pointerSelector: result => result.Id);
 
-            var cursorDto = BuildCursorDto(miningGovernancesResults, request.Cursor, pointerSelector: result => result.Id);
+        var assembledResults = await Task.WhenAll(miningGovernancesResults.Select(vault => _miningGovernanceAssembler.Assemble(vault)));
 
-            var assembledResults = await Task.WhenAll(miningGovernancesResults.Select(vault => _miningGovernanceAssembler.Assemble(vault)));
-
-            return new MiningGovernancesDto { MiningGovernances = assembledResults, Cursor = cursorDto };
-        }
+        return new MiningGovernancesDto { MiningGovernances = assembledResults, Cursor = cursorDto };
     }
 }

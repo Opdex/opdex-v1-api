@@ -9,26 +9,25 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools;
+
+public class CallCirrusGetOpdexLiquidityPoolReservesQueryHandler : IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, ReservesReceipt>
 {
-    public class CallCirrusGetOpdexLiquidityPoolReservesQueryHandler : IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, ReservesReceipt>
+    private readonly ISmartContractsModule _smartContractsModule;
+
+    public CallCirrusGetOpdexLiquidityPoolReservesQueryHandler(ISmartContractsModule smartContractsModule)
     {
-        private readonly ISmartContractsModule _smartContractsModule;
+        _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+    }
 
-        public CallCirrusGetOpdexLiquidityPoolReservesQueryHandler(ISmartContractsModule smartContractsModule)
-        {
-            _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-        }
+    public async Task<ReservesReceipt> Handle(CallCirrusGetOpdexLiquidityPoolReservesQuery request, CancellationToken cancellationToken)
+    {
+        var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Reserves");
+        var reservesResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
+        var reserves = ((JArray)reservesResponse.Return).ToArray();
 
-        public async Task<ReservesReceipt> Handle(CallCirrusGetOpdexLiquidityPoolReservesQuery request, CancellationToken cancellationToken)
-        {
-            var localCall = new LocalCallRequestDto(request.Address, request.Address, "get_Reserves");
-            var reservesResponse = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-            var reserves = ((JArray)reservesResponse.Return).ToArray();
+        if (reserves.Length != 2) return default;
 
-            if (reserves.Length != 2) return default;
-
-            return new ReservesReceipt(ulong.Parse(reserves[0].ToString()), UInt256.Parse(reserves[1].ToString()));
-        }
+        return new ReservesReceipt(ulong.Parse(reserves[0].ToString()), UInt256.Parse(reserves[1].ToString()));
     }
 }

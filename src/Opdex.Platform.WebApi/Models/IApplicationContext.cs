@@ -1,9 +1,8 @@
 using Opdex.Platform.Common.Models;
 
-namespace Opdex.Platform.WebApi.Models
+namespace Opdex.Platform.WebApi.Models;
+
+public interface IApplicationContext
 {
-    public interface IApplicationContext
-    {
-        Address Wallet { get; }
-    }
+    Address Wallet { get; }
 }

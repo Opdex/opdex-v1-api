@@ -7,152 +7,151 @@ using Opdex.Platform.WebApi.Validation.Transactions;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.Transactions
+namespace Opdex.Platform.WebApi.Tests.Validation.Transactions;
+
+public class TransactionFilterParametersValidatorTests
 {
-    public class TransactionFilterParametersValidatorTests
+    private readonly TransactionFilterParametersValidator _validator;
+
+    public TransactionFilterParametersValidatorTests()
     {
-        private readonly TransactionFilterParametersValidator _validator;
+        _validator = new TransactionFilterParametersValidator();
+    }
 
-        public TransactionFilterParametersValidatorTests()
+    [Theory]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void Wallet_Invalid(Address wallet)
+    {
+        // Arrange
+        var request = new TransactionFilterParameters
         {
-            _validator = new TransactionFilterParametersValidator();
-        }
+            Wallet = wallet
+        };
 
-        [Theory]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void Wallet_Invalid(Address wallet)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Wallet);
+    }
+
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(ValidNetworkAddressData))]
+    public void Wallet_Valid(Address wallet)
+    {
+        // Arrange
+        var request = new TransactionFilterParameters
         {
-            // Arrange
-            var request = new TransactionFilterParameters
-            {
-                Wallet = wallet
-            };
+            Wallet = wallet
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Wallet);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Wallet);
+    }
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(ValidNetworkAddressData))]
-        public void Wallet_Valid(Address wallet)
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void Contracts_Items_Invalid(Address address)
+    {
+        // Arrange
+        var request = new TransactionFilterParameters
         {
-            // Arrange
-            var request = new TransactionFilterParameters
-            {
-                Wallet = wallet
-            };
+            Contracts = new List<Address>() { address }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Wallet);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Contracts);
+    }
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void Contracts_Items_Invalid(Address address)
+    [Fact]
+    public void Contracts_Items_Valid()
+    {
+        // Arrange
+        var request = new TransactionFilterParameters
         {
-            // Arrange
-            var request = new TransactionFilterParameters
-            {
-                Contracts = new List<Address>() { address }
-            };
+            Contracts = new List<Address>() { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Contracts);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Contracts);
+    }
 
-        [Fact]
-        public void Contracts_Items_Valid()
+    [Theory]
+    [InlineData(default(TransactionEventType))]
+    [InlineData((TransactionEventType)1000)]
+    public void EventTypes_Items_Invalid(TransactionEventType eventType)
+    {
+        // Arrange
+        var request = new TransactionFilterParameters
         {
-            // Arrange
-            var request = new TransactionFilterParameters
-            {
-                Contracts = new List<Address>() { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
-            };
+            EventTypes = new List<TransactionEventType>() { eventType }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Contracts);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.EventTypes);
+    }
 
-        [Theory]
-        [InlineData(default(TransactionEventType))]
-        [InlineData((TransactionEventType)1000)]
-        public void EventTypes_Items_Invalid(TransactionEventType eventType)
+    [Fact]
+    public void EventTypes_Items_Valid()
+    {
+        // Arrange
+        var request = new TransactionFilterParameters
         {
-            // Arrange
-            var request = new TransactionFilterParameters
-            {
-                EventTypes = new List<TransactionEventType>() { eventType }
-            };
+            EventTypes = new List<TransactionEventType>() { TransactionEventType.ClaimPendingMarketOwnershipEvent }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.EventTypes);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.EventTypes);
+    }
 
-        [Fact]
-        public void EventTypes_Items_Valid()
+    [Fact]
+    public void Limit_Invalid()
+    {
+        // Arrange
+        var request = new TransactionFilterParameters
         {
-            // Arrange
-            var request = new TransactionFilterParameters
-            {
-                EventTypes = new List<TransactionEventType>() { TransactionEventType.ClaimPendingMarketOwnershipEvent }
-            };
+            Limit = Cursor.DefaultMaxLimit + 1
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.EventTypes);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Limit);
+    }
 
-        [Fact]
-        public void Limit_Invalid()
+    [Fact]
+    public void Limit_Valid()
+    {
+        // Arrange
+        var request = new TransactionFilterParameters
         {
-            // Arrange
-            var request = new TransactionFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit + 1
-            };
+            Limit = Cursor.DefaultMaxLimit
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Limit);
-        }
-
-        [Fact]
-        public void Limit_Valid()
-        {
-            // Arrange
-            var request = new TransactionFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Limit);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Limit);
     }
 }

@@ -4,47 +4,46 @@ using Opdex.Platform.WebApi.Models.Requests.MiningPools;
 using Opdex.Platform.WebApi.Validation.MiningPools;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.MiningPools
+namespace Opdex.Platform.WebApi.Tests.Validation.MiningPools;
+
+public class MiningQuoteValidatorTests
 {
-    public class MiningQuoteValidatorTests
+    private readonly MiningQuoteValidator _validator;
+
+    public MiningQuoteValidatorTests()
     {
-        private readonly MiningQuoteValidator _validator;
+        _validator = new MiningQuoteValidator();
+    }
 
-        public MiningQuoteValidatorTests()
+    [Fact]
+    public void Amount_Zero_Invalid()
+    {
+        // Arrange
+        var request = new MiningQuote
         {
-            _validator = new MiningQuoteValidator();
-        }
+            Amount = FixedDecimal.Zero,
+        };
 
-        [Fact]
-        public void Amount_Zero_Invalid()
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Amount);
+    }
+
+    [Fact]
+    public void Amount_GreaterThanZero_Valid()
+    {
+        // Arrange
+        var request = new MiningQuote
         {
-            // Arrange
-            var request = new MiningQuote
-            {
-                Amount = FixedDecimal.Zero,
-            };
+            Amount = FixedDecimal.Parse("0.00000001"),
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Amount);
-        }
-
-        [Fact]
-        public void Amount_GreaterThanZero_Valid()
-        {
-            // Arrange
-            var request = new MiningQuote
-            {
-                Amount = FixedDecimal.Parse("0.00000001"),
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Amount);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Amount);
     }
 }

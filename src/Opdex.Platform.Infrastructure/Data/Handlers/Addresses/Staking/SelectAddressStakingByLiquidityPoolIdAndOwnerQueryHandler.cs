@@ -11,13 +11,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking;
+
+public class SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler
+    : IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>
 {
-    public class SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler
-        : IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>
-    {
-        private static readonly string SqlQuery =
-            @$"Select
+    private static readonly string SqlQuery =
+        @$"Select
                 {nameof(AddressStakingEntity.Id)},
                 {nameof(AddressStakingEntity.LiquidityPoolId)},
                 {nameof(AddressStakingEntity.Owner)},
@@ -29,41 +29,40 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Staking
                 AND {nameof(AddressStakingEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler(IDbContext context, IMapper mapper)
+    public SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<AddressStaking> Handle(SelectAddressStakingByLiquidityPoolIdAndOwnerQuery request, CancellationToken cancellationToken)
+    {
+        var queryParams = new SqlParams(request.LiquidityPoolId, request.Owner);
+
+        var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<AddressStakingEntity>(query);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(AddressStaking)} not found.");
         }
 
-        public async Task<AddressStaking> Handle(SelectAddressStakingByLiquidityPoolIdAndOwnerQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<AddressStaking>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong liquidityPoolId, Address owner)
         {
-            var queryParams = new SqlParams(request.LiquidityPoolId, request.Owner);
-
-            var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<AddressStakingEntity>(query);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(AddressStaking)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<AddressStaking>(result);
+            LiquidityPoolId = liquidityPoolId;
+            Owner = owner;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong liquidityPoolId, Address owner)
-            {
-                LiquidityPoolId = liquidityPoolId;
-                Owner = owner;
-            }
-
-            public ulong LiquidityPoolId { get; }
-            public Address Owner { get; }
-        }
+        public ulong LiquidityPoolId { get; }
+        public Address Owner { get; }
     }
 }

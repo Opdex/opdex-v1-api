@@ -9,12 +9,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
+
+public class SelectVaultByTokenIdQueryHandler : IRequestHandler<SelectVaultByTokenIdQuery, Vault>
 {
-    public class SelectVaultByTokenIdQueryHandler : IRequestHandler<SelectVaultByTokenIdQuery, Vault>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(VaultEntity.Id)},
                 {nameof(VaultEntity.Address)},
                 {nameof(VaultEntity.TokenId)},
@@ -28,38 +28,37 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
             WHERE {nameof(VaultEntity.TokenId)} = @{nameof(VaultEntity.TokenId)}
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectVaultByTokenIdQueryHandler(IDbContext context, IMapper mapper)
+    public SelectVaultByTokenIdQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<Vault> Handle(SelectVaultByTokenIdQuery request, CancellationToken cancellationToken)
+    {
+        var queryParams = new SqlParams(request.TokenId);
+        var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<VaultEntity>(query);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(Vault)} not found.");
         }
 
-        public async Task<Vault> Handle(SelectVaultByTokenIdQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<Vault>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong tokenId)
         {
-            var queryParams = new SqlParams(request.TokenId);
-            var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<VaultEntity>(query);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(Vault)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<Vault>(result);
+            TokenId = tokenId;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong tokenId)
-            {
-                TokenId = tokenId;
-            }
-
-            public ulong TokenId { get; }
-        }
+        public ulong TokenId { get; }
     }
 }

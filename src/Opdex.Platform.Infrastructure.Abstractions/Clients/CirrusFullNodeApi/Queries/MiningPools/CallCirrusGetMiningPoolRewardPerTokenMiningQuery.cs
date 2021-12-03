@@ -3,35 +3,34 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using System;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.MiningPools
+namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.MiningPools;
+
+/// <summary>
+/// Retrieves the reward per LP token that is staked in a particular mining pool.
+/// </summary>
+public class CallCirrusGetMiningPoolRewardPerTokenMiningQuery : IRequest<UInt256>
 {
     /// <summary>
-    /// Retrieves the reward per LP token that is staked in a particular mining pool.
+    /// Creates a request to retrieve the reward per LP token that is staked in a particular mining pool.
     /// </summary>
-    public class CallCirrusGetMiningPoolRewardPerTokenMiningQuery : IRequest<UInt256>
+    /// <param name="miningPool">The address of the mining pool.</param>
+    /// <param name="blockHeight">The block height to search at.</param>
+    public CallCirrusGetMiningPoolRewardPerTokenMiningQuery(Address miningPool, ulong blockHeight)
     {
-        /// <summary>
-        /// Creates a request to retrieve the reward per LP token that is staked in a particular mining pool.
-        /// </summary>
-        /// <param name="miningPool">The address of the mining pool.</param>
-        /// <param name="blockHeight">The block height to search at.</param>
-        public CallCirrusGetMiningPoolRewardPerTokenMiningQuery(Address miningPool, ulong blockHeight)
+        if (miningPool == Address.Empty)
         {
-            if (miningPool == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(miningPool), "Mining pool address must be provided.");
-            }
-
-            if (blockHeight == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-            }
-
-            MiningPool = miningPool;
-            BlockHeight = blockHeight;
+            throw new ArgumentNullException(nameof(miningPool), "Mining pool address must be provided.");
         }
 
-        public Address MiningPool { get; }
-        public ulong BlockHeight { get; }
+        if (blockHeight == 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
+        }
+
+        MiningPool = miningPool;
+        BlockHeight = blockHeight;
     }
+
+    public Address MiningPool { get; }
+    public ulong BlockHeight { get; }
 }

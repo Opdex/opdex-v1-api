@@ -9,49 +9,48 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Auth
+namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Auth;
+
+public class CallCirrusVerifyMessageQueryHandlerTests
 {
-    public class CallCirrusVerifyMessageQueryHandlerTests
+    private readonly Mock<IWalletModule> _moduleMock;
+
+    private readonly CallCirrusVerifyMessageQueryHandler _handler;
+
+    public CallCirrusVerifyMessageQueryHandlerTests()
     {
-        private readonly Mock<IWalletModule> _moduleMock;
+        _moduleMock = new Mock<IWalletModule>();
+        _handler = new CallCirrusVerifyMessageQueryHandler(_moduleMock.Object);
+    }
 
-        private readonly CallCirrusVerifyMessageQueryHandler _handler;
+    [Fact]
+    public async Task Handle_VerifyMessage_Call()
+    {
+        // Arrange
+        var request = new CallCirrusVerifyMessageQuery("MESSAGE_CONTENT", new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"), "BASE64_SIGNATURE");
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        public CallCirrusVerifyMessageQueryHandlerTests()
-        {
-            _moduleMock = new Mock<IWalletModule>();
-            _handler = new CallCirrusVerifyMessageQueryHandler(_moduleMock.Object);
-        }
+        // Act
+        await _handler.Handle(request, cancellationToken);
 
-        [Fact]
-        public async Task Handle_VerifyMessage_Call()
-        {
-            // Arrange
-            var request = new CallCirrusVerifyMessageQuery("MESSAGE_CONTENT", new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"), "BASE64_SIGNATURE");
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _moduleMock.Verify(callTo => callTo.VerifyMessage(It.Is<VerifyMessageRequestDto>(dto => dto.Message == request.Message
+                                                                                                && dto.Signature == request.Signature
+                                                                                                && dto.ExternalAddress == request.Signer), cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _handler.Handle(request, cancellationToken);
+    [Fact]
+    public async Task Handle_VerifyMessage_Return()
+    {
+        // Arrange
+        var request = new CallCirrusVerifyMessageQuery("MESSAGE_CONTENT", new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"), "BASE64_SIGNATURE");
 
-            // Assert
-            _moduleMock.Verify(callTo => callTo.VerifyMessage(It.Is<VerifyMessageRequestDto>(dto => dto.Message == request.Message
-                                                                                                 && dto.Signature == request.Signature
-                                                                                                 && dto.ExternalAddress == request.Signer), cancellationToken), Times.Once);
-        }
+        _moduleMock.Setup(callTo => callTo.VerifyMessage(It.IsAny<VerifyMessageRequestDto>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-        [Fact]
-        public async Task Handle_VerifyMessage_Return()
-        {
-            // Arrange
-            var request = new CallCirrusVerifyMessageQuery("MESSAGE_CONTENT", new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"), "BASE64_SIGNATURE");
+        // Act
+        var response = await _handler.Handle(request, CancellationToken.None);
 
-            _moduleMock.Setup(callTo => callTo.VerifyMessage(It.IsAny<VerifyMessageRequestDto>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-
-            // Act
-            var response = await _handler.Handle(request, CancellationToken.None);
-
-            // Assert
-            response.Should().Be(true);
-        }
+        // Assert
+        response.Should().Be(true);
     }
 }

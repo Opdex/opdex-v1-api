@@ -7,20 +7,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.MiningGovernances
+namespace Opdex.Platform.Application.Handlers.MiningGovernances;
+
+public class RetrieveMiningGovernancesWithFilterQueryHandler : IRequestHandler<RetrieveMiningGovernancesWithFilterQuery, IEnumerable<MiningGovernance>>
 {
-    public class RetrieveMiningGovernancesWithFilterQueryHandler : IRequestHandler<RetrieveMiningGovernancesWithFilterQuery, IEnumerable<MiningGovernance>>
+    private readonly IMediator _mediator;
+
+    public RetrieveMiningGovernancesWithFilterQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveMiningGovernancesWithFilterQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public async Task<IEnumerable<MiningGovernance>> Handle(RetrieveMiningGovernancesWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            return await _mediator.Send(new SelectMiningGovernancesWithFilterQuery(request.Cursor), cancellationToken);
-        }
+    public async Task<IEnumerable<MiningGovernance>> Handle(RetrieveMiningGovernancesWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        return await _mediator.Send(new SelectMiningGovernancesWithFilterQuery(request.Cursor), cancellationToken);
     }
 }

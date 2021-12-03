@@ -5,82 +5,81 @@ using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Validation.Wallets;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.Wallets
+namespace Opdex.Platform.WebApi.Tests.Validation.Wallets;
+
+public class AddressBalanceFilterParametersValidatorTests
 {
-    public class AddressBalanceFilterParametersValidatorTests
+    private readonly AddressBalanceFilterParametersValidator _validator;
+
+    public AddressBalanceFilterParametersValidatorTests()
     {
-        private readonly AddressBalanceFilterParametersValidator _validator;
+        _validator = new AddressBalanceFilterParametersValidator();
+    }
 
-        public AddressBalanceFilterParametersValidatorTests()
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void Tokens_Items_Invalid(Address address)
+    {
+        // Arrange
+        var request = new AddressBalanceFilterParameters
         {
-            _validator = new AddressBalanceFilterParametersValidator();
-        }
+            Tokens = new Address[] { address }
+        };
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void Tokens_Items_Invalid(Address address)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Tokens);
+    }
+
+    [Fact]
+    public void Tokens_Items_Valid()
+    {
+        // Arrange
+        var request = new AddressBalanceFilterParameters
         {
-            // Arrange
-            var request = new AddressBalanceFilterParameters
-            {
-                Tokens = new Address[] { address }
-            };
+            Tokens = new Address[] { new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh") }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Tokens);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Tokens);
+    }
 
-        [Fact]
-        public void Tokens_Items_Valid()
+    [Fact]
+    public void Limit_Invalid()
+    {
+        // Arrange
+        var request = new AddressBalanceFilterParameters
         {
-            // Arrange
-            var request = new AddressBalanceFilterParameters
-            {
-                Tokens = new Address[] { new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh") }
-            };
+            Limit = Cursor.DefaultMaxLimit + 1
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Tokens);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Limit);
+    }
 
-        [Fact]
-        public void Limit_Invalid()
+    [Fact]
+    public void Limit_Valid()
+    {
+        // Arrange
+        var request = new AddressBalanceFilterParameters
         {
-            // Arrange
-            var request = new AddressBalanceFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit + 1
-            };
+            Limit = Cursor.DefaultMaxLimit
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Limit);
-        }
-
-        [Fact]
-        public void Limit_Valid()
-        {
-            // Arrange
-            var request = new AddressBalanceFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Limit);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Limit);
     }
 }

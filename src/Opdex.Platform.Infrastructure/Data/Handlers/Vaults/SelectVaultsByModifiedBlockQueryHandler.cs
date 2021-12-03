@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
+
+public class SelectVaultsByModifiedBlockQueryHandler : IRequestHandler<SelectVaultsByModifiedBlockQuery, IEnumerable<Vault>>
 {
-    public class SelectVaultsByModifiedBlockQueryHandler : IRequestHandler<SelectVaultsByModifiedBlockQuery, IEnumerable<Vault>>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(VaultEntity.Id)},
                 {nameof(VaultEntity.Address)},
                 {nameof(VaultEntity.TokenId)},
@@ -28,32 +28,31 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
             FROM vault
             WHERE {nameof(VaultEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectVaultsByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
+    public SelectVaultsByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<IEnumerable<Vault>> Handle(SelectVaultsByModifiedBlockQuery request, CancellationToken cancellationToken)
+    {
+        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.BlockHeight), cancellationToken);
+
+        var result = await _context.ExecuteQueryAsync<VaultEntity>(query);
+
+        return _mapper.Map<IEnumerable<Vault>>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong modifiedBlock)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            ModifiedBlock = modifiedBlock;
         }
 
-        public async Task<IEnumerable<Vault>> Handle(SelectVaultsByModifiedBlockQuery request, CancellationToken cancellationToken)
-        {
-            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.BlockHeight), cancellationToken);
-
-            var result = await _context.ExecuteQueryAsync<VaultEntity>(query);
-
-            return _mapper.Map<IEnumerable<Vault>>(result);
-        }
-
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong modifiedBlock)
-            {
-                ModifiedBlock = modifiedBlock;
-            }
-
-            public ulong ModifiedBlock { get; }
-        }
+        public ulong ModifiedBlock { get; }
     }
 }

@@ -8,41 +8,40 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers;
+
+public class ProcessSetPendingDeployerOwnershipLogCommandHandler : IRequestHandler<ProcessSetPendingDeployerOwnershipLogCommand, bool>
 {
-    public class ProcessSetPendingDeployerOwnershipLogCommandHandler : IRequestHandler<ProcessSetPendingDeployerOwnershipLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessSetPendingDeployerOwnershipLogCommandHandler> _logger;
+
+    public ProcessSetPendingDeployerOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessSetPendingDeployerOwnershipLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessSetPendingDeployerOwnershipLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessSetPendingDeployerOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessSetPendingDeployerOwnershipLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessSetPendingDeployerOwnershipLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (deployer == null) return false;
+
+            if (request.BlockHeight < deployer.ModifiedBlock)
+            {
+                return true;
+            }
+
+            deployer.SetPendingOwnership(request.Log, request.BlockHeight);
+
+            return await _mediator.Send(new MakeDeployerCommand(deployer, request.BlockHeight)) > 0;
         }
-
-        public async Task<bool> Handle(ProcessSetPendingDeployerOwnershipLogCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: false));
-                if (deployer == null) return false;
+            _logger.LogError(ex, $"Failure processing {nameof(SetPendingDeployerOwnershipLog)}");
 
-                if (request.BlockHeight < deployer.ModifiedBlock)
-                {
-                    return true;
-                }
-
-                deployer.SetPendingOwnership(request.Log, request.BlockHeight);
-
-                return await _mediator.Send(new MakeDeployerCommand(deployer, request.BlockHeight)) > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(SetPendingDeployerOwnershipLog)}");
-
-                return false;
-            }
+            return false;
         }
     }
 }

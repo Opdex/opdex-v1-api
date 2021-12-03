@@ -3,77 +3,76 @@ using Newtonsoft.Json;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
-namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens
+namespace Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
+
+public class DistributionLog : TransactionLog
 {
-    public class DistributionLog : TransactionLog
+    public DistributionLog(dynamic log, Address address, int sortOrder)
+        : base(TransactionLogType.DistributionLog, address, sortOrder)
     {
-        public DistributionLog(dynamic log, Address address, int sortOrder)
-            : base(TransactionLogType.DistributionLog, address, sortOrder)
+        UInt256 vaultAmount = UInt256.Parse((string)log?.vaultAmount);
+        UInt256 miningAmount = UInt256.Parse((string)log?.miningAmount);
+        uint periodIndex = log?.periodIndex;
+        UInt256 totalSupply = UInt256.Parse((string)log?.totalSupply);
+        ulong nextDistributionBlock = log?.nextDistributionBlock;
+
+        if (nextDistributionBlock == 0)
         {
-            UInt256 vaultAmount = UInt256.Parse((string)log?.vaultAmount);
-            UInt256 miningAmount = UInt256.Parse((string)log?.miningAmount);
-            uint periodIndex = log?.periodIndex;
-            UInt256 totalSupply = UInt256.Parse((string)log?.totalSupply);
-            ulong nextDistributionBlock = log?.nextDistributionBlock;
-
-            if (nextDistributionBlock == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(nextDistributionBlock), "Next distribution block must be greater than 0.");
-            }
-
-            if (totalSupply == UInt256.Zero)
-            {
-                throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must be greater than 0.");
-            }
-
-            VaultAmount = vaultAmount;
-            MiningAmount = miningAmount;
-            PeriodIndex = periodIndex;
-            TotalSupply = totalSupply;
-            NextDistributionBlock = nextDistributionBlock;
+            throw new ArgumentOutOfRangeException(nameof(nextDistributionBlock), "Next distribution block must be greater than 0.");
         }
 
-        public DistributionLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
-            : base(TransactionLogType.DistributionLog, id, transactionId, address, sortOrder)
+        if (totalSupply == UInt256.Zero)
         {
-            var logDetails = DeserializeLogDetails(details);
-            VaultAmount = logDetails.VaultAmount;
-            MiningAmount = logDetails.MiningAmount;
-            PeriodIndex = logDetails.PeriodIndex;
-            TotalSupply = logDetails.TotalSupply;
-            NextDistributionBlock = logDetails.NextDistributionBlock;
+            throw new ArgumentOutOfRangeException(nameof(totalSupply), "Total supply must be greater than 0.");
         }
 
-        public UInt256 VaultAmount { get; }
-        public UInt256 MiningAmount { get; }
-        public uint PeriodIndex { get; }
-        public UInt256 TotalSupply { get; }
-        public ulong NextDistributionBlock { get; }
+        VaultAmount = vaultAmount;
+        MiningAmount = miningAmount;
+        PeriodIndex = periodIndex;
+        TotalSupply = totalSupply;
+        NextDistributionBlock = nextDistributionBlock;
+    }
 
-        private struct LogDetails
-        {
-            public UInt256 VaultAmount { get; set; }
-            public UInt256 MiningAmount { get; set; }
-            public uint PeriodIndex { get; set; }
-            public UInt256 TotalSupply { get; set; }
-            public ulong NextDistributionBlock { get; set; }
-        }
+    public DistributionLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
+        : base(TransactionLogType.DistributionLog, id, transactionId, address, sortOrder)
+    {
+        var logDetails = DeserializeLogDetails(details);
+        VaultAmount = logDetails.VaultAmount;
+        MiningAmount = logDetails.MiningAmount;
+        PeriodIndex = logDetails.PeriodIndex;
+        TotalSupply = logDetails.TotalSupply;
+        NextDistributionBlock = logDetails.NextDistributionBlock;
+    }
 
-        private static LogDetails DeserializeLogDetails(string details)
-        {
-            return JsonConvert.DeserializeObject<LogDetails>(details);
-        }
+    public UInt256 VaultAmount { get; }
+    public UInt256 MiningAmount { get; }
+    public uint PeriodIndex { get; }
+    public UInt256 TotalSupply { get; }
+    public ulong NextDistributionBlock { get; }
 
-        public override string SerializeLogDetails()
+    private struct LogDetails
+    {
+        public UInt256 VaultAmount { get; set; }
+        public UInt256 MiningAmount { get; set; }
+        public uint PeriodIndex { get; set; }
+        public UInt256 TotalSupply { get; set; }
+        public ulong NextDistributionBlock { get; set; }
+    }
+
+    private static LogDetails DeserializeLogDetails(string details)
+    {
+        return JsonConvert.DeserializeObject<LogDetails>(details);
+    }
+
+    public override string SerializeLogDetails()
+    {
+        return JsonConvert.SerializeObject(new LogDetails
         {
-            return JsonConvert.SerializeObject(new LogDetails
-            {
-                VaultAmount = VaultAmount,
-                MiningAmount = MiningAmount,
-                PeriodIndex = PeriodIndex,
-                TotalSupply = TotalSupply,
-                NextDistributionBlock = NextDistributionBlock
-            });
-        }
+            VaultAmount = VaultAmount,
+            MiningAmount = MiningAmount,
+            PeriodIndex = PeriodIndex,
+            TotalSupply = TotalSupply,
+            NextDistributionBlock = NextDistributionBlock
+        });
     }
 }

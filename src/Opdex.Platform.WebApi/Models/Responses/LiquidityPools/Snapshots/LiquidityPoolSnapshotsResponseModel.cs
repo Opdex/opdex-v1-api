@@ -1,6 +1,5 @@
-namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots
+namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots;
+
+public class LiquidityPoolSnapshotsResponseModel : PaginatedResponseModel<LiquidityPoolSnapshotResponseModel>
 {
-    public class LiquidityPoolSnapshotsResponseModel : PaginatedResponseModel<LiquidityPoolSnapshotResponseModel>
-    {
-    }
 }

@@ -10,27 +10,26 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions
+namespace Opdex.Platform.Application.EntryHandlers.Transactions;
+
+public class CreateTransactionBroadcastCommandHandler
+    : IRequestHandler<CreateTransactionBroadcastCommand, Sha256>
 {
-    public class CreateTransactionBroadcastCommandHandler
-        : IRequestHandler<CreateTransactionBroadcastCommand, Sha256>
+    private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
+
+    public CreateTransactionBroadcastCommandHandler(IMediator mediator, IMapper mapper)
     {
-        private readonly IMediator _mediator;
-        private readonly IMapper _mapper;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
 
-        public CreateTransactionBroadcastCommandHandler(IMediator mediator, IMapper mapper)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        }
+    public Task<Sha256> Handle(CreateTransactionBroadcastCommand request, CancellationToken cancellationToken)
+    {
+        var dto = JsonConvert.DeserializeObject<TransactionQuoteRequestDto>(request.QuoteRequest);
 
-        public Task<Sha256> Handle(CreateTransactionBroadcastCommand request, CancellationToken cancellationToken)
-        {
-            var dto = JsonConvert.DeserializeObject<TransactionQuoteRequestDto>(request.QuoteRequest);
+        var quoteRequest = _mapper.Map<TransactionQuoteRequest>(dto);
 
-            var quoteRequest = _mapper.Map<TransactionQuoteRequest>(dto);
-
-            return _mediator.Send(new MakeTransactionBroadcastCommand(quoteRequest), cancellationToken);
-        }
+        return _mediator.Send(new MakeTransactionBroadcastCommand(quoteRequest), cancellationToken);
     }
 }

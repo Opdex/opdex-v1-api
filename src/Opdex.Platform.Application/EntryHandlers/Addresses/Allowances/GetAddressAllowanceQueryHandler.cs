@@ -9,24 +9,23 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Addresses.Allowances
+namespace Opdex.Platform.Application.EntryHandlers.Addresses.Allowances;
+
+public class GetAddressAllowanceQueryHandler : IRequestHandler<GetAddressAllowanceQuery, AddressAllowanceDto>
 {
-    public class GetAddressAllowanceQueryHandler : IRequestHandler<GetAddressAllowanceQuery, AddressAllowanceDto>
+    private readonly IMediator _mediator;
+    private readonly IModelAssembler<AddressAllowance, AddressAllowanceDto> _assembler;
+
+    public GetAddressAllowanceQueryHandler(IMediator mediator, IModelAssembler<AddressAllowance, AddressAllowanceDto> assembler)
     {
-        private readonly IMediator _mediator;
-        private readonly IModelAssembler<AddressAllowance, AddressAllowanceDto> _assembler;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
+    }
 
-        public GetAddressAllowanceQueryHandler(IMediator mediator, IModelAssembler<AddressAllowance, AddressAllowanceDto> assembler)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
-        }
+    public async Task<AddressAllowanceDto> Handle(GetAddressAllowanceQuery request, CancellationToken cancellationToken)
+    {
+        var allowance = await _mediator.Send(new RetrieveAddressAllowanceQuery(request.Owner, request.Spender, request.Token), cancellationToken);
 
-        public async Task<AddressAllowanceDto> Handle(GetAddressAllowanceQuery request, CancellationToken cancellationToken)
-        {
-            var allowance = await _mediator.Send(new RetrieveAddressAllowanceQuery(request.Owner, request.Spender, request.Token), cancellationToken);
-
-            return await _assembler.Assemble(allowance);
-        }
+        return await _assembler.Assemble(allowance);
     }
 }

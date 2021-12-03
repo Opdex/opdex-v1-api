@@ -1,11 +1,10 @@
 using System;
 
-namespace Opdex.Platform.Common.Exceptions
+namespace Opdex.Platform.Common.Exceptions;
+
+public class MaximumReorgException : Exception
 {
-    public class MaximumReorgException : Exception
+    public MaximumReorgException() : base("Maximum reorg limit reached")
     {
-        public MaximumReorgException() : base("Maximum reorg limit reached")
-        {
-        }
     }
 }

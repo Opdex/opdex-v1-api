@@ -6,32 +6,31 @@ using Opdex.Platform.Application.Abstractions.Commands.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Deployers;
 
-namespace Opdex.Platform.Application.Handlers.Deployers
+namespace Opdex.Platform.Application.Handlers.Deployers;
+
+public class MakeDeployerCommandHandler : IRequestHandler<MakeDeployerCommand, ulong>
 {
-    public class MakeDeployerCommandHandler : IRequestHandler<MakeDeployerCommand, ulong>
+    private readonly IMediator _mediator;
+
+    public MakeDeployerCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeDeployerCommandHandler(IMediator mediator)
+    public async Task<ulong> Handle(MakeDeployerCommand request, CancellationToken cancellationToken)
+    {
+        // When refresh is true, force the update of updatable properties prior to persistence
+        if (request.Refresh)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            var summary = await _mediator.Send(new RetrieveDeployerContractSummaryQuery(request.Deployer.Address,
+                                                                                        request.BlockHeight,
+                                                                                        includePendingOwner: request.RefreshPendingOwner,
+                                                                                        includeOwner: request.RefreshOwner));
+
+            request.Deployer.Update(summary);
         }
 
-        public async Task<ulong> Handle(MakeDeployerCommand request, CancellationToken cancellationToken)
-        {
-            // When refresh is true, force the update of updatable properties prior to persistence
-            if (request.Refresh)
-            {
-                var summary = await _mediator.Send(new RetrieveDeployerContractSummaryQuery(request.Deployer.Address,
-                                                                                            request.BlockHeight,
-                                                                                            includePendingOwner: request.RefreshPendingOwner,
-                                                                                            includeOwner: request.RefreshOwner));
-
-                request.Deployer.Update(summary);
-            }
-
-            // Persist the deployer
-            return await _mediator.Send(new PersistDeployerCommand(request.Deployer), cancellationToken);
-        }
+        // Persist the deployer
+        return await _mediator.Send(new PersistDeployerCommand(request.Deployer), cancellationToken);
     }
 }

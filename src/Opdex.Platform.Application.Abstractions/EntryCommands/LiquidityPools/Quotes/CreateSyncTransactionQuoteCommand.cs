@@ -2,28 +2,27 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Common.Models;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.LiquidityPools.Quotes;
+
+/// <summary>
+/// Quote a sync transaction.
+/// </summary>
+public class CreateSyncTransactionQuoteCommand : BaseTransactionQuoteCommand
 {
     /// <summary>
-    /// Quote a sync transaction.
+    /// Creates a sync transaction quote command.
     /// </summary>
-    public class CreateSyncTransactionQuoteCommand : BaseTransactionQuoteCommand
+    /// <param name="liquidityPool">The liquidity pool address.</param>
+    /// <param name="wallet">The transaction sender's wallet address.</param>
+    public CreateSyncTransactionQuoteCommand(Address liquidityPool, Address wallet) : base(wallet)
     {
-        /// <summary>
-        /// Creates a sync transaction quote command.
-        /// </summary>
-        /// <param name="liquidityPool">The liquidity pool address.</param>
-        /// <param name="wallet">The transaction sender's wallet address.</param>
-        public CreateSyncTransactionQuoteCommand(Address liquidityPool, Address wallet) : base(wallet)
+        if (liquidityPool == Address.Empty)
         {
-            if (liquidityPool == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool must be provided.");
-            }
-
-            LiquidityPool = liquidityPool;
+            throw new ArgumentNullException(nameof(liquidityPool), "Liquidity pool must be provided.");
         }
 
-        public Address LiquidityPool { get; }
+        LiquidityPool = liquidityPool;
     }
+
+    public Address LiquidityPool { get; }
 }

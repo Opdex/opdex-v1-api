@@ -10,33 +10,32 @@ using Opdex.Platform.Common.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Addresses.Mining
+namespace Opdex.Platform.Application.EntryHandlers.Addresses.Mining;
+
+public class GetMiningPositionByPoolQueryHandler : IRequestHandler<GetMiningPositionByPoolQuery, MiningPositionDto>
 {
-    public class GetMiningPositionByPoolQueryHandler : IRequestHandler<GetMiningPositionByPoolQuery, MiningPositionDto>
+    private readonly IMediator _mediator;
+
+    public GetMiningPositionByPoolQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator;
+    }
 
-        public GetMiningPositionByPoolQueryHandler(IMediator mediator)
+    public async Task<MiningPositionDto> Handle(GetMiningPositionByPoolQuery request, CancellationToken cancellationToken)
+    {
+        var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.MiningPoolAddress, findOrThrow: true), cancellationToken);
+        var addressMining = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id,
+                                                                                                      request.Address,
+                                                                                                      findOrThrow: true), cancellationToken);
+        var liqudityPool = await _mediator.Send(new RetrieveLiquidityPoolByIdQuery(miningPool.LiquidityPoolId, findOrThrow: true), cancellationToken);
+        var token = await _mediator.Send(new RetrieveTokenByIdQuery(liqudityPool.LpTokenId, findOrThrow: true), cancellationToken);
+
+        return new MiningPositionDto
         {
-            _mediator = mediator;
-        }
-
-        public async Task<MiningPositionDto> Handle(GetMiningPositionByPoolQuery request, CancellationToken cancellationToken)
-        {
-            var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.MiningPoolAddress, findOrThrow: true), cancellationToken);
-            var addressMining = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id,
-                                                                                                          request.Address,
-                                                                                                          findOrThrow: true), cancellationToken);
-            var liqudityPool = await _mediator.Send(new RetrieveLiquidityPoolByIdQuery(miningPool.LiquidityPoolId, findOrThrow: true), cancellationToken);
-            var token = await _mediator.Send(new RetrieveTokenByIdQuery(liqudityPool.LpTokenId, findOrThrow: true), cancellationToken);
-
-            return new MiningPositionDto
-            {
-                Address = request.Address,
-                Amount = addressMining.Balance.ToDecimal(token.Decimals),
-                MiningPool = miningPool.Address,
-                MiningToken = token.Address
-            };
-        }
+            Address = request.Address,
+            Amount = addressMining.Balance.ToDecimal(token.Decimals),
+            MiningPool = miningPool.Address,
+            MiningToken = token.Address
+        };
     }
 }

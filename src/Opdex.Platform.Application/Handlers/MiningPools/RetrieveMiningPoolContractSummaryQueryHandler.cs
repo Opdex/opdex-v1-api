@@ -9,50 +9,49 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.MiningPools
+namespace Opdex.Platform.Application.Handlers.MiningPools;
+
+public class RetrieveMiningPoolContractSummaryQueryHandler
+    : IRequestHandler<RetrieveMiningPoolContractSummaryQuery, MiningPoolContractSummary>
 {
-    public class RetrieveMiningPoolContractSummaryQueryHandler
-        : IRequestHandler<RetrieveMiningPoolContractSummaryQuery, MiningPoolContractSummary>
+    private readonly IMediator _mediator;
+
+    public RetrieveMiningPoolContractSummaryQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveMiningPoolContractSummaryQueryHandler(IMediator mediator)
+    public async Task<MiningPoolContractSummary> Handle(RetrieveMiningPoolContractSummaryQuery request, CancellationToken cancellationToken)
+    {
+        var summary = new MiningPoolContractSummary(request.BlockHeight);
+
+        if (request.IncludeRewardPerBlock)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            var rewardRate = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.MiningPool,
+                                                                                              MiningPoolConstants.StateKeys.RewardRate,
+                                                                                              SmartContractParameterType.UInt256,
+                                                                                              request.BlockHeight));
+
+            summary.SetRewardRate(rewardRate);
         }
 
-        public async Task<MiningPoolContractSummary> Handle(RetrieveMiningPoolContractSummaryQuery request, CancellationToken cancellationToken)
+        if (request.IncludeMiningPeriodEndBlock)
         {
-            var summary = new MiningPoolContractSummary(request.BlockHeight);
+            var miningPeriodEndBlock = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.MiningPool,
+                                                                                                        MiningPoolConstants.StateKeys.MiningPeriodEndBlock,
+                                                                                                        SmartContractParameterType.UInt64,
+                                                                                                        request.BlockHeight));
 
-            if (request.IncludeRewardPerBlock)
-            {
-                var rewardRate = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.MiningPool,
-                                                                                                  MiningPoolConstants.StateKeys.RewardRate,
-                                                                                                  SmartContractParameterType.UInt256,
-                                                                                                  request.BlockHeight));
-
-                summary.SetRewardRate(rewardRate);
-            }
-
-            if (request.IncludeMiningPeriodEndBlock)
-            {
-                var miningPeriodEndBlock = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.MiningPool,
-                                                                                                            MiningPoolConstants.StateKeys.MiningPeriodEndBlock,
-                                                                                                            SmartContractParameterType.UInt64,
-                                                                                                            request.BlockHeight));
-
-                summary.SetMiningPeriodEnd(miningPeriodEndBlock);
-            }
-
-            if (request.IncludeRewardPerLpt)
-            {
-                var rewardPerToken = await _mediator.Send(new CallCirrusGetMiningPoolRewardPerTokenMiningQuery(request.MiningPool, request.BlockHeight));
-
-                summary.SetRewardPerLpt(rewardPerToken);
-            }
-
-            return summary;
+            summary.SetMiningPeriodEnd(miningPeriodEndBlock);
         }
+
+        if (request.IncludeRewardPerLpt)
+        {
+            var rewardPerToken = await _mediator.Send(new CallCirrusGetMiningPoolRewardPerTokenMiningQuery(request.MiningPool, request.BlockHeight));
+
+            summary.SetRewardPerLpt(rewardPerToken);
+        }
+
+        return summary;
     }
 }

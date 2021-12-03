@@ -7,24 +7,23 @@ using Opdex.Platform.Domain.Models.Transactions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions
+namespace Opdex.Platform.Application.EntryHandlers.Transactions;
+
+public class GetTransactionByHashQueryHandler : IRequestHandler<GetTransactionByHashQuery, TransactionDto>
 {
-    public class GetTransactionByHashQueryHandler : IRequestHandler<GetTransactionByHashQuery, TransactionDto>
+    private readonly IMediator _mediator;
+    private readonly IModelAssembler<Transaction, TransactionDto> _transactionDtoAssembler;
+
+    public GetTransactionByHashQueryHandler(IMediator mediator, IModelAssembler<Transaction, TransactionDto> transactionDtoAssembler)
     {
-        private readonly IMediator _mediator;
-        private readonly IModelAssembler<Transaction, TransactionDto> _transactionDtoAssembler;
+        _mediator = mediator;
+        _transactionDtoAssembler = transactionDtoAssembler;
+    }
 
-        public GetTransactionByHashQueryHandler(IMediator mediator, IModelAssembler<Transaction, TransactionDto> transactionDtoAssembler)
-        {
-            _mediator = mediator;
-            _transactionDtoAssembler = transactionDtoAssembler;
-        }
+    public async Task<TransactionDto> Handle(GetTransactionByHashQuery request, CancellationToken cancellationToken)
+    {
+        var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.Hash), cancellationToken);
 
-        public async Task<TransactionDto> Handle(GetTransactionByHashQuery request, CancellationToken cancellationToken)
-        {
-            var transaction = await _mediator.Send(new RetrieveTransactionByHashQuery(request.Hash), cancellationToken);
-
-            return await _transactionDtoAssembler.Assemble(transaction);
-        }
+        return await _transactionDtoAssembler.Assemble(transaction);
     }
 }

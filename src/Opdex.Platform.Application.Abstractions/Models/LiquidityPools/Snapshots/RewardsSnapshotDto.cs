@@ -1,8 +1,7 @@
-namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots
+namespace Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots;
+
+public class RewardsSnapshotDto
 {
-    public class RewardsSnapshotDto
-    {
-        public decimal ProviderUsd { get; set; }
-        public decimal MarketUsd { get; set; }
-    }
+    public decimal ProviderUsd { get; set; }
+    public decimal MarketUsd { get; set; }
 }

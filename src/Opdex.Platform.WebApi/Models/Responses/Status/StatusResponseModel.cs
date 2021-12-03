@@ -1,24 +1,23 @@
 using NJsonSchema.Annotations;
 
-namespace Opdex.Platform.WebApi.Models.Responses.Status
+namespace Opdex.Platform.WebApi.Models.Responses.Status;
+
+/// <summary>
+/// Status details for the application.
+/// </summary>
+public class StatusResponseModel
 {
     /// <summary>
-    /// Status details for the application.
+    /// Commit hash indicating the version of the running application.
     /// </summary>
-    public class StatusResponseModel
-    {
-        /// <summary>
-        /// Commit hash indicating the version of the running application.
-        /// </summary>
-        /// <example>92ec53dc8388bc835eae5a892b29cb9519de7d97</example>
-        [NotNull]
-        public string Commit { get; set; }
+    /// <example>92ec53dc8388bc835eae5a892b29cb9519de7d97</example>
+    [NotNull]
+    public string Commit { get; set; }
 
-        /// <summary>
-        /// Unique identifier for the running instance of the application.
-        /// </summary>
-        /// <example>ae89af2a-9774-4956-aa40-507edd38d200</example>
-        [NotNull]
-        public string Identifier { get; set; }
-    }
+    /// <summary>
+    /// Unique identifier for the running instance of the application.
+    /// </summary>
+    /// <example>ae89af2a-9774-4956-aa40-507edd38d200</example>
+    [NotNull]
+    public string Identifier { get; set; }
 }

@@ -13,77 +13,76 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Snapshots
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens.Snapshots;
+
+public class PersistTokenSnapshotCommandHandlerTests
 {
-    public class PersistTokenSnapshotCommandHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly PersistTokenSnapshotCommandHandler _handler;
+
+    public PersistTokenSnapshotCommandHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly PersistTokenSnapshotCommandHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+        var logger = new NullLogger<PersistTokenSnapshotCommandHandler>();
 
-        public PersistTokenSnapshotCommandHandlerTests()
-        {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            var logger = new NullLogger<PersistTokenSnapshotCommandHandler>();
+        _dbContext = new Mock<IDbContext>();
+        _handler = new PersistTokenSnapshotCommandHandler(_dbContext.Object, mapper, logger);
+    }
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new PersistTokenSnapshotCommandHandler(_dbContext.Object, mapper, logger);
-        }
+    [Fact]
+    public async Task PersistsTokenSnapshot_Insert_Success()
+    {
+        var snapshot = new TokenSnapshot(1, 2, SnapshotType.Daily, DateTime.UtcNow);
+        var command = new PersistTokenSnapshotCommand(snapshot);
 
-        [Fact]
-        public async Task PersistsTokenSnapshot_Insert_Success()
-        {
-            var snapshot = new TokenSnapshot(1, 2, SnapshotType.Daily, DateTime.UtcNow);
-            var command = new PersistTokenSnapshotCommand(snapshot);
+        _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(1));
 
-            _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(1));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Should().BeTrue();
+    }
 
-            result.Should().BeTrue();
-        }
+    [Fact]
+    public async Task PersistsTokenSnapshot_Update_Success()
+    {
+        var snapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow);
 
-        [Fact]
-        public async Task PersistsTokenSnapshot_Update_Success()
-        {
-            var snapshot = new TokenSnapshot(1, 2, 3, new Ohlc<decimal>(), SnapshotType.Daily, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow);
+        var command = new PersistTokenSnapshotCommand(snapshot);
 
-            var command = new PersistTokenSnapshotCommand(snapshot);
+        _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(1));
 
-            _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(1));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Should().BeTrue();
+    }
 
-            result.Should().BeTrue();
-        }
+    [Fact]
+    public async Task PersistTokenSnapshot_Fail()
+    {
+        var snapshot = new TokenSnapshot(1, 2, SnapshotType.Daily, DateTime.UtcNow);
+        var command = new PersistTokenSnapshotCommand(snapshot);
 
-        [Fact]
-        public async Task PersistTokenSnapshot_Fail()
-        {
-            var snapshot = new TokenSnapshot(1, 2, SnapshotType.Daily, DateTime.UtcNow);
-            var command = new PersistTokenSnapshotCommand(snapshot);
+        _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(0));
 
-            _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(0));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Should().BeFalse();
+    }
 
-            result.Should().BeFalse();
-        }
+    [Fact]
+    public async Task PersistTokenSnapshot_ThrownException()
+    {
+        var snapshot = new TokenSnapshot(1, 3, SnapshotType.Daily, DateTime.UtcNow);
+        var command = new PersistTokenSnapshotCommand(snapshot);
 
-        [Fact]
-        public async Task PersistTokenSnapshot_ThrownException()
-        {
-            var snapshot = new TokenSnapshot(1, 3, SnapshotType.Daily, DateTime.UtcNow);
-            var command = new PersistTokenSnapshotCommand(snapshot);
+        _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
+            .Throws(new Exception());
 
-            _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
-                .Throws(new Exception());
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            result.Should().BeFalse();
-        }
+        result.Should().BeFalse();
     }
 }

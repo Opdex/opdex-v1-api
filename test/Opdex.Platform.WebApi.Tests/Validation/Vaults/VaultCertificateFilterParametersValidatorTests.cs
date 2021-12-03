@@ -5,83 +5,82 @@ using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Validation.Vaults;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.Vaults
+namespace Opdex.Platform.WebApi.Tests.Validation.Vaults;
+
+public class VaultCertificateFilterParametersValidatorTests
 {
-    public class VaultCertificateFilterParametersValidatorTests
+    private readonly VaultCertificateFilterParametersValidator _validator;
+
+    public VaultCertificateFilterParametersValidatorTests()
     {
-        private readonly VaultCertificateFilterParametersValidator _validator;
+        _validator = new VaultCertificateFilterParametersValidator();
+    }
 
-        public VaultCertificateFilterParametersValidatorTests()
+    [Theory]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void Holder_Invalid(Address holder)
+    {
+        // Arrange
+        var request = new VaultCertificateFilterParameters
         {
-            _validator = new VaultCertificateFilterParametersValidator();
-        }
+            Holder = holder
+        };
 
-        [Theory]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void Holder_Invalid(Address holder)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Holder);
+    }
+
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(ValidNetworkAddressData))]
+    public void Holder_Valid(Address holder)
+    {
+        // Arrange
+        var request = new VaultCertificateFilterParameters
         {
-            // Arrange
-            var request = new VaultCertificateFilterParameters
-            {
-                Holder = holder
-            };
+            Holder = holder
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Holder);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Holder);
+    }
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(ValidNetworkAddressData))]
-        public void Holder_Valid(Address holder)
+    [Fact]
+    public void Limit_Invalid()
+    {
+        // Arrange
+        var request = new VaultCertificateFilterParameters
         {
-            // Arrange
-            var request = new VaultCertificateFilterParameters
-            {
-                Holder = holder
-            };
+            Limit = Cursor.DefaultMaxLimit + 1
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Holder);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Limit);
+    }
 
-        [Fact]
-        public void Limit_Invalid()
+    [Fact]
+    public void Limit_Valid()
+    {
+        // Arrange
+        var request = new VaultCertificateFilterParameters
         {
-            // Arrange
-            var request = new VaultCertificateFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit + 1
-            };
+            Limit = Cursor.DefaultMaxLimit
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Limit);
-        }
-
-        [Fact]
-        public void Limit_Valid()
-        {
-            // Arrange
-            var request = new VaultCertificateFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Limit);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Limit);
     }
 }

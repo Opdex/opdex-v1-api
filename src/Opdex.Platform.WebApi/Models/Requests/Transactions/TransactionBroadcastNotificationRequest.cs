@@ -1,22 +1,21 @@
 using Opdex.Platform.Common.Models;
 
-namespace Opdex.Platform.WebApi.Models.Requests.Transactions
+namespace Opdex.Platform.WebApi.Models.Requests.Transactions;
+
+/// <summary>
+/// Request to notify a user that their transaction has been broadcast.
+/// </summary>
+public class TransactionBroadcastNotificationRequest
 {
     /// <summary>
-    /// Request to notify a user that their transaction has been broadcast.
+    /// Address of the transaction sender.
     /// </summary>
-    public class TransactionBroadcastNotificationRequest
-    {
-        /// <summary>
-        /// Address of the transaction sender.
-        /// </summary>
-        /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
-        public Address WalletAddress { get; set; }
+    /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
+    public Address WalletAddress { get; set; }
 
-        /// <summary>
-        /// SHA-256 transaction hash.
-        /// </summary>
-        /// <example>402aa2241adb7b04d07d4dbc89f8aae72fa1c11f9bd2bd9013222cd774ed39fe</example>
-        public Sha256 TransactionHash { get; set; }
-    }
+    /// <summary>
+    /// SHA-256 transaction hash.
+    /// </summary>
+    /// <example>402aa2241adb7b04d07d4dbc89f8aae72fa1c11f9bd2bd9013222cd774ed39fe</example>
+    public Sha256 TransactionHash { get; set; }
 }

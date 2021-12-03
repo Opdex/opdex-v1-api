@@ -10,13 +10,13 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs;
+
+public class SelectTransactionLogsByTransactionIdQueryHandler
+    : IRequestHandler<SelectTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>
 {
-    public class SelectTransactionLogsByTransactionIdQueryHandler
-        : IRequestHandler<SelectTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(TransactionLogEntity.Id)},
                 {nameof(TransactionLogEntity.TransactionId)},
                 {nameof(TransactionLogEntity.LogTypeId)},
@@ -26,33 +26,32 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLo
             FROM transaction_log
             WHERE {nameof(TransactionLogEntity.TransactionId)} = @{nameof(SqlParams.TransactionId)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectTransactionLogsByTransactionIdQueryHandler(IDbContext context, IMapper mapper)
+    public SelectTransactionLogsByTransactionIdQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<IEnumerable<TransactionLog>> Handle(SelectTransactionLogsByTransactionIdQuery request, CancellationToken cancellationTransaction)
+    {
+        var queryParams = new SqlParams(request.TransactionId);
+        var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
+
+        var result = await _context.ExecuteQueryAsync<TransactionLogEntity>(query);
+
+        return !result.Any() ? Enumerable.Empty<TransactionLog>() : _mapper.Map<IEnumerable<TransactionLog>>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong transactionId)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            TransactionId = transactionId;
         }
 
-        public async Task<IEnumerable<TransactionLog>> Handle(SelectTransactionLogsByTransactionIdQuery request, CancellationToken cancellationTransaction)
-        {
-            var queryParams = new SqlParams(request.TransactionId);
-            var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
-
-            var result = await _context.ExecuteQueryAsync<TransactionLogEntity>(query);
-
-            return !result.Any() ? Enumerable.Empty<TransactionLog>() : _mapper.Map<IEnumerable<TransactionLog>>(result);
-        }
-
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong transactionId)
-            {
-                TransactionId = transactionId;
-            }
-
-            public ulong TransactionId { get; }
-        }
+        public ulong TransactionId { get; }
     }
 }

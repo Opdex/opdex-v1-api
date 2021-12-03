@@ -4,45 +4,44 @@ using Opdex.Platform.Common.Models;
 using System;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.WebApi.Models.Binders
+namespace Opdex.Platform.WebApi.Models.Binders;
+
+public class AddressModelBinder : IModelBinder
 {
-    public class AddressModelBinder : IModelBinder
+    public Task BindModelAsync(ModelBindingContext bindingContext)
     {
-        public Task BindModelAsync(ModelBindingContext bindingContext)
+        if (bindingContext is null) throw new ArgumentNullException(nameof(bindingContext));
+
+        var modelName = bindingContext.ModelName;
+
+        var valueProviderResult = bindingContext.ValueProvider.GetValue(modelName);
+        if (valueProviderResult == ValueProviderResult.None) return Task.CompletedTask;
+
+        bindingContext.ModelState.SetModelValue(modelName, valueProviderResult);
+
+        var value = valueProviderResult.FirstValue;
+
+        if (Address.TryParse(value, out var address))
         {
-            if (bindingContext is null) throw new ArgumentNullException(nameof(bindingContext));
-
-            var modelName = bindingContext.ModelName;
-
-            var valueProviderResult = bindingContext.ValueProvider.GetValue(modelName);
-            if (valueProviderResult == ValueProviderResult.None) return Task.CompletedTask;
-
-            bindingContext.ModelState.SetModelValue(modelName, valueProviderResult);
-
-            var value = valueProviderResult.FirstValue;
-
-            if (Address.TryParse(value, out var address))
-            {
-                bindingContext.Result = ModelBindingResult.Success(address);
-            }
-            else
-            {
-                bindingContext.ModelState.AddModelError(modelName, "Invalid address.");
-            }
-
-            return Task.CompletedTask;
+            bindingContext.Result = ModelBindingResult.Success(address);
         }
+        else
+        {
+            bindingContext.ModelState.AddModelError(modelName, "Invalid address.");
+        }
+
+        return Task.CompletedTask;
     }
+}
 
-    public class AddressModelBinderProvider : IModelBinderProvider
+public class AddressModelBinderProvider : IModelBinderProvider
+{
+    public IModelBinder GetBinder(ModelBinderProviderContext context)
     {
-        public IModelBinder GetBinder(ModelBinderProviderContext context)
-        {
-            if (context is null) throw new ArgumentNullException(nameof(context));
+        if (context is null) throw new ArgumentNullException(nameof(context));
 
-            if (context.Metadata.ModelType == typeof(Address)) return new BinderTypeModelBinder(typeof(AddressModelBinder));
+        if (context.Metadata.ModelType == typeof(Address)) return new BinderTypeModelBinder(typeof(AddressModelBinder));
 
-            return null;
-        }
+        return null;
     }
 }

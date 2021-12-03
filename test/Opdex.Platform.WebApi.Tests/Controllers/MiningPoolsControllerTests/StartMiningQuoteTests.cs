@@ -13,83 +13,82 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsControllerTests
+namespace Opdex.Platform.WebApi.Tests.Controllers.MiningPoolsControllerTests;
+
+public class StartMiningQuoteTests
 {
-    public class StartMiningQuoteTests
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<IApplicationContext> _contextMock;
+    private readonly WebApi.Controllers.MiningPoolsController _controller;
+
+    public StartMiningQuoteTests()
     {
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly Mock<IApplicationContext> _contextMock;
-        private readonly WebApi.Controllers.MiningPoolsController _controller;
+        _mapperMock = new Mock<IMapper>();
+        _mediatorMock = new Mock<IMediator>();
+        _contextMock = new Mock<IApplicationContext>();
 
-        public StartMiningQuoteTests()
-        {
-            _mapperMock = new Mock<IMapper>();
-            _mediatorMock = new Mock<IMediator>();
-            _contextMock = new Mock<IApplicationContext>();
+        _controller = new WebApi.Controllers.MiningPoolsController(_mapperMock.Object, _mediatorMock.Object, _contextMock.Object);
+    }
 
-            _controller = new WebApi.Controllers.MiningPoolsController(_mapperMock.Object, _mediatorMock.Object, _contextMock.Object);
-        }
+    [Fact]
+    public async Task StartMining_CreateStartMiningTransactionQuoteCommand_Send()
+    {
+        // Arrange
+        Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        Address miningPool = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
+        var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        [Fact]
-        public async Task StartMining_CreateStartMiningTransactionQuoteCommand_Send()
-        {
-            // Arrange
-            Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            Address miningPool = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
-            var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
-            var cancellationToken = new CancellationTokenSource().Token;
+        _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
 
-            _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
+        // Act
+        await _controller.StartMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
 
-            // Act
-            await _controller.StartMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateStartMiningTransactionQuoteCommand>(query => query.MiningPool == miningPool
+                                                                                                            && query.WalletAddress == walletAddress), cancellationToken), Times.Once);
+    }
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateStartMiningTransactionQuoteCommand>(query => query.MiningPool == miningPool
-                                                                                                       && query.WalletAddress == walletAddress), cancellationToken), Times.Once);
-        }
+    [Fact]
+    public async Task StartMining_CreateStartMiningTransactionQuoteCommandResponse_Map()
+    {
+        // Arrange
+        var dto = new TransactionQuoteDto();
+        Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        Address miningPool = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
+        var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        [Fact]
-        public async Task StartMining_CreateStartMiningTransactionQuoteCommandResponse_Map()
-        {
-            // Arrange
-            var dto = new TransactionQuoteDto();
-            Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            Address miningPool = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
-            var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
-            var cancellationToken = new CancellationTokenSource().Token;
+        _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateStartMiningTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
 
-            _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateStartMiningTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
+        // Act
+        await _controller.StartMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
 
-            // Act
-            await _controller.StartMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
+        // Assert
+        _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(dto), Times.Once);
+    }
 
-            // Assert
-            _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(dto), Times.Once);
-        }
+    [Fact]
+    public async Task StartMining_CreateStartMiningTransactionQuoteCommandResponse_ReturnOk()
+    {
+        // Arrange
+        var quoteResponse = new TransactionQuoteResponseModel();
+        Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        Address miningPool = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
+        var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        [Fact]
-        public async Task StartMining_CreateStartMiningTransactionQuoteCommandResponse_ReturnOk()
-        {
-            // Arrange
-            var quoteResponse = new TransactionQuoteResponseModel();
-            Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            Address miningPool = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
-            var miningQuoteRequest = new MiningQuote { Amount = FixedDecimal.Parse("1.00") };
-            var cancellationToken = new CancellationTokenSource().Token;
+        _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateStartMiningTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new TransactionQuoteDto());
+        _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(quoteResponse);
 
-            _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateStartMiningTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new TransactionQuoteDto());
-            _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(quoteResponse);
+        // Act
+        var response = await _controller.StartMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
 
-            // Act
-            var response = await _controller.StartMining(miningPool.ToString(), miningQuoteRequest, cancellationToken);
-
-            // Act
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(quoteResponse);
-        }
+        // Act
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(quoteResponse);
     }
 }

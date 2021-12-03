@@ -7,20 +7,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Addresses.Staking
+namespace Opdex.Platform.Application.Handlers.Addresses.Staking;
+
+public class RetrieveStakingPositionsWithFilterQueryHandler : IRequestHandler<RetrieveStakingPositionsWithFilterQuery, IEnumerable<AddressStaking>>
 {
-    public class RetrieveStakingPositionsWithFilterQueryHandler : IRequestHandler<RetrieveStakingPositionsWithFilterQuery, IEnumerable<AddressStaking>>
+    private readonly IMediator _mediator;
+
+    public RetrieveStakingPositionsWithFilterQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveStakingPositionsWithFilterQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<IEnumerable<AddressStaking>> Handle(RetrieveStakingPositionsWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectStakingPositionsWithFilterQuery(request.Address, request.Cursor), cancellationToken);
-        }
+    public Task<IEnumerable<AddressStaking>> Handle(RetrieveStakingPositionsWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectStakingPositionsWithFilterQuery(request.Address, request.Cursor), cancellationToken);
     }
 }

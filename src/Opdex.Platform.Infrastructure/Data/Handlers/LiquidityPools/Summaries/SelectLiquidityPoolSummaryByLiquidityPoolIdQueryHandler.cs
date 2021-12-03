@@ -9,13 +9,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
+namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries;
+
+public class SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler
+    : IRequestHandler<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>
 {
-    public class SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler
-        : IRequestHandler<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(LiquidityPoolSummaryEntity.Id)},
                 {nameof(LiquidityPoolSummaryEntity.LiquidityPoolId)},
                 {nameof(LiquidityPoolSummaryEntity.LiquidityUsd)},
@@ -31,38 +31,37 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
             WHERE {nameof(LiquidityPoolSummaryEntity.LiquidityPoolId)} = @{nameof(SqlParams.LiquidityPoolId)}
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler(IDbContext context, IMapper mapper)
+    public SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<LiquidityPoolSummary> Handle(SelectLiquidityPoolSummaryByLiquidityPoolIdQuery request, CancellationToken cancellationToken)
+    {
+        var queryParams = new SqlParams(request.LiquidityPoolId);
+        var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<LiquidityPoolSummaryEntity>(query);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(LiquidityPoolSummary)} not found.");
         }
 
-        public async Task<LiquidityPoolSummary> Handle(SelectLiquidityPoolSummaryByLiquidityPoolIdQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<LiquidityPoolSummary>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong liquidityPoolId)
         {
-            var queryParams = new SqlParams(request.LiquidityPoolId);
-            var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<LiquidityPoolSummaryEntity>(query);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(LiquidityPoolSummary)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<LiquidityPoolSummary>(result);
+            LiquidityPoolId = liquidityPoolId;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong liquidityPoolId)
-            {
-                LiquidityPoolId = liquidityPoolId;
-            }
-
-            public ulong LiquidityPoolId { get; }
-        }
+        public ulong LiquidityPoolId { get; }
     }
 }

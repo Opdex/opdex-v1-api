@@ -15,130 +15,129 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Vaults
+namespace Opdex.Platform.Infrastructure.Tests.CirrusFullNodeApiTests.Handlers.Vaults;
+
+public class CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandlerTests
 {
-    public class CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandlerTests
+    private readonly Mock<ISmartContractsModule> _smartContractsModuleMock;
+    private readonly CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler _handler;
+
+    public CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandlerTests()
     {
-        private readonly Mock<ISmartContractsModule> _smartContractsModuleMock;
-        private readonly CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler _handler;
+        _smartContractsModuleMock = new Mock<ISmartContractsModule>();
+        _handler = new CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler(_smartContractsModuleMock.Object);
+    }
 
-        public CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandlerTests()
+    [Fact]
+    public void CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_InvalidVault_ThrowsArgumentNullException()
+    {
+        // Arrange
+        Address vault = Address.Empty;
+        Address owner = "P1GLsMroh6zXXNMU9EjmivLgqqARwmH1iT";
+        const ulong blockHeight = 10;
+
+        // Act
+        void Act() => new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(vault, owner, blockHeight);
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Vault address must be provided.");
+    }
+
+    [Fact]
+    public void CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_InvalidOwner_ThrowsArgumentNullException()
+    {
+        // Arrange
+        Address vault = "PU9EjmivLgqqARwmH1iT1GLsMroh6zXXNM";
+        Address owner = Address.Empty;
+        const ulong blockHeight = 10;
+
+        // Act
+        void Act() => new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(vault, owner, blockHeight);
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner address must be provided.");
+    }
+
+    [Fact]
+    public void CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        Address vault = "PU9EjmivLgqqARwmH1iT1GLsMroh6zXXNM";
+        Address owner = "P1GLsMroh6zXXNMU9EjmivLgqqARwmH1iT";
+        const ulong blockHeight = 0;
+
+        // Act
+        void Act() => new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(vault, owner, blockHeight);
+
+        // Assert
+        Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Block height must be greater than zero.");
+    }
+
+    [Fact]
+    public async Task CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_Sends_LocalCallAsync()
+    {
+        // Arrange
+        Address vault = "PU9EjmivLgqqARwmH1iT1GLsMroh6zXXNM";
+        Address owner = "P1GLsMroh6zXXNMU9EjmivLgqqARwmH1iT";
+        const ulong blockHeight = 10;
+
+        var parameters = new[] { new SmartContractMethodParameter(owner) };
+
+        // Act
+        try
         {
-            _smartContractsModuleMock = new Mock<ISmartContractsModule>();
-            _handler = new CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler(_smartContractsModuleMock.Object);
+            await _handler.Handle(new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(vault, owner, blockHeight), CancellationToken.None);
         }
+        catch { }
 
-        [Fact]
-        public void CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_InvalidVault_ThrowsArgumentNullException()
+        // Assert
+        _smartContractsModuleMock.Verify(callTo => callTo.LocalCallAsync(It.Is<LocalCallRequestDto>(q => q.Amount == FixedDecimal.Zero &&
+                                                                                                         q.MethodName == VaultConstants.Methods.GetCertificates &&
+                                                                                                         q.Parameters.All(p => parameters.Contains(p)) &&
+                                                                                                         q.ContractAddress == vault &&
+                                                                                                         q.BlockHeight == blockHeight),
+                                                                         It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_Returns_VaultContractCertificateSummaries()
+    {
+        // Arrange
+        Address vault = "PU9EjmivLgqqARwmH1iT1GLsMroh6zXXNM";
+        Address owner = "P1GLsMroh6zXXNMU9EjmivLgqqARwmH1iT";
+        const ulong blockHeight = 10;
+
+        var expectedCerts = new List<CertificateResponse>
         {
-            // Arrange
-            Address vault = Address.Empty;
-            Address owner = "P1GLsMroh6zXXNMU9EjmivLgqqARwmH1iT";
-            const ulong blockHeight = 10;
+            new CertificateResponse{ Amount = 1, VestedBlock = 5, Revoked = false },
+            new CertificateResponse{ Amount = 2, VestedBlock = 6, Revoked = true },
+            new CertificateResponse{ Amount = 3, VestedBlock = 7, Revoked = false },
+            new CertificateResponse{ Amount = 4, VestedBlock = 8, Revoked = true }
+        };
 
-            // Act
-            void Act() => new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(vault, owner, blockHeight);
+        var expectedResponse = new LocalCallResponseDto { Return = expectedCerts };
 
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Vault address must be provided.");
-        }
+        _smartContractsModuleMock.Setup(callTo => callTo.LocalCallAsync(It.IsAny<LocalCallRequestDto>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
 
-        [Fact]
-        public void CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_InvalidOwner_ThrowsArgumentNullException()
+        // Act
+        var response = await _handler.Handle(new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(vault, owner, blockHeight), CancellationToken.None);
+
+        // Assert
+        foreach (var cert in response)
         {
-            // Arrange
-            Address vault = "PU9EjmivLgqqARwmH1iT1GLsMroh6zXXNM";
-            Address owner = Address.Empty;
-            const ulong blockHeight = 10;
+            var expected = expectedCerts.Single(nom => nom.VestedBlock == cert.VestedBlock);
 
-            // Act
-            void Act() => new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(vault, owner, blockHeight);
-
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Owner address must be provided.");
+            cert.Amount.Should().Be(expected.Amount);
+            cert.VestedBlock.Should().Be(expected.VestedBlock);
+            cert.Revoked.Should().Be(expected.Revoked);
         }
+    }
 
-        [Fact]
-        public void CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
-        {
-            // Arrange
-            Address vault = "PU9EjmivLgqqARwmH1iT1GLsMroh6zXXNM";
-            Address owner = "P1GLsMroh6zXXNMU9EjmivLgqqARwmH1iT";
-            const ulong blockHeight = 0;
-
-            // Act
-            void Act() => new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(vault, owner, blockHeight);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("Block height must be greater than zero.");
-        }
-
-        [Fact]
-        public async Task CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_Sends_LocalCallAsync()
-        {
-            // Arrange
-            Address vault = "PU9EjmivLgqqARwmH1iT1GLsMroh6zXXNM";
-            Address owner = "P1GLsMroh6zXXNMU9EjmivLgqqARwmH1iT";
-            const ulong blockHeight = 10;
-
-            var parameters = new[] { new SmartContractMethodParameter(owner) };
-
-            // Act
-            try
-            {
-                await _handler.Handle(new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(vault, owner, blockHeight), CancellationToken.None);
-            }
-            catch { }
-
-            // Assert
-            _smartContractsModuleMock.Verify(callTo => callTo.LocalCallAsync(It.Is<LocalCallRequestDto>(q => q.Amount == FixedDecimal.Zero &&
-                                                                                                             q.MethodName == VaultConstants.Methods.GetCertificates &&
-                                                                                                             q.Parameters.All(p => parameters.Contains(p)) &&
-                                                                                                             q.ContractAddress == vault &&
-                                                                                                             q.BlockHeight == blockHeight),
-                                                                             It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task CallCirrusGetVaultContractCertificateSummariesByOwnerQuery_Returns_VaultContractCertificateSummaries()
-        {
-            // Arrange
-            Address vault = "PU9EjmivLgqqARwmH1iT1GLsMroh6zXXNM";
-            Address owner = "P1GLsMroh6zXXNMU9EjmivLgqqARwmH1iT";
-            const ulong blockHeight = 10;
-
-            var expectedCerts = new List<CertificateResponse>
-            {
-                new CertificateResponse{ Amount = 1, VestedBlock = 5, Revoked = false },
-                new CertificateResponse{ Amount = 2, VestedBlock = 6, Revoked = true },
-                new CertificateResponse{ Amount = 3, VestedBlock = 7, Revoked = false },
-                new CertificateResponse{ Amount = 4, VestedBlock = 8, Revoked = true }
-            };
-
-            var expectedResponse = new LocalCallResponseDto { Return = expectedCerts };
-
-            _smartContractsModuleMock.Setup(callTo => callTo.LocalCallAsync(It.IsAny<LocalCallRequestDto>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedResponse);
-
-            // Act
-            var response = await _handler.Handle(new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(vault, owner, blockHeight), CancellationToken.None);
-
-            // Assert
-            foreach (var cert in response)
-            {
-                var expected = expectedCerts.Single(nom => nom.VestedBlock == cert.VestedBlock);
-
-                cert.Amount.Should().Be(expected.Amount);
-                cert.VestedBlock.Should().Be(expected.VestedBlock);
-                cert.Revoked.Should().Be(expected.Revoked);
-            }
-        }
-
-        private sealed class CertificateResponse
-        {
-            public UInt256 Amount { get; set; }
-            public ulong VestedBlock { get; set; }
-            public bool Revoked { get; set; }
-        }
+    private sealed class CertificateResponse
+    {
+        public UInt256 Amount { get; set; }
+        public ulong VestedBlock { get; set; }
+        public bool Revoked { get; set; }
     }
 }

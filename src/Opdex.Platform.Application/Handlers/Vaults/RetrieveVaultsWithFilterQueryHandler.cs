@@ -7,20 +7,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Vaults
+namespace Opdex.Platform.Application.Handlers.Vaults;
+
+public class RetrieveVaultsWithFilterQueryHandler : IRequestHandler<RetrieveVaultsWithFilterQuery, IEnumerable<Vault>>
 {
-    public class RetrieveVaultsWithFilterQueryHandler : IRequestHandler<RetrieveVaultsWithFilterQuery, IEnumerable<Vault>>
+    private readonly IMediator _mediator;
+
+    public RetrieveVaultsWithFilterQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveVaultsWithFilterQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public async Task<IEnumerable<Vault>> Handle(RetrieveVaultsWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            return await _mediator.Send(new SelectVaultsWithFilterQuery(request.Cursor), cancellationToken);
-        }
+    public async Task<IEnumerable<Vault>> Handle(RetrieveVaultsWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        return await _mediator.Send(new SelectVaultsWithFilterQuery(request.Cursor), cancellationToken);
     }
 }

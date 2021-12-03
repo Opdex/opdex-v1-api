@@ -12,15 +12,15 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
-{
-    public class SelectTransactionsForSnapshotRewindQueryHandler
-        : IRequestHandler<SelectTransactionsForSnapshotRewindQuery, IEnumerable<Transaction>>
-    {
-        private const string Split = "Split";
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
 
-        private static readonly string SqlQuery =
-            @$"SELECT
+public class SelectTransactionsForSnapshotRewindQueryHandler
+    : IRequestHandler<SelectTransactionsForSnapshotRewindQuery, IEnumerable<Transaction>>
+{
+    private const string Split = "Split";
+
+    private static readonly string SqlQuery =
+        @$"SELECT
                 t.{nameof(TransactionEntity.Id)},
                 t.`{nameof(TransactionEntity.To)}`,
                 t.`{nameof(TransactionEntity.From)}`,
@@ -44,47 +44,46 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
             WHERE b.{nameof(BlockEntity.MedianTime)} >= @{nameof(SqlParams.DateTime)}
             ORDER BY t.{nameof(TransactionEntity.Id)} ASC;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectTransactionsForSnapshotRewindQueryHandler(IDbContext context, IMapper mapper)
+    public SelectTransactionsForSnapshotRewindQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<IEnumerable<Transaction>> Handle(SelectTransactionsForSnapshotRewindQuery request, CancellationToken cancellationToken)
+    {
+        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.DateTime), cancellationToken);
+
+        var transactions = new Dictionary<ulong, Transaction>();
+
+        await _context.ExecuteQueryAsync<TransactionEntity, TransactionLogEntity, Transaction>(query, (transaction, log) =>
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        }
+            var exists = transactions.TryGetValue(transaction.Id, out Transaction tx);
+            if (!exists) tx = _mapper.Map<Transaction>(transaction);
 
-        public async Task<IEnumerable<Transaction>> Handle(SelectTransactionsForSnapshotRewindQuery request, CancellationToken cancellationToken)
-        {
-            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.DateTime), cancellationToken);
-
-            var transactions = new Dictionary<ulong, Transaction>();
-
-            await _context.ExecuteQueryAsync<TransactionEntity, TransactionLogEntity, Transaction>(query, (transaction, log) =>
+            if (log != null)
             {
-                var exists = transactions.TryGetValue(transaction.Id, out Transaction tx);
-                if (!exists) tx = _mapper.Map<Transaction>(transaction);
-
-                if (log != null)
-                {
-                    tx.SetLog(_mapper.Map<TransactionLog>(log));
-                }
-
-                transactions[tx.Id] = tx;
-
-                return tx;
-            }, splitOn: Split);
-
-            return transactions.Values;
-        }
-
-        private sealed class SqlParams
-        {
-            internal SqlParams(DateTime dateTime)
-            {
-                DateTime = dateTime;
+                tx.SetLog(_mapper.Map<TransactionLog>(log));
             }
 
-            public DateTime DateTime { get; }
+            transactions[tx.Id] = tx;
+
+            return tx;
+        }, splitOn: Split);
+
+        return transactions.Values;
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(DateTime dateTime)
+        {
+            DateTime = dateTime;
         }
+
+        public DateTime DateTime { get; }
     }
 }

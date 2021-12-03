@@ -7,20 +7,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.MiningPools
+namespace Opdex.Platform.Application.Handlers.MiningPools;
+
+public class RetrieveMiningPoolsByModifiedBlockQueryHandler : IRequestHandler<RetrieveMiningPoolsByModifiedBlockQuery, IEnumerable<MiningPool>>
 {
-    public class RetrieveMiningPoolsByModifiedBlockQueryHandler : IRequestHandler<RetrieveMiningPoolsByModifiedBlockQuery, IEnumerable<MiningPool>>
+    private readonly IMediator _mediator;
+
+    public RetrieveMiningPoolsByModifiedBlockQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveMiningPoolsByModifiedBlockQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<IEnumerable<MiningPool>> Handle(RetrieveMiningPoolsByModifiedBlockQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectMiningPoolsByModifiedBlockQuery(request.BlockHeight), cancellationToken);
-        }
+    public Task<IEnumerable<MiningPool>> Handle(RetrieveMiningPoolsByModifiedBlockQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectMiningPoolsByModifiedBlockQuery(request.BlockHeight), cancellationToken);
     }
 }

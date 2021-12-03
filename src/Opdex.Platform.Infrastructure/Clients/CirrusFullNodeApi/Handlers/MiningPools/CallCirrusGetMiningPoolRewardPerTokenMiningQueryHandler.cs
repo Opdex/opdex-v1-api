@@ -8,24 +8,23 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.MiningPools
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.MiningPools;
+
+public class CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler : IRequestHandler<CallCirrusGetMiningPoolRewardPerTokenMiningQuery, UInt256>
 {
-    public class CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler : IRequestHandler<CallCirrusGetMiningPoolRewardPerTokenMiningQuery, UInt256>
+    private readonly ISmartContractsModule _smartContractsModule;
+    private const string MethodName = MiningPoolConstants.Methods.GetRewardPerStakedToken;
+
+    public CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler(ISmartContractsModule smartContractsModule)
     {
-        private readonly ISmartContractsModule _smartContractsModule;
-        private const string MethodName = MiningPoolConstants.Methods.GetRewardPerStakedToken;
+        _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+    }
 
-        public CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler(ISmartContractsModule smartContractsModule)
-        {
-            _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-        }
+    public async Task<UInt256> Handle(CallCirrusGetMiningPoolRewardPerTokenMiningQuery request, CancellationToken cancellationToken)
+    {
+        var localCall = new LocalCallRequestDto(request.MiningPool, request.MiningPool, MethodName, request.BlockHeight);
+        var response = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 
-        public async Task<UInt256> Handle(CallCirrusGetMiningPoolRewardPerTokenMiningQuery request, CancellationToken cancellationToken)
-        {
-            var localCall = new LocalCallRequestDto(request.MiningPool, request.MiningPool, MethodName, request.BlockHeight);
-            var response = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-
-            return response.DeserializeValue<UInt256>();
-        }
+        return response.DeserializeValue<UInt256>();
     }
 }

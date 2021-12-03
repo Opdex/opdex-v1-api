@@ -9,44 +9,43 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.Tran
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Opdex.Platform.Application.Handlers.Transactions
+namespace Opdex.Platform.Application.Handlers.Transactions;
+
+public class MakeTransactionCommandHandler : IRequestHandler<MakeTransactionCommand, ulong>
 {
-    public class MakeTransactionCommandHandler : IRequestHandler<MakeTransactionCommand, ulong>
+    private readonly IMediator _mediator;
+    private readonly ILogger<MakeTransactionCommandHandler> _logger;
+
+    public MakeTransactionCommandHandler(IMediator mediator, ILogger<MakeTransactionCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<MakeTransactionCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public MakeTransactionCommandHandler(IMediator mediator, ILogger<MakeTransactionCommandHandler> logger)
+    public async Task<ulong> Handle(MakeTransactionCommand request, CancellationToken cancellationToken)
+    {
+        var txId = await _mediator.Send(new PersistTransactionCommand(request.Transaction));
+
+        request.Transaction.SetId(txId);
+
+        await Task.WhenAll(request.Transaction.Logs.Select(async log =>
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
-
-        public async Task<ulong> Handle(MakeTransactionCommand request, CancellationToken cancellationToken)
-        {
-            var txId = await _mediator.Send(new PersistTransactionCommand(request.Transaction));
-
-            request.Transaction.SetId(txId);
-
-            await Task.WhenAll(request.Transaction.Logs.Select(async log =>
+            var success = await _mediator.Send(new PersistTransactionLogCommand(log));
+            if (!success)
             {
-                var success = await _mediator.Send(new PersistTransactionLogCommand(log));
-                if (!success)
+                using (_logger.BeginScope(new Dictionary<string, object>
+                       {
+                           ["txId"] = txId,
+                           ["txHash"] = request.Transaction.Hash,
+                           ["LogType"] = log.LogType,
+                           ["LogSortOrder"] = log.SortOrder
+                       }))
                 {
-                    using (_logger.BeginScope(new Dictionary<string, object>
-                    {
-                        ["txId"] = txId,
-                        ["txHash"] = request.Transaction.Hash,
-                        ["LogType"] = log.LogType,
-                        ["LogSortOrder"] = log.SortOrder
-                    }))
-                    {
-                        _logger.LogWarning("Transaction log unsuccessfully persisted");
-                    }
+                    _logger.LogWarning("Transaction log unsuccessfully persisted");
                 }
-            }));
+            }
+        }));
 
-            return txId;
-        }
+        return txId;
     }
 }

@@ -3,66 +3,65 @@ using Newtonsoft.Json;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
-namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools
+namespace Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
+
+public abstract class StakeLog : TransactionLog
 {
-    public abstract class StakeLog : TransactionLog
+    protected StakeLog(TransactionLogType logType, Address staker, UInt256 amount, UInt256 totalStaked, UInt256 stakerBalance, Address address, int sortOrder)
+        : base(logType, address, sortOrder)
     {
-        protected StakeLog(TransactionLogType logType, Address staker, UInt256 amount, UInt256 totalStaked, UInt256 stakerBalance, Address address, int sortOrder)
-            : base(logType, address, sortOrder)
+        if (staker == Address.Empty)
         {
-            if (staker == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(staker), "Staker address must be set.");
-            }
-
-            if (amount == UInt256.Zero)
-            {
-                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
-            }
-
-            Staker = staker;
-            Amount = amount;
-            TotalStaked = totalStaked;
-            StakerBalance = stakerBalance;
+            throw new ArgumentNullException(nameof(staker), "Staker address must be set.");
         }
 
-        protected StakeLog(TransactionLogType logType, ulong id, ulong transactionId, Address address, int sortOrder, string details)
-            : base(logType, id, transactionId, address, sortOrder)
+        if (amount == UInt256.Zero)
         {
-            var logDetails = DeserializeLogDetails(details);
-            Staker = logDetails.Staker;
-            Amount = logDetails.Amount;
-            TotalStaked = logDetails.TotalStaked;
-            StakerBalance = logDetails.StakerBalance;
+            throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
         }
 
-        public Address Staker { get; }
-        public UInt256 Amount { get; }
-        public UInt256 TotalStaked { get; }
-        public UInt256 StakerBalance { get; }
+        Staker = staker;
+        Amount = amount;
+        TotalStaked = totalStaked;
+        StakerBalance = stakerBalance;
+    }
 
-        private struct LogDetails
-        {
-            public Address Staker { get; set; }
-            public UInt256 Amount { get; set; }
-            public UInt256 TotalStaked { get; set; }
-            public UInt256 StakerBalance { get; set; }
-        }
+    protected StakeLog(TransactionLogType logType, ulong id, ulong transactionId, Address address, int sortOrder, string details)
+        : base(logType, id, transactionId, address, sortOrder)
+    {
+        var logDetails = DeserializeLogDetails(details);
+        Staker = logDetails.Staker;
+        Amount = logDetails.Amount;
+        TotalStaked = logDetails.TotalStaked;
+        StakerBalance = logDetails.StakerBalance;
+    }
 
-        private static LogDetails DeserializeLogDetails(string details)
-        {
-            return JsonConvert.DeserializeObject<LogDetails>(details);
-        }
+    public Address Staker { get; }
+    public UInt256 Amount { get; }
+    public UInt256 TotalStaked { get; }
+    public UInt256 StakerBalance { get; }
 
-        public override string SerializeLogDetails()
+    private struct LogDetails
+    {
+        public Address Staker { get; set; }
+        public UInt256 Amount { get; set; }
+        public UInt256 TotalStaked { get; set; }
+        public UInt256 StakerBalance { get; set; }
+    }
+
+    private static LogDetails DeserializeLogDetails(string details)
+    {
+        return JsonConvert.DeserializeObject<LogDetails>(details);
+    }
+
+    public override string SerializeLogDetails()
+    {
+        return JsonConvert.SerializeObject(new LogDetails
         {
-            return JsonConvert.SerializeObject(new LogDetails
-            {
-                Staker = Staker,
-                Amount = Amount,
-                TotalStaked = TotalStaked,
-                StakerBalance = StakerBalance
-            });
-        }
+            Staker = Staker,
+            Amount = Amount,
+            TotalStaked = TotalStaked,
+            StakerBalance = StakerBalance
+        });
     }
 }

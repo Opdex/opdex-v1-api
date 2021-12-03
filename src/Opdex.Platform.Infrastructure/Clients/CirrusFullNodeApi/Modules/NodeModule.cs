@@ -7,18 +7,17 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modul
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Serialization;
 using Opdex.Platform.Infrastructure.Http;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
-{
-    public class NodeModule : ApiClientBase, INodeModule
-    {
-        public NodeModule(HttpClient httpClient, ILogger<NodeModule> logger)
-            : base(httpClient, logger, StratisFullNode.SerializerSettings)
-        {
-        }
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules;
 
-        public Task<NodeStatusDto> GetNodeStatusAsync(CancellationToken cancellationToken)
-        {
-            return GetAsync<NodeStatusDto>(CirrusUriHelper.Node.Status, cancellationToken);
-        }
+public class NodeModule : ApiClientBase, INodeModule
+{
+    public NodeModule(HttpClient httpClient, ILogger<NodeModule> logger)
+        : base(httpClient, logger, StratisFullNode.SerializerSettings)
+    {
+    }
+
+    public Task<NodeStatusDto> GetNodeStatusAsync(CancellationToken cancellationToken)
+    {
+        return GetAsync<NodeStatusDto>(CirrusUriHelper.Node.Status, cancellationToken);
     }
 }

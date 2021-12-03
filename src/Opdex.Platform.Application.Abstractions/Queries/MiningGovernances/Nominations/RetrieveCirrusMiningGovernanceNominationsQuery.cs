@@ -5,27 +5,26 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.MiningGovernances.Nominations
+namespace Opdex.Platform.Application.Abstractions.Queries.MiningGovernances.Nominations;
+
+public class RetrieveCirrusMiningGovernanceNominationsQuery : IRequest<IEnumerable<MiningGovernanceContractNominationSummary>>
 {
-    public class RetrieveCirrusMiningGovernanceNominationsQuery : IRequest<IEnumerable<MiningGovernanceContractNominationSummary>>
+    public RetrieveCirrusMiningGovernanceNominationsQuery(Address address, ulong blockHeight)
     {
-        public RetrieveCirrusMiningGovernanceNominationsQuery(Address address, ulong blockHeight)
+        if (address == Address.Empty)
         {
-            if (address == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(address));
-            }
-
-            if (blockHeight < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight));
-            }
-
-            Address = address;
-            BlockHeight = blockHeight;
+            throw new ArgumentNullException(nameof(address));
         }
 
-        public Address Address { get; }
-        public ulong BlockHeight { get; }
+        if (blockHeight < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(blockHeight));
+        }
+
+        Address = address;
+        BlockHeight = blockHeight;
     }
+
+    public Address Address { get; }
+    public ulong BlockHeight { get; }
 }

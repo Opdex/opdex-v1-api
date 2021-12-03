@@ -137,265 +137,264 @@ using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Pledges;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Proposals;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Votes;
 
-namespace Opdex.Platform.Infrastructure
+namespace Opdex.Platform.Infrastructure;
+
+public static class PlatformInfrastructureServiceCollectionExtensions
 {
-    public static class PlatformInfrastructureServiceCollectionExtensions
+    public static IServiceCollection AddPlatformInfrastructureServices(this IServiceCollection services, CirrusConfiguration cirrusConfiguration,
+                                                                       CoinMarketCapConfiguration cmcConfiguration)
     {
-        public static IServiceCollection AddPlatformInfrastructureServices(this IServiceCollection services, CirrusConfiguration cirrusConfiguration,
-            CoinMarketCapConfiguration cmcConfiguration)
-        {
-            SqlMapper.AddTypeHandler(new DateTimeHandler());
-            SqlMapper.AddTypeHandler(new UInt128Handler());
-            SqlMapper.AddTypeHandler(new UInt256Handler());
-            SqlMapper.AddTypeHandler(new AddressHandler());
-            SqlMapper.AddTypeHandler(new FixedDecimalHandler());
-            SqlMapper.AddTypeHandler(new Sha256Handler());
+        SqlMapper.AddTypeHandler(new DateTimeHandler());
+        SqlMapper.AddTypeHandler(new UInt128Handler());
+        SqlMapper.AddTypeHandler(new UInt256Handler());
+        SqlMapper.AddTypeHandler(new AddressHandler());
+        SqlMapper.AddTypeHandler(new FixedDecimalHandler());
+        SqlMapper.AddTypeHandler(new Sha256Handler());
 
-            // Data Services
-            AddDataQueries(services);
-            AddDataCommands(services);
+        // Data Services
+        AddDataQueries(services);
+        AddDataCommands(services);
 
-            // Client Services
-            AddCirrusServices(services, cirrusConfiguration);
-            AddCmcServices(services, cmcConfiguration);
-            AddSignalRServices(services);
+        // Client Services
+        AddCirrusServices(services, cirrusConfiguration);
+        AddCmcServices(services, cmcConfiguration);
+        AddSignalRServices(services);
 
-            return services;
-        }
+        return services;
+    }
 
-        private static void AddDataCommands(IServiceCollection services)
-        {
-            // Markets
-            services.AddTransient<IRequestHandler<PersistMarketCommand, ulong>, PersistMarketCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistMarketPermissionCommand, ulong>, PersistMarketPermissionCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistMarketSnapshotCommand, bool>, PersistMarketSnapshotCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistMarketRouterCommand, bool>, PersistMarketRouterCommandHandler>();
+    private static void AddDataCommands(IServiceCollection services)
+    {
+        // Markets
+        services.AddTransient<IRequestHandler<PersistMarketCommand, ulong>, PersistMarketCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistMarketPermissionCommand, ulong>, PersistMarketPermissionCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistMarketSnapshotCommand, bool>, PersistMarketSnapshotCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistMarketRouterCommand, bool>, PersistMarketRouterCommandHandler>();
 
-            // Blocks
-            services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistIndexerLockCommand, bool>, PersistIndexerLockCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistIndexerUnlockCommand, bool>, PersistIndexerUnlockCommandHandler>();
-            services.AddTransient<IRequestHandler<ExecuteRewindToBlockCommand, bool>, ExecuteRewindToBlockCommandHandler>();
+        // Blocks
+        services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistIndexerLockCommand, bool>, PersistIndexerLockCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistIndexerUnlockCommand, bool>, PersistIndexerUnlockCommandHandler>();
+        services.AddTransient<IRequestHandler<ExecuteRewindToBlockCommand, bool>, ExecuteRewindToBlockCommandHandler>();
 
-            // Liquidity Pools
-            services.AddTransient<IRequestHandler<PersistLiquidityPoolCommand, ulong>, PersistLiquidityPoolCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistLiquidityPoolSnapshotCommand, bool>, PersistLiquidityPoolSnapshotCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistLiquidityPoolSummaryCommand, ulong>, PersistLiquidityPoolSummaryCommandHandler>();
+        // Liquidity Pools
+        services.AddTransient<IRequestHandler<PersistLiquidityPoolCommand, ulong>, PersistLiquidityPoolCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistLiquidityPoolSnapshotCommand, bool>, PersistLiquidityPoolSnapshotCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistLiquidityPoolSummaryCommand, ulong>, PersistLiquidityPoolSummaryCommandHandler>();
 
-            // Mining Pools
-            services.AddTransient<IRequestHandler<PersistMiningPoolCommand, ulong>, PersistMiningPoolCommandHandler>();
+        // Mining Pools
+        services.AddTransient<IRequestHandler<PersistMiningPoolCommand, ulong>, PersistMiningPoolCommandHandler>();
 
-            // Tokens
-            services.AddTransient<IRequestHandler<PersistTokenCommand, ulong>, PersistTokenCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTokenSnapshotCommand, bool>, PersistTokenSnapshotCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTokenSummaryCommand, ulong>, PersistTokenSummaryCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTokenAttributeCommand, bool>, PersistTokenAttributeCommandHandler>();
+        // Tokens
+        services.AddTransient<IRequestHandler<PersistTokenCommand, ulong>, PersistTokenCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistTokenSnapshotCommand, bool>, PersistTokenSnapshotCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistTokenSummaryCommand, ulong>, PersistTokenSummaryCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistTokenAttributeCommand, bool>, PersistTokenAttributeCommandHandler>();
 
-            // Transactions
-            services.AddTransient<IRequestHandler<PersistTransactionCommand, ulong>, PersistTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistTransactionLogCommand, bool>, PersistTransactionLogCommandHandler>();
+        // Transactions
+        services.AddTransient<IRequestHandler<PersistTransactionCommand, ulong>, PersistTransactionCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistTransactionLogCommand, bool>, PersistTransactionLogCommandHandler>();
 
-            // Token Distribution
-            services.AddTransient<IRequestHandler<PersistTokenDistributionCommand, bool>, PersistTokenDistributionCommandHandler>();
+        // Token Distribution
+        services.AddTransient<IRequestHandler<PersistTokenDistributionCommand, bool>, PersistTokenDistributionCommandHandler>();
 
-            // Mining Governances
-            services.AddTransient<IRequestHandler<PersistMiningGovernanceCommand, ulong>, PersistMiningGovernanceCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistMiningGovernanceNominationCommand, ulong>, PersistMiningGovernanceNominationCommandHandler>();
+        // Mining Governances
+        services.AddTransient<IRequestHandler<PersistMiningGovernanceCommand, ulong>, PersistMiningGovernanceCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistMiningGovernanceNominationCommand, ulong>, PersistMiningGovernanceNominationCommandHandler>();
 
-            // Deployers
-            services.AddTransient<IRequestHandler<PersistDeployerCommand, ulong>, PersistDeployerCommandHandler>();
+        // Deployers
+        services.AddTransient<IRequestHandler<PersistDeployerCommand, ulong>, PersistDeployerCommandHandler>();
 
-            // Vault
-            services.AddTransient<IRequestHandler<PersistVaultCommand, ulong>, PersistVaultCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistVaultCertificateCommand, bool>, PersistVaultCertificateCommandHandler>();
+        // Vault
+        services.AddTransient<IRequestHandler<PersistVaultCommand, ulong>, PersistVaultCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistVaultCertificateCommand, bool>, PersistVaultCertificateCommandHandler>();
 
-            // Vault Governances
-            services.AddTransient<IRequestHandler<PersistVaultGovernanceCommand, ulong>, PersistVaultGovernanceCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistVaultGovernanceCertificateCommand, ulong>, PersistVaultGovernanceCertificateCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistVaultProposalCommand, ulong>, PersistVaultProposalCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistVaultProposalPledgeCommand, ulong>, PersistVaultProposalPledgeCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistVaultProposalVoteCommand, ulong>, PersistVaultProposalVoteCommandHandler>();
+        // Vault Governances
+        services.AddTransient<IRequestHandler<PersistVaultGovernanceCommand, ulong>, PersistVaultGovernanceCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistVaultGovernanceCertificateCommand, ulong>, PersistVaultGovernanceCertificateCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistVaultProposalCommand, ulong>, PersistVaultProposalCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistVaultProposalPledgeCommand, ulong>, PersistVaultProposalPledgeCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistVaultProposalVoteCommand, ulong>, PersistVaultProposalVoteCommandHandler>();
 
-            // Addresses
-            services.AddTransient<IRequestHandler<PersistAddressBalanceCommand, ulong>, PersistAddressBalanceCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistAddressMiningCommand, ulong>, PersistAddressMiningCommandHandler>();
-            services.AddTransient<IRequestHandler<PersistAddressStakingCommand, ulong>, PersistAddressStakingCommandHandler>();
-        }
+        // Addresses
+        services.AddTransient<IRequestHandler<PersistAddressBalanceCommand, ulong>, PersistAddressBalanceCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistAddressMiningCommand, ulong>, PersistAddressMiningCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistAddressStakingCommand, ulong>, PersistAddressStakingCommandHandler>();
+    }
 
-        private static void AddDataQueries(IServiceCollection services)
-        {
-            services.AddScoped<IDbContext, DbContext>();
+    private static void AddDataQueries(IServiceCollection services)
+    {
+        services.AddScoped<IDbContext, DbContext>();
 
-            // Admins
-            services.AddTransient<IRequestHandler<SelectAdminByAddressQuery, Admin>, SelectAdminByAddressQueryHandler>();
+        // Admins
+        services.AddTransient<IRequestHandler<SelectAdminByAddressQuery, Admin>, SelectAdminByAddressQueryHandler>();
 
-            // Deployer
-            services.AddTransient<IRequestHandler<SelectActiveDeployerQuery, Deployer>, SelectActiveDeployerQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectDeployerByAddressQuery, Deployer>, SelectDeployerByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectDeployersByModifiedBlockQuery, IEnumerable<Deployer>>, SelectDeployersByModifiedBlockQueryHandler>();
+        // Deployer
+        services.AddTransient<IRequestHandler<SelectActiveDeployerQuery, Deployer>, SelectActiveDeployerQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectDeployerByAddressQuery, Deployer>, SelectDeployerByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectDeployersByModifiedBlockQuery, IEnumerable<Deployer>>, SelectDeployersByModifiedBlockQueryHandler>();
 
-            // Market
-            services.AddTransient<IRequestHandler<SelectMarketSnapshotWithFilterQuery, MarketSnapshot>, SelectMarketSnapshotWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMarketByAddressQuery, Market>, SelectMarketByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshot>>, SelectMarketSnapshotsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMarketByIdQuery, Market>, SelectMarketByIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMarketPermissionQuery, MarketPermission>, SelectMarketPermissionQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMarketPermissionsByUserQuery, IEnumerable<MarketPermissionType>>, SelectMarketPermissionsByUserQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectActiveMarketRouterByMarketIdQuery, MarketRouter>, SelectActiveMarketRouterByMarketIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMarketRouterByAddressQuery, MarketRouter>, SelectMarketRouterByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectAllMarketsQuery, IEnumerable<Market>>, SelectAllMarketsQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMarketPermissionsByModifiedBlockQuery, IEnumerable<MarketPermission>>, SelectMarketPermissionsByModifiedBlockQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMarketsByModifiedBlockQuery, IEnumerable<Market>>, SelectMarketsByModifiedBlockQueryHandler>();
+        // Market
+        services.AddTransient<IRequestHandler<SelectMarketSnapshotWithFilterQuery, MarketSnapshot>, SelectMarketSnapshotWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMarketByAddressQuery, Market>, SelectMarketByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshot>>, SelectMarketSnapshotsWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMarketByIdQuery, Market>, SelectMarketByIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMarketPermissionQuery, MarketPermission>, SelectMarketPermissionQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMarketPermissionsByUserQuery, IEnumerable<MarketPermissionType>>, SelectMarketPermissionsByUserQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectActiveMarketRouterByMarketIdQuery, MarketRouter>, SelectActiveMarketRouterByMarketIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMarketRouterByAddressQuery, MarketRouter>, SelectMarketRouterByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectAllMarketsQuery, IEnumerable<Market>>, SelectAllMarketsQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMarketPermissionsByModifiedBlockQuery, IEnumerable<MarketPermission>>, SelectMarketPermissionsByModifiedBlockQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMarketsByModifiedBlockQuery, IEnumerable<Market>>, SelectMarketsByModifiedBlockQueryHandler>();
 
-            // Blocks
-            services.AddTransient<IRequestHandler<SelectLatestBlockQuery, Block>, SelectLatestBlockQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectBlockByHeightQuery, Block>, SelectBlockByHeightQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectBlockByMedianTimeQuery, Block>, SelectBlockByMedianTimeQueryHandler>();
+        // Blocks
+        services.AddTransient<IRequestHandler<SelectLatestBlockQuery, Block>, SelectLatestBlockQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectBlockByHeightQuery, Block>, SelectBlockByHeightQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectBlockByMedianTimeQuery, Block>, SelectBlockByMedianTimeQueryHandler>();
 
-            // Liquidity Pools
-            services.AddTransient<IRequestHandler<SelectLiquidityPoolByAddressQuery, LiquidityPool>, SelectLiquidityPoolByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>, SelectLiquidityPoolsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshot>>, SelectLiquidityPoolSnapshotsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectLiquidityPoolBySrcTokenIdAndMarketIdQuery, LiquidityPool>, SelectLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>, SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectLiquidityPoolByIdQuery, LiquidityPool>, SelectLiquidityPoolByIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectLiquidityPoolSnapshotWithFilterQuery, LiquidityPoolSnapshot>, SelectLiquidityPoolSnapshotWithFilterQueryHandler>();
+        // Liquidity Pools
+        services.AddTransient<IRequestHandler<SelectLiquidityPoolByAddressQuery, LiquidityPool>, SelectLiquidityPoolByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>, SelectLiquidityPoolsWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshot>>, SelectLiquidityPoolSnapshotsWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectLiquidityPoolBySrcTokenIdAndMarketIdQuery, LiquidityPool>, SelectLiquidityPoolBySrcTokenIdAndMarketIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>, SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectLiquidityPoolByIdQuery, LiquidityPool>, SelectLiquidityPoolByIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectLiquidityPoolSnapshotWithFilterQuery, LiquidityPoolSnapshot>, SelectLiquidityPoolSnapshotWithFilterQueryHandler>();
 
-            // Mining Pools
-            services.AddTransient<IRequestHandler<SelectMiningPoolsWithFilterQuery, IEnumerable<MiningPool>>, SelectMiningPoolsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningPoolByIdQuery, MiningPool>, SelectMiningPoolByIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningPoolByLiquidityPoolIdQuery, MiningPool>, SelectMiningPoolByLiquidityPoolIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningPoolByAddressQuery, MiningPool>, SelectMiningPoolByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningPoolsByModifiedBlockQuery, IEnumerable<MiningPool>>, SelectMiningPoolsByModifiedBlockQueryHandler>();
+        // Mining Pools
+        services.AddTransient<IRequestHandler<SelectMiningPoolsWithFilterQuery, IEnumerable<MiningPool>>, SelectMiningPoolsWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMiningPoolByIdQuery, MiningPool>, SelectMiningPoolByIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMiningPoolByLiquidityPoolIdQuery, MiningPool>, SelectMiningPoolByLiquidityPoolIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMiningPoolByAddressQuery, MiningPool>, SelectMiningPoolByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMiningPoolsByModifiedBlockQuery, IEnumerable<MiningPool>>, SelectMiningPoolsByModifiedBlockQueryHandler>();
 
-            // Tokens
-            services.AddTransient<IRequestHandler<SelectTokenByIdQuery, Token>, SelectTokenByIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTokenByAddressQuery, Token>, SelectTokenByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTokensWithFilterQuery, IEnumerable<Token>>, SelectTokensWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshot>>, SelectTokenSnapshotsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>, SelectTokenSnapshotWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>, SelectLatestTokenDistributionQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, SelectTokenAttributesByTokenIdQueryHandler>();
+        // Tokens
+        services.AddTransient<IRequestHandler<SelectTokenByIdQuery, Token>, SelectTokenByIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTokenByAddressQuery, Token>, SelectTokenByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTokensWithFilterQuery, IEnumerable<Token>>, SelectTokensWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshot>>, SelectTokenSnapshotsWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>, SelectTokenSnapshotWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>, SelectLatestTokenDistributionQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, SelectTokenAttributesByTokenIdQueryHandler>();
 
-            // Mining Governances
-            services.AddTransient<IRequestHandler<SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningGovernancesWithFilterQuery, IEnumerable<MiningGovernance>>, SelectMiningGovernancesWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningGovernanceByAddressQuery, MiningGovernance>, SelectMiningGovernanceByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningGovernanceByTokenIdQuery, MiningGovernance>, SelectMiningGovernanceByTokenIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery, MiningGovernanceNomination>, SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningGovernancesByModifiedBlockQuery, IEnumerable<MiningGovernance>>, SelectMiningGovernancesByModifiedBlockQueryHandler>();
+        // Mining Governances
+        services.AddTransient<IRequestHandler<SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>, SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMiningGovernancesWithFilterQuery, IEnumerable<MiningGovernance>>, SelectMiningGovernancesWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMiningGovernanceByAddressQuery, MiningGovernance>, SelectMiningGovernanceByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMiningGovernanceByTokenIdQuery, MiningGovernance>, SelectMiningGovernanceByTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQuery, MiningGovernanceNomination>, SelectMiningGovernanceNominationByLiquidityAndMiningPoolIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMiningGovernancesByModifiedBlockQuery, IEnumerable<MiningGovernance>>, SelectMiningGovernancesByModifiedBlockQueryHandler>();
 
-            // Transactions
-            services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, SelectTransactionLogsByTransactionIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTransactionsWithFilterQuery, IEnumerable<Transaction>>, SelectTransactionsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectTransactionsForSnapshotRewindQuery, IEnumerable<Transaction>>, SelectTransactionsForSnapshotRewindQueryHandler>();
+        // Transactions
+        services.AddTransient<IRequestHandler<SelectTransactionByHashQuery, Transaction>, SelectTransactionByHashQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, SelectTransactionLogsByTransactionIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTransactionsWithFilterQuery, IEnumerable<Transaction>>, SelectTransactionsWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectTransactionsForSnapshotRewindQuery, IEnumerable<Transaction>>, SelectTransactionsForSnapshotRewindQueryHandler>();
 
-            // Vault
-            services.AddTransient<IRequestHandler<SelectVaultsWithFilterQuery, IEnumerable<Vault>>, SelectVaultsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultByAddressQuery, Vault>, SelectVaultByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultByTokenIdQuery, Vault>, SelectVaultByTokenIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesByOwnerAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultsByModifiedBlockQuery, IEnumerable<Vault>>, SelectVaultsByModifiedBlockQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultCertificatesByModifiedBlockQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesByModifiedBlockQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultByIdQuery, Vault>, SelectVaultByIdQueryHandler>();
+        // Vault
+        services.AddTransient<IRequestHandler<SelectVaultsWithFilterQuery, IEnumerable<Vault>>, SelectVaultsWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultByAddressQuery, Vault>, SelectVaultByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultByTokenIdQuery, Vault>, SelectVaultByTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesByOwnerAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultsByModifiedBlockQuery, IEnumerable<Vault>>, SelectVaultsByModifiedBlockQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultCertificatesByModifiedBlockQuery, IEnumerable<VaultCertificate>>, SelectVaultCertificatesByModifiedBlockQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultByIdQuery, Vault>, SelectVaultByIdQueryHandler>();
 
-            // Vault Governance
-            services.AddTransient<IRequestHandler<SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery, IEnumerable<VaultGovernanceCertificate>>, SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery, VaultProposalPledge>, SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery, VaultProposalVote>, SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultProposalByVaultIdAndPublicIdQuery, VaultProposal>, SelectVaultProposalByVaultIdAndPublicIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultGovernanceByAddressQuery, VaultGovernance>, SelectVaultGovernanceByAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectVaultGovernanceByIdQuery, VaultGovernance>, SelectVaultGovernanceByIdQueryHandler>();
+        // Vault Governance
+        services.AddTransient<IRequestHandler<SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery, IEnumerable<VaultGovernanceCertificate>>, SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery, VaultProposalPledge>, SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery, VaultProposalVote>, SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultProposalByVaultIdAndPublicIdQuery, VaultProposal>, SelectVaultProposalByVaultIdAndPublicIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultGovernanceByAddressQuery, VaultGovernance>, SelectVaultGovernanceByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultGovernanceByIdQuery, VaultGovernance>, SelectVaultGovernanceByIdQueryHandler>();
 
-            // Addresses
-            services.AddTransient<IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>, SelectAddressBalanceByOwnerAndTokenIdQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>, SelectAddressMiningByMiningPoolIdAndOwnerQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>, SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectAddressBalancesWithFilterQuery, IEnumerable<AddressBalance>>, SelectAddressBalancesWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningPositionsWithFilterQuery, IEnumerable<AddressMining>>, SelectMiningPositionsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectStakingPositionsWithFilterQuery, IEnumerable<AddressStaking>>, SelectStakingPositionsWithFilterQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectAddressBalancesByModifiedBlockQuery, IEnumerable<AddressBalance>>, SelectAddressBalancesByModifiedBlockQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectMiningPositionsByModifiedBlockQuery, IEnumerable<AddressMining>>, SelectMiningPositionsByModifiedBlockQueryHandler>();
-            services.AddTransient<IRequestHandler<SelectStakingPositionsByModifiedBlockQuery, IEnumerable<AddressStaking>>, SelectStakingPositionsByModifiedBlockQueryHandler>();
+        // Addresses
+        services.AddTransient<IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>, SelectAddressBalanceByOwnerAndTokenIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>, SelectAddressMiningByMiningPoolIdAndOwnerQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>, SelectAddressStakingByLiquidityPoolIdAndOwnerQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectAddressBalancesWithFilterQuery, IEnumerable<AddressBalance>>, SelectAddressBalancesWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMiningPositionsWithFilterQuery, IEnumerable<AddressMining>>, SelectMiningPositionsWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectStakingPositionsWithFilterQuery, IEnumerable<AddressStaking>>, SelectStakingPositionsWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectAddressBalancesByModifiedBlockQuery, IEnumerable<AddressBalance>>, SelectAddressBalancesByModifiedBlockQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMiningPositionsByModifiedBlockQuery, IEnumerable<AddressMining>>, SelectMiningPositionsByModifiedBlockQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectStakingPositionsByModifiedBlockQuery, IEnumerable<AddressStaking>>, SelectStakingPositionsByModifiedBlockQueryHandler>();
 
-            // Indexer
-            services.AddTransient<IRequestHandler<SelectIndexerLockQuery, IndexLock>, SelectIndexerLockQueryHandler>();
-        }
+        // Indexer
+        services.AddTransient<IRequestHandler<SelectIndexerLockQuery, IndexLock>, SelectIndexerLockQueryHandler>();
+    }
 
-        private static void AddCirrusServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)
-        {
-            // Modules
-            services.AddHttpClient<ISmartContractsModule, SmartContractsModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
-                .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
-                .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
+    private static void AddCirrusServices(IServiceCollection services, CirrusConfiguration cirrusConfiguration)
+    {
+        // Modules
+        services.AddHttpClient<ISmartContractsModule, SmartContractsModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
-            services.AddHttpClient<IBlockStoreModule, BlockStoreModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
-                .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
-                .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
+        services.AddHttpClient<IBlockStoreModule, BlockStoreModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
-            services.AddHttpClient<IMempoolModule, MempoolModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
-                .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
-                .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
+        services.AddHttpClient<IMempoolModule, MempoolModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
-            services.AddHttpClient<INodeModule, NodeModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
-                .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
-                .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
+        services.AddHttpClient<INodeModule, NodeModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
-            services.AddHttpClient<IWalletModule, WalletModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
-                .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
-                .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
+        services.AddHttpClient<IWalletModule, WalletModule>(client => client.BuildCirrusHttpClient(cirrusConfiguration))
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetRetryPolicy())
+            .AddPolicyHandler(CirrusHttpClientBuilder.GetCircuitBreakerPolicy());
 
-            // Queries
-            services.AddTransient<IRequestHandler<CallCirrusGetBestBlockReceiptQuery, BlockReceipt>, CallCirrusGetBestBlockReceiptQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetBlockReceiptByHashQuery, BlockReceipt>, CallCirrusGetBlockReceiptByHashQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetTransactionByHashQuery, Transaction>, CallCirrusGetTransactionByHashQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetExistsInMempoolQuery, bool>, CallCirrusGetExistsInMempoolQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetStandardTokenContractSummaryQuery, StandardTokenContractSummary>, CallCirrusGetStandardTokenContractSummaryQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetMiningPoolRewardPerTokenMiningQuery, UInt256>, CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenAllowanceQuery, UInt256>, CallCirrusGetSrcTokenAllowanceQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, ReservesReceipt>, CallCirrusGetOpdexLiquidityPoolReservesQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetAmountOutStandardQuoteQuery, UInt256>, CallCirrusGetAmountOutStandardQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetAmountInStandardQuoteQuery, UInt256>, CallCirrusGetAmountInStandardQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetAmountOutMultiHopQuoteQuery, UInt256>, CallCirrusGetAmountOutMultiHopQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetAmountInMultiHopQuoteQuery, UInt256>, CallCirrusGetAmountInMultiHopQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetLiquidityAmountInQuoteQuery, UInt256>, CallCirrusGetLiquidityAmountInQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetBlockHashByHeightQuery, Sha256>, CallCirrusGetBlockHashByHeightQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, UInt256>, CallCirrusGetSrcTokenBalanceQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetMiningGovernanceNominationsSummaryQuery, IEnumerable<MiningGovernanceContractNominationSummary>>, CallCirrusGetMiningGovernanceNominationsSummaryQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>, CallCirrusLocalCallSmartContractMethodCommandHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetAddressCrsBalanceQuery, ulong>, CallCirrusGetAddressCrsBalanceQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetMiningBalanceForAddressQuery, UInt256>, CallCirrusGetMiningBalanceForAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetStakingWeightForAddressQuery, UInt256>, CallCirrusGetStakingWeightForAddressQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetSmartContractPropertyQuery, SmartContractMethodParameter>, CallCirrusGetSmartContractPropertyQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetVaultContractCertificateSummariesByOwnerQuery, IEnumerable<VaultContractCertificateSummary>>, CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>, CallCirrusGetMarketPermissionAuthorizationQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusVerifyMessageQuery, bool>, CallCirrusVerifyMessageQueryHandler>();
+        // Queries
+        services.AddTransient<IRequestHandler<CallCirrusGetBestBlockReceiptQuery, BlockReceipt>, CallCirrusGetBestBlockReceiptQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetBlockReceiptByHashQuery, BlockReceipt>, CallCirrusGetBlockReceiptByHashQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetTransactionByHashQuery, Transaction>, CallCirrusGetTransactionByHashQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetExistsInMempoolQuery, bool>, CallCirrusGetExistsInMempoolQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetStandardTokenContractSummaryQuery, StandardTokenContractSummary>, CallCirrusGetStandardTokenContractSummaryQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetMiningPoolRewardPerTokenMiningQuery, UInt256>, CallCirrusGetMiningPoolRewardPerTokenMiningQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenAllowanceQuery, UInt256>, CallCirrusGetSrcTokenAllowanceQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetOpdexLiquidityPoolReservesQuery, ReservesReceipt>, CallCirrusGetOpdexLiquidityPoolReservesQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetAmountOutStandardQuoteQuery, UInt256>, CallCirrusGetAmountOutStandardQuoteQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetAmountInStandardQuoteQuery, UInt256>, CallCirrusGetAmountInStandardQuoteQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetAmountOutMultiHopQuoteQuery, UInt256>, CallCirrusGetAmountOutMultiHopQuoteQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetAmountInMultiHopQuoteQuery, UInt256>, CallCirrusGetAmountInMultiHopQuoteQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetLiquidityAmountInQuoteQuery, UInt256>, CallCirrusGetLiquidityAmountInQuoteQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetBlockHashByHeightQuery, Sha256>, CallCirrusGetBlockHashByHeightQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetSrcTokenBalanceQuery, UInt256>, CallCirrusGetSrcTokenBalanceQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetMiningGovernanceNominationsSummaryQuery, IEnumerable<MiningGovernanceContractNominationSummary>>, CallCirrusGetMiningGovernanceNominationsSummaryQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusLocalCallSmartContractMethodCommand, TransactionQuote>, CallCirrusLocalCallSmartContractMethodCommandHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetAddressCrsBalanceQuery, ulong>, CallCirrusGetAddressCrsBalanceQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetMiningBalanceForAddressQuery, UInt256>, CallCirrusGetMiningBalanceForAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetStakingWeightForAddressQuery, UInt256>, CallCirrusGetStakingWeightForAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetSmartContractPropertyQuery, SmartContractMethodParameter>, CallCirrusGetSmartContractPropertyQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetVaultContractCertificateSummariesByOwnerQuery, IEnumerable<VaultContractCertificateSummary>>, CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>, CallCirrusGetMarketPermissionAuthorizationQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusVerifyMessageQuery, bool>, CallCirrusVerifyMessageQueryHandler>();
 
-            // Commands
-            services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, Sha256>, CallCirrusCallSmartContractMethodCommandHandler>();
-            services.AddTransient<IRequestHandler<CallCirrusCreateSmartContractCommand, Sha256>, CallCirrusCreateSmartContractCommandHandler>();
-        }
+        // Commands
+        services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, Sha256>, CallCirrusCallSmartContractMethodCommandHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusCreateSmartContractCommand, Sha256>, CallCirrusCreateSmartContractCommandHandler>();
+    }
 
-        private static void AddCmcServices(IServiceCollection services, CoinMarketCapConfiguration cmcConfiguration)
-        {
-            // Modules
-            services.AddHttpClient<IQuotesModule, QuotesModule>(client => client.BuildHttpClient(cmcConfiguration))
-                .AddPolicyHandler(CmcHttpClientBuilder.GetRetryPolicy())
-                .AddPolicyHandler(CmcHttpClientBuilder.GetCircuitBreakerPolicy());
+    private static void AddCmcServices(IServiceCollection services, CoinMarketCapConfiguration cmcConfiguration)
+    {
+        // Modules
+        services.AddHttpClient<IQuotesModule, QuotesModule>(client => client.BuildHttpClient(cmcConfiguration))
+            .AddPolicyHandler(CmcHttpClientBuilder.GetRetryPolicy())
+            .AddPolicyHandler(CmcHttpClientBuilder.GetCircuitBreakerPolicy());
 
-            // Queries
-            services.AddTransient<IRequestHandler<CallCmcGetStraxLatestQuoteQuery, decimal>, CallCmcGetStraxLatestQuoteQueryHandler>();
-            services.AddTransient<IRequestHandler<CallCmcGetStraxHistoricalQuoteQuery, decimal>, CallCmcGetStraxHistoricalQuoteQueryHandler>();
-        }
+        // Queries
+        services.AddTransient<IRequestHandler<CallCmcGetStraxLatestQuoteQuery, decimal>, CallCmcGetStraxLatestQuoteQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCmcGetStraxHistoricalQuoteQuery, decimal>, CallCmcGetStraxHistoricalQuoteQueryHandler>();
+    }
 
-        private static void AddSignalRServices(IServiceCollection services)
-        {
-            services.AddTransient<IRequestHandler<NotifyUserOfSuccessfulAuthenticationCommand, Unit>, NotifyUserOfSuccessfulAuthenticationCommandHandler>();
-            services.AddTransient<IRequestHandler<NotifyUserOfBroadcastTransactionCommand, Unit>, NotifyUserOfBroadcastTransactionCommandHandler>();
-            services.AddTransient<IRequestHandler<NotifyUserOfMinedTransactionCommand, Unit>, NotifyUserOfMinedTransactionCommandHandler>();
-        }
+    private static void AddSignalRServices(IServiceCollection services)
+    {
+        services.AddTransient<IRequestHandler<NotifyUserOfSuccessfulAuthenticationCommand, Unit>, NotifyUserOfSuccessfulAuthenticationCommandHandler>();
+        services.AddTransient<IRequestHandler<NotifyUserOfBroadcastTransactionCommand, Unit>, NotifyUserOfBroadcastTransactionCommandHandler>();
+        services.AddTransient<IRequestHandler<NotifyUserOfMinedTransactionCommand, Unit>, NotifyUserOfMinedTransactionCommandHandler>();
     }
 }

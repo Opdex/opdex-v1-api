@@ -11,27 +11,26 @@ using Opdex.Platform.Domain.Models.Transactions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Vaults.Quotes
+namespace Opdex.Platform.Application.EntryHandlers.Vaults.Quotes;
+
+public class CreateClaimPendingVaultOwnershipTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateClaimPendingVaultOwnershipTransactionQuoteCommand>
 {
-    public class CreateClaimPendingVaultOwnershipTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateClaimPendingVaultOwnershipTransactionQuoteCommand>
+    private const string MethodName = VaultConstants.Methods.ClaimPendingOwnership;
+    private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+
+    public CreateClaimPendingVaultOwnershipTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
+                                                                          IMediator mediator,
+                                                                          OpdexConfiguration config) : base(quoteAssembler, mediator, config)
     {
-        private const string MethodName = VaultConstants.Methods.ClaimPendingOwnership;
-        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+    }
 
-        public CreateClaimPendingVaultOwnershipTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                                              IMediator mediator,
-                                                                              OpdexConfiguration config) : base(quoteAssembler, mediator, config)
-        {
-        }
+    public override async Task<TransactionQuoteDto> Handle(CreateClaimPendingVaultOwnershipTransactionQuoteCommand request, CancellationToken cancellationToken)
+    {
+        // ensure vault exists, if not throw to return 404
+        _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
 
-        public override async Task<TransactionQuoteDto> Handle(CreateClaimPendingVaultOwnershipTransactionQuoteCommand request, CancellationToken cancellationToken)
-        {
-            // ensure vault exists, if not throw to return 404
-            _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
+        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, CrsToSend, MethodName, _callbackEndpoint);
 
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, CrsToSend, MethodName, _callbackEndpoint);
-
-            return await ExecuteAsync(quoteRequest, cancellationToken);
-        }
+        return await ExecuteAsync(quoteRequest, cancellationToken);
     }
 }

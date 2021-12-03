@@ -4,32 +4,31 @@ using Opdex.Platform.Application.Exceptions;
 using System;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.WebApi.Middleware
+namespace Opdex.Platform.WebApi.Middleware;
+
+/// <summary>
+/// Provides middleware for returning redirect responses based on exceptions thrown.
+/// </summary>
+public class RedirectToResourceMiddleware
 {
-    /// <summary>
-    /// Provides middleware for returning redirect responses based on exceptions thrown.
-    /// </summary>
-    public class RedirectToResourceMiddleware
+    private readonly RequestDelegate _next;
+
+    public RedirectToResourceMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
+        _next = next ?? throw new ArgumentNullException(nameof(next));
+    }
 
-        public RedirectToResourceMiddleware(RequestDelegate next)
+    public async Task Invoke(HttpContext httpContext)
+    {
+        try
         {
-            _next = next ?? throw new ArgumentNullException(nameof(next));
+            await _next(httpContext);
         }
-
-        public async Task Invoke(HttpContext httpContext)
+        catch (TokenAlreadyIndexedException e)
         {
-            try
-            {
-                await _next(httpContext);
-            }
-            catch (TokenAlreadyIndexedException e)
-            {
-                httpContext.Response.Headers.Add(HeaderNames.Location, $"/tokens/{e.Token}");
-                httpContext.Response.StatusCode = StatusCodes.Status303SeeOther;
-                await httpContext.Response.CompleteAsync();
-            }
+            httpContext.Response.Headers.Add(HeaderNames.Location, $"/tokens/{e.Token}");
+            httpContext.Response.StatusCode = StatusCodes.Status303SeeOther;
+            await httpContext.Response.CompleteAsync();
         }
     }
 }

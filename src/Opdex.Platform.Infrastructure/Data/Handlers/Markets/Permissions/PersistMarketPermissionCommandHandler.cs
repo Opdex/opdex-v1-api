@@ -8,12 +8,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions;
+
+public class PersistMarketPermissionCommandHandler : IRequestHandler<PersistMarketPermissionCommand, ulong>
 {
-    public class PersistMarketPermissionCommandHandler : IRequestHandler<PersistMarketPermissionCommand, ulong>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO market_permission (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO market_permission (
                 {nameof(MarketPermissionEntity.MarketId)},
                 {nameof(MarketPermissionEntity.User)},
                 {nameof(MarketPermissionEntity.Permission)},
@@ -32,47 +32,46 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets.Permissions
               );
               SELECT LAST_INSERT_ID();";
 
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE market_permission
+    private static readonly string UpdateSqlCommand =
+        $@"UPDATE market_permission
                 SET
                     {nameof(MarketPermissionEntity.IsAuthorized)} = @{nameof(MarketPermissionEntity.IsAuthorized)},
                     {nameof(MarketPermissionEntity.Blame)} = @{nameof(MarketPermissionEntity.Blame)},
                     {nameof(MarketPermissionEntity.ModifiedBlock)} = @{nameof(MarketPermissionEntity.ModifiedBlock)}
                 WHERE {nameof(MarketPermissionEntity.Id)} = @{nameof(MarketPermissionEntity.Id)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistMarketPermissionCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMarketPermissionCommandHandler> logger)
+    public PersistMarketPermissionCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMarketPermissionCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<ulong> Handle(PersistMarketPermissionCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var entity = _mapper.Map<MarketPermissionEntity>(request.MarketPermission);
+
+            var isUpdate = entity.Id >= 1;
+
+            var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+
+            var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+
+            var result = await _context.ExecuteScalarAsync<ulong>(command);
+
+            return isUpdate ? entity.Id : result;
         }
-
-        public async Task<ulong> Handle(PersistMarketPermissionCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var entity = _mapper.Map<MarketPermissionEntity>(request.MarketPermission);
+            _logger.LogError(ex, $"Failure persisting {request.MarketPermission}.");
 
-                var isUpdate = entity.Id >= 1;
-
-                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-
-                var result = await _context.ExecuteScalarAsync<ulong>(command);
-
-                return isUpdate ? entity.Id : result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure persisting {request.MarketPermission}.");
-
-                return 0;
-            }
+            return 0;
         }
     }
 }

@@ -8,25 +8,24 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.LiquidityPools
+namespace Opdex.Platform.Application.Handlers.LiquidityPools;
+
+public class RetrieveLiquidityAmountInQuoteQueryHandler : IRequestHandler<RetrieveLiquidityAmountInQuoteQuery, UInt256>
 {
-    public class RetrieveLiquidityAmountInQuoteQueryHandler : IRequestHandler<RetrieveLiquidityAmountInQuoteQuery, UInt256>
+    private readonly IMediator _mediator;
+
+    public RetrieveLiquidityAmountInQuoteQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveLiquidityAmountInQuoteQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
+    public async Task<UInt256> Handle(RetrieveLiquidityAmountInQuoteQuery request, CancellationToken cancellationToken)
+    {
+        var reserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(request.Pool), cancellationToken);
 
-        public async Task<UInt256> Handle(RetrieveLiquidityAmountInQuoteQuery request, CancellationToken cancellationToken)
-        {
-            var reserves = await _mediator.Send(new CallCirrusGetOpdexLiquidityPoolReservesQuery(request.Pool), cancellationToken);
+        var reserveIn = request.TokenIn == Address.Cirrus ? reserves.Crs : reserves.Src;
+        var reserveOut = request.TokenIn == Address.Cirrus ? reserves.Src : reserves.Crs;
 
-            var reserveIn = request.TokenIn == Address.Cirrus ? reserves.Crs : reserves.Src;
-            var reserveOut = request.TokenIn == Address.Cirrus ? reserves.Src : reserves.Crs;
-
-            return await _mediator.Send(new CallCirrusGetLiquidityAmountInQuoteQuery(request.AmountIn, reserveIn, reserveOut, request.Router), cancellationToken);
-        }
+        return await _mediator.Send(new CallCirrusGetLiquidityAmountInQuoteQuery(request.AmountIn, reserveIn, reserveOut, request.Router), cancellationToken);
     }
 }

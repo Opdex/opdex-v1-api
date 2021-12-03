@@ -5,117 +5,116 @@ using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Validation.Wallets;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.Wallets
+namespace Opdex.Platform.WebApi.Tests.Validation.Wallets;
+
+public class MiningPositionFilterParametersValidatorTests
 {
-    public class MiningPositionFilterParametersValidatorTests
+    private readonly MiningPositionFilterParametersValidator _validator;
+
+    public MiningPositionFilterParametersValidatorTests()
     {
-        private readonly MiningPositionFilterParametersValidator _validator;
+        _validator = new MiningPositionFilterParametersValidator();
+    }
 
-        public MiningPositionFilterParametersValidatorTests()
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void MiningPools_Items_Invalid(Address address)
+    {
+        // Arrange
+        var request = new MiningPositionFilterParameters
         {
-            _validator = new MiningPositionFilterParametersValidator();
-        }
+            MiningPools = new Address[] { address }
+        };
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void MiningPools_Items_Invalid(Address address)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.MiningPools);
+    }
+
+    [Fact]
+    public void MiningPools_Items_Valid()
+    {
+        // Arrange
+        var request = new MiningPositionFilterParameters
         {
-            // Arrange
-            var request = new MiningPositionFilterParameters
-            {
-                MiningPools = new Address[] { address }
-            };
+            MiningPools = new Address[] { new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh") }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.MiningPools);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.MiningPools);
+    }
 
-        [Fact]
-        public void MiningPools_Items_Valid()
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void LiquidityPools_Items_Invalid(Address address)
+    {
+        // Arrange
+        var request = new MiningPositionFilterParameters
         {
-            // Arrange
-            var request = new MiningPositionFilterParameters
-            {
-                MiningPools = new Address[] { new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh") }
-            };
+            LiquidityPools = new Address[] { address }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.MiningPools);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.LiquidityPools);
+    }
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void LiquidityPools_Items_Invalid(Address address)
+    [Fact]
+    public void LiquidityPools_Items_Valid()
+    {
+        // Arrange
+        var request = new MiningPositionFilterParameters
         {
-            // Arrange
-            var request = new MiningPositionFilterParameters
-            {
-                LiquidityPools = new Address[] { address }
-            };
+            LiquidityPools = new Address[] { new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh") }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.LiquidityPools);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.LiquidityPools);
+    }
 
-        [Fact]
-        public void LiquidityPools_Items_Valid()
+    [Fact]
+    public void Limit_Invalid()
+    {
+        // Arrange
+        var request = new MiningPositionFilterParameters
         {
-            // Arrange
-            var request = new MiningPositionFilterParameters
-            {
-                LiquidityPools = new Address[] { new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh") }
-            };
+            Limit = Cursor.DefaultMaxLimit + 1
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.LiquidityPools);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Limit);
+    }
 
-        [Fact]
-        public void Limit_Invalid()
+    [Fact]
+    public void Limit_Valid()
+    {
+        // Arrange
+        var request = new MiningPositionFilterParameters
         {
-            // Arrange
-            var request = new MiningPositionFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit + 1
-            };
+            Limit = Cursor.DefaultMaxLimit
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Limit);
-        }
-
-        [Fact]
-        public void Limit_Valid()
-        {
-            // Arrange
-            var request = new MiningPositionFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Limit);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Limit);
     }
 }

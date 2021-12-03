@@ -8,19 +8,18 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules
-{
-    public class MempoolModule : ApiClientBase, IMempoolModule
-    {
-        public MempoolModule(HttpClient httpClient, ILogger<MempoolModule> logger)
-            : base(httpClient, logger, StratisFullNode.SerializerSettings)
-        {
-        }
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Modules;
 
-        /// <inheritdoc />
-        public async Task<IEnumerable<Sha256>> GetRawMempoolAsync(CancellationToken cancellationToken)
-        {
-            return await GetAsync<IEnumerable<Sha256>>(CirrusUriHelper.Mempool.GetRawMempool, cancellationToken);
-        }
+public class MempoolModule : ApiClientBase, IMempoolModule
+{
+    public MempoolModule(HttpClient httpClient, ILogger<MempoolModule> logger)
+        : base(httpClient, logger, StratisFullNode.SerializerSettings)
+    {
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<Sha256>> GetRawMempoolAsync(CancellationToken cancellationToken)
+    {
+        return await GetAsync<IEnumerable<Sha256>>(CirrusUriHelper.Mempool.GetRawMempool, cancellationToken);
     }
 }

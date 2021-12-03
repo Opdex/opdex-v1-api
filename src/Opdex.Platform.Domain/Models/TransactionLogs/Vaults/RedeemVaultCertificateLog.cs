@@ -3,70 +3,69 @@ using Newtonsoft.Json;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 
-namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults
+namespace Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
+
+public class RedeemVaultCertificateLog : TransactionLog
 {
-    public class RedeemVaultCertificateLog : TransactionLog
+    public RedeemVaultCertificateLog(dynamic log, Address address, int sortOrder)
+        : base(TransactionLogType.RedeemVaultCertificateLog, address, sortOrder)
     {
-        public RedeemVaultCertificateLog(dynamic log, Address address, int sortOrder)
-            : base(TransactionLogType.RedeemVaultCertificateLog, address, sortOrder)
+        Address owner = (string)log?.owner;
+        UInt256 amount = UInt256.Parse((string)log?.amount);
+        ulong vestedBlock = log?.vestedBlock;
+
+        if (owner == Address.Empty)
         {
-            Address owner = (string)log?.owner;
-            UInt256 amount = UInt256.Parse((string)log?.amount);
-            ulong vestedBlock = log?.vestedBlock;
-
-            if (owner == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(owner), "Owner must be set.");
-            }
-
-            if (vestedBlock < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(vestedBlock), "Vested block must be greater than 0.");
-            }
-
-            if (amount == UInt256.Zero)
-            {
-                throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
-            }
-
-            Owner = owner;
-            Amount = amount;
-            VestedBlock = vestedBlock;
+            throw new ArgumentNullException(nameof(owner), "Owner must be set.");
         }
 
-        public RedeemVaultCertificateLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
-            : base(TransactionLogType.RedeemVaultCertificateLog, id, transactionId, address, sortOrder)
+        if (vestedBlock < 1)
         {
-            var logDetails = DeserializeLogDetails(details);
-            Owner = logDetails.Owner;
-            Amount = logDetails.Amount;
-            VestedBlock = logDetails.VestedBlock;
+            throw new ArgumentOutOfRangeException(nameof(vestedBlock), "Vested block must be greater than 0.");
         }
 
-        public Address Owner { get; }
-        public UInt256 Amount { get; }
-        public ulong VestedBlock { get; }
-
-        private struct LogDetails
+        if (amount == UInt256.Zero)
         {
-            public Address Owner { get; set; }
-            public UInt256 Amount { get; set; }
-            public ulong VestedBlock { get; set; }
+            throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than 0.");
         }
 
-        private static LogDetails DeserializeLogDetails(string details)
-        {
-            return JsonConvert.DeserializeObject<LogDetails>(details);
-        }
+        Owner = owner;
+        Amount = amount;
+        VestedBlock = vestedBlock;
+    }
 
-        public override string SerializeLogDetails()
+    public RedeemVaultCertificateLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
+        : base(TransactionLogType.RedeemVaultCertificateLog, id, transactionId, address, sortOrder)
+    {
+        var logDetails = DeserializeLogDetails(details);
+        Owner = logDetails.Owner;
+        Amount = logDetails.Amount;
+        VestedBlock = logDetails.VestedBlock;
+    }
+
+    public Address Owner { get; }
+    public UInt256 Amount { get; }
+    public ulong VestedBlock { get; }
+
+    private struct LogDetails
+    {
+        public Address Owner { get; set; }
+        public UInt256 Amount { get; set; }
+        public ulong VestedBlock { get; set; }
+    }
+
+    private static LogDetails DeserializeLogDetails(string details)
+    {
+        return JsonConvert.DeserializeObject<LogDetails>(details);
+    }
+
+    public override string SerializeLogDetails()
+    {
+        return JsonConvert.SerializeObject(new LogDetails
         {
-            return JsonConvert.SerializeObject(new LogDetails
-            {
-                Owner = Owner,
-                Amount = Amount,
-                VestedBlock = VestedBlock
-            });
-        }
+            Owner = Owner,
+            Amount = Amount,
+            VestedBlock = VestedBlock
+        });
     }
 }

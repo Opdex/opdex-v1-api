@@ -7,28 +7,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Blocks
+namespace Opdex.Platform.Application.Tests.Handlers.Blocks;
+
+public class RetrieveCirrusBestBlockReceiptQueryHandlerTests
 {
-    public class RetrieveCirrusBestBlockReceiptQueryHandlerTests
+    private readonly RetrieveCirrusBestBlockReceiptQueryHandler _handler;
+    private readonly Mock<IMediator> _mediator;
+
+    public RetrieveCirrusBestBlockReceiptQueryHandlerTests()
     {
-        private readonly RetrieveCirrusBestBlockReceiptQueryHandler _handler;
-        private readonly Mock<IMediator> _mediator;
+        _mediator = new Mock<IMediator>();
+        _handler = new RetrieveCirrusBestBlockReceiptQueryHandler(_mediator.Object);
+    }
 
-        public RetrieveCirrusBestBlockReceiptQueryHandlerTests()
-        {
-            _mediator = new Mock<IMediator>();
-            _handler = new RetrieveCirrusBestBlockReceiptQueryHandler(_mediator.Object);
-        }
+    [Fact]
+    public async Task RetrieveCirrusBestBlockReceiptQuery_Sends_CallCirrusGetBestBlockReceiptQuery()
+    {
+        // Arrange
+        // Act
+        await _handler.Handle(new RetrieveCirrusBestBlockReceiptQuery(), CancellationToken.None);
 
-        [Fact]
-        public async Task RetrieveCirrusBestBlockReceiptQuery_Sends_CallCirrusGetBestBlockReceiptQuery()
-        {
-            // Arrange
-            // Act
-            await _handler.Handle(new RetrieveCirrusBestBlockReceiptQuery(), CancellationToken.None);
-
-            // Assert
-            _mediator.Verify(callTo => callTo.Send(It.IsAny<CallCirrusGetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>()), Times.Once);
-        }
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<CallCirrusGetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

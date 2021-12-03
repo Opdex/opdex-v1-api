@@ -10,13 +10,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances;
+
+public class SelectAddressBalanceByOwnerAndTokenIdQueryHandler
+    : IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>
 {
-    public class SelectAddressBalanceByOwnerAndTokenIdQueryHandler
-        : IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(AddressBalanceEntity.Id)},
                 {nameof(AddressBalanceEntity.TokenId)},
                 {nameof(AddressBalanceEntity.Owner)},
@@ -28,40 +28,39 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
                 {nameof(AddressBalanceEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectAddressBalanceByOwnerAndTokenIdQueryHandler(IDbContext context, IMapper mapper)
+    public SelectAddressBalanceByOwnerAndTokenIdQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<AddressBalance> Handle(SelectAddressBalanceByOwnerAndTokenIdQuery request, CancellationToken cancellationToken)
+    {
+        var queryParams = new SqlParams(request.TokenId, request.Owner);
+        var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<AddressBalanceEntity>(query);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(AddressBalance)} not found.");
         }
 
-        public async Task<AddressBalance> Handle(SelectAddressBalanceByOwnerAndTokenIdQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<AddressBalance>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong tokenId, Address owner)
         {
-            var queryParams = new SqlParams(request.TokenId, request.Owner);
-            var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<AddressBalanceEntity>(query);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(AddressBalance)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<AddressBalance>(result);
+            TokenId = tokenId;
+            Owner = owner;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong tokenId, Address owner)
-            {
-                TokenId = tokenId;
-                Owner = owner;
-            }
-
-            public ulong TokenId { get; }
-            public Address Owner { get; }
-        }
+        public ulong TokenId { get; }
+        public Address Owner { get; }
     }
 }

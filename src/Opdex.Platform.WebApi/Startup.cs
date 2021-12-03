@@ -51,272 +51,271 @@ using Opdex.Platform.WebApi.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Common.Encryption;
 
-namespace Opdex.Platform.WebApi
+namespace Opdex.Platform.WebApi;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration { get; }
+
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddApplicationInsightsTelemetry();
+        services.AddApplicationInsightsTelemetryProcessor<IgnoreRequestPathsTelemetryProcessor>();
+
+        // gets rid of telemetry spam in the debug console, may prevent visual studio app insights monitoring
+        TelemetryDebugWriter.IsTracingDisabled = true;
+
+        services.AddProblemDetails(options =>
         {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddApplicationInsightsTelemetry();
-            services.AddApplicationInsightsTelemetryProcessor<IgnoreRequestPathsTelemetryProcessor>();
-
-            // gets rid of telemetry spam in the debug console, may prevent visual studio app insights monitoring
-            TelemetryDebugWriter.IsTracingDisabled = true;
-
-            services.AddProblemDetails(options =>
+            options.ValidationProblemStatusCode = 400;
+            // Serilog.AspNetCore.RequestLoggingMiddleware does this better
+            options.ShouldLogUnhandledException = (context, exception, problem) => false;
+            options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
+            options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
+            options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
+            options.Map<TooManyRequestsException>((context, exception) =>
             {
-                options.ValidationProblemStatusCode = 400;
-                // Serilog.AspNetCore.RequestLoggingMiddleware does this better
-                options.ShouldLogUnhandledException = (context, exception, problem) => false;
-                options.Map<InvalidDataException>(e => ProblemDetailsTemplates.CreateValidationProblemDetails(e.PropertyName, e.Message));
-                options.Map<AlreadyIndexedException>(e => new StatusCodeProblemDetails(StatusCodes.Status400BadRequest) { Detail = e.Message });
-                options.Map<NotFoundException>(e => new StatusCodeProblemDetails(StatusCodes.Status404NotFound) { Detail = e.Message });
-                options.Map<TooManyRequestsException>((context, exception) =>
+                context.Response.Headers["Retry-After"] = exception.RetryAfter;
+                return new StatusCodeProblemDetails(StatusCodes.Status429TooManyRequests)
                 {
-                    context.Response.Headers["Retry-After"] = exception.RetryAfter;
-                    return new StatusCodeProblemDetails(StatusCodes.Status429TooManyRequests)
+                    Detail = $"Quota exceeded. Maximum allowed: {exception.Limit} per {exception.Period}. Please try again in {exception.RetryAfter} second(s)."
+                };
+            });
+            options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
+            options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
+            options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+            options.IncludeExceptionDetails = (context, ex) =>
+            {
+                var environment = context.RequestServices.GetRequiredService<IHostEnvironment>();
+                return environment.IsDevelopment();
+            };
+        });
+
+        var serializerSettings = Serialization.DefaultJsonSettings;
+
+        services
+            .AddControllers(options =>
+            {
+                options.ModelBinderProviders.Insert(0, new AddressModelBinderProvider());
+                options.ModelBinderProviders.Insert(1, new Sha256ModelBinderProvider());
+
+                options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests));
+            })
+            .AddFluentValidation(config =>
+            {
+                config.DisableDataAnnotationsValidation = true;
+                config.RegisterValidatorsFromAssemblyContaining<Startup>();
+            })
+            .AddNetworkActionHidingConvention()
+            .AddProblemDetailsConventions()
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.NullValueHandling = serializerSettings.NullValueHandling;
+                options.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
+                options.SerializerSettings.Converters = serializerSettings.Converters;
+            });
+
+        JsonConvert.DefaultSettings = () => serializerSettings;
+
+        services.AddProblemDetailTelemetryInitializer();
+
+        services.AddHttpClient();
+
+        // Automapper Profiles
+        services.AddAutoMapper(mapperConfig =>
+        {
+            mapperConfig.AddProfile<PlatformApplicationMapperProfile>();
+            mapperConfig.AddProfile<PlatformInfrastructureMapperProfile>();
+            mapperConfig.AddProfile<PlatformWebApiMapperProfile>();
+        });
+
+        // Rate Limiting
+        services.AddMemoryCache();
+        services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"))
+            .Configure<IpRateLimitOptions>(options =>
+            {
+                options.RequestBlockedBehaviorAsync = (context, identity, rateLimitCounter, rule) =>
+                {
+                    var retryAfter = rateLimitCounter.Timestamp.RetryAfterFrom(rule);
+                    throw new TooManyRequestsException(rule.Limit, rule.Period, retryAfter);
+                };
+            });
+        services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
+        services.AddInMemoryRateLimiting();
+        services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
+        // Startup Configuration Validation Filters
+        services.AddTransient<IStartupFilter, ConfigurationValidationStartupFilter>();
+
+        // Cirrus Configurations
+        var cirrusConfig = Configuration.GetSection(nameof(CirrusConfiguration));
+        services.SetupConfiguration<CirrusConfiguration>(cirrusConfig);
+
+        // Opdex Configurations
+        var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
+        services.SetupConfiguration<OpdexConfiguration>(opdexConfig);
+
+        // Encryption Configurations
+        var encryptionConfig = Configuration.GetSection(nameof(EncryptionConfiguration));
+        services.SetupConfiguration<EncryptionConfiguration>(encryptionConfig);
+
+        // Database Configurations
+        var databaseConfig = Configuration.GetSection(nameof(DatabaseConfiguration));
+        services.SetupConfiguration<DatabaseConfiguration>(databaseConfig);
+
+        // Coin Market Cap Configurations
+        var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
+        services.SetupConfiguration<CoinMarketCapConfiguration>(cmcConfig);
+
+        var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
+        services.SetupConfiguration<AuthConfiguration>(authConfig);
+
+        // Register project module services
+        services.AddPlatformApplicationServices();
+        services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(),
+                                                   cmcConfig.Get<CoinMarketCapConfiguration>());
+
+        services.AddScoped<IApplicationContext, ApplicationContext>();
+
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    // temp solution, OAuth will prefer assymmetric key
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
                     {
-                        Detail = $"Quota exceeded. Maximum allowed: {exception.Limit} per {exception.Period}. Please try again in {exception.RetryAfter} second(s)."
-                    };
-                });
-                options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
-                options.Map<IndexingAlreadyRunningException>(e => new StatusCodeProblemDetails(StatusCodes.Status503ServiceUnavailable) { Detail = e.Message });
-                options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
-                options.IncludeExceptionDetails = (context, ex) =>
-                {
-                    var environment = context.RequestServices.GetRequiredService<IHostEnvironment>();
-                    return environment.IsDevelopment();
+                        // signalR sends bearer token in the query string
+                        var accessToken = context.Request.Query["access_token"];
+
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                        {
+                            // assigns the bearer token from signalR connection
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
 
-            var serializerSettings = Serialization.DefaultJsonSettings;
+        services.AddOpenApiDocument((settings, provider) =>
+        {
+            // must add type converter attribute to pass NSwag check for IsPrimitiveType
+            TypeDescriptor.AddAttributes(typeof(Address), new TypeConverterAttribute(typeof(AddressConverter)));
+            TypeDescriptor.AddAttributes(typeof(FixedDecimal), new TypeConverterAttribute(typeof(FixedDecimalConverter)));
+            TypeDescriptor.AddAttributes(typeof(Sha256), new TypeConverterAttribute(typeof(Sha256)));
 
-            services
-                .AddControllers(options =>
-                {
-                    options.ModelBinderProviders.Insert(0, new AddressModelBinderProvider());
-                    options.ModelBinderProviders.Insert(1, new Sha256ModelBinderProvider());
-
-                    options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests));
-                })
-                .AddFluentValidation(config =>
-                {
-                    config.DisableDataAnnotationsValidation = true;
-                    config.RegisterValidatorsFromAssemblyContaining<Startup>();
-                })
-                .AddNetworkActionHidingConvention()
-                .AddProblemDetailsConventions()
-                .AddNewtonsoftJson(options =>
-                {
-                    options.SerializerSettings.NullValueHandling = serializerSettings.NullValueHandling;
-                    options.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
-                    options.SerializerSettings.Converters = serializerSettings.Converters;
-                });
-
-            JsonConvert.DefaultSettings = () => serializerSettings;
-
-            services.AddProblemDetailTelemetryInitializer();
-
-            services.AddHttpClient();
-
-            // Automapper Profiles
-            services.AddAutoMapper(mapperConfig =>
+            // processes fluent validation rules as OpenAPI type rules
+            settings.AddFluentValidationSchemaProcessor(provider, config =>
             {
-                mapperConfig.AddProfile<PlatformApplicationMapperProfile>();
-                mapperConfig.AddProfile<PlatformInfrastructureMapperProfile>();
-                mapperConfig.AddProfile<PlatformWebApiMapperProfile>();
+                config.RegisterRulesFromAssemblyContaining<Startup>();
             });
 
-            // Rate Limiting
-            services.AddMemoryCache();
-            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"))
-                    .Configure<IpRateLimitOptions>(options =>
-                    {
-                        options.RequestBlockedBehaviorAsync = (context, identity, rateLimitCounter, rule) =>
-                        {
-                            var retryAfter = rateLimitCounter.Timestamp.RetryAfterFrom(rule);
-                            throw new TooManyRequestsException(rule.Limit, rule.Period, retryAfter);
-                        };
-                    });
-            services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
-            services.AddInMemoryRateLimiting();
-            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-
-            // Startup Configuration Validation Filters
-            services.AddTransient<IStartupFilter, ConfigurationValidationStartupFilter>();
-
-            // Cirrus Configurations
-            var cirrusConfig = Configuration.GetSection(nameof(CirrusConfiguration));
-            services.SetupConfiguration<CirrusConfiguration>(cirrusConfig);
-
-            // Opdex Configurations
-            var opdexConfig = Configuration.GetSection(nameof(OpdexConfiguration));
-            services.SetupConfiguration<OpdexConfiguration>(opdexConfig);
-
-            // Encryption Configurations
-            var encryptionConfig = Configuration.GetSection(nameof(EncryptionConfiguration));
-            services.SetupConfiguration<EncryptionConfiguration>(encryptionConfig);
-
-            // Database Configurations
-            var databaseConfig = Configuration.GetSection(nameof(DatabaseConfiguration));
-            services.SetupConfiguration<DatabaseConfiguration>(databaseConfig);
-
-            // Coin Market Cap Configurations
-            var cmcConfig = Configuration.GetSection(nameof(CoinMarketCapConfiguration));
-            services.SetupConfiguration<CoinMarketCapConfiguration>(cmcConfig);
-
-            var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
-            services.SetupConfiguration<AuthConfiguration>(authConfig);
-
-            // Register project module services
-            services.AddPlatformApplicationServices();
-            services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(),
-                                                       cmcConfig.Get<CoinMarketCapConfiguration>());
-
-            services.AddScoped<IApplicationContext, ApplicationContext>();
-
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateIssuerSigningKey = true,
-                        ValidateLifetime = true,
-                        // temp solution, OAuth will prefer assymmetric key
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfig.Get<AuthConfiguration>().Opdex.SigningKey))
-                    };
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            // signalR sends bearer token in the query string
-                            var accessToken = context.Request.Query["access_token"];
-
-                            var path = context.HttpContext.Request.Path;
-                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
-                            {
-                                // assigns the bearer token from signalR connection
-                                context.Token = accessToken;
-                            }
-                            return Task.CompletedTask;
-                        }
-                    };
-                });
-
-            services.AddOpenApiDocument((settings, provider) =>
+            settings.Title = "Opdex Platform API";
+            settings.Version = "v1";
+            settings.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
             {
-                // must add type converter attribute to pass NSwag check for IsPrimitiveType
-                TypeDescriptor.AddAttributes(typeof(Address), new TypeConverterAttribute(typeof(AddressConverter)));
-                TypeDescriptor.AddAttributes(typeof(FixedDecimal), new TypeConverterAttribute(typeof(FixedDecimalConverter)));
-                TypeDescriptor.AddAttributes(typeof(Sha256), new TypeConverterAttribute(typeof(Sha256)));
-
-                // processes fluent validation rules as OpenAPI type rules
-                settings.AddFluentValidationSchemaProcessor(provider, config =>
-                {
-                    config.RegisterRulesFromAssemblyContaining<Startup>();
-                });
-
-                settings.Title = "Opdex Platform API";
-                settings.Version = "v1";
-                settings.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-                {
-                    Description = "Enter your JWT.",
-                    Type = OpenApiSecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT"
-                });
-                settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
-                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Address), schema => schema.Type = JsonObjectType.String));
-                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema =>
-                {
-                    schema.Type = JsonObjectType.String;
-                }));
-                settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Sha256), schema =>
-                {
-                    schema.Type = JsonObjectType.String;
-                    schema.Pattern = @"^[0-9a-fA-F]{64}$";
-                }));
+                Description = "Enter your JWT.",
+                Type = OpenApiSecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT"
             });
-
-            services.AddSignalR()
-                    .AddAzureSignalR();
-
-            services.AddAuthorization(options =>
+            settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
+            settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Address), schema => schema.Type = JsonObjectType.String));
+            settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema =>
             {
-                options.AddPolicy("AdminOnly", policy => policy.Requirements.Add(new AdminOnlyRequirement()));
-            });
+                schema.Type = JsonObjectType.String;
+            }));
+            settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Sha256), schema =>
+            {
+                schema.Type = JsonObjectType.String;
+                schema.Pattern = @"^[0-9a-fA-F]{64}$";
+            }));
+        });
 
-            services.AddSingleton<IUserIdProvider, WalletAddressUserIdProvider>();
-            services.AddSingleton<IAuthorizationHandler, AdminOnlyHandler>();
+        services.AddSignalR()
+            .AddAzureSignalR();
 
-            services.AddTransient<ITwoWayEncryptionProvider, AesCbcProvider>();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy => policy.Requirements.Add(new AdminOnlyRequirement()));
+        });
+
+        services.AddSingleton<IUserIdProvider, WalletAddressUserIdProvider>();
+        services.AddSingleton<IAuthorizationHandler, AdminOnlyHandler>();
+
+        services.AddTransient<ITwoWayEncryptionProvider, AesCbcProvider>();
+    }
+
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            IdentityModelEventSource.ShowPII = true;
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        app.UseProblemDetails();
+        app.UseMiddleware<RedirectToResourceMiddleware>();
+        app.UseCors(options => options
+                        .SetIsOriginAllowed(host => true)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials());
+        app.UseSerilogRequestLogging();
+        app.UseRouting();
+        app.UseIpRateLimiting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseOpenApi();
+        app.UseSwaggerUi3();
+        app.UseEndpoints(endpoints =>
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                IdentityModelEventSource.ShowPII = true;
-            }
+            endpoints.MapHub<PlatformHub>("/transactions/socket");
+            endpoints.MapControllers();
+        });
+    }
 
-            app.UseProblemDetails();
-            app.UseMiddleware<RedirectToResourceMiddleware>();
-            app.UseCors(options => options
-                            .SetIsOriginAllowed(host => true)
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials());
-            app.UseSerilogRequestLogging();
-            app.UseRouting();
-            app.UseIpRateLimiting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseOpenApi();
-            app.UseSwaggerUi3();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapHub<PlatformHub>("/transactions/socket");
-                endpoints.MapControllers();
-            });
+    /// <summary>
+    /// Ignores telemetry from non-api paths.
+    /// </summary>
+    public class IgnoreRequestPathsTelemetryProcessor : ITelemetryProcessor
+    {
+        private readonly ITelemetryProcessor _next;
+
+        public IgnoreRequestPathsTelemetryProcessor(ITelemetryProcessor next)
+        {
+            _next = next;
         }
 
-        /// <summary>
-        /// Ignores telemetry from non-api paths.
-        /// </summary>
-        public class IgnoreRequestPathsTelemetryProcessor : ITelemetryProcessor
+        public void Process(ITelemetry item)
         {
-            private readonly ITelemetryProcessor _next;
-
-            public IgnoreRequestPathsTelemetryProcessor(ITelemetryProcessor next)
+            if (item is RequestTelemetry request &&
+                (request.Url.AbsolutePath == "/" ||
+                 request.Url.AbsolutePath == "/favicon.ico" ||
+                 request.Url.AbsolutePath.StartsWith("/swagger")))
             {
-                _next = next;
+                return;
             }
 
-            public void Process(ITelemetry item)
-            {
-                if (item is RequestTelemetry request &&
-                    (request.Url.AbsolutePath == "/" ||
-                     request.Url.AbsolutePath == "/favicon.ico" ||
-                     request.Url.AbsolutePath.StartsWith("/swagger")))
-                {
-                    return;
-                }
-
-                _next.Process(item);
-            }
+            _next.Process(item);
         }
     }
 }

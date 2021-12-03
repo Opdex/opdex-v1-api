@@ -10,12 +10,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools
+namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools;
+
+public class SelectMiningPoolByAddressQueryHandler : IRequestHandler<SelectMiningPoolByAddressQuery, MiningPool>
 {
-    public class SelectMiningPoolByAddressQueryHandler : IRequestHandler<SelectMiningPoolByAddressQuery, MiningPool>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(MiningPoolEntity.Id)},
                 {nameof(MiningPoolEntity.LiquidityPoolId)},
                 {nameof(MiningPoolEntity.Address)},
@@ -27,38 +27,37 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools
             FROM pool_mining
             WHERE {nameof(MiningPoolEntity.Address)} = @{nameof(SqlParams.Address)} LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectMiningPoolByAddressQueryHandler(IDbContext context, IMapper mapper)
+    public SelectMiningPoolByAddressQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<MiningPool> Handle(SelectMiningPoolByAddressQuery request, CancellationToken cancellationToken)
+    {
+        var queryParams = new SqlParams(request.Address);
+        var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<MiningPoolEntity>(query);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(MiningPool)} not found.");
         }
 
-        public async Task<MiningPool> Handle(SelectMiningPoolByAddressQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<MiningPool>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(Address address)
         {
-            var queryParams = new SqlParams(request.Address);
-            var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<MiningPoolEntity>(query);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(MiningPool)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<MiningPool>(result);
+            Address = address;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(Address address)
-            {
-                Address = address;
-            }
-
-            public Address Address { get; }
-        }
+        public Address Address { get; }
     }
 }

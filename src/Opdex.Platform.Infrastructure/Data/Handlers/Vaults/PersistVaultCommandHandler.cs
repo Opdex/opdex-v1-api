@@ -8,12 +8,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
+
+public class PersistVaultCommandHandler : IRequestHandler<PersistVaultCommand, ulong>
 {
-    public class PersistVaultCommandHandler : IRequestHandler<PersistVaultCommand, ulong>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO vault (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO vault (
                 {nameof(VaultEntity.Address)},
                 {nameof(VaultEntity.TokenId)},
                 {nameof(VaultEntity.PendingOwner)},
@@ -34,8 +34,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
               );
               SELECT LAST_INSERT_ID()";
 
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE vault
+    private static readonly string UpdateSqlCommand =
+        $@"UPDATE vault
                 SET
                     {nameof(VaultEntity.PendingOwner)} = @{nameof(VaultEntity.PendingOwner)},
                     {nameof(VaultEntity.Owner)} = @{nameof(VaultEntity.Owner)},
@@ -43,40 +43,39 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Vaults
                     {nameof(VaultEntity.ModifiedBlock)} = @{nameof(VaultEntity.ModifiedBlock)}
                 WHERE {nameof(VaultEntity.Id)} = @{nameof(VaultEntity.Id)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistVaultCommandHandler(IDbContext context, IMapper mapper,
-            ILogger<PersistVaultCommandHandler> logger)
+    public PersistVaultCommandHandler(IDbContext context, IMapper mapper,
+                                      ILogger<PersistVaultCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<ulong> Handle(PersistVaultCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var entity = _mapper.Map<VaultEntity>(request.Vault);
+
+            var isUpdate = entity.Id >= 1;
+
+            var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+
+            var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+
+            var result = await _context.ExecuteScalarAsync<ulong>(command);
+
+            return isUpdate ? entity.Id : result;
         }
-
-        public async Task<ulong> Handle(PersistVaultCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var entity = _mapper.Map<VaultEntity>(request.Vault);
+            _logger.LogError(ex, $"Failure persisting {nameof(request.Vault)}.");
 
-                var isUpdate = entity.Id >= 1;
-
-                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-
-                var result = await _context.ExecuteScalarAsync<ulong>(command);
-
-                return isUpdate ? entity.Id : result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure persisting {nameof(request.Vault)}.");
-
-                return 0;
-            }
+            return 0;
         }
     }
 }

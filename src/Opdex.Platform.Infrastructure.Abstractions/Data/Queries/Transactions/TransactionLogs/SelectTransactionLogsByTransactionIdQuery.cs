@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using MediatR;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs
-{
-    public class SelectTransactionLogsByTransactionIdQuery : IRequest<IEnumerable<TransactionLog>>
-    {
-        public SelectTransactionLogsByTransactionIdQuery(ulong transactionId)
-        {
-            if (transactionId < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(transactionId));
-            }
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions.TransactionLogs;
 
-            TransactionId = transactionId;
+public class SelectTransactionLogsByTransactionIdQuery : IRequest<IEnumerable<TransactionLog>>
+{
+    public SelectTransactionLogsByTransactionIdQuery(ulong transactionId)
+    {
+        if (transactionId < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(transactionId));
         }
 
-        public ulong TransactionId { get; }
+        TransactionId = transactionId;
     }
+
+    public ulong TransactionId { get; }
 }

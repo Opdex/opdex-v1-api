@@ -19,109 +19,108 @@ using AutoMapper;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
 
-namespace Opdex.Platform.WebApi.Controllers
+namespace Opdex.Platform.WebApi.Controllers;
+
+[ApiController]
+[Route("index")]
+public class IndexController : ControllerBase
 {
-    [ApiController]
-    [Route("index")]
-    public class IndexController : ControllerBase
+    private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
+    private readonly NetworkType _network;
+
+    public IndexController(IMapper mapper, IMediator mediator, OpdexConfiguration opdexConfiguration)
     {
-        private readonly IMapper _mapper;
-        private readonly IMediator _mediator;
-        private readonly NetworkType _network;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
+    }
 
-        public IndexController(IMapper mapper, IMediator mediator, OpdexConfiguration opdexConfiguration)
+    /// <summary>Get Latest Block</summary>
+    /// <remarks>Retrieve the latest synced block.</remarks>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="200">Latest indexed block details.</response>
+    /// <response code="404">No blocks have been indexed.</response>
+    [HttpGet("latest-block")]
+    [Authorize]
+    [ProducesResponseType(typeof(BlockResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<BlockResponseModel>> GetLastSyncedBlock(CancellationToken cancellationToken)
+    {
+        var block = await _mediator.Send(new GetLatestBlockQuery(), cancellationToken);
+
+        return Ok(_mapper.Map<BlockResponseModel>(block));
+    }
+
+    /// <summary>Resync From Deployment</summary>
+    /// <remarks>Processes the mined governance token and market deployer transactions then syncs to chain tip.</remarks>
+    /// <remarks>
+    /// For a successful redeployment, copy the mined token and market deployer deployment transaction hashes.
+    /// Then clear all non-lookup tables of any data in the database. Leaving only `_type` tables populated.
+    /// </remarks>
+    /// <param name="request">The mined token and market deployer transaction hashes to look up.</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <response code="204">Indexer resynced.</response>
+    /// <response code="400">Markets already indexed.</response>
+    /// <response code="403">You don't have permission to carry out this request.</response>
+    [HttpPost("resync-from-deployment")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
+    {
+        // Todo: Spike and implement separate market vs wallet in JWT. Markets are currently required, they should not be.
+        // If a new session starts, with no markets, a user cannot get authorized to hit this endpoint.
+        // var admin = await _mediator.Send(new GetAdminByAddressQuery(_context.Wallet, findOrThrow: false), cancellationToken);
+        // if (admin == null) return Unauthorized();
+
+        var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
+        if (markets.Any())
         {
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
+            throw new AlreadyIndexedException("Markets already indexed.");
         }
 
-        /// <summary>Get Latest Block</summary>
-        /// <remarks>Retrieve the latest synced block.</remarks>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <response code="200">Latest indexed block details.</response>
-        /// <response code="404">No blocks have been indexed.</response>
-        [HttpGet("latest-block")]
-        [Authorize]
-        [ProducesResponseType(typeof(BlockResponseModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<BlockResponseModel>> GetLastSyncedBlock(CancellationToken cancellationToken)
-        {
-            var block = await _mediator.Send(new GetLatestBlockQuery(), cancellationToken);
+        await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploy), CancellationToken.None);
 
-            return Ok(_mapper.Map<BlockResponseModel>(block));
+        try
+        {
+            await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash), CancellationToken.None);
+            await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash), CancellationToken.None);
+            await _mediator.Send(new ProcessLatestBlocksCommand(_network), CancellationToken.None);
+        }
+        finally
+        {
+            await _mediator.Send(new MakeIndexerUnlockCommand(), CancellationToken.None);
         }
 
-        /// <summary>Resync From Deployment</summary>
-        /// <remarks>Processes the mined governance token and market deployer transactions then syncs to chain tip.</remarks>
-        /// <remarks>
-        /// For a successful redeployment, copy the mined token and market deployer deployment transaction hashes.
-        /// Then clear all non-lookup tables of any data in the database. Leaving only `_type` tables populated.
-        /// </remarks>
-        /// <param name="request">The mined token and market deployer transaction hashes to look up.</param>
-        /// <param name="cancellationToken">Cancellation token</param>
-        /// <response code="204">Indexer resynced.</response>
-        /// <response code="400">Markets already indexed.</response>
-        /// <response code="403">You don't have permission to carry out this request.</response>
-        [HttpPost("resync-from-deployment")]
-        [Authorize(Policy = "AdminOnly")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
+        return NoContent();
+    }
+
+    /// <summary>Rewind to Block</summary>
+    /// <param name="request">Request to rewind back to specific block.</param>
+    /// <response code="204">Indexer rewound.</response>
+    [HttpPost("rewind")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult> Rewind(RewindRequest request)
+    {
+        await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewind), CancellationToken.None);
+
+        try
         {
-            // Todo: Spike and implement separate market vs wallet in JWT. Markets are currently required, they should not be.
-            // If a new session starts, with no markets, a user cannot get authorized to hit this endpoint.
-            // var admin = await _mediator.Send(new GetAdminByAddressQuery(_context.Wallet, findOrThrow: false), cancellationToken);
-            // if (admin == null) return Unauthorized();
-
-            var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
-            if (markets.Any())
-            {
-                throw new AlreadyIndexedException("Markets already indexed.");
-            }
-
-            await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploy), CancellationToken.None);
-
-            try
-            {
-                await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash), CancellationToken.None);
-                await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash), CancellationToken.None);
-                await _mediator.Send(new ProcessLatestBlocksCommand(_network), CancellationToken.None);
-            }
-            finally
-            {
-                await _mediator.Send(new MakeIndexerUnlockCommand(), CancellationToken.None);
-            }
-
-            return NoContent();
+            var rewound = await _mediator.Send(new CreateRewindToBlockCommand(request.Block), CancellationToken.None);
+            if (!rewound) throw new Exception("Indexer rewind unexpectedly failed.");
+        }
+        finally
+        {
+            await _mediator.Send(new MakeIndexerUnlockCommand(), CancellationToken.None);
         }
 
-        /// <summary>Rewind to Block</summary>
-        /// <param name="request">Request to rewind back to specific block.</param>
-        /// <response code="204">Indexer rewound.</response>
-        [HttpPost("rewind")]
-        [Authorize(Policy = "AdminOnly")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Rewind(RewindRequest request)
-        {
-            await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewind), CancellationToken.None);
-
-            try
-            {
-                var rewound = await _mediator.Send(new CreateRewindToBlockCommand(request.Block), CancellationToken.None);
-                if (!rewound) throw new Exception("Indexer rewind unexpectedly failed.");
-            }
-            finally
-            {
-                await _mediator.Send(new MakeIndexerUnlockCommand(), CancellationToken.None);
-            }
-
-            return NoContent();
-        }
+        return NoContent();
     }
 }

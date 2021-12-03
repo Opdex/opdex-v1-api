@@ -16,99 +16,98 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Transactions
+namespace Opdex.Platform.Application.Tests.Handlers.Transactions;
+
+public class MakeTransactionQuoteCommandHandlerTests
 {
-    public class MakeTransactionQuoteCommandHandlerTests
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly MakeTransactionQuoteCommandHandler _handler;
+
+    public MakeTransactionQuoteCommandHandlerTests()
     {
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly MakeTransactionQuoteCommandHandler _handler;
+        _mediatorMock = new Mock<IMediator>();
+        _handler = new MakeTransactionQuoteCommandHandler(_mediatorMock.Object);
+    }
 
-        public MakeTransactionQuoteCommandHandlerTests()
+    [Fact]
+    public void MakeTransactionQuoteCommandHandler_InvalidQuoteRequest_ThrowArgumentNullException()
+    {
+        // Arrange
+        // Act
+        void Act() => new MakeTransactionQuoteCommand(null);
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Transaction quote request must be provided.");
+    }
+
+    [Fact]
+    public async Task MakeTransactionQuoteCommandHandler_Sends_CallCirrusLocalCallSmartContractMethodCommand()
+    {
+        // Arrange
+        Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+        Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+        FixedDecimal amount = FixedDecimal.Parse("1.1");
+        const string method = "Swap";
+        const string callback = "https://dev-api.opdex.com/transactions";
+
+        var parameters = new List<TransactionQuoteRequestParameter>()
         {
-            _mediatorMock = new Mock<IMediator>();
-            _handler = new MakeTransactionQuoteCommandHandler(_mediatorMock.Object);
-        }
+            new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
+        };
 
-        [Fact]
-        public void MakeTransactionQuoteCommandHandler_InvalidQuoteRequest_ThrowArgumentNullException()
+        var cancellationToken = new CancellationTokenSource().Token;
+        var request = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);
+
+        // Act
+        try
         {
-            // Arrange
-            // Act
-            void Act() => new MakeTransactionQuoteCommand(null);
-
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Transaction quote request must be provided.");
+            await _handler.Handle(new MakeTransactionQuoteCommand(request), cancellationToken);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task MakeTransactionQuoteCommandHandler_Sends_CallCirrusLocalCallSmartContractMethodCommand()
-        {
-            // Arrange
-            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            FixedDecimal amount = FixedDecimal.Parse("1.1");
-            const string method = "Swap";
-            const string callback = "https://dev-api.opdex.com/transactions";
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusLocalCallSmartContractMethodCommand>(requestDto => requestDto.QuoteRequest == request),
+                                                   It.IsAny<CancellationToken>()), Times.Once);
+    }
 
-            var parameters = new List<TransactionQuoteRequestParameter>()
-            {
-                new TransactionQuoteRequestParameter("Amount", UInt256.Parse("10"))
-            };
+    [Fact]
+    public async Task MakeTransactionQuoteCommandHandler_Returns_TransactionQuote_Success()
+    {
 
-            var cancellationToken = new CancellationTokenSource().Token;
-            var request = new TransactionQuoteRequest(sender, to, amount, method, callback, parameters);
+        // Arrange
+        const string result = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+        const uint gasUsed = 10000;
 
-            // Act
-            try
-            {
-                await _handler.Handle(new MakeTransactionQuoteCommand(request), cancellationToken);
-            }
-            catch (Exception) { }
+        Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
+        Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
+        FixedDecimal amount = FixedDecimal.Zero;
+        const string method = "Swap";
+        const string callback = "https://dev-api.opdex.com/transactions";
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CallCirrusLocalCallSmartContractMethodCommand>(requestDto => requestDto.QuoteRequest == request),
-                                                       It.IsAny<CancellationToken>()), Times.Once);
-        }
+        var quoteRequest = new TransactionQuoteRequest(sender, to, amount, method, callback);
 
-        [Fact]
-        public async Task MakeTransactionQuoteCommandHandler_Returns_TransactionQuote_Success()
-        {
+        dynamic txLog = new ExpandoObject();
+        txLog.owner = "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN";
+        txLog.spender = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";
+        txLog.amount = "1";
+        txLog.oldAmount = "0";
 
-            // Arrange
-            const string result = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            const uint gasUsed = 10000;
+        var logs = new List<TransactionLog> { new ApprovalLog(txLog, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", 1) };
 
-            Address sender = "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy";
-            Address to = "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy";
-            FixedDecimal amount = FixedDecimal.Zero;
-            const string method = "Swap";
-            const string callback = "https://dev-api.opdex.com/transactions";
+        var quote = new TransactionQuote(result, null, gasUsed, logs, quoteRequest);
 
-            var quoteRequest = new TransactionQuoteRequest(sender, to, amount, method, callback);
+        _mediatorMock
+            .Setup(callTo => callTo.Send(It.IsAny<CallCirrusLocalCallSmartContractMethodCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(quote);
 
-            dynamic txLog = new ExpandoObject();
-            txLog.owner = "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN";
-            txLog.spender = "PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh";
-            txLog.amount = "1";
-            txLog.oldAmount = "0";
+        // Act
+        var response = await _handler.Handle(new MakeTransactionQuoteCommand(quoteRequest), CancellationToken.None);
 
-            var logs = new List<TransactionLog> { new ApprovalLog(txLog, "PWcdTKU64jVFCDoHJgUKz633jsy1XTenAy", 1) };
-
-            var quote = new TransactionQuote(result, null, gasUsed, logs, quoteRequest);
-
-            _mediatorMock
-                .Setup(callTo => callTo.Send(It.IsAny<CallCirrusLocalCallSmartContractMethodCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(quote);
-
-            // Act
-            var response = await _handler.Handle(new MakeTransactionQuoteCommand(quoteRequest), CancellationToken.None);
-
-            // Assert
-            response.Error.Should().BeNull();
-            response.Request.Should().BeEquivalentTo(quoteRequest);
-            response.Result.Should().Be(result);
-            response.GasUsed.Should().Be(gasUsed);
-            response.Logs.Should().BeEquivalentTo(logs);
-        }
+        // Assert
+        response.Error.Should().BeNull();
+        response.Request.Should().BeEquivalentTo(quoteRequest);
+        response.Result.Should().Be(result);
+        response.GasUsed.Should().Be(gasUsed);
+        response.Logs.Should().BeEquivalentTo(logs);
     }
 }

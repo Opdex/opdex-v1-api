@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets;
+
+public class SelectMarketsByModifiedBlockQueryHandler : IRequestHandler<SelectMarketsByModifiedBlockQuery, IEnumerable<Market>>
 {
-    public class SelectMarketsByModifiedBlockQueryHandler : IRequestHandler<SelectMarketsByModifiedBlockQuery, IEnumerable<Market>>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(MarketEntity.Id)},
                 {nameof(MarketEntity.Address)},
                 {nameof(MarketEntity.DeployerId)},
@@ -32,32 +32,31 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
             FROM market
             WHERE {nameof(MarketEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectMarketsByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
+    public SelectMarketsByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<IEnumerable<Market>> Handle(SelectMarketsByModifiedBlockQuery request, CancellationToken cancellationToken)
+    {
+        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.BlockHeight), cancellationToken);
+
+        var result = await _context.ExecuteQueryAsync<MarketEntity>(query);
+
+        return _mapper.Map<IEnumerable<Market>>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong modifiedBlock)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            ModifiedBlock = modifiedBlock;
         }
 
-        public async Task<IEnumerable<Market>> Handle(SelectMarketsByModifiedBlockQuery request, CancellationToken cancellationToken)
-        {
-            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.BlockHeight), cancellationToken);
-
-            var result = await _context.ExecuteQueryAsync<MarketEntity>(query);
-
-            return _mapper.Map<IEnumerable<Market>>(result);
-        }
-
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong modifiedBlock)
-            {
-                ModifiedBlock = modifiedBlock;
-            }
-
-            public ulong ModifiedBlock { get; }
-        }
+        public ulong ModifiedBlock { get; }
     }
 }

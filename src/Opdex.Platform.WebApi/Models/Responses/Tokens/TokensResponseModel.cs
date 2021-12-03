@@ -1,6 +1,5 @@
-namespace Opdex.Platform.WebApi.Models.Responses.Tokens
+namespace Opdex.Platform.WebApi.Models.Responses.Tokens;
+
+public class TokensResponseModel : PaginatedResponseModel<TokenResponseModel>
 {
-    public class TokensResponseModel : PaginatedResponseModel<TokenResponseModel>
-    {
-    }
 }

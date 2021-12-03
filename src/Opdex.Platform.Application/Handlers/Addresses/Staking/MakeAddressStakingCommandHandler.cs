@@ -5,20 +5,19 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Addresses.Staking
+namespace Opdex.Platform.Application.Handlers.Addresses.Staking;
+
+public class MakeAddressStakingCommandHandler : IRequestHandler<MakeAddressStakingCommand, ulong>
 {
-    public class MakeAddressStakingCommandHandler : IRequestHandler<MakeAddressStakingCommand, ulong>
+    private readonly IMediator _mediator;
+
+    public MakeAddressStakingCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeAddressStakingCommandHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<ulong> Handle(MakeAddressStakingCommand request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new PersistAddressStakingCommand(request.AddressStaking), cancellationToken);
-        }
+    public Task<ulong> Handle(MakeAddressStakingCommand request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new PersistAddressStakingCommand(request.AddressStaking), cancellationToken);
     }
 }

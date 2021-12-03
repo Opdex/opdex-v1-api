@@ -14,83 +14,82 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers.MarketsControllerTests
+namespace Opdex.Platform.WebApi.Tests.Controllers.MarketsControllerTests;
+
+public class ClaimOwnershipTests
 {
-    public class ClaimOwnershipTests
+    private readonly Mock<IApplicationContext> _applicationContextMock;
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly MarketsController _controller;
+
+    public ClaimOwnershipTests()
     {
-        private readonly Mock<IApplicationContext> _applicationContextMock;
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly MarketsController _controller;
+        _applicationContextMock = new Mock<IApplicationContext>();
+        _mapperMock = new Mock<IMapper>();
+        _mediatorMock = new Mock<IMediator>();
+        _controller = new MarketsController(_mediatorMock.Object, _mapperMock.Object, _applicationContextMock.Object);
+    }
 
-        public ClaimOwnershipTests()
+    [Fact]
+    public async Task ClaimOwnershipQuote_CreateClaimStandardMarketOwnershipTransactionQuoteCommand_Send()
+    {
+        // Arrange
+        Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+
+        Address market = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        // Act
+        await _controller.ClaimOwnershipQuote(market, cancellationToken);
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateClaimStandardMarketOwnershipTransactionQuoteCommand>(command
+                                                                                                                        => command.Market == market
+                                                                                                                           && command.WalletAddress == walletAddress
+                                                   ), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task ClaimOwnershipQuote_Result_Map()
+    {
+        // Arrange
+        Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+
+        var quote = new TransactionQuoteDto();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateClaimStandardMarketOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(quote);
+
+        // Act
+        try
         {
-            _applicationContextMock = new Mock<IApplicationContext>();
-            _mapperMock = new Mock<IMapper>();
-            _mediatorMock = new Mock<IMediator>();
-            _controller = new MarketsController(_mediatorMock.Object, _mapperMock.Object, _applicationContextMock.Object);
+            await _controller.ClaimOwnershipQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", CancellationToken.None);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task ClaimOwnershipQuote_CreateClaimStandardMarketOwnershipTransactionQuoteCommand_Send()
-        {
-            // Arrange
-            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+        // Assert
+        _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
+    }
 
-            Address market = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM";
-            var cancellationToken = new CancellationTokenSource().Token;
+    [Fact]
+    public async Task ClaimOwnershipQuote_Success_ReturnOk()
+    {
+        // Arrange
+        Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
 
-            // Act
-            await _controller.ClaimOwnershipQuote(market, cancellationToken);
+        var responseModel = new TransactionQuoteResponseModel();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateClaimStandardMarketOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new TransactionQuoteDto());
+        _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateClaimStandardMarketOwnershipTransactionQuoteCommand>(command
-                => command.Market == market
-                && command.WalletAddress == walletAddress
-            ), cancellationToken), Times.Once);
-        }
+        // Act
+        var response = await _controller.ClaimOwnershipQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", CancellationToken.None);
 
-        [Fact]
-        public async Task ClaimOwnershipQuote_Result_Map()
-        {
-            // Arrange
-            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
-
-            var quote = new TransactionQuoteDto();
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateClaimStandardMarketOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(quote);
-
-            // Act
-            try
-            {
-                await _controller.ClaimOwnershipQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", CancellationToken.None);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
-        }
-
-        [Fact]
-        public async Task ClaimOwnershipQuote_Success_ReturnOk()
-        {
-            // Arrange
-            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _applicationContextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
-
-            var responseModel = new TransactionQuoteResponseModel();
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateClaimStandardMarketOwnershipTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new TransactionQuoteDto());
-            _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
-
-            // Act
-            var response = await _controller.ClaimOwnershipQuote("PR71udY85pAcNcitdDfzQevp6Zar9DizHM", CancellationToken.None);
-
-            // Act
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
-        }
+        // Act
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
     }
 }

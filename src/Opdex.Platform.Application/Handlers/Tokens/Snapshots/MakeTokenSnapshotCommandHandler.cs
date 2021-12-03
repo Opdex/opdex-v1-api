@@ -8,35 +8,34 @@ using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Summaries;
 
-namespace Opdex.Platform.Application.Handlers.Tokens.Snapshots
+namespace Opdex.Platform.Application.Handlers.Tokens.Snapshots;
+
+public class MakeTokenSnapshotCommandHandler : IRequestHandler<MakeTokenSnapshotCommand, bool>
 {
-    public class MakeTokenSnapshotCommandHandler : IRequestHandler<MakeTokenSnapshotCommand, bool>
+    private readonly IMediator _mediator;
+
+    public MakeTokenSnapshotCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeTokenSnapshotCommandHandler(IMediator mediator)
+    public async Task<bool> Handle(MakeTokenSnapshotCommand request, CancellationToken cancellationToken)
+    {
+        if (request.Snapshot.SnapshotType == SnapshotType.Daily)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
+            var summary = await _mediator.Send(new SelectTokenSummaryByMarketAndTokenIdQuery(request.Snapshot.MarketId,
+                                                                                             request.Snapshot.TokenId,
+                                                                                             findOrThrow: false));
 
-        public async Task<bool> Handle(MakeTokenSnapshotCommand request, CancellationToken cancellationToken)
-        {
-            if (request.Snapshot.SnapshotType == SnapshotType.Daily)
+            summary ??= new TokenSummary(request.Snapshot.MarketId, request.Snapshot.TokenId, request.BlockHeight);
+
+            if (summary.ModifiedBlock <= request.BlockHeight)
             {
-                var summary = await _mediator.Send(new SelectTokenSummaryByMarketAndTokenIdQuery(request.Snapshot.MarketId,
-                                                                                                 request.Snapshot.TokenId,
-                                                                                                 findOrThrow: false));
-
-                summary ??= new TokenSummary(request.Snapshot.MarketId, request.Snapshot.TokenId, request.BlockHeight);
-
-                if (summary.ModifiedBlock <= request.BlockHeight)
-                {
-                    summary.Update(request.Snapshot, request.BlockHeight);
-                    await _mediator.Send(new PersistTokenSummaryCommand(summary));
-                }
+                summary.Update(request.Snapshot, request.BlockHeight);
+                await _mediator.Send(new PersistTokenSummaryCommand(summary));
             }
-
-            return await _mediator.Send(new PersistTokenSnapshotCommand(request.Snapshot), CancellationToken.None);
         }
+
+        return await _mediator.Send(new PersistTokenSnapshotCommand(request.Snapshot), CancellationToken.None);
     }
 }

@@ -8,38 +8,37 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools.SwapQuotes
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.LiquidityPools.SwapQuotes;
+
+public class CallCirrusGetAmountOutMultiHopQuoteQueryHandler : IRequestHandler<CallCirrusGetAmountOutMultiHopQuoteQuery, UInt256>
 {
-    public class CallCirrusGetAmountOutMultiHopQuoteQueryHandler : IRequestHandler<CallCirrusGetAmountOutMultiHopQuoteQuery, UInt256>
+    private readonly ISmartContractsModule _smartContractsModule;
+
+    public CallCirrusGetAmountOutMultiHopQuoteQueryHandler(ISmartContractsModule smartContractsModule)
     {
-        private readonly ISmartContractsModule _smartContractsModule;
+        _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+    }
 
-        public CallCirrusGetAmountOutMultiHopQuoteQueryHandler(ISmartContractsModule smartContractsModule)
+    public async Task<UInt256> Handle(CallCirrusGetAmountOutMultiHopQuoteQuery request, CancellationToken cancellationToken)
+    {
+        var quoteParams = new[]
         {
-            _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+            new SmartContractMethodParameter(request.TokenInAmount),
+            new SmartContractMethodParameter((UInt256)request.TokenInReserveCrs),
+            new SmartContractMethodParameter(request.TokenInReserveSrc),
+            new SmartContractMethodParameter((UInt256)request.TokenOutReserveCrs),
+            new SmartContractMethodParameter(request.TokenOutReserveSrc)
+        };
+
+        var localCall = new LocalCallRequestDto(request.Router, request.Router, "GetAmountOut", quoteParams);
+
+        var amountIn = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
+
+        if (amountIn.ErrorMessage != null)
+        {
+            throw new Exception($"Invalid request: {amountIn.ErrorMessage.Value}");
         }
 
-        public async Task<UInt256> Handle(CallCirrusGetAmountOutMultiHopQuoteQuery request, CancellationToken cancellationToken)
-        {
-            var quoteParams = new[]
-            {
-                new SmartContractMethodParameter(request.TokenInAmount),
-                new SmartContractMethodParameter((UInt256)request.TokenInReserveCrs),
-                new SmartContractMethodParameter(request.TokenInReserveSrc),
-                new SmartContractMethodParameter((UInt256)request.TokenOutReserveCrs),
-                new SmartContractMethodParameter(request.TokenOutReserveSrc)
-            };
-
-            var localCall = new LocalCallRequestDto(request.Router, request.Router, "GetAmountOut", quoteParams);
-
-            var amountIn = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-
-            if (amountIn.ErrorMessage != null)
-            {
-                throw new Exception($"Invalid request: {amountIn.ErrorMessage.Value}");
-            }
-
-            return amountIn.DeserializeValue<UInt256>();
-        }
+        return amountIn.DeserializeValue<UInt256>();
     }
 }

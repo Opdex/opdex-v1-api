@@ -12,51 +12,50 @@ using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningPools
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MiningPools;
+
+public class ProcessMineLogCommandHandler : IRequestHandler<ProcessMineLogCommand, bool>
 {
-    public class ProcessMineLogCommandHandler : IRequestHandler<ProcessMineLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessMineLogCommandHandler> _logger;
+
+    public ProcessMineLogCommandHandler(IMediator mediator, ILogger<ProcessMineLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessMineLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessMineLogCommandHandler(IMediator mediator, ILogger<ProcessMineLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessMineLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+            var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (miningPool == null) return false;
 
-        public async Task<bool> Handle(ProcessMineLogCommand request, CancellationToken cancellationToken)
-        {
-            try
+            var miningBalance = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, request.Log.Miner, findOrThrow: false))
+                                ?? new AddressMining(miningPool.Id, request.Log.Miner, UInt256.Zero, request.BlockHeight);
+
+            // Update the mining position if this log is equal or later than the modified block
+            if (request.BlockHeight >= miningBalance.ModifiedBlock)
             {
-                var miningPool = await _mediator.Send(new RetrieveMiningPoolByAddressQuery(request.Log.Contract, findOrThrow: false));
-                if (miningPool == null) return false;
+                miningBalance.SetBalance(request.Log.MinerBalance, request.BlockHeight);
 
-                var miningBalance = await _mediator.Send(new RetrieveAddressMiningByMiningPoolIdAndOwnerQuery(miningPool.Id, request.Log.Miner, findOrThrow: false))
-                                    ?? new AddressMining(miningPool.Id, request.Log.Miner, UInt256.Zero, request.BlockHeight);
+                var miningPositionId = await _mediator.Send(new MakeAddressMiningCommand(miningBalance));
 
-                // Update the mining position if this log is equal or later than the modified block
-                if (request.BlockHeight >= miningBalance.ModifiedBlock)
+                if (miningPositionId == 0)
                 {
-                    miningBalance.SetBalance(request.Log.MinerBalance, request.BlockHeight);
-
-                    var miningPositionId = await _mediator.Send(new MakeAddressMiningCommand(miningBalance));
-
-                    if (miningPositionId == 0)
-                    {
-                        // Don't exit here, we will want to attempt to update the mining pool below
-                        _logger.LogWarning($"Unexpected error updating mining position for {request.Log.Miner}");
-                    }
+                    // Don't exit here, we will want to attempt to update the mining pool below
+                    _logger.LogWarning($"Unexpected error updating mining position for {request.Log.Miner}");
                 }
-
-                return await _mediator.Send(new MakeMiningPoolCommand(miningPool, request.BlockHeight, refreshRewardPerLpt: true)) > 0;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(MineLog)}");
 
-                return false;
-            }
+            return await _mediator.Send(new MakeMiningPoolCommand(miningPool, request.BlockHeight, refreshRewardPerLpt: true)) > 0;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Failure processing {nameof(MineLog)}");
+
+            return false;
         }
     }
 }

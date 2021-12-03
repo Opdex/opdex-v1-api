@@ -8,12 +8,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution;
+
+public class PersistTokenDistributionCommandHandler : IRequestHandler<PersistTokenDistributionCommand, bool>
 {
-    public class PersistTokenDistributionCommandHandler : IRequestHandler<PersistTokenDistributionCommand, bool>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO token_distribution (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO token_distribution (
                 {nameof(TokenDistributionEntity.TokenId)},
                 {nameof(TokenDistributionEntity.VaultDistribution)},
                 {nameof(TokenDistributionEntity.MiningGovernanceDistribution)},
@@ -33,35 +33,34 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
                 @{nameof(TokenDistributionEntity.ModifiedBlock)}
               );";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistTokenDistributionCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistTokenDistributionCommandHandler> logger)
+    public PersistTokenDistributionCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistTokenDistributionCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<bool> Handle(PersistTokenDistributionCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var poolEntity = _mapper.Map<TokenDistributionEntity>(request.TokenDistribution);
+
+            var command = DatabaseQuery.Create(InsertSqlCommand, poolEntity, cancellationToken);
+
+            var result = await _context.ExecuteCommandAsync(command);
+
+            return result >= 1;
         }
-
-        public async Task<bool> Handle(PersistTokenDistributionCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var poolEntity = _mapper.Map<TokenDistributionEntity>(request.TokenDistribution);
+            _logger.LogError(ex, $"Failure persisting {nameof(TokenDistributionEntity)} record.");
 
-                var command = DatabaseQuery.Create(InsertSqlCommand, poolEntity, cancellationToken);
-
-                var result = await _context.ExecuteCommandAsync(command);
-
-                return result >= 1;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure persisting {nameof(TokenDistributionEntity)} record.");
-
-                return false;
-            }
+            return false;
         }
     }
 }

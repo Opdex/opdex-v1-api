@@ -17,44 +17,43 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Vaults.Quotes
+namespace Opdex.Platform.Application.EntryHandlers.Vaults.Quotes;
+
+public class CreateCreateVaultCertificateTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateCreateVaultCertificateTransactionQuoteCommand>
 {
-    public class CreateCreateVaultCertificateTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateCreateVaultCertificateTransactionQuoteCommand>
+    private const string MethodName = VaultConstants.Methods.CreateCertificate;
+    private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+
+    public CreateCreateVaultCertificateTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
+                                                                      IMediator mediator, OpdexConfiguration config)
+        : base(quoteAssembler, mediator, config)
     {
-        private const string MethodName = VaultConstants.Methods.CreateCertificate;
-        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+    }
 
-        public CreateCreateVaultCertificateTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                                          IMediator mediator, OpdexConfiguration config)
-            : base(quoteAssembler, mediator, config)
+    public override async Task<TransactionQuoteDto> Handle(CreateCreateVaultCertificateTransactionQuoteCommand request, CancellationToken cancellationToken)
+    {
+        // ensure the vault exists, else throw 404 not found
+        _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault), cancellationToken);
+
+        UInt256 amount;
+        try
         {
+            amount = request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals);
+        }
+        catch (OverflowException)
+        {
+            throw new InvalidDataException("amount", "Value too large.");
         }
 
-        public override async Task<TransactionQuoteDto> Handle(CreateCreateVaultCertificateTransactionQuoteCommand request, CancellationToken cancellationToken)
+        var requestParameters = new List<TransactionQuoteRequestParameter>
         {
-            // ensure the vault exists, else throw 404 not found
-            _ = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Vault), cancellationToken);
+            new TransactionQuoteRequestParameter("Holder", request.Holder),
+            new TransactionQuoteRequestParameter("Amount", amount)
+        };
 
-            UInt256 amount;
-            try
-            {
-                amount = request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals);
-            }
-            catch (OverflowException)
-            {
-                throw new InvalidDataException("amount", "Value too large.");
-            }
+        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
 
-            var requestParameters = new List<TransactionQuoteRequestParameter>
-            {
-                new TransactionQuoteRequestParameter("Holder", request.Holder),
-                new TransactionQuoteRequestParameter("Amount", amount)
-            };
+        return await ExecuteAsync(quoteRequest, cancellationToken);
 
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.Vault, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
-
-            return await ExecuteAsync(quoteRequest, cancellationToken);
-
-        }
     }
 }

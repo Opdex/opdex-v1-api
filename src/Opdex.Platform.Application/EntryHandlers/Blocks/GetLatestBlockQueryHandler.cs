@@ -8,23 +8,22 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Blocks
-{
-    public class GetLatestBlockQueryHandler : IRequestHandler<GetLatestBlockQuery, BlockDto>
-    {
-        private readonly IMapper _mapper;
-        private readonly IMediator _mediator;
+namespace Opdex.Platform.Application.EntryHandlers.Blocks;
 
-        public GetLatestBlockQueryHandler(IMapper mapper, IMediator mediator)
-        {
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-        public async Task<BlockDto> Handle(GetLatestBlockQuery request, CancellationToken cancellationToken)
-        {
-            var block = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: false), cancellationToken);
-            if (block is null) throw new NotFoundException("No blocks have been indexed.");
-            return _mapper.Map<BlockDto>(block);
-        }
+public class GetLatestBlockQueryHandler : IRequestHandler<GetLatestBlockQuery, BlockDto>
+{
+    private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
+
+    public GetLatestBlockQueryHandler(IMapper mapper, IMediator mediator)
+    {
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
+    public async Task<BlockDto> Handle(GetLatestBlockQuery request, CancellationToken cancellationToken)
+    {
+        var block = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: false), cancellationToken);
+        if (block is null) throw new NotFoundException("No blocks have been indexed.");
+        return _mapper.Map<BlockDto>(block);
     }
 }

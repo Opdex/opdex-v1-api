@@ -1,8 +1,7 @@
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Models;
+
+public abstract class AuditEntity
 {
-    public abstract class AuditEntity
-    {
-        public ulong CreatedBlock { get; set; }
-        public ulong ModifiedBlock { get; set; }
-    }
+    public ulong CreatedBlock { get; set; }
+    public ulong ModifiedBlock { get; set; }
 }

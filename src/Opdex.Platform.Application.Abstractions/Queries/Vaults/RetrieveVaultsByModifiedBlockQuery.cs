@@ -3,27 +3,26 @@ using Opdex.Platform.Domain.Models.Vaults;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Vaults
+namespace Opdex.Platform.Application.Abstractions.Queries.Vaults;
+
+/// <summary>
+/// Retrieve all vaults based on their modified block.
+/// </summary>
+public class RetrieveVaultsByModifiedBlockQuery : IRequest<IEnumerable<Vault>>
 {
     /// <summary>
-    /// Retrieve all vaults based on their modified block.
+    /// Constructor to create a retrieve vaults by modified block query.
     /// </summary>
-    public class RetrieveVaultsByModifiedBlockQuery : IRequest<IEnumerable<Vault>>
+    /// <param name="blockHeight">The block height to select vaults by.</param>
+    public RetrieveVaultsByModifiedBlockQuery(ulong blockHeight)
     {
-        /// <summary>
-        /// Constructor to create a retrieve vaults by modified block query.
-        /// </summary>
-        /// <param name="blockHeight">The block height to select vaults by.</param>
-        public RetrieveVaultsByModifiedBlockQuery(ulong blockHeight)
+        if (blockHeight < 1)
         {
-            if (blockHeight < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-            }
-
-            BlockHeight = blockHeight;
+            throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
         }
 
-        public ulong BlockHeight { get; }
+        BlockHeight = blockHeight;
     }
+
+    public ulong BlockHeight { get; }
 }

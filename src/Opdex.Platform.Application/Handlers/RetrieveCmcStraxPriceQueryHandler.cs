@@ -6,34 +6,33 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CoinMarketCapApi.Queries;
 
-namespace Opdex.Platform.Application.Handlers
+namespace Opdex.Platform.Application.Handlers;
+
+public class RetrieveCmcStraxPriceQueryHandler : IRequestHandler<RetrieveCmcStraxPriceQuery, decimal>
 {
-    public class RetrieveCmcStraxPriceQueryHandler : IRequestHandler<RetrieveCmcStraxPriceQuery, decimal>
+    private readonly IMediator _mediator;
+    private readonly ILogger<RetrieveCmcStraxPriceQueryHandler> _logger;
+
+    public RetrieveCmcStraxPriceQueryHandler(IMediator mediator, ILogger<RetrieveCmcStraxPriceQueryHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<RetrieveCmcStraxPriceQueryHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public RetrieveCmcStraxPriceQueryHandler(IMediator mediator, ILogger<RetrieveCmcStraxPriceQueryHandler> logger)
+    public async Task<decimal> Handle(RetrieveCmcStraxPriceQuery request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var isFiveMinutesOrOlder = DateTime.UtcNow.Subtract(request.BlockTime) > TimeSpan.FromMinutes(5);
+
+            return isFiveMinutesOrOlder
+                ? await _mediator.Send(new CallCmcGetStraxHistoricalQuoteQuery(request.BlockTime))
+                : await _mediator.Send(new CallCmcGetStraxLatestQuoteQuery());
         }
-
-        public async Task<decimal> Handle(RetrieveCmcStraxPriceQuery request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var isFiveMinutesOrOlder = DateTime.UtcNow.Subtract(request.BlockTime) > TimeSpan.FromMinutes(5);
-
-                return isFiveMinutesOrOlder
-                    ? await _mediator.Send(new CallCmcGetStraxHistoricalQuoteQuery(request.BlockTime))
-                    : await _mediator.Send(new CallCmcGetStraxLatestQuoteQuery());
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error retrieving STRAX price quote");
-                return 0m;
-            }
+            _logger.LogError(ex, "Unexpected error retrieving STRAX price quote");
+            return 0m;
         }
     }
 }

@@ -1,11 +1,10 @@
-namespace Opdex.Platform.Common.Enums
+namespace Opdex.Platform.Common.Enums;
+
+public enum SnapshotType
 {
-    public enum SnapshotType
-    {
-        Minute = 1,
-        Hourly = 2,
-        Daily = 3,
-        Weekly = 4,
-        Monthly = 5
-    }
+    Minute = 1,
+    Hourly = 2,
+    Daily = 3,
+    Weekly = 4,
+    Monthly = 5
 }

@@ -1,14 +1,13 @@
 using MediatR;
 
-namespace Opdex.Platform.Common.Queries
+namespace Opdex.Platform.Common.Queries;
+
+public abstract class FindQuery<T> : IRequest<T>
 {
-    public abstract class FindQuery<T> : IRequest<T>
+    protected FindQuery(bool findOrThrow)
     {
-        protected FindQuery(bool findOrThrow)
-        {
-            FindOrThrow = findOrThrow;
-        }
-        
-        public bool FindOrThrow { get; }
+        FindOrThrow = findOrThrow;
     }
+        
+    public bool FindOrThrow { get; }
 }

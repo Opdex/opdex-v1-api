@@ -3,36 +3,35 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools
+namespace Opdex.Platform.Application.Abstractions.Queries.LiquidityPools;
+
+public class RetrieveLiquidityAmountInQuoteQuery : IRequest<UInt256>
 {
-    public class RetrieveLiquidityAmountInQuoteQuery : IRequest<UInt256>
+    public RetrieveLiquidityAmountInQuoteQuery(UInt256 amountIn, Address tokenIn, Address pool, Address router)
     {
-        public RetrieveLiquidityAmountInQuoteQuery(UInt256 amountIn, Address tokenIn, Address pool, Address router)
+        if (tokenIn == Address.Empty)
         {
-            if (tokenIn == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(tokenIn));
-            }
-
-            if (pool == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(pool));
-            }
-
-            if (router == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(router));
-            }
-
-            AmountIn = amountIn;
-            TokenIn = tokenIn;
-            Pool = pool;
-            Router = router;
+            throw new ArgumentNullException(nameof(tokenIn));
         }
 
-        public UInt256 AmountIn { get; }
-        public Address TokenIn { get; }
-        public Address Pool { get; }
-        public Address Router { get; }
+        if (pool == Address.Empty)
+        {
+            throw new ArgumentNullException(nameof(pool));
+        }
+
+        if (router == Address.Empty)
+        {
+            throw new ArgumentNullException(nameof(router));
+        }
+
+        AmountIn = amountIn;
+        TokenIn = tokenIn;
+        Pool = pool;
+        Router = router;
     }
+
+    public UInt256 AmountIn { get; }
+    public Address TokenIn { get; }
+    public Address Pool { get; }
+    public Address Router { get; }
 }

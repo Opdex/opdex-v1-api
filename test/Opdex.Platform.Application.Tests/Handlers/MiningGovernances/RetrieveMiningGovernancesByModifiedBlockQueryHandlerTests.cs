@@ -8,46 +8,45 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.MiningGovernances
+namespace Opdex.Platform.Application.Tests.Handlers.MiningGovernances;
+
+public class RetrieveMiningGovernancesByModifiedBlockQueryHandlerTests
 {
-    public class RetrieveMiningGovernancesByModifiedBlockQueryHandlerTests
+    private readonly Mock<IMediator> _mediator;
+    private readonly RetrieveMiningGovernancesByModifiedBlockQueryHandler _handler;
+
+    public RetrieveMiningGovernancesByModifiedBlockQueryHandlerTests()
     {
-        private readonly Mock<IMediator> _mediator;
-        private readonly RetrieveMiningGovernancesByModifiedBlockQueryHandler _handler;
+        _mediator = new Mock<IMediator>();
+        _handler = new RetrieveMiningGovernancesByModifiedBlockQueryHandler(_mediator.Object);
+    }
 
-        public RetrieveMiningGovernancesByModifiedBlockQueryHandlerTests()
+    [Fact]
+    public void RetrieveMiningGovernancesByModifiedBlockQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        // Act
+        void Act() => new RetrieveMiningGovernancesByModifiedBlockQuery(0);
+
+        // Assert
+        Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
+    }
+
+    [Fact]
+    public async Task RetrieveMiningGovernancesByModifiedBlockQuery_Sends_SelectMiningGovernancesByModifiedBlockQuery()
+    {
+        // Arrange
+        const ulong blockHeight = 10;
+
+        // Act
+        try
         {
-            _mediator = new Mock<IMediator>();
-            _handler = new RetrieveMiningGovernancesByModifiedBlockQueryHandler(_mediator.Object);
+            await _handler.Handle(new RetrieveMiningGovernancesByModifiedBlockQuery(blockHeight), CancellationToken.None);
         }
+        catch { }
 
-        [Fact]
-        public void RetrieveMiningGovernancesByModifiedBlockQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
-        {
-            // Arrange
-            // Act
-            void Act() => new RetrieveMiningGovernancesByModifiedBlockQuery(0);
-
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
-        }
-
-        [Fact]
-        public async Task RetrieveMiningGovernancesByModifiedBlockQuery_Sends_SelectMiningGovernancesByModifiedBlockQuery()
-        {
-            // Arrange
-            const ulong blockHeight = 10;
-
-            // Act
-            try
-            {
-                await _handler.Handle(new RetrieveMiningGovernancesByModifiedBlockQuery(blockHeight), CancellationToken.None);
-            }
-            catch { }
-
-            // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<SelectMiningGovernancesByModifiedBlockQuery>(q => q.BlockHeight == blockHeight),
-                                                   It.IsAny<CancellationToken>()), Times.Once);
-        }
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.Is<SelectMiningGovernancesByModifiedBlockQuery>(q => q.BlockHeight == blockHeight),
+                                               It.IsAny<CancellationToken>()), Times.Once);
     }
 }

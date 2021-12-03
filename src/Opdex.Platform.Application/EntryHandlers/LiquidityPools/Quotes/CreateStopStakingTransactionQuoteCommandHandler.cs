@@ -16,35 +16,34 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
+namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes;
+
+public class CreateStopStakingTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateStopStakingTransactionQuoteCommand>
 {
-    public class CreateStopStakingTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateStopStakingTransactionQuoteCommand>
+    private const string MethodName = LiquidityPoolConstants.Methods.StopStaking;
+    private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+
+    public CreateStopStakingTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
+                                                           IMediator mediator, OpdexConfiguration config)
+        : base(quoteAssembler, mediator, config)
     {
-        private const string MethodName = LiquidityPoolConstants.Methods.StopStaking;
-        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+    }
 
-        public CreateStopStakingTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                               IMediator mediator, OpdexConfiguration config)
-            : base(quoteAssembler, mediator, config)
+    public override async Task<TransactionQuoteDto> Handle(CreateStopStakingTransactionQuoteCommand request, CancellationToken cancellationToken)
+    {
+        // ensure liquidity pool exists, if not throw to return 404
+        _ = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool, findOrThrow: true), cancellationToken);
+
+        var amount = request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals);
+
+        var requestParameters = new List<TransactionQuoteRequestParameter>
         {
-        }
+            new TransactionQuoteRequestParameter("Amount", amount),
+            new TransactionQuoteRequestParameter("Liquidate Rewards", request.Liquidate)
+        };
 
-        public override async Task<TransactionQuoteDto> Handle(CreateStopStakingTransactionQuoteCommand request, CancellationToken cancellationToken)
-        {
-            // ensure liquidity pool exists, if not throw to return 404
-            _ = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool, findOrThrow: true), cancellationToken);
+        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.LiquidityPool, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
 
-            var amount = request.Amount.ToSatoshis(TokenConstants.Opdex.Decimals);
-
-            var requestParameters = new List<TransactionQuoteRequestParameter>
-            {
-                new TransactionQuoteRequestParameter("Amount", amount),
-                new TransactionQuoteRequestParameter("Liquidate Rewards", request.Liquidate)
-            };
-
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.LiquidityPool, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
-
-            return await ExecuteAsync(quoteRequest, cancellationToken);
-        }
+        return await ExecuteAsync(quoteRequest, cancellationToken);
     }
 }

@@ -3,20 +3,19 @@ using Opdex.Platform.Domain.Models.Addresses;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Addresses.Mining
-{
-    public class RetrieveMiningPositionsByModifiedBlockQuery : IRequest<IEnumerable<AddressMining>>
-    {
-        public RetrieveMiningPositionsByModifiedBlockQuery(ulong blockHeight)
-        {
-            if (blockHeight == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-            }
+namespace Opdex.Platform.Application.Abstractions.Queries.Addresses.Mining;
 
-            BlockHeight = blockHeight;
+public class RetrieveMiningPositionsByModifiedBlockQuery : IRequest<IEnumerable<AddressMining>>
+{
+    public RetrieveMiningPositionsByModifiedBlockQuery(ulong blockHeight)
+    {
+        if (blockHeight == 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
         }
 
-        public ulong BlockHeight { get; }
+        BlockHeight = blockHeight;
     }
+
+    public ulong BlockHeight { get; }
 }

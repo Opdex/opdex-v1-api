@@ -4,20 +4,19 @@ using Opdex.Platform.Domain.Models.Vaults;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates
-{
-    public class RetrieveVaultCertificatesByOwnerAddressQuery : IRequest<IEnumerable<VaultCertificate>>
-    {
-        public RetrieveVaultCertificatesByOwnerAddressQuery(Address ownerAddress)
-        {
-            if (ownerAddress == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(ownerAddress));
-            }
+namespace Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
 
-            OwnerAddress = ownerAddress;
+public class RetrieveVaultCertificatesByOwnerAddressQuery : IRequest<IEnumerable<VaultCertificate>>
+{
+    public RetrieveVaultCertificatesByOwnerAddressQuery(Address ownerAddress)
+    {
+        if (ownerAddress == Address.Empty)
+        {
+            throw new ArgumentNullException(nameof(ownerAddress));
         }
 
-        public Address OwnerAddress { get; }
+        OwnerAddress = ownerAddress;
     }
+
+    public Address OwnerAddress { get; }
 }

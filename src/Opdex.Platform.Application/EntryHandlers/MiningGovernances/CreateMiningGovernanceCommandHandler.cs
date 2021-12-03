@@ -7,34 +7,33 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.MiningGovernances
+namespace Opdex.Platform.Application.EntryHandlers.MiningGovernances;
+
+public class CreateMiningGovernanceCommandHandler : IRequestHandler<CreateMiningGovernanceCommand, ulong>
 {
-    public class CreateMiningGovernanceCommandHandler : IRequestHandler<CreateMiningGovernanceCommand, ulong>
+    private readonly IMediator _mediator;
+
+    public CreateMiningGovernanceCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public CreateMiningGovernanceCommandHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
+    public async Task<ulong> Handle(CreateMiningGovernanceCommand request, CancellationToken cancellationToken)
+    {
+        var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.MiningGovernance, findOrThrow: false));
 
-        public async Task<ulong> Handle(CreateMiningGovernanceCommand request, CancellationToken cancellationToken)
-        {
-            var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.MiningGovernance, findOrThrow: false));
+        // Return if it already exists
+        if (miningGovernance != null) return miningGovernance.Id;
 
-            // Return if it already exists
-            if (miningGovernance != null) return miningGovernance.Id;
+        var summary = await _mediator.Send(new RetrieveMiningGovernanceContractSummaryByAddressQuery(request.MiningGovernance,
+                                                                                                     request.BlockHeight,
+                                                                                                     includeMiningDuration: true));
 
-            var summary = await _mediator.Send(new RetrieveMiningGovernanceContractSummaryByAddressQuery(request.MiningGovernance,
-                                                                                                         request.BlockHeight,
-                                                                                                         includeMiningDuration: true));
+        miningGovernance = new MiningGovernance(request.MiningGovernance,
+                                                request.StakingTokenId,
+                                                summary.MiningDuration.GetValueOrDefault(),
+                                                request.BlockHeight);
 
-            miningGovernance = new MiningGovernance(request.MiningGovernance,
-                                              request.StakingTokenId,
-                                              summary.MiningDuration.GetValueOrDefault(),
-                                              request.BlockHeight);
-
-            return await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance, request.BlockHeight));
-        }
+        return await _mediator.Send(new MakeMiningGovernanceCommand(miningGovernance, request.BlockHeight));
     }
 }

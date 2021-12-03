@@ -3,15 +3,14 @@ using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
-{
-    public class SelectTransactionsWithFilterQuery : IRequest<IEnumerable<Transaction>>
-    {
-        public SelectTransactionsWithFilterQuery(TransactionsCursor cursor)
-        {
-            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor), "Cursor must be set.");
-        }
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 
-        public TransactionsCursor Cursor { get; }
+public class SelectTransactionsWithFilterQuery : IRequest<IEnumerable<Transaction>>
+{
+    public SelectTransactionsWithFilterQuery(TransactionsCursor cursor)
+    {
+        Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor), "Cursor must be set.");
     }
+
+    public TransactionsCursor Cursor { get; }
 }

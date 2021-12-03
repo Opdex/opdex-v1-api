@@ -13,79 +13,78 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.TransactionLogs.Tokens
+namespace Opdex.Platform.Application.Tests.EntryHandlers.Transactions.TransactionLogs.Tokens;
+
+public class ProcessApprovalLogCommandHandlerTests
 {
-    public class ProcessApprovalLogCommandHandlerTests
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<ILogger<ProcessApprovalLogCommandHandler>> _loggerMock;
+    private readonly ProcessApprovalLogCommandHandler _handler;
+
+    public ProcessApprovalLogCommandHandlerTests()
     {
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly Mock<ILogger<ProcessApprovalLogCommandHandler>> _loggerMock;
-        private readonly ProcessApprovalLogCommandHandler _handler;
+        _mediatorMock = new Mock<IMediator>();
+        _loggerMock = new Mock<ILogger<ProcessApprovalLogCommandHandler>>();
 
-        public ProcessApprovalLogCommandHandlerTests()
-        {
-            _mediatorMock = new Mock<IMediator>();
-            _loggerMock = new Mock<ILogger<ProcessApprovalLogCommandHandler>>();
+        _handler = new ProcessApprovalLogCommandHandler(_mediatorMock.Object);
+    }
 
-            _handler = new ProcessApprovalLogCommandHandler(_mediatorMock.Object);
-        }
+    [Fact]
+    public async Task ProcessApprovalLogCommand_Sends_RetrieveMarketRouterByAddressQuery()
+    {
+        // Arrange
+        dynamic log = SetupApprovalLog("PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", "9000000000", "50000000");
+        var request = new ProcessApprovalLogCommand(new ApprovalLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5),
+                                                    "PR71udY85pAcNcitdDfzQevp6Zar9DizHM",
+                                                    50000);
 
-        [Fact]
-        public async Task ProcessApprovalLogCommand_Sends_RetrieveMarketRouterByAddressQuery()
-        {
-            // Arrange
-            dynamic log = SetupApprovalLog("PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", "9000000000", "50000000");
-            var request = new ProcessApprovalLogCommand(new ApprovalLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5),
-                                                        "PR71udY85pAcNcitdDfzQevp6Zar9DizHM",
-                                                        50000);
+        // Act
+        await _handler.Handle(request, CancellationToken.None);
 
-            // Act
-            await _handler.Handle(request, CancellationToken.None);
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveMarketRouterByAddressQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveMarketRouterByAddressQuery>(), It.IsAny<CancellationToken>()), Times.Once);
-        }
+    [Fact]
+    public async Task ProcessApprovalLogCommand_Sends_RetrieveLiquidityPoolByAddressQuery()
+    {
+        // Arrange
+        dynamic log = SetupApprovalLog("PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", "9000000000", "50000000");
+        var request = new ProcessApprovalLogCommand(new ApprovalLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5),
+                                                    "PR71udY85pAcNcitdDfzQevp6Zar9DizHM",
+                                                    50000);
 
-        [Fact]
-        public async Task ProcessApprovalLogCommand_Sends_RetrieveLiquidityPoolByAddressQuery()
-        {
-            // Arrange
-            dynamic log = SetupApprovalLog("PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", "9000000000", "50000000");
-            var request = new ProcessApprovalLogCommand(new ApprovalLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5),
-                                                        "PR71udY85pAcNcitdDfzQevp6Zar9DizHM",
-                                                        50000);
+        // Act
+        await _handler.Handle(request, CancellationToken.None);
 
-            // Act
-            await _handler.Handle(request, CancellationToken.None);
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolByAddressQuery>(), It.IsAny<CancellationToken>()), Times.Once);
-        }
+    [Fact]
+    public async Task ProcessApprovalLogCommand_Sends_RetrieveMiningPoolByAddressQuery()
+    {
+        // Arrange
+        dynamic log = SetupApprovalLog("PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", "9000000000", "50000000");
+        var request = new ProcessApprovalLogCommand(new ApprovalLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5),
+                                                    "PR71udY85pAcNcitdDfzQevp6Zar9DizHM",
+                                                    50000);
 
-        [Fact]
-        public async Task ProcessApprovalLogCommand_Sends_RetrieveMiningPoolByAddressQuery()
-        {
-            // Arrange
-            dynamic log = SetupApprovalLog("PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", "PJK7skDpACVauUvuqjBf7LXaWgRKCvMJL7", "9000000000", "50000000");
-            var request = new ProcessApprovalLogCommand(new ApprovalLog(log, "PAdS3HnzJ5QhacRuQ5Yb5koAp4XxqswnXi", 5),
-                                                        "PR71udY85pAcNcitdDfzQevp6Zar9DizHM",
-                                                        50000);
+        // Act
+        await _handler.Handle(request, CancellationToken.None);
 
-            // Act
-            await _handler.Handle(request, CancellationToken.None);
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>()), Times.Once);
-        }
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
 
 
-        private ExpandoObject SetupApprovalLog(string owner, string spender, string newAmount, string oldAmount)
-        {
-            dynamic log = new ExpandoObject();
-            log.owner = owner;
-            log.spender = spender;
-            log.amount = newAmount;
-            log.oldAmount = oldAmount;
-            return log;
-        }
+    private ExpandoObject SetupApprovalLog(string owner, string spender, string newAmount, string oldAmount)
+    {
+        dynamic log = new ExpandoObject();
+        log.owner = owner;
+        log.spender = spender;
+        log.amount = newAmount;
+        log.oldAmount = oldAmount;
+        return log;
     }
 }

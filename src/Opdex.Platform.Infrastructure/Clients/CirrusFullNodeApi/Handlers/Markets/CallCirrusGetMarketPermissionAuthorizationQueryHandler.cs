@@ -8,30 +8,29 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Markets;
+
+public class CallCirrusGetMarketPermissionAuthorizationQueryHandler : IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>
 {
-    public class CallCirrusGetMarketPermissionAuthorizationQueryHandler : IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>
+    private readonly ISmartContractsModule _smartContractsModule;
+    private const string MethodName = StandardMarketConstants.Methods.IsAuthorized;
+
+    public CallCirrusGetMarketPermissionAuthorizationQueryHandler(ISmartContractsModule smartContractsModule)
     {
-        private readonly ISmartContractsModule _smartContractsModule;
-        private const string MethodName = StandardMarketConstants.Methods.IsAuthorized;
+        _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+    }
 
-        public CallCirrusGetMarketPermissionAuthorizationQueryHandler(ISmartContractsModule smartContractsModule)
+    public async Task<bool> Handle(CallCirrusGetMarketPermissionAuthorizationQuery request, CancellationToken cancellationToken)
+    {
+        var parameters = new[]
         {
-            _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-        }
+            new SmartContractMethodParameter(request.Wallet),
+            new SmartContractMethodParameter((byte)request.Permission)
+        };
 
-        public async Task<bool> Handle(CallCirrusGetMarketPermissionAuthorizationQuery request, CancellationToken cancellationToken)
-        {
-            var parameters = new[]
-            {
-                new SmartContractMethodParameter(request.Wallet),
-                new SmartContractMethodParameter((byte)request.Permission)
-            };
+        var localCall = new LocalCallRequestDto(request.Market, request.Market, MethodName, parameters, request.BlockHeight);
+        var response = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
 
-            var localCall = new LocalCallRequestDto(request.Market, request.Market, MethodName, parameters, request.BlockHeight);
-            var response = await _smartContractsModule.LocalCallAsync(localCall, cancellationToken);
-
-            return response.DeserializeValue<bool>();
-        }
+        return response.DeserializeValue<bool>();
     }
 }

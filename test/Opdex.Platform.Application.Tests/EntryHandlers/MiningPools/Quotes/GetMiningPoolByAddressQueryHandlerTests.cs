@@ -12,66 +12,65 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools.Quotes
+namespace Opdex.Platform.Application.Tests.EntryHandlers.MiningPools.Quotes;
+
+public class GetMiningPoolByAddressQueryHandlerTests
 {
-    public class GetMiningPoolByAddressQueryHandlerTests
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<IModelAssembler<MiningPool, MiningPoolDto>> _miningPoolAssemblerMock;
+
+    private readonly GetMiningPoolByAddressQueryHandler _handler;
+
+    public GetMiningPoolByAddressQueryHandlerTests()
     {
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly Mock<IModelAssembler<MiningPool, MiningPoolDto>> _miningPoolAssemblerMock;
+        _mediatorMock = new Mock<IMediator>();
+        _miningPoolAssemblerMock = new Mock<IModelAssembler<MiningPool, MiningPoolDto>>();
+        _handler = new GetMiningPoolByAddressQueryHandler(_mediatorMock.Object, _miningPoolAssemblerMock.Object);
+    }
 
-        private readonly GetMiningPoolByAddressQueryHandler _handler;
+    [Fact]
+    public async Task Handler_RetrieveMiningPoolByAddressQuery_Send()
+    {
+        // Arrange
+        var miningPool = "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm";
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        public GetMiningPoolByAddressQueryHandlerTests()
-        {
-            _mediatorMock = new Mock<IMediator>();
-            _miningPoolAssemblerMock = new Mock<IModelAssembler<MiningPool, MiningPoolDto>>();
-            _handler = new GetMiningPoolByAddressQueryHandler(_mediatorMock.Object, _miningPoolAssemblerMock.Object);
-        }
+        // Act
+        await _handler.Handle(new GetMiningPoolByAddressQuery(miningPool), cancellationToken);
 
-        [Fact]
-        public async Task Handler_RetrieveMiningPoolByAddressQuery_Send()
-        {
-            // Arrange
-            var miningPool = "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm";
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveMiningPoolByAddressQuery>(query => query.Address == miningPool
+                                                                                                    && query.FindOrThrow), cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _handler.Handle(new GetMiningPoolByAddressQuery(miningPool), cancellationToken);
+    [Fact]
+    public async Task Handle_MiningPoolDto_Assemble()
+    {
+        // Arrange
+        var miningPool = new MiningPool(5, 10, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", UInt256.Parse("500201035"), UInt256.Parse("4249200"), 530039, 505, 510);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveMiningPoolByAddressQuery>(query => query.Address == miningPool
-                                                                                                && query.FindOrThrow), cancellationToken), Times.Once);
-        }
+        // Act
+        await _handler.Handle(new GetMiningPoolByAddressQuery("PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm"), CancellationToken.None);
 
-        [Fact]
-        public async Task Handle_MiningPoolDto_Assemble()
-        {
-            // Arrange
-            var miningPool = new MiningPool(5, 10, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", UInt256.Parse("500201035"), UInt256.Parse("4249200"), 530039, 505, 510);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
+        // Assert
+        _miningPoolAssemblerMock.Verify(callTo => callTo.Assemble(miningPool), Times.Once);
+    }
 
-            // Act
-            await _handler.Handle(new GetMiningPoolByAddressQuery("PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm"), CancellationToken.None);
+    [Fact]
+    public async Task Handle_MiningPoolDto_Return()
+    {
+        // Arrange
+        var dto = new MiningPoolDto();
 
-            // Assert
-            _miningPoolAssemblerMock.Verify(callTo => callTo.Assemble(miningPool), Times.Once);
-        }
+        var miningPool = new MiningPool(5, 10, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", UInt256.Parse("500201035"), UInt256.Parse("4249200"), 530039, 505, 510);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
+        _miningPoolAssemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<MiningPool>())).ReturnsAsync(dto);
 
-        [Fact]
-        public async Task Handle_MiningPoolDto_Return()
-        {
-            // Arrange
-            var dto = new MiningPoolDto();
+        // Act
+        var response = await _handler.Handle(new GetMiningPoolByAddressQuery("PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm"), CancellationToken.None);
 
-            var miningPool = new MiningPool(5, 10, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", UInt256.Parse("500201035"), UInt256.Parse("4249200"), 530039, 505, 510);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMiningPoolByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(miningPool);
-            _miningPoolAssemblerMock.Setup(callTo => callTo.Assemble(It.IsAny<MiningPool>())).ReturnsAsync(dto);
-
-            // Act
-            var response = await _handler.Handle(new GetMiningPoolByAddressQuery("PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm"), CancellationToken.None);
-
-            // Assert
-            response.Should().Be(dto);
-        }
+        // Assert
+        response.Should().Be(dto);
     }
 }

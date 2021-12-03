@@ -6,21 +6,20 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.LiquidityPools
+namespace Opdex.Platform.Application.Handlers.LiquidityPools;
+
+public class RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler
+    : IRequestHandler<RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>
 {
-    public class RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler
-        : IRequestHandler<RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery, LiquidityPoolSummary>
+    private readonly IMediator _mediator;
+
+    public RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<LiquidityPoolSummary> Handle(RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(request.LiquidityPoolId, request.FindOrThrow), cancellationToken);
-        }
+    public Task<LiquidityPoolSummary> Handle(RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(request.LiquidityPoolId, request.FindOrThrow), cancellationToken);
     }
 }

@@ -2,37 +2,36 @@ using System;
 using MediatR;
 using Opdex.Platform.Domain.Models.Markets;
 
-namespace Opdex.Platform.Application.Abstractions.Commands.Markets
+namespace Opdex.Platform.Application.Abstractions.Commands.Markets;
+
+/// <summary>
+/// Create a make market command to upsert and persist a market instance.
+/// </summary>
+public class MakeMarketCommand : IRequest<ulong>
 {
     /// <summary>
-    /// Create a make market command to upsert and persist a market instance.
+    /// Constructor to create a make market command.
     /// </summary>
-    public class MakeMarketCommand : IRequest<ulong>
+    /// <param name="market">The market domain model to upsert.</param>
+    /// <param name="blockHeight">The block height ot refresh optional properties at.</param>
+    /// <param name="refreshPendingOwner">Flag to refresh the pending owner property of the market contract, default is false.</param>
+    /// <param name="refreshOwner">Flag to refresh the owner property of the market contract, default is false.</param>
+    public MakeMarketCommand(Market market, ulong blockHeight, bool refreshPendingOwner = false, bool refreshOwner = false)
     {
-        /// <summary>
-        /// Constructor to create a make market command.
-        /// </summary>
-        /// <param name="market">The market domain model to upsert.</param>
-        /// <param name="blockHeight">The block height ot refresh optional properties at.</param>
-        /// <param name="refreshPendingOwner">Flag to refresh the pending owner property of the market contract, default is false.</param>
-        /// <param name="refreshOwner">Flag to refresh the owner property of the market contract, default is false.</param>
-        public MakeMarketCommand(Market market, ulong blockHeight, bool refreshPendingOwner = false, bool refreshOwner = false)
+        if (blockHeight == 0)
         {
-            if (blockHeight == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-            }
-
-            Market = market ?? throw new ArgumentNullException(nameof(market), "Market must be provided.");
-            BlockHeight = blockHeight;
-            RefreshPendingOwner = refreshPendingOwner && !market.IsStakingMarket;
-            RefreshOwner = refreshOwner && !market.IsStakingMarket; // Only non staking markets
+            throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
         }
 
-        public Market Market { get; }
-        public ulong BlockHeight { get; }
-        public bool RefreshPendingOwner { get; }
-        public bool RefreshOwner { get; }
-        public bool Refresh => RefreshPendingOwner || RefreshOwner;
+        Market = market ?? throw new ArgumentNullException(nameof(market), "Market must be provided.");
+        BlockHeight = blockHeight;
+        RefreshPendingOwner = refreshPendingOwner && !market.IsStakingMarket;
+        RefreshOwner = refreshOwner && !market.IsStakingMarket; // Only non staking markets
     }
+
+    public Market Market { get; }
+    public ulong BlockHeight { get; }
+    public bool RefreshPendingOwner { get; }
+    public bool RefreshOwner { get; }
+    public bool Refresh => RefreshPendingOwner || RefreshOwner;
 }

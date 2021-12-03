@@ -9,12 +9,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes;
+
+public class PersistTokenAttributeCommandHandler : IRequestHandler<PersistTokenAttributeCommand, bool>
 {
-    public class PersistTokenAttributeCommandHandler : IRequestHandler<PersistTokenAttributeCommand, bool>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO token_attribute (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO token_attribute (
                 {nameof(TokenAttributeEntity.TokenId)},
                 {nameof(TokenAttributeEntity.AttributeTypeId)}
               ) VALUES (
@@ -22,35 +22,34 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes
                 @{nameof(TokenAttributeEntity.AttributeTypeId)}
               );";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistTokenAttributeCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistTokenAttributeCommandHandler> logger)
+    public PersistTokenAttributeCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistTokenAttributeCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<bool> Handle(PersistTokenAttributeCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var entity = _mapper.Map<TokenAttributeEntity>(request.Attribute);
+
+            var command = DatabaseQuery.Create(InsertSqlCommand, entity, cancellationToken);
+
+            var result = await _context.ExecuteCommandAsync(command);
+
+            return result > 0;
         }
-
-        public async Task<bool> Handle(PersistTokenAttributeCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var entity = _mapper.Map<TokenAttributeEntity>(request.Attribute);
+            _logger.LogError(ex, $"Failure persisting {nameof(TokenAttribute)}");
 
-                var command = DatabaseQuery.Create(InsertSqlCommand, entity, cancellationToken);
-
-                var result = await _context.ExecuteCommandAsync(command);
-
-                return result > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure persisting {nameof(TokenAttribute)}");
-
-                return false;
-            }
+            return false;
         }
     }
 }

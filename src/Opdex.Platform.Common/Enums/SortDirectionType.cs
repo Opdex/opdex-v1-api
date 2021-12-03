@@ -1,8 +1,7 @@
-namespace Opdex.Platform.Common.Enums
+namespace Opdex.Platform.Common.Enums;
+
+public enum SortDirectionType
 {
-    public enum SortDirectionType
-    {
-        ASC = 1,
-        DESC = 2
-    }
+    ASC = 1,
+    DESC = 2
 }
