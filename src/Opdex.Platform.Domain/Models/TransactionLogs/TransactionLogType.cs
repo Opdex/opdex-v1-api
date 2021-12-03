@@ -41,10 +41,18 @@ public enum TransactionLogType : uint
     // Mined token logs
     DistributionLog = 23,
 
-    // Vault
+    // Vault logs
     CreateVaultCertificateLog = 24,
     RevokeVaultCertificateLog = 25,
     RedeemVaultCertificateLog = 26,
     SetPendingVaultOwnershipLog = 27,
-    ClaimPendingVaultOwnershipLog = 28
+    ClaimPendingVaultOwnershipLog = 28,
+
+    // Vault governance logs
+    CompleteVaultProposalLog = 29,
+    CreateVaultProposalLog = 30,
+    VaultProposalPledgeLog = 31,
+    VaultProposalWithdrawPledgeLog = 32,
+    VaultProposalVoteLog = 33,
+    VaultProposalWithdrawVoteLog = 34
 }
