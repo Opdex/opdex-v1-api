@@ -4,6 +4,9 @@ using System;
 
 namespace Opdex.Platform.Domain.Models.VaultGovernances;
 
+/// <summary>
+/// The voting position of an address for a proposal.
+/// </summary>
 public class VaultProposalVote : BlockAudit
 {
     public VaultProposalVote(ulong vaultGovernanceId, ulong proposalId, Address voter, ulong vote, ulong balance, bool inFavor, ulong createdBlock)
