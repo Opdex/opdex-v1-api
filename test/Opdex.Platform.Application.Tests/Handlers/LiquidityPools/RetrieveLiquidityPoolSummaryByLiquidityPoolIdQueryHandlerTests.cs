@@ -10,63 +10,62 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools
+namespace Opdex.Platform.Application.Tests.Handlers.LiquidityPools;
+
+public class RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests
 {
-    public class RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler _handler;
+
+    public RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests()
     {
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler _handler;
+        _mediatorMock = new Mock<IMediator>();
+        _handler = new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler(_mediatorMock.Object);
+    }
 
-        public RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests()
-        {
-            _mediatorMock = new Mock<IMediator>();
-            _handler = new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQueryHandler(_mediatorMock.Object);
-        }
+    [Fact]
+    public void RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery_InvalidLiquidityPoolId_ThrowArgumentOutOfRangeException()
+    {
+        // Arrange
+        // Act
+        void Act() => new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(0);
 
-        [Fact]
-        public void RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery_InvalidLiquidityPoolId_ThrowArgumentOutOfRangeException()
-        {
-            // Arrange
-            // Act
-            void Act() => new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(0);
+        // Assert
+        Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("LiquidityPoolId must be greater than 0.");
+    }
 
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Should().Contain("LiquidityPoolId must be greater than 0.");
-        }
+    [Fact]
+    public async Task Handle_MediatorSelectLiquidityPoolSummaryCommand_Send()
+    {
+        // Arrange
+        const ulong liquidityPoolId = 1;
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        [Fact]
-        public async Task Handle_MediatorSelectLiquidityPoolSummaryCommand_Send()
-        {
-            // Arrange
-            const ulong liquidityPoolId = 1;
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Act
+        await _handler.Handle(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(liquidityPoolId), cancellationToken);
 
-            // Act
-            await _handler.Handle(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(liquidityPoolId), cancellationToken);
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(
+                                 It.Is<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery>(query => query.LiquidityPoolId == liquidityPoolId),
+                                 cancellationToken
+                             ), Times.Once);
+    }
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(
-                It.Is<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery>(query => query.LiquidityPoolId == liquidityPoolId),
-                cancellationToken
-            ), Times.Once);
-        }
+    [Fact]
+    public async Task Handle_MediatorSelectLiquidityPoolSummaryCommand_Return()
+    {
+        // Arrange
+        const ulong id = 100L;
+        const ulong liquidityPoolId = 1;
+        var summary = new LiquidityPoolSummary(id, liquidityPoolId, 2.00m, 2.5m, 3.00m, 4, 4.5m, 5, 7, 8, 9);
 
-        [Fact]
-        public async Task Handle_MediatorSelectLiquidityPoolSummaryCommand_Return()
-        {
-            // Arrange
-            const ulong id = 100L;
-            const ulong liquidityPoolId = 1;
-            var summary = new LiquidityPoolSummary(id, liquidityPoolId, 2.00m, 2.5m, 3.00m, 4, 4.5m, 5, 7, 8, 9);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(summary);
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<SelectLiquidityPoolSummaryByLiquidityPoolIdQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(summary);
+        // Act
+        var response = await _handler.Handle(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(liquidityPoolId), default);
 
-            // Act
-            var response = await _handler.Handle(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(liquidityPoolId), default);
-
-            // Assert
-            response.Should().Be(summary);
-        }
+        // Assert
+        response.Should().Be(summary);
     }
 }

@@ -14,95 +14,94 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers.TokensControllerTests
+namespace Opdex.Platform.WebApi.Tests.Controllers.TokensControllerTests;
+
+public class ApproveAllowanceQuoteTests
 {
-    public class ApproveAllowanceQuoteTests
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<IApplicationContext> _contextMock;
+    private readonly TokensController _controller;
+
+    public ApproveAllowanceQuoteTests()
     {
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly Mock<IApplicationContext> _contextMock;
-        private readonly TokensController _controller;
+        _mapperMock = new Mock<IMapper>();
+        _mediatorMock = new Mock<IMediator>();
+        _contextMock = new Mock<IApplicationContext>();
 
-        public ApproveAllowanceQuoteTests()
-        {
-            _mapperMock = new Mock<IMapper>();
-            _mediatorMock = new Mock<IMediator>();
-            _contextMock = new Mock<IApplicationContext>();
+        _controller = new TokensController(_mediatorMock.Object, _mapperMock.Object, _contextMock.Object);
+    }
 
-            _controller = new TokensController(_mediatorMock.Object, _mapperMock.Object, _contextMock.Object);
-        }
+    [Fact]
+    public async Task ApproveAllowance_CreateApproveAllowanceTransactionQuoteCommand_Send()
+    {
+        // Arrange
+        Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
+        Address spender = "PXfJ6u1yzNPDda3GZPZpB4iW4LHVEPMKeh";
+        FixedDecimal amount = FixedDecimal.Parse("1.1");
 
-        [Fact]
-        public async Task ApproveAllowance_CreateApproveAllowanceTransactionQuoteCommand_Send()
-        {
-            // Arrange
-            Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
-            Address spender = "PXfJ6u1yzNPDda3GZPZpB4iW4LHVEPMKeh";
-            FixedDecimal amount = FixedDecimal.Parse("1.1");
+        var request = new ApproveAllowanceRequest { Spender = spender, Amount = amount };
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            var request = new ApproveAllowanceRequest { Spender = spender, Amount = amount };
-            var cancellationToken = new CancellationTokenSource().Token;
+        _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
 
-            _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
+        // Act
+        await _controller.ApproveAllowance(token, request, cancellationToken);
 
-            // Act
-            await _controller.ApproveAllowance(token, request, cancellationToken);
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateApproveAllowanceTransactionQuoteCommand>(query => query.Token == token &&
+                                                                                                                 query.WalletAddress == walletAddress &&
+                                                                                                                 query.Spender == spender &&
+                                                                                                                 query.Amount == amount),
+                                                   cancellationToken), Times.Once);
+    }
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateApproveAllowanceTransactionQuoteCommand>(query => query.Token == token &&
-                                                                                                                     query.WalletAddress == walletAddress &&
-                                                                                                                     query.Spender == spender &&
-                                                                                                                     query.Amount == amount),
-                                                       cancellationToken), Times.Once);
-        }
+    [Fact]
+    public async Task ApproveAllowance_CreateApproveAllowanceTransactionQuoteCommandResponse_Map()
+    {
+        // Arrange
+        Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
+        Address spender = "PXfJ6u1yzNPDda3GZPZpB4iW4LHVEPMKeh";
+        FixedDecimal amount = FixedDecimal.Parse("1.1");
 
-        [Fact]
-        public async Task ApproveAllowance_CreateApproveAllowanceTransactionQuoteCommandResponse_Map()
-        {
-            // Arrange
-            Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
-            Address spender = "PXfJ6u1yzNPDda3GZPZpB4iW4LHVEPMKeh";
-            FixedDecimal amount = FixedDecimal.Parse("1.1");
+        var request = new ApproveAllowanceRequest { Spender = spender, Amount = amount };
+        var cancellationToken = new CancellationTokenSource().Token;
+        var dto = new TransactionQuoteDto();
 
-            var request = new ApproveAllowanceRequest { Spender = spender, Amount = amount };
-            var cancellationToken = new CancellationTokenSource().Token;
-            var dto = new TransactionQuoteDto();
+        _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateApproveAllowanceTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
 
-            _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateApproveAllowanceTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
+        // Act
+        await _controller.ApproveAllowance(token, request, cancellationToken);
 
-            // Act
-            await _controller.ApproveAllowance(token, request, cancellationToken);
+        // Assert
+        _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>()), Times.Once);
+    }
 
-            // Assert
-            _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>()), Times.Once);
-        }
+    [Fact]
+    public async Task ApproveAllowance_CreateApproveAllowanceTransactionQuoteCommandResponse_ReturnOk()
+    {
+        // Arrange
+        Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
+        Address spender = "PXfJ6u1yzNPDda3GZPZpB4iW4LHVEPMKeh";
+        FixedDecimal amount = FixedDecimal.Parse("1.1");
 
-        [Fact]
-        public async Task ApproveAllowance_CreateApproveAllowanceTransactionQuoteCommandResponse_ReturnOk()
-        {
-            // Arrange
-            Address walletAddress = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDda3";
-            Address spender = "PXfJ6u1yzNPDda3GZPZpB4iW4LHVEPMKeh";
-            FixedDecimal amount = FixedDecimal.Parse("1.1");
+        var request = new ApproveAllowanceRequest { Spender = spender, Amount = amount };
+        var cancellationToken = new CancellationTokenSource().Token;
+        var quoteResponse = new TransactionQuoteResponseModel();
 
-            var request = new ApproveAllowanceRequest { Spender = spender, Amount = amount };
-            var cancellationToken = new CancellationTokenSource().Token;
-            var quoteResponse = new TransactionQuoteResponseModel();
+        _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateApproveAllowanceTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new TransactionQuoteDto());
+        _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(quoteResponse);
 
-            _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateApproveAllowanceTransactionQuoteCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new TransactionQuoteDto());
-            _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(quoteResponse);
+        // Act
+        var response = await _controller.ApproveAllowance(token, request, cancellationToken);
 
-            // Act
-            var response = await _controller.ApproveAllowance(token, request, cancellationToken);
-
-            // Act
-            response.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response).Value.Should().Be(quoteResponse);
-        }
+        // Act
+        response.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response).Value.Should().Be(quoteResponse);
     }
 }

@@ -8,12 +8,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets;
+
+public class PersistMarketCommandHandler : IRequestHandler<PersistMarketCommand, ulong>
 {
-    public class PersistMarketCommandHandler : IRequestHandler<PersistMarketCommand, ulong>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO market (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO market (
                 {nameof(MarketEntity.Address)},
                 {nameof(MarketEntity.DeployerId)},
                 {nameof(MarketEntity.StakingTokenId)},
@@ -42,47 +42,46 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
               );
               SELECT LAST_INSERT_ID();";
 
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE market
+    private static readonly string UpdateSqlCommand =
+        $@"UPDATE market
                 SET
                     {nameof(MarketEntity.PendingOwner)} = @{nameof(MarketEntity.PendingOwner)},
                     {nameof(MarketEntity.Owner)} = @{nameof(MarketEntity.Owner)},
                     {nameof(MarketEntity.ModifiedBlock)} = @{nameof(MarketEntity.ModifiedBlock)}
                 WHERE {nameof(MarketEntity.Id)} = @{nameof(MarketEntity.Id)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistMarketCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMarketCommandHandler> logger)
+    public PersistMarketCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMarketCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<ulong> Handle(PersistMarketCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var entity = _mapper.Map<MarketEntity>(request.Market);
+
+            var isUpdate = entity.Id >= 1;
+
+            var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+
+            var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+
+            var result = await _context.ExecuteScalarAsync<ulong>(command);
+
+            return isUpdate ? entity.Id : result;
         }
-
-        public async Task<ulong> Handle(PersistMarketCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var entity = _mapper.Map<MarketEntity>(request.Market);
+            _logger.LogError(ex, $"Failure persisting {request.Market}.");
 
-                var isUpdate = entity.Id >= 1;
-
-                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-
-                var result = await _context.ExecuteScalarAsync<ulong>(command);
-
-                return isUpdate ? entity.Id : result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure persisting {request.Market}.");
-
-                return 0;
-            }
+            return 0;
         }
     }
 }

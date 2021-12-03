@@ -6,27 +6,26 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Domain.Models.Transactions;
 
-namespace Opdex.Platform.Application.Handlers.Transactions
+namespace Opdex.Platform.Application.Handlers.Transactions;
+
+public class RetrieveCirrusTransactionByHashQueryHandler : IRequestHandler<RetrieveCirrusTransactionByHashQuery, Transaction>
 {
-    public class RetrieveCirrusTransactionByHashQueryHandler : IRequestHandler<RetrieveCirrusTransactionByHashQuery, Transaction>
+    private readonly IMediator _mediator;
+
+    public RetrieveCirrusTransactionByHashQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveCirrusTransactionByHashQueryHandler(IMediator mediator)
+    public async Task<Transaction> Handle(RetrieveCirrusTransactionByHashQuery request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            return await _mediator.Send(new CallCirrusGetTransactionByHashQuery(request.TxHash), cancellationToken);
         }
-
-        public async Task<Transaction> Handle(RetrieveCirrusTransactionByHashQuery request, CancellationToken cancellationToken)
+        catch (Exception)
         {
-            try
-            {
-                return await _mediator.Send(new CallCirrusGetTransactionByHashQuery(request.TxHash), cancellationToken);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return null;
         }
     }
 }

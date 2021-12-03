@@ -6,23 +6,22 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Addresses.Staking
+namespace Opdex.Platform.Application.Handlers.Addresses.Staking;
+
+public class RetrieveAddressStakingByLiquidityPoolIdAndOwnerQueryHandler
+    : IRequestHandler<RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>
 {
-    public class RetrieveAddressStakingByLiquidityPoolIdAndOwnerQueryHandler
-        : IRequestHandler<RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>
+    private readonly IMediator _mediator;
+
+    public RetrieveAddressStakingByLiquidityPoolIdAndOwnerQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveAddressStakingByLiquidityPoolIdAndOwnerQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
+    public Task<AddressStaking> Handle(RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery request, CancellationToken cancellationToken)
+    {
+        var query = new SelectAddressStakingByLiquidityPoolIdAndOwnerQuery(request.LiquidityPoolId, request.Owner, request.FindOrThrow);
 
-        public Task<AddressStaking> Handle(RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery request, CancellationToken cancellationToken)
-        {
-            var query = new SelectAddressStakingByLiquidityPoolIdAndOwnerQuery(request.LiquidityPoolId, request.Owner, request.FindOrThrow);
-
-            return _mediator.Send(query, cancellationToken);
-        }
+        return _mediator.Send(query, cancellationToken);
     }
 }

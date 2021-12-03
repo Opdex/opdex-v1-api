@@ -6,30 +6,29 @@ using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 
-namespace Opdex.Platform.Application.Handlers.Markets
+namespace Opdex.Platform.Application.Handlers.Markets;
+
+public class MakeMarketCommandHandler : IRequestHandler<MakeMarketCommand, ulong>
 {
-    public class MakeMarketCommandHandler : IRequestHandler<MakeMarketCommand, ulong>
+    private readonly IMediator _mediator;
+
+    public MakeMarketCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeMarketCommandHandler(IMediator mediator)
+    public async Task<ulong> Handle(MakeMarketCommand request, CancellationToken cancellationToken)
+    {
+        if (request.Refresh)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            var summary = await _mediator.Send(new RetrieveMarketContractSummaryQuery(request.Market.Address,
+                                                                                      request.BlockHeight,
+                                                                                      includePendingOwner: request.RefreshPendingOwner,
+                                                                                      includeOwner: request.RefreshOwner));
+
+            request.Market.Update(summary);
         }
 
-        public async Task<ulong> Handle(MakeMarketCommand request, CancellationToken cancellationToken)
-        {
-            if (request.Refresh)
-            {
-                var summary = await _mediator.Send(new RetrieveMarketContractSummaryQuery(request.Market.Address,
-                                                                                          request.BlockHeight,
-                                                                                          includePendingOwner: request.RefreshPendingOwner,
-                                                                                          includeOwner: request.RefreshOwner));
-
-                request.Market.Update(summary);
-            }
-
-            return await _mediator.Send(new PersistMarketCommand(request.Market));
-        }
+        return await _mediator.Send(new PersistMarketCommand(request.Market));
     }
 }

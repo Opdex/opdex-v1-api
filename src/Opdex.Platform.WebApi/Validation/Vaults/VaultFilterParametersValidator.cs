@@ -3,14 +3,13 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults;
 using Opdex.Platform.WebApi.Models.Requests.Vaults;
 
-namespace Opdex.Platform.WebApi.Validation.Vaults
+namespace Opdex.Platform.WebApi.Validation.Vaults;
+
+public class VaultFilterParametersValidator : AbstractCursorValidator<VaultFilterParameters, VaultsCursor>
 {
-    public class VaultFilterParametersValidator : AbstractCursorValidator<VaultFilterParameters, VaultsCursor>
+    public VaultFilterParametersValidator()
     {
-        public VaultFilterParametersValidator()
-        {
-            RuleFor(filter => filter.LockedToken).MustBeNetworkAddressOrEmpty();
-            RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit);
-        }
+        RuleFor(filter => filter.LockedToken).MustBeNetworkAddressOrEmpty();
+        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit);
     }
 }

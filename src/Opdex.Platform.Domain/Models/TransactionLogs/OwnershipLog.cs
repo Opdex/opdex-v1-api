@@ -3,56 +3,55 @@ using Opdex.Platform.Common;
 using Opdex.Platform.Common.Models;
 using System;
 
-namespace Opdex.Platform.Domain.Models.TransactionLogs
+namespace Opdex.Platform.Domain.Models.TransactionLogs;
+
+public abstract class OwnershipLog : TransactionLog
 {
-    public abstract class OwnershipLog : TransactionLog
+    protected OwnershipLog(TransactionLogType logType, Address from, Address to, Address address, int sortOrder)
+        : base(logType, address, sortOrder)
     {
-        protected OwnershipLog(TransactionLogType logType, Address from, Address to, Address address, int sortOrder)
-            : base(logType, address, sortOrder)
+        if (from == Address.Empty)
         {
-            if (from == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(from), "From address must be set.");
-            }
-
-            if (to == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(to), "To address must be set.");
-            }
-
-            From = from;
-            To = to;
+            throw new ArgumentNullException(nameof(from), "From address must be set.");
         }
 
-        protected OwnershipLog(TransactionLogType logType, ulong id, ulong transactionId, Address address, int sortOrder, string details)
-            : base(logType, id, transactionId, address, sortOrder)
+        if (to == Address.Empty)
         {
-            var logDetails = DeserializeLogDetails(details);
-            From = logDetails.From;
-            To = logDetails.To;
+            throw new ArgumentNullException(nameof(to), "To address must be set.");
         }
 
-        public Address From { get; }
-        public Address To { get; }
+        From = from;
+        To = to;
+    }
 
-        private struct LogDetails
-        {
-            public Address From { get; set; }
-            public Address To { get; set; }
-        }
+    protected OwnershipLog(TransactionLogType logType, ulong id, ulong transactionId, Address address, int sortOrder, string details)
+        : base(logType, id, transactionId, address, sortOrder)
+    {
+        var logDetails = DeserializeLogDetails(details);
+        From = logDetails.From;
+        To = logDetails.To;
+    }
 
-        private static LogDetails DeserializeLogDetails(string details)
-        {
-            return JsonConvert.DeserializeObject<LogDetails>(details);
-        }
+    public Address From { get; }
+    public Address To { get; }
 
-        public override string SerializeLogDetails()
+    private struct LogDetails
+    {
+        public Address From { get; set; }
+        public Address To { get; set; }
+    }
+
+    private static LogDetails DeserializeLogDetails(string details)
+    {
+        return JsonConvert.DeserializeObject<LogDetails>(details);
+    }
+
+    public override string SerializeLogDetails()
+    {
+        return JsonConvert.SerializeObject(new LogDetails
         {
-            return JsonConvert.SerializeObject(new LogDetails
-            {
-                From = From,
-                To = To
-            });
-        }
+            From = From,
+            To = To
+        });
     }
 }

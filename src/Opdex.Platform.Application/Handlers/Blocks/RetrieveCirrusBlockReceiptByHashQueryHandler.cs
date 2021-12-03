@@ -6,20 +6,19 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Domain.Models.Blocks;
 
-namespace Opdex.Platform.Application.Handlers.Blocks
+namespace Opdex.Platform.Application.Handlers.Blocks;
+
+public class RetrieveCirrusBlockReceiptByHashQueryHandler : IRequestHandler<RetrieveCirrusBlockReceiptByHashQuery, BlockReceipt>
 {
-    public class RetrieveCirrusBlockReceiptByHashQueryHandler : IRequestHandler<RetrieveCirrusBlockReceiptByHashQuery, BlockReceipt>
+    private readonly IMediator _mediator;
+
+    public RetrieveCirrusBlockReceiptByHashQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveCirrusBlockReceiptByHashQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<BlockReceipt> Handle(RetrieveCirrusBlockReceiptByHashQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new CallCirrusGetBlockReceiptByHashQuery(request.Hash, request.FindOrThrow), cancellationToken);
-        }
+    public Task<BlockReceipt> Handle(RetrieveCirrusBlockReceiptByHashQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new CallCirrusGetBlockReceiptByHashQuery(request.Hash, request.FindOrThrow), cancellationToken);
     }
 }

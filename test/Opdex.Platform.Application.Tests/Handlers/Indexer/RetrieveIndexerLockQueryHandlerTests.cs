@@ -8,34 +8,33 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Indexer
+namespace Opdex.Platform.Application.Tests.Handlers.Indexer;
+
+public class RetrieveIndexerLockQueryHandlerTests
 {
-    public class RetrieveIndexerLockQueryHandlerTests
+    private readonly Mock<IMediator> _mediator;
+    private readonly RetrieveIndexerLockQueryHandler _handler;
+
+    public RetrieveIndexerLockQueryHandlerTests()
     {
-        private readonly Mock<IMediator> _mediator;
-        private readonly RetrieveIndexerLockQueryHandler _handler;
+        _mediator = new Mock<IMediator>();
+        _handler = new RetrieveIndexerLockQueryHandler(_mediator.Object);
+    }
 
-        public RetrieveIndexerLockQueryHandlerTests()
+    [Fact]
+    public async Task Send_SelectIndexerUnlockCommand()
+    {
+        // Arrange
+        var token = CancellationToken.None;
+
+        // Act
+        try
         {
-            _mediator = new Mock<IMediator>();
-            _handler = new RetrieveIndexerLockQueryHandler(_mediator.Object);
+            await _handler.Handle(new RetrieveIndexerLockQuery(), token);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task Send_SelectIndexerUnlockCommand()
-        {
-            // Arrange
-            var token = CancellationToken.None;
-
-            // Act
-            try
-            {
-                await _handler.Handle(new RetrieveIndexerLockQuery(), token);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mediator.Verify(callTo => callTo.Send(It.IsAny<SelectIndexerLockQuery>(), token), Times.Once);
-        }
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<SelectIndexerLockQuery>(), token), Times.Once);
     }
 }

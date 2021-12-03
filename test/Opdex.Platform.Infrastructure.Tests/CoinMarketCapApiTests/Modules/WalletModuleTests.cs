@@ -13,42 +13,41 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.CoinMarketCapApiTests.Modules
+namespace Opdex.Platform.Infrastructure.Tests.CoinMarketCapApiTests.Modules;
+
+public class WalletModuleTests
 {
-    public class WalletModuleTests
+    private const string BaseAddress = "https://cirrus.opdex.com/api/";
+    private readonly Mock<HttpMessageHandler> _handler;
+    private readonly WalletModule _walletModule;
+
+    public WalletModuleTests()
     {
-        private const string BaseAddress = "https://cirrus.opdex.com/api/";
-        private readonly Mock<HttpMessageHandler> _handler;
-        private readonly WalletModule _walletModule;
+        _handler = new Mock<HttpMessageHandler>();
+        var logger = NullLogger<WalletModule>.Instance;
 
-        public WalletModuleTests()
+        var httpClient = _handler.CreateClient();
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        _walletModule = new WalletModule(httpClient, logger);
+    }
+
+    [Fact]
+    public async Task VerifyMessage_SendRequest()
+    {
+        // arrange
+        var request = new VerifyMessageRequestDto("MESSAGE_TO_SIGN", new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"), "BASE64_SIGNATURE");
+        _handler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "\"True\"");
+
+        // act
+        await _walletModule.VerifyMessage(request, CancellationToken.None);
+
+        // assert
+        _handler.VerifyRequest(HttpMethod.Post, $"{BaseAddress}Wallet/verifymessage", async httpRequestMessage =>
         {
-            _handler = new Mock<HttpMessageHandler>();
-            var logger = NullLogger<WalletModule>.Instance;
-
-            var httpClient = _handler.CreateClient();
-            httpClient.BaseAddress = new Uri(BaseAddress);
-
-            _walletModule = new WalletModule(httpClient, logger);
-        }
-
-        [Fact]
-        public async Task VerifyMessage_SendRequest()
-        {
-            // arrange
-            var request = new VerifyMessageRequestDto("MESSAGE_TO_SIGN", new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"), "BASE64_SIGNATURE");
-            _handler.SetupAnyRequest().ReturnsResponse(HttpStatusCode.OK, "\"True\"");
-
-            // act
-            await _walletModule.VerifyMessage(request, CancellationToken.None);
-
-            // assert
-            _handler.VerifyRequest(HttpMethod.Post, $"{BaseAddress}Wallet/verifymessage", async httpRequestMessage =>
-            {
-                var rawBody = await httpRequestMessage.Content.ReadAsStringAsync();
-                var body = JsonConvert.DeserializeObject<VerifyMessageRequestDto>(rawBody, StratisFullNode.SerializerSettings);
-                return body.Message == request.Message && body.ExternalAddress == request.ExternalAddress && body.Signature == request.Signature;
-            });
-        }
+            var rawBody = await httpRequestMessage.Content.ReadAsStringAsync();
+            var body = JsonConvert.DeserializeObject<VerifyMessageRequestDto>(rawBody, StratisFullNode.SerializerSettings);
+            return body.Message == request.Message && body.ExternalAddress == request.ExternalAddress && body.Signature == request.Signature;
+        });
     }
 }

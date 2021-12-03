@@ -12,90 +12,89 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets;
+
+public class SelectMarketsByModifiedBlockQueryHandlerTests
 {
-    public class SelectMarketsByModifiedBlockQueryHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly SelectMarketsByModifiedBlockQueryHandler _handler;
+
+    public SelectMarketsByModifiedBlockQueryHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectMarketsByModifiedBlockQueryHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-        public SelectMarketsByModifiedBlockQueryHandlerTests()
+        _dbContext = new Mock<IDbContext>();
+        _handler = new SelectMarketsByModifiedBlockQueryHandler(_dbContext.Object, mapper);
+    }
+
+    [Fact]
+    public void SelectMarketsByModifiedBlockQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        // Act
+        void Act() => new SelectMarketsByModifiedBlockQuery(0);
+
+        // Assert
+        Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
+    }
+
+    [Fact]
+    public async Task SelectMarketsByModifiedBlockQuery_ExecutesQuery()
+    {
+        // Arrange
+        const ulong modifiedBlock = 10;
+        var command = new SelectMarketsByModifiedBlockQuery(modifiedBlock);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<MarketEntity>(
+                              It.Is<DatabaseQuery>(q => q.Sql.Contains("ModifiedBlock = @ModifiedBlock") &&
+                                                        q.Sql.Contains("FROM market"))), Times.Once);
+    }
+
+    [Fact]
+    public async Task SelectMarketsByModifiedBlockQuery_Returns()
+    {
+        // Arrange
+        const ulong modifiedBlock = 10;
+
+        var entity = new MarketEntity
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+            Id = 123454,
+            Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
+            DeployerId = 2,
+            StakingTokenId = 3,
+            Owner = "PHVEPMKehXfJ6u1yzNPDw7uGZPZpB4iW4L",
+            AuthPoolCreators = true,
+            AuthProviders = true,
+            AuthTraders = false,
+            TransactionFee = 3,
+            MarketFeeEnabled = true,
+            CreatedBlock = 10,
+            ModifiedBlock = 11
+        };
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new SelectMarketsByModifiedBlockQueryHandler(_dbContext.Object, mapper);
-        }
-
-        [Fact]
-        public void SelectMarketsByModifiedBlockQuery_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
+        var entities = new List<MarketEntity>
         {
-            // Arrange
-            // Act
-            void Act() => new SelectMarketsByModifiedBlockQuery(0);
+            entity
+        };
 
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block height must be greater than zero.");
-        }
-
-        [Fact]
-        public async Task SelectMarketsByModifiedBlockQuery_ExecutesQuery()
+        var expectedResponse = new List<Market>
         {
-            // Arrange
-            const ulong modifiedBlock = 10;
-            var command = new SelectMarketsByModifiedBlockQuery(modifiedBlock);
+            new Market(entity.Id, entity.Address, entity.DeployerId, entity.StakingTokenId, entity.PendingOwner, entity.Owner, entity.AuthPoolCreators,
+                       entity.AuthProviders, entity.AuthTraders, entity.TransactionFee, entity.MarketFeeEnabled, entity.CreatedBlock, entity.ModifiedBlock)
+        };
 
-            // Act
-            await _handler.Handle(command, CancellationToken.None);
+        var command = new SelectMarketsByModifiedBlockQuery(modifiedBlock);
 
-            // Assert
-            _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<MarketEntity>(
-                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("ModifiedBlock = @ModifiedBlock") &&
-                                                            q.Sql.Contains("FROM market"))), Times.Once);
-        }
+        _dbContext.Setup(callTo => callTo.ExecuteQueryAsync<MarketEntity>(It.IsAny<DatabaseQuery>())).ReturnsAsync(entities);
 
-        [Fact]
-        public async Task SelectMarketsByModifiedBlockQuery_Returns()
-        {
-            // Arrange
-            const ulong modifiedBlock = 10;
+        // Act
+        var response = await _handler.Handle(command, CancellationToken.None);
 
-            var entity = new MarketEntity
-            {
-                Id = 123454,
-                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
-                DeployerId = 2,
-                StakingTokenId = 3,
-                Owner = "PHVEPMKehXfJ6u1yzNPDw7uGZPZpB4iW4L",
-                AuthPoolCreators = true,
-                AuthProviders = true,
-                AuthTraders = false,
-                TransactionFee = 3,
-                MarketFeeEnabled = true,
-                CreatedBlock = 10,
-                ModifiedBlock = 11
-            };
-
-            var entities = new List<MarketEntity>
-            {
-                entity
-            };
-
-            var expectedResponse = new List<Market>
-            {
-                new Market(entity.Id, entity.Address, entity.DeployerId, entity.StakingTokenId, entity.PendingOwner, entity.Owner, entity.AuthPoolCreators,
-                           entity.AuthProviders, entity.AuthTraders, entity.TransactionFee, entity.MarketFeeEnabled, entity.CreatedBlock, entity.ModifiedBlock)
-            };
-
-            var command = new SelectMarketsByModifiedBlockQuery(modifiedBlock);
-
-            _dbContext.Setup(callTo => callTo.ExecuteQueryAsync<MarketEntity>(It.IsAny<DatabaseQuery>())).ReturnsAsync(entities);
-
-            // Act
-            var response = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            response.Should().BeEquivalentTo(expectedResponse);
-        }
+        // Assert
+        response.Should().BeEquivalentTo(expectedResponse);
     }
 }

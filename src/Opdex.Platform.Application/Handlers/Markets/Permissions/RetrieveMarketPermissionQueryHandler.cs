@@ -5,23 +5,22 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Permission
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Markets.Permissions
+namespace Opdex.Platform.Application.Handlers.Markets.Permissions;
+
+public class RetrieveMarketPermissionQueryHandler : IRequestHandler<RetrieveMarketPermissionQuery, MarketPermission>
 {
-    public class RetrieveMarketPermissionQueryHandler : IRequestHandler<RetrieveMarketPermissionQuery, MarketPermission>
+    private readonly IMediator _mediator;
+
+    public RetrieveMarketPermissionQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator;
+    }
 
-        public RetrieveMarketPermissionQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
-        public Task<MarketPermission> Handle(RetrieveMarketPermissionQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectMarketPermissionQuery(request.MarketId,
-                                                                  request.Address,
-                                                                  request.Permission,
-                                                                  request.FindOrThrow), cancellationToken);
-        }
+    public Task<MarketPermission> Handle(RetrieveMarketPermissionQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectMarketPermissionQuery(request.MarketId,
+                                                              request.Address,
+                                                              request.Permission,
+                                                              request.FindOrThrow), cancellationToken);
     }
 }

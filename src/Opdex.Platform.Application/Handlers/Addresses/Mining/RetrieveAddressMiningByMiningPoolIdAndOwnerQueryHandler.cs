@@ -6,23 +6,22 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Addresses.Mining
+namespace Opdex.Platform.Application.Handlers.Addresses.Mining;
+
+public class RetrieveAddressMiningByMiningPoolIdAndOwnerQueryHandler
+    : IRequestHandler<RetrieveAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>
 {
-    public class RetrieveAddressMiningByMiningPoolIdAndOwnerQueryHandler
-        : IRequestHandler<RetrieveAddressMiningByMiningPoolIdAndOwnerQuery, AddressMining>
+    private readonly IMediator _mediator;
+
+    public RetrieveAddressMiningByMiningPoolIdAndOwnerQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveAddressMiningByMiningPoolIdAndOwnerQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
+    public Task<AddressMining> Handle(RetrieveAddressMiningByMiningPoolIdAndOwnerQuery request, CancellationToken cancellationToken)
+    {
+        var query = new SelectAddressMiningByMiningPoolIdAndOwnerQuery(request.MiningPoolId, request.Owner, request.FindOrThrow);
 
-        public Task<AddressMining> Handle(RetrieveAddressMiningByMiningPoolIdAndOwnerQuery request, CancellationToken cancellationToken)
-        {
-            var query = new SelectAddressMiningByMiningPoolIdAndOwnerQuery(request.MiningPoolId, request.Owner, request.FindOrThrow);
-
-            return _mediator.Send(query, cancellationToken);
-        }
+        return _mediator.Send(query, cancellationToken);
     }
 }

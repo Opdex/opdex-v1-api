@@ -5,20 +5,19 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Blocks
+namespace Opdex.Platform.Application.Handlers.Blocks;
+
+public class MakeRewindToBlockCommandHandler : IRequestHandler<MakeRewindToBlockCommand, bool>
 {
-    public class MakeRewindToBlockCommandHandler : IRequestHandler<MakeRewindToBlockCommand, bool>
+    private readonly IMediator _mediator;
+
+    public MakeRewindToBlockCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeRewindToBlockCommandHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<bool> Handle(MakeRewindToBlockCommand request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new ExecuteRewindToBlockCommand(request.Block));
-        }
+    public Task<bool> Handle(MakeRewindToBlockCommand request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new ExecuteRewindToBlockCommand(request.Block));
     }
 }

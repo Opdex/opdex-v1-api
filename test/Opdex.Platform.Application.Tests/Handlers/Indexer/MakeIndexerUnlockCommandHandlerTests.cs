@@ -9,47 +9,33 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Indexer
+namespace Opdex.Platform.Application.Tests.Handlers.Indexer;
+
+public class MakeIndexerUnlockCommandHandlerTests
 {
-    public class MakeIndexerUnlockCommandHandlerTests
+    private readonly Mock<IMediator> _mediator;
+    private readonly MakeIndexerUnlockCommandHandler _handler;
+
+    public MakeIndexerUnlockCommandHandlerTests()
     {
-        private readonly Mock<IMediator> _mediator;
-        private readonly MakeIndexerUnlockCommandHandler _handler;
+        _mediator = new Mock<IMediator>();
+        _handler = new MakeIndexerUnlockCommandHandler(_mediator.Object, new NullLogger<MakeIndexerUnlockCommandHandler>());
+    }
 
-        public MakeIndexerUnlockCommandHandlerTests()
+    [Fact]
+    public async Task Send_PersistIndexerUnlockCommand()
+    {
+        // Arrange
+        var token = CancellationToken.None;
+
+        // Act
+        try
         {
-            _mediator = new Mock<IMediator>();
-            _handler = new MakeIndexerUnlockCommandHandler(_mediator.Object, new NullLogger<MakeIndexerUnlockCommandHandler>());
+            await _handler.Handle(new MakeIndexerUnlockCommand(), token);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task Send_PersistIndexerUnlockCommand()
-        {
-            // Arrange
-            var token = CancellationToken.None;
-
-            // Act
-            try
-            {
-                await _handler.Handle(new MakeIndexerUnlockCommand(), token);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mediator.Verify(callTo => callTo.Send(It.IsAny<PersistIndexerUnlockCommand>(), token), Times.Once);
-        }
-
-        [Fact]
-        public async Task UnableToUnlockIndexer_ThrowException()
-        {
-            // Arrange
-            var token = CancellationToken.None;
-
-            // Act
-            Task Act() => _handler.Handle(new MakeIndexerUnlockCommand(), token);
-
-            // Assert
-            await Assert.ThrowsAsync<Exception>(Act);
-        }
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<PersistIndexerUnlockCommand>(), token), Times.Once);
     }
 }

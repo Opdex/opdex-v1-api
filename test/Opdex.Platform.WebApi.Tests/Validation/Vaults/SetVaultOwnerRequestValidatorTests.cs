@@ -4,49 +4,48 @@ using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Validation.Vaults;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.Vaults
+namespace Opdex.Platform.WebApi.Tests.Validation.Vaults;
+
+public class SetVaultOwnerQuoteRequestValidatorTests
 {
-    public class SetVaultOwnerQuoteRequestValidatorTests
+    private readonly SetVaultOwnerQuoteRequestValidator _validator;
+
+    public SetVaultOwnerQuoteRequestValidatorTests()
     {
-        private readonly SetVaultOwnerQuoteRequestValidator _validator;
+        _validator = new SetVaultOwnerQuoteRequestValidator();
+    }
 
-        public SetVaultOwnerQuoteRequestValidatorTests()
+    [Theory]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void Owner_Invalid(Address owner)
+    {
+        // Arrange
+        var request = new SetVaultOwnerQuoteRequest
         {
-            _validator = new SetVaultOwnerQuoteRequestValidator();
-        }
+            Owner = owner
+        };
 
-        [Theory]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void Owner_Invalid(Address owner)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Owner);
+    }
+
+    [Fact]
+    public void Owner_Valid()
+    {
+        // Arrange
+        var request = new SetVaultOwnerQuoteRequest
         {
-            // Arrange
-            var request = new SetVaultOwnerQuoteRequest
-            {
-                Owner = owner
-            };
+            Owner = new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh")
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Owner);
-        }
-
-        [Fact]
-        public void Owner_Valid()
-        {
-            // Arrange
-            var request = new SetVaultOwnerQuoteRequest
-            {
-                Owner = new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh")
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Owner);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Owner);
     }
 }

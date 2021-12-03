@@ -4,49 +4,48 @@ using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Validation.Vaults;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.Vaults
+namespace Opdex.Platform.WebApi.Tests.Validation.Vaults;
+
+public class RevokeVaultCertificatesQuoteRequestValidatorTests
 {
-    public class RevokeVaultCertificatesQuoteRequestValidatorTests
+    private readonly RevokeVaultCertificatesQuoteRequestValidator _validator;
+
+    public RevokeVaultCertificatesQuoteRequestValidatorTests()
     {
-        private readonly RevokeVaultCertificatesQuoteRequestValidator _validator;
+        _validator = new RevokeVaultCertificatesQuoteRequestValidator();
+    }
 
-        public RevokeVaultCertificatesQuoteRequestValidatorTests()
+    [Theory]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void Holder_Invalid(Address holder)
+    {
+        // Arrange
+        var request = new RevokeVaultCertificatesQuoteRequest
         {
-            _validator = new RevokeVaultCertificatesQuoteRequestValidator();
-        }
+            Holder = holder
+        };
 
-        [Theory]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void Holder_Invalid(Address holder)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Holder);
+    }
+
+    [Fact]
+    public void Holder_Valid()
+    {
+        // Arrange
+        var request = new RevokeVaultCertificatesQuoteRequest
         {
-            // Arrange
-            var request = new RevokeVaultCertificatesQuoteRequest
-            {
-                Holder = holder
-            };
+            Holder = new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh")
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Holder);
-        }
-
-        [Fact]
-        public void Holder_Valid()
-        {
-            // Arrange
-            var request = new RevokeVaultCertificatesQuoteRequest
-            {
-                Holder = new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh")
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Holder);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Holder);
     }
 }

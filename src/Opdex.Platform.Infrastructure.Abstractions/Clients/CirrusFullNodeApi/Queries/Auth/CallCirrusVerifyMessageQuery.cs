@@ -3,31 +3,30 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using System;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth
+namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
+
+/// <summary>
+/// Request to call Cirrus full node to verify a signed message.
+/// </summary>
+public class CallCirrusVerifyMessageQuery : IRequest<bool>
 {
     /// <summary>
-    /// Request to call Cirrus full node to verify a signed message.
+    /// Creates a request to call Cirrus full node to verify a signer message.
     /// </summary>
-    public class CallCirrusVerifyMessageQuery : IRequest<bool>
+    /// <param name="message">The unsigned message.</param>
+    /// <param name="signer">The address of the message signer.</param>
+    /// <param name="signature">The signed message.</param>
+    public CallCirrusVerifyMessageQuery(string message, Address signer, string signature)
     {
-        /// <summary>
-        /// Creates a request to call Cirrus full node to verify a signer message.
-        /// </summary>
-        /// <param name="message">The unsigned message.</param>
-        /// <param name="signer">The address of the message signer.</param>
-        /// <param name="signature">The signed message.</param>
-        public CallCirrusVerifyMessageQuery(string message, Address signer, string signature)
-        {
-            if (!message.HasValue()) throw new ArgumentNullException("Message must not be empty.");
-            if (signer == Address.Empty) throw new ArgumentNullException("Signer must not be empty.");
-            if (!signature.HasValue()) throw new ArgumentNullException("Signature must not be empty.");
-            Message = message;
-            Signer = signer;
-            Signature = signature;
-        }
-
-        public string Message { get; }
-        public Address Signer { get; }
-        public string Signature { get; }
+        if (!message.HasValue()) throw new ArgumentNullException("Message must not be empty.");
+        if (signer == Address.Empty) throw new ArgumentNullException("Signer must not be empty.");
+        if (!signature.HasValue()) throw new ArgumentNullException("Signature must not be empty.");
+        Message = message;
+        Signer = signer;
+        Signature = signature;
     }
+
+    public string Message { get; }
+    public Address Signer { get; }
+    public string Signature { get; }
 }

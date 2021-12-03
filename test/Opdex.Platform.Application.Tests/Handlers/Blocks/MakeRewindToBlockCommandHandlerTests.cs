@@ -9,75 +9,74 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Blocks
+namespace Opdex.Platform.Application.Tests.Handlers.Blocks;
+
+public class MakeRewindToBlockCommandHandlerTests
 {
-    public class MakeRewindToBlockCommandHandlerTests
+    private readonly MakeRewindToBlockCommandHandler _handler;
+    private readonly Mock<IMediator> _mediator;
+
+    public MakeRewindToBlockCommandHandlerTests()
     {
-        private readonly MakeRewindToBlockCommandHandler _handler;
-        private readonly Mock<IMediator> _mediator;
+        _mediator = new Mock<IMediator>();
+        _handler = new MakeRewindToBlockCommandHandler(_mediator.Object);
+    }
 
-        public MakeRewindToBlockCommandHandlerTests()
+    [Fact]
+    public void MakeRewindToBlockCommand_InvalidBlock_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        // Act
+        static void Act() => new MakeRewindToBlockCommand(0);
+
+        // Assert
+        Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block number must be greater than 0.");
+    }
+
+    [Fact]
+    public async Task MakeRewindToBlockCommand_Sends_ExecuteRewindToBlockCommand()
+    {
+        // Arrange
+        const ulong block = 10;
+
+        // Act
+        try
         {
-            _mediator = new Mock<IMediator>();
-            _handler = new MakeRewindToBlockCommandHandler(_mediator.Object);
+            await _handler.Handle(new MakeRewindToBlockCommand(block), CancellationToken.None);
         }
+        catch { }
 
-        [Fact]
-        public void MakeRewindToBlockCommand_InvalidBlock_ThrowsArgumentOutOfRangeException()
-        {
-            // Arrange
-            // Act
-            static void Act() => new MakeRewindToBlockCommand(0);
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.Is<ExecuteRewindToBlockCommand>(q => q.Block == block), CancellationToken.None));
+    }
 
-            // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(Act).Message.Contains("Block number must be greater than 0.");
-        }
+    [Fact]
+    public async Task MakeRewindToBlockCommand_Success()
+    {
+        // Arrange
+        var command = new MakeRewindToBlockCommand(10);
 
-        [Fact]
-        public async Task MakeRewindToBlockCommand_Sends_ExecuteRewindToBlockCommand()
-        {
-            // Arrange
-            const ulong block = 10;
+        _mediator.Setup(m => m.Send(It.IsAny<ExecuteRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-            // Act
-            try
-            {
-                await _handler.Handle(new MakeRewindToBlockCommand(block), CancellationToken.None);
-            }
-            catch { }
+        // Act
+        var response = await _handler.Handle(command, CancellationToken.None);
 
-            // Assert
-            _mediator.Verify(callTo => callTo.Send(It.Is<ExecuteRewindToBlockCommand>(q => q.Block == block), CancellationToken.None));
-        }
+        // Assert
+        response.Should().BeTrue();
+    }
 
-        [Fact]
-        public async Task MakeRewindToBlockCommand_Success()
-        {
-            // Arrange
-            var command = new MakeRewindToBlockCommand(10);
+    [Fact]
+    public async Task MakeRewindToBlockCommand_Fail()
+    {
+        // Arrange
+        var command = new MakeRewindToBlockCommand(10);
 
-            _mediator.Setup(m => m.Send(It.IsAny<ExecuteRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _mediator.Setup(m => m.Send(It.IsAny<ExecuteRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
-            // Act
-            var response = await _handler.Handle(command, CancellationToken.None);
+        // Act
+        var response = await _handler.Handle(command, CancellationToken.None);
 
-            // Assert
-            response.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task MakeRewindToBlockCommand_Fail()
-        {
-            // Arrange
-            var command = new MakeRewindToBlockCommand(10);
-
-            _mediator.Setup(m => m.Send(It.IsAny<ExecuteRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
-
-            // Act
-            var response = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            response.Should().BeFalse();
-        }
+        // Assert
+        response.Should().BeFalse();
     }
 }

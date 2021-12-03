@@ -7,23 +7,22 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Vaults.Certificates
+namespace Opdex.Platform.Application.Handlers.Vaults.Certificates;
+
+public class RetrieveVaultContractCertificateSummariesByOwnerQueryHandler
+    : IRequestHandler<RetrieveVaultContractCertificateSummariesByOwnerQuery, IEnumerable<VaultContractCertificateSummary>>
 {
-    public class RetrieveVaultContractCertificateSummariesByOwnerQueryHandler
-        : IRequestHandler<RetrieveVaultContractCertificateSummariesByOwnerQuery, IEnumerable<VaultContractCertificateSummary>>
+    private readonly IMediator _mediator;
+
+    public RetrieveVaultContractCertificateSummariesByOwnerQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveVaultContractCertificateSummariesByOwnerQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<IEnumerable<VaultContractCertificateSummary>> Handle(RetrieveVaultContractCertificateSummariesByOwnerQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(request.Vault,
-                                                                                                 request.Owner,
-                                                                                                 request.BlockHeight), cancellationToken);
-        }
+    public Task<IEnumerable<VaultContractCertificateSummary>> Handle(RetrieveVaultContractCertificateSummariesByOwnerQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new CallCirrusGetVaultContractCertificateSummariesByOwnerQuery(request.Vault,
+                                                                                             request.Owner,
+                                                                                             request.BlockHeight), cancellationToken);
     }
 }

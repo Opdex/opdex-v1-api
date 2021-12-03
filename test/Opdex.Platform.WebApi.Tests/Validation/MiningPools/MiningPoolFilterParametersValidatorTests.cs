@@ -7,117 +7,116 @@ using Opdex.Platform.WebApi.Validation.MiningPools;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.MiningPools
+namespace Opdex.Platform.WebApi.Tests.Validation.MiningPools;
+
+public class MiningPoolFilterParametersValidatorTests
 {
-    public class MiningPoolFilterParametersValidatorTests
+    private readonly MiningPoolFilterParametersValidator _validator;
+
+    public MiningPoolFilterParametersValidatorTests()
     {
-        private readonly MiningPoolFilterParametersValidator _validator;
+        _validator = new MiningPoolFilterParametersValidator();
+    }
 
-        public MiningPoolFilterParametersValidatorTests()
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void LiquidityPools_Items_Invalid(Address address)
+    {
+        // Arrange
+        var request = new MiningPoolFilterParameters
         {
-            _validator = new MiningPoolFilterParametersValidator();
-        }
+            LiquidityPools = new List<Address>() { address }
+        };
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void LiquidityPools_Items_Invalid(Address address)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.LiquidityPools);
+    }
+
+    [Fact]
+    public void LiquidityPools_Items_Valid()
+    {
+        // Arrange
+        var request = new MiningPoolFilterParameters
         {
-            // Arrange
-            var request = new MiningPoolFilterParameters
-            {
-                LiquidityPools = new List<Address>() { address }
-            };
+            LiquidityPools = new List<Address>() { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.LiquidityPools);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.LiquidityPools);
+    }
 
-        [Fact]
-        public void LiquidityPools_Items_Valid()
+    [Fact]
+    public void MiningStatus_Invalid()
+    {
+        // Arrange
+        var request = new MiningPoolFilterParameters
         {
-            // Arrange
-            var request = new MiningPoolFilterParameters
-            {
-                LiquidityPools = new List<Address>() { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
-            };
+            MiningStatus = (MiningStatusFilter)954353
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.LiquidityPools);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.MiningStatus);
+    }
 
-        [Fact]
-        public void MiningStatus_Invalid()
+    [Theory]
+    [InlineData(MiningStatusFilter.Any)]
+    [InlineData(MiningStatusFilter.Active)]
+    [InlineData(MiningStatusFilter.Inactive)]
+    public void MiningStatus_Valid(MiningStatusFilter status)
+    {
+        // Arrange
+        var request = new MiningPoolFilterParameters
         {
-            // Arrange
-            var request = new MiningPoolFilterParameters
-            {
-                MiningStatus = (MiningStatusFilter)954353
-            };
+            MiningStatus = status
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.MiningStatus);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.MiningStatus);
+    }
 
-        [Theory]
-        [InlineData(MiningStatusFilter.Any)]
-        [InlineData(MiningStatusFilter.Active)]
-        [InlineData(MiningStatusFilter.Inactive)]
-        public void MiningStatus_Valid(MiningStatusFilter status)
+    [Fact]
+    public void Limit_Invalid()
+    {
+        // Arrange
+        var request = new MiningPoolFilterParameters
         {
-            // Arrange
-            var request = new MiningPoolFilterParameters
-            {
-                MiningStatus = status
-            };
+            Limit = Cursor.DefaultMaxLimit + 1
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.MiningStatus);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Limit);
+    }
 
-        [Fact]
-        public void Limit_Invalid()
+    [Fact]
+    public void Limit_Valid()
+    {
+        // Arrange
+        var request = new MiningPoolFilterParameters
         {
-            // Arrange
-            var request = new MiningPoolFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit + 1
-            };
+            Limit = Cursor.DefaultMaxLimit
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Limit);
-        }
-
-        [Fact]
-        public void Limit_Valid()
-        {
-            // Arrange
-            var request = new MiningPoolFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Limit);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Limit);
     }
 }

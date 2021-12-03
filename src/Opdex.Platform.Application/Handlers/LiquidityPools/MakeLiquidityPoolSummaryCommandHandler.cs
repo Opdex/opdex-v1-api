@@ -5,20 +5,19 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.LiquidityPools
+namespace Opdex.Platform.Application.Handlers.LiquidityPools;
+
+public class MakeLiquidityPoolSummaryCommandHandler : IRequestHandler<MakeLiquidityPoolSummaryCommand, ulong>
 {
-    public class MakeLiquidityPoolSummaryCommandHandler : IRequestHandler<MakeLiquidityPoolSummaryCommand, ulong>
+    private readonly IMediator _mediator;
+
+    public MakeLiquidityPoolSummaryCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeLiquidityPoolSummaryCommandHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<ulong> Handle(MakeLiquidityPoolSummaryCommand request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new PersistLiquidityPoolSummaryCommand(request.Summary), cancellationToken);
-        }
+    public Task<ulong> Handle(MakeLiquidityPoolSummaryCommand request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new PersistLiquidityPoolSummaryCommand(request.Summary), cancellationToken);
     }
 }

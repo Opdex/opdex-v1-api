@@ -7,36 +7,35 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Extensions;
 
-namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots
+namespace Opdex.Platform.Application.EntryHandlers.Tokens.Snapshots;
+
+public class ProcessLpTokenSnapshotCommandHandler : IRequestHandler<ProcessLpTokenSnapshotCommand, decimal>
 {
-    public class ProcessLpTokenSnapshotCommandHandler : IRequestHandler<ProcessLpTokenSnapshotCommand, decimal>
+    private readonly IMediator _mediator;
+
+    public ProcessLpTokenSnapshotCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public ProcessLpTokenSnapshotCommandHandler(IMediator mediator)
+    public async Task<decimal> Handle(ProcessLpTokenSnapshotCommand request, CancellationToken cancellationToken)
+    {
+        var lptUsd = MathExtensions.FiatPerToken(request.LpToken.TotalSupply, request.ReservesUsd, request.LpToken.Sats);
+        var tokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(request.LpToken.Id, request.MarketId,
+                                                                                          request.BlockTime, request.SnapshotType));
+
+        // Update a stale snapshot if it is older than what was requested
+        if (tokenSnapshot.EndDate < request.BlockTime)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            tokenSnapshot.ResetStaleSnapshot(lptUsd, request.BlockTime);
+        }
+        else
+        {
+            tokenSnapshot.UpdatePrice(lptUsd);
         }
 
-        public async Task<decimal> Handle(ProcessLpTokenSnapshotCommand request, CancellationToken cancellationToken)
-        {
-            var lptUsd = MathExtensions.FiatPerToken(request.LpToken.TotalSupply, request.ReservesUsd, request.LpToken.Sats);
-            var tokenSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(request.LpToken.Id, request.MarketId,
-                                                                                              request.BlockTime, request.SnapshotType));
+        await _mediator.Send(new MakeTokenSnapshotCommand(tokenSnapshot, request.BlockHeight));
 
-            // Update a stale snapshot if it is older than what was requested
-            if (tokenSnapshot.EndDate < request.BlockTime)
-            {
-                tokenSnapshot.ResetStaleSnapshot(lptUsd, request.BlockTime);
-            }
-            else
-            {
-                tokenSnapshot.UpdatePrice(lptUsd);
-            }
-
-            await _mediator.Send(new MakeTokenSnapshotCommand(tokenSnapshot, request.BlockHeight));
-
-            return tokenSnapshot.Price.Close;
-        }
+        return tokenSnapshot.Price.Close;
     }
 }

@@ -1,7 +1,6 @@
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+
+public enum PagingDirection
 {
-    public enum PagingDirection
-    {
-        Forward, Backward
-    }
+    Forward, Backward
 }

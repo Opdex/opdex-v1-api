@@ -10,61 +10,60 @@ using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults;
+
+public class ProcessRevokeVaultCertificateLogCommandHandler : IRequestHandler<ProcessRevokeVaultCertificateLogCommand, bool>
 {
-    public class ProcessRevokeVaultCertificateLogCommandHandler : IRequestHandler<ProcessRevokeVaultCertificateLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessRevokeVaultCertificateLogCommandHandler> _logger;
+
+    public ProcessRevokeVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessRevokeVaultCertificateLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessRevokeVaultCertificateLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessRevokeVaultCertificateLogCommandHandler(IMediator mediator, ILogger<ProcessRevokeVaultCertificateLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessRevokeVaultCertificateLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+            var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (vault == null) return false;
 
-        public async Task<bool> Handle(ProcessRevokeVaultCertificateLogCommand request, CancellationToken cancellationToken)
-        {
-            try
+            if (request.BlockHeight >= vault.ModifiedBlock)
             {
-                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
-                if (vault == null) return false;
+                var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
 
-                if (request.BlockHeight >= vault.ModifiedBlock)
+                if (vaultId <= 0)
                 {
-                    var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
-
-                    if (vaultId <= 0)
-                    {
-                        _logger.LogWarning($"Unexpected error updating vault supply by address: {vault.Address}");
-                    }
+                    _logger.LogWarning($"Unexpected error updating vault supply by address: {vault.Address}");
                 }
-
-                var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
-
-                // Select certificates using the vestedBlock as an Id
-                var certificateToUpdate = certificates.SingleOrDefault(c => c.VestedBlock == request.Log.VestedBlock);
-
-                if (certificateToUpdate == null)
-                {
-                    return false;
-                }
-
-                if (request.BlockHeight >= certificateToUpdate.ModifiedBlock)
-                {
-                    certificateToUpdate.Revoke(request.Log, request.BlockHeight);
-
-                    return await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate));
-                }
-
-                return true;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(RevokeVaultCertificateLog)}");
 
+            var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
+
+            // Select certificates using the vestedBlock as an Id
+            var certificateToUpdate = certificates.SingleOrDefault(c => c.VestedBlock == request.Log.VestedBlock);
+
+            if (certificateToUpdate == null)
+            {
                 return false;
             }
+
+            if (request.BlockHeight >= certificateToUpdate.ModifiedBlock)
+            {
+                certificateToUpdate.Revoke(request.Log, request.BlockHeight);
+
+                return await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate));
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Failure processing {nameof(RevokeVaultCertificateLog)}");
+
+            return false;
         }
     }
 }

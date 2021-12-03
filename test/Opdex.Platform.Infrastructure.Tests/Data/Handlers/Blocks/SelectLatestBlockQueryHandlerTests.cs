@@ -11,43 +11,42 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Blocks;
 using Opdex.Platform.Infrastructure.Data.Handlers.Blocks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Blocks;
+
+public class SelectLatestBlockQueryHandlerTests
 {
-    public class SelectLatestBlockQueryHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly SelectLatestBlockQueryHandler _handler;
+
+    public SelectLatestBlockQueryHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectLatestBlockQueryHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-        public SelectLatestBlockQueryHandlerTests()
+        _dbContext = new Mock<IDbContext>();
+        _handler = new SelectLatestBlockQueryHandler(_dbContext.Object, mapper);
+    }
+
+    [Fact]
+    public async Task SelectLatestBlock_Success()
+    {
+        var expectedEntity = new BlockEntity
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+            Hash = new Sha256(543548579837345),
+            Height = 1235,
+            Time = DateTime.Now,
+            MedianTime = DateTime.Now
+        };
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new SelectLatestBlockQueryHandler(_dbContext.Object, mapper);
-        }
+        var command = new SelectLatestBlockQuery();
 
-        [Fact]
-        public async Task SelectLatestBlock_Success()
-        {
-            var expectedEntity = new BlockEntity
-            {
-                Hash = new Sha256(543548579837345),
-                Height = 1235,
-                Time = DateTime.Now,
-                MedianTime = DateTime.Now
-            };
+        _dbContext.Setup(db => db.ExecuteFindAsync<BlockEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(expectedEntity));
 
-            var command = new SelectLatestBlockQuery();
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<BlockEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedEntity));
-
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            result.Hash.Should().Be(expectedEntity.Hash);
-            result.Height.Should().Be(expectedEntity.Height);
-            result.Time.Should().Be(expectedEntity.Time);
-            result.MedianTime.Should().Be(expectedEntity.MedianTime);
-        }
+        result.Hash.Should().Be(expectedEntity.Hash);
+        result.Height.Should().Be(expectedEntity.Height);
+        result.Time.Should().Be(expectedEntity.Time);
+        result.MedianTime.Should().Be(expectedEntity.MedianTime);
     }
 }

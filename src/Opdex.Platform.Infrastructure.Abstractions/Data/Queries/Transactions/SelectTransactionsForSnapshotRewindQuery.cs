@@ -3,20 +3,19 @@ using Opdex.Platform.Domain.Models.Transactions;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions
-{
-    public class SelectTransactionsForSnapshotRewindQuery : IRequest<IEnumerable<Transaction>>
-    {
-        public SelectTransactionsForSnapshotRewindQuery(DateTime dateTime)
-        {
-            if (dateTime == default)
-            {
-                throw new ArgumentOutOfRangeException(nameof(dateTime), "Date time must be valid.");
-            }
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 
-            DateTime = dateTime;
+public class SelectTransactionsForSnapshotRewindQuery : IRequest<IEnumerable<Transaction>>
+{
+    public SelectTransactionsForSnapshotRewindQuery(DateTime dateTime)
+    {
+        if (dateTime == default)
+        {
+            throw new ArgumentOutOfRangeException(nameof(dateTime), "Date time must be valid.");
         }
 
-        public DateTime DateTime { get; }
+        DateTime = dateTime;
     }
+
+    public DateTime DateTime { get; }
 }

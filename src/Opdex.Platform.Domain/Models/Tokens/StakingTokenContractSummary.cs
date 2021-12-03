@@ -3,75 +3,74 @@ using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using System;
 
-namespace Opdex.Platform.Domain.Models.Tokens
+namespace Opdex.Platform.Domain.Models.Tokens;
+
+public class StakingTokenContractSummary
 {
-    public class StakingTokenContractSummary
+    public StakingTokenContractSummary(ulong blockHeight)
     {
-        public StakingTokenContractSummary(ulong blockHeight)
+        if (blockHeight == 0)
         {
-            if (blockHeight == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-            }
-
-            BlockHeight = blockHeight;
+            throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
         }
 
-        public ulong BlockHeight { get; }
-        public ulong? Genesis { get; private set; }
-        public ulong? PeriodDuration { get; private set; }
-        public uint? PeriodIndex { get; private set; }
-        public Address? MiningGovernance { get; private set; }
-        public Address? Vault { get; private set; }
+        BlockHeight = blockHeight;
+    }
 
-        public void SetGenesis(SmartContractMethodParameter value)
+    public ulong BlockHeight { get; }
+    public ulong? Genesis { get; private set; }
+    public ulong? PeriodDuration { get; private set; }
+    public uint? PeriodIndex { get; private set; }
+    public Address? MiningGovernance { get; private set; }
+    public Address? Vault { get; private set; }
+
+    public void SetGenesis(SmartContractMethodParameter value)
+    {
+        if (value.Type != SmartContractParameterType.UInt64)
         {
-            if (value.Type != SmartContractParameterType.UInt64)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "Genesis value must be of UInt64 type.");
-            }
-
-            Genesis = value.Parse<ulong>();
+            throw new ArgumentOutOfRangeException(nameof(value), "Genesis value must be of UInt64 type.");
         }
 
-        public void SetPeriodIndex(SmartContractMethodParameter value)
-        {
-            if (value.Type != SmartContractParameterType.UInt32)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "Period index value must be of UInt32 type.");
-            }
+        Genesis = value.Parse<ulong>();
+    }
 
-            PeriodIndex = value.Parse<uint>();
+    public void SetPeriodIndex(SmartContractMethodParameter value)
+    {
+        if (value.Type != SmartContractParameterType.UInt32)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value), "Period index value must be of UInt32 type.");
         }
 
-        public void SetPeriodDuration(SmartContractMethodParameter value)
-        {
-            if (value.Type != SmartContractParameterType.UInt64)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "Period duration value must be of UInt64 type.");
-            }
+        PeriodIndex = value.Parse<uint>();
+    }
 
-            PeriodDuration = value.Parse<ulong>();
+    public void SetPeriodDuration(SmartContractMethodParameter value)
+    {
+        if (value.Type != SmartContractParameterType.UInt64)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value), "Period duration value must be of UInt64 type.");
         }
 
-        public void SetMiningGovernance(SmartContractMethodParameter value)
-        {
-            if (value.Type != SmartContractParameterType.Address)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "Mining governance value must be of Address type.");
-            }
+        PeriodDuration = value.Parse<ulong>();
+    }
 
-            MiningGovernance = value.Parse<Address>();
+    public void SetMiningGovernance(SmartContractMethodParameter value)
+    {
+        if (value.Type != SmartContractParameterType.Address)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value), "Mining governance value must be of Address type.");
         }
 
-        public void SetVault(SmartContractMethodParameter value)
-        {
-            if (value.Type != SmartContractParameterType.Address)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "Vault value must be of Address type.");
-            }
+        MiningGovernance = value.Parse<Address>();
+    }
 
-            Vault = value.Parse<Address>();
+    public void SetVault(SmartContractMethodParameter value)
+    {
+        if (value.Type != SmartContractParameterType.Address)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value), "Vault value must be of Address type.");
         }
+
+        Vault = value.Parse<Address>();
     }
 }

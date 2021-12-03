@@ -11,91 +11,90 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summaries
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools.Summaries;
+
+public class SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests
 {
-    public class SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler _handler;
+
+    public SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-        public SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandlerTests()
+        _dbContext = new Mock<IDbContext>();
+        _handler = new SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler(_dbContext.Object, mapper);
+    }
+
+    [Fact]
+    public async Task SelectLiquidityPoolSummaryByLiquidityPoolId_Success()
+    {
+        const ulong id = 99ul;
+
+        var expectedEntity = new LiquidityPoolSummaryEntity
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+            Id = 1,
+            LiquidityPoolId = 2,
+            LiquidityUsd = 3.00m,
+            DailyLiquidityUsdChangePercent = 3.50m,
+            VolumeUsd = 4.00m,
+            StakingWeight = 5,
+            DailyStakingWeightChangePercent = 4.5m,
+            LockedCrs = 6,
+            LockedSrc = 7,
+            CreatedBlock = 8,
+            ModifiedBlock = 9
+        };
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new SelectLiquidityPoolSummaryByLiquidityPoolIdQueryHandler(_dbContext.Object, mapper);
-        }
+        var command = new SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(id);
 
-        [Fact]
-        public async Task SelectLiquidityPoolSummaryByLiquidityPoolId_Success()
-        {
-            const ulong id = 99ul;
+        _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolSummaryEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(expectedEntity));
 
-            var expectedEntity = new LiquidityPoolSummaryEntity
-            {
-                Id = 1,
-                LiquidityPoolId = 2,
-                LiquidityUsd = 3.00m,
-                DailyLiquidityUsdChangePercent = 3.50m,
-                VolumeUsd = 4.00m,
-                StakingWeight = 5,
-                DailyStakingWeightChangePercent = 4.5m,
-                LockedCrs = 6,
-                LockedSrc = 7,
-                CreatedBlock = 8,
-                ModifiedBlock = 9
-            };
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var command = new SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(id);
+        result.Id.Should().Be(expectedEntity.Id);
+        result.LiquidityPoolId.Should().Be(expectedEntity.LiquidityPoolId);
+        result.LiquidityUsd.Should().Be(expectedEntity.LiquidityUsd);
+        result.DailyLiquidityUsdChangePercent.Should().Be(expectedEntity.DailyLiquidityUsdChangePercent);
+        result.VolumeUsd.Should().Be(expectedEntity.VolumeUsd);
+        result.StakingWeight.Should().Be(expectedEntity.StakingWeight);
+        result.DailyStakingWeightChangePercent.Should().Be(expectedEntity.DailyStakingWeightChangePercent);
+        result.LockedCrs.Should().Be(expectedEntity.LockedCrs);
+        result.LockedSrc.Should().Be(expectedEntity.LockedSrc);
+        result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);
+        result.ModifiedBlock.Should().Be(expectedEntity.ModifiedBlock);
+    }
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolSummaryEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedEntity));
+    [Fact]
+    public void SelectLiquidityPoolSummaryByLiquidityPoolId_Throws_NotFoundException()
+    {
+        const ulong id = 99ul;
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        var command = new SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(id);
 
-            result.Id.Should().Be(expectedEntity.Id);
-            result.LiquidityPoolId.Should().Be(expectedEntity.LiquidityPoolId);
-            result.LiquidityUsd.Should().Be(expectedEntity.LiquidityUsd);
-            result.DailyLiquidityUsdChangePercent.Should().Be(expectedEntity.DailyLiquidityUsdChangePercent);
-            result.VolumeUsd.Should().Be(expectedEntity.VolumeUsd);
-            result.StakingWeight.Should().Be(expectedEntity.StakingWeight);
-            result.DailyStakingWeightChangePercent.Should().Be(expectedEntity.DailyStakingWeightChangePercent);
-            result.LockedCrs.Should().Be(expectedEntity.LockedCrs);
-            result.LockedSrc.Should().Be(expectedEntity.LockedSrc);
-            result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);
-            result.ModifiedBlock.Should().Be(expectedEntity.ModifiedBlock);
-        }
+        _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolSummaryEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<LiquidityPoolSummaryEntity>(null));
 
-        [Fact]
-        public void SelectLiquidityPoolSummaryByLiquidityPoolId_Throws_NotFoundException()
-        {
-            const ulong id = 99ul;
+        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+            .Should()
+            .ThrowAsync<NotFoundException>()
+            .WithMessage($"{nameof(LiquidityPoolSummary)} not found.");
+    }
 
-            var command = new SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(id);
+    [Fact]
+    public async Task SelectLiquidityPoolSummaryByLiquidityPoolId_ReturnsNull()
+    {
+        const ulong id = 99ul;
+        const bool findOrThrow = false;
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolSummaryEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<LiquidityPoolSummaryEntity>(null));
+        var command = new SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(id, findOrThrow);
 
-            _handler.Invoking(h => h.Handle(command, CancellationToken.None))
-                .Should()
-                .ThrowAsync<NotFoundException>()
-                .WithMessage($"{nameof(LiquidityPoolSummary)} not found.");
-        }
+        _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolSummaryEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<LiquidityPoolSummaryEntity>(null));
 
-        [Fact]
-        public async Task SelectLiquidityPoolSummaryByLiquidityPoolId_ReturnsNull()
-        {
-            const ulong id = 99ul;
-            const bool findOrThrow = false;
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var command = new SelectLiquidityPoolSummaryByLiquidityPoolIdQuery(id, findOrThrow);
-
-            _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolSummaryEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<LiquidityPoolSummaryEntity>(null));
-
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            result.Should().BeNull();
-        }
+        result.Should().BeNull();
     }
 }

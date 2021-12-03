@@ -11,12 +11,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
+
+public class SelectTransactionByHashQueryHandler : IRequestHandler<SelectTransactionByHashQuery, Transaction>
 {
-    public class SelectTransactionByHashQueryHandler : IRequestHandler<SelectTransactionByHashQuery, Transaction>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(TransactionEntity.Id)},
                 `{nameof(TransactionEntity.To)}`,
                 `{nameof(TransactionEntity.From)}`,
@@ -28,38 +28,37 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
             FROM transaction
             WHERE {nameof(TransactionEntity.Hash)} = @{nameof(SqlParams.Hash)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectTransactionByHashQueryHandler(IDbContext context, IMapper mapper)
+    public SelectTransactionByHashQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<Transaction> Handle(SelectTransactionByHashQuery request, CancellationToken cancellationTransaction)
+    {
+        var queryParams = new SqlParams(request.Hash);
+        var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
+
+        var result = await _context.ExecuteFindAsync<TransactionEntity>(query);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(Transaction)} not found.");
         }
 
-        public async Task<Transaction> Handle(SelectTransactionByHashQuery request, CancellationToken cancellationTransaction)
+        return result == null ? null : _mapper.Map<Transaction>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(Sha256 hash)
         {
-            var queryParams = new SqlParams(request.Hash);
-            var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationTransaction);
-
-            var result = await _context.ExecuteFindAsync<TransactionEntity>(query);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(Transaction)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<Transaction>(result);
+            Hash = hash;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(Sha256 hash)
-            {
-                Hash = hash;
-            }
-
-            public Sha256 Hash { get; }
-        }
+        public Sha256 Hash { get; }
     }
 }

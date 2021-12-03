@@ -6,27 +6,26 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.EntryQueries.Markets
-{
-    public class GetMarketSnapshotsWithFilterQuery : IRequest<MarketSnapshotsDto>
-    {
-        /// <summary>
-        /// Creates a request to retrieve snapshot data for a given liquidity pool.
-        /// </summary>
-        /// <param name="market">The address of the market.</param>
-        /// <param name="cursor">The snapshot cursor filter.</param>
-        public GetMarketSnapshotsWithFilterQuery(Address market, SnapshotCursor cursor)
-        {
-            if (market == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(market), "Market address must not be empty.");
-            }
+namespace Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 
-            Market = market;
-            Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor));
+public class GetMarketSnapshotsWithFilterQuery : IRequest<MarketSnapshotsDto>
+{
+    /// <summary>
+    /// Creates a request to retrieve snapshot data for a given liquidity pool.
+    /// </summary>
+    /// <param name="market">The address of the market.</param>
+    /// <param name="cursor">The snapshot cursor filter.</param>
+    public GetMarketSnapshotsWithFilterQuery(Address market, SnapshotCursor cursor)
+    {
+        if (market == Address.Empty)
+        {
+            throw new ArgumentNullException(nameof(market), "Market address must not be empty.");
         }
 
-        public Address Market { get; }
-        public SnapshotCursor Cursor { get; }
+        Market = market;
+        Cursor = cursor ?? throw new ArgumentNullException(nameof(cursor));
     }
+
+    public Address Market { get; }
+    public SnapshotCursor Cursor { get; }
 }

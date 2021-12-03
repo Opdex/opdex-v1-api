@@ -2,12 +2,11 @@ using MediatR;
 using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.Tokens;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distribution
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distribution;
+
+public class SelectLatestTokenDistributionQuery : FindQuery<TokenDistribution>
 {
-    public class SelectLatestTokenDistributionQuery : FindQuery<TokenDistribution>
+    public SelectLatestTokenDistributionQuery(bool findOrThrow = true) : base(findOrThrow)
     {
-        public SelectLatestTokenDistributionQuery(bool findOrThrow = true) : base(findOrThrow)
-        {
-        }
     }
 }

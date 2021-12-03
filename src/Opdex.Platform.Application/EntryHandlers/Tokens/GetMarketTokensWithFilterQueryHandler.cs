@@ -11,42 +11,41 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Tokens
+namespace Opdex.Platform.Application.EntryHandlers.Tokens;
+
+public class GetMarketTokensWithFilterQueryHandler : EntryFilterQueryHandler<GetMarketTokensWithFilterQuery, MarketTokensDto>
 {
-    public class GetMarketTokensWithFilterQueryHandler : EntryFilterQueryHandler<GetMarketTokensWithFilterQuery, MarketTokensDto>
+    private readonly IMediator _mediator;
+    private readonly IModelAssembler<MarketToken, MarketTokenDto> _marketTokenAssembler;
+
+    public GetMarketTokensWithFilterQueryHandler(IMediator mediator, IModelAssembler<MarketToken, MarketTokenDto> marketTokenAssembler)
     {
-        private readonly IMediator _mediator;
-        private readonly IModelAssembler<MarketToken, MarketTokenDto> _marketTokenAssembler;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _marketTokenAssembler = marketTokenAssembler ?? throw new ArgumentNullException(nameof(marketTokenAssembler));
+    }
 
-        public GetMarketTokensWithFilterQueryHandler(IMediator mediator, IModelAssembler<MarketToken, MarketTokenDto> marketTokenAssembler)
+    public override async Task<MarketTokensDto> Handle(GetMarketTokensWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market), cancellationToken);
+
+        var tokens = await _mediator.Send(new RetrieveTokensWithFilterQuery(market.Id, request.Cursor), cancellationToken);
+
+        var dtos = await Task.WhenAll(tokens.Select(token => _marketTokenAssembler.Assemble(new MarketToken(market, token))));
+
+        var dtoResults = dtos.ToList();
+
+        var cursor = BuildCursorDto(dtoResults, request.Cursor, pointerSelector: result =>
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _marketTokenAssembler = marketTokenAssembler ?? throw new ArgumentNullException(nameof(marketTokenAssembler));
-        }
-
-        public override async Task<MarketTokensDto> Handle(GetMarketTokensWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Market), cancellationToken);
-
-            var tokens = await _mediator.Send(new RetrieveTokensWithFilterQuery(market.Id, request.Cursor), cancellationToken);
-
-            var dtos = await Task.WhenAll(tokens.Select(token => _marketTokenAssembler.Assemble(new MarketToken(market, token))));
-
-            var dtoResults = dtos.ToList();
-
-            var cursor = BuildCursorDto(dtoResults, request.Cursor, pointerSelector: result =>
+            return request.Cursor.OrderBy switch
             {
-                return request.Cursor.OrderBy switch
-                {
-                    TokenOrderByType.Name => (result.Name, result.Id),
-                    TokenOrderByType.Symbol => (result.Symbol, result.Id),
-                    TokenOrderByType.PriceUsd => (result.Summary.PriceUsd.ToString(), result.Id),
-                    TokenOrderByType.DailyPriceChangePercent => (result.Summary.DailyPriceChangePercent.ToString(), result.Id),
-                    _ => (string.Empty, result.Id)
-                };
-            });
+                TokenOrderByType.Name => (result.Name, result.Id),
+                TokenOrderByType.Symbol => (result.Symbol, result.Id),
+                TokenOrderByType.PriceUsd => (result.Summary.PriceUsd.ToString(), result.Id),
+                TokenOrderByType.DailyPriceChangePercent => (result.Summary.DailyPriceChangePercent.ToString(), result.Id),
+                _ => (string.Empty, result.Id)
+            };
+        });
 
-            return new MarketTokensDto { Tokens = dtoResults, Cursor = cursor };
-        }
+        return new MarketTokensDto { Tokens = dtoResults, Cursor = cursor };
     }
 }

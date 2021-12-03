@@ -12,53 +12,52 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer;
+
+public class SelectIndexerLockQueryHandlerTests
 {
-    public class SelectIndexerLockQueryHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly SelectIndexerLockQueryHandler _handler;
+
+    public SelectIndexerLockQueryHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectIndexerLockQueryHandler _handler;
+        _dbContext = new Mock<IDbContext>();
+        _handler = new SelectIndexerLockQueryHandler(_dbContext.Object);
+    }
 
-        public SelectIndexerLockQueryHandlerTests()
+    [Fact]
+    public async Task SelectIndexLock_Success()
+    {
+        var expectedEntity = new IndexLockEntity
         {
-            _dbContext = new Mock<IDbContext>();
-            _handler = new SelectIndexerLockQueryHandler(_dbContext.Object);
-        }
+            Available = true,
+            Locked = false,
+            ModifiedDate = DateTime.Now
+        };
 
-        [Fact]
-        public async Task SelectIndexLock_Success()
-        {
-            var expectedEntity = new IndexLockEntity
-            {
-                Available = true,
-                Locked = false,
-                ModifiedDate = DateTime.Now
-            };
+        var command = new SelectIndexerLockQuery();
 
-            var command = new SelectIndexerLockQuery();
+        _dbContext.Setup(db => db.ExecuteFindAsync<IndexLockEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(expectedEntity));
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<IndexLockEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedEntity));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Available.Should().Be(expectedEntity.Available);
+        result.Locked.Should().Be(expectedEntity.Locked);
+        result.ModifiedDate.Should().Be(expectedEntity.ModifiedDate);
+    }
 
-            result.Available.Should().Be(expectedEntity.Available);
-            result.Locked.Should().Be(expectedEntity.Locked);
-            result.ModifiedDate.Should().Be(expectedEntity.ModifiedDate);
-        }
+    [Fact]
+    public void SelectIndexLock_Throws_NotFoundException()
+    {
+        var command = new SelectIndexerLockQuery();
 
-        [Fact]
-        public void SelectIndexLock_Throws_NotFoundException()
-        {
-            var command = new SelectIndexerLockQuery();
+        _dbContext.Setup(db => db.ExecuteFindAsync<IndexLockEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<IndexLockEntity>(null));
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<IndexLockEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<IndexLockEntity>(null));
-
-            _handler.Invoking(h => h.Handle(command, CancellationToken.None))
-                .Should()
-                .ThrowAsync<NotFoundException>()
-                .WithMessage($"{nameof(IndexLock)} not found.");
-        }
+        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+            .Should()
+            .ThrowAsync<NotFoundException>()
+            .WithMessage($"{nameof(IndexLock)} not found.");
     }
 }

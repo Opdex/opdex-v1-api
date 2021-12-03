@@ -2,20 +2,19 @@ using System;
 using MediatR;
 using Opdex.Platform.Common.Models;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Blocks
-{
-    public class RetrieveCirrusBlockHashByHeightQuery : IRequest<Sha256>
-    {
-        public RetrieveCirrusBlockHashByHeightQuery(ulong height)
-        {
-            if (height < 1)
-            {
-                throw new ArgumentNullException(nameof(height));
-            }
+namespace Opdex.Platform.Application.Abstractions.Queries.Blocks;
 
-            Height = height;
+public class RetrieveCirrusBlockHashByHeightQuery : IRequest<Sha256>
+{
+    public RetrieveCirrusBlockHashByHeightQuery(ulong height)
+    {
+        if (height < 1)
+        {
+            throw new ArgumentNullException(nameof(height));
         }
 
-        public ulong Height { get; }
+        Height = height;
     }
+
+    public ulong Height { get; }
 }

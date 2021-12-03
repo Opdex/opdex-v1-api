@@ -8,43 +8,42 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts
+namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.SmartContracts;
+
+public class CallCirrusGetSmartContractPropertyQueryHandler : IRequestHandler<CallCirrusGetSmartContractPropertyQuery, SmartContractMethodParameter>
 {
-    public class CallCirrusGetSmartContractPropertyQueryHandler : IRequestHandler<CallCirrusGetSmartContractPropertyQuery, SmartContractMethodParameter>
+    private readonly ISmartContractsModule _smartContractsModule;
+    private readonly ILogger<CallCirrusGetSmartContractPropertyQueryHandler> _logger;
+
+    public CallCirrusGetSmartContractPropertyQueryHandler(ISmartContractsModule smartContractsModule,
+                                                          ILogger<CallCirrusGetSmartContractPropertyQueryHandler> logger)
     {
-        private readonly ISmartContractsModule _smartContractsModule;
-        private readonly ILogger<CallCirrusGetSmartContractPropertyQueryHandler> _logger;
+        _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public CallCirrusGetSmartContractPropertyQueryHandler(ISmartContractsModule smartContractsModule,
-                                                              ILogger<CallCirrusGetSmartContractPropertyQueryHandler> logger)
+    public async Task<SmartContractMethodParameter> Handle(CallCirrusGetSmartContractPropertyQuery request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _smartContractsModule = smartContractsModule ?? throw new ArgumentNullException(nameof(smartContractsModule));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var result = await _smartContractsModule.GetContractStorageAsync(request.Contract, request.PropertyStateKey,
+                                                                             request.PropertyType, request.BlockHeight, cancellationToken);
+
+            return new SmartContractMethodParameter(result, request.PropertyType);
         }
-
-        public async Task<SmartContractMethodParameter> Handle(CallCirrusGetSmartContractPropertyQuery request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
+            using (_logger.BeginScope(new Dictionary<string, object>{
+                       ["Contract"] = request.Contract,
+                       ["StateKey"] = request.PropertyStateKey,
+                       ["PropertyType"] = request.PropertyType,
+                       ["BlockHeight"] = request.BlockHeight
+                   }))
             {
-                var result = await _smartContractsModule.GetContractStorageAsync(request.Contract, request.PropertyStateKey,
-                                                                                 request.PropertyType, request.BlockHeight, cancellationToken);
-
-                return new SmartContractMethodParameter(result, request.PropertyType);
+                _logger.LogError(ex, "Unexpected error retrieving smart contact property value.");
             }
-            catch (Exception ex)
-            {
-                using (_logger.BeginScope(new Dictionary<string, object>{
-                    ["Contract"] = request.Contract,
-                    ["StateKey"] = request.PropertyStateKey,
-                    ["PropertyType"] = request.PropertyType,
-                    ["BlockHeight"] = request.BlockHeight
-                }))
-                {
-                    _logger.LogError(ex, "Unexpected error retrieving smart contact property value.");
-                }
 
-                throw;
-            }
+            throw;
         }
     }
 }

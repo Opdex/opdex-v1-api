@@ -1,20 +1,19 @@
 using MediatR;
 using Opdex.Platform.Domain.Models.Vaults;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
+
+public class PersistVaultCertificateCommand : IRequest<bool>
 {
-    public class PersistVaultCertificateCommand : IRequest<bool>
+    public PersistVaultCertificateCommand(VaultCertificate vaultCertificate)
     {
-        public PersistVaultCertificateCommand(VaultCertificate vaultCertificate)
+        if (vaultCertificate == null)
         {
-            if (vaultCertificate == null)
-            {
-                VaultCertificate = vaultCertificate;
-            }
-            
             VaultCertificate = vaultCertificate;
         }
-        
-        public VaultCertificate VaultCertificate { get; }
+            
+        VaultCertificate = vaultCertificate;
     }
+        
+    public VaultCertificate VaultCertificate { get; }
 }

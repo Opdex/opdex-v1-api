@@ -10,12 +10,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries;
+
+public class SelectTokenSummaryByMarketAndTokenIdQueryHandler : IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>
 {
-    public class SelectTokenSummaryByMarketAndTokenIdQueryHandler : IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(TokenSummaryEntity.Id)},
                 {nameof(TokenSummaryEntity.MarketId)},
                 {nameof(TokenSummaryEntity.TokenId)},
@@ -28,39 +28,38 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Summaries
                   {nameof(TokenSummaryEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;".RemoveExcessWhitespace();
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectTokenSummaryByMarketAndTokenIdQueryHandler(IDbContext context, IMapper mapper)
+    public SelectTokenSummaryByMarketAndTokenIdQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<TokenSummary> Handle(SelectTokenSummaryByMarketAndTokenIdQuery request, CancellationToken cancellationToken)
+    {
+        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.MarketId, request.TokenId), cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<TokenSummaryEntity>(query);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(TokenSummary)} not found.");
         }
 
-        public async Task<TokenSummary> Handle(SelectTokenSummaryByMarketAndTokenIdQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<TokenSummary>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong marketId, ulong tokenId)
         {
-            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.MarketId, request.TokenId), cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<TokenSummaryEntity>(query);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(TokenSummary)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<TokenSummary>(result);
+            MarketId = marketId;
+            TokenId = tokenId;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong marketId, ulong tokenId)
-            {
-                MarketId = marketId;
-                TokenId = tokenId;
-            }
-
-            public ulong MarketId { get; }
-            public ulong TokenId { get; }
-        }
+        public ulong MarketId { get; }
+        public ulong TokenId { get; }
     }
 }

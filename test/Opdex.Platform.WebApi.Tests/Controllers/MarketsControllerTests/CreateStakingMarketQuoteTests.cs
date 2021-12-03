@@ -15,96 +15,95 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers.MarketsControllerTests
+namespace Opdex.Platform.WebApi.Tests.Controllers.MarketsControllerTests;
+
+public class CreateStakingMarketQuoteTests
 {
-    public class CreateStakingMarketQuoteTests
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<IApplicationContext> _contextMock;
+    private readonly MarketsController _controller;
+
+    public CreateStakingMarketQuoteTests()
     {
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly Mock<IApplicationContext> _contextMock;
-        private readonly MarketsController _controller;
+        _mapperMock = new Mock<IMapper>();
+        _mediatorMock = new Mock<IMediator>();
+        _contextMock = new Mock<IApplicationContext>();
+        _controller = new MarketsController(_mediatorMock.Object, _mapperMock.Object, _contextMock.Object);
+    }
 
-        public CreateStakingMarketQuoteTests()
+    [Fact]
+    public async Task CreateStakingMarketQuoteRequest_CreateCreateStakingMarketTransactionQuoteCommand_Send()
+    {
+        // Arrange
+        Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        _contextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+
+        var request = new CreateStakingMarketQuoteRequest
         {
-            _mapperMock = new Mock<IMapper>();
-            _mediatorMock = new Mock<IMediator>();
-            _contextMock = new Mock<IApplicationContext>();
-            _controller = new MarketsController(_mediatorMock.Object, _mapperMock.Object, _contextMock.Object);
-        }
+            StakingToken = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM"
+        };
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        [Fact]
-        public async Task CreateStakingMarketQuoteRequest_CreateCreateStakingMarketTransactionQuoteCommand_Send()
+        // Act
+        await _controller.CreateStakingMarketQuote(request, cancellationToken);
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCreateStakingMarketTransactionQuoteCommand>(command
+                                                                                                               => command.WalletAddress == walletAddress
+                                                                                                                  && command.StakingToken == request.StakingToken
+                                                   ), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateStakingMarketQuote_Result_Map()
+    {
+        // Arrange
+        Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        _contextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+
+        var quote = new TransactionQuoteDto();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStakingMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(quote);
+
+        var request = new CreateStakingMarketQuoteRequest
         {
-            // Arrange
-            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _contextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+            StakingToken = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM"
+        };
 
-            var request = new CreateStakingMarketQuoteRequest
-            {
-                StakingToken = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM"
-            };
-            var cancellationToken = new CancellationTokenSource().Token;
-
-            // Act
-            await _controller.CreateStakingMarketQuote(request, cancellationToken);
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateCreateStakingMarketTransactionQuoteCommand>(command
-                => command.WalletAddress == walletAddress
-                && command.StakingToken == request.StakingToken
-            ), cancellationToken), Times.Once);
-        }
-
-        [Fact]
-        public async Task CreateStakingMarketQuote_Result_Map()
+        // Act
+        try
         {
-            // Arrange
-            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _contextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
-
-            var quote = new TransactionQuoteDto();
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStakingMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(quote);
-
-            var request = new CreateStakingMarketQuoteRequest
-            {
-                StakingToken = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM"
-            };
-
-            // Act
-            try
-            {
-                await _controller.CreateStakingMarketQuote(request, CancellationToken.None);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
+            await _controller.CreateStakingMarketQuote(request, CancellationToken.None);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task CreateStakingMarketQuote_Success_ReturnOk()
+        // Assert
+        _mapperMock.Verify(callTo => callTo.Map<TransactionQuoteResponseModel>(quote), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateStakingMarketQuote_Success_ReturnOk()
+    {
+        // Arrange
+        Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        _contextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+
+        var responseModel = new TransactionQuoteResponseModel();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStakingMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new TransactionQuoteDto());
+        _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
+
+        var request = new CreateStakingMarketQuoteRequest
         {
-            // Arrange
-            Address walletAddress = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            _contextMock.Setup(callTo => callTo.Wallet).Returns(walletAddress);
+            StakingToken = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM"
+        };
 
-            var responseModel = new TransactionQuoteResponseModel();
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateCreateStakingMarketTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new TransactionQuoteDto());
-            _mapperMock.Setup(callTo => callTo.Map<TransactionQuoteResponseModel>(It.IsAny<TransactionQuoteDto>())).Returns(responseModel);
+        // Act
+        var response = await _controller.CreateStakingMarketQuote(request, CancellationToken.None);
 
-            var request = new CreateStakingMarketQuoteRequest
-            {
-                StakingToken = "PR71udY85pAcNcitdDfzQevp6Zar9DizHM"
-            };
-
-            // Act
-            var response = await _controller.CreateStakingMarketQuote(request, CancellationToken.None);
-
-            // Act
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
-        }
+        // Act
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
     }
 }

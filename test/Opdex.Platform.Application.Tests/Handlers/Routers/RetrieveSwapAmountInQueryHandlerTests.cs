@@ -15,109 +15,108 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.Handlers.Routers
+namespace Opdex.Platform.Application.Tests.Handlers.Routers;
+
+public class RetrieveSwapAmountInQueryHandlerTests
 {
-    public class RetrieveSwapAmountInQueryHandlerTests
+    private readonly Mock<IMediator> _mediatorMock;
+
+    private readonly RetrieveSwapAmountInQueryHandler _handler;
+
+    public RetrieveSwapAmountInQueryHandlerTests()
     {
-        private readonly Mock<IMediator> _mediatorMock;
+        _mediatorMock = new Mock<IMediator>();
+        _handler = new RetrieveSwapAmountInQueryHandler(_mediatorMock.Object);
+    }
 
-        private readonly RetrieveSwapAmountInQueryHandler _handler;
+    [Fact]
+    public async Task SingleHop_RetrieveLiquidityPoolReserves_Once()
+    {
+        // Arrange
+        SetupPools();
 
-        public RetrieveSwapAmountInQueryHandlerTests()
-        {
-            _mediatorMock = new Mock<IMediator>();
-            _handler = new RetrieveSwapAmountInQueryHandler(_mediatorMock.Object);
-        }
+        var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
+        var tokenIn = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 10, 10);
+        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
 
-        [Fact]
-        public async Task SingleHop_RetrieveLiquidityPoolReserves_Once()
-        {
-            // Arrange
-            SetupPools();
+        var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
-            var tokenIn = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 10, 10);
-            var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
+        // Act
+        await _handler.Handle(request, cancellationToken);
 
-            var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery>(), cancellationToken), Times.Once);
+        _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<CallCirrusGetOpdexLiquidityPoolReservesQuery>(), cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _handler.Handle(request, cancellationToken);
+    [Fact]
+    public async Task SingleHop_CallCirrusGetAmountInStandardQuoteQuery_Send()
+    {
+        // Arrange
+        SetupPools();
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery>(), cancellationToken), Times.Once);
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<CallCirrusGetOpdexLiquidityPoolReservesQuery>(), cancellationToken), Times.Once);
-        }
+        var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
+        var tokenIn = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 10, 10);
+        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
 
-        [Fact]
-        public async Task SingleHop_CallCirrusGetAmountInStandardQuoteQuery_Send()
-        {
-            // Arrange
-            SetupPools();
+        var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
-            var tokenIn = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 10, 10);
-            var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
+        // Act
+        await _handler.Handle(request, cancellationToken);
 
-            var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<CallCirrusGetAmountInStandardQuoteQuery>(), cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _handler.Handle(request, cancellationToken);
+    [Fact]
+    public async Task MultiHop_RetrieveLiquidityPoolReserves_Twice()
+    {
+        // Arrange
+        SetupPools();
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<CallCirrusGetAmountInStandardQuoteQuery>(), cancellationToken), Times.Once);
-        }
+        var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
+        var tokenIn = new Token(5, new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), false, "Britcoin", "XGBP", 18, 1000000000000000000, UInt256.Parse("1000000000000000000000000000000000000"), 10, 10);
+        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
 
-        [Fact]
-        public async Task MultiHop_RetrieveLiquidityPoolReserves_Twice()
-        {
-            // Arrange
-            SetupPools();
+        var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
-            var tokenIn = new Token(5, new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), false, "Britcoin", "XGBP", 18, 1000000000000000000, UInt256.Parse("1000000000000000000000000000000000000"), 10, 10);
-            var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
+        // Act
+        await _handler.Handle(request, cancellationToken);
 
-            var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery>(), cancellationToken), Times.Exactly(2));
+        _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<CallCirrusGetOpdexLiquidityPoolReservesQuery>(), cancellationToken), Times.Exactly(2));
+    }
 
-            // Act
-            await _handler.Handle(request, cancellationToken);
+    [Fact]
+    public async Task MultiHop_CallCirrusGetAmountInMultiHopQuoteQuery_Send()
+    {
+        // Arrange
+        SetupPools();
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery>(), cancellationToken), Times.Exactly(2));
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<CallCirrusGetOpdexLiquidityPoolReservesQuery>(), cancellationToken), Times.Exactly(2));
-        }
+        var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
+        var tokenIn = new Token(5, new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), false, "Britcoin", "XGBP", 18, 1000000000000000000, UInt256.Parse("1000000000000000000000000000000000000"), 10, 10);
+        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
 
-        [Fact]
-        public async Task MultiHop_CallCirrusGetAmountInMultiHopQuoteQuery_Send()
-        {
-            // Arrange
-            SetupPools();
+        var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
-            var tokenIn = new Token(5, new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), false, "Britcoin", "XGBP", 18, 1000000000000000000, UInt256.Parse("1000000000000000000000000000000000000"), 10, 10);
-            var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
+        // Act
+        await _handler.Handle(request, cancellationToken);
 
-            var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<CallCirrusGetAmountInMultiHopQuoteQuery>(), cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _handler.Handle(request, cancellationToken);
+    private void SetupPools()
+    {
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new LiquidityPool(5, new Address("PPK3k64UASByx3168NU1ejXgugbW9PHRG6"), "CRS/SRC", 10, 50, 5, 20, 250));
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.IsAny<CallCirrusGetAmountInMultiHopQuoteQuery>(), cancellationToken), Times.Once);
-        }
-
-        private void SetupPools()
-        {
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new LiquidityPool(5, new Address("PPK3k64UASByx3168NU1ejXgugbW9PHRG6"), "CRS/SRC", 10, 50, 5, 20, 250));
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetOpdexLiquidityPoolReservesQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new ReservesReceipt(5000, 2319148201));
-        }
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetOpdexLiquidityPoolReservesQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ReservesReceipt(5000, 2319148201));
     }
 }

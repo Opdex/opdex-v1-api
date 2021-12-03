@@ -7,31 +7,30 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Deployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.MarketDeployers;
+
+public class ProcessClaimPendingDeployerOwnershipLogCommandHandler : IRequestHandler<ProcessClaimPendingDeployerOwnershipLogCommand, bool>
 {
-    public class ProcessClaimPendingDeployerOwnershipLogCommandHandler : IRequestHandler<ProcessClaimPendingDeployerOwnershipLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessClaimPendingDeployerOwnershipLogCommandHandler> _logger;
+
+    public ProcessClaimPendingDeployerOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessClaimPendingDeployerOwnershipLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessClaimPendingDeployerOwnershipLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessClaimPendingDeployerOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessClaimPendingDeployerOwnershipLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessClaimPendingDeployerOwnershipLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            return await _mediator.Send(new CreateDeployerCommand(request.Log.Contract, request.Log.To, request.BlockHeight)) > 0;
         }
-
-        public async Task<bool> Handle(ProcessClaimPendingDeployerOwnershipLogCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                return await _mediator.Send(new CreateDeployerCommand(request.Log.Contract, request.Log.To, request.BlockHeight)) > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(ClaimPendingDeployerOwnershipLog)}");
+            _logger.LogError(ex, $"Failure processing {nameof(ClaimPendingDeployerOwnershipLog)}");
 
-                return false;
-            }
+            return false;
         }
     }
 }

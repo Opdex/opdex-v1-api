@@ -10,12 +10,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Deployers;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers;
+
+public class SelectDeployerByAddressQueryHandler : IRequestHandler<SelectDeployerByAddressQuery, Deployer>
 {
-    public class SelectDeployerByAddressQueryHandler : IRequestHandler<SelectDeployerByAddressQuery, Deployer>
-    {
-        private static readonly string SqlCommand =
-            $@"SELECT
+    private static readonly string SqlCommand =
+        $@"SELECT
                 {nameof(DeployerEntity.Id)},
                 {nameof(DeployerEntity.Address)},
                 {nameof(DeployerEntity.PendingOwner)},
@@ -26,39 +26,38 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
             WHERE {nameof(DeployerEntity.Address)} = @{nameof(SqlParams.Address)}
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectDeployerByAddressQueryHandler(IDbContext context, IMapper mapper)
+    public SelectDeployerByAddressQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<Deployer> Handle(SelectDeployerByAddressQuery request, CancellationToken cancellationToken)
+    {
+        var sqlParams = new SqlParams(request.Address);
+
+        var command = DatabaseQuery.Create(SqlCommand, sqlParams, cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<DeployerEntity>(command);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(Deployer)} not found.");
         }
 
-        public async Task<Deployer> Handle(SelectDeployerByAddressQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<Deployer>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(Address address)
         {
-            var sqlParams = new SqlParams(request.Address);
-
-            var command = DatabaseQuery.Create(SqlCommand, sqlParams, cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<DeployerEntity>(command);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(Deployer)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<Deployer>(result);
+            Address = address;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(Address address)
-            {
-                Address = address;
-            }
-
-            public Address Address { get; }
-        }
+        public Address Address { get; }
     }
 }

@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.SignalR;
 
-namespace Opdex.Platform.WebApi.Auth
+namespace Opdex.Platform.WebApi.Auth;
+
+public class WalletAddressUserIdProvider : IUserIdProvider
 {
-    public class WalletAddressUserIdProvider : IUserIdProvider
+    public string GetUserId(HubConnectionContext connection)
     {
-        public string GetUserId(HubConnectionContext connection)
-        {
-            return connection.User.FindFirst("wallet").Value;
-        }
+        return connection.User.FindFirst("wallet").Value;
     }
 }

@@ -3,20 +3,19 @@ using Opdex.Platform.Domain.Models.Addresses;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances
-{
-    public class RetrieveAddressBalancesByModifiedBlockQuery : IRequest<IEnumerable<AddressBalance>>
-    {
-        public RetrieveAddressBalancesByModifiedBlockQuery(ulong blockHeight)
-        {
-            if (blockHeight < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-            }
+namespace Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
 
-            BlockHeight = blockHeight;
+public class RetrieveAddressBalancesByModifiedBlockQuery : IRequest<IEnumerable<AddressBalance>>
+{
+    public RetrieveAddressBalancesByModifiedBlockQuery(ulong blockHeight)
+    {
+        if (blockHeight < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
         }
 
-        public ulong BlockHeight { get; }
+        BlockHeight = blockHeight;
     }
+
+    public ulong BlockHeight { get; }
 }

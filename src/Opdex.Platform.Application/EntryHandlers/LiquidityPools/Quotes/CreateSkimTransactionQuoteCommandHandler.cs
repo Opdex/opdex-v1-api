@@ -13,32 +13,31 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes
+namespace Opdex.Platform.Application.EntryHandlers.LiquidityPools.Quotes;
+
+public class CreateSkimTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateSkimTransactionQuoteCommand>
 {
-    public class CreateSkimTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateSkimTransactionQuoteCommand>
+    private const string MethodName = LiquidityPoolConstants.Methods.Skim;
+    private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+
+    public CreateSkimTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
+                                                    IMediator mediator, OpdexConfiguration config)
+        : base(quoteAssembler, mediator, config)
     {
-        private const string MethodName = LiquidityPoolConstants.Methods.Skim;
-        private readonly FixedDecimal CrsToSend = FixedDecimal.Zero;
+    }
 
-        public CreateSkimTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                        IMediator mediator, OpdexConfiguration config)
-            : base(quoteAssembler, mediator, config)
+    public override async Task<TransactionQuoteDto> Handle(CreateSkimTransactionQuoteCommand request, CancellationToken cancellationToken)
+    {
+        // ensure liquidity pool exists, if not throw to return 404
+        _ = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool, findOrThrow: true), cancellationToken);
+
+        var requestParameters = new List<TransactionQuoteRequestParameter>
         {
-        }
+            new TransactionQuoteRequestParameter("Recipient", request.Recipient)
+        };
 
-        public override async Task<TransactionQuoteDto> Handle(CreateSkimTransactionQuoteCommand request, CancellationToken cancellationToken)
-        {
-            // ensure liquidity pool exists, if not throw to return 404
-            _ = await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(request.LiquidityPool, findOrThrow: true), cancellationToken);
+        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.LiquidityPool, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
 
-            var requestParameters = new List<TransactionQuoteRequestParameter>
-            {
-                new TransactionQuoteRequestParameter("Recipient", request.Recipient)
-            };
-
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.LiquidityPool, CrsToSend, MethodName, _callbackEndpoint, requestParameters);
-
-            return await ExecuteAsync(quoteRequest, cancellationToken);
-        }
+        return await ExecuteAsync(quoteRequest, cancellationToken);
     }
 }

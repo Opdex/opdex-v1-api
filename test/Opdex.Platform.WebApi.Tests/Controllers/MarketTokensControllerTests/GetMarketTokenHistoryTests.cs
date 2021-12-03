@@ -16,100 +16,99 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers.MarketTokensControllerTests
+namespace Opdex.Platform.WebApi.Tests.Controllers.MarketTokensControllerTests;
+
+public class GetTokenHistoryTests
 {
-    public class GetTokenHistoryTests
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<IApplicationContext> _contextMock;
+    private readonly MarketTokensController _controller;
+
+    public GetTokenHistoryTests()
     {
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly Mock<IApplicationContext> _contextMock;
-        private readonly MarketTokensController _controller;
+        _mapperMock = new Mock<IMapper>();
+        _mediatorMock = new Mock<IMediator>();
+        _contextMock = new Mock<IApplicationContext>();
 
-        public GetTokenHistoryTests()
+        _controller = new MarketTokensController(_mediatorMock.Object, _mapperMock.Object, _contextMock.Object);
+    }
+
+    [Fact]
+    public async Task GetMarketToken_GetMarketTokenSnapshotsWithFilterQuery_Send()
+    {
+        // Arrange
+        Address market = "fJ6u1yzNPDw7uPGZPZpB4iW4LHVEPMKehX";
+        Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        var filters = new SnapshotFilterParameters
         {
-            _mapperMock = new Mock<IMapper>();
-            _mediatorMock = new Mock<IMediator>();
-            _contextMock = new Mock<IApplicationContext>();
+            StartDateTime = DateTime.UtcNow.AddDays(-5),
+            EndDateTime = DateTime.UtcNow,
+            Interval = Interval.OneDay
+        };
 
-            _controller = new MarketTokensController(_mediatorMock.Object, _mapperMock.Object, _contextMock.Object);
-        }
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        [Fact]
-        public async Task GetMarketToken_GetMarketTokenSnapshotsWithFilterQuery_Send()
+        // Act
+        await _controller.GetMarketTokenHistory(market, token, filters, cancellationToken);
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetMarketTokenSnapshotsWithFilterQuery>(query => query.Cursor.StartTime == filters.StartDateTime
+                                                                                                          && query.Cursor.EndTime == filters.EndDateTime
+                                                                                                          && query.Cursor.Interval == filters.Interval
+                                                                                                          && query.Cursor.IsFirstRequest
+                                                                                                          && query.Token == token),
+                                                   cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetMarketToken_MarketTokenDto_Map()
+    {
+        // Arrange
+        Address market = "fJ6u1yzNPDw7uPGZPZpB4iW4LHVEPMKehX";
+        Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        var filters = new SnapshotFilterParameters
         {
-            // Arrange
-            Address market = "fJ6u1yzNPDw7uPGZPZpB4iW4LHVEPMKehX";
-            Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            var filters = new SnapshotFilterParameters
-            {
-                StartDateTime = DateTime.UtcNow.AddDays(-5),
-                EndDateTime = DateTime.UtcNow,
-                Interval = Interval.OneDay
-            };
+            StartDateTime = DateTime.UtcNow.AddDays(-5),
+            EndDateTime = DateTime.UtcNow,
+            Interval = Interval.OneDay
+        };
 
-            var cancellationToken = new CancellationTokenSource().Token;
+        var dto = new MarketTokenSnapshotsDto();
 
-            // Act
-            await _controller.GetMarketTokenHistory(market, token, filters, cancellationToken);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMarketTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetMarketTokenSnapshotsWithFilterQuery>(query => query.Cursor.StartTime == filters.StartDateTime
-                                                                                                     && query.Cursor.EndTime == filters.EndDateTime
-                                                                                                     && query.Cursor.Interval == filters.Interval
-                                                                                                     && query.Cursor.IsFirstRequest
-                                                                                                     && query.Token == token),
-                                                       cancellationToken), Times.Once);
-        }
+        // Act
+        await _controller.GetMarketTokenHistory(market, token, filters, CancellationToken.None);
 
-        [Fact]
-        public async Task GetMarketToken_MarketTokenDto_Map()
+        // Assert
+        _mapperMock.Verify(callTo => callTo.Map<MarketTokenSnapshotsResponseModel>(It.IsAny<MarketTokenSnapshotsDto>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetMarketToken_ReturnOk()
+    {
+        // Arrange
+        Address market = "fJ6u1yzNPDw7uPGZPZpB4iW4LHVEPMKehX";
+        Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        var filters = new SnapshotFilterParameters
         {
-            // Arrange
-            Address market = "fJ6u1yzNPDw7uPGZPZpB4iW4LHVEPMKehX";
-            Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            var filters = new SnapshotFilterParameters
-            {
-                StartDateTime = DateTime.UtcNow.AddDays(-5),
-                EndDateTime = DateTime.UtcNow,
-                Interval = Interval.OneDay
-            };
+            StartDateTime = DateTime.UtcNow.AddDays(-5),
+            EndDateTime = DateTime.UtcNow,
+            Interval = Interval.OneDay
+        };
 
-            var dto = new MarketTokenSnapshotsDto();
+        var dto = new MarketTokenSnapshotsDto();
+        var tokenResponse = new MarketTokenSnapshotsResponseModel();
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMarketTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMarketTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
+        _mapperMock.Setup(callTo => callTo.Map<MarketTokenSnapshotsResponseModel>(It.IsAny<MarketTokenSnapshotsDto>())).Returns(tokenResponse);
 
-            // Act
-            await _controller.GetMarketTokenHistory(market, token, filters, CancellationToken.None);
+        // Act
+        var response = await _controller.GetMarketTokenHistory(market, token, filters, CancellationToken.None);
 
-            // Assert
-            _mapperMock.Verify(callTo => callTo.Map<MarketTokenSnapshotsResponseModel>(It.IsAny<MarketTokenSnapshotsDto>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task GetMarketToken_ReturnOk()
-        {
-            // Arrange
-            Address market = "fJ6u1yzNPDw7uPGZPZpB4iW4LHVEPMKehX";
-            Address token = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            var filters = new SnapshotFilterParameters
-            {
-                StartDateTime = DateTime.UtcNow.AddDays(-5),
-                EndDateTime = DateTime.UtcNow,
-                Interval = Interval.OneDay
-            };
-
-            var dto = new MarketTokenSnapshotsDto();
-            var tokenResponse = new MarketTokenSnapshotsResponseModel();
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMarketTokenSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
-            _mapperMock.Setup(callTo => callTo.Map<MarketTokenSnapshotsResponseModel>(It.IsAny<MarketTokenSnapshotsDto>())).Returns(tokenResponse);
-
-            // Act
-            var response = await _controller.GetMarketTokenHistory(market, token, filters, CancellationToken.None);
-
-            // Act
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(tokenResponse);
-        }
+        // Act
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(tokenResponse);
     }
 }

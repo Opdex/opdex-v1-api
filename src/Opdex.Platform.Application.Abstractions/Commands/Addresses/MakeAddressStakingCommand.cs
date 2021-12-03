@@ -2,15 +2,14 @@ using System;
 using MediatR;
 using Opdex.Platform.Domain.Models.Addresses;
 
-namespace Opdex.Platform.Application.Abstractions.Commands.Addresses
-{
-    public class MakeAddressStakingCommand : IRequest<ulong>
-    {
-        public MakeAddressStakingCommand(AddressStaking addressStaking)
-        {
-            AddressStaking = addressStaking ?? throw new ArgumentNullException(nameof(addressStaking));
-        }
+namespace Opdex.Platform.Application.Abstractions.Commands.Addresses;
 
-        public AddressStaking AddressStaking { get; }
+public class MakeAddressStakingCommand : IRequest<ulong>
+{
+    public MakeAddressStakingCommand(AddressStaking addressStaking)
+    {
+        AddressStaking = addressStaking ?? throw new ArgumentNullException(nameof(addressStaking));
     }
+
+    public AddressStaking AddressStaking { get; }
 }

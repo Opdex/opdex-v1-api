@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools
+namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools;
+
+public class SelectMiningPoolsByModifiedBlockQueryHandler : IRequestHandler<SelectMiningPoolsByModifiedBlockQuery, IEnumerable<MiningPool>>
 {
-    public class SelectMiningPoolsByModifiedBlockQueryHandler : IRequestHandler<SelectMiningPoolsByModifiedBlockQuery, IEnumerable<MiningPool>>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(MiningPoolEntity.Id)},
                 {nameof(MiningPoolEntity.LiquidityPoolId)},
                 {nameof(MiningPoolEntity.Address)},
@@ -27,32 +27,31 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningPools
             FROM pool_mining
             WHERE {nameof(MiningPoolEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectMiningPoolsByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
+    public SelectMiningPoolsByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<IEnumerable<MiningPool>> Handle(SelectMiningPoolsByModifiedBlockQuery request, CancellationToken cancellationToken)
+    {
+        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.BlockHeight), cancellationToken);
+
+        var result = await _context.ExecuteQueryAsync<MiningPoolEntity>(query);
+
+        return _mapper.Map<IEnumerable<MiningPool>>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong modifiedBlock)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            ModifiedBlock = modifiedBlock;
         }
 
-        public async Task<IEnumerable<MiningPool>> Handle(SelectMiningPoolsByModifiedBlockQuery request, CancellationToken cancellationToken)
-        {
-            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.BlockHeight), cancellationToken);
-
-            var result = await _context.ExecuteQueryAsync<MiningPoolEntity>(query);
-
-            return _mapper.Map<IEnumerable<MiningPool>>(result);
-        }
-
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong modifiedBlock)
-            {
-                ModifiedBlock = modifiedBlock;
-            }
-
-            public ulong ModifiedBlock { get; }
-        }
+        public ulong ModifiedBlock { get; }
     }
 }

@@ -8,36 +8,35 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.LiquidityPools.Snapshots
+namespace Opdex.Platform.Application.Handlers.LiquidityPools.Snapshots;
+
+public class MakeLiquidityPoolSnapshotCommandHandler : IRequestHandler<MakeLiquidityPoolSnapshotCommand, bool>
 {
-    public class MakeLiquidityPoolSnapshotCommandHandler : IRequestHandler<MakeLiquidityPoolSnapshotCommand, bool>
+    private readonly IMediator _mediator;
+
+    public MakeLiquidityPoolSnapshotCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeLiquidityPoolSnapshotCommandHandler(IMediator mediator)
+    public async Task<bool> Handle(MakeLiquidityPoolSnapshotCommand request, CancellationToken cancellationToken)
+    {
+        // Update the liquidity pool summary using the daily snapshot
+        if (request.Snapshot.SnapshotType == SnapshotType.Daily)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
+            var summary = await _mediator.Send(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(request.Snapshot.LiquidityPoolId,
+                                                                                                      findOrThrow: false));
 
-        public async Task<bool> Handle(MakeLiquidityPoolSnapshotCommand request, CancellationToken cancellationToken)
-        {
-            // Update the liquidity pool summary using the daily snapshot
-            if (request.Snapshot.SnapshotType == SnapshotType.Daily)
+            summary ??= new LiquidityPoolSummary(request.Snapshot.LiquidityPoolId, request.BlockHeight);
+
+            if (summary.ModifiedBlock <= request.BlockHeight)
             {
-                var summary = await _mediator.Send(new RetrieveLiquidityPoolSummaryByLiquidityPoolIdQuery(request.Snapshot.LiquidityPoolId,
-                                                                                                          findOrThrow: false));
+                summary.Update(request.Snapshot, request.BlockHeight);
 
-                summary ??= new LiquidityPoolSummary(request.Snapshot.LiquidityPoolId, request.BlockHeight);
-
-                if (summary.ModifiedBlock <= request.BlockHeight)
-                {
-                    summary.Update(request.Snapshot, request.BlockHeight);
-
-                    await _mediator.Send(new MakeLiquidityPoolSummaryCommand(summary));
-                }
+                await _mediator.Send(new MakeLiquidityPoolSummaryCommand(summary));
             }
-
-            return await _mediator.Send(new PersistLiquidityPoolSnapshotCommand(request.Snapshot), cancellationToken);
         }
+
+        return await _mediator.Send(new PersistLiquidityPoolSnapshotCommand(request.Snapshot), cancellationToken);
     }
 }

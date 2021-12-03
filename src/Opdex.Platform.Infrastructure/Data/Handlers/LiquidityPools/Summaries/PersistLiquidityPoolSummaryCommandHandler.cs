@@ -10,12 +10,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
+namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries;
+
+public class PersistLiquidityPoolSummaryCommandHandler : IRequestHandler<PersistLiquidityPoolSummaryCommand, ulong>
 {
-    public class PersistLiquidityPoolSummaryCommandHandler : IRequestHandler<PersistLiquidityPoolSummaryCommand, ulong>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO pool_liquidity_summary (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO pool_liquidity_summary (
                 {nameof(LiquidityPoolSummaryEntity.LiquidityPoolId)},
                 {nameof(LiquidityPoolSummaryEntity.LiquidityUsd)},
                 {nameof(LiquidityPoolSummaryEntity.DailyLiquidityUsdChangePercent)},
@@ -40,8 +40,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
               );
               SELECT LAST_INSERT_ID();".RemoveExcessWhitespace();
 
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE pool_liquidity_summary
+    private static readonly string UpdateSqlCommand =
+        $@"UPDATE pool_liquidity_summary
                 SET
                     {nameof(LiquidityPoolSummaryEntity.LiquidityUsd)} = @{nameof(LiquidityPoolSummaryEntity.LiquidityUsd)},
                     {nameof(LiquidityPoolSummaryEntity.DailyLiquidityUsdChangePercent)} = @{nameof(LiquidityPoolSummaryEntity.DailyLiquidityUsdChangePercent)},
@@ -52,41 +52,40 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools.Summaries
                     {nameof(LiquidityPoolSummaryEntity.LockedSrc)} = @{nameof(LiquidityPoolSummaryEntity.LockedSrc)},
                     {nameof(LiquidityPoolSummaryEntity.ModifiedBlock)} = @{nameof(LiquidityPoolSummaryEntity.ModifiedBlock)}
                 WHERE {nameof(LiquidityPoolSummaryEntity.Id)} = @{nameof(LiquidityPoolSummaryEntity.Id)};"
-                .RemoveExcessWhitespace();
+            .RemoveExcessWhitespace();
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistLiquidityPoolSummaryCommandHandler(IDbContext context, IMapper mapper,
-            ILogger<PersistLiquidityPoolSummaryCommandHandler> logger)
+    public PersistLiquidityPoolSummaryCommandHandler(IDbContext context, IMapper mapper,
+                                                     ILogger<PersistLiquidityPoolSummaryCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<ulong> Handle(PersistLiquidityPoolSummaryCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var entity = _mapper.Map<LiquidityPoolSummaryEntity>(request.Summary);
+
+            var isUpdate = entity.Id >= 1;
+
+            var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+
+            var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+
+            var result = await _context.ExecuteScalarAsync<ulong>(command);
+
+            return isUpdate ? entity.Id : result;
         }
-
-        public async Task<ulong> Handle(PersistLiquidityPoolSummaryCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var entity = _mapper.Map<LiquidityPoolSummaryEntity>(request.Summary);
-
-                var isUpdate = entity.Id >= 1;
-
-                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-
-                var result = await _context.ExecuteScalarAsync<ulong>(command);
-
-                return isUpdate ? entity.Id : result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Unable to persist {nameof(LiquidityPoolSummary)}");
-                return 0;
-            }
+            _logger.LogError(ex, $"Unable to persist {nameof(LiquidityPoolSummary)}");
+            return 0;
         }
     }
 }

@@ -6,33 +6,31 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Vaults
+namespace Opdex.Platform.Application.Handlers.Vaults;
 
+public class MakeVaultCommandHandler : IRequestHandler<MakeVaultCommand, ulong>
 {
-    public class MakeVaultCommandHandler : IRequestHandler<MakeVaultCommand, ulong>
+    private readonly IMediator _mediator;
+
+    public MakeVaultCommandHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public MakeVaultCommandHandler(IMediator mediator)
+    public async Task<ulong> Handle(MakeVaultCommand request, CancellationToken cancellationToken)
+    {
+        if (request.Refresh)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            var summary = await _mediator.Send(new RetrieveVaultContractSummaryQuery(request.Vault.Address,
+                                                                                     request.BlockHeight,
+                                                                                     includePendingOwner: request.RefreshPendingOwner,
+                                                                                     includeOwner: request.RefreshOwner,
+                                                                                     includeSupply: request.RefreshSupply,
+                                                                                     includeGenesis: request.RefreshGenesis));
+
+            request.Vault.Update(summary);
         }
 
-        public async Task<ulong> Handle(MakeVaultCommand request, CancellationToken cancellationToken)
-        {
-            if (request.Refresh)
-            {
-                var summary = await _mediator.Send(new RetrieveVaultContractSummaryQuery(request.Vault.Address,
-                                                                                         request.BlockHeight,
-                                                                                         includePendingOwner: request.RefreshPendingOwner,
-                                                                                         includeOwner: request.RefreshOwner,
-                                                                                         includeSupply: request.RefreshSupply,
-                                                                                         includeGenesis: request.RefreshGenesis));
-
-                request.Vault.Update(summary);
-            }
-
-            return await _mediator.Send(new PersistVaultCommand(request.Vault));
-        }
+        return await _mediator.Send(new PersistVaultCommand(request.Vault));
     }
 }

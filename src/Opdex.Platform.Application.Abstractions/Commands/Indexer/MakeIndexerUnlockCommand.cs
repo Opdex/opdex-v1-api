@@ -1,8 +1,7 @@
 using MediatR;
 
-namespace Opdex.Platform.Application.Abstractions.Commands.Indexer
+namespace Opdex.Platform.Application.Abstractions.Commands.Indexer;
+
+public class MakeIndexerUnlockCommand : IRequest
 {
-    public class MakeIndexerUnlockCommand : IRequest
-    {
-    }
 }

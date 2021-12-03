@@ -7,20 +7,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Markets.Permissions
+namespace Opdex.Platform.Application.Handlers.Markets.Permissions;
+
+public class RetrieveMarketPermissionsByModifiedBlockQueryHandler : IRequestHandler<RetrieveMarketPermissionsByModifiedBlockQuery, IEnumerable<MarketPermission>>
 {
-    public class RetrieveMarketPermissionsByModifiedBlockQueryHandler : IRequestHandler<RetrieveMarketPermissionsByModifiedBlockQuery, IEnumerable<MarketPermission>>
+    private readonly IMediator _mediator;
+
+    public RetrieveMarketPermissionsByModifiedBlockQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveMarketPermissionsByModifiedBlockQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<IEnumerable<MarketPermission>> Handle(RetrieveMarketPermissionsByModifiedBlockQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectMarketPermissionsByModifiedBlockQuery(request.BlockHeight), cancellationToken);
-        }
+    public Task<IEnumerable<MarketPermission>> Handle(RetrieveMarketPermissionsByModifiedBlockQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectMarketPermissionsByModifiedBlockQuery(request.BlockHeight), cancellationToken);
     }
 }

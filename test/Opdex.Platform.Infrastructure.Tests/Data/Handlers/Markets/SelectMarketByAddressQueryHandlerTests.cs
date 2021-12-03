@@ -12,89 +12,88 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Markets;
+
+public class SelectMarketByAddressQueryHandlerTests
 {
-    public class SelectMarketByAddressQueryHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly SelectMarketByAddressQueryHandler _handler;
+
+    public SelectMarketByAddressQueryHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectMarketByAddressQueryHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-        public SelectMarketByAddressQueryHandlerTests()
+        _dbContext = new Mock<IDbContext>();
+        _handler = new SelectMarketByAddressQueryHandler(_dbContext.Object, mapper);
+    }
+
+    [Fact]
+    public async Task SelectMarketByAddress_Success()
+    {
+        Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+
+        var expectedEntity = new MarketEntity
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+            Id = 123454,
+            Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
+            Owner = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT",
+            AuthPoolCreators = false,
+            AuthProviders = true,
+            AuthTraders = true,
+            DeployerId = 4,
+            MarketFeeEnabled = true,
+            CreatedBlock = 1,
+            ModifiedBlock = 2
+        };
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new SelectMarketByAddressQueryHandler(_dbContext.Object, mapper);
-        }
+        var command = new SelectMarketByAddressQuery(address);
 
-        [Fact]
-        public async Task SelectMarketByAddress_Success()
-        {
-            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(expectedEntity));
 
-            var expectedEntity = new MarketEntity
-            {
-                Id = 123454,
-                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
-                Owner = "PJpR65NLUpTFgs8mJxdSC7bbwgyadJEVgT",
-                AuthPoolCreators = false,
-                AuthProviders = true,
-                AuthTraders = true,
-                DeployerId = 4,
-                MarketFeeEnabled = true,
-                CreatedBlock = 1,
-                ModifiedBlock = 2
-            };
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var command = new SelectMarketByAddressQuery(address);
+        result.Id.Should().Be(expectedEntity.Id);
+        result.Address.Should().Be(expectedEntity.Address);
+        result.Owner.Should().Be(expectedEntity.Owner);
+        result.AuthPoolCreators.Should().Be(expectedEntity.AuthPoolCreators);
+        result.AuthProviders.Should().Be(expectedEntity.AuthProviders);
+        result.AuthTraders.Should().Be(expectedEntity.AuthTraders);
+        result.DeployerId.Should().Be(expectedEntity.DeployerId);
+        result.MarketFeeEnabled.Should().Be(expectedEntity.MarketFeeEnabled);
+        result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);
+        result.ModifiedBlock.Should().Be(expectedEntity.ModifiedBlock);
+    }
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedEntity));
+    [Fact]
+    public void SelectMarketByAddress_Throws_NotFoundException()
+    {
+        Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        var command = new SelectMarketByAddressQuery(address);
 
-            result.Id.Should().Be(expectedEntity.Id);
-            result.Address.Should().Be(expectedEntity.Address);
-            result.Owner.Should().Be(expectedEntity.Owner);
-            result.AuthPoolCreators.Should().Be(expectedEntity.AuthPoolCreators);
-            result.AuthProviders.Should().Be(expectedEntity.AuthProviders);
-            result.AuthTraders.Should().Be(expectedEntity.AuthTraders);
-            result.DeployerId.Should().Be(expectedEntity.DeployerId);
-            result.MarketFeeEnabled.Should().Be(expectedEntity.MarketFeeEnabled);
-            result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);
-            result.ModifiedBlock.Should().Be(expectedEntity.ModifiedBlock);
-        }
+        _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<MarketEntity>(null));
 
-        [Fact]
-        public void SelectMarketByAddress_Throws_NotFoundException()
-        {
-            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+            .Should()
+            .ThrowAsync<NotFoundException>()
+            .WithMessage($"{nameof(Market)} not found.");
+    }
 
-            var command = new SelectMarketByAddressQuery(address);
+    [Fact]
+    public async Task SelectMarketByAddress_ReturnsNull()
+    {
+        Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        const bool findOrThrow = false;
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<MarketEntity>(null));
+        var command = new SelectMarketByAddressQuery(address, findOrThrow);
 
-            _handler.Invoking(h => h.Handle(command, CancellationToken.None))
-                .Should()
-                .ThrowAsync<NotFoundException>()
-                .WithMessage($"{nameof(Market)} not found.");
-        }
+        _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<MarketEntity>(null));
 
-        [Fact]
-        public async Task SelectMarketByAddress_ReturnsNull()
-        {
-            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            const bool findOrThrow = false;
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var command = new SelectMarketByAddressQuery(address, findOrThrow);
-
-            _dbContext.Setup(db => db.ExecuteFindAsync<MarketEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<MarketEntity>(null));
-
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            result.Should().BeNull();
-        }
+        result.Should().BeNull();
     }
 }

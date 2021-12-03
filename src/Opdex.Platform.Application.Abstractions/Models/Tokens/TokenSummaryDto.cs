@@ -1,9 +1,8 @@
-namespace Opdex.Platform.Application.Abstractions.Models.Tokens
+namespace Opdex.Platform.Application.Abstractions.Models.Tokens;
+
+public class TokenSummaryDto
 {
-    public class TokenSummaryDto
-    {
-        public decimal PriceUsd { get; set; }
-        public decimal DailyPriceChangePercent { get; set; }
-        public ulong ModifiedBlock { get; set; }
-    }
+    public decimal PriceUsd { get; set; }
+    public decimal DailyPriceChangePercent { get; set; }
+    public ulong ModifiedBlock { get; set; }
 }

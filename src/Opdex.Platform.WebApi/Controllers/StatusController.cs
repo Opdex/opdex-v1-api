@@ -4,33 +4,32 @@ using NSwag.Annotations;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.WebApi.Models.Responses.Status;
 
-namespace Opdex.Platform.WebApi.Controllers
+namespace Opdex.Platform.WebApi.Controllers;
+
+[ApiController]
+[Route("status")]
+public class StatusController : ControllerBase
 {
-    [ApiController]
-    [Route("status")]
-    public class StatusController : ControllerBase
+    private readonly OpdexConfiguration _opdexConfiguration;
+
+    public StatusController(OpdexConfiguration opdexConfiguration)
     {
-        private readonly OpdexConfiguration _opdexConfiguration;
+        _opdexConfiguration = opdexConfiguration;
+    }
 
-        public StatusController(OpdexConfiguration opdexConfiguration)
+    /// <summary>
+    /// Get Status
+    /// </summary>
+    /// <remarks>Retrieves status details for the running instance of the application.</remarks>
+    /// <returns>Status details.</returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(StatusResponseModel), StatusCodes.Status200OK)]
+    public ActionResult<StatusResponseModel> GetStatus()
+    {
+        return new StatusResponseModel
         {
-            _opdexConfiguration = opdexConfiguration;
-        }
-
-        /// <summary>
-        /// Get Status
-        /// </summary>
-        /// <remarks>Retrieves status details for the running instance of the application.</remarks>
-        /// <returns>Status details.</returns>
-        [HttpGet]
-        [ProducesResponseType(typeof(StatusResponseModel), StatusCodes.Status200OK)]
-        public ActionResult<StatusResponseModel> GetStatus()
-        {
-            return new StatusResponseModel
-            {
-                Commit = _opdexConfiguration.CommitHash,
-                Identifier = _opdexConfiguration.InstanceId
-            };
-        }
+            Commit = _opdexConfiguration.CommitHash,
+            Identifier = _opdexConfiguration.InstanceId
+        };
     }
 }

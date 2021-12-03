@@ -8,41 +8,40 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Vaults;
+
+public class ProcessClaimPendingVaultOwnershipLogCommandHandler : IRequestHandler<ProcessClaimPendingVaultOwnershipLogCommand, bool>
 {
-    public class ProcessClaimPendingVaultOwnershipLogCommandHandler : IRequestHandler<ProcessClaimPendingVaultOwnershipLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessClaimPendingVaultOwnershipLogCommandHandler> _logger;
+
+    public ProcessClaimPendingVaultOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessClaimPendingVaultOwnershipLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessClaimPendingVaultOwnershipLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessClaimPendingVaultOwnershipLogCommandHandler(IMediator mediator, ILogger<ProcessClaimPendingVaultOwnershipLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessClaimPendingVaultOwnershipLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (vault == null) return false;
+
+            if (request.BlockHeight < vault.ModifiedBlock)
+            {
+                return true;
+            }
+
+            vault.SetOwnershipClaimed(request.Log, request.BlockHeight);
+
+            return await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight)) > 0;
         }
-
-        public async Task<bool> Handle(ProcessClaimPendingVaultOwnershipLogCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
-                if (vault == null) return false;
+            _logger.LogError(ex, $"Failure processing {nameof(ClaimPendingVaultOwnershipLog)}");
 
-                if (request.BlockHeight < vault.ModifiedBlock)
-                {
-                    return true;
-                }
-
-                vault.SetOwnershipClaimed(request.Log, request.BlockHeight);
-
-                return await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight)) > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(ClaimPendingVaultOwnershipLog)}");
-
-                return false;
-            }
+            return false;
         }
     }
 }

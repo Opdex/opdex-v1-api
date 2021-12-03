@@ -1,9 +1,8 @@
 using Opdex.Platform.Common.Enums;
 
-namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools
+namespace Opdex.Platform.Application.Abstractions.Models.TransactionEvents.LiquidityPools;
+
+public class AddLiquidityEventDto : ProvideEventDto
 {
-    public class AddLiquidityEventDto : ProvideEventDto
-    {
-        public override TransactionEventType EventType => TransactionEventType.AddLiquidityEvent;
-    }
+    public override TransactionEventType EventType => TransactionEventType.AddLiquidityEvent;
 }

@@ -8,12 +8,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominations
+namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominations;
+
+public class PersistMiningGovernanceNominationCommandHandler : IRequestHandler<PersistMiningGovernanceNominationCommand, ulong>
 {
-    public class PersistMiningGovernanceNominationCommandHandler : IRequestHandler<PersistMiningGovernanceNominationCommand, ulong>
-    {
-        private static readonly string InsertSqlCommand =
-            $@"INSERT INTO mining_governance_nomination (
+    private static readonly string InsertSqlCommand =
+        $@"INSERT INTO mining_governance_nomination (
                 {nameof(MiningGovernanceNominationEntity.MiningGovernanceId)},
                 {nameof(MiningGovernanceNominationEntity.LiquidityPoolId)},
                 {nameof(MiningGovernanceNominationEntity.MiningPoolId)},
@@ -32,47 +32,46 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.MiningGovernances.Nominati
               );
               SELECT LAST_INSERT_ID();";
 
-        private static readonly string UpdateSqlCommand =
-            $@"UPDATE mining_governance_nomination
+    private static readonly string UpdateSqlCommand =
+        $@"UPDATE mining_governance_nomination
                 SET
                     {nameof(MiningGovernanceNominationEntity.Weight)} = @{nameof(MiningGovernanceNominationEntity.Weight)},
                     {nameof(MiningGovernanceNominationEntity.IsNominated)} = @{nameof(MiningGovernanceNominationEntity.IsNominated)},
                     {nameof(MiningGovernanceNominationEntity.ModifiedBlock)} = @{nameof(MiningGovernanceNominationEntity.ModifiedBlock)}
                 WHERE {nameof(MiningGovernanceNominationEntity.Id)} = @{nameof(MiningGovernanceNominationEntity.Id)};";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistMiningGovernanceNominationCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMiningGovernanceNominationCommandHandler> logger)
+    public PersistMiningGovernanceNominationCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMiningGovernanceNominationCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<ulong> Handle(PersistMiningGovernanceNominationCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var entity = _mapper.Map<MiningGovernanceNominationEntity>(request.Nomination);
+
+            var isUpdate = entity.Id >= 1;
+
+            var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
+
+            var command = DatabaseQuery.Create(sql, entity, cancellationToken);
+
+            var result = await _context.ExecuteScalarAsync<ulong>(command);
+
+            return isUpdate ? entity.Id : result;
         }
-
-        public async Task<ulong> Handle(PersistMiningGovernanceNominationCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var entity = _mapper.Map<MiningGovernanceNominationEntity>(request.Nomination);
+            _logger.LogError(ex, $"Failure persisting {request.Nomination}.");
 
-                var isUpdate = entity.Id >= 1;
-
-                var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-
-                var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-
-                var result = await _context.ExecuteScalarAsync<ulong>(command);
-
-                return isUpdate ? entity.Id : result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure persisting {request.Nomination}.");
-
-                return 0;
-            }
+            return 0;
         }
     }
 }

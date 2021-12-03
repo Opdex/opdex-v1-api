@@ -7,20 +7,19 @@ using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 
-namespace Opdex.Platform.Application.Handlers.Transactions
+namespace Opdex.Platform.Application.Handlers.Transactions;
+
+public class RetrieveTransactionByHashQueryHandler : IRequestHandler<RetrieveTransactionByHashQuery, Transaction>
 {
-    public class RetrieveTransactionByHashQueryHandler : IRequestHandler<RetrieveTransactionByHashQuery, Transaction>
+    private readonly IMediator _mediator;
+        
+    public RetrieveTransactionByHashQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
         
-        public RetrieveTransactionByHashQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-        
-        public Task<Transaction> Handle(RetrieveTransactionByHashQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectTransactionByHashQuery(request.Hash, request.FindOrThrow), cancellationToken);
-        }
+    public Task<Transaction> Handle(RetrieveTransactionByHashQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectTransactionByHashQuery(request.Hash, request.FindOrThrow), cancellationToken);
     }
 }

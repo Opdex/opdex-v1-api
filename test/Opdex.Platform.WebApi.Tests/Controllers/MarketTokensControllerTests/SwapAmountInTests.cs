@@ -13,70 +13,69 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers.MarketTokensControllerTests
+namespace Opdex.Platform.WebApi.Tests.Controllers.MarketTokensControllerTests;
+
+public class SwapAmountInTests
 {
-    public class SwapAmountInTests
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<IApplicationContext> _contextMock;
+    private readonly MarketTokensController _controller;
+
+    public SwapAmountInTests()
     {
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly Mock<IApplicationContext> _contextMock;
-        private readonly MarketTokensController _controller;
+        _mapperMock = new Mock<IMapper>();
+        _mediatorMock = new Mock<IMediator>();
+        _contextMock = new Mock<IApplicationContext>();
 
-        public SwapAmountInTests()
+        _controller = new MarketTokensController(_mediatorMock.Object, _mapperMock.Object, _contextMock.Object);
+    }
+
+    [Fact]
+    public async Task SwapAmountIn_GetLiquidityPoolSwapAmountInQuery_Send()
+    {
+        // Arrange
+        Address market = new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH");
+        Address tokenIn = new Address("tNgQhNxvachxKGvRonk2S8nrpYi44carYv");
+        var request = new SwapAmountInQuoteRequestModel
         {
-            _mapperMock = new Mock<IMapper>();
-            _mediatorMock = new Mock<IMediator>();
-            _contextMock = new Mock<IApplicationContext>();
+            TokenOut = new Address("tUHwBBmhHbaBA49hVhuVNUDmreGjSFceuD"),
+            TokenOutAmount = FixedDecimal.Parse("10.50000000")
+        };
 
-            _controller = new MarketTokensController(_mediatorMock.Object, _mapperMock.Object, _contextMock.Object);
-        }
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        [Fact]
-        public async Task SwapAmountIn_GetLiquidityPoolSwapAmountInQuery_Send()
+        // Act
+        await _controller.SwapAmountIn(market, tokenIn, request, cancellationToken);
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetSwapAmountInQuery>(query => query.Market == market
+                                                                                        && query.TokenIn == tokenIn
+                                                                                        && query.TokenOut == request.TokenOut
+                                                                                        && query.TokenOutAmount == request.TokenOutAmount), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task SwapAmountIn_Response_ReturnOk()
+    {
+        // Arrange
+        Address market = new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH");
+        Address tokenIn = new Address("tNgQhNxvachxKGvRonk2S8nrpYi44carYv");
+        var request = new SwapAmountInQuoteRequestModel
         {
-            // Arrange
-            Address market = new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH");
-            Address tokenIn = new Address("tNgQhNxvachxKGvRonk2S8nrpYi44carYv");
-            var request = new SwapAmountInQuoteRequestModel
-            {
-                TokenOut = new Address("tUHwBBmhHbaBA49hVhuVNUDmreGjSFceuD"),
-                TokenOutAmount = FixedDecimal.Parse("10.50000000")
-            };
+            TokenOut = new Address("tUHwBBmhHbaBA49hVhuVNUDmreGjSFceuD"),
+            TokenOutAmount = FixedDecimal.Parse("10.50000000")
+        };
 
-            var cancellationToken = new CancellationTokenSource().Token;
+        FixedDecimal amountIn = FixedDecimal.Parse("2.55558888");
 
-            // Act
-            await _controller.SwapAmountIn(market, tokenIn, request, cancellationToken);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetSwapAmountInQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(amountIn);
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetSwapAmountInQuery>(query => query.Market == market
-                                                                                                          && query.TokenIn == tokenIn
-                                                                                                          && query.TokenOut == request.TokenOut
-                                                                                                          && query.TokenOutAmount == request.TokenOutAmount), cancellationToken), Times.Once);
-        }
+        // Act
+        var response = await _controller.SwapAmountIn(market, tokenIn, request, CancellationToken.None);
 
-        [Fact]
-        public async Task SwapAmountIn_Response_ReturnOk()
-        {
-            // Arrange
-            Address market = new Address("t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH");
-            Address tokenIn = new Address("tNgQhNxvachxKGvRonk2S8nrpYi44carYv");
-            var request = new SwapAmountInQuoteRequestModel
-            {
-                TokenOut = new Address("tUHwBBmhHbaBA49hVhuVNUDmreGjSFceuD"),
-                TokenOutAmount = FixedDecimal.Parse("10.50000000")
-            };
-
-            FixedDecimal amountIn = FixedDecimal.Parse("2.55558888");
-
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetSwapAmountInQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(amountIn);
-
-            // Act
-            var response = await _controller.SwapAmountIn(market, tokenIn, request, CancellationToken.None);
-
-            // Assert
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((SwapAmountInQuoteResponseModel)((OkObjectResult)response.Result).Value).AmountIn.Should().Be(amountIn);
-        }
+        // Assert
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((SwapAmountInQuoteResponseModel)((OkObjectResult)response.Result).Value).AmountIn.Should().Be(amountIn);
     }
 }

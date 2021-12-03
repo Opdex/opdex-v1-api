@@ -11,77 +11,76 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.MiningPools;
+
+public class PersistMiningPoolCommandHandlerTests
 {
-    public class PersistMiningPoolCommandHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly PersistMiningPoolCommandHandler _handler;
+
+    public PersistMiningPoolCommandHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly PersistMiningPoolCommandHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+        var logger = new NullLogger<PersistMiningPoolCommandHandler>();
 
-        public PersistMiningPoolCommandHandlerTests()
-        {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
-            var logger = new NullLogger<PersistMiningPoolCommandHandler>();
+        _dbContext = new Mock<IDbContext>();
+        _handler = new PersistMiningPoolCommandHandler(_dbContext.Object, mapper, logger);
+    }
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new PersistMiningPoolCommandHandler(_dbContext.Object, mapper, logger);
-        }
+    [Fact]
+    public async Task InsertMiningPool_Success()
+    {
+        var pool = new MiningPool(1, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 2);
+        var command = new PersistMiningPoolCommand(pool);
 
-        [Fact]
-        public async Task InsertMiningPool_Success()
-        {
-            var pool = new MiningPool(1, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 2);
-            var command = new PersistMiningPoolCommand(pool);
+        _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(1234ul));
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(1234ul));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Should().Be(1234);
+    }
 
-            result.Should().Be(1234);
-        }
+    [Fact]
+    public async Task UpdateMiningPool_Success()
+    {
+        const ulong id = 99ul;
 
-        [Fact]
-        public async Task UpdateMiningPool_Success()
-        {
-            const ulong id = 99ul;
+        var pool = new MiningPool(id, 2, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 3, 4, 5, 6, 7);
+        var command = new PersistMiningPoolCommand(pool);
 
-            var pool = new MiningPool(id, 2, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 3, 4, 5, 6, 7);
-            var command = new PersistMiningPoolCommand(pool);
+        _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(id));
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(id));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Should().Be(id);
+    }
 
-            result.Should().Be(id);
-        }
+    [Fact]
+    public async Task InsertMiningPool_Fail()
+    {
+        var pool = new MiningPool(1, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 2);
+        var command = new PersistMiningPoolCommand(pool);
 
-        [Fact]
-        public async Task InsertMiningPool_Fail()
-        {
-            var pool = new MiningPool(1, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 2);
-            var command = new PersistMiningPoolCommand(pool);
+        _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(0ul));
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(0ul));
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        result.Should().Be(0);
+    }
 
-            result.Should().Be(0);
-        }
+    [Fact]
+    public async Task InsertMiningPool_Throws()
+    {
+        var pool = new MiningPool(1, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 2);
+        var command = new PersistMiningPoolCommand(pool);
 
-        [Fact]
-        public async Task InsertMiningPool_Throws()
-        {
-            var pool = new MiningPool(1, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 2);
-            var command = new PersistMiningPoolCommand(pool);
+        _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).Throws<Exception>();
 
-            _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).Throws<Exception>();
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            result.Should().Be(0);
-        }
+        result.Should().Be(0);
     }
 }

@@ -7,21 +7,20 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Vaults.Certificates
+namespace Opdex.Platform.Application.Handlers.Vaults.Certificates;
+
+public class RetrieveVaultCertificatesByOwnerAddressQueryHandler
+    : IRequestHandler<RetrieveVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>
 {
-    public class RetrieveVaultCertificatesByOwnerAddressQueryHandler
-        : IRequestHandler<RetrieveVaultCertificatesByOwnerAddressQuery, IEnumerable<VaultCertificate>>
+    private readonly IMediator _mediator;
+
+    public RetrieveVaultCertificatesByOwnerAddressQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveVaultCertificatesByOwnerAddressQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<IEnumerable<VaultCertificate>> Handle(RetrieveVaultCertificatesByOwnerAddressQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectVaultCertificatesByOwnerAddressQuery(request.OwnerAddress), cancellationToken);
-        }
+    public Task<IEnumerable<VaultCertificate>> Handle(RetrieveVaultCertificatesByOwnerAddressQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectVaultCertificatesByOwnerAddressQuery(request.OwnerAddress), cancellationToken);
     }
 }

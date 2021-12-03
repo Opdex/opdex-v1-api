@@ -5,82 +5,81 @@ using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Validation.Wallets;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.Wallets
+namespace Opdex.Platform.WebApi.Tests.Validation.Wallets;
+
+public class StakingPositionFilterParametersValidatorTests
 {
-    public class StakingPositionFilterParametersValidatorTests
+    private readonly StakingPositionFilterParametersValidator _validator;
+
+    public StakingPositionFilterParametersValidatorTests()
     {
-        private readonly StakingPositionFilterParametersValidator _validator;
+        _validator = new StakingPositionFilterParametersValidator();
+    }
 
-        public StakingPositionFilterParametersValidatorTests()
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void LiquidityPools_Items_Invalid(Address address)
+    {
+        // Arrange
+        var request = new StakingPositionFilterParameters
         {
-            _validator = new StakingPositionFilterParametersValidator();
-        }
+            LiquidityPools = new Address[] { address }
+        };
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void LiquidityPools_Items_Invalid(Address address)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.LiquidityPools);
+    }
+
+    [Fact]
+    public void LiquidityPools_Items_Valid()
+    {
+        // Arrange
+        var request = new StakingPositionFilterParameters
         {
-            // Arrange
-            var request = new StakingPositionFilterParameters
-            {
-                LiquidityPools = new Address[] { address }
-            };
+            LiquidityPools = new Address[] { new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh") }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.LiquidityPools);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.LiquidityPools);
+    }
 
-        [Fact]
-        public void LiquidityPools_Items_Valid()
+    [Fact]
+    public void Limit_Invalid()
+    {
+        // Arrange
+        var request = new StakingPositionFilterParameters
         {
-            // Arrange
-            var request = new StakingPositionFilterParameters
-            {
-                LiquidityPools = new Address[] { new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh") }
-            };
+            Limit = Cursor.DefaultMaxLimit + 1
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.LiquidityPools);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Limit);
+    }
 
-        [Fact]
-        public void Limit_Invalid()
+    [Fact]
+    public void Limit_Valid()
+    {
+        // Arrange
+        var request = new StakingPositionFilterParameters
         {
-            // Arrange
-            var request = new StakingPositionFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit + 1
-            };
+            Limit = Cursor.DefaultMaxLimit
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Limit);
-        }
-
-        [Fact]
-        public void Limit_Valid()
-        {
-            // Arrange
-            var request = new StakingPositionFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Limit);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Limit);
     }
 }

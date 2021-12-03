@@ -9,12 +9,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions;
+
+public class PersistTransactionCommandHandler : IRequestHandler<PersistTransactionCommand, ulong>
 {
-    public class PersistTransactionCommandHandler : IRequestHandler<PersistTransactionCommand, ulong>
-    {
-        private static readonly string SqlCommand =
-            $@"INSERT INTO transaction (
+    private static readonly string SqlCommand =
+        $@"INSERT INTO transaction (
                 `{nameof(TransactionEntity.From)}`,
                 `{nameof(TransactionEntity.To)}`,
                 {nameof(TransactionEntity.NewContractAddress)},
@@ -33,41 +33,40 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions
               );
               SELECT LAST_INSERT_ID();";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-        public PersistTransactionCommandHandler(IDbContext context, IMapper mapper,
-            ILogger<PersistTransactionCommandHandler> logger)
+    public PersistTransactionCommandHandler(IDbContext context, IMapper mapper,
+                                            ILogger<PersistTransactionCommandHandler> logger)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<ulong> Handle(PersistTransactionCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var transactionEntity = _mapper.Map<TransactionEntity>(request.Transaction);
+
+            var command = DatabaseQuery.Create(SqlCommand, transactionEntity, cancellationToken);
+
+            var result = await _context.ExecuteScalarAsync<ulong>(command);
+
+            if (result == 0)
+            {
+                throw new Exception("Error persisting transaction.");
+            }
+
+            return result;
         }
-
-        public async Task<ulong> Handle(PersistTransactionCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var transactionEntity = _mapper.Map<TransactionEntity>(request.Transaction);
+            _logger.LogError(ex, $"Unable to persist {nameof(request.Transaction)}");
 
-                var command = DatabaseQuery.Create(SqlCommand, transactionEntity, cancellationToken);
-
-                var result = await _context.ExecuteScalarAsync<ulong>(command);
-
-                if (result == 0)
-                {
-                    throw new Exception("Error persisting transaction.");
-                }
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Unable to persist {nameof(request.Transaction)}");
-
-                return 0;
-            }
+            return 0;
         }
     }
 }

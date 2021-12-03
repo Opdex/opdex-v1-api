@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances;
+
+public class SelectAddressBalancesByModifiedBlockQueryHandler : IRequestHandler<SelectAddressBalancesByModifiedBlockQuery, IEnumerable<AddressBalance>>
 {
-    public class SelectAddressBalancesByModifiedBlockQueryHandler : IRequestHandler<SelectAddressBalancesByModifiedBlockQuery, IEnumerable<AddressBalance>>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(AddressBalanceEntity.Id)},
                 {nameof(AddressBalanceEntity.TokenId)},
                 {nameof(AddressBalanceEntity.Owner)},
@@ -25,32 +25,31 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Addresses.Balances
             FROM address_balance
             WHERE {nameof(AddressBalanceEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectAddressBalancesByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
+    public SelectAddressBalancesByModifiedBlockQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<IEnumerable<AddressBalance>> Handle(SelectAddressBalancesByModifiedBlockQuery request, CancellationToken cancellationToken)
+    {
+        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.BlockHeight), cancellationToken);
+
+        var result = await _context.ExecuteQueryAsync<AddressBalanceEntity>(query);
+
+        return _mapper.Map<IEnumerable<AddressBalance>>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong modifiedBlock)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            ModifiedBlock = modifiedBlock;
         }
 
-        public async Task<IEnumerable<AddressBalance>> Handle(SelectAddressBalancesByModifiedBlockQuery request, CancellationToken cancellationToken)
-        {
-            var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.BlockHeight), cancellationToken);
-
-            var result = await _context.ExecuteQueryAsync<AddressBalanceEntity>(query);
-
-            return _mapper.Map<IEnumerable<AddressBalance>>(result);
-        }
-
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong modifiedBlock)
-            {
-                ModifiedBlock = modifiedBlock;
-            }
-
-            public ulong ModifiedBlock { get; }
-        }
+        public ulong ModifiedBlock { get; }
     }
 }

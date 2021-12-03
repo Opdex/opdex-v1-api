@@ -17,295 +17,294 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers
+namespace Opdex.Platform.WebApi.Tests.Controllers;
+
+public class WalletsControllerTests
 {
-    public class WalletsControllerTests
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IMediator> _mediatorMock;
+
+    private readonly WalletsController _controller;
+
+    public WalletsControllerTests()
     {
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IMediator> _mediatorMock;
+        _mapperMock = new Mock<IMapper>();
+        _mediatorMock = new Mock<IMediator>();
 
-        private readonly WalletsController _controller;
+        _controller = new WalletsController(_mapperMock.Object, _mediatorMock.Object);
+    }
 
-        public WalletsControllerTests()
-        {
-            _mapperMock = new Mock<IMapper>();
-            _mediatorMock = new Mock<IMediator>();
+    [Fact]
+    public async Task GetAddressBalances_GetAddressBalancesWithFilterQuery_Send()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            _controller = new WalletsController(_mapperMock.Object, _mediatorMock.Object);
-        }
+        // Act
+        await _controller.GetAddressBalances("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new AddressBalanceFilterParameters(), cancellationToken);
 
-        [Fact]
-        public async Task GetAddressBalances_GetAddressBalancesWithFilterQuery_Send()
-        {
-            // Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetAddressBalancesWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _controller.GetAddressBalances("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new AddressBalanceFilterParameters(), cancellationToken);
+    [Fact]
+    public async Task GetAddressBalances_Result_ReturnOk()
+    {
+        // Arrange
+        var addressBalances = new AddressBalancesResponseModel();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new AddressBalancesDto());
+        _mapperMock.Setup(callTo => callTo.Map<AddressBalancesResponseModel>(It.IsAny<AddressBalancesDto>())).Returns(addressBalances);
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetAddressBalancesWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
-        }
+        // Act
+        var response = await _controller.GetAddressBalances("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new AddressBalanceFilterParameters(), CancellationToken.None);
 
-        [Fact]
-        public async Task GetAddressBalances_Result_ReturnOk()
-        {
-            // Arrange
-            var addressBalances = new AddressBalancesResponseModel();
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAddressBalancesWithFilterQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new AddressBalancesDto());
-            _mapperMock.Setup(callTo => callTo.Map<AddressBalancesResponseModel>(It.IsAny<AddressBalancesDto>())).Returns(addressBalances);
+        // Assert
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(addressBalances);
+    }
 
-            // Act
-            var response = await _controller.GetAddressBalances("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new AddressBalanceFilterParameters(), CancellationToken.None);
+    [Fact]
+    public async Task GetAddressBalanceByToken_GetAddressBalanceByTokenQuery_Send()
+    {
+        // Arrange
+        var address = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
+        var token = "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5";
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            // Assert
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(addressBalances);
-        }
+        // Act
+        await _controller.GetAddressBalanceByToken(address, token, cancellationToken);
 
-        [Fact]
-        public async Task GetAddressBalanceByToken_GetAddressBalanceByTokenQuery_Send()
-        {
-            // Arrange
-            var address = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
-            var token = "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5";
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(
+                                 It.Is<GetAddressBalanceByTokenQuery>(query => query.WalletAddress == address && query.TokenAddress == token),
+                                 cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _controller.GetAddressBalanceByToken(address, token, cancellationToken);
+    [Fact]
+    public async Task GetAddressBalanceByToken_Result_ReturnOk()
+    {
+        // Arrange
+        var tokenBalance = new AddressBalanceResponseModel();
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(
-                It.Is<GetAddressBalanceByTokenQuery>(query => query.WalletAddress == address && query.TokenAddress == token),
-                cancellationToken), Times.Once);
-        }
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAddressBalanceByTokenQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new AddressBalanceDto());
+        _mapperMock.Setup(callTo => callTo.Map<AddressBalanceResponseModel>(It.IsAny<AddressBalanceDto>())).Returns(tokenBalance);
 
-        [Fact]
-        public async Task GetAddressBalanceByToken_Result_ReturnOk()
-        {
-            // Arrange
-            var tokenBalance = new AddressBalanceResponseModel();
+        // Act
+        var response = await _controller.GetAddressBalanceByToken("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5", CancellationToken.None);
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAddressBalanceByTokenQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new AddressBalanceDto());
-            _mapperMock.Setup(callTo => callTo.Map<AddressBalanceResponseModel>(It.IsAny<AddressBalanceDto>())).Returns(tokenBalance);
+        // Act
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(tokenBalance);
+    }
 
-            // Act
-            var response = await _controller.GetAddressBalanceByToken("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5", CancellationToken.None);
+    [Fact]
+    public async Task RefreshAddressBalance_CreateRefreshAddressBalanceCommand_Send()
+    {
+        // Arrange
+        var walletAddress = new Address("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy");
+        var tokenAddress = new Address("PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5");
 
-            // Act
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(tokenBalance);
-        }
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        [Fact]
-        public async Task RefreshAddressBalance_CreateRefreshAddressBalanceCommand_Send()
-        {
-            // Arrange
-            var walletAddress = new Address("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy");
-            var tokenAddress = new Address("PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5");
+        // Act
+        await _controller.RefreshAddressBalance(walletAddress, tokenAddress, cancellationToken);
 
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateRefreshAddressBalanceCommand>(command => command.Wallet == walletAddress
+                                                                                                        && command.Token == tokenAddress), cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _controller.RefreshAddressBalance(walletAddress, tokenAddress, cancellationToken);
+    [Fact]
+    public async Task RefreshAddressBalance_Result_ReturnOk()
+    {
+        // Arrange
+        var walletAddress = new Address("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy");
+        var tokenAddress = new Address("PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5");
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<CreateRefreshAddressBalanceCommand>(command => command.Wallet == walletAddress
-                                                                                                         && command.Token == tokenAddress), cancellationToken), Times.Once);
-        }
+        var addressBalanceResponse = new AddressBalanceResponseModel();
+        var addressBalanceDto = new AddressBalanceDto();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateRefreshAddressBalanceCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(addressBalanceDto);
+        _mapperMock.Setup(callTo => callTo.Map<AddressBalanceResponseModel>(addressBalanceDto)).Returns(addressBalanceResponse);
 
-        [Fact]
-        public async Task RefreshAddressBalance_Result_ReturnOk()
-        {
-            // Arrange
-            var walletAddress = new Address("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy");
-            var tokenAddress = new Address("PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5");
+        // Act
+        var response = await _controller.RefreshAddressBalance(walletAddress, tokenAddress, CancellationToken.None);
 
-            var addressBalanceResponse = new AddressBalanceResponseModel();
-            var addressBalanceDto = new AddressBalanceDto();
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CreateRefreshAddressBalanceCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(addressBalanceDto);
-            _mapperMock.Setup(callTo => callTo.Map<AddressBalanceResponseModel>(addressBalanceDto)).Returns(addressBalanceResponse);
+        // Assert
 
-            // Act
-            var response = await _controller.RefreshAddressBalance(walletAddress, tokenAddress, CancellationToken.None);
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(addressBalanceResponse);
+    }
 
-            // Assert
+    [Fact]
+    public async Task GetMiningPositions_GetMiningPositionsWithFilterQuery_Send()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(addressBalanceResponse);
-        }
+        // Act
+        await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new MiningPositionFilterParameters(), cancellationToken);
 
-        [Fact]
-        public async Task GetMiningPositions_GetMiningPositionsWithFilterQuery_Send()
-        {
-            // Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetMiningPositionsWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new MiningPositionFilterParameters(), cancellationToken);
+    [Fact]
+    public async Task GetMiningPositions_Result_ReturnOk()
+    {
+        // Arrange
+        var miningPositions = new MiningPositionsResponseModel();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new MiningPositionsDto());
+        _mapperMock.Setup(callTo => callTo.Map<MiningPositionsResponseModel>(It.IsAny<MiningPositionsDto>())).Returns(miningPositions);
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetMiningPositionsWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
-        }
+        // Act
+        var response = await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new MiningPositionFilterParameters(), CancellationToken.None);
 
-        [Fact]
-        public async Task GetMiningPositions_Result_ReturnOk()
-        {
-            // Arrange
-            var miningPositions = new MiningPositionsResponseModel();
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMiningPositionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new MiningPositionsDto());
-            _mapperMock.Setup(callTo => callTo.Map<MiningPositionsResponseModel>(It.IsAny<MiningPositionsDto>())).Returns(miningPositions);
+        // Assert
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(miningPositions);
+    }
 
-            // Act
-            var response = await _controller.GetMiningPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new MiningPositionFilterParameters(), CancellationToken.None);
+    [Fact]
+    public async Task GetStakingPositions_GetStakingPositionsWithFilterQuery_Send()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            // Assert
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(miningPositions);
-        }
+        // Act
+        await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new StakingPositionFilterParameters(), cancellationToken);
 
-        [Fact]
-        public async Task GetStakingPositions_GetStakingPositionsWithFilterQuery_Send()
-        {
-            // Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetStakingPositionsWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new StakingPositionFilterParameters(), cancellationToken);
+    [Fact]
+    public async Task GetStakingPositions_Result_ReturnOk()
+    {
+        // Arrange
+        var stakingPositions = new StakingPositionsResponseModel();
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetStakingPositionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new StakingPositionsDto());
+        _mapperMock.Setup(callTo => callTo.Map<StakingPositionsResponseModel>(It.IsAny<StakingPositionsDto>())).Returns(stakingPositions);
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetStakingPositionsWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
-        }
+        // Act
+        var response = await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new StakingPositionFilterParameters(), CancellationToken.None);
 
-        [Fact]
-        public async Task GetStakingPositions_Result_ReturnOk()
-        {
-            // Arrange
-            var stakingPositions = new StakingPositionsResponseModel();
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetStakingPositionsWithFilterQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new StakingPositionsDto());
-            _mapperMock.Setup(callTo => callTo.Map<StakingPositionsResponseModel>(It.IsAny<StakingPositionsDto>())).Returns(stakingPositions);
+        // Assert
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(stakingPositions);
+    }
 
-            // Act
-            var response = await _controller.GetStakingPositions("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", new StakingPositionFilterParameters(), CancellationToken.None);
+    [Fact]
+    public async Task GetStakingPositionByPool_GetStakingPositionByPoolQuery_Send()
+    {
+        // Arrange
+        var address = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
+        var liquidityPool = "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5";
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            // Assert
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(stakingPositions);
-        }
+        // Act
+        await _controller.GetStakingPositionByPool(address, liquidityPool, cancellationToken);
 
-        [Fact]
-        public async Task GetStakingPositionByPool_GetStakingPositionByPoolQuery_Send()
-        {
-            // Arrange
-            var address = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
-            var liquidityPool = "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5";
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(
+                                 It.Is<GetStakingPositionByPoolQuery>(query => query.Address == address && query.LiquidityPoolAddress == liquidityPool),
+                                 cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _controller.GetStakingPositionByPool(address, liquidityPool, cancellationToken);
+    [Fact]
+    public async Task GetStakingPositionByPool_Result_ReturnOk()
+    {
+        // Arrange
+        var stakingPosition = new StakingPositionResponseModel();
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(
-                It.Is<GetStakingPositionByPoolQuery>(query => query.Address == address && query.LiquidityPoolAddress == liquidityPool),
-                cancellationToken), Times.Once);
-        }
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetStakingPositionByPoolQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new StakingPositionDto());
+        _mapperMock.Setup(callTo => callTo.Map<StakingPositionResponseModel>(It.IsAny<StakingPositionDto>())).Returns(stakingPosition);
 
-        [Fact]
-        public async Task GetStakingPositionByPool_Result_ReturnOk()
-        {
-            // Arrange
-            var stakingPosition = new StakingPositionResponseModel();
+        // Act
+        var response = await _controller.GetStakingPositionByPool("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5", CancellationToken.None);
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetStakingPositionByPoolQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new StakingPositionDto());
-            _mapperMock.Setup(callTo => callTo.Map<StakingPositionResponseModel>(It.IsAny<StakingPositionDto>())).Returns(stakingPosition);
+        // Act
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(stakingPosition);
+    }
 
-            // Act
-            var response = await _controller.GetStakingPositionByPool("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5", CancellationToken.None);
+    [Fact]
+    public async Task GetMiningPositionByPool_GetMiningPositionByPoolQuery_Send()
+    {
+        // Arrange
+        var address = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
+        var miningPool = "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5";
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            // Act
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(stakingPosition);
-        }
+        // Act
+        await _controller.GetMiningPositionByPool(address, miningPool, cancellationToken);
 
-        [Fact]
-        public async Task GetMiningPositionByPool_GetMiningPositionByPoolQuery_Send()
-        {
-            // Arrange
-            var address = "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy";
-            var miningPool = "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5";
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(
+                                 It.Is<GetMiningPositionByPoolQuery>(query => query.Address == address && query.MiningPoolAddress == miningPool),
+                                 cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _controller.GetMiningPositionByPool(address, miningPool, cancellationToken);
+    [Fact]
+    public async Task GetMiningPositionByPool_Result_ReturnOk()
+    {
+        // Arrange
+        var miningPosition = new MiningPositionResponseModel();
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(
-                It.Is<GetMiningPositionByPoolQuery>(query => query.Address == address && query.MiningPoolAddress == miningPool),
-                cancellationToken), Times.Once);
-        }
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMiningPositionByPoolQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new MiningPositionDto());
+        _mapperMock.Setup(callTo => callTo.Map<MiningPositionResponseModel>(It.IsAny<MiningPositionDto>())).Returns(miningPosition);
 
-        [Fact]
-        public async Task GetMiningPositionByPool_Result_ReturnOk()
-        {
-            // Arrange
-            var miningPosition = new MiningPositionResponseModel();
+        // Act
+        var response = await _controller.GetMiningPositionByPool("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5", CancellationToken.None);
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMiningPositionByPoolQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new MiningPositionDto());
-            _mapperMock.Setup(callTo => callTo.Map<MiningPositionResponseModel>(It.IsAny<MiningPositionDto>())).Returns(miningPosition);
+        // Act
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(miningPosition);
+    }
 
-            // Act
-            var response = await _controller.GetMiningPositionByPool("P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", "PBWhPbobijB21xv6DY75zaRpaLCvVZWLN5", CancellationToken.None);
+    [Fact]
+    public async Task GetAllowance_GetAddressAllowanceQuery_Send()
+    {
+        // Arrange
+        const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
+        const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            // Act
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(miningPosition);
-        }
+        // Act
+        await _controller.GetAllowance(owner, token, spender, cancellationToken);
 
-        [Fact]
-        public async Task GetAllowance_GetAddressAllowanceQuery_Send()
-        {
-            // Arrange
-            const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
-            const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetAddressAllowanceQuery>(
+                                                       query => query.Owner == owner
+                                                                && query.Spender == spender
+                                                                && query.Token == token
+                                                   ), cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _controller.GetAllowance(owner, token, spender, cancellationToken);
+    [Fact]
+    public async Task GetAllowance_GetAddressAllowanceQuery_ReturnMapped()
+    {
+        // Arrange
+        const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
+        const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
+        const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
+        var addressAllowanceDto = new AddressAllowanceDto { Allowance = FixedDecimal.Parse("500000"), Owner = owner, Spender = spender, Token = token };
+        var approvedAllowanceResponseModel = new ApprovedAllowanceResponseModel { Allowance = FixedDecimal.Parse("500000"), Owner = owner, Spender = spender, Token = token };
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetAddressAllowanceQuery>(
-                query => query.Owner == owner
-                      && query.Spender == spender
-                      && query.Token == token
-            ), cancellationToken), Times.Once);
-        }
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAddressAllowanceQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(addressAllowanceDto);
 
-        [Fact]
-        public async Task GetAllowance_GetAddressAllowanceQuery_ReturnMapped()
-        {
-            // Arrange
-            const string owner = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
-            const string spender = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXl";
-            const string token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXj";
-            var addressAllowanceDto = new AddressAllowanceDto { Allowance = FixedDecimal.Parse("500000"), Owner = owner, Spender = spender, Token = token };
-            var approvedAllowanceResponseModel = new ApprovedAllowanceResponseModel { Allowance = FixedDecimal.Parse("500000"), Owner = owner, Spender = spender, Token = token };
+        _mapperMock.Setup(callTo => callTo.Map<ApprovedAllowanceResponseModel>(addressAllowanceDto))
+            .Returns(approvedAllowanceResponseModel);
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetAddressAllowanceQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(addressAllowanceDto);
+        // Act
+        var response = await _controller.GetAllowance(owner, token, spender, CancellationToken.None);
 
-            _mapperMock.Setup(callTo => callTo.Map<ApprovedAllowanceResponseModel>(addressAllowanceDto))
-                .Returns(approvedAllowanceResponseModel);
-
-            // Act
-            var response = await _controller.GetAllowance(owner, token, spender, CancellationToken.None);
-
-            // Assert
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(approvedAllowanceResponseModel);
-        }
+        // Assert
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(approvedAllowanceResponseModel);
     }
 }

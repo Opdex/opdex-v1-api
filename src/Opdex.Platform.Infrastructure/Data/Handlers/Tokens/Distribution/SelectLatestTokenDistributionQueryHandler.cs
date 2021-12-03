@@ -9,12 +9,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distribution;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution;
+
+public class SelectLatestTokenDistributionQueryHandler : IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>
 {
-    public class SelectLatestTokenDistributionQueryHandler : IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(TokenDistributionEntity.Id)},
                 {nameof(TokenDistributionEntity.TokenId)},
                 {nameof(TokenDistributionEntity.VaultDistribution)},
@@ -28,27 +28,26 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution
             ORDER BY {nameof(TokenDistributionEntity.NextDistributionBlock)} DESC
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectLatestTokenDistributionQueryHandler(IDbContext context, IMapper mapper)
+    public SelectLatestTokenDistributionQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<TokenDistribution> Handle(SelectLatestTokenDistributionQuery request, CancellationToken cancellationToken)
+    {
+        var query = DatabaseQuery.Create(SqlQuery, cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<TokenDistributionEntity>(query);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(TokenDistribution)} not found.");
         }
 
-        public async Task<TokenDistribution> Handle(SelectLatestTokenDistributionQuery request, CancellationToken cancellationToken)
-        {
-            var query = DatabaseQuery.Create(SqlQuery, cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<TokenDistributionEntity>(query);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(TokenDistribution)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<TokenDistribution>(result);
-        }
+        return result == null ? null : _mapper.Map<TokenDistribution>(result);
     }
 }

@@ -9,12 +9,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
+namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools;
+
+public class SelectLiquidityPoolByIdQueryHandler : IRequestHandler<SelectLiquidityPoolByIdQuery, LiquidityPool>
 {
-    public class SelectLiquidityPoolByIdQueryHandler : IRequestHandler<SelectLiquidityPoolByIdQuery, LiquidityPool>
-    {
-        private static readonly string SqlQuery =
-            @$"SELECT
+    private static readonly string SqlQuery =
+        @$"SELECT
                 {nameof(LiquidityPoolEntity.Id)},
                 {nameof(LiquidityPoolEntity.Name)},
                 {nameof(LiquidityPoolEntity.Address)},
@@ -27,38 +27,37 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.LiquidityPools
             WHERE {nameof(LiquidityPoolEntity.Id)} = @{nameof(SqlParams.LiquidityPoolId)}
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectLiquidityPoolByIdQueryHandler(IDbContext context, IMapper mapper)
+    public SelectLiquidityPoolByIdQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<LiquidityPool> Handle(SelectLiquidityPoolByIdQuery request, CancellationToken cancellationToken)
+    {
+        var queryParams = new SqlParams(request.LiquidityPoolId);
+        var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<LiquidityPoolEntity>(query);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(LiquidityPool)} not found.");
         }
 
-        public async Task<LiquidityPool> Handle(SelectLiquidityPoolByIdQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<LiquidityPool>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(ulong liquidityPoolId)
         {
-            var queryParams = new SqlParams(request.LiquidityPoolId);
-            var query = DatabaseQuery.Create(SqlQuery, queryParams, cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<LiquidityPoolEntity>(query);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(LiquidityPool)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<LiquidityPool>(result);
+            LiquidityPoolId = liquidityPoolId;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(ulong liquidityPoolId)
-            {
-                LiquidityPoolId = liquidityPoolId;
-            }
-
-            public ulong LiquidityPoolId { get; }
-        }
+        public ulong LiquidityPoolId { get; }
     }
 }

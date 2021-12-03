@@ -21,329 +21,328 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots
+namespace Opdex.Platform.Application.Tests.EntryHandlers.Markets.Snapshots;
+
+public class GetMarketSnapshotsWithFilterQueryHandlerTests
 {
-    public class GetMarketSnapshotsWithFilterQueryHandlerTests
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<IMapper> _mapperMock;
+
+    private readonly GetMarketSnapshotsWithFilterQueryHandler _handler;
+
+    public GetMarketSnapshotsWithFilterQueryHandlerTests()
     {
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly Mock<IMapper> _mapperMock;
+        _mediatorMock = new Mock<IMediator>();
+        _mapperMock = new Mock<IMapper>();
 
-        private readonly GetMarketSnapshotsWithFilterQueryHandler _handler;
+        _handler = new GetMarketSnapshotsWithFilterQueryHandler(_mediatorMock.Object, _mapperMock.Object);
+    }
 
-        public GetMarketSnapshotsWithFilterQueryHandlerTests()
+    [Fact]
+    public async Task Handle_RetrieveMarketByAddressQuery_Send()
+    {
+        // Arrange
+        var market = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+        var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, default, default, PagingDirection.Forward, default);
+        var request = new GetMarketSnapshotsWithFilterQuery(market, cursor);
+
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        // Act
+        try
         {
-            _mediatorMock = new Mock<IMediator>();
-            _mapperMock = new Mock<IMapper>();
-
-            _handler = new GetMarketSnapshotsWithFilterQueryHandler(_mediatorMock.Object, _mapperMock.Object);
+            await _handler.Handle(request, cancellationToken);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task Handle_RetrieveMarketByAddressQuery_Send()
-        {
-            // Arrange
-            var market = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, default, default, PagingDirection.Forward, default);
-            var request = new GetMarketSnapshotsWithFilterQuery(market, cursor);
-
-            var cancellationToken = new CancellationTokenSource().Token;
-
-            // Act
-            try
-            {
-                await _handler.Handle(request, cancellationToken);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveMarketByAddressQuery>(query => query.Address == market
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveMarketByAddressQuery>(query => query.Address == market
                                                                                                 && query.FindOrThrow), cancellationToken), Times.Once);
-        }
+    }
 
-        [Fact]
-        public async Task Handle_RetrieveMarketSnapshotsWithFilterQuery_Send()
+    [Fact]
+    public async Task Handle_RetrieveMarketSnapshotsWithFilterQuery_Send()
+    {
+        // Arrange
+        var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+        var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, default, default, PagingDirection.Forward, default);
+        var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
+
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+
+        // Act
+        try
         {
-            // Arrange
-            var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, default, default, PagingDirection.Forward, default);
-            var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
-
-            var cancellationToken = new CancellationTokenSource().Token;
-
-            var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
-
-            // Act
-            try
-            {
-                await _handler.Handle(request, cancellationToken);
-            }
-            catch (Exception) { }
-
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveMarketSnapshotsWithFilterQuery>(query => query.MarketId == market.Id &&
-                                                                                                                     query.Cursor == cursor), cancellationToken), Times.Once);
+            await _handler.Handle(request, cancellationToken);
         }
+        catch (Exception) { }
 
-        [Fact]
-        public async Task Handle_SnapshotsRetrieved_MapResults()
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveMarketSnapshotsWithFilterQuery>(query => query.MarketId == market.Id &&
+                                                                                                          query.Cursor == cursor), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_SnapshotsRetrieved_MapResults()
+    {
+        // Arrange
+        var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+        var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 10, PagingDirection.Forward, default);
+        var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
+
+        var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+
+        var snapshots = new []
         {
-            // Arrange
-            var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 10, PagingDirection.Forward, default);
-            var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 30m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+        };
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
 
-            var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+        // Act
+        await _handler.Handle(request, CancellationToken.None);
 
-            var snapshots = new []
-            {
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 30m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
-            };
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
+        // Assert
+        _mapperMock.Verify(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>()), Times.Exactly(snapshots.Length));
+    }
 
-            // Act
-            await _handler.Handle(request, CancellationToken.None);
+    [Fact]
+    public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
+    {
+        // Arrange
+        var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+        var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 3, PagingDirection.Forward, (DateTime.UtcNow, 10));
+        var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
-            // Assert
-            _mapperMock.Verify(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>()), Times.Exactly(snapshots.Length));
-        }
+        var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
 
-        [Fact]
-        public async Task Handle_LessThanLimitPlusOneResults_RemoveZero()
+        var snapshots = new []
         {
-            // Arrange
-            var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 3, PagingDirection.Forward, (DateTime.UtcNow, 10));
-            var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+        };
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
+        _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
 
-            var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+        // Act
+        var dto = await _handler.Handle(request, CancellationToken.None);
 
-            var snapshots = new []
-            {
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
-            };
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
+        // Assert
+        dto.Snapshots.Count().Should().Be(snapshots.Length);
+    }
 
-            // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+    [Fact]
+    public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
+    {
+        // Arrange
+        var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+        var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 10));
+        var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
-            // Assert
-            dto.Snapshots.Count().Should().Be(snapshots.Length);
-        }
+        var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
 
-        [Fact]
-        public async Task Handle_LimitPlusOneResultsPagingBackward_RemoveFirst()
+        var snapshots = new []
         {
-            // Arrange
-            var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 10));
-            var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+        };
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
+        _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
 
-            var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+        // Act
+        var dto = await _handler.Handle(request, CancellationToken.None);
 
-            var snapshots = new []
-            {
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
-            };
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
+        // Assert
+        _mapperMock.Verify(callTo => callTo.Map<MarketSnapshotDto>(snapshots[0]), Times.Never);
+        dto.Snapshots.Count().Should().Be(snapshots.Length - 1);
+    }
 
-            // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+    [Fact]
+    public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
+    {
+        // Arrange
+        var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+        var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 10));
+        var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
-            // Assert
-            _mapperMock.Verify(callTo => callTo.Map<MarketSnapshotDto>(snapshots[0]), Times.Never);
-            dto.Snapshots.Count().Should().Be(snapshots.Length - 1);
-        }
+        var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
 
-        [Fact]
-        public async Task Handle_LimitPlusOneResultsPagingForward_RemoveLast()
+        var snapshots = new []
         {
-            // Arrange
-            var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 10));
-            var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+        };
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
+        _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
 
-            var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+        // Act
+        var dto = await _handler.Handle(request, CancellationToken.None);
 
-            var snapshots = new []
-            {
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
-            };
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
+        // Assert
+        _mapperMock.Verify(callTo => callTo.Map<MarketSnapshotDto>(snapshots[snapshots.Length - 1]), Times.Never);
+        dto.Snapshots.Count().Should().Be(snapshots.Length - 1);
+    }
 
-            // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+    [Fact]
+    public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
+    {
+        // Arrange
+        var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+        var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
+        var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
-            // Assert
-            _mapperMock.Verify(callTo => callTo.Map<MarketSnapshotDto>(snapshots[snapshots.Length - 1]), Times.Never);
-            dto.Snapshots.Count().Should().Be(snapshots.Length - 1);
-        }
+        var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
 
-        [Fact]
-        public async Task Handle_FirstRequestInPagedResults_ReturnCursor()
+        var snapshots = new []
         {
-            // Arrange
-            var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
-            var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+        };
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
+        _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
 
-            var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+        // Act
+        var dto = await _handler.Handle(request, CancellationToken.None);
 
-            var snapshots = new []
-            {
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
-            };
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
+        // Assert
+        AssertNext(dto.Cursor, (snapshots[^2].StartDate, snapshots[^2].Id));
+        dto.Cursor.Previous.Should().Be(null);
+    }
 
-            // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+    [Fact]
+    public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
+    {
+        // Arrange
+        var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+        var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
+        var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
-            // Assert
-            AssertNext(dto.Cursor, (snapshots[^2].StartDate, snapshots[^2].Id));
-            dto.Cursor.Previous.Should().Be(null);
-        }
+        var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
 
-        [Fact]
-        public async Task Handle_PagingForwardWithMoreResults_ReturnCursor()
+        var snapshots = new []
         {
-            // Arrange
-            var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
-            var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+        };
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
+        _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
 
-            var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+        // Act
+        var dto = await _handler.Handle(request, CancellationToken.None);
 
-            var snapshots = new []
-            {
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
-            };
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
+        // Assert
+        AssertNext(dto.Cursor, (snapshots[^2].StartDate, snapshots[^2].Id));
+        AssertPrevious(dto.Cursor, (snapshots[0].StartDate, snapshots[0].Id));
+    }
 
-            // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+    [Fact]
+    public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
+    {
+        // Arrange
+        var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+        var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
+        var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
-            // Assert
-            AssertNext(dto.Cursor, (snapshots[^2].StartDate, snapshots[^2].Id));
-            AssertPrevious(dto.Cursor, (snapshots[0].StartDate, snapshots[0].Id));
-        }
+        var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
 
-        [Fact]
-        public async Task Handle_PagingBackwardWithMoreResults_ReturnCursor()
+        var snapshots = new []
         {
-            // Arrange
-            var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
-            var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
+        };
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
+        _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
 
-            var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+        // Act
+        var dto = await _handler.Handle(request, CancellationToken.None);
 
-            var snapshots = new []
-            {
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(30m, 30m, 30m, 30m), 50m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T08:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T08:59:59Z").ToUniversalTime())
-            };
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
+        // Assert
+        AssertNext(dto.Cursor, (snapshots[^1].StartDate, snapshots[^1].Id));
+        AssertPrevious(dto.Cursor, (snapshots[1].StartDate, snapshots[1].Id));
+    }
 
-            // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+    [Fact]
+    public async Task Handle_PagingForwardLastPage_ReturnCursor()
+    {
+        // Arrange
+        var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+        var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
+        var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
-            // Assert
-            AssertNext(dto.Cursor, (snapshots[^1].StartDate, snapshots[^1].Id));
-            AssertPrevious(dto.Cursor, (snapshots[1].StartDate, snapshots[1].Id));
-        }
+        var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
 
-        [Fact]
-        public async Task Handle_PagingForwardLastPage_ReturnCursor()
+        var snapshots = new []
         {
-            // Arrange
-            var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
-            var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime())
+        };
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
+        _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
 
-            var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+        // Act
+        var dto = await _handler.Handle(request, CancellationToken.None);
 
-            var snapshots = new []
-            {
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime())
-            };
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
+        // Assert
+        dto.Cursor.Next.Should().Be(null);
+        AssertPrevious(dto.Cursor, (snapshots[0].StartDate, snapshots[0].Id));
+    }
 
-            // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+    [Fact]
+    public async Task Handle_PagingBackwardLastPage_ReturnCursor()
+    {
+        // Arrange
+        var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+        var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
+        var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
 
-            // Assert
-            dto.Cursor.Next.Should().Be(null);
-            AssertPrevious(dto.Cursor, (snapshots[0].StartDate, snapshots[0].Id));
-        }
+        var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
 
-        [Fact]
-        public async Task Handle_PagingBackwardLastPage_ReturnCursor()
+        var snapshots = new []
         {
-            // Arrange
-            var marketAddress = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-            var cursor = new SnapshotCursor(Interval.OneDay, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
-            var request = new GetMarketSnapshotsWithFilterQuery(marketAddress, cursor);
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
+            new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime())
+        };
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
+        _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
 
-            var market = new Market(1, marketAddress, 2, 3, Address.Empty, "tsenHnGSo1q69CJzWGnxohmQ9RukZsB6bB", true, true, true, 3, true, 9, 10);
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
+        // Act
+        var dto = await _handler.Handle(request, CancellationToken.None);
 
-            var snapshots = new []
-            {
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(10m, 10m, 10m, 10m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T10:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T10:59:59Z").ToUniversalTime()),
-                new MarketSnapshot(1, 1, new Ohlc<decimal>(20m, 20m, 20m, 20m), 20m, new StakingSnapshot(), new RewardsSnapshot(), SnapshotType.Hourly, DateTime.Parse("2021-11-06T09:00:00Z").ToUniversalTime(), DateTime.Parse("2021-11-06T09:59:59Z").ToUniversalTime())
-            };
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketSnapshotsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(snapshots);
-            _mapperMock.Setup(callTo => callTo.Map<MarketSnapshotDto>(It.IsAny<MarketSnapshot>())).Returns(new MarketSnapshotDto());
+        // Assert
+        AssertNext(dto.Cursor, (snapshots[^1].StartDate, snapshots[^1].Id));
+        dto.Cursor.Previous.Should().Be(null);
+    }
 
-            // Act
-            var dto = await _handler.Handle(request, CancellationToken.None);
+    private void AssertNext(CursorDto dto, (DateTime, ulong) pointer)
+    {
+        SnapshotCursor.TryParse(dto.Next.Base64Decode(), out var next).Should().Be(true);
+        next.PagingDirection.Should().Be(PagingDirection.Forward);
+        next.Pointer.Should().Be(pointer);
+    }
 
-            // Assert
-            AssertNext(dto.Cursor, (snapshots[^1].StartDate, snapshots[^1].Id));
-            dto.Cursor.Previous.Should().Be(null);
-        }
-
-        private void AssertNext(CursorDto dto, (DateTime, ulong) pointer)
-        {
-            SnapshotCursor.TryParse(dto.Next.Base64Decode(), out var next).Should().Be(true);
-            next.PagingDirection.Should().Be(PagingDirection.Forward);
-            next.Pointer.Should().Be(pointer);
-        }
-
-        private void AssertPrevious(CursorDto dto, (DateTime, ulong) pointer)
-        {
-            SnapshotCursor.TryParse(dto.Previous.Base64Decode(), out var next).Should().Be(true);
-            next.PagingDirection.Should().Be(PagingDirection.Backward);
-            next.Pointer.Should().Be(pointer);
-        }
+    private void AssertPrevious(CursorDto dto, (DateTime, ulong) pointer)
+    {
+        SnapshotCursor.TryParse(dto.Previous.Base64Decode(), out var next).Should().Be(true);
+        next.PagingDirection.Should().Be(PagingDirection.Backward);
+        next.Pointer.Should().Be(pointer);
     }
 }

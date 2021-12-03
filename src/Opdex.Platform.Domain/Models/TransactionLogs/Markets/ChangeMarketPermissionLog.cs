@@ -5,66 +5,65 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Markets;
 
-namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets
+namespace Opdex.Platform.Domain.Models.TransactionLogs.Markets;
+
+public class ChangeMarketPermissionLog : TransactionLog
 {
-    public class ChangeMarketPermissionLog : TransactionLog
+    public ChangeMarketPermissionLog(dynamic log, Address address, int sortOrder)
+        : base(TransactionLogType.ChangeMarketPermissionLog, address, sortOrder)
     {
-        public ChangeMarketPermissionLog(dynamic log, Address address, int sortOrder)
-            : base(TransactionLogType.ChangeMarketPermissionLog, address, sortOrder)
+        Address fromAddress = (string)log?.address;
+        byte permission = log?.permission;
+        bool isAuthorized = log?.isAuthorized;
+
+        if (fromAddress == Address.Empty)
         {
-            Address fromAddress = (string)log?.address;
-            byte permission = log?.permission;
-            bool isAuthorized = log?.isAuthorized;
-
-            if (fromAddress == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(fromAddress), "Address must be set.");
-            }
-
-            var permissionCast = (MarketPermissionType)permission;
-            if (!permissionCast.IsValid())
-            {
-                throw new ArgumentOutOfRangeException(nameof(permission), "Permission must be valid.");
-            }
-
-            Address = fromAddress;
-            Permission = permissionCast;
-            IsAuthorized = isAuthorized;
+            throw new ArgumentNullException(nameof(fromAddress), "Address must be set.");
         }
 
-        public ChangeMarketPermissionLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
-            : base(TransactionLogType.ChangeMarketPermissionLog, id, transactionId, address, sortOrder)
+        var permissionCast = (MarketPermissionType)permission;
+        if (!permissionCast.IsValid())
         {
-            var logDetails = DeserializeLogDetails(details);
-            Address = logDetails.Address;
-            Permission = logDetails.Permission;
-            IsAuthorized = logDetails.IsAuthorized;
+            throw new ArgumentOutOfRangeException(nameof(permission), "Permission must be valid.");
         }
 
-        public Address Address { get; }
-        public MarketPermissionType Permission { get; }
-        public bool IsAuthorized { get; }
+        Address = fromAddress;
+        Permission = permissionCast;
+        IsAuthorized = isAuthorized;
+    }
 
-        public struct LogDetails
-        {
-            public Address Address { get; set; }
-            public MarketPermissionType Permission { get; set; }
-            public bool IsAuthorized { get; set; }
-        }
+    public ChangeMarketPermissionLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
+        : base(TransactionLogType.ChangeMarketPermissionLog, id, transactionId, address, sortOrder)
+    {
+        var logDetails = DeserializeLogDetails(details);
+        Address = logDetails.Address;
+        Permission = logDetails.Permission;
+        IsAuthorized = logDetails.IsAuthorized;
+    }
 
-        private static LogDetails DeserializeLogDetails(string details)
-        {
-            return JsonConvert.DeserializeObject<LogDetails>(details);
-        }
+    public Address Address { get; }
+    public MarketPermissionType Permission { get; }
+    public bool IsAuthorized { get; }
 
-        public override string SerializeLogDetails()
+    public struct LogDetails
+    {
+        public Address Address { get; set; }
+        public MarketPermissionType Permission { get; set; }
+        public bool IsAuthorized { get; set; }
+    }
+
+    private static LogDetails DeserializeLogDetails(string details)
+    {
+        return JsonConvert.DeserializeObject<LogDetails>(details);
+    }
+
+    public override string SerializeLogDetails()
+    {
+        return JsonConvert.SerializeObject(new LogDetails
         {
-            return JsonConvert.SerializeObject(new LogDetails
-            {
-                Address = Address,
-                Permission = Permission,
-                IsAuthorized = IsAuthorized
-            });
-        }
+            Address = Address,
+            Permission = Permission,
+            IsAuthorized = IsAuthorized
+        });
     }
 }

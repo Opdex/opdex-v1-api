@@ -18,110 +18,109 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 
-namespace Opdex.Platform.Application.EntryHandlers.Blocks
+namespace Opdex.Platform.Application.EntryHandlers.Blocks;
+
+public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBlocksCommand, Unit>
 {
-    public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBlocksCommand, Unit>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessLatestBlocksCommandHandler> _logger;
+    private const int MaxReorg = 200;
+    public ProcessLatestBlocksCommandHandler(IMediator mediator, ILogger<ProcessLatestBlocksCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessLatestBlocksCommandHandler> _logger;
-        private const int MaxReorg = 200;
-        public ProcessLatestBlocksCommandHandler(IMediator mediator, ILogger<ProcessLatestBlocksCommandHandler> logger)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public async Task<Unit> Handle(ProcessLatestBlocksCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(ProcessLatestBlocksCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            try
+            // The latest synced block we have, if we don't have any, the tip of Cirrus chain, else null
+            var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), cancellationToken);
+
+            // Rewind when applicable, would mean our latest synced block cannot be found at the FN by block hash
+            if (bestBlock == null)
             {
-                // The latest synced block we have, if we don't have any, the tip of Cirrus chain, else null
-                var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), cancellationToken);
+                // Get our latest synced block from the database and attempt to retrieve it again from the FN
+                var dbLatestBlock = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: true));
+                bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
 
-                // Rewind when applicable, would mean our latest synced block cannot be found at the FN by block hash
-                if (bestBlock == null)
+                // Walk backward through our database blocks until we find one that can be found at the FN
+                int reorgLength = 0;
+                while (bestBlock == null && reorgLength < MaxReorg)
                 {
-                    // Get our latest synced block from the database and attempt to retrieve it again from the FN
-                    var dbLatestBlock = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: true));
+                    dbLatestBlock = await _mediator.Send(new RetrieveBlockByHeightQuery(dbLatestBlock.Height - 1));
                     bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
-
-                    // Walk backward through our database blocks until we find one that can be found at the FN
-                    int reorgLength = 0;
-                    while (bestBlock == null && reorgLength < MaxReorg)
-                    {
-                        dbLatestBlock = await _mediator.Send(new RetrieveBlockByHeightQuery(dbLatestBlock.Height - 1));
-                        bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
-                        if (bestBlock == null) reorgLength++;
-                    }
-
-                    if (bestBlock == null) throw new MaximumReorgException();
-
-                    // Rewind our data back to the latest matching block
-                    var rewound = await _mediator.Send(new CreateRewindToBlockCommand(bestBlock.Height));
-                    if (!rewound) throw new Exception($"Failure rewinding database to block height: {bestBlock.Height}");
+                    if (bestBlock == null) reorgLength++;
                 }
 
-                // Process each block until we reach the chain tip
-                while (bestBlock.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
+                if (bestBlock == null) throw new MaximumReorgException();
+
+                // Rewind our data back to the latest matching block
+                var rewound = await _mediator.Send(new CreateRewindToBlockCommand(bestBlock.Height));
+                if (!rewound) throw new Exception($"Failure rewinding database to block height: {bestBlock.Height}");
+            }
+
+            // Process each block until we reach the chain tip
+            while (bestBlock.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
+            {
+                // Retrieve and create the block
+                var currentBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash.Value, findOrThrow: true));
+                var blockCreated = await _mediator.Send(new CreateBlockCommand(currentBlock));
+
+                if (!blockCreated) break;
+
+                if (currentBlock.IsNewMinuteFromPrevious(bestBlock.MedianTime))
                 {
-                    // Retrieve and create the block
-                    var currentBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(bestBlock.NextBlockHash.Value, findOrThrow: true));
-                    var blockCreated = await _mediator.Send(new CreateBlockCommand(currentBlock));
-
-                    if (!blockCreated) break;
-
-                    if (currentBlock.IsNewMinuteFromPrevious(bestBlock.MedianTime))
+                    // Dev Environment = 15 minutes, otherwise 1 minute
+                    if (request.NetworkType != NetworkType.DEVNET || currentBlock.MedianTime.Minute % 15 == 0)
                     {
-                        // Dev Environment = 15 minutes, otherwise 1 minute
-                        if (request.NetworkType != NetworkType.DEVNET || currentBlock.MedianTime.Minute % 15 == 0)
-                        {
-                            var snapshotsCreated = await _mediator.Send(new CreateCrsTokenSnapshotsCommand(currentBlock.MedianTime, currentBlock.Height));
-                            if (!snapshotsCreated) break;
-                        }
+                        var snapshotsCreated = await _mediator.Send(new CreateCrsTokenSnapshotsCommand(currentBlock.MedianTime, currentBlock.Height));
+                        if (!snapshotsCreated) break;
                     }
-
-                    var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus));
-
-                    var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, 0, currentBlock.MedianTime, SnapshotType.Minute));
-
-                    // If it's a new day from the previous block, refresh all daily snapshots. (Tokens, Liquidity Pools, Markets)
-                    if (currentBlock.IsNewDayFromPrevious(bestBlock.MedianTime))
-                    {
-                        await _mediator.Send(new ProcessDailySnapshotRefreshCommand(currentBlock.Height, currentBlock.MedianTime, crsSnapshot.Price.Close));
-                    }
-
-                    // Process all transactions in the block
-                    foreach (var tx in currentBlock.TxHashes.Where(tx => tx != currentBlock.MerkleRoot))
-                    {
-                        // Todo: Consider processing liquidity pool snapshots after each block rather than during each transaction.
-                        await _mediator.Send(new CreateTransactionCommand(tx));
-                    }
-
-                    // Process market snapshots every 2 minutes
-                    if (currentBlock.IsNewMinuteFromPrevious(bestBlock.MedianTime) &&
-                        currentBlock.MedianTime.Minute % 2 == 0)
-                    {
-                        var markets = await _mediator.Send(new RetrieveAllMarketsQuery());
-
-                        foreach (var market in markets)
-                        {
-                            await _mediator.Send(new ProcessMarketSnapshotsCommand(market, currentBlock.MedianTime));
-                        }
-                    }
-
-                    bestBlock = currentBlock;
                 }
-            }
-            catch (MaximumReorgException ex)
-            {
-                _logger.LogCritical(ex, "Maximum reorg limit reached");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failure processing blocks");
-            }
 
-            return Unit.Value;
+                var crs = await _mediator.Send(new RetrieveTokenByAddressQuery(Address.Cirrus));
+
+                var crsSnapshot = await _mediator.Send(new RetrieveTokenSnapshotWithFilterQuery(crs.Id, 0, currentBlock.MedianTime, SnapshotType.Minute));
+
+                // If it's a new day from the previous block, refresh all daily snapshots. (Tokens, Liquidity Pools, Markets)
+                if (currentBlock.IsNewDayFromPrevious(bestBlock.MedianTime))
+                {
+                    await _mediator.Send(new ProcessDailySnapshotRefreshCommand(currentBlock.Height, currentBlock.MedianTime, crsSnapshot.Price.Close));
+                }
+
+                // Process all transactions in the block
+                foreach (var tx in currentBlock.TxHashes.Where(tx => tx != currentBlock.MerkleRoot))
+                {
+                    // Todo: Consider processing liquidity pool snapshots after each block rather than during each transaction.
+                    await _mediator.Send(new CreateTransactionCommand(tx));
+                }
+
+                // Process market snapshots every 2 minutes
+                if (currentBlock.IsNewMinuteFromPrevious(bestBlock.MedianTime) &&
+                    currentBlock.MedianTime.Minute % 2 == 0)
+                {
+                    var markets = await _mediator.Send(new RetrieveAllMarketsQuery());
+
+                    foreach (var market in markets)
+                    {
+                        await _mediator.Send(new ProcessMarketSnapshotsCommand(market, currentBlock.MedianTime));
+                    }
+                }
+
+                bestBlock = currentBlock;
+            }
         }
+        catch (MaximumReorgException ex)
+        {
+            _logger.LogCritical(ex, "Maximum reorg limit reached");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failure processing blocks");
+        }
+
+        return Unit.Value;
     }
 }

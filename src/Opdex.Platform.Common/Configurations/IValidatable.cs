@@ -1,7 +1,6 @@
-namespace Opdex.Platform.Common.Configurations
+namespace Opdex.Platform.Common.Configurations;
+
+public interface IValidatable
 {
-    public interface IValidatable
-    {
-        void Validate();
-    }
+    void Validate();
 }

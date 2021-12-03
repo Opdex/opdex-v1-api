@@ -7,21 +7,20 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.LiquidityPools.Snapshots
+namespace Opdex.Platform.Application.Handlers.LiquidityPools.Snapshots;
+
+public class RetrieveLiquidityPoolSnapshotsWithFilterQueryHandler
+    : IRequestHandler<RetrieveLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshot>>
 {
-    public class RetrieveLiquidityPoolSnapshotsWithFilterQueryHandler
-        : IRequestHandler<RetrieveLiquidityPoolSnapshotsWithFilterQuery, IEnumerable<LiquidityPoolSnapshot>>
+    private readonly IMediator _mediator;
+
+    public RetrieveLiquidityPoolSnapshotsWithFilterQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveLiquidityPoolSnapshotsWithFilterQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<IEnumerable<LiquidityPoolSnapshot>> Handle(RetrieveLiquidityPoolSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectLiquidityPoolSnapshotsWithFilterQuery(request.LiquidityPoolId, request.Cursor), cancellationToken);
-        }
+    public Task<IEnumerable<LiquidityPoolSnapshot>> Handle(RetrieveLiquidityPoolSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectLiquidityPoolSnapshotsWithFilterQuery(request.LiquidityPoolId, request.Cursor), cancellationToken);
     }
 }

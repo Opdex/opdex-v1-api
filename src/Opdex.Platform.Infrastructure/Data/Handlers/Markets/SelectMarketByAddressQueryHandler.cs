@@ -11,12 +11,12 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets;
+
+public class SelectMarketByAddressQueryHandler : IRequestHandler<SelectMarketByAddressQuery, Market>
 {
-    public class SelectMarketByAddressQueryHandler : IRequestHandler<SelectMarketByAddressQuery, Market>
-    {
-        private static readonly string SqlCommand =
-            $@"SELECT
+    private static readonly string SqlCommand =
+        $@"SELECT
                 {nameof(MarketEntity.Id)},
                 {nameof(MarketEntity.Address)},
                 {nameof(MarketEntity.DeployerId)},
@@ -34,39 +34,38 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets
             WHERE {nameof(MarketEntity.Address)} = @{nameof(SqlParams.Address)}
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectMarketByAddressQueryHandler(IDbContext context, IMapper mapper)
+    public SelectMarketByAddressQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<Market> Handle(SelectMarketByAddressQuery request, CancellationToken cancellationToken)
+    {
+        var sqlParams = new SqlParams(request.Address);
+
+        var command = DatabaseQuery.Create(SqlCommand, sqlParams, cancellationToken);
+
+        var result = await _context.ExecuteFindAsync<MarketEntity>(command);
+
+        if (request.FindOrThrow && result == null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            throw new NotFoundException($"{nameof(Market)} not found.");
         }
 
-        public async Task<Market> Handle(SelectMarketByAddressQuery request, CancellationToken cancellationToken)
+        return result == null ? null : _mapper.Map<Market>(result);
+    }
+
+    private sealed class SqlParams
+    {
+        internal SqlParams(Address address)
         {
-            var sqlParams = new SqlParams(request.Address);
-
-            var command = DatabaseQuery.Create(SqlCommand, sqlParams, cancellationToken);
-
-            var result = await _context.ExecuteFindAsync<MarketEntity>(command);
-
-            if (request.FindOrThrow && result == null)
-            {
-                throw new NotFoundException($"{nameof(Market)} not found.");
-            }
-
-            return result == null ? null : _mapper.Map<Market>(result);
+            Address = address;
         }
 
-        private sealed class SqlParams
-        {
-            internal SqlParams(Address address)
-            {
-                Address = address;
-            }
-
-            public Address Address { get; }
-        }
+        public Address Address { get; }
     }
 }

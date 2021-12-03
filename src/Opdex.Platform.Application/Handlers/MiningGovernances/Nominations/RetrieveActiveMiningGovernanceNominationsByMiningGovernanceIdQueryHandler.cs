@@ -7,21 +7,20 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.MiningGovernances.Nominations
+namespace Opdex.Platform.Application.Handlers.MiningGovernances.Nominations;
+
+public class RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler
+    : IRequestHandler<RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>
 {
-    public class RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler
-        : IRequestHandler<RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery, IEnumerable<MiningGovernanceNomination>>
+    private readonly IMediator _mediator;
+
+    public RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<IEnumerable<MiningGovernanceNomination>> Handle(RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(request.MiningGovernanceId), cancellationToken);
-        }
+    public Task<IEnumerable<MiningGovernanceNomination>> Handle(RetrieveActiveMiningGovernanceNominationsByMiningGovernanceIdQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectActiveMiningGovernanceNominationsByMiningGovernanceIdQuery(request.MiningGovernanceId), cancellationToken);
     }
 }

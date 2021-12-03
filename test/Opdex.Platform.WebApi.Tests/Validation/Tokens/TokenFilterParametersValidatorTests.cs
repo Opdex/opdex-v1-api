@@ -7,194 +7,192 @@ using Opdex.Platform.WebApi.Validation.Tokens;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.Tokens
+namespace Opdex.Platform.WebApi.Tests.Validation.Tokens;
+
+public class TokenFilterParametersValidatorTests
 {
-    public class TokenFilterParametersValidatorTests
+    private readonly TokenFilterParametersValidator _validator;
+
+    public TokenFilterParametersValidatorTests()
     {
-        private readonly TokenFilterParametersValidator _validator;
+        _validator = new TokenFilterParametersValidator();
+    }
 
-        public TokenFilterParametersValidatorTests()
+    [Theory]
+    [InlineData("*")]
+    [InlineData("?")]
+    [InlineData(":")]
+    [InlineData("asdf;")]
+    public void Keyword_Invalid(string keyword)
+    {
+        // Arrange
+        var request = new TokenFilterParameters
         {
-            _validator = new TokenFilterParametersValidator();
-        }
+            Keyword = keyword
+        };
 
-        [Theory]
-        [InlineData("*")]
-        [InlineData("?")]
-        [InlineData(":")]
-        [InlineData("asdf;")]
-        public void Keyword_Invalid(string keyword)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.Keyword).WithErrorMessage("Keyword must consist of letters, numbers and spaces only.");
+    }
+
+    [Theory]
+    [InlineData("asdf")]
+    [InlineData("fda")]
+    [InlineData("89df7g78eh5qehgn8943hg3")]
+    [InlineData("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc")]
+    [InlineData("Bitcoin Wrapped")]
+    public void Keyword_Valid(string keyword)
+    {
+        // Arrange
+        var request = new TokenFilterParameters
         {
-            // Arrange
-            var request = new TokenFilterParameters
-            {
-                Keyword = keyword
-            };
+            Keyword = keyword
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.Keyword).WithErrorMessage("Keyword must consist of letters, numbers and spaces only.");
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.Keyword);
+    }
 
-        [Theory]
-        [InlineData("asdf")]
-        [InlineData("fda")]
-        [InlineData("89df7g78eh5qehgn8943hg3")]
-        [InlineData("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc")]
-        [InlineData("Bitcoin Wrapped")]
-        public void Keyword_Valid(string keyword)
+    [Fact]
+    public void OrderBy_Invalid()
+    {
+        // Arrange
+        var request = new TokenFilterParameters
         {
-            // Arrange
-            var request = new TokenFilterParameters
-            {
-                Keyword = keyword
-            };
+            OrderBy = (TokenOrderByType)10000
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.Keyword);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.OrderBy);
+    }
 
-        [Fact]
-        public void OrderBy_Invalid()
+    [Theory]
+    [InlineData(TokenOrderByType.PriceUsd)]
+    [InlineData(TokenOrderByType.DailyPriceChangePercent)]
+    public void OrderBy_Valid(TokenOrderByType orderBy)
+    {
+        // Arrange
+        var request = new TokenFilterParameters
         {
-            // Arrange
-            var request = new TokenFilterParameters
-            {
-                OrderBy = (TokenOrderByType)10000
-            };
+            OrderBy = orderBy
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.OrderBy);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.OrderBy);
+    }
 
-        [Theory]
-        [InlineData(TokenOrderByType.PriceUsd)]
-        [InlineData(TokenOrderByType.DailyPriceChangePercent)]
-        public void OrderBy_Valid(TokenOrderByType orderBy)
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void Tokens_Items_Invalid(Address address)
+    {
+        // Arrange
+        var request = new TokenFilterParameters
         {
-            // Arrange
-            var request = new TokenFilterParameters
-            {
-                OrderBy = orderBy
-            };
+            Tokens = new List<Address> { address }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.OrderBy);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.Tokens);
+    }
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void Tokens_Items_Invalid(Address address)
+    [Fact]
+    public void Tokens_Items_Valid()
+    {
+        // Arrange
+        var request = new TokenFilterParameters
         {
-            // Arrange
-            var request = new TokenFilterParameters
-            {
-                Tokens = new List<Address> { address }
-            };
+            Tokens = new List<Address> { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.Tokens);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.Tokens);
+    }
 
-        [Fact]
-        public void Tokens_Items_Valid()
+    [Theory]
+    [InlineData((TokenProvisionalFilter)1000)]
+    public void ProvisionalFilter_Item_Invalid(TokenProvisionalFilter filter)
+    {
+        // Arrange
+        var request = new TokenFilterParameters
         {
-            // Arrange
-            var request = new TokenFilterParameters
-            {
-                Tokens = new List<Address> { new Address("tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc") }
-            };
+            TokenType = filter
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.Tokens);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.TokenType);
+    }
 
-        [Theory]
-        [InlineData((TokenProvisionalFilter)1000)]
-        public void ProvisionalFilter_Item_Invalid(TokenProvisionalFilter filter)
+    [Theory]
+    [InlineData(TokenProvisionalFilter.All)]
+    [InlineData(TokenProvisionalFilter.Provisional)]
+    [InlineData(TokenProvisionalFilter.NonProvisional)]
+    public void ProvisionalFilter_Item_Valid(TokenProvisionalFilter filter)
+    {
+        // Arrange
+        var request = new TokenFilterParameters
         {
-            // Arrange
-            var request = new TokenFilterParameters
-            {
-                TokenType = filter
-            };
+            TokenType = filter
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.TokenType);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.TokenType);
+    }
 
-        [Theory]
-        [InlineData((default))]
-        [InlineData(TokenProvisionalFilter.All)]
-        [InlineData(TokenProvisionalFilter.Provisional)]
-        [InlineData(TokenProvisionalFilter.NonProvisional)]
-        public void ProvisionalFilter_Item_Valid(TokenProvisionalFilter filter)
+    [Fact]
+    public void Limit_Invalid()
+    {
+        // Arrange
+        var request = new TokenFilterParameters
         {
-            // Arrange
-            var request = new TokenFilterParameters
-            {
-                TokenType = filter
-            };
+            Limit = Cursor.DefaultMaxLimit + 1
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.TokenType);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.Limit);
+    }
 
-        [Fact]
-        public void Limit_Invalid()
+    [Fact]
+    public void Limit_Valid()
+    {
+        // Arrange
+        var request = new TokenFilterParameters
         {
-            // Arrange
-            var request = new TokenFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit + 1
-            };
+            Limit = Cursor.DefaultMaxLimit
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(r => r.Limit);
-        }
-
-        [Fact]
-        public void Limit_Valid()
-        {
-            // Arrange
-            var request = new TokenFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(r => r.Limit);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.Limit);
     }
 }

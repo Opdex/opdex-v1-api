@@ -5,83 +5,82 @@ using Opdex.Platform.WebApi.Models.Requests.Vaults;
 using Opdex.Platform.WebApi.Validation.Vaults;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.Vaults
+namespace Opdex.Platform.WebApi.Tests.Validation.Vaults;
+
+public class VaultFilterParametersValidatorTests
 {
-    public class VaultFilterParametersValidatorTests
+    private readonly VaultFilterParametersValidator _validator;
+
+    public VaultFilterParametersValidatorTests()
     {
-        private readonly VaultFilterParametersValidator _validator;
+        _validator = new VaultFilterParametersValidator();
+    }
 
-        public VaultFilterParametersValidatorTests()
+    [Theory]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void LockedToken_Invalid(Address lockedToken)
+    {
+        // Arrange
+        var request = new VaultFilterParameters
         {
-            _validator = new VaultFilterParametersValidator();
-        }
+            LockedToken = lockedToken
+        };
 
-        [Theory]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void LockedToken_Invalid(Address lockedToken)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.LockedToken);
+    }
+
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(ValidNetworkAddressData))]
+    public void LockedToken_Valid(Address lockedToken)
+    {
+        // Arrange
+        var request = new VaultFilterParameters
         {
-            // Arrange
-            var request = new VaultFilterParameters
-            {
-                LockedToken = lockedToken
-            };
+            LockedToken = lockedToken
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.LockedToken);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.LockedToken);
+    }
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(ValidNetworkAddressData))]
-        public void LockedToken_Valid(Address lockedToken)
+    [Fact]
+    public void Limit_Invalid()
+    {
+        // Arrange
+        var request = new VaultFilterParameters
         {
-            // Arrange
-            var request = new VaultFilterParameters
-            {
-                LockedToken = lockedToken
-            };
+            Limit = Cursor.DefaultMaxLimit + 1
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.LockedToken);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Limit);
+    }
 
-        [Fact]
-        public void Limit_Invalid()
+    [Fact]
+    public void Limit_Valid()
+    {
+        // Arrange
+        var request = new VaultFilterParameters
         {
-            // Arrange
-            var request = new VaultFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit + 1
-            };
+            Limit = Cursor.DefaultMaxLimit
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Limit);
-        }
-
-        [Fact]
-        public void Limit_Valid()
-        {
-            // Arrange
-            var request = new VaultFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Limit);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Limit);
     }
 }

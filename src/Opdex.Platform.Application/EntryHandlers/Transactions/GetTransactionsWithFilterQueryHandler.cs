@@ -9,29 +9,28 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions
+namespace Opdex.Platform.Application.EntryHandlers.Transactions;
+
+public class GetTransactionsWithFilterQueryHandler : EntryFilterQueryHandler<GetTransactionsWithFilterQuery, TransactionsDto>
 {
-    public class GetTransactionsWithFilterQueryHandler : EntryFilterQueryHandler<GetTransactionsWithFilterQuery, TransactionsDto>
+    private readonly IMediator _mediator;
+    private readonly IModelAssembler<Transaction, TransactionDto> _assembler;
+
+    public GetTransactionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<Transaction, TransactionDto> assembler)
     {
-        private readonly IMediator _mediator;
-        private readonly IModelAssembler<Transaction, TransactionDto> _assembler;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
+    }
 
-        public GetTransactionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<Transaction, TransactionDto> assembler)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
-        }
+    public override async Task<TransactionsDto> Handle(GetTransactionsWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        var transactions = await _mediator.Send(new RetrieveTransactionsWithFilterQuery(request.Cursor), cancellationToken);
 
-        public override async Task<TransactionsDto> Handle(GetTransactionsWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            var transactions = await _mediator.Send(new RetrieveTransactionsWithFilterQuery(request.Cursor), cancellationToken);
+        var transactionResults = transactions.ToList();
 
-            var transactionResults = transactions.ToList();
+        var cursor = BuildCursorDto(transactionResults, request.Cursor, pointerSelector: result => result.Id);
 
-            var cursor = BuildCursorDto(transactionResults, request.Cursor, pointerSelector: result => result.Id);
-
-            var dtos = await Task.WhenAll(transactionResults.Select(transaction => _assembler.Assemble(transaction)));
-            return new TransactionsDto { Transactions = dtos, Cursor = cursor };
-        }
+        var dtos = await Task.WhenAll(transactionResults.Select(transaction => _assembler.Assemble(transaction)));
+        return new TransactionsDto { Transactions = dtos, Cursor = cursor };
     }
 }

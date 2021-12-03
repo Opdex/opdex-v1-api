@@ -13,71 +13,70 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Middleware
+namespace Opdex.Platform.WebApi.Tests.Middleware;
+
+public class RedirectToResourceMiddlewareTests
 {
-    public class RedirectToResourceMiddlewareTests
+    [Fact]
+    public async Task Invoke_RegularException_Next()
     {
-        [Fact]
-        public async Task Invoke_RegularException_Next()
-        {
-            // Arrange
-            using var host = await CreateHost();
+        // Arrange
+        using var host = await CreateHost();
 
-            // Act
-            HttpResponseMessage response = null;
-            try
+        // Act
+        HttpResponseMessage response = null;
+        try
+        {
+            response = await host.GetTestClient().GetAsync("/generic-exception");
+        }
+        catch (Exception) { }
+
+        // Assert
+        response?.StatusCode.Should().NotBe(HttpStatusCode.SeeOther);
+    }
+
+    [Fact]
+    public async Task Invoke_TokenAlreadyIndexedException_Intercept()
+    {
+        // Arrange
+        using var host = await CreateHost();
+
+        // Act
+        var response = await host.GetTestClient().GetAsync("/token-already-indexed-exception");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.SeeOther);
+    }
+
+    private async Task<IHost> CreateHost()
+    {
+        return await new HostBuilder()
+            .ConfigureWebHost(webBuilder =>
             {
-                response = await host.GetTestClient().GetAsync("/generic-exception");
-            }
-            catch (Exception) { }
-
-            // Assert
-            response?.StatusCode.Should().NotBe(HttpStatusCode.SeeOther);
-        }
-
-        [Fact]
-        public async Task Invoke_TokenAlreadyIndexedException_Intercept()
-        {
-            // Arrange
-            using var host = await CreateHost();
-
-            // Act
-            var response = await host.GetTestClient().GetAsync("/token-already-indexed-exception");
-
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.SeeOther);
-        }
-
-        private async Task<IHost> CreateHost()
-        {
-            return await new HostBuilder()
-                .ConfigureWebHost(webBuilder =>
-                {
-                    webBuilder
-                        .UseTestServer()
-                        .ConfigureServices(services =>
+                webBuilder
+                    .UseTestServer()
+                    .ConfigureServices(services =>
+                    {
+                        services.AddRouting();
+                    })
+                    .Configure(app =>
+                    {
+                        app.UseMiddleware<RedirectToResourceMiddleware>();
+                        app.UseRouting();
+                        app.UseEndpoints(builder =>
                         {
-                            services.AddRouting();
-                        })
-                        .Configure(app =>
-                        {
-                            app.UseMiddleware<RedirectToResourceMiddleware>();
-                            app.UseRouting();
-                            app.UseEndpoints(builder =>
+                            builder.MapGet("/token-already-indexed-exception", context =>
                             {
-                                builder.MapGet("/token-already-indexed-exception", context =>
-                                {
-                                    throw new TokenAlreadyIndexedException("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-                                });
-                                builder.MapGet("/generic-exception", context =>
-                                {
-                                    throw new Exception("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
-                                });
+                                throw new TokenAlreadyIndexedException("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
                             });
-
+                            builder.MapGet("/generic-exception", context =>
+                            {
+                                throw new Exception("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm");
+                            });
                         });
-                })
-                .StartAsync();
-        }
+
+                    });
+            })
+            .StartAsync();
     }
 }

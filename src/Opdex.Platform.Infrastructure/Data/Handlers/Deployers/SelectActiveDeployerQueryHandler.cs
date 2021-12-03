@@ -8,12 +8,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
+namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers;
+
+public class SelectActiveDeployerQueryHandler : IRequestHandler<SelectActiveDeployerQuery, Deployer>
 {
-    public class SelectActiveDeployerQueryHandler : IRequestHandler<SelectActiveDeployerQuery, Deployer>
-    {
-        private static readonly string SqlCommand =
-            $@"SELECT
+    private static readonly string SqlCommand =
+        $@"SELECT
                 {nameof(DeployerEntity.Id)},
                 {nameof(DeployerEntity.Address)},
                 {nameof(DeployerEntity.PendingOwner)},
@@ -23,21 +23,20 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Deployers
             FROM market_deployer
             LIMIT 1;";
 
-        private readonly IDbContext _context;
-        private readonly IMapper _mapper;
+    private readonly IDbContext _context;
+    private readonly IMapper _mapper;
 
-        public SelectActiveDeployerQueryHandler(IDbContext context, IMapper mapper)
-        {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        }
-        public async Task<Deployer> Handle(SelectActiveDeployerQuery request, CancellationToken cancellationToken)
-        {
-            var command = DatabaseQuery.Create(SqlCommand, cancellationToken);
+    public SelectActiveDeployerQueryHandler(IDbContext context, IMapper mapper)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+    public async Task<Deployer> Handle(SelectActiveDeployerQuery request, CancellationToken cancellationToken)
+    {
+        var command = DatabaseQuery.Create(SqlCommand, cancellationToken);
 
-            var result = await _context.ExecuteFindAsync<DeployerEntity>(command);
+        var result = await _context.ExecuteFindAsync<DeployerEntity>(command);
 
-            return _mapper.Map<Deployer>(result);
-        }
+        return _mapper.Map<Deployer>(result);
     }
 }

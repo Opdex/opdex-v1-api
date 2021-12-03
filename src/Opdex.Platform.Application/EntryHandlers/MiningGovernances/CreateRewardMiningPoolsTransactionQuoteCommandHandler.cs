@@ -11,28 +11,27 @@ using Opdex.Platform.Domain.Models.Transactions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.MiningGovernances
+namespace Opdex.Platform.Application.EntryHandlers.MiningGovernances;
+
+public class CreateRewardMiningPoolsTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateRewardMiningPoolsTransactionQuoteCommand>
 {
-    public class CreateRewardMiningPoolsTransactionQuoteCommandHandler : BaseTransactionQuoteCommandHandler<CreateRewardMiningPoolsTransactionQuoteCommand>
+    private static readonly FixedDecimal AmountCrs = FixedDecimal.Zero;
+
+    public CreateRewardMiningPoolsTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
+                                                                 IMediator mediator, OpdexConfiguration config)
+        : base(quoteAssembler, mediator, config)
     {
-        private static readonly FixedDecimal AmountCrs = FixedDecimal.Zero;
+    }
 
-        public CreateRewardMiningPoolsTransactionQuoteCommandHandler(IModelAssembler<TransactionQuote, TransactionQuoteDto> quoteAssembler,
-                                                                     IMediator mediator, OpdexConfiguration config)
-            : base(quoteAssembler, mediator, config)
-        {
-        }
+    public override async Task<TransactionQuoteDto> Handle(CreateRewardMiningPoolsTransactionQuoteCommand request, CancellationToken cancellationToken)
+    {
+        // ensure mining governance contract exists, throw 404 if not
+        _ = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.MiningGovernance), cancellationToken);
 
-        public override async Task<TransactionQuoteDto> Handle(CreateRewardMiningPoolsTransactionQuoteCommand request, CancellationToken cancellationToken)
-        {
-            // ensure mining governance contract exists, throw 404 if not
-            _ = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(request.MiningGovernance), cancellationToken);
+        var methodName = request.FullDistribution ? MiningGovernanceConstants.Methods.RewardMiningPools : MiningGovernanceConstants.Methods.RewardMiningPool;
 
-            var methodName = request.FullDistribution ? MiningGovernanceConstants.Methods.RewardMiningPools : MiningGovernanceConstants.Methods.RewardMiningPool;
+        var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.MiningGovernance, AmountCrs, methodName, _callbackEndpoint);
 
-            var quoteRequest = new TransactionQuoteRequest(request.WalletAddress, request.MiningGovernance, AmountCrs, methodName, _callbackEndpoint);
-
-            return await ExecuteAsync(quoteRequest, cancellationToken);
-        }
+        return await ExecuteAsync(quoteRequest, cancellationToken);
     }
 }

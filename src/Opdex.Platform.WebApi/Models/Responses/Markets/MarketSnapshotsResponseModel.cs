@@ -1,6 +1,5 @@
-namespace Opdex.Platform.WebApi.Models.Responses.Markets
+namespace Opdex.Platform.WebApi.Models.Responses.Markets;
+
+public class MarketSnapshotsResponseModel : PaginatedResponseModel<MarketSnapshotResponseModel>
 {
-    public class MarketSnapshotsResponseModel : PaginatedResponseModel<MarketSnapshotResponseModel>
-    {
-    }
 }

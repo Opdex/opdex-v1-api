@@ -5,83 +5,82 @@ using Opdex.Platform.WebApi.Models.Requests.MiningGovernances;
 using Opdex.Platform.WebApi.Validation.MiningGovernances;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Validation.MiningGovernances
+namespace Opdex.Platform.WebApi.Tests.Validation.MiningGovernances;
+
+public class MiningGovernanceFilterParametersValidatorTests
 {
-    public class MiningGovernanceFilterParametersValidatorTests
+    private readonly MiningGovernanceFilterParametersValidator _validator;
+
+    public MiningGovernanceFilterParametersValidatorTests()
     {
-        private readonly MiningGovernanceFilterParametersValidator _validator;
+        _validator = new MiningGovernanceFilterParametersValidator();
+    }
 
-        public MiningGovernanceFilterParametersValidatorTests()
+    [Theory]
+    [ClassData(typeof(NonNetworkAddressData))]
+    public void MinedToken_Invalid(Address minedToken)
+    {
+        // Arrange
+        var request = new MiningGovernanceFilterParameters
         {
-            _validator = new MiningGovernanceFilterParametersValidator();
-        }
+            MinedToken = minedToken
+        };
 
-        [Theory]
-        [ClassData(typeof(NonNetworkAddressData))]
-        public void MinedToken_Invalid(Address minedToken)
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.MinedToken);
+    }
+
+    [Theory]
+    [ClassData(typeof(NullAddressData))]
+    [ClassData(typeof(EmptyAddressData))]
+    [ClassData(typeof(ValidNetworkAddressData))]
+    public void MinedToken_Valid(Address minedToken)
+    {
+        // Arrange
+        var request = new MiningGovernanceFilterParameters
         {
-            // Arrange
-            var request = new MiningGovernanceFilterParameters
-            {
-                MinedToken = minedToken
-            };
+            MinedToken = minedToken
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.MinedToken);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.MinedToken);
+    }
 
-        [Theory]
-        [ClassData(typeof(NullAddressData))]
-        [ClassData(typeof(EmptyAddressData))]
-        [ClassData(typeof(ValidNetworkAddressData))]
-        public void MinedToken_Valid(Address minedToken)
+    [Fact]
+    public void Limit_Invalid()
+    {
+        // Arrange
+        var request = new MiningGovernanceFilterParameters
         {
-            // Arrange
-            var request = new MiningGovernanceFilterParameters
-            {
-                MinedToken = minedToken
-            };
+            Limit = Cursor.DefaultMaxLimit + 1
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.MinedToken);
-        }
+        // Assert
+        result.ShouldHaveValidationErrorFor(request => request.Limit);
+    }
 
-        [Fact]
-        public void Limit_Invalid()
+    [Fact]
+    public void Limit_Valid()
+    {
+        // Arrange
+        var request = new MiningGovernanceFilterParameters
         {
-            // Arrange
-            var request = new MiningGovernanceFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit + 1
-            };
+            Limit = Cursor.DefaultMaxLimit
+        };
 
-            // Act
-            var result = _validator.TestValidate(request);
+        // Act
+        var result = _validator.TestValidate(request);
 
-            // Assert
-            result.ShouldHaveValidationErrorFor(request => request.Limit);
-        }
-
-        [Fact]
-        public void Limit_Valid()
-        {
-            // Arrange
-            var request = new MiningGovernanceFilterParameters
-            {
-                Limit = Cursor.DefaultMaxLimit
-            };
-
-            // Act
-            var result = _validator.TestValidate(request);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(request => request.Limit);
-        }
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(request => request.Limit);
     }
 }

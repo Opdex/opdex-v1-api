@@ -13,53 +13,52 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.WebApi.Tests.Controllers.MiningGovernancesControllerTests
+namespace Opdex.Platform.WebApi.Tests.Controllers.MiningGovernancesControllerTests;
+
+public class GetMiningGovernancesTests
 {
-    public class GetMiningGovernancesTests
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IApplicationContext> _applicationContextMock;
+
+    private readonly MiningGovernancesController _controller;
+
+    public GetMiningGovernancesTests()
     {
-        private readonly Mock<IMediator> _mediatorMock;
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IApplicationContext> _applicationContextMock;
+        _mediatorMock = new Mock<IMediator>();
+        _mapperMock = new Mock<IMapper>();
+        _applicationContextMock = new Mock<IApplicationContext>();
 
-        private readonly MiningGovernancesController _controller;
+        _controller = new MiningGovernancesController(_mediatorMock.Object, _mapperMock.Object, _applicationContextMock.Object);
+    }
 
-        public GetMiningGovernancesTests()
-        {
-            _mediatorMock = new Mock<IMediator>();
-            _mapperMock = new Mock<IMapper>();
-            _applicationContextMock = new Mock<IApplicationContext>();
+    [Fact]
+    public async Task GetGovernances_GetMiningGovernancesWithFilterQuery_Send()
+    {
+        // Arrange
+        var cancellationToken = new CancellationTokenSource().Token;
 
-            _controller = new MiningGovernancesController(_mediatorMock.Object, _mapperMock.Object, _applicationContextMock.Object);
-        }
+        // Act
+        await _controller.GetMiningGovernances(new MiningGovernanceFilterParameters(), cancellationToken);
 
-        [Fact]
-        public async Task GetGovernances_GetMiningGovernancesWithFilterQuery_Send()
-        {
-            // Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetMiningGovernancesWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
+    }
 
-            // Act
-            await _controller.GetMiningGovernances(new MiningGovernanceFilterParameters(), cancellationToken);
+    [Fact]
+    public async Task GetGovernances_Result_ReturnOk()
+    {
+        // Arrange
+        var miningGovernances = new MiningGovernancesResponseModel();
 
-            // Assert
-            _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetMiningGovernancesWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
-        }
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMiningGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new MiningGovernancesDto());
+        _mapperMock.Setup(callTo => callTo.Map<MiningGovernancesResponseModel>(It.IsAny<MiningGovernancesDto>())).Returns(miningGovernances);
 
-        [Fact]
-        public async Task GetGovernances_Result_ReturnOk()
-        {
-            // Arrange
-            var miningGovernances = new MiningGovernancesResponseModel();
+        // Act
+        var response = await _controller.GetMiningGovernances(new MiningGovernanceFilterParameters(), CancellationToken.None);
 
-            _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetMiningGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new MiningGovernancesDto());
-            _mapperMock.Setup(callTo => callTo.Map<MiningGovernancesResponseModel>(It.IsAny<MiningGovernancesDto>())).Returns(miningGovernances);
-
-            // Act
-            var response = await _controller.GetMiningGovernances(new MiningGovernanceFilterParameters(), CancellationToken.None);
-
-            // Assert
-            response.Result.Should().BeOfType<OkObjectResult>();
-            ((OkObjectResult)response.Result).Value.Should().Be(miningGovernances);
-        }
+        // Assert
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(miningGovernances);
     }
 }

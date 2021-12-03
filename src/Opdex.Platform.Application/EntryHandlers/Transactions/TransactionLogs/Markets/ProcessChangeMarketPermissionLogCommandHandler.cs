@@ -11,63 +11,62 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets.Permissions;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 
-namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets
+namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Markets;
+
+public class ProcessChangeMarketPermissionLogCommandHandler : IRequestHandler<ProcessChangeMarketPermissionLogCommand, bool>
 {
-    public class ProcessChangeMarketPermissionLogCommandHandler : IRequestHandler<ProcessChangeMarketPermissionLogCommand, bool>
+    private readonly IMediator _mediator;
+    private readonly ILogger<ProcessChangeMarketPermissionLogCommandHandler> _logger;
+
+    public ProcessChangeMarketPermissionLogCommandHandler(IMediator mediator, ILogger<ProcessChangeMarketPermissionLogCommandHandler> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<ProcessChangeMarketPermissionLogCommandHandler> _logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ProcessChangeMarketPermissionLogCommandHandler(IMediator mediator, ILogger<ProcessChangeMarketPermissionLogCommandHandler> logger)
+    public async Task<bool> Handle(ProcessChangeMarketPermissionLogCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (market == null) return false;
+
+            var marketPermission = await _mediator.Send(new RetrieveMarketPermissionQuery(market.Id,
+                                                                                          request.Log.Address,
+                                                                                          request.Log.Permission,
+                                                                                          false));
+
+            if (marketPermission is null)
+            {
+                marketPermission = new MarketPermission(market.Id,
+                                                        request.Log.Address,
+                                                        request.Log.Permission,
+                                                        request.Log.IsAuthorized,
+                                                        request.Sender,
+                                                        request.BlockHeight);
+            }
+
+            if (request.BlockHeight < marketPermission.ModifiedBlock)
+            {
+                return true;
+            }
+
+            if (request.Log.IsAuthorized)
+            {
+                marketPermission.Authorize(request.Sender, request.BlockHeight);
+            }
+            else
+            {
+                marketPermission.Revoke(request.Sender, request.BlockHeight);
+            }
+
+            return await _mediator.Send(new MakeMarketPermissionCommand(marketPermission)) > 0;
         }
-
-        public async Task<bool> Handle(ProcessChangeMarketPermissionLogCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            try
-            {
-                var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.Log.Contract, findOrThrow: false));
-                if (market == null) return false;
+            _logger.LogError(ex, $"Failure processing {nameof(ChangeMarketPermissionLog)}");
 
-                var marketPermission = await _mediator.Send(new RetrieveMarketPermissionQuery(market.Id,
-                                                                                              request.Log.Address,
-                                                                                              request.Log.Permission,
-                                                                                              false));
-
-                if (marketPermission is null)
-                {
-                    marketPermission = new MarketPermission(market.Id,
-                                                            request.Log.Address,
-                                                            request.Log.Permission,
-                                                            request.Log.IsAuthorized,
-                                                            request.Sender,
-                                                            request.BlockHeight);
-                }
-
-                if (request.BlockHeight < marketPermission.ModifiedBlock)
-                {
-                    return true;
-                }
-
-                if (request.Log.IsAuthorized)
-                {
-                    marketPermission.Authorize(request.Sender, request.BlockHeight);
-                }
-                else
-                {
-                    marketPermission.Revoke(request.Sender, request.BlockHeight);
-                }
-
-                return await _mediator.Send(new MakeMarketPermissionCommand(marketPermission)) > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failure processing {nameof(ChangeMarketPermissionLog)}");
-
-                return false;
-            }
+            return false;
         }
     }
 }

@@ -1,27 +1,26 @@
 using MediatR;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands
+namespace Opdex.Platform.Application.Abstractions.EntryCommands;
+
+/// <summary>
+/// Create the rewind snapshots command to take in a block height to be used to recalculate existing snapshots affected by the rewind.
+/// </summary>
+public class CreateRewindSnapshotsCommand : IRequest<bool>
 {
     /// <summary>
-    /// Create the rewind snapshots command to take in a block height to be used to recalculate existing snapshots affected by the rewind.
+    /// Create the create rewind snapshots command.
     /// </summary>
-    public class CreateRewindSnapshotsCommand : IRequest<bool>
+    /// <param name="rewindHeight">The block height to rewind to.</param>
+    public CreateRewindSnapshotsCommand(ulong rewindHeight)
     {
-        /// <summary>
-        /// Create the create rewind snapshots command.
-        /// </summary>
-        /// <param name="rewindHeight">The block height to rewind to.</param>
-        public CreateRewindSnapshotsCommand(ulong rewindHeight)
+        if (rewindHeight == 0)
         {
-            if (rewindHeight == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(rewindHeight), "Rewind height must be greater than 0.");
-            }
-
-            RewindHeight = rewindHeight;
+            throw new ArgumentOutOfRangeException(nameof(rewindHeight), "Rewind height must be greater than 0.");
         }
 
-        public ulong RewindHeight { get; }
+        RewindHeight = rewindHeight;
     }
+
+    public ulong RewindHeight { get; }
 }

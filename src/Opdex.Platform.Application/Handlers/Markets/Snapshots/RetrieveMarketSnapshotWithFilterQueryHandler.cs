@@ -6,20 +6,19 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Markets.Snapshots
+namespace Opdex.Platform.Application.Handlers.Markets.Snapshots;
+
+public class RetrieveMarketSnapshotWithFilterQueryHandler : IRequestHandler<RetrieveMarketSnapshotWithFilterQuery, MarketSnapshot>
 {
-    public class RetrieveMarketSnapshotWithFilterQueryHandler : IRequestHandler<RetrieveMarketSnapshotWithFilterQuery, MarketSnapshot>
+    private readonly IMediator _mediator;
+
+    public RetrieveMarketSnapshotWithFilterQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
-        public RetrieveMarketSnapshotWithFilterQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task<MarketSnapshot> Handle(RetrieveMarketSnapshotWithFilterQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectMarketSnapshotWithFilterQuery(request.MarketId, request.DateTime, request.SnapshotType), cancellationToken);
-        }
+    public Task<MarketSnapshot> Handle(RetrieveMarketSnapshotWithFilterQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectMarketSnapshotWithFilterQuery(request.MarketId, request.DateTime, request.SnapshotType), cancellationToken);
     }
 }

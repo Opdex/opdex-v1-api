@@ -7,92 +7,91 @@ using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
 using Xunit;
 
-namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens
+namespace Opdex.Platform.Domain.Tests.Models.TransactionLogs.Tokens;
+
+public class TransferLogTests
 {
-    public class TransferLogTests
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void CreateTransferLog_FromAddressNotSet_ThrowArgumentNullException(string from)
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateTransferLog_FromAddressNotSet_ThrowArgumentNullException(string from)
-        {
-            // Arrange
-            dynamic txLog = new ExpandoObject();
-            txLog.from = from;
-            txLog.to = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
-            txLog.amount = "32981";
+        // Arrange
+        dynamic txLog = new ExpandoObject();
+        txLog.from = from;
+        txLog.to = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
+        txLog.amount = "32981";
 
-            // Act
-            void Act() => new TransferLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
+        // Act
+        void Act() => new TransferLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act);
-        }
+        // Assert
+        Assert.Throws<ArgumentNullException>(Act);
+    }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void CreateTransferLog_ToAddressNotSet_ThrowArgumentNullException(string to)
-        {
-            // Arrange
-            dynamic txLog = new ExpandoObject();
-            txLog.from = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
-            txLog.to = to;
-            txLog.amount = "32981";
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void CreateTransferLog_ToAddressNotSet_ThrowArgumentNullException(string to)
+    {
+        // Arrange
+        dynamic txLog = new ExpandoObject();
+        txLog.from = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5";
+        txLog.to = to;
+        txLog.amount = "32981";
 
-            // Act
-            void Act() => new TransferLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
+        // Act
+        void Act() => new TransferLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
-            // Assert
-            Assert.Throws<ArgumentNullException>(Act);
-        }
+        // Assert
+        Assert.Throws<ArgumentNullException>(Act);
+    }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        [InlineData("ABC")]
-        [InlineData("100.005")]
-        [InlineData("100_000")]
-        public void CreateTransferLog_AmountInvalid_ThrowException(string amount)
-        {
-            // Arrange
-            dynamic txLog = new ExpandoObject();
-            txLog.from = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj3";
-            txLog.to = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj7";
-            txLog.amount = amount;
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("ABC")]
+    [InlineData("100.005")]
+    [InlineData("100_000")]
+    public void CreateTransferLog_AmountInvalid_ThrowException(string amount)
+    {
+        // Arrange
+        dynamic txLog = new ExpandoObject();
+        txLog.from = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj3";
+        txLog.to = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj7";
+        txLog.amount = amount;
 
-            // Act
-            void Act() => new TransferLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
+        // Act
+        void Act() => new TransferLog(txLog, "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj5", 5);
 
-            // Assert
-            Assert.ThrowsAny<Exception>(Act);
-        }
+        // Assert
+        Assert.ThrowsAny<Exception>(Act);
+    }
 
-        [Fact]
-        public void CreatesTransferLog_Success()
-        {
-            Address address = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
-            const int sortOrder = 1;
-            UInt256 amount = 87654345678;
+    [Fact]
+    public void CreatesTransferLog_Success()
+    {
+        Address address = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV";
+        const int sortOrder = 1;
+        UInt256 amount = 87654345678;
 
-            dynamic tx = new ExpandoObject();
-            tx.from = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj3";
-            tx.to = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj7";
-            tx.amount = amount.ToString();
+        dynamic tx = new ExpandoObject();
+        tx.from = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj3";
+        tx.to = "PM2p2uVqojah5kcXzHiBtV8LVDVGVAgvj7";
+        tx.amount = amount.ToString();
 
-            var txLog = new TransferLog(tx, address, sortOrder);
+        var txLog = new TransferLog(tx, address, sortOrder);
 
-            txLog.Id.Should().Be(0);
-            txLog.TransactionId.Should().Be(0);
-            txLog.LogType.Should().Be(TransactionLogType.TransferLog);
-            txLog.Contract.Should().Be(address);
-            txLog.SortOrder.Should().Be(sortOrder);
-            txLog.From.Should().Be(tx.from);
-            txLog.To.Should().Be(tx.to);
-            txLog.Amount.Should().Be(amount);
-        }
+        txLog.Id.Should().Be(0);
+        txLog.TransactionId.Should().Be(0);
+        txLog.LogType.Should().Be(TransactionLogType.TransferLog);
+        txLog.Contract.Should().Be(address);
+        txLog.SortOrder.Should().Be(sortOrder);
+        txLog.From.Should().Be(tx.from);
+        txLog.To.Should().Be(tx.to);
+        txLog.Amount.Should().Be(amount);
     }
 }

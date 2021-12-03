@@ -3,20 +3,19 @@ using Opdex.Platform.Domain.Models.Addresses;
 using System;
 using System.Collections.Generic;
 
-namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Staking
-{
-    public class SelectStakingPositionsByModifiedBlockQuery : IRequest<IEnumerable<AddressStaking>>
-    {
-        public SelectStakingPositionsByModifiedBlockQuery(ulong blockHeight)
-        {
-            if (blockHeight == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-            }
+namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Addresses.Staking;
 
-            BlockHeight = blockHeight;
+public class SelectStakingPositionsByModifiedBlockQuery : IRequest<IEnumerable<AddressStaking>>
+{
+    public SelectStakingPositionsByModifiedBlockQuery(ulong blockHeight)
+    {
+        if (blockHeight == 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
         }
 
-        public ulong BlockHeight { get; }
+        BlockHeight = blockHeight;
     }
+
+    public ulong BlockHeight { get; }
 }

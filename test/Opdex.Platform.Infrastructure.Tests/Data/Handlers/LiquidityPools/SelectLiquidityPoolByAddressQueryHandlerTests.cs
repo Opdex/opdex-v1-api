@@ -12,83 +12,82 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools
+namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.LiquidityPools;
+
+public class SelectLiquidityPoolByAddressQueryHandlerTests
 {
-    public class SelectLiquidityPoolByAddressQueryHandlerTests
+    private readonly Mock<IDbContext> _dbContext;
+    private readonly SelectLiquidityPoolByAddressQueryHandler _handler;
+
+    public SelectLiquidityPoolByAddressQueryHandlerTests()
     {
-        private readonly Mock<IDbContext> _dbContext;
-        private readonly SelectLiquidityPoolByAddressQueryHandler _handler;
+        var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
-        public SelectLiquidityPoolByAddressQueryHandlerTests()
+        _dbContext = new Mock<IDbContext>();
+        _handler = new SelectLiquidityPoolByAddressQueryHandler(_dbContext.Object, mapper);
+    }
+
+    [Fact]
+    public async Task SelectLiquidityPoolByAddress_Success()
+    {
+        Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+
+        var expectedEntity = new LiquidityPoolEntity
         {
-            var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
+            Id = 123454,
+            SrcTokenId = 1235,
+            LpTokenId = 8765,
+            MarketId = 1,
+            Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
+            CreatedBlock = 1,
+            ModifiedBlock = 1
+        };
 
-            _dbContext = new Mock<IDbContext>();
-            _handler = new SelectLiquidityPoolByAddressQueryHandler(_dbContext.Object, mapper);
-        }
+        var command = new SelectLiquidityPoolByAddressQuery(address);
 
-        [Fact]
-        public async Task SelectLiquidityPoolByAddress_Success()
-        {
-            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult(expectedEntity));
 
-            var expectedEntity = new LiquidityPoolEntity
-            {
-                Id = 123454,
-                SrcTokenId = 1235,
-                LpTokenId = 8765,
-                MarketId = 1,
-                Address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u",
-                CreatedBlock = 1,
-                ModifiedBlock = 1
-            };
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var command = new SelectLiquidityPoolByAddressQuery(address);
+        result.Id.Should().Be(expectedEntity.Id);
+        result.SrcTokenId.Should().Be(expectedEntity.SrcTokenId);
+        result.LpTokenId.Should().Be(expectedEntity.LpTokenId);
+        result.MarketId.Should().Be(expectedEntity.MarketId);
+        result.Address.Should().Be(expectedEntity.Address);
+        result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);
+        result.ModifiedBlock.Should().Be(expectedEntity.ModifiedBlock);
+    }
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult(expectedEntity));
+    [Fact]
+    public void SelectLiquidityPoolByAddress_Throws_NotFoundException()
+    {
+        Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+        var command = new SelectLiquidityPoolByAddressQuery(address);
 
-            result.Id.Should().Be(expectedEntity.Id);
-            result.SrcTokenId.Should().Be(expectedEntity.SrcTokenId);
-            result.LpTokenId.Should().Be(expectedEntity.LpTokenId);
-            result.MarketId.Should().Be(expectedEntity.MarketId);
-            result.Address.Should().Be(expectedEntity.Address);
-            result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);
-            result.ModifiedBlock.Should().Be(expectedEntity.ModifiedBlock);
-        }
+        _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
 
-        [Fact]
-        public void SelectLiquidityPoolByAddress_Throws_NotFoundException()
-        {
-            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+            .Should()
+            .ThrowAsync<NotFoundException>()
+            .WithMessage($"{nameof(LiquidityPool)} not found.");
+    }
 
-            var command = new SelectLiquidityPoolByAddressQuery(address);
+    [Fact]
+    public async Task SelectLiquidityPoolByAddress_ReturnsNull()
+    {
+        Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
+        const bool findOrThrow = false;
 
-            _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
+        var command = new SelectLiquidityPoolByAddressQuery(address, findOrThrow);
 
-            _handler.Invoking(h => h.Handle(command, CancellationToken.None))
-                .Should()
-                .ThrowAsync<NotFoundException>()
-                .WithMessage($"{nameof(LiquidityPool)} not found.");
-        }
+        _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
+            .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
 
-        [Fact]
-        public async Task SelectLiquidityPoolByAddress_ReturnsNull()
-        {
-            Address address = "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u";
-            const bool findOrThrow = false;
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            var command = new SelectLiquidityPoolByAddressQuery(address, findOrThrow);
-
-            _dbContext.Setup(db => db.ExecuteFindAsync<LiquidityPoolEntity>(It.IsAny<DatabaseQuery>()))
-                .Returns(() => Task.FromResult<LiquidityPoolEntity>(null));
-
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            result.Should().BeNull();
-        }
+        result.Should().BeNull();
     }
 }

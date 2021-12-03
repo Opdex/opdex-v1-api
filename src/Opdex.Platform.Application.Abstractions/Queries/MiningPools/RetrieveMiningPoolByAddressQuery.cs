@@ -3,20 +3,19 @@ using Opdex.Platform.Common.Queries;
 using Opdex.Platform.Domain.Models.MiningPools;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.Queries.MiningPools
-{
-    public class RetrieveMiningPoolByAddressQuery : FindQuery<MiningPool>
-    {
-        public RetrieveMiningPoolByAddressQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
-        {
-            if (address == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(address));
-            }
+namespace Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 
-            Address = address;
+public class RetrieveMiningPoolByAddressQuery : FindQuery<MiningPool>
+{
+    public RetrieveMiningPoolByAddressQuery(Address address, bool findOrThrow = true) : base(findOrThrow)
+    {
+        if (address == Address.Empty)
+        {
+            throw new ArgumentNullException(nameof(address));
         }
 
-        public Address Address { get; }
+        Address = address;
     }
+
+    public Address Address { get; }
 }

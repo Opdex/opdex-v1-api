@@ -6,20 +6,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.Handlers.Markets.Permissions
+namespace Opdex.Platform.Application.Handlers.Markets.Permissions;
+
+public class RetrieveMarketPermissionsByUserQueryHandler : IRequestHandler<RetrieveMarketPermissionsByUserQuery, IEnumerable<MarketPermissionType>>
 {
-    public class RetrieveMarketPermissionsByUserQueryHandler : IRequestHandler<RetrieveMarketPermissionsByUserQuery, IEnumerable<MarketPermissionType>>
+    private readonly IMediator _mediator;
+
+    public RetrieveMarketPermissionsByUserQueryHandler(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator;
+    }
 
-        public RetrieveMarketPermissionsByUserQueryHandler(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
-        public Task<IEnumerable<MarketPermissionType>> Handle(RetrieveMarketPermissionsByUserQuery request, CancellationToken cancellationToken)
-        {
-            return _mediator.Send(new SelectMarketPermissionsByUserQuery(request.MarketId, request.User), cancellationToken);
-        }
+    public Task<IEnumerable<MarketPermissionType>> Handle(RetrieveMarketPermissionsByUserQuery request, CancellationToken cancellationToken)
+    {
+        return _mediator.Send(new SelectMarketPermissionsByUserQuery(request.MarketId, request.User), cancellationToken);
     }
 }

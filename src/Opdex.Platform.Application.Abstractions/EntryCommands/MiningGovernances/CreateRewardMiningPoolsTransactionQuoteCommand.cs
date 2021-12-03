@@ -2,31 +2,30 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Common.Models;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances
+namespace Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
+
+/// <summary>
+/// Create a quote for rewarding mining pools by distributing miningGovernance tokens to mine.
+/// </summary>
+public class CreateRewardMiningPoolsTransactionQuoteCommand : BaseTransactionQuoteCommand
 {
     /// <summary>
-    /// Create a quote for rewarding mining pools by distributing miningGovernance tokens to mine.
+    /// Creates a reward mining pools transaction quote.
     /// </summary>
-    public class CreateRewardMiningPoolsTransactionQuoteCommand : BaseTransactionQuoteCommand
+    /// <param name="miningGovernance">The miningGovernance contract address to call.</param>
+    /// <param name="wallet">The wallet address public key sending the transaction.</param>
+    /// <param name="fullDistribution">Flag determining if one or all nominated mining pools should be rewarded.</param>
+    public CreateRewardMiningPoolsTransactionQuoteCommand(Address miningGovernance, Address wallet, bool fullDistribution) : base(wallet)
     {
-        /// <summary>
-        /// Creates a reward mining pools transaction quote.
-        /// </summary>
-        /// <param name="miningGovernance">The miningGovernance contract address to call.</param>
-        /// <param name="wallet">The wallet address public key sending the transaction.</param>
-        /// <param name="fullDistribution">Flag determining if one or all nominated mining pools should be rewarded.</param>
-        public CreateRewardMiningPoolsTransactionQuoteCommand(Address miningGovernance, Address wallet, bool fullDistribution) : base(wallet)
+        if (miningGovernance == Address.Empty)
         {
-            if (miningGovernance == Address.Empty)
-            {
-                throw new ArgumentNullException(nameof(miningGovernance), "Mining governance address must be provided.");
-            }
-
-            MiningGovernance = miningGovernance;
-            FullDistribution = fullDistribution;
+            throw new ArgumentNullException(nameof(miningGovernance), "Mining governance address must be provided.");
         }
 
-        public Address MiningGovernance { get; }
-        public bool FullDistribution { get; }
+        MiningGovernance = miningGovernance;
+        FullDistribution = fullDistribution;
     }
+
+    public Address MiningGovernance { get; }
+    public bool FullDistribution { get; }
 }

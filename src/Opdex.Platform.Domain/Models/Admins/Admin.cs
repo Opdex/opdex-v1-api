@@ -1,28 +1,27 @@
 using Opdex.Platform.Common.Models;
 using System;
 
-namespace Opdex.Platform.Domain.Models.Admins
+namespace Opdex.Platform.Domain.Models.Admins;
+
+public class Admin
 {
-    public class Admin
+    public Admin(ulong id, Address address)
     {
-        public Admin(ulong id, Address address)
+        if (id < 1)
         {
-            if (id < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(id), "Id must be greater than 0.");
-            }
-
-            if (address == Address.Empty)
-            {
-                throw new ArgumentException("Address must be provided.", nameof(address));
-            }
-
-            Id = id;
-            Address = address;
+            throw new ArgumentOutOfRangeException(nameof(id), "Id must be greater than 0.");
         }
 
-        public ulong Id { get; }
+        if (address == Address.Empty)
+        {
+            throw new ArgumentException("Address must be provided.", nameof(address));
+        }
 
-        public Address Address { get; }
+        Id = id;
+        Address = address;
     }
+
+    public ulong Id { get; }
+
+    public Address Address { get; }
 }
