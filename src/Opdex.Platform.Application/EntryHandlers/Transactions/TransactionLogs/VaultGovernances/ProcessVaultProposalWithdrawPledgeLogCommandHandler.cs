@@ -45,7 +45,7 @@ public class ProcessVaultProposalWithdrawPledgeLogCommandHandler : IRequestHandl
             pledge.Update(request.Log, request.BlockHeight);
 
             var persistedProposal = await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight)) > 0;
-            var persistedWithdraw = await _mediator.Send(new MakeVaultProposalPledgeCommand(pledge)) > 0;
+            var persistedWithdraw = await _mediator.Send(new MakeVaultProposalPledgeCommand(pledge, request.BlockHeight)) > 0;
 
             return persistedProposal && persistedWithdraw;
         }

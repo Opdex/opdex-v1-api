@@ -23,12 +23,12 @@ public class MakeVaultProposalVoteCommandHandler : IRequestHandler<MakeVaultProp
     {
         if (request.RefreshVote)
         {
-            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(request.Vote.VaultGovernanceId));
-            var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(request.Vote.ProposalId));
+            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(request.Vote.VaultGovernanceId), CancellationToken.None);
+            var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(request.Vote.ProposalId), CancellationToken.None);
             var summary = await _mediator.Send(new CallCirrusGetVaultProposalVoteSummaryByProposalIdAndVoterQuery(vault.Address,
                                                                                                                   proposal.PublicId,
                                                                                                                   request.Vote.Voter,
-                                                                                                                  request.BlockHeight));
+                                                                                                                  request.BlockHeight), CancellationToken.None);
 
             request.Vote.Update(summary, request.BlockHeight);
         }

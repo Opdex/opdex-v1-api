@@ -52,7 +52,7 @@ public class ProcessVaultProposalPledgeLogCommandHandler : IRequestHandler<Proce
 
             var persistedProposal = await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight,
                                                                                       refreshProposal: request.Log.PledgeMinimumMet)) > 0;
-            var persistedPledge = await _mediator.Send(new MakeVaultProposalPledgeCommand(pledge)) > 0;
+            var persistedPledge = await _mediator.Send(new MakeVaultProposalPledgeCommand(pledge, request.BlockHeight)) > 0;
 
             return persistedProposal && persistedPledge;
         }

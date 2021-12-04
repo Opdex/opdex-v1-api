@@ -8,6 +8,6 @@ public class VaultProposalVoteSummary
         Amount = amount;
     }
 
-    public bool InFavor;
-    public ulong Amount;
+    public bool InFavor { get; }
+    public ulong Amount { get; }
 }
