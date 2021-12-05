@@ -39,6 +39,8 @@ public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreat
             if (market != null) return true;
 
             // Get potential market staking token
+            // Todo: We _should_ add this token if it doesn't exist however, the contract will return Address.Zero which looks like a real address
+            // -- Would need to attempt to get the token summary to see if it exists, or add Address.Zero per market to check.
             var stakingToken = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.StakingToken, findOrThrow: false));
 
             // Create market

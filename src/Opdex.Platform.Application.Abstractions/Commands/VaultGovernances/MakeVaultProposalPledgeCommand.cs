@@ -4,8 +4,17 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
 
+/// <summary>
+/// Make and persist a vault proposal pledge and optionally refresh values from a Cirrus node.
+/// </summary>
 public class MakeVaultProposalPledgeCommand : IRequest<ulong>
 {
+    /// <summary>
+    /// Constructor to initialize the make vault proposal pledge command.
+    /// </summary>
+    /// <param name="pledge">The pledge to be persisted.</param>
+    /// <param name="blockHeight">The block height to use when refreshing pledge properties prior to persistence.</param>
+    /// <param name="refreshPledge">Flag to refresh the active pledged amount.</param>
     public MakeVaultProposalPledgeCommand(VaultProposalPledge pledge, ulong blockHeight, bool refreshPledge = false)
     {
         Pledge = pledge ?? throw new ArgumentNullException(nameof(pledge), "Vault pledge must be provided.");

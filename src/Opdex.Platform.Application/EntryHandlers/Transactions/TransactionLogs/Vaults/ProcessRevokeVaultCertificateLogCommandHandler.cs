@@ -55,6 +55,8 @@ public class ProcessRevokeVaultCertificateLogCommandHandler : IRequestHandler<Pr
                 {
                     certificateToUpdate.Revoke(request.Log, request.BlockHeight);
 
+                    await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
+
                     return await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate));
                 }
 
@@ -75,6 +77,11 @@ public class ProcessRevokeVaultCertificateLogCommandHandler : IRequestHandler<Pr
             if (request.BlockHeight >= certToUpdate.ModifiedBlock)
             {
                 certToUpdate.Revoke(request.Log, request.BlockHeight);
+
+                var refreshedSupply = await _mediator.Send(new MakeVaultGovernanceCommand(vaultGovernance, request.BlockHeight,
+                                                                                          refreshUnassignedSupply: true)) > 0;
+
+                if (!refreshedSupply) _logger.LogError("Failure to update vault unassigned supply after revoking certificate.");
 
                 return await _mediator.Send(new MakeVaultGovernanceCertificateCommand(certToUpdate)) > 0;
             }

@@ -5,7 +5,7 @@ using System;
 namespace Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 
 /// <summary>
-/// Retrieve a vault proposal to retrieve it's details by internal Id.
+/// Retrieve a vault proposal to retrieve its details.
 /// </summary>
 public class RetrieveVaultProposalByIdQuery : FindQuery<VaultProposal>
 {

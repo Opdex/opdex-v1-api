@@ -63,7 +63,9 @@ public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<Pr
             // Update the vault when applicable
             if (request.BlockHeight >= vaultGovernance.ModifiedBlock)
             {
-                var vaultId = await _mediator.Send(new MakeVaultGovernanceCommand(vaultGovernance, request.BlockHeight, refreshUnassignedSupply: true));
+                var vaultId = await _mediator.Send(new MakeVaultGovernanceCommand(vaultGovernance, request.BlockHeight,
+                                                                                  refreshUnassignedSupply: true,
+                                                                                  refreshProposedSupply: true));
                 if (vaultId == 0) _logger.LogWarning($"Unexpected error updating vault governance supply by address: {vaultGovernance.Address}");
             }
 

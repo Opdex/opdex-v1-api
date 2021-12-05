@@ -137,7 +137,6 @@ public class ProcessDistributionLogCommandHandler : IRequestHandler<ProcessDistr
                 }
             }
 
-
             return true;
         }
         catch (Exception ex)
