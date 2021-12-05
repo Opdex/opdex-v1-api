@@ -28,7 +28,7 @@ public class SelectVaultGovernanceByAddressQueryHandler : IRequestHandler<Select
                 {nameof(VaultGovernanceEntity.CreatedBlock)},
                 {nameof(VaultGovernanceEntity.ModifiedBlock)}
             FROM vault_governance
-            WHERE {nameof(VaultGovernanceEntity.Id)} = @{nameof(SqlParams.VaultAddress)}
+            WHERE {nameof(VaultGovernanceEntity.Address)} = @{nameof(SqlParams.VaultAddress)}
             LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;

@@ -13,6 +13,7 @@ public class VaultGovernanceContractSummary
     }
 
     public ulong BlockHeight { get; }
+    public ulong? VestingDuration { get; private set; }
     public UInt256? UnassignedSupply { get; private set; }
     public UInt256? ProposedSupply { get; private set; }
     public ulong? TotalPledgeMinimum { get; private set; }
@@ -40,5 +41,11 @@ public class VaultGovernanceContractSummary
     {
         if (totalVoteMinimum is null) throw new ArgumentNullException(nameof(totalVoteMinimum));
         TotalVoteMinimum = totalVoteMinimum.Parse<ulong>();
+    }
+
+    public void SetVestingDuration(SmartContractMethodParameter vestingDuration)
+    {
+        if (vestingDuration is null) throw new ArgumentNullException(nameof(vestingDuration));
+        VestingDuration = vestingDuration.Parse<ulong>();
     }
 }

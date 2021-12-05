@@ -1,10 +1,10 @@
 using AutoMapper;
 using FluentAssertions;
 using Moq;
-using Opdex.Platform.Domain.Models.VaultGovernances;
+using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Certificates;
 using System;
 using System.Threading;
@@ -30,10 +30,10 @@ public class PersistVaultGovernanceCertificateCommandHandlerTests
     public async Task Insert_VaultGovernanceCertificate_Success()
     {
         const ulong expectedId = 10ul;
-        var certificate = new VaultGovernanceCertificate(5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
+        var certificate = new VaultCertificate(5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
         var command = new PersistVaultGovernanceCertificateCommand(certificate);
 
-        _mapperMock.Setup(callTo => callTo.Map<VaultGovernanceCertificateEntity>(certificate)).Returns(new VaultGovernanceCertificateEntity());
+        _mapperMock.Setup(callTo => callTo.Map<VaultCertificateEntity>(certificate)).Returns(new VaultCertificateEntity());
         _dbContextMock.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedId);
 
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -42,13 +42,13 @@ public class PersistVaultGovernanceCertificateCommandHandlerTests
     }
 
     [Fact]
-    public async Task Update_VaultGovernanceCertificate_Success()
+    public async Task Update_VaultCertificate_Success()
     {
         const ulong expectedId = 10ul;
-        var certificate = new VaultGovernanceCertificate(expectedId, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, false, false, 50, 100);
+        var certificate = new VaultCertificate(expectedId, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, false, false, 50, 100);
         var command = new PersistVaultGovernanceCertificateCommand(certificate);
 
-        _mapperMock.Setup(callTo => callTo.Map<VaultGovernanceCertificateEntity>(certificate)).Returns(new VaultGovernanceCertificateEntity());
+        _mapperMock.Setup(callTo => callTo.Map<VaultCertificateEntity>(certificate)).Returns(new VaultCertificateEntity());
         _dbContextMock.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).ReturnsAsync(expectedId);
 
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -57,13 +57,13 @@ public class PersistVaultGovernanceCertificateCommandHandlerTests
     }
 
     [Fact]
-    public async Task PersistsVaultGovernanceCertificate_Fail()
+    public async Task PersistsVaultCertificate_Fail()
     {
         const ulong expectedId = 0;
-        var certificate = new VaultGovernanceCertificate(5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
+        var certificate = new VaultCertificate(5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
         var command = new PersistVaultGovernanceCertificateCommand(certificate);
 
-        _mapperMock.Setup(callTo => callTo.Map<VaultGovernanceCertificateEntity>(certificate)).Returns(new VaultGovernanceCertificateEntity());
+        _mapperMock.Setup(callTo => callTo.Map<VaultCertificateEntity>(certificate)).Returns(new VaultCertificateEntity());
         _dbContextMock.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>())).ThrowsAsync(new Exception("Some SQL Exception"));
 
         var result = await _handler.Handle(command, CancellationToken.None);

@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
+using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using System;
 
 namespace Opdex.Platform.Domain.Models.VaultGovernances;
@@ -34,6 +35,26 @@ public class VaultProposalPledge : BlockAudit
     public ulong VaultGovernanceId { get; }
     public ulong ProposalId { get; }
     public Address Pledger { get; }
-    public ulong Pledge { get; }
-    public ulong Balance { get; }
+    public ulong Pledge { get; private set; }
+    public ulong Balance { get; private set; }
+
+    public void Update(ulong balance, ulong blockHeight)
+    {
+        Balance = balance;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(VaultProposalPledgeLog log, ulong blockHeight)
+    {
+        Pledge += log.PledgeAmount;
+        Balance = log.PledgerAmount;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(VaultProposalWithdrawPledgeLog log, ulong blockHeight)
+    {
+        if (log.PledgeWithdrawn) Pledge -= log.WithdrawAmount;
+        Balance = log.PledgerAmount;
+        SetModifiedBlock(blockHeight);
+    }
 }

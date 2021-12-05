@@ -5,8 +5,18 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Votes;
 
+/// <summary>
+/// Select a vote for a proposal by the vault, proposal, and voter's address.
+/// </summary>
 public class SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery : FindQuery<VaultProposalVote>
 {
+    /// <summary>
+    /// Constructor to create a select vault proposal vote by vault id and proposal id and voter query.
+    /// </summary>
+    /// <param name="vaultId">The id of the vault the proposal lives in.</param>
+    /// <param name="proposalId">The internal proposalId.</param>
+    /// <param name="voter">The voter's address.</param>
+    /// <param name="findOrThrow">Find or throw, defaults to true, when true throws not found exception if no record is found.</param>
     public SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery(ulong vaultId, ulong proposalId, Address voter, bool findOrThrow = true)
         : base(findOrThrow)
     {

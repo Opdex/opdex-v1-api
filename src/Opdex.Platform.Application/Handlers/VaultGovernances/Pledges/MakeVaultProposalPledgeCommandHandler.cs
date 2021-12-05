@@ -1,5 +1,8 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 using System;
 using System.Threading;
@@ -16,8 +19,20 @@ public class MakeVaultProposalPledgeCommandHandler : IRequestHandler<MakeVaultPr
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public Task<ulong> Handle(MakeVaultProposalPledgeCommand request, CancellationToken cancellationToken)
+    public async Task<ulong> Handle(MakeVaultProposalPledgeCommand request, CancellationToken cancellationToken)
     {
-        return _mediator.Send(new PersistVaultProposalPledgeCommand(request.Pledge), CancellationToken.None);
+        if (request.RefreshPledge)
+        {
+            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(request.Pledge.VaultGovernanceId), CancellationToken.None);
+            var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(request.Pledge.ProposalId), CancellationToken.None);
+            var pledge = await _mediator.Send(new CallCirrusGetVaultProposalPledgeByProposalIdAndPledgerQuery(vault.Address,
+                                                                                                              proposal.PublicId,
+                                                                                                              request.Pledge.Pledger,
+                                                                                                              request.BlockHeight), CancellationToken.None);
+
+            request.Pledge.Update(pledge, request.BlockHeight);
+        }
+
+        return await _mediator.Send(new PersistVaultProposalPledgeCommand(request.Pledge), CancellationToken.None);
     }
 }

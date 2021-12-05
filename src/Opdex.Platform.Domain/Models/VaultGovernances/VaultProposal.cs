@@ -2,6 +2,7 @@ using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
+using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using System;
 
 namespace Opdex.Platform.Domain.Models.VaultGovernances;
@@ -27,7 +28,7 @@ public class VaultProposal : BlockAudit
 
     public VaultProposal(ulong id, ulong publicId, ulong vaultGovernanceId, Address creator, Address wallet, UInt256 amount, string description,
                          VaultProposalType type, VaultProposalStatus status, ulong expiration, ulong yesAmount, ulong noAmount, ulong pledgeAmount,
-                         ulong createdBlock, ulong modifiedBlock)
+                         bool approved, ulong createdBlock, ulong modifiedBlock)
         : base(createdBlock, modifiedBlock)
     {
         Id = id;
@@ -43,6 +44,7 @@ public class VaultProposal : BlockAudit
         YesAmount = yesAmount;
         NoAmount = noAmount;
         PledgeAmount = pledgeAmount;
+        Approved = approved;
     }
 
     public ulong Id { get; }
@@ -53,9 +55,55 @@ public class VaultProposal : BlockAudit
     public UInt256 Amount { get; }
     public string Description { get; }
     public VaultProposalType Type { get; }
-    public VaultProposalStatus Status { get; }
-    public ulong Expiration { get; }
-    public ulong YesAmount { get; }
-    public ulong NoAmount { get; }
-    public ulong PledgeAmount { get; }
+    public VaultProposalStatus Status { get; private set; }
+    public ulong Expiration { get; private set; }
+    public ulong YesAmount { get; private set; }
+    public ulong NoAmount { get; private set; }
+    public ulong PledgeAmount { get; private set; }
+    public bool Approved { get; private set; }
+
+    public void Update(VaultProposalSummary summary, ulong blockHeight)
+    {
+        Status = summary.Status;
+        Expiration = summary.Expiration;
+        YesAmount = summary.YesAmount;
+        NoAmount = summary.NoAmount;
+        PledgeAmount = summary.PledgeAmount;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(VaultProposalVoteLog log, ulong blockHeight)
+    {
+        Status = VaultProposalStatus.Vote;
+        YesAmount = log.ProposalYesAmount;
+        NoAmount = log.ProposalNoAmount;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(VaultProposalPledgeLog log, ulong blockHeight)
+    {
+        if (log.TotalPledgeMinimumMet) Status = VaultProposalStatus.Vote;
+        PledgeAmount = log.ProposalPledgeAmount;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(VaultProposalWithdrawVoteLog log, ulong blockHeight)
+    {
+        YesAmount = log.ProposalYesAmount;
+        NoAmount = log.ProposalNoAmount;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(VaultProposalWithdrawPledgeLog log, ulong blockHeight)
+    {
+        PledgeAmount = log.ProposalPledgeAmount;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(CompleteVaultProposalLog log, ulong blockHeight)
+    {
+        Status = VaultProposalStatus.Complete;
+        Approved = log.Approved;
+        SetModifiedBlock(blockHeight);
+    }
 }

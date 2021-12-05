@@ -1,5 +1,6 @@
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Blocks;
+using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using System;
 
 namespace Opdex.Platform.Domain.Models.VaultGovernances;
@@ -36,7 +37,29 @@ public class VaultProposalVote : BlockAudit
     public ulong VaultGovernanceId { get; }
     public ulong ProposalId { get; }
     public Address Voter { get; }
-    public ulong Vote { get; }
-    public ulong Balance { get; }
-    public bool InFavor { get; }
+    public ulong Vote { get; private set; }
+    public ulong Balance { get; private set; }
+    public bool InFavor { get; private set; }
+
+    public void Update(VaultProposalVoteSummary summary, ulong blockHeight)
+    {
+        InFavor = summary.InFavor;
+        Balance = summary.Amount;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(VaultProposalVoteLog log, ulong blockHeight)
+    {
+        Vote += log.VoteAmount;
+        Balance = log.VoterAmount;
+        InFavor = log.InFavor;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void Update(VaultProposalWithdrawVoteLog log, ulong blockHeight)
+    {
+        if (log.VoteWithdrawn) Vote -= log.WithdrawAmount;
+        Balance = log.VoterAmount;
+        SetModifiedBlock(blockHeight);
+    }
 }

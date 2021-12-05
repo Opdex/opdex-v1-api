@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Markets;
+using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
+using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
@@ -37,11 +39,12 @@ public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreat
             if (market != null) return true;
 
             // Get potential market staking token
+            // Todo: We _should_ add this token if it doesn't exist however, the contract will return Address.Zero which looks like a real address
+            // -- Would need to attempt to get the token summary to see if it exists, or add Address.Zero per market to check.
             var stakingToken = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.StakingToken, findOrThrow: false));
-            var stakingTokenId = stakingToken?.Id ?? 0;
 
             // Create market
-            market = new Market(request.Log.Market, deployer.Id, stakingTokenId, request.Log.Owner, request.Log.AuthPoolCreators,
+            market = new Market(request.Log.Market, deployer.Id, stakingToken?.Id ?? 0, request.Log.Owner, request.Log.AuthPoolCreators,
                                 request.Log.AuthProviders, request.Log.AuthTraders, request.Log.TransactionFee,
                                 request.Log.EnableMarketFee, request.BlockHeight);
 
@@ -53,8 +56,40 @@ public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreat
             if (router != null) return true;
 
             router = new MarketRouter(request.Log.Router, marketId, true, request.BlockHeight);
-            return await _mediator.Send(new MakeMarketRouterCommand(router), CancellationToken.None);
+            var routerPersisted = await _mediator.Send(new MakeMarketRouterCommand(router), CancellationToken.None);
 
+            // Create staking token vault and governance contracts
+            if (stakingToken != null)
+            {
+                // Get token summary
+                var stakingTokenSummary = await _mediator.Send(new RetrieveStakingTokenContractSummaryQuery(stakingToken.Address, request.BlockHeight,
+                                                                                                            includeVault: true, includeMiningGovernance: true));
+
+                if (stakingTokenSummary.Vault == null || stakingTokenSummary.MiningGovernance == null)
+                {
+                    _logger.LogError("Missing Vault and Mining Governance from staking token summary.");
+                    return false;
+                }
+
+                var vaultId = await _mediator.Send(new CreateVaultGovernanceCommand(stakingTokenSummary.Vault.Value, stakingToken.Id, request.BlockHeight));
+
+                var miningGovernanceId = await _mediator.Send(new CreateMiningGovernanceCommand(stakingTokenSummary.MiningGovernance.Value,
+                                                                                                stakingToken.Id, request.BlockHeight));
+
+                if (vaultId == 0)
+                {
+                    _logger.LogError("Unexpected vaultId response from creation");
+                    return false;
+                }
+
+                if (miningGovernanceId == 0)
+                {
+                    _logger.LogError("Unexpected miningGovernanceId response from creation");
+                    return false;
+                }
+            }
+
+            return routerPersisted;
         }
         catch (Exception ex)
         {

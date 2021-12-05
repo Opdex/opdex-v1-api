@@ -45,6 +45,14 @@ public static class TransactionEventExtensions
             TransactionEventType.CreateVaultCertificateEvent => new[] { TransactionLogType.CreateVaultCertificateLog },
             TransactionEventType.RedeemVaultCertificateEvent => new[] { TransactionLogType.RedeemVaultCertificateLog },
             TransactionEventType.RevokeVaultCertificateEvent => new[] { TransactionLogType.RevokeVaultCertificateLog },
+            // Vault Governance
+            TransactionEventType.CompleteVaultProposalEvent => new[] { TransactionLogType.CompleteVaultProposalLog },
+            TransactionEventType.CreateVaultProposalEvent => new[] { TransactionLogType.CreateVaultProposalLog },
+            TransactionEventType.VaultProposalPledgeEvent => new[] { TransactionLogType.VaultProposalPledgeLog },
+            TransactionEventType.VaultProposalWithdrawPledgeEvent => new[] { TransactionLogType.VaultProposalWithdrawPledgeLog },
+            TransactionEventType.VaultProposalVoteEvent => new[] { TransactionLogType.VaultProposalVoteLog },
+            TransactionEventType.VaultProposalWithdrawVoteEvent => new[] { TransactionLogType.VaultProposalWithdrawVoteLog },
+
             _ => throw new ArgumentOutOfRangeException(nameof(eventType), "Invalid transaction event type")
         };
     }

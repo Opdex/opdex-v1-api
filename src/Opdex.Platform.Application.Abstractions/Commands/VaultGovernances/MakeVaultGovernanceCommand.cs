@@ -9,6 +9,15 @@ namespace Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
 /// </summary>
 public class MakeVaultGovernanceCommand : IRequest<ulong>
 {
+    /// <summary>
+    /// Constructor to initialize the make vault governance command.
+    /// </summary>
+    /// <param name="vault">The vault to persist.</param>
+    /// <param name="blockHeight">The block height used when refreshing vault property values.</param>
+    /// <param name="refreshUnassignedSupply">Flag to refresh the unassigned supply of the vault, default false.</param>
+    /// <param name="refreshProposedSupply">Flag to refresh the proposed supply of the vault, default false.</param>
+    /// <param name="refreshTotalPledgeMinimum">Flag to refresh the total pledge minimum amount, default false.</param>
+    /// <param name="refreshTotalVoteMinimum">Flag to refresh the total vote minimum amount, default false.</param>
     public MakeVaultGovernanceCommand(VaultGovernance vault, ulong blockHeight, bool refreshUnassignedSupply = false, bool refreshProposedSupply = false,
                                       bool refreshTotalPledgeMinimum = false, bool refreshTotalVoteMinimum = false)
     {

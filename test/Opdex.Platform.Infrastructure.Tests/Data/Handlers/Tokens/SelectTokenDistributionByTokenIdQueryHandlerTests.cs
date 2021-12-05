@@ -13,26 +13,27 @@ using Xunit;
 
 namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Tokens;
 
-public class SelectLatestTokenDistributionQueryHandlerTests
+public class SelectLatestTokenDistributionByTokenIdQueryHandlerTests
 {
     private readonly Mock<IDbContext> _dbContext;
-    private readonly SelectLatestTokenDistributionQueryHandler _handler;
+    private readonly SelectLatestTokenDistributionByTokenIdQueryHandler _handler;
 
-    public SelectLatestTokenDistributionQueryHandlerTests()
+    public SelectLatestTokenDistributionByTokenIdQueryHandlerTests()
     {
         var mapper = new MapperConfiguration(config => config.AddProfile(new PlatformInfrastructureMapperProfile())).CreateMapper();
 
         _dbContext = new Mock<IDbContext>();
-        _handler = new SelectLatestTokenDistributionQueryHandler(_dbContext.Object, mapper);
+        _handler = new SelectLatestTokenDistributionByTokenIdQueryHandler(_dbContext.Object, mapper);
     }
 
     [Fact]
     public async Task SelectTokenDistributionByTokenId_Success()
     {
+        const ulong tokenId = 99999;
         var expectedEntity = new TokenDistributionEntity
         {
             Id = 123454,
-            TokenId = 99999,
+            TokenId = tokenId,
             VaultDistribution = 10000,
             MiningGovernanceDistribution = 10000000,
             DistributionBlock = 87654,
@@ -42,7 +43,7 @@ public class SelectLatestTokenDistributionQueryHandlerTests
             ModifiedBlock = 1
         };
 
-        var command = new SelectLatestTokenDistributionQuery();
+        var command = new SelectLatestTokenDistributionByTokenIdQuery(tokenId);
 
         _dbContext.Setup(db => db.ExecuteFindAsync<TokenDistributionEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult(expectedEntity));
@@ -61,7 +62,8 @@ public class SelectLatestTokenDistributionQueryHandlerTests
     [Fact]
     public void SelectTokenDistributionByTokenId_Throws_NotFoundException()
     {
-        var command = new SelectLatestTokenDistributionQuery();
+        const ulong tokenId = 99999;
+        var command = new SelectLatestTokenDistributionByTokenIdQuery(tokenId);
 
         _dbContext.Setup(db => db.ExecuteFindAsync<TokenDistributionEntity>(It.IsAny<DatabaseQuery>()))
             .Returns(() => Task.FromResult<TokenDistributionEntity>(null));

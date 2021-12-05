@@ -3,7 +3,7 @@ using MediatR;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,34 +14,34 @@ public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<P
 {
     private static readonly string InsertSqlCommand =
         $@"INSERT INTO vault_governance_certificate (
-                {nameof(VaultGovernanceCertificateEntity.VaultGovernanceId)},
-                {nameof(VaultGovernanceCertificateEntity.Owner)},
-                {nameof(VaultGovernanceCertificateEntity.Amount)},
-                {nameof(VaultGovernanceCertificateEntity.Revoked)},
-                {nameof(VaultGovernanceCertificateEntity.Redeemed)},
-                {nameof(VaultGovernanceCertificateEntity.VestedBlock)},
-                {nameof(VaultGovernanceCertificateEntity.CreatedBlock)},
-                {nameof(VaultGovernanceCertificateEntity.ModifiedBlock)}
+                {nameof(VaultCertificateEntity.VaultId)},
+                {nameof(VaultCertificateEntity.Owner)},
+                {nameof(VaultCertificateEntity.Amount)},
+                {nameof(VaultCertificateEntity.Revoked)},
+                {nameof(VaultCertificateEntity.Redeemed)},
+                {nameof(VaultCertificateEntity.VestedBlock)},
+                {nameof(VaultCertificateEntity.CreatedBlock)},
+                {nameof(VaultCertificateEntity.ModifiedBlock)}
               ) VALUES (
-                @{nameof(VaultGovernanceCertificateEntity.VaultGovernanceId)},
-                @{nameof(VaultGovernanceCertificateEntity.Owner)},
-                @{nameof(VaultGovernanceCertificateEntity.Amount)},
-                @{nameof(VaultGovernanceCertificateEntity.Revoked)},
-                @{nameof(VaultGovernanceCertificateEntity.Redeemed)},
-                @{nameof(VaultGovernanceCertificateEntity.VestedBlock)},
-                @{nameof(VaultGovernanceCertificateEntity.CreatedBlock)},
-                @{nameof(VaultGovernanceCertificateEntity.ModifiedBlock)}
+                @{nameof(VaultCertificateEntity.VaultId)},
+                @{nameof(VaultCertificateEntity.Owner)},
+                @{nameof(VaultCertificateEntity.Amount)},
+                @{nameof(VaultCertificateEntity.Revoked)},
+                @{nameof(VaultCertificateEntity.Redeemed)},
+                @{nameof(VaultCertificateEntity.VestedBlock)},
+                @{nameof(VaultCertificateEntity.CreatedBlock)},
+                @{nameof(VaultCertificateEntity.ModifiedBlock)}
               );
               SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
         $@"UPDATE vault_governance_certificate
                 SET
-                    {nameof(VaultGovernanceCertificateEntity.Amount)} = @{nameof(VaultGovernanceCertificateEntity.Amount)},
-                    {nameof(VaultGovernanceCertificateEntity.Revoked)} = @{nameof(VaultGovernanceCertificateEntity.Revoked)},
-                    {nameof(VaultGovernanceCertificateEntity.Redeemed)} = @{nameof(VaultGovernanceCertificateEntity.Redeemed)},
-                    {nameof(VaultGovernanceCertificateEntity.ModifiedBlock)} = @{nameof(VaultGovernanceCertificateEntity.ModifiedBlock)}
-                WHERE {nameof(VaultGovernanceCertificateEntity.Id)} = @{nameof(VaultGovernanceCertificateEntity.Id)};".RemoveExcessWhitespace();
+                    {nameof(VaultCertificateEntity.Amount)} = @{nameof(VaultCertificateEntity.Amount)},
+                    {nameof(VaultCertificateEntity.Revoked)} = @{nameof(VaultCertificateEntity.Revoked)},
+                    {nameof(VaultCertificateEntity.Redeemed)} = @{nameof(VaultCertificateEntity.Redeemed)},
+                    {nameof(VaultCertificateEntity.ModifiedBlock)} = @{nameof(VaultCertificateEntity.ModifiedBlock)}
+                WHERE {nameof(VaultCertificateEntity.Id)} = @{nameof(VaultCertificateEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
@@ -55,7 +55,7 @@ public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<P
     {
         try
         {
-            var entity = _mapper.Map<VaultGovernanceCertificateEntity>(request.Certificate);
+            var entity = _mapper.Map<VaultCertificateEntity>(request.Certificate);
 
             var isUpdate = entity.Id >= 1;
 
