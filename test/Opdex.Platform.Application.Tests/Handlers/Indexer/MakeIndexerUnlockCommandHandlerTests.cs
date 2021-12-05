@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Handlers.Indexer;
@@ -14,12 +13,12 @@ namespace Opdex.Platform.Application.Tests.Handlers.Indexer;
 public class MakeIndexerUnlockCommandHandlerTests
 {
     private readonly Mock<IMediator> _mediator;
-    private readonly MakeIndexerUnlockCommandHandler _handler;
+    private readonly MakeIndexerUnlockCommandHandlerWrapper _handler;
 
     public MakeIndexerUnlockCommandHandlerTests()
     {
         _mediator = new Mock<IMediator>();
-        _handler = new MakeIndexerUnlockCommandHandler(_mediator.Object, new NullLogger<MakeIndexerUnlockCommandHandler>());
+        _handler = new MakeIndexerUnlockCommandHandlerWrapper(_mediator.Object);
     }
 
     [Fact]
@@ -37,5 +36,17 @@ public class MakeIndexerUnlockCommandHandlerTests
 
         // Assert
         _mediator.Verify(callTo => callTo.Send(It.IsAny<PersistIndexerUnlockCommand>(), token), Times.Once);
+    }
+
+    public class MakeIndexerUnlockCommandHandlerWrapper : MakeIndexerUnlockCommandHandler
+    {
+        public MakeIndexerUnlockCommandHandlerWrapper(IMediator mediator) : base(mediator)
+        {
+        }
+
+        public new async Task Handle(MakeIndexerUnlockCommand command, CancellationToken cancellationToken)
+        {
+            await base.Handle(command, cancellationToken);
+        }
     }
 }

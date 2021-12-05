@@ -1,10 +1,12 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,11 +46,13 @@ public class PersistVaultProposalVoteCommandHandler : IRequestHandler<PersistVau
                 WHERE {nameof(VaultProposalVoteEntity.Id)} = @{nameof(VaultProposalVoteEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
+    private readonly ILogger<PersistVaultProposalVoteCommandHandler> _logger;
     private readonly IMapper _mapper;
 
-    public PersistVaultProposalVoteCommandHandler(IDbContext context, IMapper mapper)
+    public PersistVaultProposalVoteCommandHandler(IDbContext context, ILogger<PersistVaultProposalVoteCommandHandler> logger, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        _logger = logger;
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
     public async Task<ulong> Handle(PersistVaultProposalVoteCommand request, CancellationToken cancellationToken)
@@ -67,9 +71,18 @@ public class PersistVaultProposalVoteCommandHandler : IRequestHandler<PersistVau
 
             return isUpdate ? entity.Id : result;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // TODO: PAPI-276
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "VaultId", request.Vote.VaultGovernanceId },
+                { "ProposalId", request.Vote.ProposalId },
+                { "Voter", request.Vote.Voter },
+                { "BlockHeight", request.Vote.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, "Failure persisting vault proposal vote.");
+            }
             return 0;
         }
     }

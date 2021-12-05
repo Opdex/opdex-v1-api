@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -58,7 +59,15 @@ public class PersistTokenDistributionCommandHandler : IRequestHandler<PersistTok
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting {nameof(TokenDistributionEntity)} record.");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "TokenId", request.TokenDistribution.TokenId },
+                { "PeriodIndex", request.TokenDistribution.PeriodIndex },
+                { "BlockHeight", request.TokenDistribution.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting token distribution.");
+            }
 
             return false;
         }

@@ -1,10 +1,12 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -58,11 +60,13 @@ public class PersistVaultProposalCommandHandler : IRequestHandler<PersistVaultPr
                 WHERE {nameof(VaultProposalEntity.Id)} = @{nameof(VaultProposalEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
+    private readonly ILogger<PersistVaultProposalCommandHandler> _logger;
     private readonly IMapper _mapper;
 
-    public PersistVaultProposalCommandHandler(IDbContext context, IMapper mapper)
+    public PersistVaultProposalCommandHandler(IDbContext context, ILogger<PersistVaultProposalCommandHandler> logger, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
     public async Task<ulong> Handle(PersistVaultProposalCommand request, CancellationToken cancellationToken)
@@ -81,9 +85,18 @@ public class PersistVaultProposalCommandHandler : IRequestHandler<PersistVaultPr
 
             return isUpdate ? entity.Id : result;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // TODO: PAPI-276
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "VaultId", request.Proposal.VaultGovernanceId },
+                { "PublicId", request.Proposal.PublicId },
+                { "Wallet", request.Proposal.Wallet },
+                { "BlockHeight", request.Proposal.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, "Failure persisting vault proposal.");
+            }
             return 0;
         }
     }

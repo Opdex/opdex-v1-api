@@ -22,11 +22,11 @@ public class MakeIndexerLockCommandHandlerTests
     public MakeIndexerLockCommandHandlerTests()
     {
         _mediator = new Mock<IMediator>();
-        _handler = new MakeIndexerLockCommandHandler(_mediator.Object, new NullLogger<MakeIndexerLockCommandHandler>());
+        _handler = new MakeIndexerLockCommandHandler(_mediator.Object);
     }
 
     [Fact]
-    public async Task Send_PersistIndexerLockCommand()
+    public async Task Handle_Send_PersistIndexerLockCommand()
     {
         // Arrange
         var token = CancellationToken.None;
@@ -41,36 +41,5 @@ public class MakeIndexerLockCommandHandlerTests
 
         // Assert
         _mediator.Verify(callTo => callTo.Send(It.Is<PersistIndexerLockCommand>(command => command.Reason == reason), CancellationToken.None), Times.Once);
-    }
-
-    [Fact]
-    public async Task CannotPersistIndexerLock_ThrowIndexerAlreadyRunningException()
-    {
-        // Arrange
-        var token = CancellationToken.None;
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), It.IsAny<CancellationToken>()))
-                 .ReturnsAsync(false);
-
-        // Act
-        Task Act() => _handler.Handle(new MakeIndexerLockCommand(IndexLockReason.Index), token);
-
-        // Assert
-        await Assert.ThrowsAsync<IndexingAlreadyRunningException>(Act);
-    }
-
-    [Fact]
-    public async Task CanPersistIndexerLock_DoNotThrow()
-    {
-        // Arrange
-        var token = CancellationToken.None;
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<PersistIndexerLockCommand>(), It.IsAny<CancellationToken>()))
-                 .ReturnsAsync(true);
-
-        // Act
-        Task Act() => _handler.Handle(new MakeIndexerLockCommand(IndexLockReason.Index), token);
-        var exception = await Record.ExceptionAsync(Act);
-
-        // Assert
-        exception.Should().BeNull();
     }
 }

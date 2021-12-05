@@ -96,7 +96,12 @@ public class IndexerBackgroundService : BackgroundService
                         }
                     }
 
-                    await mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Index), CancellationToken.None);
+                    var tryLock = await mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Index), CancellationToken.None);
+                    if (!tryLock)
+                    {
+                        _logger.LogWarning(IndexingAlreadyRunningLog);
+                        continue;
+                    }
 
                     try
                     {
@@ -108,10 +113,6 @@ public class IndexerBackgroundService : BackgroundService
                     }
 
                     unavailable = false;
-                }
-                catch (IndexingAlreadyRunningException ex)
-                {
-                    _logger.LogError(ex, IndexingAlreadyRunningLog);
                 }
                 catch (Exception ex)
                 {

@@ -8,6 +8,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Transactions.TransactionLogs;
 
@@ -53,7 +54,16 @@ public class PersistTransactionLogCommandHandler : IRequestHandler<PersistTransa
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Unable to persist {nameof(TransactionLogEntity)}");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "Contract", request.TransactionLog.Contract },
+                { "Hash", request.TransactionLog.TransactionId },
+                { "LogType", request.TransactionLog.LogType },
+                { "SortOrder", request.TransactionLog.SortOrder }
+            }))
+            {
+                _logger.LogError(ex, $"Unable to persist transaction log.");
+            }
             return false;
         }
     }

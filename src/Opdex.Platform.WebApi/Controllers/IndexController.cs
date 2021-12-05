@@ -83,7 +83,8 @@ public class IndexController : ControllerBase
             throw new AlreadyIndexedException("Markets already indexed.");
         }
 
-        await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploy), CancellationToken.None);
+        var locked = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploy), CancellationToken.None);
+        if (!locked) throw new IndexingAlreadyRunningException();
 
         try
         {
@@ -109,7 +110,8 @@ public class IndexController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> Rewind(RewindRequest request)
     {
-        await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewind), CancellationToken.None);
+        var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewind), CancellationToken.None);
+        if (!tryLock) throw new IndexingAlreadyRunningException();
 
         try
         {

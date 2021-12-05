@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -73,7 +74,14 @@ public class PersistTokenCommandHandler : IRequestHandler<PersistTokenCommand, u
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting token {request?.Token?.Address}");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "Contract", request.Token.Address },
+                { "BlockHeight", request.Token.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting token.");
+            }
 
             return 0;
         }

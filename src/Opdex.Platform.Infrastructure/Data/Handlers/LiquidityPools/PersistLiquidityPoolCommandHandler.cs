@@ -5,6 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -56,7 +57,14 @@ public class PersistLiquidityPoolCommandHandler : IRequestHandler<PersistLiquidi
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Unable to persist {request.Pool}");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "Contract", request.Pool.Address },
+                { "BlockHeight", request.Pool.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Unable to persist liquidity pool.");
+            }
             return 0;
         }
     }

@@ -37,6 +37,6 @@ public class SelectActiveDeployerQueryHandler : IRequestHandler<SelectActiveDepl
 
         var result = await _context.ExecuteFindAsync<DeployerEntity>(command);
 
-        return _mapper.Map<Deployer>(result);
+        return result is not null ? _mapper.Map<Deployer>(result) : null;
     }
 }

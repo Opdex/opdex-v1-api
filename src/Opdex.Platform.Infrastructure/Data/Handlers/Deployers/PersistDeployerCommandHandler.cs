@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -68,7 +69,14 @@ public class PersistDeployerCommandHandler : IRequestHandler<PersistDeployerComm
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting {request.Deployer}.");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "Contract", request.Deployer.Address },
+                { "BlockHeight", request.Deployer.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting market deployer.");
+            }
 
             return 0;
         }
