@@ -4,8 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Certificates;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
@@ -28,33 +31,59 @@ public class ProcessRevokeVaultCertificateLogCommandHandler : IRequestHandler<Pr
         try
         {
             var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(request.Log.Contract, findOrThrow: false));
-            if (vault == null) return false;
 
-            if (request.BlockHeight >= vault.ModifiedBlock)
+            if (vault != null)
             {
-                var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
-
-                if (vaultId <= 0)
+                if (request.BlockHeight >= vault.ModifiedBlock)
                 {
-                    _logger.LogWarning($"Unexpected error updating vault supply by address: {vault.Address}");
+                    var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
+
+                    if (vaultId <= 0)
+                    {
+                        _logger.LogWarning($"Unexpected error updating vault supply by address: {vault.Address}");
+                    }
                 }
+
+                var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
+
+                // Select certificates using the vestedBlock as an Id
+                var certificateToUpdate = certificates.SingleOrDefault(c => c.VestedBlock == request.Log.VestedBlock);
+
+                if (certificateToUpdate == null) return false;
+
+                if (request.BlockHeight >= certificateToUpdate.ModifiedBlock)
+                {
+                    certificateToUpdate.Revoke(request.Log, request.BlockHeight);
+
+                    await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true));
+
+                    return await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate));
+                }
+
+                return true;
             }
 
-            var certificates = await _mediator.Send(new RetrieveVaultCertificatesByOwnerAddressQuery(request.Log.Owner));
+            // Else handle certificates for the new vault contract
+            var vaultGovernance = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Log.Contract, findOrThrow: false));
+            if (vaultGovernance == null) return false;
+
+            var certs = await _mediator.Send(new RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQuery(vaultGovernance.Id, request.Log.Owner));
 
             // Select certificates using the vestedBlock as an Id
-            var certificateToUpdate = certificates.SingleOrDefault(c => c.VestedBlock == request.Log.VestedBlock);
+            var certToUpdate = certs.SingleOrDefault(c => c.VestedBlock == request.Log.VestedBlock);
 
-            if (certificateToUpdate == null)
+            if (certToUpdate == null) return false;
+
+            if (request.BlockHeight >= certToUpdate.ModifiedBlock)
             {
-                return false;
-            }
+                certToUpdate.Revoke(request.Log, request.BlockHeight);
 
-            if (request.BlockHeight >= certificateToUpdate.ModifiedBlock)
-            {
-                certificateToUpdate.Revoke(request.Log, request.BlockHeight);
+                var refreshedSupply = await _mediator.Send(new MakeVaultGovernanceCommand(vaultGovernance, request.BlockHeight,
+                                                                                          refreshUnassignedSupply: true)) > 0;
 
-                return await _mediator.Send(new MakeVaultCertificateCommand(certificateToUpdate));
+                if (!refreshedSupply) _logger.LogError("Failure to update vault unassigned supply after revoking certificate.");
+
+                return await _mediator.Send(new MakeVaultGovernanceCertificateCommand(certToUpdate)) > 0;
             }
 
             return true;

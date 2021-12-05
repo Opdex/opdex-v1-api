@@ -15,6 +15,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
+using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
@@ -176,6 +177,13 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
                     TransactionLogType.RedeemVaultCertificateLog => await _mediator.Send(new ProcessRedeemVaultCertificateLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.ClaimPendingVaultOwnershipLog => await _mediator.Send(new ProcessClaimPendingVaultOwnershipLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.SetPendingVaultOwnershipLog => await _mediator.Send(new ProcessSetPendingVaultOwnershipLogCommand(log, tx.From, tx.BlockHeight)),
+                    // Vault Governance
+                    TransactionLogType.CompleteVaultProposalLog => await _mediator.Send(new ProcessCompleteVaultProposalLogCommand(log, tx.From, tx.BlockHeight)),
+                    TransactionLogType.CreateVaultProposalLog => await _mediator.Send(new ProcessCreateVaultProposalLogCommand(log, tx.From, tx.BlockHeight)),
+                    TransactionLogType.VaultProposalPledgeLog => await _mediator.Send(new ProcessVaultProposalPledgeLogCommand(log, tx.From, tx.BlockHeight)),
+                    TransactionLogType.VaultProposalWithdrawPledgeLog => await _mediator.Send(new ProcessVaultProposalWithdrawPledgeLogCommand(log, tx.From, tx.BlockHeight)),
+                    TransactionLogType.VaultProposalVoteLog => await _mediator.Send(new ProcessVaultProposalVoteLogCommand(log, tx.From, tx.BlockHeight)),
+                    TransactionLogType.VaultProposalWithdrawVoteLog => await _mediator.Send(new ProcessVaultProposalWithdrawVoteLogCommand(log, tx.From, tx.BlockHeight)),
 
                     // Else
                     _ => throw new ArgumentOutOfRangeException(nameof(TransactionLogType), "Unknown transaction log type.")

@@ -18,4 +18,5 @@ public class VaultProposalEntity : AuditEntity
     public ulong YesAmount { get; set; }
     public ulong NoAmount { get; set; }
     public ulong PledgeAmount { get; set; }
+    public bool Approved { get; set; }
 }

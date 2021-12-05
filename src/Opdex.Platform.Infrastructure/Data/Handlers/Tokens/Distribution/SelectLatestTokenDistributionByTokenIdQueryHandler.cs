@@ -11,7 +11,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Distributio
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Distribution;
 
-public class SelectLatestTokenDistributionQueryHandler : IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>
+public class SelectLatestTokenDistributionByTokenIdQueryHandler : IRequestHandler<SelectLatestTokenDistributionByTokenIdQuery, TokenDistribution>
 {
     private static readonly string SqlQuery =
         @$"SELECT
@@ -25,21 +25,22 @@ public class SelectLatestTokenDistributionQueryHandler : IRequestHandler<SelectL
                 {nameof(TokenDistributionEntity.CreatedBlock)},
                 {nameof(TokenDistributionEntity.ModifiedBlock)}
             FROM token_distribution
+            WHERE {nameof(TokenDistributionEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             ORDER BY {nameof(TokenDistributionEntity.NextDistributionBlock)} DESC
             LIMIT 1;";
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
 
-    public SelectLatestTokenDistributionQueryHandler(IDbContext context, IMapper mapper)
+    public SelectLatestTokenDistributionByTokenIdQueryHandler(IDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<TokenDistribution> Handle(SelectLatestTokenDistributionQuery request, CancellationToken cancellationToken)
+    public async Task<TokenDistribution> Handle(SelectLatestTokenDistributionByTokenIdQuery request, CancellationToken cancellationToken)
     {
-        var query = DatabaseQuery.Create(SqlQuery, cancellationToken);
+        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.TokenId), cancellationToken);
 
         var result = await _context.ExecuteFindAsync<TokenDistributionEntity>(query);
 
@@ -49,5 +50,15 @@ public class SelectLatestTokenDistributionQueryHandler : IRequestHandler<SelectL
         }
 
         return result == null ? null : _mapper.Map<TokenDistribution>(result);
+    }
+
+    private class SqlParams
+    {
+        public SqlParams(ulong tokenId)
+        {
+            TokenId = tokenId;
+        }
+
+        public ulong TokenId { get; }
     }
 }

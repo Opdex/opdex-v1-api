@@ -19,6 +19,7 @@ using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.LiquidityPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
+using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.VaultGovernances;
@@ -192,7 +193,7 @@ public class PlatformInfrastructureMapperProfile : Profile
         CreateMap<VaultProposalEntity, VaultProposal>()
             .ConstructUsing(src => new VaultProposal(src.Id, src.PublicId, src.VaultGovernanceId, src.Creator, src.Wallet, src.Amount, src.Description,
                                                      (VaultProposalType)src.ProposalTypeId, (VaultProposalStatus)src.ProposalStatusId, src.Expiration,
-                                                     src.YesAmount, src.NoAmount, src.PledgeAmount, src.CreatedBlock, src.ModifiedBlock))
+                                                     src.YesAmount, src.NoAmount, src.PledgeAmount, src.Approved, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposalPledgeEntity, VaultProposalPledge>()
@@ -203,11 +204,6 @@ public class PlatformInfrastructureMapperProfile : Profile
         CreateMap<VaultProposalVoteEntity, VaultProposalVote>()
             .ConstructUsing(src => new VaultProposalVote(src.Id, src.VaultGovernanceId, src.ProposalId, src.Voter, src.Vote, src.Balance, src.InFavor,
                                                          src.CreatedBlock, src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
-
-        CreateMap<VaultGovernanceCertificateEntity, VaultGovernanceCertificate>()
-            .ConstructUsing(src => new VaultGovernanceCertificate(src.Id, src.VaultGovernanceId, src.Owner, src.Amount, src.VestedBlock, src.Redeemed,
-                                                                  src.Revoked, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultGovernanceEntity, VaultGovernance>()
@@ -262,6 +258,14 @@ public class PlatformInfrastructureMapperProfile : Profile
                     (int)TransactionLogType.RevokeVaultCertificateLog => new RevokeVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.RedeemVaultCertificateLog => new RedeemVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
+                    // Vault Governance
+                    (int)TransactionLogType.CompleteVaultProposalLog => new CompleteVaultProposalLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                    (int)TransactionLogType.CreateVaultProposalLog => new CreateVaultProposalLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                    (int)TransactionLogType.VaultProposalPledgeLog => new VaultProposalPledgeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                    (int)TransactionLogType.VaultProposalWithdrawPledgeLog => new VaultProposalWithdrawPledgeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                    (int)TransactionLogType.VaultProposalVoteLog => new VaultProposalVoteLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+                    (int)TransactionLogType.VaultProposalWithdrawVoteLog => new VaultProposalWithdrawVoteLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
+
                     // Else
                     _ => null
                 };
@@ -314,6 +318,14 @@ public class PlatformInfrastructureMapperProfile : Profile
                     nameof(CreateVaultCertificateLog) => new CreateVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(RevokeVaultCertificateLog) => new RevokeVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(RedeemVaultCertificateLog) => new RedeemVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
+
+                    // Vault Governance
+                    nameof(CompleteVaultProposalLog) => new CompleteVaultProposalLog(src.Log.Data, src.Address, src.SortOrder),
+                    nameof(CreateVaultProposalLog) => new CreateVaultProposalLog(src.Log.Data, src.Address, src.SortOrder),
+                    nameof(VaultProposalPledgeLog) => new VaultProposalPledgeLog(src.Log.Data, src.Address, src.SortOrder),
+                    nameof(VaultProposalWithdrawPledgeLog) => new VaultProposalWithdrawPledgeLog(src.Log.Data, src.Address, src.SortOrder),
+                    nameof(VaultProposalVoteLog) => new VaultProposalVoteLog(src.Log.Data, src.Address, src.SortOrder),
+                    nameof(VaultProposalWithdrawVoteLog) => new VaultProposalWithdrawVoteLog(src.Log.Data, src.Address, src.SortOrder),
 
                     // Else
                     _ => null
@@ -646,6 +658,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.YesAmount, opt => opt.MapFrom(src => src.YesAmount))
             .ForMember(dest => dest.NoAmount, opt => opt.MapFrom(src => src.NoAmount))
             .ForMember(dest => dest.PledgeAmount, opt => opt.MapFrom(src => src.PledgeAmount))
+            .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
@@ -669,18 +682,6 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Vote, opt => opt.MapFrom(src => src.Vote))
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
             .ForMember(dest => dest.InFavor, opt => opt.MapFrom(src => src.InFavor))
-            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
-            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
-            .ForAllOtherMembers(opt => opt.Ignore());
-
-        CreateMap<VaultGovernanceCertificate, VaultGovernanceCertificateEntity>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.VaultGovernanceId, opt => opt.MapFrom(src => src.VaultGovernanceId))
-            .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
-            .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
-            .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock))
-            .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
-            .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());

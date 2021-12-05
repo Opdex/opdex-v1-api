@@ -124,6 +124,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Model
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Data.Handlers.Tokens.Attributes;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
+using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.VaultGovernances;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Auth;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
@@ -132,6 +133,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.C
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Pledges;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Votes;
+using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.VaultGovernances;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Certificates;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Pledges;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Proposals;
@@ -274,7 +276,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectTokensWithFilterQuery, IEnumerable<Token>>, SelectTokensWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshot>>, SelectTokenSnapshotsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>, SelectTokenSnapshotWithFilterQueryHandler>();
-        services.AddTransient<IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>, SelectLatestTokenDistributionQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectLatestTokenDistributionByTokenIdQuery, TokenDistribution>, SelectLatestTokenDistributionByTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, SelectTokenAttributesByTokenIdQueryHandler>();
 
@@ -303,12 +305,14 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectVaultByIdQuery, Vault>, SelectVaultByIdQueryHandler>();
 
         // Vault Governance
-        services.AddTransient<IRequestHandler<SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery, IEnumerable<VaultGovernanceCertificate>>, SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery, IEnumerable<VaultCertificate>>, SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery, VaultProposalPledge>, SelectVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery, VaultProposalVote>, SelectVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultProposalByVaultIdAndPublicIdQuery, VaultProposal>, SelectVaultProposalByVaultIdAndPublicIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultGovernanceByAddressQuery, VaultGovernance>, SelectVaultGovernanceByAddressQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultGovernanceByIdQuery, VaultGovernance>, SelectVaultGovernanceByIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultProposalByIdQuery, VaultProposal>, SelectVaultProposalByIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultGovernanceByTokenIdQuery, VaultGovernance>, SelectVaultGovernanceByTokenIdQueryHandler>();
 
         // Addresses
         services.AddTransient<IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>, SelectAddressBalanceByOwnerAndTokenIdQueryHandler>();
@@ -373,6 +377,9 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<CallCirrusGetVaultContractCertificateSummariesByOwnerQuery, IEnumerable<VaultContractCertificateSummary>>, CallCirrusGetVaultContractCertificateSummariesByOwnerQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusGetMarketPermissionAuthorizationQuery, bool>, CallCirrusGetMarketPermissionAuthorizationQueryHandler>();
         services.AddTransient<IRequestHandler<CallCirrusVerifyMessageQuery, bool>, CallCirrusVerifyMessageQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetVaultProposalSummaryByProposalIdQuery, VaultProposalSummary>, CallCirrusGetVaultProposalSummaryByProposalIdQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetVaultProposalVoteSummaryByProposalIdAndVoterQuery, VaultProposalVoteSummary>, CallCirrusGetVaultProposalVoteSummaryByProposalIdAndVoterQueryHandler>();
+        services.AddTransient<IRequestHandler<CallCirrusGetVaultProposalPledgeByProposalIdAndPledgerQuery, ulong>, CallCirrusGetVaultProposalPledgeByProposalIdAndPledgerQueryHandler>();
 
         // Commands
         services.AddTransient<IRequestHandler<CallCirrusCallSmartContractMethodCommand, Sha256>, CallCirrusCallSmartContractMethodCommandHandler>();

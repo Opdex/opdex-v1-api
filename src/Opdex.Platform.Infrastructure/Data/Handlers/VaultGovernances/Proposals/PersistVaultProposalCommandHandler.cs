@@ -28,6 +28,7 @@ public class PersistVaultProposalCommandHandler : IRequestHandler<PersistVaultPr
                 {nameof(VaultProposalEntity.YesAmount)},
                 {nameof(VaultProposalEntity.NoAmount)},
                 {nameof(VaultProposalEntity.PledgeAmount)},
+                {nameof(VaultProposalEntity.Approved)},
                 {nameof(VaultProposalEntity.CreatedBlock)},
                 {nameof(VaultProposalEntity.ModifiedBlock)}
               ) VALUES (
@@ -43,6 +44,7 @@ public class PersistVaultProposalCommandHandler : IRequestHandler<PersistVaultPr
                 @{nameof(VaultProposalEntity.YesAmount)},
                 @{nameof(VaultProposalEntity.NoAmount)},
                 @{nameof(VaultProposalEntity.PledgeAmount)},
+                @{nameof(VaultProposalEntity.Approved)},
                 @{nameof(VaultProposalEntity.CreatedBlock)},
                 @{nameof(VaultProposalEntity.ModifiedBlock)}
               );
@@ -56,6 +58,7 @@ public class PersistVaultProposalCommandHandler : IRequestHandler<PersistVaultPr
                     {nameof(VaultProposalEntity.YesAmount)} = @{nameof(VaultProposalEntity.YesAmount)},
                     {nameof(VaultProposalEntity.NoAmount)} = @{nameof(VaultProposalEntity.NoAmount)},
                     {nameof(VaultProposalEntity.PledgeAmount)} = @{nameof(VaultProposalEntity.PledgeAmount)},
+                    {nameof(VaultProposalEntity.Approved)} = @{nameof(VaultProposalEntity.Approved)},
                     {nameof(VaultProposalEntity.ModifiedBlock)} = @{nameof(VaultProposalEntity.ModifiedBlock)}
                 WHERE {nameof(VaultProposalEntity.Id)} = @{nameof(VaultProposalEntity.Id)};".RemoveExcessWhitespace();
 

@@ -14,7 +14,7 @@ public class VaultProposalPledgeLog : TransactionLog
         ulong pledgeAmount = (ulong)log?.pledgeAmount;
         ulong pledgerAmount = (ulong)log?.pledgerAmount;
         ulong proposalPledgeAmount = (ulong)log?.proposalPledgeAmount;
-        bool pledgeMinimumMet = (bool)log?.pledgeMinimumMet;
+        bool totalPledgeMinimumMet = (bool)log?.totalPledgeMinimumMet;
 
         if (proposalId < 1) throw new ArgumentOutOfRangeException(nameof(proposalId), "Proposal id must be greater than 0.");
         if (pledger == Address.Empty) throw new ArgumentNullException(nameof(pledger), "Pledger must be set.");
@@ -27,7 +27,7 @@ public class VaultProposalPledgeLog : TransactionLog
         PledgeAmount = pledgeAmount;
         PledgerAmount = pledgerAmount;
         ProposalPledgeAmount = proposalPledgeAmount;
-        PledgeMinimumMet = pledgeMinimumMet;
+        TotalPledgeMinimumMet = totalPledgeMinimumMet;
     }
 
     public VaultProposalPledgeLog(ulong id, ulong transactionId, Address address, int sortOrder, string details)
@@ -39,7 +39,7 @@ public class VaultProposalPledgeLog : TransactionLog
         PledgeAmount = logDetails.PledgeAmount;
         PledgerAmount = logDetails.PledgerAmount;
         ProposalPledgeAmount = logDetails.ProposalPledgeAmount;
-        PledgeMinimumMet = logDetails.PledgeMinimumMet;
+        TotalPledgeMinimumMet = logDetails.TotalPledgeMinimumMet;
     }
 
     public ulong ProposalId { get; }
@@ -47,7 +47,7 @@ public class VaultProposalPledgeLog : TransactionLog
     public ulong PledgeAmount { get; }
     public ulong PledgerAmount { get; }
     public ulong ProposalPledgeAmount { get; }
-    public bool PledgeMinimumMet { get; }
+    public bool TotalPledgeMinimumMet { get; }
 
     private struct LogDetails
     {
@@ -56,7 +56,7 @@ public class VaultProposalPledgeLog : TransactionLog
         public ulong PledgeAmount { get; set; }
         public ulong PledgerAmount { get; set; }
         public ulong ProposalPledgeAmount { get; set; }
-        public bool PledgeMinimumMet { get; set; }
+        public bool TotalPledgeMinimumMet { get; set; }
     }
 
     private static LogDetails DeserializeLogDetails(string details)
@@ -73,7 +73,7 @@ public class VaultProposalPledgeLog : TransactionLog
             PledgeAmount = PledgeAmount,
             PledgerAmount = PledgerAmount,
             ProposalPledgeAmount = ProposalPledgeAmount,
-            PledgeMinimumMet = PledgeMinimumMet
+            TotalPledgeMinimumMet = TotalPledgeMinimumMet
         });
     }
 }

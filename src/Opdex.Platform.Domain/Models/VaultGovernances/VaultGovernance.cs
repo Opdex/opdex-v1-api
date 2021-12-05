@@ -1,6 +1,7 @@
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.Blocks;
+using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using System;
 
 namespace Opdex.Platform.Domain.Models.VaultGovernances;
@@ -48,9 +49,24 @@ public class VaultGovernance : BlockAudit
 
         if (summary.UnassignedSupply.HasValue) UnassignedSupply = summary.UnassignedSupply.Value;
         if (summary.ProposedSupply.HasValue) ProposedSupply = summary.ProposedSupply.Value;
-        if (summary.ProposedSupply.HasValue) ProposedSupply = summary.ProposedSupply.Value;
         if (summary.TotalPledgeMinimum.HasValue) TotalPledgeMinimum = summary.TotalPledgeMinimum.Value;
         if (summary.TotalVoteMinimum.HasValue) TotalVoteMinimum = summary.TotalVoteMinimum.Value;
         SetModifiedBlock(summary.BlockHeight);
+    }
+
+    public void Update(CompleteVaultProposalLog log, VaultProposal proposal, ulong blockHeight)
+    {
+        var isPledgeMinimum = proposal.Type == VaultProposalType.TotalPledgeMinimum;
+        var isVoteMinimum = proposal.Type == VaultProposalType.TotalVoteMinimum;
+
+        if (!log.Approved || (!isPledgeMinimum && !isVoteMinimum))
+        {
+            return;
+        }
+
+        if (isPledgeMinimum) TotalPledgeMinimum = (ulong)proposal.Amount;
+        if (isVoteMinimum) TotalVoteMinimum = (ulong)proposal.Amount;
+
+        SetModifiedBlock(blockHeight);
     }
 }

@@ -17,6 +17,7 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Markets;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
+using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
@@ -24,7 +25,6 @@ using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Domain.Models.Admins;
 using Opdex.Platform.Domain.Models.LiquidityPools;
@@ -35,8 +35,10 @@ using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Domain.Models.TransactionLogs.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MiningPools;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
+using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
+using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Linq;
 
@@ -323,6 +325,63 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.NewAmount, opt => opt.MapFrom(src => src.NewAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
             .ForMember(dest => dest.Holder, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock));
+
+        // Vault Governance Events
+        CreateMap<CompleteVaultProposalLog, CompleteVaultProposalEventDto>()
+            .IncludeBase<TransactionLog, TransactionEventDto>()
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
+            .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved));
+
+        CreateMap<CreateVaultProposalLog, CreateVaultProposalEventDto>()
+            .IncludeBase<TransactionLog, TransactionEventDto>()
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
+            .ForMember(dest => dest.Wallet, opt => opt.MapFrom(src => src.Wallet))
+            .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.ToDecimal(src.Type == VaultProposalType.Create ||
+                                                                                           src.Type == VaultProposalType.Revoke
+                                                                                               ? TokenConstants.Opdex.Decimals
+                                                                                               : TokenConstants.Cirrus.Decimals)))
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.Expiration, opt => opt.MapFrom(src => src.Expiration))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
+
+        CreateMap<VaultProposalPledgeLog, VaultProposalPledgeEventDto>()
+            .IncludeBase<TransactionLog, TransactionEventDto>()
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
+            .ForMember(dest => dest.Pledger, opt => opt.MapFrom(src => src.Pledger))
+            .ForMember(dest => dest.PledgeAmount, opt => opt.MapFrom(src => src.PledgeAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.PledgerAmount, opt => opt.MapFrom(src => src.PledgerAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.ProposalPledgeAmount, opt => opt.MapFrom(src => src.ProposalPledgeAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.TotalPledgeMinimumMet, opt => opt.MapFrom(src => src.TotalPledgeMinimumMet));
+
+        CreateMap<VaultProposalWithdrawPledgeLog, VaultProposalWithdrawPledgeEventDto>()
+            .IncludeBase<TransactionLog, TransactionEventDto>()
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
+            .ForMember(dest => dest.Pledger, opt => opt.MapFrom(src => src.Pledger))
+            .ForMember(dest => dest.WithdrawAmount, opt => opt.MapFrom(src => src.WithdrawAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.PledgerAmount, opt => opt.MapFrom(src => src.PledgerAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.ProposalPledgeAmount, opt => opt.MapFrom(src => src.ProposalPledgeAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.PledgeWithdrawn, opt => opt.MapFrom(src => src.PledgeWithdrawn));
+
+        CreateMap<VaultProposalVoteLog, VaultProposalVoteEventDto>()
+            .IncludeBase<TransactionLog, TransactionEventDto>()
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
+            .ForMember(dest => dest.Voter, opt => opt.MapFrom(src => src.Voter))
+            .ForMember(dest => dest.VoteAmount, opt => opt.MapFrom(src => src.VoteAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.VoterAmount, opt => opt.MapFrom(src => src.VoterAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.ProposalYesAmount, opt => opt.MapFrom(src => src.ProposalYesAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.ProposalNoAmount, opt => opt.MapFrom(src => src.ProposalNoAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.InFavor, opt => opt.MapFrom(src => src.InFavor));
+
+        CreateMap<VaultProposalWithdrawVoteLog, VaultProposalWithdrawVoteEventDto>()
+            .IncludeBase<TransactionLog, TransactionEventDto>()
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
+            .ForMember(dest => dest.Voter, opt => opt.MapFrom(src => src.Voter))
+            .ForMember(dest => dest.WithdrawAmount, opt => opt.MapFrom(src => src.WithdrawAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.VoterAmount, opt => opt.MapFrom(src => src.VoterAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.ProposalYesAmount, opt => opt.MapFrom(src => src.ProposalYesAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.ProposalNoAmount, opt => opt.MapFrom(src => src.ProposalNoAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
+            .ForMember(dest => dest.VoteWithdrawn, opt => opt.MapFrom(src => src.VoteWithdrawn));
 
         CreateMap<TransactionQuote, TransactionQuoteDto>()
             .ForMember(dest => dest.Result, opt => opt.MapFrom(src => src.Result))

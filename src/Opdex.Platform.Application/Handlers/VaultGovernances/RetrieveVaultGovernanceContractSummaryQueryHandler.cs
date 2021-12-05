@@ -63,6 +63,16 @@ public class RetrieveVaultGovernanceContractSummaryQueryHandler : IRequestHandle
             summary.SetTotalVoteMinimum(totalVoteMinimum);
         }
 
+        if (request.IncludeVestingDuration)
+        {
+            var vestingDuration = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
+                                                                                                   VaultGovernanceConstants.StateKeys.VestingDuration,
+                                                                                                   SmartContractParameterType.UInt64,
+                                                                                                   request.BlockHeight), cancellationToken);
+
+            summary.SetVestingDuration(vestingDuration);
+        }
+
         return summary;
     }
 }
