@@ -32,6 +32,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Route("deploy")]
+[ApiVersion("1.0")]
 public class DeployController : ControllerBase
 {
     private readonly IMediator _mediator;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -11,7 +10,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
-using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests;
@@ -25,6 +23,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Authorize]
 [Route("tokens")]
+[ApiVersion("1.0")]
 public class TokensController : ControllerBase
 {
     private readonly IMediator _mediator;

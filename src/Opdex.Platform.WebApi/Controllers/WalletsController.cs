@@ -20,6 +20,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Authorize]
 [Route("wallets")]
+[ApiVersion("1.0")]
 public class WalletsController : ControllerBase
 {
     private readonly IMediator _mediator;

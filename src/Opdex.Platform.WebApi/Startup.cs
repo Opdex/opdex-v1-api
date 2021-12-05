@@ -50,6 +50,7 @@ using AspNetCoreRateLimit;
 using Opdex.Platform.WebApi.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Common.Encryption;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 namespace Opdex.Platform.WebApi;
 
@@ -95,6 +96,14 @@ public class Startup
                 var environment = context.RequestServices.GetRequiredService<IHostEnvironment>();
                 return environment.IsDevelopment();
             };
+        });
+
+        services.AddApiVersioning(options =>
+        {
+            options.AssumeDefaultVersionWhenUnspecified = true;
+            options.DefaultApiVersion = new ApiVersion(1, 0);
+            options.ApiVersionReader = new HeaderApiVersionReader("Api-Version");
+            options.ReportApiVersions = true;
         });
 
         var serializerSettings = Serialization.DefaultJsonSettings;

@@ -26,6 +26,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Route("auth")]
+[ApiVersion("1.0")]
 public class AuthController : ControllerBase
 {
     private readonly OpdexConfiguration _opdexConfiguration;

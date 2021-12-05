@@ -19,6 +19,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Authorize]
 [Route("vaults")]
+[ApiVersion("1.0")]
 public class VaultsController : ControllerBase
 {
     private readonly IApplicationContext _context;

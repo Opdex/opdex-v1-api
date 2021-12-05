@@ -19,6 +19,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Authorize]
 [Route("mining-pools")]
+[ApiVersion("1.0")]
 public class MiningPoolsController : ControllerBase
 {
     private readonly IMapper _mapper;

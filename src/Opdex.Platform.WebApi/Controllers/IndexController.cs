@@ -23,6 +23,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Route("index")]
+[ApiVersion("1.0")]
 public class IndexController : ControllerBase
 {
     private readonly IMapper _mapper;

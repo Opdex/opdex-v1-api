@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.WebApi.Models.Responses.Status;
 
@@ -8,6 +7,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 
 [ApiController]
 [Route("status")]
+[ApiVersion("1.0")]
 public class StatusController : ControllerBase
 {
     private readonly OpdexConfiguration _opdexConfiguration;
