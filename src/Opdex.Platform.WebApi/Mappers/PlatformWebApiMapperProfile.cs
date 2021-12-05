@@ -587,7 +587,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.PledgeAmount, opt => opt.MapFrom(src => src.PledgeAmount))
             .ForMember(dest => dest.PledgerAmount, opt => opt.MapFrom(src => src.PledgerAmount))
             .ForMember(dest => dest.ProposalPledgeAmount, opt => opt.MapFrom(src => src.ProposalPledgeAmount))
-            .ForMember(dest => dest.PledgeMinimumMet, opt => opt.MapFrom(src => src.PledgeMinimumMet));
+            .ForMember(dest => dest.TotalPledgeMinimumMet, opt => opt.MapFrom(src => src.TotalPledgeMinimumMet));
 
         CreateMap<VaultProposalWithdrawPledgeEventDto, VaultProposalWithdrawPledgeEvent>()
             .IncludeBase<TransactionEventDto, TransactionEvent>()

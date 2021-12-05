@@ -10,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 /// </summary>
 public class RetrieveVaultGovernanceContractSummaryQuery : IRequest<VaultGovernanceContractSummary>
 {
-    public RetrieveVaultGovernanceContractSummaryQuery(Address vaultGovernance, ulong blockHeight,
+    public RetrieveVaultGovernanceContractSummaryQuery(Address vaultGovernance, ulong blockHeight, bool includeVestingDuration = false,
                                                        bool includeUnassignedSupply = false, bool includeProposedSupply = false,
                                                        bool includeTotalPledgeMinimum = false, bool includeTotalVoteMinimum = false)
     {
@@ -19,6 +19,7 @@ public class RetrieveVaultGovernanceContractSummaryQuery : IRequest<VaultGoverna
 
         VaultGovernance = vaultGovernance;
         BlockHeight = blockHeight;
+        IncludeVestingDuration = includeVestingDuration;
         IncludeUnassignedSupply = includeUnassignedSupply;
         IncludeProposedSupply = includeProposedSupply;
         IncludeTotalPledgeMinimum = includeTotalPledgeMinimum;
@@ -27,6 +28,7 @@ public class RetrieveVaultGovernanceContractSummaryQuery : IRequest<VaultGoverna
 
     public Address VaultGovernance { get; }
     public ulong BlockHeight { get; }
+    public bool IncludeVestingDuration { get; }
     public bool IncludeUnassignedSupply { get; }
     public bool IncludeProposedSupply { get; }
     public bool IncludeTotalPledgeMinimum { get; }

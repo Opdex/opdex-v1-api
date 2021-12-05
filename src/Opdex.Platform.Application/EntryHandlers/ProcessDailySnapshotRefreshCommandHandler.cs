@@ -45,7 +45,9 @@ public class ProcessDailySnapshotRefreshCommandHandler : IRequestHandler<Process
 
                 if (stakingToken == null) continue;
 
-                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(stakingToken.Id, market.Id));
+                var liquidityPool = await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(stakingToken.Id, market.Id, findOrThrow: false));
+
+                if (liquidityPool == null) continue;
 
                 var lpToken = await _mediator.Send(new RetrieveTokenByIdQuery(liquidityPool.LpTokenId, findOrThrow: false));
 

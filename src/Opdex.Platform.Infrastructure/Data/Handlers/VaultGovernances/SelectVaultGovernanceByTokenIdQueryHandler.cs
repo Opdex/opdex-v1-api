@@ -1,7 +1,6 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Common.Exceptions;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
@@ -13,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
 
-public class SelectVaultGovernanceByAddressQueryHandler : IRequestHandler<SelectVaultGovernanceByAddressQuery, VaultGovernance>
+public class SelectVaultGovernanceByTokenIdQueryHandler : IRequestHandler<SelectVaultGovernanceByTokenIdQuery, VaultGovernance>
 {
     private static readonly string SqlQuery =
         @$"SELECT
@@ -28,21 +27,21 @@ public class SelectVaultGovernanceByAddressQueryHandler : IRequestHandler<Select
                 {nameof(VaultGovernanceEntity.CreatedBlock)},
                 {nameof(VaultGovernanceEntity.ModifiedBlock)}
             FROM vault_governance
-            WHERE {nameof(VaultGovernanceEntity.Address)} = @{nameof(SqlParams.VaultAddress)}
+            WHERE {nameof(VaultGovernanceEntity.TokenId)} = @{nameof(SqlParams.TokenId)}
             LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
 
-    public SelectVaultGovernanceByAddressQueryHandler(IDbContext context, IMapper mapper)
+    public SelectVaultGovernanceByTokenIdQueryHandler(IDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<VaultGovernance> Handle(SelectVaultGovernanceByAddressQuery request, CancellationToken cancellationToken)
+    public async Task<VaultGovernance> Handle(SelectVaultGovernanceByTokenIdQuery request, CancellationToken cancellationToken)
     {
-        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.Vault), cancellationToken);
+        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.TokenId), cancellationToken);
 
         var result = await _context.ExecuteFindAsync<VaultGovernanceEntity>(query);
 
@@ -56,11 +55,12 @@ public class SelectVaultGovernanceByAddressQueryHandler : IRequestHandler<Select
 
     private sealed class SqlParams
     {
-        internal SqlParams(Address vaultAddress)
+        internal SqlParams(ulong tokenId)
         {
-            VaultAddress = vaultAddress;
+            TokenId = tokenId;
         }
 
-        public Address VaultAddress { get; }
+        public ulong TokenId { get; }
     }
 }
+

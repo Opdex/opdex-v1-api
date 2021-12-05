@@ -28,7 +28,7 @@ public class VaultProposal : BlockAudit
 
     public VaultProposal(ulong id, ulong publicId, ulong vaultGovernanceId, Address creator, Address wallet, UInt256 amount, string description,
                          VaultProposalType type, VaultProposalStatus status, ulong expiration, ulong yesAmount, ulong noAmount, ulong pledgeAmount,
-                         ulong createdBlock, ulong modifiedBlock)
+                         bool approved, ulong createdBlock, ulong modifiedBlock)
         : base(createdBlock, modifiedBlock)
     {
         Id = id;
@@ -44,6 +44,7 @@ public class VaultProposal : BlockAudit
         YesAmount = yesAmount;
         NoAmount = noAmount;
         PledgeAmount = pledgeAmount;
+        Approved = approved;
     }
 
     public ulong Id { get; }
@@ -59,6 +60,7 @@ public class VaultProposal : BlockAudit
     public ulong YesAmount { get; private set; }
     public ulong NoAmount { get; private set; }
     public ulong PledgeAmount { get; private set; }
+    public bool Approved { get; private set; }
 
     public void Update(VaultProposalSummary summary, ulong blockHeight)
     {
@@ -80,7 +82,7 @@ public class VaultProposal : BlockAudit
 
     public void Update(VaultProposalPledgeLog log, ulong blockHeight)
     {
-        if (log.PledgeMinimumMet) Status = VaultProposalStatus.Vote;
+        if (log.TotalPledgeMinimumMet) Status = VaultProposalStatus.Vote;
         PledgeAmount = log.ProposalPledgeAmount;
         SetModifiedBlock(blockHeight);
     }
@@ -101,6 +103,7 @@ public class VaultProposal : BlockAudit
     public void Update(CompleteVaultProposalLog log, ulong blockHeight)
     {
         Status = VaultProposalStatus.Complete;
+        Approved = log.Approved;
         SetModifiedBlock(blockHeight);
     }
 }

@@ -59,7 +59,7 @@ public class ProcessMarketSnapshotsCommandHandler : IRequestHandler<ProcessMarke
                 return await _mediator.Send(new RetrieveLiquidityPoolSnapshotWithFilterQuery(pool.Id, request.BlockTime, SnapshotType));
             }));
 
-            snapshots.AddRange(chunkSnapshots);
+            snapshots.AddRange(chunkSnapshots.Where(snapshot => snapshot.Id > 0));
         }
 
         // Apply LP snapshot to market snapshot

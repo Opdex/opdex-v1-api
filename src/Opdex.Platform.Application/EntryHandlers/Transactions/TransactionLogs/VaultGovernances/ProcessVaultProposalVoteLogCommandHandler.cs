@@ -40,15 +40,20 @@ public class ProcessVaultProposalVoteLogCommandHandler : IRequestHandler<Process
                                                                                                              request.Log.Voter,
                                                                                                              findOrThrow: false));
 
-            vote ??= new VaultProposalVote(vault.Id, request.Log.ProposalId, request.Log.Voter, request.Log.VoteAmount,
-                                           request.Log.VoterAmount, request.Log.InFavor, request.BlockHeight);
-
-            if (request.BlockHeight < vote.ModifiedBlock)
+            if (vote == null)
             {
-                return true;
+                vote = new VaultProposalVote(vault.Id, proposal.Id, request.Log.Voter, request.Log.VoteAmount,
+                                             request.Log.VoterAmount, request.Log.InFavor, request.BlockHeight);
             }
+            else
+            {
+                if (request.BlockHeight < vote.ModifiedBlock)
+                {
+                    return true;
+                }
 
-            vote.Update(request.Log, request.BlockHeight);
+                vote.Update(request.Log, request.BlockHeight);
+            }
 
             var persistedProposal = await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight)) > 0;
             var persistedVote = await _mediator.Send(new MakeVaultProposalVoteCommand(vote, request.BlockHeight)) > 0;

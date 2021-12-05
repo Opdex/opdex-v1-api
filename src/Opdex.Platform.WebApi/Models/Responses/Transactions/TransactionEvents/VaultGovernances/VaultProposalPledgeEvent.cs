@@ -9,5 +9,5 @@ public class VaultProposalPledgeEvent : TransactionEvent
     public FixedDecimal PledgeAmount { get; set; }
     public FixedDecimal PledgerAmount { get; set; }
     public FixedDecimal ProposalPledgeAmount { get; set; }
-    public bool PledgeMinimumMet { get; set; }
+    public bool TotalPledgeMinimumMet { get; set; }
 }

@@ -77,7 +77,7 @@ public class MakeVaultProposalPledgeCommandHandlerTests
         var request = new MakeVaultProposalPledgeCommand(pledge, blockHeight, true);
         var expectedVault = new VaultGovernance(1, "PmH1iT1GLsMroh6zXXNMU9EjmivLgqqARw", 2, 3, 4, 5, 6, 7, 8, 9);
         var expectedProposal = new VaultProposal(1, pledge.ProposalId, 1, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN",
-                                                 2, "Description", VaultProposalType.Create, VaultProposalStatus.Vote, 6, 7, 8, 9, 10, 11);
+                                                 2, "Description", VaultProposalType.Create, VaultProposalStatus.Vote, 6, 7, 8, 9, true, 10, 11);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedVault);

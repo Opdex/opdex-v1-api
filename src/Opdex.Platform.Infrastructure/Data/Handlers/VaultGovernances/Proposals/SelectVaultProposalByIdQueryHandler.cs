@@ -29,6 +29,7 @@ public class SelectVaultProposalByIdQueryHandler : IRequestHandler<SelectVaultPr
                 {nameof(VaultProposalEntity.YesAmount)},
                 {nameof(VaultProposalEntity.NoAmount)},
                 {nameof(VaultProposalEntity.PledgeAmount)},
+                {nameof(VaultProposalEntity.Approved)},
                 {nameof(VaultProposalEntity.CreatedBlock)},
                 {nameof(VaultProposalEntity.ModifiedBlock)}
             FROM vault_proposal

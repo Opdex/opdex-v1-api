@@ -82,10 +82,10 @@ public class MarketSnapshot
         var allValidSnapshots = snapshots.All(s =>
         {
             var isDailyType = s.SnapshotType == SnapshotType.Daily;
-            var sameDay = s.StartDate.Date == StartDate.Date && s.EndDate.Date == EndDate.Date;
+            var sameDayOrPrior = s.StartDate.Date <= StartDate.Date && s.EndDate.Date <= EndDate.Date;
             var uniquePool = snapshots.Count(p => p.LiquidityPoolId == s.LiquidityPoolId) == 1;
 
-            return isDailyType && sameDay && uniquePool;
+            return isDailyType && sameDayOrPrior && uniquePool;
         });
 
         if (!allValidSnapshots)

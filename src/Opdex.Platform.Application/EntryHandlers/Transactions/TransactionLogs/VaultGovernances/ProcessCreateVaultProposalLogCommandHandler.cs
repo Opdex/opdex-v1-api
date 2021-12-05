@@ -39,7 +39,17 @@ public class ProcessCreateVaultProposalLogCommandHandler : IRequestHandler<Proce
                 return true;
             }
 
-            return await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight)) > 0;
+            var proposalUpdated =  await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight)) > 0;
+
+            if (proposal.Type == VaultProposalType.Create)
+            {
+                var vaultUpdated = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight,
+                                                                                       refreshProposedSupply: true)) > 0;
+
+                if (!vaultUpdated) _logger.LogError("Failure updating the vault governance for proposed amount.");
+            }
+
+            return proposalUpdated;
         }
         catch (Exception ex)
         {

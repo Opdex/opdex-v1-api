@@ -48,7 +48,7 @@ public class PersistVaultProposalCommandHandlerTests
         const ulong expectedId = 10ul;
         var proposal = new VaultProposal(expectedId, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000,
                                          "Proposal description", VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000,
-                                         125000000, 40000000, 230000, 50, 500);
+                                         125000000, 40000000, 230000, true, 50, 500);
         var command = new PersistVaultProposalCommand(proposal);
 
         _mapperMock.Setup(callTo => callTo.Map<VaultProposalEntity>(proposal)).Returns(new VaultProposalEntity());

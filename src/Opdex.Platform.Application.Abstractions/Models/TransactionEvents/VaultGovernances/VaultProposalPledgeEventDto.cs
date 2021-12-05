@@ -10,6 +10,6 @@ public class VaultProposalPledgeEventDto : TransactionEventDto
     public FixedDecimal PledgeAmount { get; set; }
     public FixedDecimal PledgerAmount { get; set; }
     public FixedDecimal ProposalPledgeAmount { get; set; }
-    public bool PledgeMinimumMet { get; set; }
+    public bool TotalPledgeMinimumMet { get; set; }
     public override TransactionEventType EventType => TransactionEventType.VaultProposalPledgeEvent;
 }

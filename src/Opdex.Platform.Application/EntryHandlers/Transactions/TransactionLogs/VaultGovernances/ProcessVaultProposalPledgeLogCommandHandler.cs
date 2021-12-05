@@ -40,18 +40,23 @@ public class ProcessVaultProposalPledgeLogCommandHandler : IRequestHandler<Proce
                                                                                                                    request.Log.Pledger,
                                                                                                                    findOrThrow: false));
 
-            pledge ??= new VaultProposalPledge(vault.Id, request.Log.ProposalId, request.Log.Pledger, request.Log.PledgeAmount,
-                                               request.Log.PledgerAmount, request.BlockHeight);
-
-            if (request.BlockHeight < pledge.ModifiedBlock)
+            if (pledge == null)
             {
-                return true;
+                pledge = new VaultProposalPledge(vault.Id, proposal.Id, request.Log.Pledger, request.Log.PledgeAmount,
+                                                 request.Log.PledgerAmount, request.BlockHeight);
+            }
+            else
+            {
+                if (request.BlockHeight < pledge.ModifiedBlock)
+                {
+                    return true;
+                }
+
+                pledge.Update(request.Log, request.BlockHeight);
             }
 
-            pledge.Update(request.Log, request.BlockHeight);
-
             var persistedProposal = await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight,
-                                                                                      refreshProposal: request.Log.PledgeMinimumMet)) > 0;
+                                                                                      refreshProposal: request.Log.TotalPledgeMinimumMet)) > 0;
             var persistedPledge = await _mediator.Send(new MakeVaultProposalPledgeCommand(pledge, request.BlockHeight)) > 0;
 
             return persistedProposal && persistedPledge;

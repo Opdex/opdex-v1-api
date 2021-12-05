@@ -5,6 +5,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.Transac
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
+using Opdex.Platform.Domain.Models.VaultGovernances;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,7 +37,33 @@ public class ProcessCompleteVaultProposalLogCommandHandler : IRequestHandler<Pro
 
             proposal.Update(request.Log, request.BlockHeight);
 
-            return await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight)) > 0;
+            var proposalUpdated = await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight)) > 0;
+
+            var isMinimumProposal = proposal.Type == VaultProposalType.TotalPledgeMinimum || proposal.Type == VaultProposalType.TotalVoteMinimum;
+            var isCreate = proposal.Type == VaultProposalType.Create;
+            var isRevoke = proposal.Type == VaultProposalType.Revoke;
+            var refreshProposedSupply = false;
+            var refreshUnassignedSupply = false;
+
+            if (request.Log.Approved)
+            {
+                if (isMinimumProposal) vault.Update(request.Log, proposal, request.BlockHeight);
+                else if (isCreate)
+                {
+                    refreshProposedSupply = true;
+                    refreshUnassignedSupply = true;
+                }
+                else if (isRevoke) refreshUnassignedSupply = true;
+            }
+            else if (isCreate) refreshProposedSupply = true;
+
+            var vaultUpdated = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight,
+                                                                                   refreshProposedSupply: refreshProposedSupply,
+                                                                                   refreshUnassignedSupply: refreshUnassignedSupply)) > 0;
+
+            if (!vaultUpdated) _logger.LogError("Failure updating the vault governance with proposal changes.");
+
+            return proposalUpdated;
         }
         catch (Exception ex)
         {

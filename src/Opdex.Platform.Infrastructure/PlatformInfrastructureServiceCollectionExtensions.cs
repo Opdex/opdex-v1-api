@@ -276,7 +276,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectTokensWithFilterQuery, IEnumerable<Token>>, SelectTokensWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSnapshotsWithFilterQuery, IEnumerable<TokenSnapshot>>, SelectTokenSnapshotsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSnapshotWithFilterQuery, TokenSnapshot>, SelectTokenSnapshotWithFilterQueryHandler>();
-        services.AddTransient<IRequestHandler<SelectLatestTokenDistributionQuery, TokenDistribution>, SelectLatestTokenDistributionQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectLatestTokenDistributionByTokenIdQuery, TokenDistribution>, SelectLatestTokenDistributionByTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenSummaryByMarketAndTokenIdQuery, TokenSummary>, SelectTokenSummaryByMarketAndTokenIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectTokenAttributesByTokenIdQuery, IEnumerable<TokenAttribute>>, SelectTokenAttributesByTokenIdQueryHandler>();
 
@@ -312,6 +312,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectVaultGovernanceByAddressQuery, VaultGovernance>, SelectVaultGovernanceByAddressQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultGovernanceByIdQuery, VaultGovernance>, SelectVaultGovernanceByIdQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultProposalByIdQuery, VaultProposal>, SelectVaultProposalByIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultGovernanceByTokenIdQuery, VaultGovernance>, SelectVaultGovernanceByTokenIdQueryHandler>();
 
         // Addresses
         services.AddTransient<IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>, SelectAddressBalanceByOwnerAndTokenIdQueryHandler>();

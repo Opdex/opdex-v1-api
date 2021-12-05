@@ -193,7 +193,7 @@ public class PlatformInfrastructureMapperProfile : Profile
         CreateMap<VaultProposalEntity, VaultProposal>()
             .ConstructUsing(src => new VaultProposal(src.Id, src.PublicId, src.VaultGovernanceId, src.Creator, src.Wallet, src.Amount, src.Description,
                                                      (VaultProposalType)src.ProposalTypeId, (VaultProposalStatus)src.ProposalStatusId, src.Expiration,
-                                                     src.YesAmount, src.NoAmount, src.PledgeAmount, src.CreatedBlock, src.ModifiedBlock))
+                                                     src.YesAmount, src.NoAmount, src.PledgeAmount, src.Approved, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultProposalPledgeEntity, VaultProposalPledge>()
@@ -658,6 +658,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.YesAmount, opt => opt.MapFrom(src => src.YesAmount))
             .ForMember(dest => dest.NoAmount, opt => opt.MapFrom(src => src.NoAmount))
             .ForMember(dest => dest.PledgeAmount, opt => opt.MapFrom(src => src.PledgeAmount))
+            .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());

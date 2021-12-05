@@ -352,7 +352,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.PledgeAmount, opt => opt.MapFrom(src => src.PledgeAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
             .ForMember(dest => dest.PledgerAmount, opt => opt.MapFrom(src => src.PledgerAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
             .ForMember(dest => dest.ProposalPledgeAmount, opt => opt.MapFrom(src => src.ProposalPledgeAmount.ToDecimal(TokenConstants.Opdex.Decimals)))
-            .ForMember(dest => dest.PledgeMinimumMet, opt => opt.MapFrom(src => src.PledgeMinimumMet));
+            .ForMember(dest => dest.TotalPledgeMinimumMet, opt => opt.MapFrom(src => src.TotalPledgeMinimumMet));
 
         CreateMap<VaultProposalWithdrawPledgeLog, VaultProposalWithdrawPledgeEventDto>()
             .IncludeBase<TransactionLog, TransactionEventDto>()

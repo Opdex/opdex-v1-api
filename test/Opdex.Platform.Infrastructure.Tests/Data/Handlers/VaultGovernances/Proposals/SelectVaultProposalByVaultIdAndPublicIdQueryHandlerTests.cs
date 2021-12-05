@@ -47,6 +47,7 @@ public class SelectVaultProposalByVaultIdAndPublicIdQueryHandlerTests
             YesAmount = 25,
             NoAmount = 13,
             PledgeAmount = 14,
+            Approved = true,
             CreatedBlock = 1,
             ModifiedBlock = 2
         };
@@ -71,6 +72,7 @@ public class SelectVaultProposalByVaultIdAndPublicIdQueryHandlerTests
         result.YesAmount.Should().Be(expectedEntity.YesAmount);
         result.NoAmount.Should().Be(expectedEntity.NoAmount);
         result.PledgeAmount.Should().Be(expectedEntity.PledgeAmount);
+        result.Approved.Should().Be(expectedEntity.Approved);
         result.CreatedBlock.Should().Be(expectedEntity.CreatedBlock);
         result.ModifiedBlock.Should().Be(expectedEntity.ModifiedBlock);
     }

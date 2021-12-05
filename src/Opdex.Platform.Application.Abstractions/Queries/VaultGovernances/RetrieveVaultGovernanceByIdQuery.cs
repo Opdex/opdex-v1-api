@@ -5,7 +5,7 @@ using System;
 namespace Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 
 /// <summary>
-/// Retrieve a vault governance by it's internal Id.
+/// Retrieve a vault governance by its internal Id.
 /// </summary>
 public class RetrieveVaultGovernanceByIdQuery : FindQuery<VaultGovernance>
 {
