@@ -75,7 +75,7 @@ public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<P
         {
             using (_logger.BeginScope(new Dictionary<string, object>()
             {
-                { "VaultId", request.Certificate.VaultGovernanceId },
+                { "VaultId", request.Certificate.VaultId },
                 { "Owner", request.Certificate.Owner },
                 { "BlockHeight", request.Certificate.ModifiedBlock }
             }))
