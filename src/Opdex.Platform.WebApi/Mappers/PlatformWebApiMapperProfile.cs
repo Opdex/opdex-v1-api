@@ -20,6 +20,7 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
+using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
@@ -45,6 +46,7 @@ using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Toke
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Vault;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.VaultGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Vaults;
+using Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
 namespace Opdex.Platform.WebApi.Mappers;
@@ -361,6 +363,45 @@ public class PlatformWebApiMapperProfile : Profile
         CreateMap<VaultCertificatesDto, VaultCertificatesResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Certificates))
             .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
+
+        CreateMap<VaultGovernanceDto, VaultGovernanceResponseModel>()
+            .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
+            .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
+            .ForMember(dest => dest.TokensUnassigned, opt => opt.MapFrom(src => src.TokensUnassigned))
+            .ForMember(dest => dest.TokensProposed, opt => opt.MapFrom(src => src.TokensProposed))
+            .ForMember(dest => dest.TotalPledgeMinimum, opt => opt.MapFrom(src => src.TotalPledgeMinimum))
+            .ForMember(dest => dest.TotalVoteMinimum, opt => opt.MapFrom(src => src.TotalVoteMinimum))
+            .ForMember(dest => dest.VestingDuration, opt => opt.MapFrom(src => src.VestingDuration));
+
+        CreateMap<VaultProposalDto, VaultProposalResponseModel>()
+            .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
+            .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
+            .ForMember(dest => dest.Creator, opt => opt.MapFrom(src => src.Creator))
+            .ForMember(dest => dest.Wallet, opt => opt.MapFrom(src => src.Wallet))
+            .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.Expiration, opt => opt.MapFrom(src => src.Expiration))
+            .ForMember(dest => dest.YesAmount, opt => opt.MapFrom(src => src.YesAmount))
+            .ForMember(dest => dest.NoAmount, opt => opt.MapFrom(src => src.NoAmount))
+            .ForMember(dest => dest.PledgeAmount, opt => opt.MapFrom(src => src.PledgeAmount))
+            .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved));
+
+        CreateMap<VaultProposalPledgeDto, VaultProposalPledgeResponseModel>()
+            .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
+            .ForMember(dest => dest.Pledger, opt => opt.MapFrom(src => src.Pledger))
+            .ForMember(dest => dest.Pledge, opt => opt.MapFrom(src => src.Pledge))
+            .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance));
+
+        CreateMap<VaultProposalVoteDto, VaultProposalVoteResponseModel>()
+            .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
+            .ForMember(dest => dest.Voter, opt => opt.MapFrom(src => src.Voter))
+            .ForMember(dest => dest.Vote, opt => opt.MapFrom(src => src.Vote))
+            .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance));
 
         // Transactions
         CreateMap<TransactionsDto, TransactionsResponseModel>()

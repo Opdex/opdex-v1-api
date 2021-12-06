@@ -12,6 +12,6 @@ public class CreateVaultCertificateQuoteRequest
     public Address Holder { get; set; }
 
     /// <summary>Amount of staking tokens to assign.</summary>
-    /// <example>50000.00000000</example>
+    /// <example>"50000.00000000"</example>
     public FixedDecimal Amount { get; set; }
 }
