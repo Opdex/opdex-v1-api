@@ -32,6 +32,7 @@ public class VaultProposalVoteDtoAssembler : IModelAssembler<VaultProposalVote, 
         dto.Vault = vault.Address;
         dto.ProposalId = proposal.PublicId;
         dto.Vote = vote.Vote.ToDecimal(TokenConstants.Cirrus.Decimals);
+        dto.Balance = vote.Balance.ToDecimal(TokenConstants.Cirrus.Decimals);
         return dto;
     }
 }

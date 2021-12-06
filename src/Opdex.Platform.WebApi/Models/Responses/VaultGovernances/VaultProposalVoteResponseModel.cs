@@ -32,11 +32,17 @@ public class VaultProposalVoteResponseModel
     public Address Voter { get; set; }
 
     /// <summary>
-    /// Amount of CRS voting on the proposal.
+    /// Amount of CRS voted on the proposal. This will not change once the vote period has finished.
     /// </summary>
     /// <example>"500.00000000"</example>
     [NotNull]
     public FixedDecimal Vote { get; set; }
+
+    /// <summary>
+    /// Currently voting CRS balance.
+    /// </summary>
+    /// <example>"0.00000000"</example>
+    public FixedDecimal Balance { get; set; }
 
     /// <summary>
     /// If the vote is in favor of the proposal.

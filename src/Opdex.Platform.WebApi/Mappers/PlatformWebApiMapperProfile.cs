@@ -393,13 +393,15 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Pledger, opt => opt.MapFrom(src => src.Pledger))
-            .ForMember(dest => dest.Pledge, opt => opt.MapFrom(src => src.Pledge));
+            .ForMember(dest => dest.Pledge, opt => opt.MapFrom(src => src.Pledge))
+            .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance));
 
         CreateMap<VaultProposalVoteDto, VaultProposalVoteResponseModel>()
             .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Voter, opt => opt.MapFrom(src => src.Voter))
-            .ForMember(dest => dest.Vote, opt => opt.MapFrom(src => src.Vote));
+            .ForMember(dest => dest.Vote, opt => opt.MapFrom(src => src.Vote))
+            .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance));
 
         // Transactions
         CreateMap<TransactionsDto, TransactionsResponseModel>()

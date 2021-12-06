@@ -32,8 +32,14 @@ public class VaultProposalPledgeResponseModel
     public Address Pledger { get; set; }
 
     /// <summary>
-    /// Amount of CRS pledged to the proposal.
+    /// Amount of CRS pledged to the proposal. This will not change once the pledge period has finished.
     /// </summary>
     /// <example>"500.00000000"</example>
     public FixedDecimal Pledge { get; set; }
+
+    /// <summary>
+    /// Currently pledged CRS balance.
+    /// </summary>
+    /// <example>"0.00000000"</example>
+    public FixedDecimal Balance { get; set; }
 }

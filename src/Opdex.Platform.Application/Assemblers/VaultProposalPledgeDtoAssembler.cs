@@ -32,6 +32,7 @@ public class VaultProposalPledgeDtoAssembler : IModelAssembler<VaultProposalPled
         dto.Vault = vault.Address;
         dto.ProposalId = proposal.PublicId;
         dto.Pledge = pledge.Pledge.ToDecimal(TokenConstants.Cirrus.Decimals);
+        dto.Balance = pledge.Balance.ToDecimal(TokenConstants.Cirrus.Decimals);
         return dto;
     }
 }
