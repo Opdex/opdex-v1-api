@@ -75,6 +75,7 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Liquidity
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
+using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
@@ -197,6 +198,7 @@ using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Collections.Generic;
+using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
 
 namespace Opdex.Platform.Application;
 
@@ -243,6 +245,12 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<GetVaultsWithFilterQuery, VaultsDto>, GetVaultsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<GetVaultByAddressQuery, VaultDto>, GetVaultByAddressQueryHandler>();
         services.AddTransient<IRequestHandler<GetVaultCertificatesWithFilterQuery, VaultCertificatesDto>, GetVaultCertificatesWithFilterQueryHandler>();
+
+        // Vault Governances
+        services.AddTransient<IRequestHandler<GetVaultGovernanceByAddressQuery, VaultGovernanceDto>, GetVaultGovernanceByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<GetVaultProposalByVaultAddressAndPublicIdQuery, VaultProposalDto>, GetVaultProposalByVaultAddressAndPublicIdQueryHandler>();
+        services.AddTransient<IRequestHandler<GetVaultProposalPledgeByVaultAddressPublicIdAndPledgerQuery, VaultProposalPledgeDto>, GetVaultProposalPledgeByVaultAddressPublicIdAndPledgerQueryHandler>();
+        services.AddTransient<IRequestHandler<GetVaultProposalVoteByVaultAddressPublicIdAndVoterQuery, VaultProposalVoteDto>, GetVaultProposalVoteByVaultAddressPublicIdAndVoterQueryHandler>();
 
         // Mining Governances
         services.AddTransient<IRequestHandler<GetMiningGovernancesWithFilterQuery, MiningGovernancesDto>, GetMiningGovernancesWithFilterQueryHandler>();
@@ -626,6 +634,12 @@ public static class PlatformApplicationServiceCollectionExtensions
 
         // Vaults
         services.AddTransient<IModelAssembler<Vault, VaultDto>, VaultDtoAssembler>();
+
+        // Vault Governances
+        services.AddTransient<IModelAssembler<VaultGovernance, VaultGovernanceDto>, VaultGovernanceDtoAssembler>();
+        services.AddTransient<IModelAssembler<VaultProposal, VaultProposalDto>, VaultProposalDtoAssembler>();
+        services.AddTransient<IModelAssembler<VaultProposalPledge, VaultProposalPledgeDto>, VaultProposalPledgeDtoAssembler>();
+        services.AddTransient<IModelAssembler<VaultProposalVote, VaultProposalVoteDto>, VaultProposalVoteDtoAssembler>();
 
         // Transactions
         services.AddTransient<IModelAssembler<Transaction, TransactionDto>, TransactionDtoAssembler>();

@@ -41,6 +41,7 @@ using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Linq;
+using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 
 namespace Opdex.Platform.Application;
 
@@ -170,6 +171,31 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.VestingEndBlock, opt => opt.MapFrom(src => src.VestedBlock))
             .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
             .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked));
+
+        CreateMap<VaultGovernance, VaultGovernanceDto>()
+            .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Address))
+            .ForMember(dest => dest.VestingDuration, opt => opt.MapFrom(src => src.VestingDuration))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<VaultProposal, VaultProposalDto>()
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.PublicId))
+            .ForMember(dest => dest.Creator, opt => opt.MapFrom(src => src.Creator))
+            .ForMember(dest => dest.Wallet, opt => opt.MapFrom(src => src.Wallet))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.Expiration, opt => opt.MapFrom(src => src.Expiration))
+            .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<VaultProposalPledge, VaultProposalPledgeDto>()
+            .ForMember(dest => dest.Pledger, opt => opt.MapFrom(src => src.Pledger))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<VaultProposalVote, VaultProposalVoteDto>()
+            .ForMember(dest => dest.Voter, opt => opt.MapFrom(src => src.Voter))
+            .ForMember(dest => dest.InFavor, opt => opt.MapFrom(src => src.InFavor))
+            .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<AddressBalance, AddressBalanceDto>()
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Owner))

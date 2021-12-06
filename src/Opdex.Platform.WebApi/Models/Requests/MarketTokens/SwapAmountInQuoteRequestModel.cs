@@ -16,6 +16,6 @@ public class SwapAmountInQuoteRequestModel
     /// <summary>
     /// The expected amount of tokens to be output after the swap.
     /// </summary>
-    /// <example>50.00000000</example>
+    /// <example>"50.00000000"</example>
     public FixedDecimal TokenOutAmount { get; set; }
 }
