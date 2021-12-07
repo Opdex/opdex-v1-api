@@ -3,7 +3,7 @@ using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Common.Models;
 using System;
 
-namespace Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
+namespace Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Proposals;
 
 /// <summary>
 /// Query to retrieve a vault proposal by the contract address and public proposal id.

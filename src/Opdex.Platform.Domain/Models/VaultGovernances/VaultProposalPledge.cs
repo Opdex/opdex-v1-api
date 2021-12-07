@@ -38,7 +38,13 @@ public class VaultProposalPledge : BlockAudit
     public ulong Pledge { get; private set; }
     public ulong Balance { get; private set; }
 
-    public void Update(ulong balance, ulong blockHeight)
+    public void UpdatePledge(ulong pledge, ulong blockHeight)
+    {
+        Pledge = pledge;
+        SetModifiedBlock(blockHeight);
+    }
+
+    public void UpdateBalance(ulong balance, ulong blockHeight)
     {
         Balance = balance;
         SetModifiedBlock(blockHeight);

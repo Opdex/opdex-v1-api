@@ -11,6 +11,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Permissions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
+using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Exceptions;
@@ -62,6 +63,10 @@ public class CreateRewindToBlockCommandHandler : IRequestHandler<CreateRewindToB
         rewound = await _mediator.Send(new CreateRewindMiningPoolsCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindMarketsCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindMarketPermissionsCommand(request.Block), CancellationToken.None) && rewound;
+        rewound = await _mediator.Send(new CreateRewindVaultGovernancesCommand(request.Block), CancellationToken.None) && rewound;
+        rewound = await _mediator.Send(new CreateRewindVaultProposalsCommand(request.Block), CancellationToken.None) && rewound;
+        // rewound = await _mediator.Send(new CreateRewindVaultProposalPledgesCommand(request.Block), CancellationToken.None) && rewound;
+        // rewound = await _mediator.Send(new CreateRewindVaultProposalVotesCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindSnapshotsCommand(request.Block), CancellationToken.None) && rewound; // markets/pools/tokens combined
 
         _logger.LogTrace("Refreshing of stale records finished.");

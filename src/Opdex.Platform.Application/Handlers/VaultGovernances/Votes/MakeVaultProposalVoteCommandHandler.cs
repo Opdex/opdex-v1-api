@@ -21,7 +21,7 @@ public class MakeVaultProposalVoteCommandHandler : IRequestHandler<MakeVaultProp
 
     public async Task<ulong> Handle(MakeVaultProposalVoteCommand request, CancellationToken cancellationToken)
     {
-        if (request.RefreshVote)
+        if (request.RefreshBalance)
         {
             var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(request.Vote.VaultGovernanceId), CancellationToken.None);
             var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(request.Vote.ProposalId), CancellationToken.None);

@@ -19,4 +19,8 @@
       <ProjectReference Include="..\Opdex.Platform.Infrastructure.Abstractions\Opdex.Platform.Infrastructure.Abstractions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="EntryHandlers\VaultGovernances\Certificates" />
+    </ItemGroup>
+
 </Project>
