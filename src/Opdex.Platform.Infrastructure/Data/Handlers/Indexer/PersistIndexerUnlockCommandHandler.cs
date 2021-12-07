@@ -38,7 +38,7 @@ public class PersistIndexerUnlockCommandHandler : AsyncRequestHandler<PersistInd
         {
             var command = DatabaseQuery.Create(SqlQuery, new { InstanceId = _instanceId }, CancellationToken.None);
             var result = await _context.ExecuteCommandAsync(command);
-            if (result == 0) throw new NoRowsAffectedException("Indexer appears to have not unlocked.");
+            if (result == 0) _logger.LogCritical("Failed to unlock indexer.");
         }
         catch (Exception ex)
         {

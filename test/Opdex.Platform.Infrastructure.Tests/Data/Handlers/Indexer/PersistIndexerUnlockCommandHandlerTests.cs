@@ -1,15 +1,10 @@
-using Castle.Core.Logging;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using MySqlConnector;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
-using Opdex.Platform.Infrastructure.Data;
 using Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
 using System;
-using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -79,7 +74,7 @@ public class PersistIndexerUnlockCommandHandlerTests
                    LogLevel.Critical,
                    It.IsAny<EventId>(),
                    It.Is<It.IsAnyType>((o, t) => string.Equals("Failed to unlock indexer.", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
-                   It.IsAny<NoRowsAffectedException>(),
+                   null,
                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
                Times.Once);
     }
@@ -99,7 +94,7 @@ public class PersistIndexerUnlockCommandHandlerTests
                    LogLevel.Critical,
                    It.IsAny<EventId>(),
                    It.Is<It.IsAnyType>((o, t) => true),
-                   It.IsAny<NoRowsAffectedException>(),
+                   null,
                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
                Times.Never);
     }
