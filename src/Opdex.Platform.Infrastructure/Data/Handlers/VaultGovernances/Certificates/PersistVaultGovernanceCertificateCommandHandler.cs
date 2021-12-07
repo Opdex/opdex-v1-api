@@ -1,10 +1,12 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,11 +46,13 @@ public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<P
                 WHERE {nameof(VaultCertificateEntity.Id)} = @{nameof(VaultCertificateEntity.Id)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
+    private readonly ILogger<PersistVaultGovernanceCertificateCommandHandler> _logger;
     private readonly IMapper _mapper;
 
-    public PersistVaultGovernanceCertificateCommandHandler(IDbContext context, IMapper mapper)
+    public PersistVaultGovernanceCertificateCommandHandler(IDbContext context, ILogger<PersistVaultGovernanceCertificateCommandHandler> logger, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
     public async Task<ulong> Handle(PersistVaultGovernanceCertificateCommand request, CancellationToken cancellationToken)
@@ -67,9 +71,17 @@ public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<P
 
             return isUpdate ? entity.Id : result;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // TODO: PAPI-276
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "VaultId", request.Certificate.VaultId },
+                { "Owner", request.Certificate.Owner },
+                { "BlockHeight", request.Certificate.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, "Failure persisting vault certificate.");
+            }
             return 0;
         }
     }

@@ -5,7 +5,7 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.Commands.Indexer;
 
-public class MakeIndexerLockCommand : IRequest
+public class MakeIndexerLockCommand : IRequest<bool>
 {
     public MakeIndexerLockCommand(IndexLockReason reason)
     {

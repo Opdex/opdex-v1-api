@@ -6,6 +6,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,7 +48,14 @@ public class PersistTokenAttributeCommandHandler : IRequestHandler<PersistTokenA
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting {nameof(TokenAttribute)}");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "TokenId", request.Attribute.TokenId },
+                { "AttributeType", request.Attribute.AttributeType }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting token attribute.");
+            }
 
             return false;
         }

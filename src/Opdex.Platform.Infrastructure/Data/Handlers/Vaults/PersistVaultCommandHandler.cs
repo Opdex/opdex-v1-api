@@ -5,6 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -73,7 +74,14 @@ public class PersistVaultCommandHandler : IRequestHandler<PersistVaultCommand, u
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting {nameof(request.Vault)}.");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "Contract", request.Vault.Address },
+                { "BlockHeight", request.Vault.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting vault.");
+            }
 
             return 0;
         }

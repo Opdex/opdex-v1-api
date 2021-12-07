@@ -7,7 +7,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Indexer;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
 using System;
 using System.Threading;
@@ -60,6 +59,7 @@ public class IndexerBackgroundServiceTests
         var indexLock = new IndexLock(false, false, _primaryIdentity, IndexLockReason.Index, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         // Act
         await _indexerService.StartAsync(token);
@@ -80,6 +80,7 @@ public class IndexerBackgroundServiceTests
         var indexLock = new IndexLock(true, true, _otherIdentity, IndexLockReason.Index, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         // Act
         await _indexerService.StartAsync(token);
@@ -99,6 +100,7 @@ public class IndexerBackgroundServiceTests
         var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Rewind, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         // Act
         await _indexerService.StartAsync(token);
@@ -118,6 +120,7 @@ public class IndexerBackgroundServiceTests
         var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Deploy, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         // Act
         await _indexerService.StartAsync(token);
@@ -137,6 +140,7 @@ public class IndexerBackgroundServiceTests
         var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Index, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         // Act
         await _indexerService.StartAsync(token);
@@ -149,15 +153,14 @@ public class IndexerBackgroundServiceTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_LockingIndexerFails_ThrowsIndexingAlreadyRunningException()
+    public async Task ExecuteAsync_LockingIndexerFails_DoNotProcessBlocksOrUnlock()
     {
         // Arrange
         var token = new CancellationTokenSource().Token;
         var indexLock = new IndexLock(true, false, _primaryIdentity, IndexLockReason.Index, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>()))
-            .Throws<IndexingAlreadyRunningException>();
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
         // Act
         await _indexerService.StartAsync(token);
@@ -177,6 +180,7 @@ public class IndexerBackgroundServiceTests
         var indexLock = new IndexLock(true, false, _primaryIdentity, IndexLockReason.Index, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         // Act
         await _indexerService.StartAsync(token);

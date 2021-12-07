@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -79,7 +80,15 @@ public class PersistMarketCommandHandler : IRequestHandler<PersistMarketCommand,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting {request.Market}.");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "Contract", request.Market.Address },
+                { "DeployerId", request.Market.DeployerId },
+                { "BlockHeight", request.Market.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting market.");
+            }
 
             return 0;
         }

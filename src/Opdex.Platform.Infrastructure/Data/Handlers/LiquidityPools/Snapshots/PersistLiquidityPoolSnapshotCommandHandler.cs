@@ -5,6 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools.Snapshots;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -64,7 +65,16 @@ public class PersistLiquidityPoolSnapshotCommandHandler : IRequestHandler<Persis
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting liquidity pool snapshot for poolId {request?.Snapshot?.LiquidityPoolId}.");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "LiquidityPoolId", request.Snapshot.LiquidityPoolId },
+                { "StartDate", request.Snapshot.StartDate },
+                { "EndDate", request.Snapshot.EndDate },
+                { "ModifiedDate", request.Snapshot.ModifiedDate }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting liquidity pool snapshot");
+            }
 
             return false;
         }

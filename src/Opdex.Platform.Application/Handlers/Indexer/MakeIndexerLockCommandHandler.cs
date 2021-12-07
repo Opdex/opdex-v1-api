@@ -1,34 +1,23 @@
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
-using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Handlers.Indexer;
 
-public class MakeIndexerLockCommandHandler : IRequestHandler<MakeIndexerLockCommand, Unit>
+public class MakeIndexerLockCommandHandler : IRequestHandler<MakeIndexerLockCommand, bool>
 {
     private readonly IMediator _mediator;
-    private readonly ILogger<MakeIndexerLockCommandHandler> _logger;
 
-    public MakeIndexerLockCommandHandler(IMediator mediator, ILogger<MakeIndexerLockCommandHandler> logger)
+    public MakeIndexerLockCommandHandler(IMediator mediator)
     {
-        _mediator = mediator;
-        _logger = logger;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<Unit> Handle(MakeIndexerLockCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(MakeIndexerLockCommand request, CancellationToken cancellationToken)
     {
-        var lockCreated = await _mediator.Send(new PersistIndexerLockCommand(request.Reason), cancellationToken);
-        if (!lockCreated)
-        {
-            throw new IndexingAlreadyRunningException();
-        }
-
-        _logger.LogDebug("Indexer locked");
-
-        return Unit.Value;
+        return await _mediator.Send(new PersistIndexerLockCommand(request.Reason), cancellationToken);
     }
 }

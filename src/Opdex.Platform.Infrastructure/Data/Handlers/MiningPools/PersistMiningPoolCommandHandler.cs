@@ -5,6 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MiningPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningPools;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -71,7 +72,15 @@ public class PersistMiningPoolCommandHandler : IRequestHandler<PersistMiningPool
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Unable to persist {request.MiningPool}");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "Contract", request.MiningPool.Address },
+                { "LiquidityPoolId", request.MiningPool.LiquidityPoolId },
+                { "BlockHeight", request.MiningPool.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Unable to persist mining pool.");
+            }
 
             return 0;
         }

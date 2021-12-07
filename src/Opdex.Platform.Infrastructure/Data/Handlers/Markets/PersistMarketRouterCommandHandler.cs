@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -26,7 +27,7 @@ public class PersistMarketRouterCommandHandler : IRequestHandler<PersistMarketRo
                 @{nameof(MarketRouterEntity.CreatedBlock)},
                 @{nameof(MarketRouterEntity.ModifiedBlock)}
               );";
-        
+
     private static readonly string UpdateSqlCommand =
         $@"UPDATE market_router
                 SET 
@@ -37,7 +38,7 @@ public class PersistMarketRouterCommandHandler : IRequestHandler<PersistMarketRo
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
     private readonly ILogger _logger;
-        
+
     public PersistMarketRouterCommandHandler(IDbContext context, IMapper mapper, ILogger<PersistMarketRouterCommandHandler> logger)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -50,21 +51,29 @@ public class PersistMarketRouterCommandHandler : IRequestHandler<PersistMarketRo
         try
         {
             var entity = _mapper.Map<MarketRouterEntity>(request.Router);
-                
+
             var isUpdate = entity.Id >= 1;
 
             var sql = isUpdate ? UpdateSqlCommand : InsertSqlCommand;
-            
+
             var command = DatabaseQuery.Create(sql, entity, cancellationToken);
-            
+
             var result = await _context.ExecuteCommandAsync(command);
 
             return result == 1;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting {request.Router}.");
-                
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "Contract", request.Router.Address },
+                { "MarketId", request.Router.MarketId },
+                { "BlockHeight", request.Router.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting market router.");
+            }
+
             return false;
         }
     }

@@ -6,6 +6,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,11 +24,13 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
                 WHERE {nameof(IndexLockEntity.Locked)} = 0;";
 
     private readonly IDbContext _context;
+    private readonly ILogger<PersistIndexerLockCommandHandler> _logger;
     private readonly string _instanceId;
 
-    public PersistIndexerLockCommandHandler(IDbContext context, OpdexConfiguration opdexConfiguration)
+    public PersistIndexerLockCommandHandler(IDbContext context, ILogger<PersistIndexerLockCommandHandler> logger, OpdexConfiguration opdexConfiguration)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _instanceId = opdexConfiguration?.InstanceId ?? throw new ArgumentNullException(nameof(context));
     }
 
@@ -39,8 +42,15 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
             var result = await _context.ExecuteCommandAsync(command);
             return result == 1;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "LockReason", request.Reason }
+            }))
+            {
+                _logger.LogError(ex, "Failed to persist indexer lock.");
+            }
             return false;
         }
     }

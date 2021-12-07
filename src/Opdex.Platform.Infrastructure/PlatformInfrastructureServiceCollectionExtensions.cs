@@ -176,7 +176,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         // Blocks
         services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
         services.AddTransient<IRequestHandler<PersistIndexerLockCommand, bool>, PersistIndexerLockCommandHandler>();
-        services.AddTransient<IRequestHandler<PersistIndexerUnlockCommand, bool>, PersistIndexerUnlockCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistIndexerUnlockCommand, Unit>, PersistIndexerUnlockCommandHandler>();
         services.AddTransient<IRequestHandler<ExecuteRewindToBlockCommand, bool>, ExecuteRewindToBlockCommandHandler>();
 
         // Liquidity Pools

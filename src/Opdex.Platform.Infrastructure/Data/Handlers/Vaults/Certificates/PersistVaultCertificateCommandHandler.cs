@@ -5,6 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -68,7 +69,15 @@ public class PersistVaultCertificateCommandHandler : IRequestHandler<PersistVaul
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting {nameof(request.VaultCertificate)}.");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "VaultId", request.VaultCertificate.VaultId },
+                { "Owner", request.VaultCertificate.Owner },
+                { "BlockHeight", request.VaultCertificate.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting vault certificate.");
+            }
 
             return false;
         }

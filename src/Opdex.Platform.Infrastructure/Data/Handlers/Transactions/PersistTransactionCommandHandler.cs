@@ -1,10 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Opdex.Platform.Domain.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
@@ -64,7 +64,14 @@ public class PersistTransactionCommandHandler : IRequestHandler<PersistTransacti
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Unable to persist {nameof(request.Transaction)}");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "Hash", request.Transaction.Hash },
+                { "BlockHeight", request.Transaction.BlockHeight },
+            }))
+            {
+                _logger.LogError(ex, $"Unable to persist transaction.");
+            }
 
             return 0;
         }

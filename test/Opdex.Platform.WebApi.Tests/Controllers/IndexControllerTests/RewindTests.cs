@@ -55,6 +55,23 @@ public class RewindTests
     }
 
     [Fact]
+    public async Task Rewind_IndexLockReturnsFalse_ThrowIndexingAlreadyRunningException()
+    {
+        // Arrange
+        var request = new RewindRequest { Block = 10 };
+        var admin = new AdminDto { Id = 1, Address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk" };
+
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetAdminByAddressQuery>(), CancellationToken.None)).ReturnsAsync(admin);
+        _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
+
+        // Act
+        Task Act() => _controller.Rewind(request);
+
+        // Assert
+        await Assert.ThrowsAsync<IndexingAlreadyRunningException>(Act);
+    }
+
+    [Fact]
     public async Task Rewind_Sends_CreateRewindToBlockCommand_Success_MakeIndexerUnlockCommand()
     {
         // Arrange
@@ -62,7 +79,7 @@ public class RewindTests
         var admin = new AdminDto { Id = 1, Address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk" };
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<GetAdminByAddressQuery>(), CancellationToken.None)).ReturnsAsync(admin);
-        _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(Unit.Value);
+        _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         // Act
         try
@@ -84,7 +101,7 @@ public class RewindTests
         var admin = new AdminDto { Id = 1, Address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk" };
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<GetAdminByAddressQuery>(), CancellationToken.None)).ReturnsAsync(admin);
-        _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(Unit.Value);
+        _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
@@ -103,7 +120,7 @@ public class RewindTests
         var admin = new AdminDto { Id = 1, Address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk" };
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<GetAdminByAddressQuery>(), CancellationToken.None)).ReturnsAsync(admin);
-        _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(Unit.Value);
+        _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
@@ -122,7 +139,7 @@ public class RewindTests
         var admin = new AdminDto { Id = 1, Address = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk" };
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<GetAdminByAddressQuery>(), CancellationToken.None)).ReturnsAsync(admin);
-        _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(Unit.Value);
+        _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mediator.Setup(m => m.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("block", "Exception message."));
 

@@ -5,6 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.MiningGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.MiningGovernances;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -72,7 +73,15 @@ public class PersistMiningGovernanceCommandHandler : IRequestHandler<PersistMini
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting {request.MiningGovernance}.");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "Contract", request.MiningGovernance.Address },
+                { "TokenId", request.MiningGovernance.TokenId },
+                { "BlockHeight", request.MiningGovernance.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting mining governance.");
+            }
 
             return 0;
         }

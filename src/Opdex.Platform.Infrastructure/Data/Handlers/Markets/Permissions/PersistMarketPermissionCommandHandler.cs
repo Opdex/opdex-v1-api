@@ -5,6 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -69,7 +70,16 @@ public class PersistMarketPermissionCommandHandler : IRequestHandler<PersistMark
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting {request.MarketPermission}.");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "MarketId", request.MarketPermission.MarketId },
+                { "User", request.MarketPermission.User },
+                { "Permission", request.MarketPermission.Permission },
+                { "BlockHeight", request.MarketPermission.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting market permission.");
+            }
 
             return 0;
         }

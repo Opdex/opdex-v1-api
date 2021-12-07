@@ -5,6 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Markets;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Markets;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -61,7 +62,16 @@ public class PersistMarketSnapshotCommandHandler : IRequestHandler<PersistMarket
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting market snapshot for marketId {request?.Snapshot?.MarketId} and type {request?.Snapshot?.SnapshotType}");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "MarketId", request.Snapshot.MarketId },
+                { "SnapshotType", request.Snapshot.SnapshotType },
+                { "StartDate", request.Snapshot.StartDate },
+                { "EndDate", request.Snapshot.EndDate }
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting market snapshot.");
+            }
 
             return false;
         }
