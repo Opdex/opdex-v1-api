@@ -52,6 +52,26 @@ public class VaultGovernancesController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>Quote Redeem Vault Certificate</summary>
+    /// <remarks>Quotes redeeming a vault certificate.</remarks>
+    /// <param name="address">Address of the vault.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Redeem vault certificate quote.</returns>
+    /// <response code="200">Redeem vault certificate quote created.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="404">Vault not found.</response>
+    /// <response code="429">Too many requests.</response>
+    [HttpPost("{address}/certificates/redeem")]
+    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteRedeemCertificate([FromRoute] Address address, CancellationToken cancellationToken)
+    {
+        var response = await _mediator.Send(new CreateRedeemVaultCertificateQuoteCommand(address, _context.Wallet), cancellationToken);
+        var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+        return Ok(quote);
+    }
+
     /// <summary>Quote Propose Create Certificate</summary>
     /// <remarks>Quotes making a vault proposal to create a certificate.</remarks>
     /// <param name="address">Address of the vault.</param>
@@ -162,6 +182,27 @@ public class VaultGovernancesController : ControllerBase
         var dto = await _mediator.Send(new GetVaultProposalByVaultAddressAndPublicIdQuery(address, proposalId), cancellationToken);
         var response = _mapper.Map<VaultProposalResponseModel>(dto);
         return Ok(response);
+    }
+
+    /// <summary>Quote Complete Vault Proposal</summary>
+    /// <remarks>Quotes completing a vault proposal.</remarks>
+    /// <param name="address">Address of the vault.</param>
+    /// <param name="proposalId">Id of the proposal in the vault.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Vault proposal completion quote.</returns>
+    /// <response code="200">Vault proposal completion quote created.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="404">Either vault or proposal not found.</response>
+    /// <response code="429">Too many requests.</response>
+    [HttpPost("{address}/proposals/{proposalId}/complete")]
+    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteCompleteProposal([FromRoute] Address address, [FromRoute] ulong proposalId, CancellationToken cancellationToken)
+    {
+        var response = await _mediator.Send(new CreateCompleteVaultProposalQuoteCommand(address, proposalId, _context.Wallet), cancellationToken);
+        var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
+        return Ok(quote);
     }
 
     /// <summary>Quote Vault Proposal Pledge</summary>

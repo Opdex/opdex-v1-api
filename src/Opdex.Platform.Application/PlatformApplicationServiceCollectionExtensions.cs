@@ -371,6 +371,8 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<CreateVaultProposalVoteQuoteCommand, TransactionQuoteDto>, CreateVaultProposalVoteQuoteCommandHandler>();
         services.AddTransient<IRequestHandler<CreateWithdrawVaultProposalPledgeQuoteCommand, TransactionQuoteDto>, CreateWithdrawVaultProposalPledgeQuoteCommandHandler>();
         services.AddTransient<IRequestHandler<CreateWithdrawVaultProposalVoteQuoteCommand, TransactionQuoteDto>, CreateWithdrawVaultProposalVoteQuoteCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateCompleteVaultProposalQuoteCommand, TransactionQuoteDto>, CreateCompleteVaultProposalQuoteCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateRedeemVaultCertificateQuoteCommand, TransactionQuoteDto>, CreateRedeemVaultCertificateQuoteCommandHandler>();
 
         // Tokens
         services.AddTransient<IRequestHandler<CreateCrsTokenSnapshotsCommand, bool>, CreateCrsTokenSnapshotsCommandHandler>();
