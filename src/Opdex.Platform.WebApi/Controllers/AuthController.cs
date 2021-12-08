@@ -9,7 +9,6 @@ using Opdex.Platform.WebApi.Auth;
 using System.Net;
 using Opdex.Platform.Common.Models;
 using System.Threading;
-using Opdex.Platform.WebApi.Models.Requests.Auth;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
@@ -21,6 +20,7 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Extensions;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
+using SSAS.NET;
 
 namespace Opdex.Platform.WebApi.Controllers;
 
@@ -56,10 +56,10 @@ public class AuthController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> StratisOpenAuthCallback([FromQuery] StratisOpenAuthCallbackQuery query,
-                                                             [FromBody] StratisOpenAuthCallbackBody body, CancellationToken cancellationToken)
+    public async Task<IActionResult> StratisSignatureAuthCallback([FromQuery] StratisSignatureAuthCallbackQuery query,
+                                                             [FromBody] StratisSignatureAuthCallbackBody body, CancellationToken cancellationToken)
     {
-        var callbackUri = new Uri(System.IO.Path.Combine(_opdexConfiguration.ApiUrl, _authConfiguration.StratisOpenAuthProtocol.CallbackPath));
+        var callbackUri = new Uri(System.IO.Path.Combine(_opdexConfiguration.ApiUrl, _authConfiguration.StratisSignatureAuth.CallbackPath));
         var expectedCallbackPath = $"{callbackUri.Authority}{callbackUri.AbsolutePath}";
         var expectedId = new StratisId(expectedCallbackPath, query.Uid, query.Exp);
 

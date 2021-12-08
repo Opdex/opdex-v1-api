@@ -1,18 +1,18 @@
 using FluentValidation.TestHelper;
-using Opdex.Platform.WebApi.Models.Requests.Auth;
 using Opdex.Platform.WebApi.Validation.Auth;
+using SSAS.NET;
 using System;
 using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Validation.Auth;
 
-public class StratisOpenAuthCallbackQueryValidatorTests
+public class StratisSignatureAuthCallbackQueryValidatorTests
 {
-    private readonly StratisOpenAuthCallbackQueryValidator _validator;
+    private readonly StratisSignatureAuthCallbackQueryValidator _validator;
 
-    public StratisOpenAuthCallbackQueryValidatorTests()
+    public StratisSignatureAuthCallbackQueryValidatorTests()
     {
-        _validator = new StratisOpenAuthCallbackQueryValidator();
+        _validator = new StratisSignatureAuthCallbackQueryValidator();
     }
 
     [Theory]
@@ -21,7 +21,7 @@ public class StratisOpenAuthCallbackQueryValidatorTests
     public void Uid_Invalid(string uid)
     {
         // Arrange
-        var request = new StratisOpenAuthCallbackQuery
+        var request = new StratisSignatureAuthCallbackQuery
         {
             Uid = uid
         };
@@ -37,7 +37,7 @@ public class StratisOpenAuthCallbackQueryValidatorTests
     public void Uid_Valid()
     {
         // Arrange
-        var request = new StratisOpenAuthCallbackQuery
+        var request = new StratisSignatureAuthCallbackQuery
         {
             Uid = Guid.NewGuid().ToString()
         };
@@ -56,7 +56,7 @@ public class StratisOpenAuthCallbackQueryValidatorTests
     public void Exp_Invalid(long exp)
     {
         // Arrange
-        var request = new StratisOpenAuthCallbackQuery
+        var request = new StratisSignatureAuthCallbackQuery
         {
             Exp = exp
         };
@@ -72,7 +72,7 @@ public class StratisOpenAuthCallbackQueryValidatorTests
     public void Exp_Valid()
     {
         // Arrange
-        var request = new StratisOpenAuthCallbackQuery
+        var request = new StratisSignatureAuthCallbackQuery
         {
             Exp = 1777777777
         };

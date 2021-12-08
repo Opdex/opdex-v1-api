@@ -289,7 +289,7 @@ public class Startup
         app.UseSwaggerUi3();
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapHub<PlatformHub>("/transactions/socket");
+            endpoints.MapHub<PlatformHub>("/socket");
             endpoints.MapControllers();
         });
     }

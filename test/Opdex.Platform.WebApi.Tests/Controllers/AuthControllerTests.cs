@@ -7,19 +7,16 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Encryption;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Extensions;
-using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.Auth;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
-using Opdex.Platform.WebApi.Auth;
 using Opdex.Platform.WebApi.Controllers;
-using Opdex.Platform.WebApi.Models.Requests.Auth;
+using SSAS.NET;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using static Opdex.Platform.WebApi.Auth.AuthConfiguration;
 
 namespace Opdex.Platform.WebApi.Tests.Controllers;
 
@@ -42,7 +39,7 @@ public class AuthControllerTests
             {
                 SigningKey = "SECRET_SIGNING_KEY"
             },
-            StratisOpenAuthProtocol = new StratisOpenAuthConfiguration
+            StratisSignatureAuth = new StratisSignatureAuthConfiguration
             {
                 CallbackPath = "auth",
             }
@@ -55,22 +52,22 @@ public class AuthControllerTests
     }
 
     [Fact]
-    public async Task StratisOpenAuthCallback_Expired_ThrowInvalidDataException()
+    public async Task StratisSignatureAuthCallback_Expired_ThrowInvalidDataException()
     {
         // Arrange
-        var query = new StratisOpenAuthCallbackQuery
+        var query = new StratisSignatureAuthCallbackQuery
         {
             Uid = Guid.NewGuid().ToString(),
             Exp = 1635200000 // 25 Oct 2021
         };
-        var body = new StratisOpenAuthCallbackBody
+        var body = new StratisSignatureAuthCallbackBody
         {
-            PublicKey = new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"),
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
             Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
         };
 
         // Act
-        Task Act() => _controller.StratisOpenAuthCallback(query, body, CancellationToken.None);
+        Task Act() => _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);
 
         // Assert
         var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
@@ -78,17 +75,17 @@ public class AuthControllerTests
     }
 
     [Fact]
-    public async Task StratisOpenAuthCallback_CallCirrusVerifyMessageQuery_Send()
+    public async Task StratisSignatureAuthCallback_CallCirrusVerifyMessageQuery_Send()
     {
         // Arrange
-        var query = new StratisOpenAuthCallbackQuery
+        var query = new StratisSignatureAuthCallbackQuery
         {
             Uid = Guid.NewGuid().ToString(),
             Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
         };
-        var body = new StratisOpenAuthCallbackBody
+        var body = new StratisSignatureAuthCallbackBody
         {
-            PublicKey = new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"),
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
             Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
         };
 
@@ -98,7 +95,7 @@ public class AuthControllerTests
         // Act
         try
         {
-            await _controller.StratisOpenAuthCallback(query, body, cancellationToken);
+            await _controller.StratisSignatureAuthCallback(query, body, cancellationToken);
         }
         catch (Exception) { }
 
@@ -109,24 +106,24 @@ public class AuthControllerTests
     }
 
     [Fact]
-    public async Task StratisOpenAuthCallback_InvalidSignature_ThrowInvalidDataException()
+    public async Task StratisSignatureAuthCallback_InvalidSignature_ThrowInvalidDataException()
     {
         // Arrange
-        var query = new StratisOpenAuthCallbackQuery
+        var query = new StratisSignatureAuthCallbackQuery
         {
             Uid = Guid.NewGuid().ToString(),
             Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
         };
-        var body = new StratisOpenAuthCallbackBody
+        var body = new StratisSignatureAuthCallbackBody
         {
-            PublicKey = new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"),
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
             Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<CallCirrusVerifyMessageQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
         // Act
-        Task Act() => _controller.StratisOpenAuthCallback(query, body, CancellationToken.None);
+        Task Act() => _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);
 
         // Assert
         var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
@@ -134,17 +131,17 @@ public class AuthControllerTests
     }
 
     [Fact]
-    public async Task StratisOpenAuthCallback_Uid_Decrypt()
+    public async Task StratisSignatureAuthCallback_Uid_Decrypt()
     {
         // Arrange
-        var query = new StratisOpenAuthCallbackQuery
+        var query = new StratisSignatureAuthCallbackQuery
         {
             Uid = Guid.NewGuid().ToString(),
             Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
         };
-        var body = new StratisOpenAuthCallbackBody
+        var body = new StratisSignatureAuthCallbackBody
         {
-            PublicKey = new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"),
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
             Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
         };
 
@@ -152,7 +149,7 @@ public class AuthControllerTests
         _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => "CONNECTION_ID");
 
         // Act
-        await _controller.StratisOpenAuthCallback(query, body, CancellationToken.None);
+        await _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);
 
         // Assert
         _fakeTwoWayEncryptionProvider.DecryptCalls.Count.Should().Be(1);
@@ -160,17 +157,17 @@ public class AuthControllerTests
     }
 
     [Fact]
-    public async Task StratisOpenAuthCallback_DecryptionError_ThrowInvalidDataException()
+    public async Task StratisSignatureAuthCallback_DecryptionError_ThrowInvalidDataException()
     {
         // Arrange
-        var query = new StratisOpenAuthCallbackQuery
+        var query = new StratisSignatureAuthCallbackQuery
         {
             Uid = Guid.NewGuid().ToString(),
             Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
         };
-        var body = new StratisOpenAuthCallbackBody
+        var body = new StratisSignatureAuthCallbackBody
         {
-            PublicKey = new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"),
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
             Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
         };
 
@@ -178,7 +175,7 @@ public class AuthControllerTests
         _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => throw new CryptographicException("Invalid key."));
 
         // Act
-        Task Act() => _controller.StratisOpenAuthCallback(query, body, CancellationToken.None);
+        Task Act() => _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);
 
         // Assert
         var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
@@ -186,17 +183,17 @@ public class AuthControllerTests
     }
 
     [Fact]
-    public async Task StratisOpenAuthCallback_NotifyUserOfSuccessfulAuthenticationCommand_Send()
+    public async Task StratisSignatureAuthCallback_NotifyUserOfSuccessfulAuthenticationCommand_Send()
     {
         // Arrange
-        var query = new StratisOpenAuthCallbackQuery
+        var query = new StratisSignatureAuthCallbackQuery
         {
             Uid = Guid.NewGuid().ToString(),
             Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
         };
-        var body = new StratisOpenAuthCallbackBody
+        var body = new StratisSignatureAuthCallbackBody
         {
-            PublicKey = new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"),
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
             Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
         };
 
@@ -209,7 +206,7 @@ public class AuthControllerTests
         using (var cts = new CancellationTokenSource()) { cancellationToken = cts.Token; }
 
         // Act
-        await _controller.StratisOpenAuthCallback(query, body, cancellationToken);
+        await _controller.StratisSignatureAuthCallback(query, body, cancellationToken);
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(
@@ -217,17 +214,17 @@ public class AuthControllerTests
     }
 
     [Fact]
-    public async Task StratisOpenAuthCallback_OnSuccess_ReturnOk()
+    public async Task StratisSignatureAuthCallback_OnSuccess_ReturnOk()
     {
         // Arrange
-        var query = new StratisOpenAuthCallbackQuery
+        var query = new StratisSignatureAuthCallbackQuery
         {
             Uid = Guid.NewGuid().ToString(),
             Exp = DateTimeOffset.UtcNow.AddDays(1).ToUnixTimeSeconds()
         };
-        var body = new StratisOpenAuthCallbackBody
+        var body = new StratisSignatureAuthCallbackBody
         {
-            PublicKey = new Address("PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV"),
+            PublicKey = "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV",
             Signature = "H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc="
         };
 
@@ -237,7 +234,7 @@ public class AuthControllerTests
         _fakeTwoWayEncryptionProvider.WhenDecryptCalled(() => connectionId);
 
         // Act
-        var response = await _controller.StratisOpenAuthCallback(query, body, CancellationToken.None);
+        var response = await _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);
 
         // Assert
         response.Should().BeAssignableTo<OkResult>();
