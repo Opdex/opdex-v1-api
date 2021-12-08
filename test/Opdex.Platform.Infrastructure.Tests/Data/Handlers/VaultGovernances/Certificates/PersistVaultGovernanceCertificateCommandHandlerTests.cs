@@ -1,5 +1,7 @@
 using AutoMapper;
+using Castle.Core.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
@@ -23,7 +25,7 @@ public class PersistVaultGovernanceCertificateCommandHandlerTests
     {
         _dbContextMock = new Mock<IDbContext>();
         _mapperMock = new Mock<IMapper>();
-        _handler = new PersistVaultGovernanceCertificateCommandHandler(_dbContextMock.Object, _mapperMock.Object);
+        _handler = new PersistVaultGovernanceCertificateCommandHandler(_dbContextMock.Object, Mock.Of<ILogger<PersistVaultGovernanceCertificateCommandHandler>>(), _mapperMock.Object);
     }
 
     [Fact]

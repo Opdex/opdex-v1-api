@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -63,7 +64,18 @@ public class PersistTokenSnapshotCommandHandler : IRequestHandler<PersistTokenSn
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting token snapshot for tokenId {request?.Snapshot?.TokenId} and type {request?.Snapshot?.SnapshotType}");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "MarketId", request.Snapshot.MarketId },
+                { "TokenId", request.Snapshot.TokenId },
+                { "SnapshotType", request.Snapshot.SnapshotType },
+                { "StartDate", request.Snapshot.StartDate },
+                { "EndDate", request.Snapshot.EndDate },
+                { "ModifiedDate", request.Snapshot.ModifiedDate },
+            }))
+            {
+                _logger.LogError(ex, $"Failure persisting token snapshot.");
+            }
 
             return false;
         }

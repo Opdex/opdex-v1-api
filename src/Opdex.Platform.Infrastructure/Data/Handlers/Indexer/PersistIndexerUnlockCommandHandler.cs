@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
 
-public class PersistIndexerUnlockCommandHandler : IRequestHandler<PersistIndexerUnlockCommand, bool>
+public class PersistIndexerUnlockCommandHandler : AsyncRequestHandler<PersistIndexerUnlockCommand>
 {
     private static readonly string SqlQuery =
         $@"UPDATE index_lock
@@ -21,18 +22,27 @@ public class PersistIndexerUnlockCommandHandler : IRequestHandler<PersistIndexer
             WHERE {nameof(IndexLockEntity.InstanceId)} = @{nameof(IndexLockEntity.InstanceId)};";
 
     private readonly IDbContext _context;
+    private readonly ILogger<PersistIndexerUnlockCommandHandler> _logger;
     private readonly string _instanceId;
 
-    public PersistIndexerUnlockCommandHandler(IDbContext context, OpdexConfiguration opdexConfiguration)
+    public PersistIndexerUnlockCommandHandler(IDbContext context, ILogger<PersistIndexerUnlockCommandHandler> logger, OpdexConfiguration opdexConfiguration)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _instanceId = opdexConfiguration?.InstanceId ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<bool> Handle(PersistIndexerUnlockCommand request, CancellationToken cancellationToken)
+    protected override async Task Handle(PersistIndexerUnlockCommand request, CancellationToken cancellationToken)
     {
-        var command = DatabaseQuery.Create(SqlQuery, new { InstanceId = _instanceId }, CancellationToken.None);
-        var result = await _context.ExecuteCommandAsync(command);
-        return result == 1;
+        try
+        {
+            var command = DatabaseQuery.Create(SqlQuery, new { InstanceId = _instanceId }, CancellationToken.None);
+            var result = await _context.ExecuteCommandAsync(command);
+            if (result == 0) _logger.LogCritical("Failed to unlock indexer.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical(ex, "Failed to unlock indexer.");
+        }
     }
 }

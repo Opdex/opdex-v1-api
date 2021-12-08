@@ -7,6 +7,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -69,7 +70,15 @@ public class PersistTokenSummaryCommandHandler : IRequestHandler<PersistTokenSum
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Unable to persist {nameof(TokenSummary)}");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "MarketId", request.TokenSummary.MarketId },
+                { "TokenId", request.TokenSummary.TokenId },
+                { "BlockHeight", request.TokenSummary.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, $"Unable to persist token summary.");
+            }
             return 0;
         }
     }

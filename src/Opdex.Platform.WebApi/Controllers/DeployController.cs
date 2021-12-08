@@ -10,6 +10,7 @@ using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models;
@@ -68,7 +69,8 @@ public class DeployController : ControllerBase
             throw new Exception("Markets already exist");
         }
 
-        await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploy), CancellationToken.None);
+        var locked = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploy), CancellationToken.None);
+        if (!locked) throw new IndexingAlreadyRunningException();
 
         // Deploy governance token
         var createGovernanceTokenParams = new[]

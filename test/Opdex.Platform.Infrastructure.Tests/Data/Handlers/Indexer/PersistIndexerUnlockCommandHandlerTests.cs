@@ -1,9 +1,10 @@
-using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
 using Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -12,56 +13,105 @@ namespace Opdex.Platform.Infrastructure.Tests.Data.Handlers.Indexer;
 
 public class PersistIndexerUnlockCommandHandlerTests
 {
-    private readonly Mock<IDbContext> _dbContext;
-    private readonly PersistIndexerUnlockCommandHandler _handler;
+    private readonly Mock<IDbContext> _dbContextMock;
+    private readonly Mock<ILogger<PersistIndexerUnlockCommandHandler>> _loggerMock;
+    private readonly PersistIndexerUnlockCommandHandlerWrapper _handler;
 
     public PersistIndexerUnlockCommandHandlerTests()
     {
-        _dbContext = new Mock<IDbContext>();
+        _dbContextMock = new Mock<IDbContext>();
+        _loggerMock = new Mock<ILogger<PersistIndexerUnlockCommandHandler>>();
         var opdexConfiguration = new OpdexConfiguration();
-        _handler = new PersistIndexerUnlockCommandHandler(_dbContext.Object, opdexConfiguration);
+        _handler = new PersistIndexerUnlockCommandHandlerWrapper(_dbContextMock.Object, _loggerMock.Object, opdexConfiguration);
     }
 
     [Fact]
     public async Task PersistIndexerUnlock_ExecuteCommand()
     {
         // Arrange
-        var token = CancellationToken.None;
+        using var cancellationTokenSource = new CancellationTokenSource();
 
         // Act
-        var result = await _handler.Handle(new PersistIndexerUnlockCommand(), token);
+        await _handler.Handle(new PersistIndexerUnlockCommand(), cancellationTokenSource.Token);
 
         // Assert
-        _dbContext.Verify(callTo => callTo.ExecuteCommandAsync(It.Is<DatabaseQuery>(q => q.Token == default)), Times.Once);
+        _dbContextMock.Verify(callTo => callTo.ExecuteCommandAsync(It.Is<DatabaseQuery>(q => q.Token == CancellationToken.None)), Times.Once);
     }
 
     [Fact]
-    public async Task PersistIndexerUnlock_Failure_ReturnFalse()
+    public async Task Handle_ThrownException_LogCritical()
     {
         // Arrange
-        var token = CancellationToken.None;
-        _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
-            .ReturnsAsync(0);
+        var exception = new StubMysqlException();
+        _dbContextMock.Setup(callTo => callTo.ExecuteCommandAsync(It.IsAny<DatabaseQuery>())).ThrowsAsync(exception);
 
         // Act
-        var result = await _handler.Handle(new PersistIndexerUnlockCommand(), token);
+        await _handler.Handle(new PersistIndexerUnlockCommand(), CancellationToken.None);
 
         // Assert
-        result.Should().BeFalse();
+        _loggerMock.Verify(
+               x => x.Log(
+                   LogLevel.Critical,
+                   It.IsAny<EventId>(),
+                   It.Is<It.IsAnyType>((o, t) => string.Equals("Failed to unlock indexer.", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
+                   exception,
+                   It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+               Times.Once);
     }
 
     [Fact]
-    public async Task PersistIndexerUnlock_Success_ReturnTrue()
+    public async Task Handle_NoAffectedRows_LogCritical()
     {
         // Arrange
-        var token = CancellationToken.None;
-        _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
-            .ReturnsAsync(1);
+        _dbContextMock.Setup(callTo => callTo.ExecuteCommandAsync(It.IsAny<DatabaseQuery>())).ReturnsAsync(0);
 
         // Act
-        var result = await _handler.Handle(new PersistIndexerUnlockCommand(), token);
+        await _handler.Handle(new PersistIndexerUnlockCommand(), CancellationToken.None);
 
         // Assert
-        result.Should().BeTrue();
+        _loggerMock.Verify(
+               x => x.Log(
+                   LogLevel.Critical,
+                   It.IsAny<EventId>(),
+                   It.Is<It.IsAnyType>((o, t) => string.Equals("Failed to unlock indexer.", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
+                   null,
+                   It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+               Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_OneAffectedRow_NoCriticalLog()
+    {
+        // Arrange
+        _dbContextMock.Setup(callTo => callTo.ExecuteCommandAsync(It.IsAny<DatabaseQuery>())).ReturnsAsync(1);
+
+        // Act
+        await _handler.Handle(new PersistIndexerUnlockCommand(), CancellationToken.None);
+
+        // Assert
+        _loggerMock.Verify(
+               x => x.Log(
+                   LogLevel.Critical,
+                   It.IsAny<EventId>(),
+                   It.Is<It.IsAnyType>((o, t) => true),
+                   null,
+                   It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+               Times.Never);
+    }
+
+    public class PersistIndexerUnlockCommandHandlerWrapper : PersistIndexerUnlockCommandHandler
+    {
+        public PersistIndexerUnlockCommandHandlerWrapper(IDbContext context, ILogger<PersistIndexerUnlockCommandHandler> logger, OpdexConfiguration opdexConfiguration) : base(context, logger, opdexConfiguration)
+        {
+        }
+
+        public new async Task Handle(PersistIndexerUnlockCommand command, CancellationToken cancellationToken)
+        {
+            await base.Handle(command, cancellationToken);
+        }
+    }
+
+    class StubMysqlException : Exception
+    {
     }
 }

@@ -5,6 +5,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Addresses;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -66,7 +67,15 @@ public class PersistAddressBalanceCommandHandler : IRequestHandler<PersistAddres
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failure persisting address balance for owner: {request.AddressBalance.Owner}");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "Owner", request.AddressBalance.Owner },
+                { "TokenId", request.AddressBalance.TokenId },
+                { "BlockHeight", request.AddressBalance.ModifiedBlock }
+            }))
+            {
+                _logger.LogError(ex, "Failure persisting address balance.");
+            }
 
             return 0;
         }

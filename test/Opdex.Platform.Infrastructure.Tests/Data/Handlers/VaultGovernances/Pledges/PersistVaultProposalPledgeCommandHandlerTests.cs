@@ -1,5 +1,6 @@
 using AutoMapper;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
@@ -23,7 +24,7 @@ public class PersistVaultProposalPledgeCommandHandlerTests
     {
         _dbContextMock = new Mock<IDbContext>();
         _mapperMock = new Mock<IMapper>();
-        _handler = new PersistVaultProposalPledgeCommandHandler(_dbContextMock.Object, _mapperMock.Object);
+        _handler = new PersistVaultProposalPledgeCommandHandler(_dbContextMock.Object, Mock.Of<ILogger<PersistVaultProposalPledgeCommandHandler>>(), _mapperMock.Object);
     }
 
     [Fact]

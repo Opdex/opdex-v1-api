@@ -7,6 +7,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.LiquidityPools;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.LiquidityPools;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -84,7 +85,14 @@ public class PersistLiquidityPoolSummaryCommandHandler : IRequestHandler<Persist
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Unable to persist {nameof(LiquidityPoolSummary)}");
+            using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+                { "LiquidityPoolId" , request.Summary.LiquidityPoolId},
+                { "BlockHeight" , request.Summary.ModifiedBlock}
+            }))
+            {
+                _logger.LogError(ex, $"Unable to persist liquidity pool summary.");
+            }
             return 0;
         }
     }

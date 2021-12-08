@@ -568,7 +568,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<MakeRewindToBlockCommand, bool>, MakeRewindToBlockCommandHandler>();
 
         // Indexer
-        services.AddTransient<IRequestHandler<MakeIndexerLockCommand, Unit>, MakeIndexerLockCommandHandler>();
+        services.AddTransient<IRequestHandler<MakeIndexerLockCommand, bool>, MakeIndexerLockCommandHandler>();
         services.AddTransient<IRequestHandler<MakeIndexerUnlockCommand, Unit>, MakeIndexerUnlockCommandHandler>();
 
         // Tokens

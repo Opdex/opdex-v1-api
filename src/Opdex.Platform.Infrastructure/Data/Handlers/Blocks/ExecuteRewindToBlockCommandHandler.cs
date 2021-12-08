@@ -32,9 +32,9 @@ public class ExecuteRewindToBlockCommandHandler : IRequestHandler<ExecuteRewindT
 
             return true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            _logger.LogError("Failure rewinding to block {Block}.", request.Block);
+            _logger.LogError(ex, "Failure rewinding to block {Block}.", request.Block);
             return false;
         }
     }
