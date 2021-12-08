@@ -15,7 +15,7 @@ public class CreateVaultProposalCreateCertificateQuoteCommand : BaseTransactionQ
     /// </summary>
     /// <param name="vault">Address of the vault.</param>
     /// <param name="owner">Address of the certificate owner.</param>
-    /// <param name="amount">Proposed minimum pledge amount.</param>
+    /// <param name="amount">Proposed governance token certificate value.</param>
     /// <param name="description">Proposal description.</param>
     /// <param name="walletAddress">Address of the sender.</param>
     public CreateVaultProposalCreateCertificateQuoteCommand(Address vault, Address owner, FixedDecimal amount, string description, Address walletAddress) : base(walletAddress)

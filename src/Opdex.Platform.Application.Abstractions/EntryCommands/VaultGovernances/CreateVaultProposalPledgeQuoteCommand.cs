@@ -10,12 +10,11 @@ namespace Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances
 public class CreateVaultProposalPledgeQuoteCommand : BaseTransactionQuoteCommand
 {
     /// <summary>
-    /// Creates a command to quote voting on a vault proposal.
+    /// Creates a command to quote pledging to a vault proposal.
     /// </summary>
     /// <param name="vault">Address of the vault.</param>
     /// <param name="proposalId">Id of the proposal in the vault.</param>
-    /// <param name="amount">Amount of CRS to vote.</param>
-    /// <param name="inFavor">If the vote is in favor of the proposal.</param>
+    /// <param name="amount">Amount of CRS to pledge.</param>
     /// <param name="walletAddress">Address of the sender.</param>
     public CreateVaultProposalPledgeQuoteCommand(Address vault, ulong proposalId, FixedDecimal amount, Address walletAddress) : base(walletAddress)
     {
