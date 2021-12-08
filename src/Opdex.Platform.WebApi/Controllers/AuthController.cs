@@ -45,11 +45,11 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Stratis Open Auth Protocol
+    /// Stratis Signature Auth
     /// </summary>
-    /// <remarks>Responds to a request from a Stratis Open Auth Signer.</remarks>
-    /// <param name="query">Tne Stratis Open Auth query string.</param>
-    /// <param name="body">The Stratis Open Auth body.</param>
+    /// <remarks>Responds to a request from a Stratis Signature Auth Signer.</remarks>
+    /// <param name="query">Tne Stratis Signature Auth query string.</param>
+    /// <param name="body">The Stratis Signature Auth body.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Signature was validated successfully.</response>
     /// <response code="400">The request is not valid.</response>
@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> StratisSignatureAuthCallback([FromQuery] StratisSignatureAuthCallbackQuery query,
-                                                             [FromBody] StratisSignatureAuthCallbackBody body, CancellationToken cancellationToken)
+                                                                  [FromBody] StratisSignatureAuthCallbackBody body, CancellationToken cancellationToken)
     {
         var callbackUri = new Uri(System.IO.Path.Combine(_opdexConfiguration.ApiUrl, _authConfiguration.StratisSignatureAuth.CallbackPath));
         var expectedCallbackPath = $"{callbackUri.Authority}{callbackUri.AbsolutePath}";
