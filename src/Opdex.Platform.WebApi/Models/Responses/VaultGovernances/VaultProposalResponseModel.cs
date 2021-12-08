@@ -56,7 +56,7 @@ public class VaultProposalResponseModel
     /// <summary>
     /// Description for the proposal.
     /// </summary>
-    /// <example>OCP-1: Request for certificate. See https://www.example.com for details.</example>
+    /// <example>OVP-1: Request to create certificate. See https://www.example.com for details.</example>
     [NotNull]
     [MaxLength(200)]
     public string Description { get; set; }

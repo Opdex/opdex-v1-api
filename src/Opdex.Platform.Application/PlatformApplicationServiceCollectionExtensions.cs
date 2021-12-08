@@ -363,6 +363,16 @@ public static class PlatformApplicationServiceCollectionExtensions
 
         // Vault Governances
         services.AddTransient<IRequestHandler<CreateVaultGovernanceCommand, ulong>, CreateVaultGovernanceCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateVaultProposalCreateCertificateQuoteCommand, TransactionQuoteDto>, CreateVaultProposalCreateCertificateQuoteCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateVaultProposalRevokeCertificateQuoteCommand, TransactionQuoteDto>, CreateVaultProposalRevokeCertificateQuoteCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateVaultProposalMinimumPledgeQuoteCommand, TransactionQuoteDto>, CreateVaultProposalMinimumPledgeQuoteCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateVaultProposalMinimumVoteQuoteCommand, TransactionQuoteDto>, CreateVaultProposalMinimumVoteQuoteCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateVaultProposalPledgeQuoteCommand, TransactionQuoteDto>, CreateVaultProposalPledgeQuoteCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateVaultProposalVoteQuoteCommand, TransactionQuoteDto>, CreateVaultProposalVoteQuoteCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateWithdrawVaultProposalPledgeQuoteCommand, TransactionQuoteDto>, CreateWithdrawVaultProposalPledgeQuoteCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateWithdrawVaultProposalVoteQuoteCommand, TransactionQuoteDto>, CreateWithdrawVaultProposalVoteQuoteCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateCompleteVaultProposalQuoteCommand, TransactionQuoteDto>, CreateCompleteVaultProposalQuoteCommandHandler>();
+        services.AddTransient<IRequestHandler<CreateRedeemVaultCertificateQuoteCommand, TransactionQuoteDto>, CreateRedeemVaultCertificateQuoteCommandHandler>();
 
         // Tokens
         services.AddTransient<IRequestHandler<CreateCrsTokenSnapshotsCommand, bool>, CreateCrsTokenSnapshotsCommandHandler>();
