@@ -2,7 +2,12 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Votes;
+using Opdex.Platform.Domain.Models.TransactionLogs;
+using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using System;
 using System.Linq;
 using System.Threading;
@@ -23,7 +28,8 @@ public class CreateRewindVaultProposalVotesCommandHandler : IRequestHandler<Crea
 
     public async Task<bool> Handle(CreateRewindVaultProposalVotesCommand request, CancellationToken cancellationToken)
     {
-        var votes = await _mediator.Send(new RetrieveVaultProposalVotesByModifiedBlockQuery(request.RewindHeight));
+        var logs = new[] { TransactionLogType.VaultProposalVoteLog, TransactionLogType.VaultProposalWithdrawVoteLog };
+        var votes = await _mediator.Send(new RetrieveVaultProposalVotesByModifiedBlockQuery(request.RewindHeight), CancellationToken.None);
         var votesList = votes.ToList();
         var staleCount = votesList.Count;
 
@@ -31,21 +37,44 @@ public class CreateRewindVaultProposalVotesCommandHandler : IRequestHandler<Crea
 
         int refreshFailureCount = 0;
 
-        var voteChunks = votesList.Chunk(5);
+        var votesByVault = votesList.GroupBy(vote => vote.VaultGovernanceId);
 
-        foreach (var chunk in voteChunks)
+        foreach (var vaultGroup in votesByVault)
         {
-            await Task.WhenAll(chunk.Select(async vote =>
+            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(vaultGroup.Key), CancellationToken.None);
+
+            var votesByProposal = vaultGroup.GroupBy(vote => vote.ProposalId);
+
+            foreach (var voteGroup in votesByProposal)
             {
-                // Todo this refreshes the active balance on the vote but not the voted amount that may have changed due to the rewind
-                // -- The only way we can access this, is to look back at our transactions
-                // -- Consider grouping votes by voter, then for each voter pulling vote transactions, then match to votes
-                var voteId = await _mediator.Send(new MakeVaultProposalVoteCommand(vote, request.RewindHeight, refreshBalance: true));
+                var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(voteGroup.Key), CancellationToken.None);
 
-                var voteRefreshed = voteId > 0;
+                foreach (var chunk in voteGroup.Chunk(10))
+                {
+                    await Task.WhenAll(chunk.Select(async vote =>
+                    {
+                        var latestVoteTx = await _mediator.Send(new SelectTransactionForVaultProposalVoteRewindQuery(vault.Address, vote.Voter,
+                                                                                                                         proposal.PublicId), CancellationToken.None);
 
-                if (!voteRefreshed) refreshFailureCount++;
-            }));
+                        if (latestVoteTx == null)
+                        {
+                            _logger.LogWarning($"Unable to find a more recent vote transaction for vote Id: {vote.Id}");
+                            return;
+                        }
+
+                        var latestLog = latestVoteTx.LogsOfTypes(logs).OrderBy(log => log.SortOrder).First();
+
+                        if (latestLog is VaultProposalVoteLog voteLog) vote.Update(voteLog, request.RewindHeight);
+                        else if (latestLog is VaultProposalWithdrawVoteLog withdrawLog) vote.Update(withdrawLog, request.RewindHeight);
+
+                        var voteId = await _mediator.Send(new MakeVaultProposalVoteCommand(vote, request.RewindHeight), CancellationToken.None);
+
+                        var voteRefreshed = voteId > 0;
+
+                        if (!voteRefreshed) refreshFailureCount++;
+                    }));
+                }
+            }
         }
 
         _logger.LogDebug($"Refreshed {staleCount - refreshFailureCount} vault proposal votes.");

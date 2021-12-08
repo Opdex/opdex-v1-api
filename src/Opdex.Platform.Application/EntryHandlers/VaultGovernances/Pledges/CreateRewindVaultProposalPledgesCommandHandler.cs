@@ -2,14 +2,11 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Pledges;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
-using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.TransactionLogs;
 using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 using System;
 using System.Linq;
@@ -31,8 +28,8 @@ public class CreateRewindVaultProposalPledgesCommandHandler : IRequestHandler<Cr
 
     public async Task<bool> Handle(CreateRewindVaultProposalPledgesCommand request, CancellationToken cancellationToken)
     {
-        var events = new[] { TransactionEventType.VaultProposalPledgeEvent, TransactionEventType.VaultProposalWithdrawPledgeEvent };
-        var pledges = await _mediator.Send(new RetrieveVaultProposalPledgesByModifiedBlockQuery(request.RewindHeight));
+        var logs = new[] { TransactionLogType.VaultProposalPledgeLog, TransactionLogType.VaultProposalWithdrawPledgeLog };
+        var pledges = await _mediator.Send(new RetrieveVaultProposalPledgesByModifiedBlockQuery(request.RewindHeight), CancellationToken.None);
         var pledgesList = pledges.ToList();
         var staleCount = pledgesList.Count;
 
@@ -40,73 +37,37 @@ public class CreateRewindVaultProposalPledgesCommandHandler : IRequestHandler<Cr
 
         int refreshFailureCount = 0;
 
-        // vaultId: [{proposal: [{pledges}]}]
-
-        // arrange pledges by vault - 1 call per vault
         var pledgesByVault = pledgesList.GroupBy(pledge => pledge.VaultGovernanceId);
 
-        // group pledges by proposal - 1 db call per proposal
         foreach (var vaultGroup in pledgesByVault)
         {
-            var vaultId = vaultGroup.Key;
-
-            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(vaultId));
+            var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(vaultGroup.Key), CancellationToken.None);
 
             var pledgesByProposal = vaultGroup.GroupBy(pledge => pledge.ProposalId);
 
             foreach (var pledgeGroup in pledgesByProposal)
             {
-                var proposalId = pledgeGroup.Key;
+                var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(pledgeGroup.Key), CancellationToken.None);
 
-                var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(proposalId));
-
-                var pledgeChunks = pledgeGroup.Chunk(5);
-
-                foreach (var chunk in pledgeChunks)
+                foreach (var chunk in pledgeGroup.Chunk(10))
                 {
                     await Task.WhenAll(chunk.Select(async pledge =>
                     {
-                        var cursor = new TransactionsCursor(pledge.Pledger, events, new [] {vault.Address}, SortDirectionType.DESC, 50,
-                                                            PagingDirection.Forward, default);
+                        var latestPledgeTx = await _mediator.Send(new SelectTransactionForVaultProposalPledgeRewindQuery(vault.Address, pledge.Pledger,
+                                                                                                                         proposal.PublicId), CancellationToken.None);
 
-                        var transactions = await _mediator.Send(new RetrieveTransactionsWithFilterQuery(cursor));
-                        var transactionsList = transactions.ToList();
-
-                        VaultProposalPledgeLog pledgeLog = null;
-                        VaultProposalWithdrawPledgeLog withdrawLog = null;
-
-                        var latestTransaction = transactionsList.FirstOrDefault(tx =>
+                        if (latestPledgeTx == null)
                         {
-                            pledgeLog = tx
-                                .LogsOfType<VaultProposalPledgeLog>(TransactionLogType.VaultProposalPledgeLog)
-                                .FirstOrDefault(log => log.ProposalId == proposal.PublicId);
-
-                            withdrawLog = tx
-                                .LogsOfType<VaultProposalWithdrawPledgeLog>(TransactionLogType.VaultProposalWithdrawPledgeLog)
-                                .FirstOrDefault(log => log.ProposalId == proposal.PublicId);
-
-                            return pledgeLog != null || withdrawLog != null;
-                        });
-
-                        if (latestTransaction == null)
-                        {
-                            // No prior history? Handle
+                            _logger.LogWarning($"Unable to find a more recent pledge transaction for pledge Id: {pledge.Id}");
+                            return;
                         }
 
-                        if (pledgeLog != null)
-                        {
-                            pledge.UpdatePledge(pledgeLog.PledgerAmount, request.RewindHeight);
-                        }
-                        // Nothing to do if the pledge was not withdrawn
-                        else if (withdrawLog != null && withdrawLog.PledgeWithdrawn)
-                        {
-                            pledge.UpdatePledge(withdrawLog.PledgerAmount, request.RewindHeight);
-                        }
+                        var latestLog = latestPledgeTx.LogsOfTypes(logs).OrderBy(log => log.SortOrder).First();
 
-                        // Todo this refreshes the active balance on the pledge but not the pledged amount that may have changed due to the rewind
-                        // -- The only way we can access this, is to look back at our transactions
-                        // -- Consider grouping pledges by pledger, then for each pledger pulling pledge transactions, then match to pledges
-                        var pledgeId = await _mediator.Send(new MakeVaultProposalPledgeCommand(pledge, request.RewindHeight, refreshBalance: true));
+                        if (latestLog is VaultProposalPledgeLog pledgeLog) pledge.Update(pledgeLog, request.RewindHeight);
+                        else if (latestLog is VaultProposalWithdrawPledgeLog withdrawLog) pledge.Update(withdrawLog, request.RewindHeight);
+
+                        var pledgeId = await _mediator.Send(new MakeVaultProposalPledgeCommand(pledge, request.RewindHeight), CancellationToken.None);
 
                         var pledgeRefreshed = pledgeId > 0;
 

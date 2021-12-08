@@ -243,6 +243,9 @@ public class CreateRewindToBlockCommandHandlerTests
         _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMarketPermissionsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mediator.Setup(m => m.Send(It.IsAny<CreateRewindVaultGovernancesCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mediator.Setup(m => m.Send(It.IsAny<CreateRewindVaultProposalsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _mediator.Setup(m => m.Send(It.IsAny<CreateRewindVaultProposalPledgesCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _mediator.Setup(m => m.Send(It.IsAny<CreateRewindVaultProposalVotesCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _mediator.Setup(m => m.Send(It.IsAny<CreateRewindVaultGovernanceCertificatesCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mediator.Setup(m => m.Send(It.IsAny<CreateRewindSnapshotsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         // Act
