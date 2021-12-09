@@ -5,24 +5,24 @@ using ZymLabs.NSwag.FluentValidation;
 
 namespace Opdex.Platform.WebApi.Validation;
 
-public class TokenAmountValidator<T> : PropertyValidator<T, FixedDecimal>, ITokenAmountValidator
+public class SrcAmountValidator<T> : PropertyValidator<T, FixedDecimal>, ISrcAmountValidator
 {
-    public override string Name => "TokenAmount";
+    public override string Name => "SrcAmount";
 
     public override bool IsValid(ValidationContext<T> context, FixedDecimal value) => value.Precision <= 18;
 
     protected override string GetDefaultMessageTemplate(string errorCode) => "{PropertyName} must not contain more than 18 decimal places.";
 }
 
-public interface ITokenAmountValidator : IPropertyValidator
+public interface ISrcAmountValidator : IPropertyValidator
 {
 }
 
-public class TokenAmountValidationRule : FluentValidationRule
+public class SrcAmountValidationRule : FluentValidationRule
 {
-    public TokenAmountValidationRule() : base("TokenAmount")
+    public SrcAmountValidationRule() : base("SrcAmount")
     {
-        Matches = validator => validator is ITokenAmountValidator;
+        Matches = validator => validator is ISrcAmountValidator;
         Apply = context =>
         {
             var schema = context.SchemaProcessorContext.Schema;
@@ -34,13 +34,13 @@ public class TokenAmountValidationRule : FluentValidationRule
     }
 }
 
-public static class TokenAmountValidatorExtensions
+public static class SrcAmountValidatorExtensions
 {
     /// <summary>
     /// Validates that the value is a valid token amount.
     /// </summary>
-    public static IRuleBuilderOptions<T, FixedDecimal> MustBeValidTokenValue<T>(this IRuleBuilder<T, FixedDecimal> ruleBuilder)
+    public static IRuleBuilderOptions<T, FixedDecimal> MustBeValidSrcValue<T>(this IRuleBuilder<T, FixedDecimal> ruleBuilder)
     {
-        return ruleBuilder.SetValidator(new TokenAmountValidator<T>());
+        return ruleBuilder.SetValidator(new SrcAmountValidator<T>());
     }
 }
