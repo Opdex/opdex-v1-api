@@ -87,7 +87,7 @@ public class LiquidityPoolsController : ControllerBase
     /// <remarks>Returns the liquidity pool that matches the provided address.</remarks>
     /// <param name="address">Contract address to get pools of</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>The requested pools</returns>
+    /// <returns>The requested pool</returns>
     /// <response code="200">Liquidity pool details found.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
