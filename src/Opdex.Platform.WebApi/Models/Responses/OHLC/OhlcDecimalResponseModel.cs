@@ -4,12 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 namespace Opdex.Platform.WebApi.Models.Responses.OHLC;
 
 /// <summary>
-/// Price details within a time interval.
+/// Value details within a time interval.
 /// </summary>
 public class OhlcDecimalResponseModel
 {
     /// <summary>
-    /// Price at the start of the time interval.
+    /// Value at the start of the time interval.
     /// </summary>
     /// <example>55.00</example>
     [NotNull]
@@ -17,7 +17,7 @@ public class OhlcDecimalResponseModel
     public decimal Open { get; set; }
 
     /// <summary>
-    /// Highest price during the time interval.
+    /// Highest value during the time interval.
     /// </summary>
     /// <example>55.55</example>
     [NotNull]
@@ -25,7 +25,7 @@ public class OhlcDecimalResponseModel
     public decimal High { get; set; }
 
     /// <summary>
-    /// Lowest price during the time interval.
+    /// Lowest value during the time interval.
     /// </summary>
     /// <example>49.85</example>
     [NotNull]
@@ -33,7 +33,7 @@ public class OhlcDecimalResponseModel
     public decimal Low { get; set; }
 
     /// <summary>
-    /// Price at the end of the time interval.
+    /// Value at the end of the time interval.
     /// </summary>
     /// <example>55.25</example>
     [NotNull]

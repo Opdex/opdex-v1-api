@@ -1,7 +1,7 @@
 using Opdex.Platform.Common.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+namespace Opdex.Platform.WebApi.Models.Requests.MarketTokens;
 
 /// <summary>
 /// A request to quote a token swap.

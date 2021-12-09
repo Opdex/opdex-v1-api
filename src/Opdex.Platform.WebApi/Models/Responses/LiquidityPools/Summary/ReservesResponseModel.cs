@@ -4,30 +4,37 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Summary;
 
+/// <summary>
+/// Reserves summary.
+/// </summary>
 public class ReservesResponseModel
 {
     /// <summary>
-    /// The total amount of locked CRS tokens.
+    /// Total amount of locked CRS tokens.
     /// </summary>
+    /// <example>"100000.00000000"</example>
     [NotNull]
     public FixedDecimal Crs { get; set; }
 
     /// <summary>
-    /// The total amount of locked SRC tokens.
+    /// Total amount of locked SRC tokens.
     /// </summary>
+    /// <example>"50.00000000"</example>
     [NotNull]
     public FixedDecimal Src { get; set; }
 
     /// <summary>
-    /// The total amount of locked reserves.
+    /// Total USD value of locked reserves.
     /// </summary>
+    /// <example>"50000000000000.00000000"</example>
     [NotNull]
     [Range(0, double.MaxValue)]
     public decimal Usd { get; set; }
 
     /// <summary>
-    /// The percentage change of liquidity for the day.
+    /// Percentage change of liquidity for the day.
     /// </summary>
+    /// <example>4.69</example>
     [NotNull]
     [Range(double.MinValue, double.MaxValue)]
     public decimal DailyUsdChangePercent { get; set; }

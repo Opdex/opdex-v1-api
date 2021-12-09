@@ -8,7 +8,6 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.MiningGovernances;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.MiningGovernances;
-using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.MiningGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System;

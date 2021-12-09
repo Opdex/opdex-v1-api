@@ -3,22 +3,25 @@ using Opdex.Platform.WebApi.Models.Responses.OHLC;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots;
 
+/// <summary>
+/// Liquidity pool reserve snapshot details.
+/// </summary>
 public class ReservesSnapshotResponseModel
 {
     /// <summary>
-    /// The total amount of locked CRS tokens.
+    /// Total amount of locked CRS tokens.
     /// </summary>
     [NotNull]
     public OhlcFixedDecimalResponseModel Crs { get; set; }
 
     /// <summary>
-    /// The total amount of locked SRC tokens.
+    /// Total amount of locked SRC tokens.
     /// </summary>
     [NotNull]
     public OhlcFixedDecimalResponseModel Src { get; set; }
 
     /// <summary>
-    /// The total amount of locked reserves.
+    /// Total USD value of locked reserves.
     /// </summary>
     [NotNull]
     public OhlcDecimalResponseModel Usd { get; set; }

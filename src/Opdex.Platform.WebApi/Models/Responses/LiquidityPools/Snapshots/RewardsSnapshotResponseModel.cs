@@ -2,23 +2,29 @@ using NJsonSchema.Annotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots;
 
+/// <summary>
+/// Reward snapshot details.
+/// </summary>
 public class RewardsSnapshotResponseModel
 {
     /// <summary>
-    /// The amount of USD rewards to providers.
+    /// USD value of rewards to providers.
     /// </summary>
+    /// <example>50000.50</example>
     [NotNull]
     public decimal ProviderUsd { get; set; }
 
     /// <summary>
-    /// The amount of USD rewards to the market, either the market owner of a standard market or stakers of a staking market.
+    /// USD value of rewards to the market, either the owner of a standard market or stakers in a staking market.
     /// </summary>
+    /// <example>10000.10</example>
     [NotNull]
     public decimal MarketUsd { get; set; }
 
     /// <summary>
-    /// The total amount of USD rewards generated from token swaps.
+    /// USD value of all rewards generated from token swaps.
     /// </summary>
+    /// <example>60000.60</example>
     [NotNull]
     public decimal TotalUsd { get; set; }
 }

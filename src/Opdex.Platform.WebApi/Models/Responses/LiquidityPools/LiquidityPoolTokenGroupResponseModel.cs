@@ -3,6 +3,9 @@ using Opdex.Platform.WebApi.Models.Responses.Tokens;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools;
 
+/// <summary>
+/// Liquidity pool token pairing details.
+/// </summary>
 public class LiquidityPoolTokenGroupResponseModel
 {
     /// <summary>
@@ -12,13 +15,13 @@ public class LiquidityPoolTokenGroupResponseModel
     public TokenResponseModel Crs { get; set; }
 
     /// <summary>
-    /// The SRC token's details and pricing.
+    /// SRC token details and pricing.
     /// </summary>
     [NotNull]
     public TokenResponseModel Src { get; set; }
 
     /// <summary>
-    /// The liquidity pool token's details and pricing.
+    /// Pairing liquidity pool token details and pricing.
     /// </summary>
     [NotNull]
     public TokenResponseModel Lp { get; set; }

@@ -8,7 +8,7 @@ using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
-using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+using Opdex.Platform.WebApi.Models.Requests.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System.Threading;
 using System.Threading.Tasks;

@@ -40,7 +40,7 @@ public sealed class SnapshotFilterParameters : FilterParameters<SnapshotCursor>
     {
         if (EncodedCursor is null) return new SnapshotCursor(Interval, StartDateTime, EndDateTime, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
-        SnapshotCursor.TryParse(decodedCursor, out var cursor);
+        _ = SnapshotCursor.TryParse(decodedCursor, out var cursor);
         return cursor;
     }
 }

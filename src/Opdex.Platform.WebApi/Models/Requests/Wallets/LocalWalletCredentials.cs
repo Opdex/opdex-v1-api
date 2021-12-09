@@ -1,6 +1,6 @@
 using Opdex.Platform.Common.Models;
 
-namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+namespace Opdex.Platform.WebApi.Models.Requests.Wallets;
 
 public class LocalWalletCredentials
 {

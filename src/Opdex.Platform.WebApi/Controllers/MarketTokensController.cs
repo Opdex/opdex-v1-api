@@ -12,7 +12,6 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests;
 using Opdex.Platform.WebApi.Models.Requests.MarketTokens;
 using Opdex.Platform.WebApi.Models.Requests.Tokens;
-using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
 using Opdex.Platform.WebApi.Models.Responses.MarketTokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using System;
@@ -132,7 +131,7 @@ public class MarketTokensController : ControllerBase
     /// <param name="marketAddress">The address of the market contract.</param>
     /// <param name="tokenIn">The input token's contract address.</param>
     /// <param name="request">The amount in swap request containing details of the expected output token and amount.</param>
-    /// <param name="cancellationToken">Cancellation Token</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The amount of tokens to be input.</returns>
     [HttpPost("{tokenIn}/swap/amount-in")]
     [ProducesResponseType(typeof(SwapAmountInQuoteResponseModel), StatusCodes.Status200OK)]
@@ -155,7 +154,7 @@ public class MarketTokensController : ControllerBase
     /// <param name="marketAddress">The address of the market contract.</param>
     /// <param name="tokenOut">The output token's contract address.</param>
     /// <param name="request">The amount out swap request containing details of the expected input token and amount.</param>
-    /// <param name="cancellationToken">Cancellation Token</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The amount of tokens to be output.</returns>
     [HttpPost("{tokenOut}/swap/amount-out")]
     [ProducesResponseType(typeof(SwapAmountOutQuoteResponseModel), StatusCodes.Status200OK)]
