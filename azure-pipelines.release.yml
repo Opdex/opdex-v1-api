@@ -12,22 +12,8 @@ jobs:
       runOnce:
         deploy:
           steps:
-            - task: replacetokens@3
-              displayName: 'Replace Variables'
-              inputs:
-                targetFiles: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/**/appsettings.Production.json'
-                encoding: 'auto'
-                writeBOM: true
-                verbosity: 'detailed'
-                actionOnMissing: 'warn'
-                keepToken: false
-                tokenPrefix: '#{'
-                tokenSuffix: '}#'
-                useLegacyPattern: false
-                enableTelemetry: true
-
             - task: ArchiveFiles@2
-              displayName: 'Archive files'
+              displayName: 'Archive Files'
               inputs:
                 rootFolderOrFile: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/Opdex.Platform.WebApi'
                 includeRootFolder: false
@@ -44,6 +30,5 @@ jobs:
                 deploymentMethod: 'auto'
                 deployToSlotOrASE: true
                 slotName: 'staging'
-                appSettings: '-OpdexConfiguration:CommitHash $(Build.SourceVersion)'
-
+                appSettings: '-OpdexConfiguration:CommitHash $(Build.SourceVersion) -Azure:KeyVault:Name $(keyVaultName)'
               displayName: Deploy to App Service
