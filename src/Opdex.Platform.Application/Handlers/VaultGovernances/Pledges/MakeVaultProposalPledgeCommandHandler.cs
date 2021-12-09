@@ -21,7 +21,7 @@ public class MakeVaultProposalPledgeCommandHandler : IRequestHandler<MakeVaultPr
 
     public async Task<ulong> Handle(MakeVaultProposalPledgeCommand request, CancellationToken cancellationToken)
     {
-        if (request.RefreshPledge)
+        if (request.RefreshBalance)
         {
             var vault = await _mediator.Send(new RetrieveVaultGovernanceByIdQuery(request.Pledge.VaultGovernanceId), CancellationToken.None);
             var proposal = await _mediator.Send(new RetrieveVaultProposalByIdQuery(request.Pledge.ProposalId), CancellationToken.None);
@@ -30,7 +30,7 @@ public class MakeVaultProposalPledgeCommandHandler : IRequestHandler<MakeVaultPr
                                                                                                               request.Pledge.Pledger,
                                                                                                               request.BlockHeight), CancellationToken.None);
 
-            request.Pledge.Update(pledge, request.BlockHeight);
+            request.Pledge.UpdateBalance(pledge, request.BlockHeight);
         }
 
         return await _mediator.Send(new PersistVaultProposalPledgeCommand(request.Pledge), CancellationToken.None);

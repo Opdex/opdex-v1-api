@@ -38,7 +38,7 @@ public class VaultProposalPledge : BlockAudit
     public ulong Pledge { get; private set; }
     public ulong Balance { get; private set; }
 
-    public void Update(ulong balance, ulong blockHeight)
+    public void UpdateBalance(ulong balance, ulong blockHeight)
     {
         Balance = balance;
         SetModifiedBlock(blockHeight);
@@ -46,14 +46,16 @@ public class VaultProposalPledge : BlockAudit
 
     public void Update(VaultProposalPledgeLog log, ulong blockHeight)
     {
-        Pledge += log.PledgeAmount;
+        // Their current pledge will always be their total balance in pledge logs
+        Pledge = log.PledgerAmount;
         Balance = log.PledgerAmount;
         SetModifiedBlock(blockHeight);
     }
 
     public void Update(VaultProposalWithdrawPledgeLog log, ulong blockHeight)
     {
-        if (log.PledgeWithdrawn) Pledge -= log.WithdrawAmount;
+        // Only adjust the pledge if it was withdrawn from an active proposal
+        if (log.PledgeWithdrawn) Pledge = log.PledgerAmount;
         Balance = log.PledgerAmount;
         SetModifiedBlock(blockHeight);
     }

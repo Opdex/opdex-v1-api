@@ -1,16 +1,16 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Pledges;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Pledges;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.VaultGovernances;
+namespace Opdex.Platform.Application.EntryHandlers.VaultGovernances.Pledges;
 
 public class GetVaultProposalPledgeByVaultAddressPublicIdAndPledgerQueryHandler : IRequestHandler<GetVaultProposalPledgeByVaultAddressPublicIdAndPledgerQuery, VaultProposalPledgeDto>
 {

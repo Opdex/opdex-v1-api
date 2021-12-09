@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Votes;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
@@ -10,7 +10,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.VaultGovernances;
+namespace Opdex.Platform.Application.EntryHandlers.VaultGovernances.Votes;
 
 public class GetVaultProposalVoteByVaultAddressPublicIdAndVoterQueryHandler : IRequestHandler<GetVaultProposalVoteByVaultAddressPublicIdAndVoterQuery, VaultProposalVoteDto>
 {
