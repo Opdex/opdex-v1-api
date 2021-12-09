@@ -5,8 +5,17 @@ using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Transactions;
 
+/// <summary>
+/// Selects the latest proposal pledge or pledge withdraw transaction a user has made.
+/// </summary>
 public class SelectTransactionForVaultProposalPledgeRewindQuery : IRequest<Transaction>
 {
+    /// <summary>
+    /// Constructor to initialize a select transaction for vault proposal pledge rewind query.
+    /// </summary>
+    /// <param name="vault">The address of the vault.</param>
+    /// <param name="pledger">The address of the pledger.</param>
+    /// <param name="proposalPublicId">The public Id of the proposal.</param>
     public SelectTransactionForVaultProposalPledgeRewindQuery(Address vault, Address pledger, ulong proposalPublicId)
     {
         Vault = vault != Address.Empty ? vault : throw new ArgumentNullException(nameof(vault), "Vault address must be provided.");

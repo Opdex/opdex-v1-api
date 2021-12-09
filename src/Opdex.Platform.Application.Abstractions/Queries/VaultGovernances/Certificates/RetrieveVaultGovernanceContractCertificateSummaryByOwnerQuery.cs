@@ -5,8 +5,17 @@ using System;
 
 namespace Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Certificates;
 
+/// <summary>
+/// Retrieve the summary of a specific vault certificate directly from the smart contract at a specific block in time.
+/// </summary>
 public class RetrieveVaultGovernanceContractCertificateSummaryByOwnerQuery : IRequest<VaultContractCertificateSummary>
 {
+    /// <summary>
+    /// Constructor to initialize a retrieve vault governance contract certificate summary by owner query.
+    /// </summary>
+    /// <param name="vault">The address of the vault to check.</param>
+    /// <param name="owner">The certificate owner's address.</param>
+    /// <param name="blockHeight">The block height to query the vault at.</param>
     public RetrieveVaultGovernanceContractCertificateSummaryByOwnerQuery(Address vault, Address owner, ulong blockHeight)
     {
         if (vault == Address.Empty)

@@ -1,13 +1,11 @@
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Application.EntryHandlers.VaultGovernances;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Proposals;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.VaultGovernances;
@@ -16,7 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Opdex.Platform.Application.Tests.EntryHandlers.VaultGovernances;
+namespace Opdex.Platform.Application.Tests.EntryHandlers.VaultGovernances.Proposals;
 
 public class GetVaultProposalByVaultAddressAndPublicIdQueryHandlerTests
 {

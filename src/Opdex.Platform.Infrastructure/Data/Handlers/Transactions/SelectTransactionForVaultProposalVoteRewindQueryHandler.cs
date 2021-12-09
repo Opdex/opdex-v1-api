@@ -45,7 +45,8 @@ public class SelectTransactionForVaultProposalVoteRewindQueryHandler
                   tl.{nameof(TransactionLogEntity.Contract)} = @{nameof(SqlParams.Vault)} AND
                   tl.{nameof(TransactionLogEntity.LogTypeId)} IN @{nameof(SqlParams.LogTypes)} AND
                   JSON_EXTRACT(tl.{nameof(TransactionLogEntity.Details)}, '$.proposalId') = @{nameof(SqlParams.ProposalId)}
-            ORDER BY t.{nameof(TransactionEntity.Block)} DESC;".RemoveExcessWhitespace();
+            ORDER BY t.{nameof(TransactionEntity.Block)} DESC
+            LIMIT 5;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
@@ -92,7 +93,9 @@ public class SelectTransactionForVaultProposalVoteRewindQueryHandler
         public Address Vault { get; }
         public Address Voter { get; }
         public ulong ProposalId { get; }
-        public static List<uint> LogTypes => new()
+
+        // Cannot be static or Dapper will fail: see this bug - https://github.com/DapperLib/Dapper/issues/621
+        public List<uint> LogTypes => new()
         {
             (uint)TransactionLogType.VaultProposalVoteLog,
             (uint)TransactionLogType.VaultProposalWithdrawVoteLog

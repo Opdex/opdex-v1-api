@@ -16,6 +16,7 @@ public class SelectVaultGovernancesByModifiedBlockQueryHandler : IRequestHandler
 {
     private static readonly string SqlQuery =
         @$"SELECT
+                {nameof(VaultGovernanceEntity.Id)},
                 {nameof(VaultGovernanceEntity.Address)},
                 {nameof(VaultGovernanceEntity.TokenId)},
                 {nameof(VaultGovernanceEntity.UnassignedSupply)},
