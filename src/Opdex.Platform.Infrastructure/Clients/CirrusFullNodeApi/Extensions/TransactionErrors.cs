@@ -5,7 +5,7 @@ namespace Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Extensions;
 
 public static class TransactionErrors
 {
-    private static readonly Regex MethodDefinitionRegex = new Regex(@"(?<=at\s).+?(\(.*?\))", RegexOptions.Compiled, TimeSpan.FromMilliseconds(500));
+    private static readonly Regex MethodDefinitionRegex = new(@"(?<=at\s).+?(\(.*?\))", RegexOptions.Compiled, TimeSpan.FromMilliseconds(500));
 
     /// <summary>
     /// Attempts to match the last method definition in a transaction error.
@@ -119,6 +119,26 @@ public static class TransactionErrors
         private const string InvalidCertificateHolder = "INVALID_CERTIFICATE_HOLDER";
         private const string TokensBurned = "TOKENS_BURNED";
         private const string CertificateLimitReached = "CERTIFICATE_LIMIT_REACHED";
+        private const string CertificateExists = "CERTIFICATE_EXISTS";
+        private const string InsufficientVaultSupply = "INSUFFICIENT_VAULT_SUPPLY";
+        private const string InvalidCertificate = "INVALID_CERTIFICATE";
+        private const string InsufficientPledgeAmount = "INSUFFICIENT_PLEDGE_AMOUNT";
+        private const string InvalidStatus = "INVALID_STATUS";
+        private const string ProposalExpired = "PROPOSAL_EXPIRED";
+        private const string InsufficientVoteAmount = "INSUFFICIENT_VOTE_AMOUNT";
+        private const string AlreadyVotedNotInFavor = "ALREADY_VOTED_NOT_IN_FAVOR";
+        private const string AlreadyVotedInFavor = "ALREADY_VOTED_IN_FAVOR";
+        private const string InvalidProposal = "INVALID_PROPOSAL";
+        private const string AlreadyComplete = "ALREADY_COMPLETE";
+        private const string ProposalInProgress = "PROPOSAL_IN_PROGRESS";
+        private const string CertificateNotFound = "CERTIFICATE_NOT_FOUND";
+        private const string CertificateVesting = "CERTIFICATE_VESTING";
+        private const string RecipientProposalInProgress = "RECIPIENT_PROPOSAL_IN_PROGRESS";
+        private const string ExcessiveAmount = "EXCESSIVE_AMOUNT";
+        private const string InvalidDescription = "INVALID_DESCRIPTION";
+        private const string NotPayable = "NOT_PAYABLE";
+        private const string InsufficientWithdrawAmount = "INSUFFICIENT_WITHDRAW_AMOUNT";
+        private const string InsufficientFunds = "INSUFFICIENT_FUNDS";
 
 
         // Smart contract methods
@@ -185,9 +205,20 @@ public static class TransactionErrors
         private const string VaultSetPendingOwnership = "OpdexVault.SetPendingOwnership(Address pendingOwner)";
         private const string VaultClaimPendingOwnership = "OpdexVault.ClaimPendingOwnership()";
 
+        private const string VaultCreateNewCertificateProposal = "OpdexVault.CreateNewCertificateProposal(UInt256 amount, Address recipient, string description)";
+        private const string VaultCreateRevokeCertificateProposal = "OpdexVault.CreateRevokeCertificateProposal(Address recipient, string description)";
+        private const string VaultCreateTotalPledgeMinimumProposal = "OpdexVault.CreateTotalPledgeMinimumProposal(UInt256 amount, string description)";
+        private const string VaultCreateTotalVoteMinimumProposal = "OpdexVault.CreateTotalVoteMinimumProposal(UInt256 amount, string description)";
+        private const string VaultPledge = "OpdexVault.Pledge(UInt64 proposalId)";
+        private const string VaultVote = "OpdexVault.Vote(UInt64 proposalId, Boolean inFavor)";
+        private const string VaultWithdrawPledge = "OpdexVault.WithdrawPledge(UInt64 proposalId, UInt64 withdrawAmount)";
+        private const string VaultWithdrawVote = "OpdexVault.WithdrawVote(UInt64 proposalId, UInt64 withdrawAmount)";
+        private const string VaultCompleteProposal = "OpdexVault.CompleteProposal(UInt64 proposalId)";
+        private const string VaultRedeemCertificate = "OpdexVault.RedeemCertificate()";
+
 
         // compiled Regex is much faster, should be initialize on startup
-        private static readonly Regex OpdexErrorRegex = new Regex(@"(?<=OPDEX:\s).+?(?=\r\n)", RegexOptions.Compiled, TimeSpan.FromMilliseconds(500));
+        private static readonly Regex OpdexErrorRegex = new(@"(?<=OPDEX:\s).+?(?=\r\n)", RegexOptions.Compiled, TimeSpan.FromMilliseconds(500));
 
         /// <summary>
         /// Attempts to parse known errors that can occur during Opdex smart contract method calls.
@@ -483,10 +514,64 @@ public static class TransactionErrors
 
                 (VaultClaimPendingOwnership, Unauthorized) => "Unable to claim vault ownership, unauthorized.",
 
+                // --- Vault Governance ---
+                (VaultCreateNewCertificateProposal, NotPayable) => "Unable to create new certificate proposal, message value expected to be zero.",
+                (VaultCreateNewCertificateProposal, InvalidDescription) => "Unable to create new certificate proposal, invalid description.",
+                (VaultCreateNewCertificateProposal, InvalidAmount) => "Unable to create new certificate proposal, amount must be greater than zero.",
+                (VaultCreateNewCertificateProposal, CertificateExists) => "Unable to create new certificate proposal, recipient already has a certificate.",
+                (VaultCreateNewCertificateProposal, InsufficientVaultSupply) => "Unable to create new certificate proposal, requested value exceeds available vault supply.",
+                (VaultCreateNewCertificateProposal, RecipientProposalInProgress) => "Unable to create new certificate proposal, recipient already has an active proposal.",
+
+                (VaultCreateRevokeCertificateProposal, NotPayable) => "Unable to create revoke certificate proposal, message value expected to be zero.",
+                (VaultCreateRevokeCertificateProposal, InvalidDescription) => "Unable to create revoke certificate proposal, invalid description.",
+                (VaultCreateRevokeCertificateProposal, InvalidAmount) => "Unable to create revoke certificate proposal, amount must be greater than zero.",
+                (VaultCreateRevokeCertificateProposal, InvalidCertificate) => "Unable to create revoke certificate proposal, certificate cannot be revoked.",
+                (VaultCreateRevokeCertificateProposal, RecipientProposalInProgress) => "Unable to create revoke certificate proposal, recipient already has an active proposal.",
+
+                (VaultCreateTotalPledgeMinimumProposal, NotPayable) => "Unable to create total pledge minimum proposal, message value expected to be zero.",
+                (VaultCreateTotalPledgeMinimumProposal, InvalidDescription) => "Unable to create total pledge minimum proposal, invalid description.",
+                (VaultCreateTotalPledgeMinimumProposal, InvalidAmount) => "Unable to create total pledge minimum proposal, amount must be greater than zero.",
+                (VaultCreateTotalPledgeMinimumProposal, ExcessiveAmount) => "Unable to create total pledge minimum proposal, proposed amount too high.",
+
+                (VaultCreateTotalVoteMinimumProposal, NotPayable) => "Unable to create total vote minimum proposal, message value expected to be zero.",
+                (VaultCreateTotalVoteMinimumProposal, InvalidDescription) => "Unable to create total vote minimum proposal, invalid description.",
+                (VaultCreateTotalVoteMinimumProposal, InvalidAmount) => "Unable to create total vote minimum proposal, amount must be greater than zero.",
+                (VaultCreateTotalVoteMinimumProposal, ExcessiveAmount) => "Unable to create total vote minimum proposal, proposed amount too high.",
+
+                (VaultPledge, InsufficientPledgeAmount) => "Unable to pledge, message valid must be greater than zero.",
+                (VaultPledge, InvalidStatus) => "Unable to pledge, invalid status.",
+                (VaultPledge, ProposalExpired) => "Unable to pledge, proposal expired.",
+
+                (VaultVote, InsufficientVoteAmount) => "Unable to vote, message value must be greater than zero.",
+                (VaultVote, InvalidStatus) => "Unable to vote, invalid status.",
+                (VaultVote, ProposalExpired) => "Unable to vote, proposal expired.",
+                (VaultVote, AlreadyVotedNotInFavor) => "Unable to vote, currently actively voting not in favor.",
+                (VaultVote, AlreadyVotedInFavor) => "Unable to vote, currently actively voting in favor.",
+
+                (VaultWithdrawPledge, NotPayable) => "Unable to withdraw pledge, message value expected to be zero.",
+                (VaultWithdrawPledge, InsufficientWithdrawAmount) => "Unable to withdraw pledge, amount must be greater than zero.",
+                (VaultWithdrawPledge, InsufficientFunds) => "Unable to withdraw pledge, requested amount exceeds balance.",
+                (VaultWithdrawPledge, TransferFailed) => "Unable to withdraw pledge, CRS transfer failed.",
+
+                (VaultWithdrawVote, NotPayable) => "Unable to withdraw vote, message value expected to be zero.",
+                (VaultWithdrawVote, InsufficientWithdrawAmount) => "Unable to withdraw vote, amount must be greater than zero.",
+                (VaultWithdrawVote, InsufficientFunds) => "Unable to withdraw vote, requested amount exceeds balance.",
+                (VaultWithdrawVote, TransferFailed) => "Unable to withdraw vote, CRS transfer failed.",
+
+                (VaultCompleteProposal, NotPayable) => "Unable to complete proposal, message value expected to be zero.",
+                (VaultCompleteProposal, InvalidProposal) => "Unable to complete proposal, not found.",
+                (VaultCompleteProposal, AlreadyComplete) => "Unable to complete proposal, already complete.",
+                (VaultCompleteProposal, ProposalInProgress) => "Unable to complete proposal, not yet expired.",
+
+                (VaultRedeemCertificate, NotPayable) => "Unable to redeem certificate, message value expected to be zero.",
+                (VaultRedeemCertificate, CertificateNotFound) => "Unable to redeem certificate, not found.",
+                (VaultRedeemCertificate, CertificateVesting) => "Unable to redeem certificate, vesting period still active.",
+                (VaultRedeemCertificate, TransferToFailed) => "Unable to redeem certificate, SRC transfer failed.",
+
                 _ => null
             };
 
-            return !(friendlyErrorMessage is null);
+            return friendlyErrorMessage is not null;
         }
 
         /// <summary>

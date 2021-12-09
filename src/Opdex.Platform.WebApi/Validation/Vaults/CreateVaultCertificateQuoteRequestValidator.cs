@@ -8,7 +8,7 @@ public class CreateVaultCertificateQuoteRequestValidator : AbstractValidator<Cre
 {
     public CreateVaultCertificateQuoteRequestValidator()
     {
-        RuleFor(request => request.Amount).MustBeValidTokenValue().GreaterThan(FixedDecimal.Zero);
+        RuleFor(request => request.Amount).MustBeValidSrcValue().GreaterThan(FixedDecimal.Zero);
         RuleFor(request => request.Holder).MustBeNetworkAddress();
     }
 }

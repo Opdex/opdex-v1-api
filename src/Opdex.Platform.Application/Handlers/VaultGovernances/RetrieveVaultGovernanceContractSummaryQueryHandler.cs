@@ -2,6 +2,7 @@ using MediatR;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.SmartContracts;
 using System;
@@ -25,20 +26,38 @@ public class RetrieveVaultGovernanceContractSummaryQueryHandler : IRequestHandle
 
         if (request.IncludeUnassignedSupply)
         {
-            var totalSupply = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
+            SmartContractMethodParameter totalSupply;
+
+            try
+            {
+                totalSupply = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
                                                                                                VaultGovernanceConstants.StateKeys.TotalSupply,
                                                                                                SmartContractParameterType.UInt256,
                                                                                                request.BlockHeight), cancellationToken);
+            }
+            catch
+            {
+                totalSupply = new SmartContractMethodParameter(0ul);
+            }
 
             summary.SetUnassignedSupply(totalSupply);
         }
 
         if (request.IncludeProposedSupply)
         {
-            var proposedSupply = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
+            SmartContractMethodParameter proposedSupply;
+
+            try
+            {
+                proposedSupply = await _mediator.Send(new CallCirrusGetSmartContractPropertyQuery(request.VaultGovernance,
                                                                                                   VaultGovernanceConstants.StateKeys.TotalProposedAmount,
                                                                                                   SmartContractParameterType.UInt256,
                                                                                                   request.BlockHeight), cancellationToken);
+            }
+            catch
+            {
+                proposedSupply = new SmartContractMethodParameter(0ul);
+            }
 
             summary.SetProposedSupply(proposedSupply);
         }

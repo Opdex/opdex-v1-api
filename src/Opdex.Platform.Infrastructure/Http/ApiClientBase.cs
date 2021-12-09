@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Opdex.Platform.Common;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.Infrastructure.Http;
 
@@ -79,7 +80,19 @@ public abstract class ApiClientBase
         {
             var jsonString = await httpResponse.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<TReturn>(jsonString, _serializerSettings);
+            try
+            {
+                return JsonConvert.DeserializeObject<TReturn>(jsonString, _serializerSettings);
+            }
+            catch
+            {
+                using (_logger.BeginScope(new Dictionary<string, object> { ["Response"] = jsonString }))
+                {
+                    _logger.LogError("Unable to deserialize expected response type.");
+                }
+
+                throw;
+            }
         }
 
         TReturn result = default;

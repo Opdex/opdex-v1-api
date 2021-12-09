@@ -14,15 +14,15 @@ public class MakeVaultProposalVoteCommand : IRequest<ulong>
     /// </summary>
     /// <param name="vote">The vote to be persisted.</param>
     /// <param name="blockHeight">The block height to use when refreshing vote properties prior to persistence.</param>
-    /// <param name="refreshVote">Flag to refresh the active voted amount.</param>
-    public MakeVaultProposalVoteCommand(VaultProposalVote vote, ulong blockHeight, bool refreshVote = false)
+    /// <param name="refreshBalance">Flag to refresh the active vote balance.</param>
+    public MakeVaultProposalVoteCommand(VaultProposalVote vote, ulong blockHeight, bool refreshBalance = false)
     {
         Vote = vote ?? throw new ArgumentNullException(nameof(vote), "Vault vote must be provided.");
         BlockHeight = blockHeight > 0 ? blockHeight : throw new ArgumentOutOfRangeException(nameof(blockHeight));
-        RefreshVote = refreshVote;
+        RefreshBalance = refreshBalance;
     }
 
     public VaultProposalVote Vote { get; }
     public ulong BlockHeight { get; }
-    public bool RefreshVote { get; }
+    public bool RefreshBalance { get; }
 }

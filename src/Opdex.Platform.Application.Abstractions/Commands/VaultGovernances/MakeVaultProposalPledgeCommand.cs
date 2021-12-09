@@ -14,15 +14,15 @@ public class MakeVaultProposalPledgeCommand : IRequest<ulong>
     /// </summary>
     /// <param name="pledge">The pledge to be persisted.</param>
     /// <param name="blockHeight">The block height to use when refreshing pledge properties prior to persistence.</param>
-    /// <param name="refreshPledge">Flag to refresh the active pledged amount.</param>
-    public MakeVaultProposalPledgeCommand(VaultProposalPledge pledge, ulong blockHeight, bool refreshPledge = false)
+    /// <param name="refreshBalance">Flag to refresh the active pledge balance.</param>
+    public MakeVaultProposalPledgeCommand(VaultProposalPledge pledge, ulong blockHeight, bool refreshBalance = false)
     {
         Pledge = pledge ?? throw new ArgumentNullException(nameof(pledge), "Vault pledge must be provided.");
         BlockHeight = blockHeight > 0 ? blockHeight : throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
-        RefreshPledge = refreshPledge;
+        RefreshBalance = refreshBalance;
     }
 
     public VaultProposalPledge Pledge { get; }
     public ulong BlockHeight { get; }
-    public bool RefreshPledge { get; }
+    public bool RefreshBalance { get; }
 }
