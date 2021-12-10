@@ -41,7 +41,7 @@ public class ApproveAllowanceQuoteTests
         Address spender = "PXfJ6u1yzNPDda3GZPZpB4iW4LHVEPMKeh";
         FixedDecimal amount = FixedDecimal.Parse("1.1");
 
-        var request = new ApproveAllowanceRequest { Spender = spender, Amount = amount };
+        var request = new ApproveAllowanceQuoteRequest { Spender = spender, Amount = amount };
         var cancellationToken = new CancellationTokenSource().Token;
 
         _contextMock.Setup(get => get.Wallet).Returns(walletAddress);
@@ -66,7 +66,7 @@ public class ApproveAllowanceQuoteTests
         Address spender = "PXfJ6u1yzNPDda3GZPZpB4iW4LHVEPMKeh";
         FixedDecimal amount = FixedDecimal.Parse("1.1");
 
-        var request = new ApproveAllowanceRequest { Spender = spender, Amount = amount };
+        var request = new ApproveAllowanceQuoteRequest { Spender = spender, Amount = amount };
         var cancellationToken = new CancellationTokenSource().Token;
         var dto = new TransactionQuoteDto();
 
@@ -89,7 +89,7 @@ public class ApproveAllowanceQuoteTests
         Address spender = "PXfJ6u1yzNPDda3GZPZpB4iW4LHVEPMKeh";
         FixedDecimal amount = FixedDecimal.Parse("1.1");
 
-        var request = new ApproveAllowanceRequest { Spender = spender, Amount = amount };
+        var request = new ApproveAllowanceQuoteRequest { Spender = spender, Amount = amount };
         var cancellationToken = new CancellationTokenSource().Token;
         var quoteResponse = new TransactionQuoteResponseModel();
 

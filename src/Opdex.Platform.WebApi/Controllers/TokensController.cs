@@ -144,7 +144,7 @@ public class TokensController : ControllerBase
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ApproveAllowance([FromRoute] Address address, [FromBody] ApproveAllowanceRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> ApproveAllowance([FromRoute] Address address, [FromBody] ApproveAllowanceQuoteRequest request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateApproveAllowanceTransactionQuoteCommand(address, _context.Wallet, request.Spender, request.Amount),
                                             cancellationToken);

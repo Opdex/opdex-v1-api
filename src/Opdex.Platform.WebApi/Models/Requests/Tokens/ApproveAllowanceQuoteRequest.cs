@@ -6,7 +6,7 @@ namespace Opdex.Platform.WebApi.Models.Requests.Tokens;
 /// <summary>
 /// Request to approve an allowance.
 /// </summary>
-public class ApproveAllowanceRequest
+public class ApproveAllowanceQuoteRequest
 {
     /// <summary>
     /// Amount of SRC tokens to approve.
