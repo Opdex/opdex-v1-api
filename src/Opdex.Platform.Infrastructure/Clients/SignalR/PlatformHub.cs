@@ -4,7 +4,6 @@ using Opdex.Platform.Common.Encryption;
 using Opdex.Platform.Common.Extensions;
 using SSAS.NET;
 using System;
-using System.IO;
 
 namespace Opdex.Platform.Infrastructure.Clients.SignalR;
 
@@ -16,8 +15,9 @@ public class PlatformHub : Hub<IPlatformClient>
     public PlatformHub(ITwoWayEncryptionProvider twoWayEncryptionProvider, AuthConfiguration authConfiguration, OpdexConfiguration opdexConfiguration)
     {
         _twoWayEncryptionProvider = twoWayEncryptionProvider ?? throw new ArgumentNullException(nameof(twoWayEncryptionProvider));
-        var authCallbackUri = new Uri(Path.Combine(opdexConfiguration.ApiUrl, authConfiguration.StratisSignatureAuth.CallbackPath));
-        _authCallback = $"{authCallbackUri.Authority}{authCallbackUri.AbsolutePath}";
+        var created = Uri.TryCreate($"{opdexConfiguration.ApiUrl}/{authConfiguration.StratisSignatureAuth.CallbackPath}", UriKind.Absolute, out var uri);
+        if (!created) throw new Exception("Unable to create callback URI");
+        _authCallback = $"{uri.Authority}{uri.AbsolutePath}";
     }
 
     /// <summary>

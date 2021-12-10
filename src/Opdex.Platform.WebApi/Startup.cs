@@ -296,7 +296,6 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapHub<PlatformHub>("/socket");
-            // endpoints.MapHub<AuthHub>("/socket/auth");
             endpoints.MapControllers();
         });
     }
