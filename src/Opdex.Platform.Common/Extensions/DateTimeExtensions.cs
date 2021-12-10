@@ -11,26 +11,6 @@ public static class DateTimeExtensions
         return !success ? default : DateTimeOffset.FromUnixTimeSeconds(timeSeconds).UtcDateTime;
     }
 
-    public static DateTime StartOfMonth(this DateTime date)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static DateTime EndOfMonth(this DateTime date)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static DateTime StartOfWeek(this DateTime date)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static DateTime EndOfWeek(this DateTime date)
-    {
-        throw new NotImplementedException();
-    }
-
     public static DateTime EndOfDay(this DateTime date)
     {
         return date.EndOfHour().AddHours(23 - date.Hour);

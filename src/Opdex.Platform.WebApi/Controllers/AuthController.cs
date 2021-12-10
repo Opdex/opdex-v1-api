@@ -55,7 +55,7 @@ public class AuthController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> StratisOpenAuthCallback([FromQuery] StratisOpenAuthCallbackQuery query,
                                                              [FromBody] StratisOpenAuthCallbackBody body, CancellationToken cancellationToken)
     {

@@ -44,7 +44,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="200">Liquidity pool results returned.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpGet]
     [ProducesResponseType(typeof(LiquidityPoolsResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -67,7 +66,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="200">Create liquidity pool quote created.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -92,12 +90,11 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpGet("{address}")]
     [ProducesResponseType(typeof(LiquidityPoolResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<LiquidityPoolResponseModel>> LiquidityPool([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetLiquidityPoolByAddressQuery(address), cancellationToken);
@@ -119,7 +116,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpGet("{address}/history")]
     [ProducesResponseType(typeof(LiquidityPoolSnapshotsResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -146,7 +142,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/add")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -173,7 +168,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/add/amount-in")]
     [ProducesResponseType(typeof(AddLiquidityAmountInQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -202,7 +196,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/remove")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -227,7 +220,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/sync")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -252,7 +244,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/skim")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -277,7 +268,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/staking/start")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -302,7 +292,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/staking/stop")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -327,7 +316,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/staking/collect")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
