@@ -65,7 +65,7 @@ public class Program
             })
             .ConfigureServices(services =>
             {
-                services.AddHostedService<IndexerBackgroundServiceManager>();
+                services.AddHostedService<IndexerBackgroundService>();
                 services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromSeconds(30));
             });
 }
