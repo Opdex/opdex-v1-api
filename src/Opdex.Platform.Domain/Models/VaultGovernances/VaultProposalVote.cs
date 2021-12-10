@@ -50,7 +50,8 @@ public class VaultProposalVote : BlockAudit
 
     public void Update(VaultProposalVoteLog log, ulong blockHeight)
     {
-        Vote += log.VoteAmount;
+        // Their current vote will always be their total balance in vote logs
+        Vote = log.VoterAmount;
         Balance = log.VoterAmount;
         InFavor = log.InFavor;
         SetModifiedBlock(blockHeight);
@@ -58,7 +59,8 @@ public class VaultProposalVote : BlockAudit
 
     public void Update(VaultProposalWithdrawVoteLog log, ulong blockHeight)
     {
-        if (log.VoteWithdrawn) Vote -= log.WithdrawAmount;
+        // Only adjust the vote if it was withdrawn from an active proposal
+        if (log.VoteWithdrawn) Vote = log.VoterAmount;
         Balance = log.VoterAmount;
         SetModifiedBlock(blockHeight);
     }

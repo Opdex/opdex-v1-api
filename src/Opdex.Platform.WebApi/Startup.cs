@@ -203,11 +203,18 @@ public class Startup
                         var accessToken = context.Request.Query["access_token"];
 
                         var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+
+                        // Note: Sharing a hub has side effects for auth
+                        // We can separate platform (requiring jwt) from auth (providing jwt) to two hubs requiring > free tier of Azure Signalr
+                        // Current implementation will pass through if access_token is not found and client doesn't negotiate the connection.
+                        // Doesn't raise security concerns with current notification based use-cases as no access_token would mean no transaction
+                        // notifications when connected due to no access_token w/ wallet address claim.
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/socket"))
                         {
-                            // assigns the bearer token from signalR connection
+                            // assigns the bearer token from signalR connection if available
                             context.Token = accessToken;
                         }
+
                         return Task.CompletedTask;
                     }
                 };
@@ -250,8 +257,7 @@ public class Startup
             }));
         });
 
-        services.AddSignalR()
-            .AddAzureSignalR();
+        services.AddSignalR(o => { o.EnableDetailedErrors = true; }).AddAzureSignalR();
 
         services.AddAuthorization(options =>
         {
@@ -289,7 +295,8 @@ public class Startup
         app.UseSwaggerUi3();
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapHub<PlatformHub>("/transactions/socket");
+            endpoints.MapHub<PlatformHub>("/socket");
+            // endpoints.MapHub<AuthHub>("/socket/auth");
             endpoints.MapControllers();
         });
     }

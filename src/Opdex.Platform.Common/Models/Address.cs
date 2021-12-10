@@ -11,9 +11,9 @@ public readonly struct Address : IEquatable<string>, IEquatable<Address>
 
     private string Value { get; }
 
-    public static readonly Address Cirrus = new Address(CRS);
+    public static readonly Address Cirrus = new(CRS);
 
-    public static readonly Address Empty = new Address(default);
+    public static readonly Address Empty = new(default);
 
     public Address(string value)
     {
