@@ -4,11 +4,12 @@ using System.ComponentModel.DataAnnotations;
 namespace Opdex.Platform.WebApi.Models.Requests.Tokens;
 
 /// <summary>
-/// Request body to add a token.
+/// Request to begin tracking a token.
 /// </summary>
 public class AddTokenRequest
 {
-    /// <summary>The address of the SRC token.</summary>
+    /// <summary>Address of the SRC token.</summary>
+    /// <example>tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3</example>
     [Required]
     public Address TokenAddress { get; set; }
 }

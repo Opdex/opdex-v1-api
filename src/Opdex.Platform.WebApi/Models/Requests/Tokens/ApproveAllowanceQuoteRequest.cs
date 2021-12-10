@@ -3,17 +3,22 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Requests.Tokens;
 
-public class ApproveAllowanceRequest
+/// <summary>
+/// Request to approve an allowance.
+/// </summary>
+public class ApproveAllowanceQuoteRequest
 {
     /// <summary>
-    /// The allowance amount to approve
+    /// Amount of SRC tokens to approve.
     /// </summary>
+    /// <example>"500.000000000000000000"</example>
     [Required]
     public FixedDecimal Amount { get; set; }
 
     /// <summary>
-    /// The spender of the allowance.
+    /// Address of the allowance spender.
     /// </summary>
+    /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
     [Required]
     public Address Spender { get; set; }
 }
