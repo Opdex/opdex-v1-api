@@ -45,7 +45,7 @@ public sealed class TokenFilterParameters : FilterParameters<TokensCursor>
     {
         if (EncodedCursor is null) return new TokensCursor(Keyword, Tokens, TokenType, OrderBy, Direction, Limit, PagingDirection.Forward, default);
         Base64Extensions.TryBase64Decode(EncodedCursor, out var decodedCursor);
-        TokensCursor.TryParse(decodedCursor, out var cursor);
+        _ = TokensCursor.TryParse(decodedCursor, out var cursor);
         return cursor;
     }
 }
