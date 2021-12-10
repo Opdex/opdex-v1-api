@@ -59,7 +59,8 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> StratisSignatureAuthCallback([FromQuery] StratisSignatureAuthCallbackQuery query,
                                                                   [FromBody] StratisSignatureAuthCallbackBody body, CancellationToken cancellationToken)
     {
-        var callbackUri = new Uri(System.IO.Path.Combine(_opdexConfiguration.ApiUrl, _authConfiguration.StratisSignatureAuth.CallbackPath));
+        var created = Uri.TryCreate($"{_opdexConfiguration.ApiUrl}/{_authConfiguration.StratisSignatureAuth.CallbackPath}", UriKind.Absolute, out var callbackUri);
+        if (!created) throw new Exception("Unable to create callback URI");
         var expectedCallbackPath = $"{callbackUri.Authority}{callbackUri.AbsolutePath}";
         var expectedId = new StratisId(expectedCallbackPath, query.Uid, query.Exp);
 
