@@ -6,6 +6,6 @@ public class WalletAddressUserIdProvider : IUserIdProvider
 {
     public string GetUserId(HubConnectionContext connection)
     {
-        return connection.User.FindFirst("wallet").Value;
+        return connection.User.FindFirst("wallet")?.Value;
     }
 }

@@ -30,6 +30,7 @@
         <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.1.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.0" />
+        <PackageReference Include="SSAS.NET" Version="1.0.0-beta.5" />
         <PackageReference Include="ZymLabs.NSwag.FluentValidation" Version="0.5.1" />
     </ItemGroup>
 
@@ -42,4 +43,11 @@
       <ProjectReference Include="..\Opdex.Platform.Application\Opdex.Platform.Application.csproj" />
       <ProjectReference Include="..\Opdex.Platform.Infrastructure\Opdex.Platform.Infrastructure.csproj" />
     </ItemGroup>
+
+    <Target Name="_ResolveCopyLocalNuGetPkgXmls" AfterTargets="ResolveReferences">
+      <ItemGroup><!-- Copy XML files from all PackageReferences to output dir, used for OpenAPI definitions -->
+        <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)'!='' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+      </ItemGroup>
+    </Target>
+
 </Project>

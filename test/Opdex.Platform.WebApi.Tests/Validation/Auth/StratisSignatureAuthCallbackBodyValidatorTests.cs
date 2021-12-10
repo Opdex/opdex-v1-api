@@ -1,18 +1,18 @@
 using FluentValidation.TestHelper;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.WebApi.Models.Requests.Auth;
 using Opdex.Platform.WebApi.Validation.Auth;
+using SSAS.NET;
 using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Validation.Auth;
 
-public class StratisOpenAuthCallbackBodyValidatorTests
+public class StratisSignatureAuthCallbackBodyValidatorTests
 {
-    private readonly StratisOpenAuthCallbackBodyValidator _validator;
+    private readonly StratisSignatureAuthCallbackBodyValidator _validator;
 
-    public StratisOpenAuthCallbackBodyValidatorTests()
+    public StratisSignatureAuthCallbackBodyValidatorTests()
     {
-        _validator = new StratisOpenAuthCallbackBodyValidator();
+        _validator = new StratisSignatureAuthCallbackBodyValidator();
     }
 
     [Theory]
@@ -22,7 +22,7 @@ public class StratisOpenAuthCallbackBodyValidatorTests
     public void Signature_Invalid(string signature)
     {
         // Arrange
-        var request = new StratisOpenAuthCallbackBody
+        var request = new StratisSignatureAuthCallbackBody
         {
             Signature = signature
         };
@@ -38,7 +38,7 @@ public class StratisOpenAuthCallbackBodyValidatorTests
     public void Signature_Valid()
     {
         // Arrange
-        var request = new StratisOpenAuthCallbackBody
+        var request = new StratisSignatureAuthCallbackBody
         {
             Signature = "TVlfU0lHTkVEX01FU1NBR0VfTVlfU0lHTkVEX01FU1NBR0VfTVlfU0lHTkVEX01FU1NBR0VfTVlfU0lHTkVEX01FU1NBR0U="
         };
@@ -57,9 +57,9 @@ public class StratisOpenAuthCallbackBodyValidatorTests
     public void PublicKey_Invalid(Address publicKey)
     {
         // Arrange
-        var request = new StratisOpenAuthCallbackBody
+        var request = new StratisSignatureAuthCallbackBody
         {
-            PublicKey = publicKey
+            PublicKey = (string)publicKey
         };
 
         // Act
@@ -73,9 +73,9 @@ public class StratisOpenAuthCallbackBodyValidatorTests
     public void PublicKey_Valid()
     {
         // Arrange
-        var request = new StratisOpenAuthCallbackBody
+        var request = new StratisSignatureAuthCallbackBody
         {
-            PublicKey = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm")
+            PublicKey = "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm"
         };
 
         // Act

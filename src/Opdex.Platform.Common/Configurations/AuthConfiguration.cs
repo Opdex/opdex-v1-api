@@ -1,24 +1,13 @@
-using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Extensions;
 using System;
 
-namespace Opdex.Platform.WebApi.Auth;
+namespace Opdex.Platform.Common.Configurations;
 
 public class AuthConfiguration : IValidatable
 {
     public AuthProvider Opdex { get; set; }
     public string AdminKey { get; set; }
-    public StratisOpenAuthConfiguration StratisOpenAuthProtocol { get; set; }
-
-    public class AuthProvider
-    {
-        public string SigningKey { get; set; }
-    }
-
-    public class StratisOpenAuthConfiguration
-    {
-        public string CallbackPath { get; set; }
-    }
+    public StratisSignatureAuthConfiguration StratisSignatureAuth { get; set; }
 
     public void Validate()
     {
@@ -27,4 +16,14 @@ public class AuthConfiguration : IValidatable
             throw new Exception($"{nameof(AuthConfiguration)}.{nameof(AdminKey)} must not be null or empty.");
         }
     }
+}
+
+public class AuthProvider
+{
+    public string SigningKey { get; set; }
+}
+
+public class StratisSignatureAuthConfiguration
+{
+    public string CallbackPath { get; set; }
 }
