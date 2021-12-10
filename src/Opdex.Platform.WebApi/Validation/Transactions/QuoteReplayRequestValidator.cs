@@ -1,5 +1,5 @@
 using FluentValidation;
-using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+using Opdex.Platform.WebApi.Models.Requests.Transactions;
 
 namespace Opdex.Platform.WebApi.Validation.Transactions;
 

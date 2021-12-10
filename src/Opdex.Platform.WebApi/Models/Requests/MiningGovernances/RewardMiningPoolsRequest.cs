@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+namespace Opdex.Platform.WebApi.Models.Requests.MiningGovernances;
 
 /// <summary>
 /// A request to quote rewarding mining pools with governance tokens.

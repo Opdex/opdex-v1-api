@@ -3,17 +3,22 @@ using System;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots;
 
+/// <summary>
+/// Liquidity pool snapshot details.
+/// </summary>
 public class LiquidityPoolSnapshotResponseModel
 {
     /// <summary>
-    /// The start time for the snapshot.
+    /// Start time for the snapshot.
     /// </summary>
+    /// <example>2022-01-01T00:00:00Z</example>
     [NotNull]
     public DateTime Timestamp { get; set; }
 
     /// <summary>
-    /// The number of transactions within the snapshot time period.
+    /// Number of transactions within the snapshot time period.
     /// </summary>
+    /// <example>500</example>
     [NotNull]
     public long TransactionCount { get; set; }
 

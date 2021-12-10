@@ -51,11 +51,11 @@ public class AuthController : ControllerBase
     /// <param name="query">Tne Stratis Signature Auth query string.</param>
     /// <param name="body">The Stratis Signature Auth body.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="200">Signature was validated successfully.</response>
+    /// <response code="204">Signature was validated successfully.</response>
     /// <response code="400">The request is not valid.</response>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> StratisSignatureAuthCallback([FromQuery] StratisSignatureAuthCallbackQuery query,
                                                                   [FromBody] StratisSignatureAuthCallbackBody body, CancellationToken cancellationToken)
     {
@@ -98,7 +98,7 @@ public class AuthController : ControllerBase
 
         await _mediator.Send(new NotifyUserOfSuccessfulAuthenticationCommand(connectionId, bearerToken), cancellationToken);
 
-        return Ok();
+        return NoContent();
     }
 
     /// <summary>Authorize</summary>

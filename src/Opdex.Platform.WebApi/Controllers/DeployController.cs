@@ -21,11 +21,10 @@ using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Commands;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.WebApi.Middleware;
-using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 

@@ -3,10 +3,13 @@ using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 
 namespace Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Summary;
 
+/// <summary>
+/// Liquidity pool summary.
+/// </summary>
 public class LiquidityPoolSummaryResponseModel
 {
     /// <summary>
-    /// The liquidity pool's locked reserves.
+    /// Locked reserves summary.
     /// </summary>
     [NotNull]
     public ReservesResponseModel Reserves { get; set; }

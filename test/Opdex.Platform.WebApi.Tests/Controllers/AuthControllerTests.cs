@@ -214,7 +214,7 @@ public class AuthControllerTests
     }
 
     [Fact]
-    public async Task StratisSignatureAuthCallback_OnSuccess_ReturnOk()
+    public async Task StratisSignatureAuthCallback_OnSuccess_NoContent()
     {
         // Arrange
         var query = new StratisSignatureAuthCallbackQuery
@@ -237,7 +237,7 @@ public class AuthControllerTests
         var response = await _controller.StratisSignatureAuthCallback(query, body, CancellationToken.None);
 
         // Assert
-        response.Should().BeAssignableTo<OkResult>();
+        response.Should().BeAssignableTo<NoContentResult>();
     }
 }
 

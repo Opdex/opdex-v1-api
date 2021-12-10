@@ -43,7 +43,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault details found.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Vault not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpGet("{address}")]
     [ProducesResponseType(typeof(VaultGovernanceResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -63,7 +62,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Redeem vault certificate quote created.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Vault not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/certificates/redeem")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -84,7 +82,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal quote created.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Vault not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/proposals/create-certificate")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -107,7 +104,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal quote created.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Vault not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/proposals/revoke-certificate")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -130,7 +126,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal quote created.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Vault not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/proposals/minimum-pledge")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -153,7 +148,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal quote created.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Vault not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/proposals/minimum-vote")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -175,7 +169,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal details found.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Either vault or proposal not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpGet("{address}/proposals/{proposalId}")]
     [ProducesResponseType(typeof(VaultProposalResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -196,7 +189,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal completion quote created.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Either vault or proposal not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/proposals/{proposalId}/complete")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -218,7 +210,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal pledge quote created.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Either vault or proposal not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/proposals/{proposalId}/pledges")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -242,7 +233,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal withdraw pledge quote created.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Either vault or proposal not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/proposals/{proposalId}/pledges/withdraw")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -265,7 +255,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal pledge details found.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Either vault, proposal or pledger not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpGet("{address}/proposals/{proposalId}/pledges/{pledger}")]
     [ProducesResponseType(typeof(VaultProposalPledgeResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -288,7 +277,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal vote quote created.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Either vault or proposal not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/proposals/{proposalId}/votes")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -311,7 +299,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal withdraw vote quote created.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Either vault or proposal not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpPost("{address}/proposals/{proposalId}/votes/withdraw")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -334,7 +321,6 @@ public class VaultGovernancesController : ControllerBase
     /// <response code="200">Vault proposal vote details found.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="404">Either vault, proposal or voter not found.</response>
-    /// <response code="429">Too many requests.</response>
     [HttpGet("{address}/proposals/{proposalId}/votes/{voter}")]
     [ProducesResponseType(typeof(VaultProposalVoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]

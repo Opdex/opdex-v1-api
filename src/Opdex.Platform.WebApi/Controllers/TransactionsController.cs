@@ -11,10 +11,9 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models;
-using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+using Opdex.Platform.WebApi.Models.Requests.Transactions;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.WebApi.Middleware;
-using Opdex.Platform.WebApi.Models.Requests.Transactions;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Controllers;

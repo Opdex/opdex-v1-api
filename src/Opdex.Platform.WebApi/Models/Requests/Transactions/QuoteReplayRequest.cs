@@ -1,5 +1,8 @@
-namespace Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+namespace Opdex.Platform.WebApi.Models.Requests.Transactions;
 
+/// <summary>
+/// Request to replay a quoted transaction.
+/// </summary>
 public class QuoteReplayRequest
 {
     /// <summary>

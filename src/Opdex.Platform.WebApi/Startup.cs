@@ -48,8 +48,8 @@ using FluentValidation.AspNetCore;
 using Opdex.Platform.WebApi.Validation;
 using AspNetCoreRateLimit;
 using Opdex.Platform.WebApi.Exceptions;
-using Microsoft.AspNetCore.Mvc;
 using Opdex.Platform.Common.Encryption;
+using Opdex.Platform.WebApi.OpenApi;
 
 namespace Opdex.Platform.WebApi;
 
@@ -105,8 +105,6 @@ public class Startup
             {
                 options.ModelBinderProviders.Insert(0, new AddressModelBinderProvider());
                 options.ModelBinderProviders.Insert(1, new Sha256ModelBinderProvider());
-
-                options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests));
             })
             .AddFluentValidation(config =>
             {
@@ -245,6 +243,8 @@ public class Startup
                 BearerFormat = "JWT"
             });
             settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
+            settings.OperationProcessors.Add(new TooManyRequestErrorOperationProcessor());
+            settings.OperationProcessors.Add(new InternalServerErrorOperationProcessor());
             settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(Address), schema => schema.Type = JsonObjectType.String));
             settings.TypeMappers.Add(new PrimitiveTypeMapper(typeof(FixedDecimal), schema =>
             {

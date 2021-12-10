@@ -9,7 +9,7 @@ namespace Opdex.Platform.WebApi.Validation.LiquidityPools;
 
 public class LiquidityPoolFilterParametersValidator : AbstractCursorValidator<LiquidityPoolFilterParameters, LiquidityPoolsCursor>
 {
-    private static readonly Regex Alphanumeric = new Regex("^[0-9A-Za-z ]+$", RegexOptions.Compiled);
+    private static readonly Regex Alphanumeric = new("^[0-9A-Za-z ]+$", RegexOptions.Compiled);
 
     public LiquidityPoolFilterParametersValidator()
     {

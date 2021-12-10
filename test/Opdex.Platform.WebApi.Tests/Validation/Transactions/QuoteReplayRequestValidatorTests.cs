@@ -1,5 +1,5 @@
 using FluentValidation.TestHelper;
-using Opdex.Platform.WebApi.Models.Requests.WalletTransactions;
+using Opdex.Platform.WebApi.Models.Requests.Transactions;
 using Opdex.Platform.WebApi.Validation.Transactions;
 using Xunit;
 
