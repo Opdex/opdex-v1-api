@@ -31,12 +31,15 @@ public class IndexerBackgroundServiceTests
         _primaryIdentity = opdexConfiguration.InstanceId;
         _otherIdentity = Guid.NewGuid().ToString();
 
-        var logger = new NullLogger<IndexerBackgroundService>();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddScoped(provider => _mediator.Object);
         var serviceProvider = serviceCollection.BuildServiceProvider();
+        var serviceScopeMock = new Mock<IServiceScope>();
+        serviceScopeMock.Setup(callTo => callTo.ServiceProvider).Returns(serviceProvider);
+        var scopeFactoryMock = new Mock<IServiceScopeFactory>();
+        scopeFactoryMock.Setup(callTo => callTo.CreateScope()).Returns(new AsyncServiceScope(serviceScopeMock.Object));
 
-        _indexerService = new IndexerBackgroundService(serviceProvider, opdexConfiguration, logger);
+        _indexerService = new IndexerBackgroundService(scopeFactoryMock.Object, opdexConfiguration, new NullLogger<IndexerBackgroundService>());
     }
 
     [Fact]

@@ -18,15 +18,15 @@ namespace Opdex.Platform.WebApi;
 public class IndexerBackgroundService : BackgroundService
 {
     private readonly ILogger<IndexerBackgroundService> _logger;
-    private readonly IServiceProvider _services;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly OpdexConfiguration _opdexConfiguration;
     private const string IndexingAlreadyRunningLog = "Index already running.";
 
-    public IndexerBackgroundService(IServiceProvider services,
+    public IndexerBackgroundService(IServiceScopeFactory scopeFactory,
                                     OpdexConfiguration opdexConfiguration,
                                     ILogger<IndexerBackgroundService> logger)
     {
-        _services = services ?? throw new ArgumentNullException(nameof(services));
+        _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _opdexConfiguration = opdexConfiguration ?? throw new ArgumentNullException(nameof(opdexConfiguration));
     }
@@ -39,7 +39,7 @@ public class IndexerBackgroundService : BackgroundService
         var unavailable = false;
 
         IMediator mediator;
-        using var scope = _services.CreateScope();
+        await using var scope = _scopeFactory.CreateAsyncScope();
         {
             mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         }
@@ -129,13 +129,26 @@ public class IndexerBackgroundService : BackgroundService
         }
     }
 
+    public override Task StartAsync(CancellationToken cancellationToken)
+    {
+        if (Running) return Task.CompletedTask;
+
+        _logger.LogDebug("Starting indexer.");
+        Running = true;
+
+        return base.StartAsync(cancellationToken);
+    }
+
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogDebug("Shutting down indexer.");
         try
         {
-            using var scope = _services.CreateScope();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+            IMediator mediator;
+            await using var scope = _scopeFactory.CreateAsyncScope();
+            {
+                mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+            }
 
             var indexLock = await mediator.Send(new RetrieveIndexerLockQuery(), CancellationToken.None);
             if (indexLock.Locked && indexLock.InstanceId == _opdexConfiguration.InstanceId)
@@ -153,36 +166,29 @@ public class IndexerBackgroundService : BackgroundService
             Running = false;
         }
     }
-
-    public override Task StartAsync(CancellationToken cancellationToken)
-    {
-        if (Running) return Task.CompletedTask;
-
-        _logger.LogDebug("Starting indexer.");
-        Running = true;
-
-        return base.StartAsync(cancellationToken);
-    }
 }
 
 /// <summary>
 /// Manages the lifetime of <see cref="IndexerBackgroundService" />.
 /// </summary>
 /// <remarks>
-/// This makes it much easier to handle graceful shutdown by the host. Stopping a hosted service cancels the token that started it. In the case of
-/// the <see cref="Host" />, cancellation of the token is handled as an error. This can be ignored, but then if the hosted service is restarted,
-/// the cancellation token is no longer linked to the application lifetime.
+/// This makes it much easier to handle graceful shutdown, by managing the lifetime of the indexer.
+/// Stopping a hosted service cancels the token that started it. In the case of the <see cref="Host" />, cancellation of the token is handled as an error.
+/// If the <see cref="Host" /> were to start the indexer, any attempt to stop and restart would require relinking the cancellation token to the application lifetime.
+/// By managing the lifetime of the indexer here, we maintain the link with application lifetime, as we're not forcing an error on the host by stopping the indexer.
 /// </remarks>
 public sealed class IndexerBackgroundServiceManager : IHostedService, IDisposable
 {
     private readonly IndexerBackgroundService _indexer;
+    private bool _started;
     private readonly bool _runOnStartup;
     private readonly IDisposable _optionsMonitor;
 
-    public IndexerBackgroundServiceManager(IServiceProvider services, OpdexConfiguration opdexConfiguration, ILogger<IndexerBackgroundService> logger,
+    public IndexerBackgroundServiceManager(IServiceScopeFactory scopeFactory, OpdexConfiguration opdexConfiguration, ILoggerFactory loggerFactory,
                                            IOptionsMonitor<IndexerConfiguration> indexerOptions)
     {
-        _indexer = new IndexerBackgroundService(services, opdexConfiguration, logger);
+        _indexer = new IndexerBackgroundService(scopeFactory, opdexConfiguration, loggerFactory.CreateLogger<IndexerBackgroundService>());
+
         _runOnStartup = indexerOptions.CurrentValue.Enabled;
         _optionsMonitor = indexerOptions.OnChange(async config =>
         {
@@ -193,13 +199,17 @@ public sealed class IndexerBackgroundServiceManager : IHostedService, IDisposabl
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        // multiple indexers should not be started, so throw
+        if (_started) throw new InvalidOperationException("Indexer management service already started.");
+        _started = true;
+
         if (!_runOnStartup) return;
         await _indexer.StartAsync(CancellationToken.None);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        if (_indexer.Running) await _indexer.StopAsync(cancellationToken);
+        await _indexer.StopAsync(cancellationToken);
     }
 
     public void Dispose()
