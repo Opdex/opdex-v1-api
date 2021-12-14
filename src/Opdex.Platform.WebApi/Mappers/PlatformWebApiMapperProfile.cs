@@ -369,6 +369,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
             .ForMember(dest => dest.TokensUnassigned, opt => opt.MapFrom(src => src.TokensUnassigned))
             .ForMember(dest => dest.TokensProposed, opt => opt.MapFrom(src => src.TokensProposed))
+            .ForMember(dest => dest.TokensLocked, opt => opt.MapFrom(src => src.TokensLocked))
             .ForMember(dest => dest.TotalPledgeMinimum, opt => opt.MapFrom(src => src.TotalPledgeMinimum))
             .ForMember(dest => dest.TotalVoteMinimum, opt => opt.MapFrom(src => src.TotalVoteMinimum))
             .ForMember(dest => dest.VestingDuration, opt => opt.MapFrom(src => src.VestingDuration));

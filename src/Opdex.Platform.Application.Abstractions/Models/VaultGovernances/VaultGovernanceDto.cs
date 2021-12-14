@@ -8,6 +8,7 @@ public class VaultGovernanceDto
     public Address Token { get; set; }
     public FixedDecimal TokensUnassigned { get; set; }
     public FixedDecimal TokensProposed { get; set; }
+    public FixedDecimal TokensLocked { get; set; }
     public FixedDecimal TotalPledgeMinimum { get; set; }
     public FixedDecimal TotalVoteMinimum { get; set; }
     public ulong VestingDuration { get; set; }
