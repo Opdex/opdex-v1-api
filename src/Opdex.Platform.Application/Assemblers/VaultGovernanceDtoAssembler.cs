@@ -1,9 +1,11 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
+using Opdex.Platform.Common.Models.UInt;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using System.Threading.Tasks;
 
@@ -26,9 +28,15 @@ public class VaultGovernanceDtoAssembler : IModelAssembler<VaultGovernance, Vaul
 
         var token = await _mediator.Send(new RetrieveTokenByIdQuery(vault.TokenId));
 
+        // vault may not have a balance yet if it was just created
+        var vaultGovernanceTokenBalance = await _mediator.Send(new RetrieveAddressBalanceByOwnerAndTokenQuery(vault.Address, token.Id, findOrThrow: false));
+
         dto.Token = token.Address;
         dto.TokensUnassigned = vault.UnassignedSupply.ToDecimal(token.Decimals);
         dto.TokensProposed = vault.ProposedSupply.ToDecimal(token.Decimals);
+        dto.TokensLocked = vaultGovernanceTokenBalance is null
+            ? UInt256.Zero.ToDecimal(token.Decimals)
+            : vaultGovernanceTokenBalance.Balance.ToDecimal(token.Decimals);
         dto.TotalPledgeMinimum = vault.TotalPledgeMinimum.ToDecimal(TokenConstants.Cirrus.Decimals);
         dto.TotalVoteMinimum = vault.TotalVoteMinimum.ToDecimal(TokenConstants.Cirrus.Decimals);
 

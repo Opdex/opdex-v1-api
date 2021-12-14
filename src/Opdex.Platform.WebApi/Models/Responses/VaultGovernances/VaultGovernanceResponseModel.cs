@@ -30,11 +30,18 @@ public class VaultGovernanceResponseModel
     public FixedDecimal TokensUnassigned { get; set; }
 
     /// <summary>
-    /// Amount of governance tokens are currently locked for active proposals.
+    /// Amount of governance tokens currently locked for active proposals.
     /// </summary>
     /// <example>"1000000.00000000"</example>
     [NotNull]
     public FixedDecimal TokensProposed { get; set; }
+
+    /// <summary>
+    /// Total amount of governance tokens in the vault.
+    /// </summary>
+    /// <example>"5000000.00000000"</example>
+    [NotNull]
+    public FixedDecimal TokensLocked { get; set; }
 
     /// <summary>
     /// Minimum amount of CRS tokens required to be pledged, for a proposal to move to a vote.
