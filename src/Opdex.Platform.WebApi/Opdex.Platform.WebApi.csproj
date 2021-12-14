@@ -35,13 +35,28 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Attributes" />
         <Folder Include="logs" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Opdex.Platform.Application\Opdex.Platform.Application.csproj" />
       <ProjectReference Include="..\Opdex.Platform.Infrastructure\Opdex.Platform.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Attributes\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Attributes\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Attributes\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="Attributes\**" />
     </ItemGroup>
 
     <Target Name="_ResolveCopyLocalNuGetPkgXmls" AfterTargets="ResolveReferences">

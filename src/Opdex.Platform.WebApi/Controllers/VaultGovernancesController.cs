@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Pledges;
@@ -13,6 +14,7 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.VaultGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
+using Opdex.Platform.WebApi.OpenApi;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +24,7 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Authorize]
 [Route("vault-governances")]
+[OpenApiOperationProcessor(typeof(GetVaultProposalVotesOperationProcessor))]
 public class VaultGovernancesController : ControllerBase
 {
     private readonly IApplicationContext _context;
@@ -71,6 +74,26 @@ public class VaultGovernancesController : ControllerBase
         var response = await _mediator.Send(new CreateRedeemVaultCertificateQuoteCommand(address, _context.Wallet), cancellationToken);
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
         return Ok(quote);
+    }
+
+    /// <summary>Get Vault Proposals</summary>
+    /// <remarks>Retrieves vault proposals.</remarks>
+    /// <param name="address">Address of the vault.</param>
+    /// <param name="filters">Filter parameters.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Vault proposal paging results.</returns>
+    /// <response code="200">Vault proposal results returned.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="404">Vault not found.</response>
+    [HttpGet("{address}/proposals")]
+    [ProducesResponseType(typeof(VaultProposalsResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<VaultProposalsResponseModel>> GetVaultProposals([FromRoute] Address address, [FromQuery] VaultProposalFilterParameters filters,
+                                                                                   CancellationToken cancellationToken)
+    {
+        var vaults = await _mediator.Send(new GetVaultProposalsWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
+        return Ok(_mapper.Map<VaultProposalsResponseModel>(vaults));
     }
 
     /// <summary>Quote Propose Create Certificate</summary>
@@ -200,6 +223,27 @@ public class VaultGovernancesController : ControllerBase
         return Ok(quote);
     }
 
+    /// <summary>Get Vault Proposal Pledges</summary>
+    /// <remarks>Retrieves vault proposal pledges.</remarks>
+    /// <param name="address">Address of the vault.</param>
+    /// <param name="proposalId">Id of the proposal in the vault.</param>
+    /// <param name="filters">Filter parameters.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Vault proposal pledge paging results.</returns>
+    /// <response code="200">Vault proposal pledge results returned.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="404">Either vault or proposal not found.</response>
+    [HttpGet("{address}/proposals/{proposalId}/pledges")]
+    [ProducesResponseType(typeof(VaultProposalPledgesResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<VaultProposalPledgesResponseModel>> GetVaultProposalPledges([FromRoute] Address address, [FromRoute] ulong proposalId,
+                                                                                               [FromQuery] VaultProposalPledgeFilterParameters filters, CancellationToken cancellationToken)
+    {
+        var vaults = await _mediator.Send(new GetVaultProposalPledgesWithFilterQuery(address, proposalId, filters.BuildCursor()), cancellationToken);
+        return Ok(_mapper.Map<VaultProposalPledgesResponseModel>(vaults));
+    }
+
     /// <summary>Quote Vault Proposal Pledge</summary>
     /// <remarks>Quotes a vault proposal pledge.</remarks>
     /// <param name="address">Address of the vault.</param>
@@ -267,6 +311,27 @@ public class VaultGovernancesController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>Get Vault Proposal Votes</summary>
+    /// <remarks>Retrieves vault proposal votes.</remarks>
+    /// <param name="address">Address of the vault.</param>
+    /// <param name="proposalId">Id of the proposal in the vault.</param>
+    /// <param name="filters">Filter parameters.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Vault proposal vote paging results.</returns>
+    /// <response code="200">Vault proposal vote results returned.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="404">Either vault or proposal not found.</response>
+    [HttpGet("{address}/proposals/{proposalId}/votes")]
+    [ProducesResponseType(typeof(VaultProposalVotesResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<VaultProposalVotesResponseModel>> GetVaultProposalVotes([FromRoute] Address address, [FromRoute] ulong proposalId,
+                                                                                           [FromQuery] VaultProposalVoteFilterParameters filters, CancellationToken cancellationToken)
+    {
+        var vaults = await _mediator.Send(new GetVaultProposalVotesWithFilterQuery(address, proposalId, filters.BuildCursor()), cancellationToken);
+        return Ok(_mapper.Map<VaultProposalVotesResponseModel>(vaults));
+    }
+
     /// <summary>Quote Vault Proposal Vote</summary>
     /// <remarks>Quotes a vault proposal vote.</remarks>
     /// <param name="address">Address of the vault.</param>
@@ -303,7 +368,7 @@ public class VaultGovernancesController : ControllerBase
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawVote([FromRoute] Address address, [FromRoute] ulong proposalId,
+    public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawVote([FromRoute] Address address, ulong proposalId,
                                                                                      [FromBody] VaultProposalWithdrawVoteQuoteRequest request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateWithdrawVaultProposalVoteQuoteCommand(address, proposalId, request.Amount, _context.Wallet), cancellationToken);
