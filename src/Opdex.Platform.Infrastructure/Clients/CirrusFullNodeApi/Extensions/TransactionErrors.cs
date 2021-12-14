@@ -50,12 +50,13 @@ public static class TransactionErrors
         internal static bool TryParseFriendlyErrorMessage(string input, out string friendlyErrorMessage)
         {
             friendlyErrorMessage = null;
-            if (IsOverflowException(input))
+            if (!IsOverflowException(input))
             {
-                friendlyErrorMessage = "Value overflow.";
-                return true;
+                return false;
             }
-            return false;
+
+            friendlyErrorMessage = "Value overflow.";
+            return true;
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ public static class TransactionErrors
         /// </summary>
         private static bool IsOverflowException(string input)
         {
-            return input.StartsWith(typeof(OverflowException).FullName);
+            return input.StartsWith(typeof(OverflowException).FullName!);
         }
     }
 
@@ -218,7 +219,7 @@ public static class TransactionErrors
 
 
         // compiled Regex is much faster, should be initialize on startup
-        private static readonly Regex OpdexErrorRegex = new(@"(?<=OPDEX:\s).+?(?=\r\n)", RegexOptions.Compiled, TimeSpan.FromMilliseconds(500));
+        private static readonly Regex OpdexErrorRegex = new(@$"(?<=OPDEX:\s).+?(?={Environment.NewLine})", RegexOptions.Compiled, TimeSpan.FromMilliseconds(500));
 
         /// <summary>
         /// Attempts to parse known errors that can occur during Opdex smart contract method calls.
@@ -228,8 +229,9 @@ public static class TransactionErrors
         /// <returns>True if an error was recognised, otherwise false.</returns>
         internal static bool TryParseFriendlyErrorMessage(string input, out string friendlyErrorMessage)
         {
-            if (TryMatchOpdexError(input, out var error)) return TryParseFriendlyOpdexErrorMessage(input, error, out friendlyErrorMessage);
-            return General.TryParseFriendlyErrorMessage(input, out friendlyErrorMessage);
+            return TryMatchOpdexError(input, out var error)
+                ? TryParseFriendlyOpdexErrorMessage(input, error, out friendlyErrorMessage)
+                : General.TryParseFriendlyErrorMessage(input, out friendlyErrorMessage);
         }
 
         private static bool TryParseFriendlyOpdexErrorMessage(string input, string error, out string friendlyErrorMessage)
@@ -582,7 +584,7 @@ public static class TransactionErrors
         /// <returns>True if a match was found, otherwise false.</returns>
         private static bool TryMatchOpdexError(string input, out string result)
         {
-            var match = OpdexErrorRegex.Match(input);
+            var match = OpdexErrorRegex.Match(input.ReplaceLineEndings());
             result = match.Value;
             return match.Success;
         }
