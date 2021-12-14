@@ -8,7 +8,7 @@ Web API project to aggregate Opdex smart contract transactional data providing a
 View the [Opdex documentation](https://docs.opdex.com).
 
 ### Run the API yourself.
-See the [local environment setup](local-environment-setup.md) guidelines.
+See the [local environment setup](https://docs.opdex.com/docs/platform-api-environment-setup) guidelines.
 
 ### Looking to get involved?
 Check out the [contributing guidelines](CONTRIBUTING.md).
