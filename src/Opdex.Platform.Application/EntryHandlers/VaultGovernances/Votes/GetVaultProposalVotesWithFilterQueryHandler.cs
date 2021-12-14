@@ -36,7 +36,7 @@ public class GetVaultProposalVotesWithFilterQueryHandler : EntryFilterQueryHandl
 
         var cursorDto = BuildCursorDto(votesResults, request.Cursor, pointerSelector: result => result.Id);
 
-        var assembledResults = await Task.WhenAll(votesResults.Select(vault => _voteAssembler.Assemble(vault)));
+        var assembledResults = await Task.WhenAll(votesResults.Select(vote => _voteAssembler.Assemble(vote)));
 
         return new VaultProposalVotesDto { Votes = assembledResults, Cursor = cursorDto };
     }

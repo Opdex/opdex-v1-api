@@ -35,7 +35,7 @@ public class GetVaultProposalPledgesWithFilterQueryHandler : EntryFilterQueryHan
 
         var cursorDto = BuildCursorDto(pledgesResults, request.Cursor, pointerSelector: result => result.Id);
 
-        var assembledResults = await Task.WhenAll(pledgesResults.Select(vault => _pledgeAssembler.Assemble(vault)));
+        var assembledResults = await Task.WhenAll(pledgesResults.Select(pledge => _pledgeAssembler.Assemble(pledge)));
 
         return new VaultProposalPledgesDto { Pledges = assembledResults, Cursor = cursorDto };
     }

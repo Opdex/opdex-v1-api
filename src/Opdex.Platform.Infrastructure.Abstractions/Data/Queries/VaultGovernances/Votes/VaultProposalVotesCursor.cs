@@ -9,7 +9,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernanc
 public class VaultProposalVotesCursor : Cursor<ulong>
 {
     public VaultProposalVotesCursor(Address voter, bool includeZeroBalances, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
-        : base(sortDirection, limit, pagingDirection, pointer, DefaultLimit, DefaultMaxLimit, DefaultSortDirectionType)
+        : base(sortDirection, limit, pagingDirection, pointer)
     {
         Voter = voter;
         IncludeZeroBalances = includeZeroBalances;
@@ -34,9 +34,6 @@ public class VaultProposalVotesCursor : Cursor<ulong>
 
         return new VaultProposalVotesCursor(Voter, IncludeZeroBalances, SortDirection, Limit, direction, pointer);
     }
-
-    /// <inheritdoc />
-    protected override bool ValidatePointer(ulong pointer) => pointer >= 0 && base.ValidatePointer(pointer);
 
     /// <summary>
     /// Parses a stringified version of the cursor

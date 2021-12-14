@@ -24,16 +24,16 @@ public class SelectVaultProposalVotesWithFilterQueryHandler : IRequestHandler<Se
 
     private static readonly string SqlQuery =
         @$"SELECT
-                vpv.{nameof(VaultProposalVoteEntity.Id)},
-                vpv.{nameof(VaultProposalVoteEntity.VaultGovernanceId)},
-                vpv.{nameof(VaultProposalVoteEntity.ProposalId)},
-                vpv.{nameof(VaultProposalVoteEntity.Voter)},
-                vpv.{nameof(VaultProposalVoteEntity.Vote)},
-                vpv.{nameof(VaultProposalVoteEntity.Balance)},
-                vpv.{nameof(VaultProposalVoteEntity.InFavor)},
-                vpv.{nameof(VaultProposalVoteEntity.CreatedBlock)},
-                vpv.{nameof(VaultProposalVoteEntity.ModifiedBlock)}
-            FROM vault_proposal_vote vpv
+                {nameof(VaultProposalVoteEntity.Id)},
+                {nameof(VaultProposalVoteEntity.VaultGovernanceId)},
+                {nameof(VaultProposalVoteEntity.ProposalId)},
+                {nameof(VaultProposalVoteEntity.Voter)},
+                {nameof(VaultProposalVoteEntity.Vote)},
+                {nameof(VaultProposalVoteEntity.Balance)},
+                {nameof(VaultProposalVoteEntity.InFavor)},
+                {nameof(VaultProposalVoteEntity.CreatedBlock)},
+                {nameof(VaultProposalVoteEntity.ModifiedBlock)}
+            FROM vault_proposal_vote
             {WhereFilter}
             {OrderBy}
             {Limit}".RemoveExcessWhitespace();
@@ -86,21 +86,21 @@ public class SelectVaultProposalVotesWithFilterQueryHandler : IRequestHandler<Se
             // going backward in descending order, use greater than
             if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.SortDirection == SortDirectionType.DESC) sortOperator = ">";
 
-            whereFilterBuilder.Append($" WHERE vpv.{nameof(VaultProposalVoteEntity.Id)} {sortOperator} @{nameof(SqlParams.VoteId)}");
+            whereFilterBuilder.Append($" WHERE {nameof(VaultProposalVoteEntity.Id)} {sortOperator} @{nameof(SqlParams.VoteId)}");
         }
 
         whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
-        whereFilterBuilder.Append($" vpv.{nameof(VaultProposalVoteEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}");
-        whereFilterBuilder.Append($" AND vpv.{nameof(VaultProposalVoteEntity.ProposalId)} = @{nameof(SqlParams.ProposalId)}");
+        whereFilterBuilder.Append($" {nameof(VaultProposalVoteEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}");
+        whereFilterBuilder.Append($" AND {nameof(VaultProposalVoteEntity.ProposalId)} = @{nameof(SqlParams.ProposalId)}");
 
         if (filterOnVoter)
         {
-            whereFilterBuilder.Append($" AND vpv.{nameof(VaultProposalVoteEntity.Voter)} = @{nameof(SqlParams.Voter)}");
+            whereFilterBuilder.Append($" AND {nameof(VaultProposalVoteEntity.Voter)} = @{nameof(SqlParams.Voter)}");
         }
 
         if (!request.Cursor.IncludeZeroBalances)
         {
-            whereFilterBuilder.Append($" AND vpv.{nameof(VaultProposalVoteEntity.Balance)} > 0");
+            whereFilterBuilder.Append($" AND {nameof(VaultProposalVoteEntity.Balance)} > 0");
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -115,7 +115,7 @@ public class SelectVaultProposalVotesWithFilterQueryHandler : IRequestHandler<Se
             direction = Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection);
         }
 
-        var orderBy = $" ORDER BY vpv.{nameof(VaultProposalVoteEntity.Id)} {direction}";
+        var orderBy = $" ORDER BY {nameof(VaultProposalVoteEntity.Id)} {direction}";
 
         var limit = $" LIMIT {request.Cursor.Limit + 1}";
 

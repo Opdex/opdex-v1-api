@@ -24,15 +24,15 @@ public class SelectVaultProposalPledgesWithFilterQueryHandler : IRequestHandler<
 
     private static readonly string SqlQuery =
         @$"SELECT
-                vpp.{nameof(VaultProposalPledgeEntity.Id)},
-                vpp.{nameof(VaultProposalPledgeEntity.VaultGovernanceId)},
-                vpp.{nameof(VaultProposalPledgeEntity.ProposalId)},
-                vpp.{nameof(VaultProposalPledgeEntity.Pledger)},
-                vpp.{nameof(VaultProposalPledgeEntity.Pledge)},
-                vpp.{nameof(VaultProposalPledgeEntity.Balance)},
-                vpp.{nameof(VaultProposalPledgeEntity.CreatedBlock)},
-                vpp.{nameof(VaultProposalPledgeEntity.ModifiedBlock)}
-            FROM vault_proposal_pledge vpp
+                {nameof(VaultProposalPledgeEntity.Id)},
+                {nameof(VaultProposalPledgeEntity.VaultGovernanceId)},
+                {nameof(VaultProposalPledgeEntity.ProposalId)},
+                {nameof(VaultProposalPledgeEntity.Pledger)},
+                {nameof(VaultProposalPledgeEntity.Pledge)},
+                {nameof(VaultProposalPledgeEntity.Balance)},
+                {nameof(VaultProposalPledgeEntity.CreatedBlock)},
+                {nameof(VaultProposalPledgeEntity.ModifiedBlock)}
+            FROM vault_proposal_pledge
             {WhereFilter}
             {OrderBy}
             {Limit}".RemoveExcessWhitespace();
@@ -85,21 +85,21 @@ public class SelectVaultProposalPledgesWithFilterQueryHandler : IRequestHandler<
             // going backward in descending order, use greater than
             if (request.Cursor.PagingDirection == PagingDirection.Backward && request.Cursor.SortDirection == SortDirectionType.DESC) sortOperator = ">";
 
-            whereFilterBuilder.Append($" WHERE vpp.{nameof(VaultProposalPledgeEntity.Id)} {sortOperator} @{nameof(SqlParams.PledgeId)}");
+            whereFilterBuilder.Append($" WHERE {nameof(VaultProposalPledgeEntity.Id)} {sortOperator} @{nameof(SqlParams.PledgeId)}");
         }
 
         whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
-        whereFilterBuilder.Append($" vpp.{nameof(VaultProposalPledgeEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}");
-        whereFilterBuilder.Append($" AND vpp.{nameof(VaultProposalPledgeEntity.ProposalId)} = @{nameof(SqlParams.ProposalId)}");
+        whereFilterBuilder.Append($" {nameof(VaultProposalPledgeEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}");
+        whereFilterBuilder.Append($" AND {nameof(VaultProposalPledgeEntity.ProposalId)} = @{nameof(SqlParams.ProposalId)}");
 
         if (filterOnPledger)
         {
-            whereFilterBuilder.Append($" AND vpp.{nameof(VaultProposalPledgeEntity.Pledger)} = @{nameof(SqlParams.Pledger)}");
+            whereFilterBuilder.Append($" AND {nameof(VaultProposalPledgeEntity.Pledger)} = @{nameof(SqlParams.Pledger)}");
         }
 
         if (!request.Cursor.IncludeZeroBalances)
         {
-            whereFilterBuilder.Append($" AND vpp.{nameof(VaultProposalPledgeEntity.Balance)} > 0");
+            whereFilterBuilder.Append($" AND {nameof(VaultProposalPledgeEntity.Balance)} > 0");
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -114,7 +114,7 @@ public class SelectVaultProposalPledgesWithFilterQueryHandler : IRequestHandler<
             direction = Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection);
         }
 
-        var orderBy = $" ORDER BY vpp.{nameof(VaultProposalPledgeEntity.Id)} {direction}";
+        var orderBy = $" ORDER BY {nameof(VaultProposalPledgeEntity.Id)} {direction}";
 
         var limit = $" LIMIT {request.Cursor.Limit + 1}";
 

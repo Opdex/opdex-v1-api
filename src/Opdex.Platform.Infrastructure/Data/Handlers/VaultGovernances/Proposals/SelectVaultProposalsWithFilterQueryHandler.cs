@@ -23,23 +23,23 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
 
     private static readonly string SqlQuery =
         @$"SELECT
-                vp.{nameof(VaultProposalEntity.Id)},
-                vp.{nameof(VaultProposalEntity.PublicId)},
-                vp.{nameof(VaultProposalEntity.VaultGovernanceId)},
-                vp.{nameof(VaultProposalEntity.Creator)},
-                vp.{nameof(VaultProposalEntity.Wallet)},
-                vp.{nameof(VaultProposalEntity.Amount)},
-                vp.{nameof(VaultProposalEntity.Description)},
-                vp.{nameof(VaultProposalEntity.ProposalTypeId)},
-                vp.{nameof(VaultProposalEntity.ProposalStatusId)},
-                vp.{nameof(VaultProposalEntity.Expiration)},
-                vp.{nameof(VaultProposalEntity.YesAmount)},
-                vp.{nameof(VaultProposalEntity.NoAmount)},
-                vp.{nameof(VaultProposalEntity.PledgeAmount)},
-                vp.{nameof(VaultProposalEntity.Approved)},
-                vp.{nameof(VaultProposalEntity.CreatedBlock)},
-                vp.{nameof(VaultProposalEntity.ModifiedBlock)}
-            FROM vault_proposal vp
+                {nameof(VaultProposalEntity.Id)},
+                {nameof(VaultProposalEntity.PublicId)},
+                {nameof(VaultProposalEntity.VaultGovernanceId)},
+                {nameof(VaultProposalEntity.Creator)},
+                {nameof(VaultProposalEntity.Wallet)},
+                {nameof(VaultProposalEntity.Amount)},
+                {nameof(VaultProposalEntity.Description)},
+                {nameof(VaultProposalEntity.ProposalTypeId)},
+                {nameof(VaultProposalEntity.ProposalStatusId)},
+                {nameof(VaultProposalEntity.Expiration)},
+                {nameof(VaultProposalEntity.YesAmount)},
+                {nameof(VaultProposalEntity.NoAmount)},
+                {nameof(VaultProposalEntity.PledgeAmount)},
+                {nameof(VaultProposalEntity.Approved)},
+                {nameof(VaultProposalEntity.CreatedBlock)},
+                {nameof(VaultProposalEntity.ModifiedBlock)}
+            FROM vault_proposal
             {WhereFilter}
             {OrderBy}
             {Limit}".RemoveExcessWhitespace();
@@ -48,7 +48,7 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
     private const string SortDirection = "{SortDirection}";
 
     private static readonly string PagingBackwardQuery =
-        @$"SELECT * FROM ({InnerQuery}) results ORDER BY results.{nameof(VaultProposalEntity.Expiration)} {SortDirection}, results.{nameof(VaultProposalEntity.Id)} {SortDirection};";
+        @$"SELECT * FROM ({InnerQuery}) results ORDER BY results.{nameof(VaultProposalEntity.PublicId)} {SortDirection};";
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
@@ -61,9 +61,9 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
 
     public async Task<IEnumerable<VaultProposal>> Handle(SelectVaultProposalsWithFilterQuery request, CancellationToken cancellationToken)
     {
-        var pointer = request.Cursor.Pointer;
+        var publicProposalId = request.Cursor.Pointer;
 
-        var queryParams = new SqlParams(pointer.Item1, pointer.Item2, request.Cursor.Status, request.Cursor.Type, request.VaultId);
+        var queryParams = new SqlParams(publicProposalId, request.Cursor.Status, request.Cursor.Type, request.VaultId);
 
         var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
@@ -91,20 +91,20 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
                 _ => throw new ArgumentException("Unrecognised paging and sorting direction.", nameof(request))
             };
 
-            whereFilterBuilder.Append($" WHERE (vp.{nameof(VaultProposalEntity.Expiration)}, vp.{nameof(VaultProposalEntity.Id)}) {sortOperator} (@{nameof(SqlParams.ExpirationPointer)}, @{nameof(SqlParams.ProposalIdPointer)})");
+            whereFilterBuilder.Append($" WHERE {nameof(VaultProposalEntity.PublicId)} {sortOperator} @{nameof(SqlParams.PublicProposalId)}");
         }
 
         whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
-        whereFilterBuilder.Append($" vp.{nameof(VaultProposalEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}");
+        whereFilterBuilder.Append($" {nameof(VaultProposalEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}");
 
         if (request.Cursor.Status != default)
         {
-            whereFilterBuilder.Append($" AND vp.{nameof(VaultProposalEntity.ProposalStatusId)} = @{nameof(SqlParams.Status)}");
+            whereFilterBuilder.Append($" AND {nameof(VaultProposalEntity.ProposalStatusId)} = @{nameof(SqlParams.Status)}");
         }
 
         if (request.Cursor.Type != default)
         {
-            whereFilterBuilder.Append($" AND vp.{nameof(VaultProposalEntity.ProposalTypeId)} = @{nameof(SqlParams.Type)}");
+            whereFilterBuilder.Append($" AND {nameof(VaultProposalEntity.ProposalTypeId)} = @{nameof(SqlParams.Type)}");
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -118,7 +118,7 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
             _ => throw new ArgumentException("Unrecognised paging direction.", nameof(request))
         };
 
-        var orderBy = $" ORDER BY vp.{nameof(VaultProposalEntity.Expiration)} {direction}, vp.{nameof(VaultProposalEntity.Id)} {direction}";
+        var orderBy = $" ORDER BY {nameof(VaultProposalEntity.PublicId)} {direction}";
 
         var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
@@ -136,18 +136,15 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
 
     private sealed class SqlParams
     {
-        public SqlParams(ulong expirationPointer, ulong proposalIdPointer, VaultProposalStatus status,
-            VaultProposalType type, ulong vaultId)
+        public SqlParams(ulong publicProposalId, VaultProposalStatus status, VaultProposalType type, ulong vaultId)
         {
-            ExpirationPointer = expirationPointer;
-            ProposalIdPointer = proposalIdPointer;
+            PublicProposalId = publicProposalId;
             Status = status;
             Type = type;
             VaultId = vaultId;
         }
 
-        public ulong ExpirationPointer { get; }
-        public ulong ProposalIdPointer { get; }
+        public ulong PublicProposalId { get; }
         public VaultProposalStatus Status { get; }
         public VaultProposalType Type { get; }
         public ulong VaultId { get; }

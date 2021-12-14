@@ -6,10 +6,10 @@ using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Proposals;
 
-public class VaultProposalsCursor : Cursor<(ulong, ulong)>
+public class VaultProposalsCursor : Cursor<ulong>
 {
-    public VaultProposalsCursor(VaultProposalStatus status, VaultProposalType type, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, (ulong, ulong) pointer)
-        : base(sortDirection, limit, pagingDirection, pointer, DefaultLimit, DefaultMaxLimit, DefaultSortDirectionType)
+    public VaultProposalsCursor(VaultProposalStatus status, VaultProposalType type, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
+        : base(sortDirection, limit, pagingDirection, pointer)
     {
         Status = status;
         Type = type;
@@ -27,7 +27,7 @@ public class VaultProposalsCursor : Cursor<(ulong, ulong)>
     }
 
     /// <inheritdoc />
-    public override Cursor<(ulong, ulong)> Turn(PagingDirection direction, (ulong, ulong) pointer)
+    public override Cursor<ulong> Turn(PagingDirection direction, ulong pointer)
     {
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
         if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical pointer.");
@@ -77,17 +77,15 @@ public class VaultProposalsCursor : Cursor<(ulong, ulong)>
         return true;
     }
 
-    private static bool TryDecodePointer(string encoded, out (ulong, ulong) pointer)
+    private static bool TryDecodePointer(string encoded, out ulong pointer)
     {
-        pointer = (default, default);
+        pointer = default;
 
         if (!encoded.TryBase64Decode(out var decoded)) return false;
 
-        var tupleParts = decoded.Replace("(", "").Replace(")", "").Split(',');
+        if (!ulong.TryParse(decoded, out var identifier)) return false;
 
-        if (tupleParts.Length != 2 || !ulong.TryParse(tupleParts[0], out var expiration) || !ulong.TryParse(tupleParts[1], out var identifier)) return false;
-
-        pointer = (expiration, identifier);
+        pointer = identifier;
         return true;
     }
 }
