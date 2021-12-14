@@ -2,58 +2,13 @@
 
 Web API project to aggregate Opdex smart contract transactional data providing a restful connection to the underlying protocols.
 
-## Local Environment Setup
+[![Discord](https://img.shields.io/discord/798074378856169482?color=%235865F2&label=Discord&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/PSJr4Ns85k)
 
-### Auth
+### Want to learn more?
+View the [Opdex documentation](https://docs.opdex.com).
 
-Add a bearer token signing key to your configuration, by running `dotnet user-secrets set AuthConfiguration:Opdex:SigningKey ~y0Ur%sEcr3T*k3Y~`. The key can be any UTF-8 string consisting of 16 bytes or more.
+### Run the API yourself.
+See the [local environment setup](https://docs.opdex.com/docs/platform-api-environment-setup) guidelines.
 
-You also need to add an additional encryption key for two-way encryption of the SignalR connection id, using `dotnet user-secrets set EncryptionConfiguration:Key SECRET-ENCRYPTION-KEY`. The key should be a 32 byte UTF-8 string, as this will ensure 256-bit encryption. 
-
-
-### Create DB
-
-Using [Opdex DB Scripts](https://github.com/Opdex/opdex-db-scripts), create the MYSQL database then set the connection string in your configuration using `dotnet user-secrets set DatabaseConfiguration:ConnectionString "Server=; Port=; Database=; Uid=; Pwd=; ConvertZeroDateTime=True;"`, providing the correct credentials.
-
-
-### CMC API KEY
-
-Generate your own Coin Market Cap API Key then set this in your configuration using `dotnet user-secrets set CoinMarketCapConfiguration:ApiKey [your-API-key]`.
-
-### Opdex Configuration
-
-Set the environment you want to run using `dotnet user-secrets set OpdexConfiguration:Network [network]`. Network types include:
-- DEVNET
-- TESTNET
-- MAINNET
-
-Set the API URL being used with `dotnet user-secrete set OpdexConfiguration:ApiUrl [ApiUrl]`. _(e.g `https://dev-api.opdex.com` or `http://localhost:44391`)_
-
-### Cirrus Dev
-
-Clone `StratisFullNode` repository.
-
-Navigate to `Stratis.CirrusMinerD` project and run `dotnet run -devmode=miner` and wait for it to start up.
-
-Use the `/api/SmartContractWallet/account-addresses` swagger endpoint to find the funded wallet address.
-
-Wallet name should be `cirrusdev` and password should be `password`.
-
-
-### Deploy Contracts
-
-Using Opdex swagger, hit `deploy/dev-contracts` and let it run.
-
-This process takes about 5 minutes while transactions are submitted and mined. After the contracts are deployed, indexing of all transaction details will begin.
-
-Once this process is done you'll have a local environment with deployed contracts and a fully synced database.
-
-
-### Processing Transactions
-
-Indexing is done in the background, as long as `Available` is set to `true` on the `index_lock` database table. Be mindful of stopping the application while indexing is idle, as this will mean that you will have to manually reset the `Locked` value on the `index_lock` table.
-
-
-### Logging
-
-Structured logging is managed and configured using Serilog. You can view structured logs locally, without any configuration changes, by using [Seq](https://datalust.co/download).
+### Looking to get involved?
+Check out the [contributing guidelines](CONTRIBUTING.md).
