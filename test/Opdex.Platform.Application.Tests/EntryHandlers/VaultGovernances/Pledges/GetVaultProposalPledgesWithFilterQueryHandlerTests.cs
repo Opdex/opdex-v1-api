@@ -5,7 +5,6 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Pled
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Pledges;
-using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Pledges;
@@ -43,9 +42,8 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalPledgesCursor(5, Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, cursor);
         var cancellationToken = new CancellationTokenSource().Token;
 
         // Act
@@ -61,46 +59,16 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_RetrieveVaultProposalByVaultIdAndPublicIdQuery_Send()
-    {
-        // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
-        var cancellationToken = new CancellationTokenSource().Token;
-
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-
-        // Act
-        try
-        {
-            await _handler.Handle(request, cancellationToken);
-        }
-        catch (Exception) { }
-
-        // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(query => query.VaultId == vault.Id
-                                                                                                               && query.PublicId == proposalId
-                                                                                                               && query.FindOrThrow), cancellationToken), Times.Once);
-    }
-
-    [Fact]
     public async Task Handle_RetrieveVaultProposalPledgesWithFilterQuery_Send()
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalPledgesCursor(5, Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, cursor);
         var cancellationToken = new CancellationTokenSource().Token;
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         try
@@ -111,7 +79,6 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultProposalPledgesWithFilterQuery>(query => query.VaultId == vault.Id
-                                                                                                            && query.ProposalId == proposal.Id
                                                                                                             && query.Cursor == cursor), cancellationToken), Times.Once);
     }
 
@@ -120,9 +87,8 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalPledgesCursor(5, Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, cursor);
 
         var pledges = new VaultProposalPledge[]
         {
@@ -134,9 +100,6 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         await _handler.Handle(request, CancellationToken.None);
@@ -150,9 +113,8 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalPledgesCursor(5, Address.Empty, true, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
+        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, cursor);
 
         var pledges = new VaultProposalPledge[]
         {
@@ -165,9 +127,6 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -181,9 +140,8 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalPledgesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
+        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, cursor);
 
         var pledges = new VaultProposalPledge[]
         {
@@ -196,9 +154,6 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -213,9 +168,8 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalPledgesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
+        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, cursor);
 
         var pledges = new VaultProposalPledge[]
         {
@@ -228,9 +182,6 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -245,9 +196,8 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalPledgesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
+        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, cursor);
 
         var pledges = new VaultProposalPledge[]
         {
@@ -260,9 +210,6 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -277,9 +224,8 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalPledgesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, cursor);
 
         var pledges = new VaultProposalPledge[]
         {
@@ -292,9 +238,6 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -309,9 +252,8 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalPledgesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, cursor);
 
         var pledges = new VaultProposalPledge[]
         {
@@ -324,9 +266,6 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -341,9 +280,8 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalPledgesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, cursor);
 
         var pledges = new VaultProposalPledge[]
         {
@@ -355,9 +293,6 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -372,9 +307,8 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalPledgesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
-        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalPledgesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+        var request = new GetVaultProposalPledgesWithFilterQuery(vaultAddress, cursor);
 
         var pledges = new VaultProposalPledge[]
         {
@@ -386,9 +320,6 @@ public class GetVaultProposalPledgesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);

@@ -77,6 +77,27 @@ public class VaultGovernancesController : ControllerBase
         return Ok(quote);
     }
 
+    /// <summary>Get Vault Proposal Pledges</summary>
+    /// <remarks>Retrieves vault proposal pledges.</remarks>
+    /// <param name="address">Address of the vault.</param>
+    /// <param name="filters">Filter parameters.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Vault proposal pledge paging results.</returns>
+    /// <response code="200">Vault proposal pledge results returned.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="404">Vault not found.</response>
+    [HttpGet("{address}/pledges")]
+    [OpenApiOperationProcessor(typeof(GetVaultProposalPledgesOperationProcessor))]
+    [ProducesResponseType(typeof(VaultProposalPledgesResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<VaultProposalPledgesResponseModel>> GetVaultProposalPledges([FromRoute] Address address,
+        [FromQuery] VaultProposalPledgeFilterParameters filters, CancellationToken cancellationToken)
+    {
+        var vaults = await _mediator.Send(new GetVaultProposalPledgesWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
+        return Ok(_mapper.Map<VaultProposalPledgesResponseModel>(vaults));
+    }
+
     /// <summary>Get Vault Proposals</summary>
     /// <remarks>Retrieves vault proposals.</remarks>
     /// <param name="address">Address of the vault.</param>
@@ -231,27 +252,6 @@ public class VaultGovernancesController : ControllerBase
         return Ok(quote);
     }
 
-    /// <summary>Get Vault Proposal Pledges</summary>
-    /// <remarks>Retrieves vault proposal pledges.</remarks>
-    /// <param name="address">Address of the vault.</param>
-    /// <param name="proposalId">Id of the proposal in the vault.</param>
-    /// <param name="filters">Filter parameters.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>Vault proposal pledge paging results.</returns>
-    /// <response code="200">Vault proposal pledge results returned.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="404">Either vault or proposal not found.</response>
-    [HttpGet("{address}/proposals/{proposalId}/pledges")]
-    [ProducesResponseType(typeof(VaultProposalPledgesResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VaultProposalPledgesResponseModel>> GetVaultProposalPledges([FromRoute] Address address, [FromRoute] ulong proposalId,
-                                                                                               [FromQuery] VaultProposalPledgeFilterParameters filters, CancellationToken cancellationToken)
-    {
-        var vaults = await _mediator.Send(new GetVaultProposalPledgesWithFilterQuery(address, proposalId, filters.BuildCursor()), cancellationToken);
-        return Ok(_mapper.Map<VaultProposalPledgesResponseModel>(vaults));
-    }
-
     /// <summary>Quote Vault Proposal Pledge</summary>
     /// <remarks>Quotes a vault proposal pledge.</remarks>
     /// <param name="address">Address of the vault.</param>
@@ -322,27 +322,6 @@ public class VaultGovernancesController : ControllerBase
         return Ok(response);
     }
 
-    /// <summary>Get Vault Proposal Votes</summary>
-    /// <remarks>Retrieves vault proposal votes.</remarks>
-    /// <param name="address">Address of the vault.</param>
-    /// <param name="proposalId">Id of the proposal in the vault.</param>
-    /// <param name="filters">Filter parameters.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>Vault proposal vote paging results.</returns>
-    /// <response code="200">Vault proposal vote results returned.</response>
-    /// <response code="400">The request is not valid.</response>
-    /// <response code="404">Either vault or proposal not found.</response>
-    [HttpGet("{address}/proposals/{proposalId}/votes")]
-    [ProducesResponseType(typeof(VaultProposalVotesResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<VaultProposalVotesResponseModel>> GetVaultProposalVotes([FromRoute] Address address, [FromRoute] ulong proposalId,
-                                                                                           [FromQuery] VaultProposalVoteFilterParameters filters, CancellationToken cancellationToken)
-    {
-        var vaults = await _mediator.Send(new GetVaultProposalVotesWithFilterQuery(address, proposalId, filters.BuildCursor()), cancellationToken);
-        return Ok(_mapper.Map<VaultProposalVotesResponseModel>(vaults));
-    }
-
     /// <summary>Quote Vault Proposal Vote</summary>
     /// <remarks>Quotes a vault proposal vote.</remarks>
     /// <param name="address">Address of the vault.</param>
@@ -411,5 +390,27 @@ public class VaultGovernancesController : ControllerBase
         var dto = await _mediator.Send(new GetVaultProposalVoteByVaultAddressPublicIdAndVoterQuery(address, proposalId, voter), cancellationToken);
         var response = _mapper.Map<VaultProposalVoteResponseModel>(dto);
         return Ok(response);
+    }
+
+    /// <summary>Get Vault Proposal Votes</summary>
+    /// <remarks>Retrieves vault proposal votes.</remarks>
+    /// <param name="address">Address of the vault.</param>
+    /// <param name="filters">Filter parameters.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Vault proposal vote paging results.</returns>
+    /// <response code="200">Vault proposal vote results returned.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="404">Vault not found.</response>
+    [HttpGet("{address}/votes")]
+    [OpenApiOperationProcessor(typeof(GetVaultProposalVotesOperationProcessor))]
+    [ProducesResponseType(typeof(VaultProposalVotesResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<VaultProposalVotesResponseModel>> GetVaultProposalVotes([FromRoute] Address address,
+                                                                                           [FromQuery] VaultProposalVoteFilterParameters filters,
+                                                                                           CancellationToken cancellationToken)
+    {
+        var vaults = await _mediator.Send(new GetVaultProposalVotesWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
+        return Ok(_mapper.Map<VaultProposalVotesResponseModel>(vaults));
     }
 }

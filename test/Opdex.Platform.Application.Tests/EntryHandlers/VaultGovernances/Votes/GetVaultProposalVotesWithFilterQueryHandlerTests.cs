@@ -19,7 +19,6 @@ using System.Threading.Tasks;
 using Xunit;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Votes;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 
 namespace Opdex.Platform.Application.Tests.EntryHandlers.VaultGovernances.Votes;
 
@@ -43,9 +42,8 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalVotesCursor(5, Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, cursor);
         var cancellationToken = new CancellationTokenSource().Token;
 
         // Act
@@ -53,7 +51,10 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
         {
             await _handler.Handle(request, cancellationToken);
         }
-        catch (Exception) { }
+        catch (Exception)
+        {
+            // ignored
+        }
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultGovernanceByAddressQuery>(query => query.Vault == vaultAddress
@@ -61,57 +62,29 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_RetrieveVaultProposalByVaultIdAndPublicIdQuery_Send()
-    {
-        // Arrange
-        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
-        var cancellationToken = new CancellationTokenSource().Token;
-
-        var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-
-        // Act
-        try
-        {
-            await _handler.Handle(request, cancellationToken);
-        }
-        catch (Exception) { }
-
-        // Assert
-        _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(query => query.VaultId == vault.Id
-                                                                                                               && query.PublicId == request.PublicProposalId
-                                                                                                               && query.FindOrThrow), cancellationToken), Times.Once);
-    }
-
-    [Fact]
     public async Task Handle_RetrieveVaultProposalVotesWithFilterQuery_Send()
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalVotesCursor(5, Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, cursor);
         var cancellationToken = new CancellationTokenSource().Token;
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         try
         {
             await _handler.Handle(request, cancellationToken);
         }
-        catch (Exception) { }
+        catch (Exception)
+        {
+            // ignored
+        }
 
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<RetrieveVaultProposalVotesWithFilterQuery>(query => query.VaultId == vault.Id
-                                                                                                          && query.ProposalId == proposal.Id
                                                                                                           && query.Cursor == cursor), cancellationToken), Times.Once);
     }
 
@@ -120,11 +93,10 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalVotesCursor(5, Address.Empty, true, SortDirectionType.ASC, 25, PagingDirection.Backward, 55);
+        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, cursor);
 
-        var votes = new VaultProposalVote[]
+        var votes = new[]
         {
             new VaultProposalVote(5, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
             new VaultProposalVote(10, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
@@ -134,9 +106,6 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         await _handler.Handle(request, CancellationToken.None);
@@ -150,11 +119,10 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalVotesCursor(5, Address.Empty, true, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
+        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, cursor);
 
-        var votes = new VaultProposalVote[]
+        var votes = new[]
         {
             new VaultProposalVote(5, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
             new VaultProposalVote(10, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
@@ -165,9 +133,6 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -181,11 +146,10 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalVotesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
+        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, cursor);
 
-        var votes = new VaultProposalVote[]
+        var votes = new[]
         {
             new VaultProposalVote(5, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
             new VaultProposalVote(10, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
@@ -196,9 +160,6 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -213,11 +174,10 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalVotesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
+        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, cursor);
 
-        var votes = new VaultProposalVote[]
+        var votes = new[]
         {
             new VaultProposalVote(5, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
             new VaultProposalVote(10, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
@@ -228,9 +188,6 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -245,11 +202,10 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalVotesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 0);
+        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, cursor);
 
-        var votes = new VaultProposalVote[]
+        var votes = new[]
         {
             new VaultProposalVote(5, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
             new VaultProposalVote(10, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
@@ -260,9 +216,6 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -277,11 +230,10 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalVotesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, cursor);
 
-        var votes = new VaultProposalVote[]
+        var votes = new[]
         {
             new VaultProposalVote(5, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
             new VaultProposalVote(10, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
@@ -292,9 +244,6 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -309,11 +258,10 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalVotesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, cursor);
 
-        var votes = new VaultProposalVote[]
+        var votes = new[]
         {
             new VaultProposalVote(5, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
             new VaultProposalVote(10, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
@@ -324,9 +272,6 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -341,11 +286,10 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalVotesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, cursor);
 
-        var votes = new VaultProposalVote[]
+        var votes = new[]
         {
             new VaultProposalVote(5, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
             new VaultProposalVote(10, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500)
@@ -355,9 +299,6 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);
@@ -372,11 +313,10 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var proposalId = 5UL;
-        var cursor = new VaultProposalVotesCursor(Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
-        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, proposalId, cursor);
+        var cursor = new VaultProposalVotesCursor(5, Address.Empty, true, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+        var request = new GetVaultProposalVotesWithFilterQuery(vaultAddress, cursor);
 
-        var votes = new VaultProposalVote[]
+        var votes = new[]
         {
             new VaultProposalVote(5, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500),
             new VaultProposalVote(10, 5, 5, "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm", 500000000000, 100000, true, 50, 500)
@@ -386,9 +326,6 @@ public class GetVaultProposalVotesWithFilterQueryHandlerTests
 
         var vault = new VaultGovernance(10, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 10, 10000000000, 100000, 50000000, 10000000, 1000000000, 50, 500);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
-        var proposal = new VaultProposal(25, 5, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 50000000, "Proposal description",
-                                         VaultProposalType.Revoke, VaultProposalStatus.Pledge, 100000, 125000000, 40000000, 230000, true, 50, 500);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultProposalByVaultIdAndPublicIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(proposal);
 
         // Act
         var dto = await _handler.Handle(request, CancellationToken.None);

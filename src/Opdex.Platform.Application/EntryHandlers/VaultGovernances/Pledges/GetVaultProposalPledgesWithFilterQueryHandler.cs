@@ -3,7 +3,6 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Pled
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Pledges;
-using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using System;
@@ -27,9 +26,8 @@ public class GetVaultProposalPledgesWithFilterQueryHandler : EntryFilterQueryHan
     public override async Task<VaultProposalPledgesDto> Handle(GetVaultProposalPledgesWithFilterQuery request, CancellationToken cancellationToken)
     {
         var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(request.Vault, findOrThrow: true), cancellationToken);
-        var proposal = await _mediator.Send(new RetrieveVaultProposalByVaultIdAndPublicIdQuery(vault.Id, request.PublicProposalId, findOrThrow: true), cancellationToken);
 
-        var pledges = await _mediator.Send(new RetrieveVaultProposalPledgesWithFilterQuery(vault.Id, proposal.Id, request.Cursor), cancellationToken);
+        var pledges = await _mediator.Send(new RetrieveVaultProposalPledgesWithFilterQuery(vault.Id, request.Cursor), cancellationToken);
 
         var pledgesResults = pledges.ToList();
 

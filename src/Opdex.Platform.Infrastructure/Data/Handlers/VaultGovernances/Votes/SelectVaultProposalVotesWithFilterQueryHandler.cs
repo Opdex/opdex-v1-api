@@ -55,7 +55,7 @@ public class SelectVaultProposalVotesWithFilterQueryHandler : IRequestHandler<Se
     {
         var voteId = request.Cursor.Pointer;
 
-        var queryParams = new SqlParams(voteId, request.VaultId, request.ProposalId, request.Cursor.Voter);
+        var queryParams = new SqlParams(voteId, request.VaultId, request.Cursor.ProposalId, request.Cursor.Voter);
 
         var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
@@ -68,6 +68,7 @@ public class SelectVaultProposalVotesWithFilterQueryHandler : IRequestHandler<Se
     {
         var whereFilterBuilder = new StringBuilder();
 
+        var filterOnProposal = request.Cursor.ProposalId != 0;
         var filterOnVoter = request.Cursor.Voter != Address.Empty;
 
         if (!request.Cursor.IsFirstRequest)
@@ -91,7 +92,11 @@ public class SelectVaultProposalVotesWithFilterQueryHandler : IRequestHandler<Se
 
         whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
         whereFilterBuilder.Append($" {nameof(VaultProposalVoteEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}");
-        whereFilterBuilder.Append($" AND {nameof(VaultProposalVoteEntity.ProposalId)} = @{nameof(SqlParams.ProposalId)}");
+
+        if (filterOnProposal)
+        {
+            whereFilterBuilder.Append($" AND {nameof(VaultProposalVoteEntity.ProposalId)} = @{nameof(SqlParams.ProposalId)}");
+        }
 
         if (filterOnVoter)
         {

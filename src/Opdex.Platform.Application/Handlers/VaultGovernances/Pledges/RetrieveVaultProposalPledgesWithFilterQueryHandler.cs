@@ -20,6 +20,6 @@ public class RetrieveVaultProposalPledgesWithFilterQueryHandler : IRequestHandle
 
     public async Task<IEnumerable<VaultProposalPledge>> Handle(RetrieveVaultProposalPledgesWithFilterQuery request, CancellationToken cancellationToken)
     {
-        return await _mediator.Send(new SelectVaultProposalPledgesWithFilterQuery(request.VaultId, request.ProposalId, request.Cursor), cancellationToken);
+        return await _mediator.Send(new SelectVaultProposalPledgesWithFilterQuery(request.VaultId, request.Cursor), cancellationToken);
     }
 }

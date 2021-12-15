@@ -8,13 +8,15 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernanc
 
 public class VaultProposalVotesCursor : Cursor<ulong>
 {
-    public VaultProposalVotesCursor(Address voter, bool includeZeroBalances, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
+    public VaultProposalVotesCursor(ulong proposalId, Address voter, bool includeZeroBalances, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
     {
+        ProposalId = proposalId;
         Voter = voter;
         IncludeZeroBalances = includeZeroBalances;
     }
 
+    public ulong ProposalId { get; }
     public Address Voter { get; }
     public bool IncludeZeroBalances { get; }
 
@@ -23,7 +25,7 @@ public class VaultProposalVotesCursor : Cursor<ulong>
     {
         var pointerBytes = Encoding.UTF8.GetBytes(Pointer.ToString());
         var encodedPointer = Convert.ToBase64String(pointerBytes);
-        return $"voter:{Voter};includeZeroBalances:{IncludeZeroBalances};direction:{SortDirection};limit:{Limit};paging:{PagingDirection};pointer:{encodedPointer};";
+        return $"proposalId:{ProposalId};voter:{Voter};includeZeroBalances:{IncludeZeroBalances};direction:{SortDirection};limit:{Limit};paging:{PagingDirection};pointer:{encodedPointer};";
     }
 
     /// <inheritdoc />
@@ -32,7 +34,7 @@ public class VaultProposalVotesCursor : Cursor<ulong>
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
         if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical id.");
 
-        return new VaultProposalVotesCursor(Voter, IncludeZeroBalances, SortDirection, Limit, direction, pointer);
+        return new VaultProposalVotesCursor(ProposalId, Voter, IncludeZeroBalances, SortDirection, Limit, direction, pointer);
     }
 
     /// <summary>
@@ -48,6 +50,8 @@ public class VaultProposalVotesCursor : Cursor<ulong>
         if (raw is null) return false;
 
         var values = ToDictionary(raw);
+
+        if (!TryGetCursorProperty<ulong>(values, "proposalId", out var proposalId)) return false;
 
         TryGetCursorProperty<Address>(values, "voter", out var voter);
 
@@ -67,7 +71,7 @@ public class VaultProposalVotesCursor : Cursor<ulong>
 
         try
         {
-            cursor = new VaultProposalVotesCursor(voter, includeZeroBalances, direction, limit, paging, pointer);
+            cursor = new VaultProposalVotesCursor(proposalId, voter, includeZeroBalances, direction, limit, paging, pointer);
         }
         catch (Exception)
         {
