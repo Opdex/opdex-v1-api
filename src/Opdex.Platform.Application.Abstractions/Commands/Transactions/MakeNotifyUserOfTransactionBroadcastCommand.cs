@@ -5,7 +5,7 @@ using System;
 namespace Opdex.Platform.Application.Abstractions.Commands.Transactions;
 
 /// <summary>Attempts to notify a user of a transaction which has been broadcast.</summary>
-public class MakeNotifyUserOfTransactionBroadcastCommand : IRequest<bool>
+public class MakeNotifyUserOfTransactionBroadcastCommand : IRequest
 {
     public MakeNotifyUserOfTransactionBroadcastCommand(Address user, Sha256 transactionHash)
     {

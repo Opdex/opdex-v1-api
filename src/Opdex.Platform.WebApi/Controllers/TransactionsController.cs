@@ -67,7 +67,7 @@ public class TransactionsController : ControllerBase
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> NotifyBroadcasted([FromBody] TransactionBroadcastNotificationRequest request, CancellationToken cancellationToken)
     {
-        var notified = await _mediator.Send(new CreateNotifyUserOfTransactionBroadcastCommand(request.WalletAddress, request.TransactionHash), cancellationToken);
+        var notified = await _mediator.Send(new CreateNotifyUserOfTransactionBroadcastCommand(request.TransactionHash), cancellationToken);
         if (!notified) throw new InvalidDataException(nameof(request.TransactionHash), "Transaction could not be found in the mempool.");
         return NoContent();
     }
