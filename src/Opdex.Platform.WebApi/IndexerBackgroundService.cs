@@ -132,6 +132,8 @@ public class IndexerBackgroundService : BackgroundService
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Shutting down indexer.");
+        await base.StopAsync(cancellationToken);
+        
         try
         {
             IMediator mediator;
@@ -150,14 +152,5 @@ public class IndexerBackgroundService : BackgroundService
         {
             _logger.LogCritical(ex, "Failure gracefully shutting down the indexer, indexing locked.");
         }
-        finally
-        {
-            await base.StopAsync(cancellationToken);
-        }
     }
-}
-
-public class IndexerConfiguration
-{
-    public bool Enabled { get; set; }
 }
