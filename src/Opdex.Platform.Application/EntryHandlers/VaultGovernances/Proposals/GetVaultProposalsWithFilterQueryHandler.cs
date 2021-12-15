@@ -31,7 +31,7 @@ public class GetVaultProposalsWithFilterQueryHandler : EntryFilterQueryHandler<G
 
         var proposalsResults = proposals.ToList();
 
-        var cursorDto = BuildCursorDto(proposalsResults, request.Cursor, pointerSelector: result => result.PublicId);
+        var cursorDto = BuildCursorDto(proposalsResults, request.Cursor, pointerSelector: result => (result.Expiration, result.PublicId));
 
         var assembledResults = await Task.WhenAll(proposalsResults.Select(proposal => _proposalAssembler.Assemble(proposal)));
 

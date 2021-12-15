@@ -42,23 +42,7 @@
       <ProjectReference Include="..\Opdex.Platform.Application\Opdex.Platform.Application.csproj" />
       <ProjectReference Include="..\Opdex.Platform.Infrastructure\Opdex.Platform.Infrastructure.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Attributes\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Remove="Attributes\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="Attributes\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Remove="Attributes\**" />
-    </ItemGroup>
-
+    
     <Target Name="_ResolveCopyLocalNuGetPkgXmls" AfterTargets="ResolveReferences">
       <ItemGroup><!-- Copy XML files from all PackageReferences to output dir, used for OpenAPI definitions -->
         <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)'!='' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />

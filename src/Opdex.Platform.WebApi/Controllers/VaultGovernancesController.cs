@@ -368,7 +368,7 @@ public class VaultGovernancesController : ControllerBase
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawVote([FromRoute] Address address, ulong proposalId,
+    public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawVote([FromRoute] Address address, [FromRoute] ulong proposalId,
                                                                                      [FromBody] VaultProposalWithdrawVoteQuoteRequest request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateWithdrawVaultProposalVoteQuoteCommand(address, proposalId, request.Amount, _context.Wallet), cancellationToken);

@@ -122,7 +122,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 3, PagingDirection.Backward, 55);
+        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 3, PagingDirection.Backward, (300000, 55));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
         var proposals = new[]
@@ -152,7 +152,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, 55);
+        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, (300000, 55));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
         var proposals = new[]
@@ -183,7 +183,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, 55);
+        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, (300000, 55));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
         var proposals = new[]
@@ -214,7 +214,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
+        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, (default, default));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
         var proposals = new[]
@@ -236,7 +236,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         var dto = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        AssertNext(dto.Cursor, proposals[^2].PublicId);
+        AssertNext(dto.Cursor, (proposals[^2].Expiration, proposals[^2].PublicId));
         dto.Cursor.Previous.Should().Be(null);
     }
 
@@ -245,7 +245,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, (300000, 50));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
         var proposals = new[]
@@ -267,8 +267,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         var dto = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        AssertNext(dto.Cursor, proposals[^2].PublicId);
-        AssertPrevious(dto.Cursor, proposals[0].PublicId);
+        AssertNext(dto.Cursor, (proposals[^2].Expiration, proposals[^2].PublicId));
+        AssertPrevious(dto.Cursor, (proposals[0].Expiration, proposals[0].PublicId));
     }
 
     [Fact]
@@ -276,7 +276,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, (300000, 50));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
         var proposals = new[]
@@ -298,8 +298,8 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         var dto = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        AssertNext(dto.Cursor, proposals[^1].PublicId);
-        AssertPrevious(dto.Cursor, proposals[1].PublicId);
+        AssertNext(dto.Cursor, (proposals[^1].Expiration, proposals[^1].PublicId));
+        AssertPrevious(dto.Cursor, (proposals[1].Expiration, proposals[1].PublicId));
     }
 
     [Fact]
@@ -307,7 +307,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, 50);
+        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Forward, (300000, 50));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
         var proposals = new[]
@@ -328,7 +328,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
 
         // Assert
         dto.Cursor.Next.Should().Be(null);
-        AssertPrevious(dto.Cursor, proposals[0].PublicId);
+        AssertPrevious(dto.Cursor, (proposals[0].Expiration, proposals[0].PublicId));
     }
 
     [Fact]
@@ -336,7 +336,7 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
     {
         // Arrange
         var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
-        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, 50);
+        var cursor = new VaultProposalsCursor(default, default, SortDirectionType.ASC, 2, PagingDirection.Backward, (300000, 50));
         var request = new GetVaultProposalsWithFilterQuery(vaultAddress, cursor);
 
         var proposals = new[]
@@ -356,18 +356,18 @@ public class GetVaultProposalsWithFilterQueryHandlerTests
         var dto = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        AssertNext(dto.Cursor, proposals[^1].PublicId);
+        AssertNext(dto.Cursor, (proposals[^1].Expiration, proposals[^1].PublicId));
         dto.Cursor.Previous.Should().Be(null);
     }
 
-    private static void AssertNext(CursorDto dto, ulong pointer)
+    private static void AssertNext(CursorDto dto, (ulong, ulong) pointer)
     {
         VaultProposalsCursor.TryParse(dto.Next.Base64Decode(), out var next).Should().Be(true);
         next.PagingDirection.Should().Be(PagingDirection.Forward);
         next.Pointer.Should().Be(pointer);
     }
 
-    private static void AssertPrevious(CursorDto dto, ulong pointer)
+    private static void AssertPrevious(CursorDto dto, (ulong, ulong) pointer)
     {
         VaultProposalsCursor.TryParse(dto.Previous.Base64Decode(), out var next).Should().Be(true);
         next.PagingDirection.Should().Be(PagingDirection.Backward);

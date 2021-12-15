@@ -48,7 +48,7 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
     private const string SortDirection = "{SortDirection}";
 
     private static readonly string PagingBackwardQuery =
-        @$"SELECT * FROM ({InnerQuery}) results ORDER BY results.{nameof(VaultProposalEntity.PublicId)} {SortDirection};";
+        @$"SELECT * FROM ({InnerQuery}) results ORDER BY results.{nameof(VaultProposalEntity.Expiration)} {SortDirection}, results.{nameof(VaultProposalEntity.PublicId)} {SortDirection};";
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
@@ -61,9 +61,7 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
 
     public async Task<IEnumerable<VaultProposal>> Handle(SelectVaultProposalsWithFilterQuery request, CancellationToken cancellationToken)
     {
-        var publicProposalId = request.Cursor.Pointer;
-
-        var queryParams = new SqlParams(publicProposalId, request.Cursor.Status, request.Cursor.Type, request.VaultId);
+        var queryParams = new SqlParams(request.Cursor.Pointer, request.Cursor.Status, request.Cursor.Type, request.VaultId);
 
         var query = DatabaseQuery.Create(QueryBuilder(request), queryParams, cancellationToken);
 
@@ -91,7 +89,7 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
                 _ => throw new ArgumentException("Unrecognised paging and sorting direction.", nameof(request))
             };
 
-            whereFilterBuilder.Append($" WHERE {nameof(VaultProposalEntity.PublicId)} {sortOperator} @{nameof(SqlParams.PublicProposalId)}");
+            whereFilterBuilder.Append($" WHERE ({nameof(VaultProposalEntity.Expiration)}, {nameof(VaultProposalEntity.PublicId)}) {sortOperator} (@{nameof(SqlParams.ExpirationPointer)}, @{nameof(SqlParams.PublicIdPointer)})");
         }
 
         whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
@@ -118,7 +116,7 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
             _ => throw new ArgumentException("Unrecognised paging direction.", nameof(request))
         };
 
-        var orderBy = $" ORDER BY {nameof(VaultProposalEntity.PublicId)} {direction}";
+        var orderBy = $" ORDER BY {nameof(VaultProposalEntity.Expiration)} {direction}, {nameof(VaultProposalEntity.PublicId)} {direction}";
 
         var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
@@ -136,15 +134,17 @@ public class SelectVaultProposalsWithFilterQueryHandler : IRequestHandler<Select
 
     private sealed class SqlParams
     {
-        public SqlParams(ulong publicProposalId, VaultProposalStatus status, VaultProposalType type, ulong vaultId)
+        public SqlParams((ulong, ulong) pointer, VaultProposalStatus status, VaultProposalType type, ulong vaultId)
         {
-            PublicProposalId = publicProposalId;
+            ExpirationPointer = pointer.Item1;
+            PublicIdPointer = pointer.Item2;
             Status = status;
             Type = type;
             VaultId = vaultId;
         }
 
-        public ulong PublicProposalId { get; }
+        public ulong ExpirationPointer { get; }
+        public ulong PublicIdPointer { get; }
         public VaultProposalStatus Status { get; }
         public VaultProposalType Type { get; }
         public ulong VaultId { get; }

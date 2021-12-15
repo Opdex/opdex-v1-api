@@ -6,9 +6,10 @@ using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Proposals;
 
-public class VaultProposalsCursor : Cursor<ulong>
+public class VaultProposalsCursor : Cursor<(ulong, ulong)>
 {
-    public VaultProposalsCursor(VaultProposalStatus status, VaultProposalType type, SortDirectionType sortDirection, uint limit, PagingDirection pagingDirection, ulong pointer)
+    public VaultProposalsCursor(VaultProposalStatus status, VaultProposalType type, SortDirectionType sortDirection, uint limit,
+                                PagingDirection pagingDirection, (ulong, ulong) pointer)
         : base(sortDirection, limit, pagingDirection, pointer)
     {
         Status = status;
@@ -27,7 +28,7 @@ public class VaultProposalsCursor : Cursor<ulong>
     }
 
     /// <inheritdoc />
-    public override Cursor<ulong> Turn(PagingDirection direction, ulong pointer)
+    public override Cursor<(ulong, ulong)> Turn(PagingDirection direction, (ulong, ulong) pointer)
     {
         if (!direction.IsValid()) throw new ArgumentOutOfRangeException(nameof(direction), "Invalid paging direction.");
         if (pointer == Pointer) throw new ArgumentOutOfRangeException(nameof(pointer), "Cannot paginate with an identical pointer.");
@@ -77,15 +78,16 @@ public class VaultProposalsCursor : Cursor<ulong>
         return true;
     }
 
-    private static bool TryDecodePointer(string encoded, out ulong pointer)
+    private static bool TryDecodePointer(string encoded, out (ulong, ulong) pointer)
     {
         pointer = default;
 
         if (!encoded.TryBase64Decode(out var decoded)) return false;
 
-        if (!ulong.TryParse(decoded, out var identifier)) return false;
+        var tupleParts = decoded.Replace("(", "").Replace(")", "").Split(',');
+        if (tupleParts.Length != 2 || !ulong.TryParse(tupleParts[0], out var expiration) || !ulong.TryParse(tupleParts[1], out var publicId)) return false;
 
-        pointer = identifier;
+        pointer = (expiration, publicId);
         return true;
     }
 }
