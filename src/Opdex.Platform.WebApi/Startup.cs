@@ -242,6 +242,7 @@ public class Startup
                 Scheme = "bearer",
                 BearerFormat = "JWT"
             });
+            settings.DocumentProcessors.Add(new SingleAllOfToRefDocumentProcessor());
             settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
             settings.OperationProcessors.Add(new TooManyRequestErrorOperationProcessor());
             settings.OperationProcessors.Add(new InternalServerErrorOperationProcessor());
