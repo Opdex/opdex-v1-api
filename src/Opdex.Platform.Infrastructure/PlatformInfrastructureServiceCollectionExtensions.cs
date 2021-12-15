@@ -320,6 +320,9 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectVaultProposalVotesByModifiedBlockQuery, IEnumerable<VaultProposalVote>>, SelectVaultProposalVotesByModifiedBlockQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultProposalPledgesByModifiedBlockQuery, IEnumerable<VaultProposalPledge>>, SelectVaultProposalPledgesByModifiedBlockQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultGovernanceCertificatesByModifiedBlockQuery, IEnumerable<VaultCertificate>>, SelectVaultGovernanceCertificatesByModifiedBlockQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultProposalsWithFilterQuery, IEnumerable<VaultProposal>>, SelectVaultProposalsWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultProposalPledgesWithFilterQuery, IEnumerable<VaultProposalPledge>>, SelectVaultProposalPledgesWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultProposalVotesWithFilterQuery, IEnumerable<VaultProposalVote>>, SelectVaultProposalVotesWithFilterQueryHandler>();
 
         // Addresses
         services.AddTransient<IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>, SelectAddressBalanceByOwnerAndTokenIdQueryHandler>();

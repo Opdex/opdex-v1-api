@@ -148,6 +148,70 @@ public class VaultGovernancesControllerTests
     }
 
     [Fact]
+    public async Task GetVaultProposalPledges_GetVaultProposalPledgesWithFilterQuery_Send()
+    {
+        // Arrange
+        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        // Act
+        await _controller.GetVaultProposalPledges(vaultAddress, new VaultProposalPledgeFilterParameters(), cancellationToken);
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultProposalPledgesWithFilterQuery>(query => query.Vault == vaultAddress
+            && query.Cursor != null), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetVaultProposalPledges_Result_ReturnOk()
+    {
+        // Arrange
+        var pledges = new VaultProposalPledgesResponseModel();
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultProposalPledgesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new VaultProposalPledgesDto());
+        _mapperMock.Setup(callTo => callTo.Map<VaultProposalPledgesResponseModel>(It.IsAny<VaultProposalPledgesDto>())).Returns(pledges);
+
+        // Act
+        var response = await _controller.GetVaultProposalPledges(new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"),  new VaultProposalPledgeFilterParameters(), CancellationToken.None);
+
+        // Assert
+        response.Result.Should().BeOfType<OkObjectResult>();
+        (((OkObjectResult)response.Result)!).Value.Should().Be(pledges);
+    }
+
+    [Fact]
+    public async Task GetVaultProposals_GetVaultProposalsWithFilterQuery_Send()
+    {
+        // Arrange
+        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        // Act
+        await _controller.GetVaultProposals(vaultAddress, new VaultProposalFilterParameters(), cancellationToken);
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultProposalsWithFilterQuery>(query => query.Vault == vaultAddress
+                                                                                                 && query.Cursor != null), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetVaultProposals_Result_ReturnOk()
+    {
+        // Arrange
+        var proposals = new VaultProposalsResponseModel();
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultProposalsWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new VaultProposalsDto());
+        _mapperMock.Setup(callTo => callTo.Map<VaultProposalsResponseModel>(It.IsAny<VaultProposalsDto>())).Returns(proposals);
+
+        // Act
+        var response = await _controller.GetVaultProposals(new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), new VaultProposalFilterParameters(), CancellationToken.None);
+
+        // Assert
+        response.Result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)response.Result).Value.Should().Be(proposals);
+    }
+
+    [Fact]
     public async Task ProposeCreateCertificateQuote_CreateVaultProposalCreateCertificateQuoteCommand_Send()
     {
         // Arrange
@@ -1002,5 +1066,37 @@ public class VaultGovernancesControllerTests
         // Act
         response.Result.Should().BeOfType<OkObjectResult>();
         ((OkObjectResult)response.Result).Value.Should().Be(responseModel);
+    }
+
+    [Fact]
+    public async Task GetVaultProposalVotes_GetVaultProposalVotesWithFilterQuery_Send()
+    {
+        // Arrange
+        var vaultAddress = new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i");
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        // Act
+        await _controller.GetVaultProposalVotes(vaultAddress, new VaultProposalVoteFilterParameters(), cancellationToken);
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultProposalVotesWithFilterQuery>(query => query.Vault == vaultAddress
+            && query.Cursor != null), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetVaultProposalVotes_Result_ReturnOk()
+    {
+        // Arrange
+        var votes = new VaultProposalVotesResponseModel();
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultProposalVotesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new VaultProposalVotesDto());
+        _mapperMock.Setup(callTo => callTo.Map<VaultProposalVotesResponseModel>(It.IsAny<VaultProposalVotesDto>())).Returns(votes);
+
+        // Act
+        var response = await _controller.GetVaultProposalVotes(new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), new VaultProposalVoteFilterParameters(), CancellationToken.None);
+
+        // Assert
+        response.Result.Should().BeOfType<OkObjectResult>();
+        (((OkObjectResult)response.Result)!).Value.Should().Be(votes);
     }
 }

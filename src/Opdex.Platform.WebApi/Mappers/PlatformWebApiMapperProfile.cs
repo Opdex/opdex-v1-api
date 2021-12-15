@@ -390,6 +390,10 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.PledgeAmount, opt => opt.MapFrom(src => src.PledgeAmount))
             .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved));
 
+        CreateMap<VaultProposalsDto, VaultProposalsResponseModel>()
+            .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Proposals))
+            .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
+
         CreateMap<VaultProposalPledgeDto, VaultProposalPledgeResponseModel>()
             .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
@@ -397,12 +401,20 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Pledge, opt => opt.MapFrom(src => src.Pledge))
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance));
 
+        CreateMap<VaultProposalPledgesDto, VaultProposalPledgesResponseModel>()
+            .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Pledges))
+            .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
+
         CreateMap<VaultProposalVoteDto, VaultProposalVoteResponseModel>()
             .ForMember(dest => dest.Vault, opt => opt.MapFrom(src => src.Vault))
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Voter, opt => opt.MapFrom(src => src.Voter))
             .ForMember(dest => dest.Vote, opt => opt.MapFrom(src => src.Vote))
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance));
+
+        CreateMap<VaultProposalVotesDto, VaultProposalVotesResponseModel>()
+            .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Votes))
+            .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 
         // Transactions
         CreateMap<TransactionsDto, TransactionsResponseModel>()
