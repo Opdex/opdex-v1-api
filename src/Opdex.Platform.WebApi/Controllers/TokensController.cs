@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
@@ -16,6 +17,7 @@ using Opdex.Platform.WebApi.Models.Requests;
 using Opdex.Platform.WebApi.Models.Requests.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
+using Opdex.Platform.WebApi.OpenApi.Tokens;
 
 namespace Opdex.Platform.WebApi.Controllers;
 
@@ -64,7 +66,7 @@ public class TokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Token details.</returns>
     /// <response code="201">The token was added to indexed tokens.</response>
-    /// <response code="303">Token is already indexed.</response>
+    /// <response code="303">Token is already indexed. Redirects to `GET /tokens/{address}`.</response>
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     [HttpPost]
@@ -91,6 +93,7 @@ public class TokensController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Token not found.</response>
     [HttpGet("{address}")]
+    [OpenApiOperationProcessor(typeof(GetTokenOperationProcessor))]
     [ProducesResponseType(typeof(TokenResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -115,6 +118,7 @@ public class TokensController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Token not found.</response>
     [HttpGet("{address}/history")]
+    [OpenApiOperationProcessor(typeof(GetTokenHistoryOperationProcessor))]
     [ProducesResponseType(typeof(TokenSnapshotsResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -140,6 +144,7 @@ public class TokensController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Token not found.</response>
     [HttpPost("{address}/approve")]
+    [OpenApiOperationProcessor(typeof(ApproveAllowanceOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -159,8 +164,14 @@ public class TokensController : ControllerBase
     /// <param name="address">The address of the token smart contract.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Token distribute transaction quote.</returns>
+    /// <response code="200">Distribute quote created.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Token not found.</response>
     [HttpPost("{address}/distribute")]
+    [OpenApiOperationProcessor(typeof(DistributeOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Distribute([FromRoute] Address address, CancellationToken cancellationToken)
