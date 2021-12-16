@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Transactions;
 using Opdex.Platform.Common.Enums;
@@ -15,6 +16,7 @@ using Opdex.Platform.WebApi.Models.Requests.Transactions;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.WebApi.Middleware;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.WebApi.OpenApi.Transactions;
 
 namespace Opdex.Platform.WebApi.Controllers;
 
@@ -42,6 +44,9 @@ public class TransactionsController : ControllerBase
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of transactions with paging.</returns>
+    /// <response code="200">Transaction results returned.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     [HttpGet]
     [Authorize]
     [ProducesResponseType(typeof(TransactionsResponseModel), StatusCodes.Status200OK)]
@@ -62,6 +67,7 @@ public class TransactionsController : ControllerBase
     /// <param name="request">The broadcasted transaction details.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="204">The broadcast notification was sent.</response>
+    /// <response code="400">The request is not valid.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -77,9 +83,13 @@ public class TransactionsController : ControllerBase
     /// <param name="hash">The SHA256 hash to of the transaction to look up.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of the transaction.</returns>
-    /// <response code="404">The transaction does not exist.</response>
+    /// <response code="200">Transaction details found.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Transaction not found.</response>
     [HttpGet("{hash}")]
     [Authorize]
+    [OpenApiOperationProcessor(typeof(GetTransactionOperationProcessor))]
     [ProducesResponseType(typeof(TransactionResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -98,6 +108,9 @@ public class TransactionsController : ControllerBase
     /// <param name="request">The quoted transaction to broadcast.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Transaction hash and sender address.</returns>
+    /// <response code="200">Transaction was broadcast.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     [HttpPost("broadcast-quote")]
     [Authorize]
     [Network(NetworkType.DEVNET)]
@@ -116,6 +129,9 @@ public class TransactionsController : ControllerBase
     /// <param name="request">A previously quoted request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The replayed transaction quote.</returns>
+    /// <response code="200">Transaction quote replayed.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     [HttpPost("replay-quote")]
     [Authorize]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
