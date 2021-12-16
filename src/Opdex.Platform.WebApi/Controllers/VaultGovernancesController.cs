@@ -37,6 +37,22 @@ public class VaultGovernancesController : ControllerBase
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
+    /// <summary>Get Vaults</summary>
+    /// <remarks>Retrieves vaults.</remarks>
+    /// <param name="filters">Filter parameters.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Vault paging results.</returns>
+    /// <response code="200">Vault results returned.</response>
+    /// <response code="400">The request is not valid.</response>
+    [HttpGet]
+    [ProducesResponseType(typeof(VaultGovernancesResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<VaultGovernancesResponseModel>> GetVaults( [FromQuery] VaultGovernanceFilterParameters filters, CancellationToken cancellationToken)
+    {
+        var vaults = await _mediator.Send(new GetVaultGovernancesWithFilterQuery(filters.BuildCursor()), cancellationToken);
+        return Ok(_mapper.Map<VaultGovernancesResponseModel>(vaults));
+    }
+
     /// <summary>Get Vault</summary>
     /// <remarks>Retrieves vault details.</remarks>
     /// <param name="address">Address of the vault.</param>
