@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
@@ -14,6 +15,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
+using Opdex.Platform.WebApi.OpenApi.Wallets;
 
 namespace Opdex.Platform.WebApi.Controllers;
 
@@ -39,6 +41,7 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns><see cref="ApprovedAllowanceResponseModel"/> summary</returns>
     [HttpGet("{address}/allowance/{token}/approved/{spender}")]
+    [OpenApiOperationProcessor(typeof(GetAllowanceOperationProcessor))]
     [ProducesResponseType(typeof(ApprovedAllowanceResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -60,6 +63,7 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A collection of address balance summaries by token.</returns>
     [HttpGet("{address}/balance")]
+    [OpenApiOperationProcessor(typeof(GetAddressBalancesOperationProcessor))]
     [ProducesResponseType(typeof(AddressBalancesResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -81,6 +85,7 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns><see cref="AddressBalanceResponseModel"/> balance summary</returns>
     [HttpGet("{address}/balance/{token}")]
+    [OpenApiOperationProcessor(typeof(GetAddressBalanceByTokenOperationProcessor))]
     [ProducesResponseType(typeof(AddressBalanceResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -101,6 +106,7 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Address balance summary.</returns>
     [HttpPost("{address}/balance/{token}")]
+    [OpenApiOperationProcessor(typeof(RefreshAddressBalanceOperationProcessor))]
     [ProducesResponseType(typeof(AddressBalanceResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -122,6 +128,7 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Mining position summaries</returns>
     [HttpGet("{address}/mining")]
+    [OpenApiOperationProcessor(typeof(GetMiningPositionsOperationProcessor))]
     [ProducesResponseType(typeof(MiningPositionsResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -141,6 +148,7 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Mining position summary</returns>
     [HttpGet("{address}/mining/{miningPool}")]
+    [OpenApiOperationProcessor(typeof(GetMiningPositionByPoolOperationProcessor))]
     [ProducesResponseType(typeof(MiningPositionResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -160,6 +168,7 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Staking position summaries</returns>
     [HttpGet("{address}/staking")]
+    [OpenApiOperationProcessor(typeof(GetStakingPositionsOperationProcessor))]
     [ProducesResponseType(typeof(StakingPositionsResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -179,6 +188,7 @@ public class WalletsController : ControllerBase
     /// <param name="cancellationToken"></param>
     /// <returns>Staking position summary</returns>
     [HttpGet("{address}/staking/{liquidityPool}")]
+    [OpenApiOperationProcessor(typeof(GetStakingPositionByPoolOperationProcessor))]
     [ProducesResponseType(typeof(StakingPositionResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
