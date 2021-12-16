@@ -9,9 +9,9 @@ public class GetStakingPositionsOperationProcessor : IOperationProcessor
     public bool Process(OperationProcessorContext context)
     {
         var walletAddressParameter = context.OperationDescription.Operation.Parameters.First(parameter => parameter.Name == "address");
-        walletAddressParameter.Example = "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm";
-        walletAddressParameter.MinLength = 30;
-        walletAddressParameter.MaxLength = 42;
+        walletAddressParameter.Schema.Example = "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm";
+        walletAddressParameter.Schema.MinLength = 30;
+        walletAddressParameter.Schema.MaxLength = 42;
 
         return true;
     }

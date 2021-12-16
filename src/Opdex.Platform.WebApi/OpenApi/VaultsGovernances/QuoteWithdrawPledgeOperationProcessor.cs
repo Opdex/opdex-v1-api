@@ -9,13 +9,13 @@ public class QuoteWithdrawPledgeOperationProcessor : IOperationProcessor
     public bool Process(OperationProcessorContext context)
     {
         var vaultAddressParameter = context.OperationDescription.Operation.Parameters.First(parameter => parameter.Name == "address");
-        vaultAddressParameter.Example = "tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i";
-        vaultAddressParameter.MinLength = 30;
-        vaultAddressParameter.MaxLength = 42;
+        vaultAddressParameter.Schema.Example = "tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i";
+        vaultAddressParameter.Schema.MinLength = 30;
+        vaultAddressParameter.Schema.MaxLength = 42;
 
         var proposalIdParameter = context.OperationDescription.Operation.Parameters.First(parameter => parameter.Name == "proposalId");
-        proposalIdParameter.Minimum = 1;
-        proposalIdParameter.Example = 5;
+        proposalIdParameter.Schema.Minimum = 1;
+        proposalIdParameter.Schema.Example = 5;
 
         return true;
     }

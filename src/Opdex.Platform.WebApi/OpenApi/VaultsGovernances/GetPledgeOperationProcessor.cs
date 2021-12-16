@@ -9,18 +9,18 @@ public class GetPledgeOperationProcessor : IOperationProcessor
     public bool Process(OperationProcessorContext context)
     {
         var vaultAddressParameter = context.OperationDescription.Operation.Parameters.First(parameter => parameter.Name == "address");
-        vaultAddressParameter.Example = "tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i";
-        vaultAddressParameter.MinLength = 30;
-        vaultAddressParameter.MaxLength = 42;
+        vaultAddressParameter.Schema.Example = "tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i";
+        vaultAddressParameter.Schema.MinLength = 30;
+        vaultAddressParameter.Schema.MaxLength = 42;
 
         var proposalIdParameter = context.OperationDescription.Operation.Parameters.First(parameter => parameter.Name == "proposalId");
-        proposalIdParameter.Minimum = 1;
-        proposalIdParameter.Example = 5;
+        proposalIdParameter.Schema.Minimum = 1;
+        proposalIdParameter.Schema.Example = 5;
 
         var voterParameter = context.OperationDescription.Operation.Parameters.First(parameter => parameter.Name == "pledger");
-        voterParameter.Example = "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm";
-        voterParameter.MinLength = 30;
-        voterParameter.MaxLength = 42;
+        voterParameter.Schema.Example = "tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm";
+        voterParameter.Schema.MinLength = 30;
+        voterParameter.Schema.MaxLength = 42;
         return true;
     }
 }
