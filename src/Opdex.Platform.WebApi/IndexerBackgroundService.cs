@@ -36,6 +36,7 @@ public class IndexerBackgroundService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        var started = false;
         var unavailable = false;
 
         IMediator mediator;
@@ -50,6 +51,14 @@ public class IndexerBackgroundService : BackgroundService
             {
                 try
                 {
+                    if (started)
+                    {
+                        // delay 30 seconds when indexing services are unavailable
+                        // delay 8 to 12 seconds when indexing is available
+                        var seconds = unavailable ? 30 : new Random().Next(8, 13);
+                        await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken);
+                    }
+
                     var indexLock = await mediator.Send(new RetrieveIndexerLockQuery(), cancellationToken);
                     if (!indexLock.Available || !_indexerOptions.CurrentValue.Enabled)
                     {
@@ -60,27 +69,29 @@ public class IndexerBackgroundService : BackgroundService
 
                     if (indexLock.Locked)
                     {
-                        var isSameInstanceReprocessing = indexLock.Reason == IndexLockReason.Index && indexLock.InstanceId == _opdexConfiguration.InstanceId;
+                        var isSameInstanceReprocessing = indexLock.Reason == IndexLockReason.Index &&
+                                                         indexLock.InstanceId == _opdexConfiguration.InstanceId;
 
                         var totalSecondsLocked = DateTime.UtcNow.Subtract(indexLock.ModifiedDate).TotalSeconds;
 
                         if (!isSameInstanceReprocessing)
                         {
                             using (_logger.BeginScope(new Dictionary<string, object>()
-                            {
-                                { "TotalSecondsLocked", totalSecondsLocked }
-                            }))
+                                   {
+                                       {"TotalSecondsLocked", totalSecondsLocked}
+                                   }))
                             {
                                 _logger.LogWarning(IndexingAlreadyRunningLog);
                             }
+
                             continue;
                         }
 
                         using (_logger.BeginScope(new Dictionary<string, object>()
-                            {
-                                { "TotalSecondsLocked", totalSecondsLocked },
-                                { "LockedReason", indexLock.Reason }
-                            }))
+                               {
+                                   { "TotalSecondsLocked", totalSecondsLocked },
+                                   { "LockedReason", indexLock.Reason }
+                               }))
                         {
                             _logger.LogWarning("Attempting to forcefully unlock indexer.");
                         }
@@ -90,7 +101,7 @@ public class IndexerBackgroundService : BackgroundService
                         await mediator.Send(new MakeIndexerUnlockCommand(), CancellationToken.None);
                     }
 
-                    var tryLock = await mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Index), CancellationToken.None);
+                    var tryLock = await mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Index), cancellationToken);
                     if (!tryLock)
                     {
                         _logger.LogWarning(IndexingAlreadyRunningLog);
@@ -108,16 +119,18 @@ public class IndexerBackgroundService : BackgroundService
 
                     unavailable = false;
                 }
+                catch (TaskCanceledException)
+                {
+                    // shutdown occurred
+                    _logger.LogWarning("Indexing cancelled");
+                }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failure to process Cirrus blocks");
                 }
                 finally
                 {
-                    // delay 30 seconds when indexing services are unavailable
-                    // delay 8 to 12 seconds when indexing is available
-                    var seconds = unavailable ? 30 : new Random().Next(8, 13);
-                    await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken);
+                    started = true;
                 }
             }
         }
@@ -132,8 +145,7 @@ public class IndexerBackgroundService : BackgroundService
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Shutting down indexer.");
-        await base.StopAsync(cancellationToken);
-        
+
         try
         {
             IMediator mediator;
@@ -150,7 +162,11 @@ public class IndexerBackgroundService : BackgroundService
         }
         catch (Exception ex)
         {
-            _logger.LogCritical(ex, "Failure gracefully shutting down the indexer, indexing locked.");
+            _logger.LogCritical(ex, "Failure gracefully shutting down the indexer");
+        }
+        finally
+        {
+            await base.StopAsync(cancellationToken);
         }
     }
 }
