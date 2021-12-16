@@ -21,8 +21,7 @@ public class RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandler : IRequ
     {
         var transaction = await _mediator.Send(new CallCirrusGetRawTransactionQuery(request.TransactionHash), cancellationToken);
 
-        if (transaction is null || transaction.Vout.Length != 1
-            && transaction.Vout[0].ScriptPubKey.Addresses.Length != 1) return Address.Empty;
+        if (transaction is null || transaction.Vout?.Length == 0 || transaction.Vout![0].ScriptPubKey?.Addresses?.Length != 1) return Address.Empty;
 
         return transaction.Vout[0].ScriptPubKey.Addresses[0];
     }
