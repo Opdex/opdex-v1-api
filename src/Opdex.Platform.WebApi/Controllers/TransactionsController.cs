@@ -46,9 +46,12 @@ public class TransactionsController : ControllerBase
     /// <returns>Details of transactions with paging.</returns>
     /// <response code="200">Transaction results returned.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     [HttpGet]
+    [Authorize]
     [ProducesResponseType(typeof(TransactionsResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<TransactionsResponseModel>> GetTransactions([FromQuery] TransactionFilterParameters filters,
                                                                                CancellationToken cancellationToken)
     {
@@ -82,11 +85,14 @@ public class TransactionsController : ControllerBase
     /// <returns>Details of the transaction.</returns>
     /// <response code="200">Transaction details found.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Transaction not found.</response>
     [HttpGet("{hash}")]
+    [Authorize]
     [OpenApiOperationProcessor(typeof(GetTransactionOperationProcessor))]
     [ProducesResponseType(typeof(TransactionResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionResponseModel>> GetTransaction([FromRoute] Sha256 hash, CancellationToken cancellationToken)
     {
