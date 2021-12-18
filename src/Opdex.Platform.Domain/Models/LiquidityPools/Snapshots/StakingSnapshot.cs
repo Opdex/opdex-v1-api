@@ -40,11 +40,6 @@ public class StakingSnapshot
     {
         Weight.Update(log.TotalStaked);
 
-        if (Weight.Close > 0 && stakingTokenUsd == 0)
-        {
-            throw new ArgumentNullException("Update issue");
-        }
-
         UpdateUsd(log.TotalStaked, stakingTokenUsd, false);
     }
 
@@ -66,22 +61,11 @@ public class StakingSnapshot
     {
         Weight.Refresh(Weight.Close);
 
-        if (Weight.Close > 0 && stakingTokenUsd == 0)
-        {
-            throw new ArgumentNullException("Refresh issue");
-        }
-
-
         UpdateUsd(Weight.Close, stakingTokenUsd, true);
     }
 
     private void UpdateUsd(UInt256 weight, decimal stakingTokenUsd, bool refresh)
     {
-        if (weight > 0 && stakingTokenUsd == 0)
-        {
-            throw new ArgumentNullException("Getting Somewhere");
-        }
-
         var usd = MathExtensions.TotalFiat(weight, stakingTokenUsd, TokenConstants.Opdex.Sats);
 
         if (refresh) Usd.Refresh(usd);
