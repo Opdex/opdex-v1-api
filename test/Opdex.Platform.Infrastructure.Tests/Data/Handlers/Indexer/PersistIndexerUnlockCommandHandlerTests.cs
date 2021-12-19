@@ -60,7 +60,7 @@ public class PersistIndexerUnlockCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_NoAffectedRows_LogCritical()
+    public async Task Handle_NoAffectedRows_LogWarning()
     {
         // Arrange
         _dbContextMock.Setup(callTo => callTo.ExecuteCommandAsync(It.IsAny<DatabaseQuery>())).ReturnsAsync(0);
@@ -71,16 +71,16 @@ public class PersistIndexerUnlockCommandHandlerTests
         // Assert
         _loggerMock.Verify(
                x => x.Log(
-                   LogLevel.Critical,
+                   LogLevel.Warning,
                    It.IsAny<EventId>(),
-                   It.Is<It.IsAnyType>((o, t) => string.Equals("Failed to unlock indexer.", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
+                   It.Is<It.IsAnyType>((o, t) => string.Equals("Attempted to unlock indexer not currently locked by this instance.", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
                    null,
                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
                Times.Once);
     }
 
     [Fact]
-    public async Task Handle_OneAffectedRow_NoCriticalLog()
+    public async Task Handle_OneAffectedRow_NoWarningLog()
     {
         // Arrange
         _dbContextMock.Setup(callTo => callTo.ExecuteCommandAsync(It.IsAny<DatabaseQuery>())).ReturnsAsync(1);
@@ -91,7 +91,7 @@ public class PersistIndexerUnlockCommandHandlerTests
         // Assert
         _loggerMock.Verify(
                x => x.Log(
-                   LogLevel.Critical,
+                   LogLevel.Warning,
                    It.IsAny<EventId>(),
                    It.Is<It.IsAnyType>((o, t) => true),
                    null,

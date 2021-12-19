@@ -175,6 +175,8 @@ public class Startup
         var authConfig = Configuration.GetSection(nameof(AuthConfiguration));
         services.SetupConfiguration<AuthConfiguration>(authConfig);
 
+        services.Configure<IndexerConfiguration>(Configuration.GetSection(nameof(IndexerConfiguration)));
+
         // Register project module services
         services.AddPlatformApplicationServices();
         services.AddPlatformInfrastructureServices(cirrusConfig.Get<CirrusConfiguration>(),

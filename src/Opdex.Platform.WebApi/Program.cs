@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Opdex.Platform.Common.Configurations;
 using Serilog;
 
 namespace Opdex.Platform.WebApi;
@@ -56,14 +57,15 @@ public class Program
             .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
             .UseSerilog((context, services, loggingConfiguration) =>
             {
+                var opdexConfiguration = services.GetRequiredService<OpdexConfiguration>();
                 loggingConfiguration
+                    .Enrich.WithProperty("InstanceId", opdexConfiguration.InstanceId)
                     .ReadFrom.Configuration(context.Configuration)
                     .WriteTo.ApplicationInsights(services.GetRequiredService<TelemetryConfiguration>(), TelemetryConverter.Traces);
             })
             .ConfigureServices(services =>
             {
                 services.AddHostedService<IndexerBackgroundService>();
-                services.Configure<HostOptions>(
-                    opts => opts.ShutdownTimeout = TimeSpan.FromSeconds(30));
+                services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromSeconds(30));
             });
 }

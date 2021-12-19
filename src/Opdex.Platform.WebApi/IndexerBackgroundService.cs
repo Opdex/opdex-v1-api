@@ -9,25 +9,29 @@ using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Indexer;
 using Opdex.Platform.Common.Configurations;
-using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 
 namespace Opdex.Platform.WebApi;
 
 public class IndexerBackgroundService : BackgroundService
 {
     private readonly ILogger<IndexerBackgroundService> _logger;
-    private readonly IServiceProvider _services;
+    private readonly IOptionsMonitor<IndexerConfiguration> _indexerOptions;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly OpdexConfiguration _opdexConfiguration;
-
     private const string IndexingAlreadyRunningLog = "Index already running.";
 
-    public IndexerBackgroundService(IServiceProvider services, OpdexConfiguration opdexConfiguration, ILogger<IndexerBackgroundService> logger)
+    public IndexerBackgroundService(IServiceScopeFactory scopeFactory,
+                                    OpdexConfiguration opdexConfiguration,
+                                    ILogger<IndexerBackgroundService> logger,
+                                    IOptionsMonitor<IndexerConfiguration> indexerOptions)
     {
-        _services = services ?? throw new ArgumentNullException(nameof(services));
+        _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _opdexConfiguration = opdexConfiguration ?? throw new ArgumentNullException(nameof(opdexConfiguration));
+        _indexerOptions = indexerOptions ?? throw new ArgumentNullException(nameof(indexerOptions));
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -36,7 +40,7 @@ public class IndexerBackgroundService : BackgroundService
         var unavailable = false;
 
         IMediator mediator;
-        using var scope = _services.CreateScope();
+        await using var scope = _scopeFactory.CreateAsyncScope();
         {
             mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         }
@@ -45,58 +49,59 @@ public class IndexerBackgroundService : BackgroundService
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (started)
-                {
-                    // delay 30 seconds when indexing services are unavailable (db flag off)
-                    // delay 8 to 12 seconds when indexing is available
-                    var seconds = unavailable ? 30 : new Random().Next(8, 13);
-
-                    await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken);
-                }
-
                 try
                 {
-                    var indexLock = await mediator.Send(new RetrieveIndexerLockQuery(), cancellationToken);
-                    if (!indexLock.Available)
+                    if (started)
                     {
-                        _logger.LogWarning("Indexing services unavailable");
+                        // delay 30 seconds when indexing services are unavailable
+                        // delay 8 to 12 seconds when indexing is available
+                        var seconds = unavailable ? 30 : new Random().Next(8, 13);
+                        await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken);
+                    }
+
+                    var indexLock = await mediator.Send(new RetrieveIndexerLockQuery(), cancellationToken);
+                    if (!indexLock.Available || !_indexerOptions.CurrentValue.Enabled)
+                    {
+                        _logger.LogDebug("Indexing services unavailable.");
                         unavailable = true;
                         continue;
                     }
 
                     if (indexLock.Locked)
                     {
-                        var isSameInstanceReprocessing = indexLock.Reason == IndexLockReason.Index && indexLock.InstanceId == _opdexConfiguration.InstanceId;
+                        var isSameInstanceReprocessing = indexLock.Reason == IndexLockReason.Index &&
+                                                         indexLock.InstanceId == _opdexConfiguration.InstanceId;
 
                         var totalSecondsLocked = DateTime.UtcNow.Subtract(indexLock.ModifiedDate).TotalSeconds;
 
                         if (!isSameInstanceReprocessing)
                         {
                             using (_logger.BeginScope(new Dictionary<string, object>()
-                            {
-                                { "TotalSecondsLocked", totalSecondsLocked }
-                            }))
+                                   {
+                                       {"TotalSecondsLocked", totalSecondsLocked}
+                                   }))
                             {
                                 _logger.LogWarning(IndexingAlreadyRunningLog);
                             }
+
                             continue;
+                        }
+
+                        using (_logger.BeginScope(new Dictionary<string, object>()
+                               {
+                                   { "TotalSecondsLocked", totalSecondsLocked },
+                                   { "LockedReason", indexLock.Reason }
+                               }))
+                        {
+                            _logger.LogWarning("Attempting to forcefully unlock indexer.");
                         }
 
                         // Consider a rewind after unlock.
                         // Rewind would go back to block prior to the previous locking timestamp to ensure all transactions and blocks were processed
                         await mediator.Send(new MakeIndexerUnlockCommand(), CancellationToken.None);
-
-                        using (_logger.BeginScope(new Dictionary<string, object>()
-                            {
-                                { "TotalSecondsLocked", totalSecondsLocked },
-                                { "LockedReason", indexLock.Reason }
-                            }))
-                        {
-                            _logger.LogWarning("Indexer forcefully unlocked.");
-                        }
                     }
 
-                    var tryLock = await mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Index), CancellationToken.None);
+                    var tryLock = await mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Index), cancellationToken);
                     if (!tryLock)
                     {
                         _logger.LogWarning(IndexingAlreadyRunningLog);
@@ -114,6 +119,11 @@ public class IndexerBackgroundService : BackgroundService
 
                     unavailable = false;
                 }
+                catch (TaskCanceledException)
+                {
+                    // shutdown occurred
+                    _logger.LogWarning("Indexing cancelled");
+                }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failure to process Cirrus blocks");
@@ -126,12 +136,25 @@ public class IndexerBackgroundService : BackgroundService
         }
     }
 
+    public override Task StartAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Starting indexer.");
+        return base.StartAsync(cancellationToken);
+    }
+
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Shutting down indexer.");
+
+        await base.StopAsync(cancellationToken);
+
         try
         {
-            using var scope = _services.CreateScope();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+            IMediator mediator;
+            await using var scope = _scopeFactory.CreateAsyncScope();
+            {
+                mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+            }
 
             var indexLock = await mediator.Send(new RetrieveIndexerLockQuery(), CancellationToken.None);
             if (indexLock.Locked && indexLock.InstanceId == _opdexConfiguration.InstanceId)
@@ -141,16 +164,7 @@ public class IndexerBackgroundService : BackgroundService
         }
         catch (Exception ex)
         {
-            _logger.LogCritical(ex, "Failure gracefully shutting down the indexer, indexing locked");
+            _logger.LogCritical(ex, "Failure gracefully shutting down the indexer");
         }
-        finally
-        {
-            await base.StopAsync(CancellationToken.None);
-        }
-    }
-
-    public override Task StartAsync(CancellationToken cancellationToken)
-    {
-        return base.StartAsync(cancellationToken);
     }
 }
