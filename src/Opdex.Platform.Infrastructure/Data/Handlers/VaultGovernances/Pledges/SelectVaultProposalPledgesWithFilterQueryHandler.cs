@@ -45,11 +45,13 @@ public class SelectVaultProposalPledgesWithFilterQueryHandler : IRequestHandler<
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
+
     public SelectVaultProposalPledgesWithFilterQueryHandler(IDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
+
     public async Task<IEnumerable<VaultProposalPledge>> Handle(SelectVaultProposalPledgesWithFilterQuery request, CancellationToken cancellationToken)
     {
         var pledgeId = request.Cursor.Pointer;

@@ -1,5 +1,6 @@
 using FluentValidation.TestHelper;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.WebApi.Models.Requests.VaultGovernances;
 using Opdex.Platform.WebApi.Validation.VaultGovernances;
 using Xunit;
@@ -49,5 +50,37 @@ public class VaultGovernanceFilterParametersValidatorTests
 
         // Assert
         result.ShouldNotHaveValidationErrorFor(r => r.LockedToken);
+    }
+
+    [Fact]
+    public void Limit_Invalid()
+    {
+        // Arrange
+        var request = new VaultGovernanceFilterParameters
+        {
+            Limit = Cursor.DefaultMaxLimit + 1
+        };
+
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(r => r.Limit);
+    }
+
+    [Fact]
+    public void Limit_Valid()
+    {
+        // Arrange
+        var request = new VaultGovernanceFilterParameters
+        {
+            Limit = Cursor.DefaultMaxLimit
+        };
+
+        // Act
+        var result = _validator.TestValidate(request);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(r => r.Limit);
     }
 }
