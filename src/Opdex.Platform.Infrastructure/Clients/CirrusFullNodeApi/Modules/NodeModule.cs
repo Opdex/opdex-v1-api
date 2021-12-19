@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Serialization;
@@ -19,5 +20,10 @@ public class NodeModule : ApiClientBase, INodeModule
     public Task<NodeStatusDto> GetNodeStatusAsync(CancellationToken cancellationToken)
     {
         return GetAsync<NodeStatusDto>(CirrusUriHelper.Node.Status, cancellationToken);
+    }
+
+    public async Task<RawTransactionDto> GetRawTransactionAsync(Sha256 transactionHash, CancellationToken cancellationToken)
+    {
+        return await GetAsync<RawTransactionDto>(string.Format(CirrusUriHelper.Node.GetRawTransaction, transactionHash, true), cancellationToken);
     }
 }

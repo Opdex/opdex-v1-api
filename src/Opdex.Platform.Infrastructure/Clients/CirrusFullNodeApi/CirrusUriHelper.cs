@@ -33,6 +33,7 @@ public static class CirrusUriHelper
     public static class Node
     {
         public const string Status = "Node/status";
+        public const string GetRawTransaction = "Node/getrawtransaction?trxid={0}&verbose={1}";
     }
 
     public static class Mempool

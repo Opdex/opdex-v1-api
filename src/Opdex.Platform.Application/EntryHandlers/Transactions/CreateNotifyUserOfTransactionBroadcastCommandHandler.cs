@@ -1,6 +1,8 @@
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
+using Opdex.Platform.Application.Abstractions.Queries.Transactions;
+using Opdex.Platform.Common.Models;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +20,13 @@ public class CreateNotifyUserOfTransactionBroadcastCommandHandler : IRequestHand
 
     public async Task<bool> Handle(CreateNotifyUserOfTransactionBroadcastCommand request, CancellationToken cancellationToken)
     {
-        return await _mediator.Send(new MakeNotifyUserOfTransactionBroadcastCommand(request.User, request.TransactionHash), cancellationToken);
+        var existsInMempool = await _mediator.Send(new RetrieveCirrusExistsInMempoolQuery(request.TransactionHash), cancellationToken);
+        if (!existsInMempool) return false;
+        
+        var sender = await _mediator.Send(new RetrieveCirrusUnverifiedTransactionSenderByHashQuery(request.TransactionHash), cancellationToken);
+        if (sender == Address.Empty) return false;
+
+        await _mediator.Send(new MakeNotifyUserOfTransactionBroadcastCommand(sender, request.TransactionHash), cancellationToken);
+        return true;
     }
 }

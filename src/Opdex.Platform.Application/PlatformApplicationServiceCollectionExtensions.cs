@@ -556,6 +556,8 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveTransactionsWithFilterQuery, IEnumerable<Transaction>>, RetrieveTransactionsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTransactionLogsByTransactionIdQuery, IEnumerable<TransactionLog>>, RetrieveTransactionLogsByTransactionIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveTransactionByHashQuery, Transaction>, RetrieveTransactionByHashQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveCirrusExistsInMempoolQuery, bool>, RetrieveCirrusExistsInMempoolQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveCirrusUnverifiedTransactionSenderByHashQuery, Address>, RetrieveCirrusUnverifiedTransactionSenderByHashQueryHandler>();
 
         // Address Balances
         services.AddTransient<IRequestHandler<RetrieveAddressStakingByLiquidityPoolIdAndOwnerQuery, AddressStaking>, RetrieveAddressStakingByLiquidityPoolIdAndOwnerQueryHandler>();
@@ -597,7 +599,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         // Transactions
         services.AddTransient<IRequestHandler<MakeTransactionCommand, ulong>, MakeTransactionCommandHandler>();
         services.AddTransient<IRequestHandler<MakeTransactionQuoteCommand, TransactionQuote>, MakeTransactionQuoteCommandHandler>();
-        services.AddTransient<IRequestHandler<MakeNotifyUserOfTransactionBroadcastCommand, bool>, MakeNotifyUserOfTransactionBroadcastCommandHandler>();
+        services.AddTransient<IRequestHandler<MakeNotifyUserOfTransactionBroadcastCommand, Unit>, MakeNotifyUserOfTransactionBroadcastCommandHandler>();
 
         // Liquidity Pools
         services.AddTransient<IRequestHandler<MakeLiquidityPoolCommand, ulong>, MakeLiquidityPoolCommandHandler>();
