@@ -44,9 +44,11 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault paging results.</returns>
     /// <response code="200">Vault results returned.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     [HttpGet]
     [ProducesResponseType(typeof(VaultGovernancesResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<VaultGovernancesResponseModel>> GetVaults( [FromQuery] VaultGovernanceFilterParameters filters, CancellationToken cancellationToken)
     {
         var vaults = await _mediator.Send(new GetVaultGovernancesWithFilterQuery(filters.BuildCursor()), cancellationToken);
@@ -60,11 +62,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault details.</returns>
     /// <response code="200">Vault details found.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpGet("{address}")]
     [OpenApiOperationProcessor(typeof(GetVaultOperationProcessor))]
     [ProducesResponseType(typeof(VaultGovernanceResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<VaultGovernanceResponseModel>> GetVault([FromRoute] Address address, CancellationToken cancellationToken)
     {
@@ -80,11 +84,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Redeem vault certificate quote.</returns>
     /// <response code="200">Redeem vault certificate quote created.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpPost("{address}/certificates/redeem")]
     [OpenApiOperationProcessor(typeof(QuoteRedeemCertificateOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteRedeemCertificate([FromRoute] Address address, CancellationToken cancellationToken)
     {
@@ -101,11 +107,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal pledge paging results.</returns>
     /// <response code="200">Vault proposal pledge results returned.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpGet("{address}/pledges")]
     [OpenApiOperationProcessor(typeof(GetVaultProposalPledgesOperationProcessor))]
     [ProducesResponseType(typeof(VaultProposalPledgesResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<VaultProposalPledgesResponseModel>> GetVaultProposalPledges([FromRoute] Address address,
         [FromQuery] VaultProposalPledgeFilterParameters filters, CancellationToken cancellationToken)
@@ -122,11 +130,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal paging results.</returns>
     /// <response code="200">Vault proposal results returned.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpGet("{address}/proposals")]
     [OpenApiOperationProcessor(typeof(GetVaultProposalsOperationProcessor))]
     [ProducesResponseType(typeof(VaultProposalsResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<VaultProposalsResponseModel>> GetVaultProposals([FromRoute] Address address, [FromQuery] VaultProposalFilterParameters filters,
                                                                                    CancellationToken cancellationToken)
@@ -143,11 +153,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal quote.</returns>
     /// <response code="200">Vault proposal quote created.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpPost("{address}/proposals/create-certificate")]
     [OpenApiOperationProcessor(typeof(QuoteProposeCreateCertificateOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeCreateCertificate([FromRoute] Address address,
                                                                                                  [FromBody] CreateCertificateVaultProposalQuoteRequest request,
@@ -166,11 +178,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal quote.</returns>
     /// <response code="200">Vault proposal quote created.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpPost("{address}/proposals/revoke-certificate")]
     [OpenApiOperationProcessor(typeof(QuoteProposeRevokeCertificateOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeRevokeCertificate([FromRoute] Address address,
                                                                                                  [FromBody] RevokeCertificateVaultProposalQuoteRequest request,
@@ -189,11 +203,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal quote.</returns>
     /// <response code="200">Vault proposal quote created.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpPost("{address}/proposals/minimum-pledge")]
     [OpenApiOperationProcessor(typeof(QuoteProposeMinimumPledgeOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeMinimumPledge([FromRoute] Address address,
                                                                                              [FromBody] MinimumPledgeVaultProposalQuoteRequest request,
@@ -212,11 +228,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal quote.</returns>
     /// <response code="200">Vault proposal quote created.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpPost("{address}/proposals/minimum-vote")]
     [OpenApiOperationProcessor(typeof(QuoteProposeMinimumVoteOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteProposeMinimumVote([FromRoute] Address address, [FromBody] MinimumVoteVaultProposalQuoteRequest request,
                                                                                            CancellationToken cancellationToken)
@@ -234,11 +252,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal details.</returns>
     /// <response code="200">Vault proposal details found.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault or proposal not found.</response>
     [HttpGet("{address}/proposals/{proposalId}")]
     [OpenApiOperationProcessor(typeof(GetProposalOperationProcessor))]
     [ProducesResponseType(typeof(VaultProposalResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<VaultProposalResponseModel>> GetProposal([FromRoute] Address address, [FromRoute] ulong proposalId, CancellationToken cancellationToken)
     {
@@ -255,11 +275,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal completion quote.</returns>
     /// <response code="200">Vault proposal completion quote created.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{address}/proposals/{proposalId}/complete")]
     [OpenApiOperationProcessor(typeof(QuoteCompleteProposalOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteCompleteProposal([FromRoute] Address address, [FromRoute] ulong proposalId, CancellationToken cancellationToken)
     {
@@ -277,6 +299,7 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal pledge quote.</returns>
     /// <response code="200">Vault proposal pledge quote created.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{address}/proposals/{proposalId}/pledges")]
     [OpenApiOperationProcessor(typeof(QuotePledgeOperationProcessor))]
@@ -301,11 +324,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal withdraw pledge quote.</returns>
     /// <response code="200">Vault proposal withdraw pledge quote created.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{address}/proposals/{proposalId}/pledges/withdraw")]
     [OpenApiOperationProcessor(typeof(QuoteWithdrawPledgeOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawPledge([FromRoute] Address address, [FromRoute] ulong proposalId,
                                                                                      [FromBody] VaultProposalWithdrawPledgeQuoteRequest request, CancellationToken cancellationToken)
@@ -324,11 +349,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal pledge details.</returns>
     /// <response code="200">Vault proposal pledge details found.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault, proposal or pledger not found.</response>
     [HttpGet("{address}/proposals/{proposalId}/pledges/{pledger}")]
     [OpenApiOperationProcessor(typeof(GetPledgeOperationProcessor))]
     [ProducesResponseType(typeof(VaultProposalPledgeResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<VaultProposalPledgeResponseModel>> GetPledge([FromRoute] Address address, [FromRoute] ulong proposalId, [FromRoute] Address pledger,
                                                                                 CancellationToken cancellationToken)
@@ -347,11 +374,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal vote quote.</returns>
     /// <response code="200">Vault proposal vote quote created.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{address}/proposals/{proposalId}/votes")]
     [OpenApiOperationProcessor(typeof(QuoteVoteOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteVote([FromRoute] Address address, [FromRoute] ulong proposalId,
                                                                              [FromBody] VaultProposalVoteQuoteRequest request, CancellationToken cancellationToken)
@@ -370,11 +399,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal withdraw vote quote.</returns>
     /// <response code="200">Vault proposal withdraw vote quote created.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault or proposal not found.</response>
     [HttpPost("{address}/proposals/{proposalId}/votes/withdraw")]
     [OpenApiOperationProcessor(typeof(QuoteWithdrawVoteOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> QuoteWithdrawVote([FromRoute] Address address, [FromRoute] ulong proposalId,
                                                                                      [FromBody] VaultProposalWithdrawVoteQuoteRequest request, CancellationToken cancellationToken)
@@ -393,6 +424,7 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal vote details.</returns>
     /// <response code="200">Vault proposal vote details found.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Either vault, proposal or voter not found.</response>
     [HttpGet("{address}/proposals/{proposalId}/votes/{voter}")]
     [OpenApiOperationProcessor(typeof(GetVoteOperationProcessor))]
@@ -416,11 +448,13 @@ public class VaultGovernancesController : ControllerBase
     /// <returns>Vault proposal vote paging results.</returns>
     /// <response code="200">Vault proposal vote results returned.</response>
     /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
     /// <response code="404">Vault not found.</response>
     [HttpGet("{address}/votes")]
     [OpenApiOperationProcessor(typeof(GetVaultProposalVotesOperationProcessor))]
     [ProducesResponseType(typeof(VaultProposalVotesResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<VaultProposalVotesResponseModel>> GetVaultProposalVotes([FromRoute] Address address,
                                                                                            [FromQuery] VaultProposalVoteFilterParameters filters,
