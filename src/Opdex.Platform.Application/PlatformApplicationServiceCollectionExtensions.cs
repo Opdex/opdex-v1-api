@@ -199,6 +199,7 @@ using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Collections.Generic;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Certificates;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Pledges;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Votes;
@@ -263,6 +264,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<GetVaultProposalsWithFilterQuery, VaultProposalsDto>, GetVaultProposalsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<GetVaultProposalPledgesWithFilterQuery, VaultProposalPledgesDto>, GetVaultProposalPledgesWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<GetVaultProposalVotesWithFilterQuery, VaultProposalVotesDto>, GetVaultProposalVotesWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<GetVaultGovernanceCertificatesWithFilterQuery, VaultCertificatesDto>, GetVaultGovernanceCertificatesWithFilterQueryHandler>();
 
         // Mining Governances
         services.AddTransient<IRequestHandler<GetMiningGovernancesWithFilterQuery, MiningGovernancesDto>, GetMiningGovernancesWithFilterQueryHandler>();
@@ -552,6 +554,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveVaultProposalsWithFilterQuery, IEnumerable<VaultProposal>>, RetrieveVaultProposalsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveVaultProposalPledgesWithFilterQuery, IEnumerable<VaultProposalPledge>>, RetrieveVaultProposalPledgesWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveVaultProposalVotesWithFilterQuery, IEnumerable<VaultProposalVote>>, RetrieveVaultProposalVotesWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveVaultGovernanceCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>, RetrieveVaultGovernanceCertificatesWithFilterQueryHandler>();
 
         // Transactions
         services.AddTransient<IRequestHandler<RetrieveCirrusTransactionByHashQuery, Transaction>, RetrieveCirrusTransactionByHashQueryHandler>();

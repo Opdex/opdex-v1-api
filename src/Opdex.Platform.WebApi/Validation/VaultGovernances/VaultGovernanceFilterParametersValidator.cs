@@ -1,3 +1,5 @@
+using FluentValidation;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances;
 using Opdex.Platform.WebApi.Models.Requests.VaultGovernances;
 
@@ -8,5 +10,6 @@ public class VaultGovernanceFilterParametersValidator : AbstractCursorValidator<
     public VaultGovernanceFilterParametersValidator()
     {
         RuleFor(request => request.LockedToken).MustBeNetworkAddressOrEmpty();
+        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit);
     }
 }

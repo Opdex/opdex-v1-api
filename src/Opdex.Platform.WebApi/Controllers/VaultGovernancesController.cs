@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Certificates;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Pledges;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Votes;
@@ -14,6 +15,7 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.VaultGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
+using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using Opdex.Platform.WebApi.OpenApi.VaultsGovernances;
 using System;
 using System.Threading;
@@ -49,7 +51,7 @@ public class VaultGovernancesController : ControllerBase
     [ProducesResponseType(typeof(VaultGovernancesResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<VaultGovernancesResponseModel>> GetVaults( [FromQuery] VaultGovernanceFilterParameters filters, CancellationToken cancellationToken)
+    public async Task<ActionResult<VaultGovernancesResponseModel>> GetVaults([FromQuery] VaultGovernanceFilterParameters filters, CancellationToken cancellationToken)
     {
         var vaults = await _mediator.Send(new GetVaultGovernancesWithFilterQuery(filters.BuildCursor()), cancellationToken);
         return Ok(_mapper.Map<VaultGovernancesResponseModel>(vaults));
@@ -75,6 +77,28 @@ public class VaultGovernancesController : ControllerBase
         var dto = await _mediator.Send(new GetVaultGovernanceByAddressQuery(address), cancellationToken);
         var response = _mapper.Map<VaultGovernanceResponseModel>(dto);
         return Ok(response);
+    }
+
+    /// <summary>Get Vault Certificates</summary>
+    /// <remarks>Retrieves vault certificates.</remarks>
+    /// <param name="address">Address of the vault.</param>
+    /// <param name="filters">Filter parameters.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Vault certificate paging results.</returns>
+    /// <response code="200">Vault certificate results returned.</response>
+    /// <response code="400">The request is not valid.</response>
+    /// <response code="401">Unauthorized.</response>
+    /// <response code="404">Vault not found.</response>
+    [HttpGet("{address}/certificates")]
+    [OpenApiOperationProcessor(typeof(GetCertificatesOperationProcessor))]
+    [ProducesResponseType(typeof(VaultCertificatesResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<VaultCertificatesResponseModel>> GetCertificates([FromRoute] Address address, [FromQuery] VaultGovernanceCertificateFilterParameters filters, CancellationToken cancellationToken)
+    {
+        var certificates = await _mediator.Send(new GetVaultGovernanceCertificatesWithFilterQuery(address, filters.BuildCursor()), cancellationToken);
+        return Ok(_mapper.Map<VaultCertificatesResponseModel>(certificates));
     }
 
     /// <summary>Quote Redeem Vault Certificate</summary>

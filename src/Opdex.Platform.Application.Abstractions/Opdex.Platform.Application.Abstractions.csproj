@@ -10,11 +10,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="EntryQueries\Transactions\Wallet" />
-      <Folder Include="EntryQueries\VaultGovernances\Certificates" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Opdex.Platform.Infrastructure.Abstractions\Opdex.Platform.Infrastructure.Abstractions.csproj" />
     </ItemGroup>
 
