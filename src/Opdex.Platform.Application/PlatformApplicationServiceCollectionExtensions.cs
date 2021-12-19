@@ -256,6 +256,7 @@ public static class PlatformApplicationServiceCollectionExtensions
 
         // Vault Governances
         services.AddTransient<IRequestHandler<GetVaultGovernanceByAddressQuery, VaultGovernanceDto>, GetVaultGovernanceByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<GetVaultGovernancesWithFilterQuery, VaultGovernancesDto>, GetVaultGovernancesWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<GetVaultProposalByVaultAddressAndPublicIdQuery, VaultProposalDto>, GetVaultProposalByVaultAddressAndPublicIdQueryHandler>();
         services.AddTransient<IRequestHandler<GetVaultProposalPledgeByVaultAddressPublicIdAndPledgerQuery, VaultProposalPledgeDto>, GetVaultProposalPledgeByVaultAddressPublicIdAndPledgerQueryHandler>();
         services.AddTransient<IRequestHandler<GetVaultProposalVoteByVaultAddressPublicIdAndVoterQuery, VaultProposalVoteDto>, GetVaultProposalVoteByVaultAddressPublicIdAndVoterQueryHandler>();
@@ -536,6 +537,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveVaultGovernanceContractSummaryQuery, VaultGovernanceContractSummary>, RetrieveVaultGovernanceContractSummaryQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveVaultGovernanceByIdQuery, VaultGovernance>, RetrieveVaultGovernanceByIdQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveVaultGovernanceByAddressQuery, VaultGovernance>, RetrieveVaultGovernanceByAddressQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveVaultGovernancesWithFilterQuery, IEnumerable<VaultGovernance>>, RetrieveVaultGovernancesWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveVaultProposalVoteByVaultIdAndProposalIdAndVoterQuery, VaultProposalVote>, RetrieveVaultProposalVoteByVaultIdAndProposalIdAndVoterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQuery, VaultProposalPledge>, RetrieveVaultProposalPledgeByVaultIdAndProposalIdAndPledgerQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveVaultProposalByVaultIdAndPublicIdQuery, VaultProposal>, RetrieveVaultProposalByVaultIdAndPublicIdQueryHandler>();

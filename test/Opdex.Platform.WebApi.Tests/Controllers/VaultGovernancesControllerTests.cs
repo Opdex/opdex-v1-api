@@ -40,6 +40,37 @@ public class VaultGovernancesControllerTests
     }
 
     [Fact]
+    public async Task GetVaults_GetVaultsWithFilterQuery_Send()
+    {
+        // Arrange
+        using var cancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = cancellationTokenSource.Token;
+
+        // Act
+        await _controller.GetVaults(new VaultGovernanceFilterParameters(), cancellationToken);
+
+        // Assert
+        _mediatorMock.Verify(callTo => callTo.Send(It.Is<GetVaultGovernancesWithFilterQuery>(query => query.Cursor != null), cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetVaults_Result_ReturnOk()
+    {
+        // Arrange
+        var vaults = new VaultGovernancesResponseModel();
+
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<GetVaultGovernancesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new VaultGovernancesDto());
+        _mapperMock.Setup(callTo => callTo.Map<VaultGovernancesResponseModel>(It.IsAny<VaultGovernancesDto>())).Returns(vaults);
+
+        // Act
+        var response = await _controller.GetVaults(new VaultGovernanceFilterParameters(), CancellationToken.None);
+
+        // Assert
+        response.Result.Should().BeOfType<OkObjectResult>();
+        (((OkObjectResult)response.Result)!).Value.Should().Be(vaults);
+    }
+
+    [Fact]
     public async Task GetVault_GetVaultGovernanceByAddressQuery_Send()
     {
         // Arrange
