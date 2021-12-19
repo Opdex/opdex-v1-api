@@ -146,6 +146,8 @@ public class IndexerBackgroundService : BackgroundService
     {
         _logger.LogInformation("Shutting down indexer.");
 
+        await base.StopAsync(cancellationToken);
+
         try
         {
             IMediator mediator;
@@ -163,10 +165,6 @@ public class IndexerBackgroundService : BackgroundService
         catch (Exception ex)
         {
             _logger.LogCritical(ex, "Failure gracefully shutting down the indexer");
-        }
-        finally
-        {
-            await base.StopAsync(cancellationToken);
         }
     }
 }
