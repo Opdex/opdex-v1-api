@@ -90,5 +90,5 @@ public class VaultGovernanceCertificatesCursor : Cursor<ulong>
 
 public enum VaultCertificateStatusFilter
 {
-    All, Redeemed, Revoked
+    All, Vesting, Redeemed, Revoked
 }

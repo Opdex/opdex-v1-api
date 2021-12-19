@@ -102,6 +102,9 @@ public class SelectVaultGovernanceCertificatesWithFilterQueryHandler : IRequestH
 
         switch (request.Cursor.Status)
         {
+            case VaultCertificateStatusFilter.Vesting:
+                whereFilterBuilder.Append($" AND c.'{nameof(VaultCertificateEntity.Redeemed)}' = false");
+                break;
             case VaultCertificateStatusFilter.Redeemed:
                 whereFilterBuilder.Append($" AND c.'{nameof(VaultCertificateEntity.Redeemed)}' = true");
                 break;

@@ -71,6 +71,7 @@ public class VaultGovernanceCertificateFilterParametersValidatorTests
 
     [Theory]
     [InlineData(default(VaultCertificateStatusFilter))]
+    [InlineData(VaultCertificateStatusFilter.Vesting)]
     [InlineData(VaultCertificateStatusFilter.Redeemed)]
     [InlineData(VaultCertificateStatusFilter.Revoked)]
     public void Status_Valid(VaultCertificateStatusFilter type)
