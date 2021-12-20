@@ -93,23 +93,23 @@ public class SelectVaultGovernanceCertificatesWithFilterQueryHandler : IRequestH
         }
 
         whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
-        whereFilterBuilder.Append($" c.`{nameof(VaultCertificateEntity.VaultId)}` = @{nameof(SqlParams.VaultId)}");
+        whereFilterBuilder.Append($" c.{nameof(VaultCertificateEntity.VaultId)} = @{nameof(SqlParams.VaultId)}");
 
         if (request.Cursor.Holder != Address.Empty)
         {
-            whereFilterBuilder.Append($" AND c.`{nameof(VaultCertificateEntity.Owner)}` = @{nameof(SqlParams.Holder)}");
+            whereFilterBuilder.Append($" AND c.{nameof(VaultCertificateEntity.Owner)} = @{nameof(SqlParams.Holder)}");
         }
 
         switch (request.Cursor.Status)
         {
             case VaultCertificateStatusFilter.Vesting:
-                whereFilterBuilder.Append($" AND c.'{nameof(VaultCertificateEntity.Redeemed)}' = false");
+                whereFilterBuilder.Append($" AND c.{nameof(VaultCertificateEntity.Redeemed)} = false");
                 break;
             case VaultCertificateStatusFilter.Redeemed:
-                whereFilterBuilder.Append($" AND c.'{nameof(VaultCertificateEntity.Redeemed)}' = true");
+                whereFilterBuilder.Append($" AND c.{nameof(VaultCertificateEntity.Redeemed)} = true");
                 break;
             case VaultCertificateStatusFilter.Revoked:
-                whereFilterBuilder.Append($" AND c.'{nameof(VaultCertificateEntity.Revoked)}' = true");
+                whereFilterBuilder.Append($" AND c.{nameof(VaultCertificateEntity.Revoked)} = true");
                 break;
         }
 
