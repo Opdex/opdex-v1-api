@@ -35,7 +35,7 @@ public class WalletsController : ControllerBase
     }
 
     /// <summary>Get Approved Allowance</summary>
-    /// <remarks>Retrieve the allowance of a spender for tokens owned by another wallet.</remarks>
+    /// <remarks>Retrieve the allowance of a spender for SRC tokens owned by another wallet.</remarks>
     /// <param name="address">Address of the wallet.</param>
     /// <param name="token">Address of the token.</param>
     /// <param name="spender">Address for the spender of the allowance.</param>
@@ -52,7 +52,7 @@ public class WalletsController : ControllerBase
                                                                                  [FromRoute] Address spender,
                                                                                  CancellationToken cancellationToken)
     {
-        if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Token must be network address for an SRC token.");
+        if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");
         var allowances = await _mediator.Send(new GetAddressAllowanceQuery(address, spender, token), cancellationToken);
         var response = _mapper.Map<ApprovedAllowanceResponseModel>(allowances);
         return Ok(response);
@@ -102,7 +102,7 @@ public class WalletsController : ControllerBase
     }
 
     /// <summary>Refresh Balance</summary>
-    /// <remarks>Retrieves and indexes the latest balance of a token for an address.</remarks>
+    /// <remarks>Retrieves and indexes the latest balance of an SRC token for an address.</remarks>
     /// <param name="address">Address of the wallet.</param>
     /// <param name="token">Address of the token to refresh the balance of, or CRS.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -117,6 +117,7 @@ public class WalletsController : ControllerBase
                                                                                        [FromRoute] Address token,
                                                                                        CancellationToken cancellationToken)
     {
+        if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Address must be SRC token address.");
         var balance = await _mediator.Send(new CreateRefreshAddressBalanceCommand(address, token), cancellationToken);
         var response = _mapper.Map<AddressBalanceResponseModel>(balance);
         return Ok(response);

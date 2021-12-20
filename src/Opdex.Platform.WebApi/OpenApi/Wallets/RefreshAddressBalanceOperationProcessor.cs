@@ -15,7 +15,7 @@ public class RefreshAddressBalanceOperationProcessor : IOperationProcessor
 
         var tokenAddressParameter = context.OperationDescription.Operation.Parameters.First(parameter => parameter.Name == "token");
         tokenAddressParameter.Schema.Example = "tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3";
-        tokenAddressParameter.Schema.MinLength = 3;
+        tokenAddressParameter.Schema.MinLength = 30;
         tokenAddressParameter.Schema.MaxLength = 42;
 
         return true;
