@@ -33,7 +33,11 @@ public class CreateSwapTransactionQuoteCommandHandler : BaseTransactionQuoteComm
 
         var isCrsOut = tokenOut.Address == Address.Cirrus;
         var isCrsIn = tokenIn.Address == Address.Cirrus;
-        var crsToSend = isCrsIn ? request.TokenInAmount : FixedDecimal.Zero;
+        var crsToSend = isCrsIn
+            ? request.TokenInExactAmount
+                ? request.TokenInAmount
+                : request.TokenInMaximumAmount
+            : FixedDecimal.Zero;
         string methodName;
         List<TransactionQuoteRequestParameter> parameters;
 

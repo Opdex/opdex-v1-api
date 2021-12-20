@@ -406,7 +406,7 @@ public class CreateSwapTransactionQuoteCommandHandlerTests
         // Assert
         _mediatorMock.Verify(callTo => callTo.Send(It.Is<MakeTransactionQuoteCommand>(c => c.QuoteRequest.Sender == command.WalletAddress
                                                                                            && c.QuoteRequest.To == router.Address
-                                                                                           && c.QuoteRequest.Amount == command.TokenInAmount
+                                                                                           && c.QuoteRequest.Amount == command.TokenInMaximumAmount
                                                                                            && c.QuoteRequest.Method == RouterConstants.Methods.SwapCrsForExactSrc
                                                                                            && c.QuoteRequest.Callback == _config.WalletTransactionCallback
                                                                                            && c.QuoteRequest.Parameters
