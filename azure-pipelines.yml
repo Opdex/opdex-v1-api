@@ -71,7 +71,7 @@ stages:
           buildContext: '$(Build.ArtifactStagingDirectory)/Opdex.Platform.WebApi'
           tags: '$(TAG)'
         displayName: Docker
-      
+
       - task: CopyFiles@2
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)'
@@ -87,7 +87,7 @@ stages:
 - stage: DEV
   displayName: 'Release to devnet (Azure)'
   dependsOn: CI
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main')) # Don't run deployment for PRs against the branch.
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/feature/PAPI-171-LoadTesting')) # Don't run deployment for PRs against the branch.
   jobs:
   - template: ${{ variables.releaseTemplate }}
     parameters:
@@ -100,7 +100,7 @@ stages:
   - template: ${{ variables.releaseTemplate }}
     parameters:
       environment: 'test'
-  - job: 
+  - job:
     displayName: 'ReadMe Docs'
     steps:
     - task: CmdLine@2
@@ -113,7 +113,7 @@ stages:
       env:
         README_API_KEY: $(README_API_KEY)
     dependsOn: 'test' # template deployment name == parameters.environment
-  - job: 
+  - job:
     displayName: 'Load Testing'
     steps:
     - task: k6-load-test@0
