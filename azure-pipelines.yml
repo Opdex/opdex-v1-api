@@ -1,6 +1,6 @@
 name: Opdex-API
 trigger:
-- feature/main
+- main
 
 pool:
   vmImage: ubuntu-latest
@@ -81,7 +81,7 @@ stages:
 - stage: DEV
   displayName: 'Release to devnet (Azure)'
   dependsOn: CI
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/feature/main')) # Don't run deployment for PRs against the branch.
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main')) # Don't run deployment for PRs against the branch.
   jobs:
   - template: ${{ variables.releaseTemplate }}
     parameters:
