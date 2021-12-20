@@ -74,9 +74,10 @@ stages:
 
       - task: CopyFiles@2
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)'
+          SourceFolder: '$(Build.SourcesDirectory)/test/k6/ci'
           Contents: '**'
           TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        displayName: Copy Load Tests Files
 
       - task: PublishBuildArtifacts@1
         inputs:
