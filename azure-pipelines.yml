@@ -1,6 +1,6 @@
 name: Opdex-API
 trigger:
-- main
+- feature/PAPI-171-LoadTesting
 
 pool:
   vmImage: ubuntu-latest
@@ -71,6 +71,12 @@ stages:
           buildContext: '$(Build.ArtifactStagingDirectory)/Opdex.Platform.WebApi'
           tags: '$(TAG)'
         displayName: Docker
+      
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)'
+          Contents: '**'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
       - task: PublishBuildArtifacts@1
         inputs:
@@ -107,6 +113,13 @@ stages:
       env:
         README_API_KEY: $(README_API_KEY)
     dependsOn: 'test' # template deployment name == parameters.environment
+  - job: 
+    displayName: 'Load Testing'
+    steps:
+    - task: k6-load-test@0
+      inputs:
+        filename: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/k6/test.js'
+        args: '-e api_base_url=https://app-opdex-test-api-staging.azurewebsites.net'
 
 - stage: MAIN
   displayName: 'Release to mainnet (Azure)'
