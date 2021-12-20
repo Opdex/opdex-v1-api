@@ -1,6 +1,6 @@
 name: Opdex-API
 trigger:
-- feature/PAPI-171-LoadTesting
+- feature/main
 
 pool:
   vmImage: ubuntu-latest
@@ -72,13 +72,6 @@ stages:
           tags: '$(TAG)'
         displayName: Docker
 
-#      - task: CopyFiles@2
-#        inputs:
-#          SourceFolder: '$(Build.SourcesDirectory)/test/k6/ci'
-#          Contents: '**'
-#          TargetFolder: '$(Build.ArtifactStagingDirectory)/k6'
-#        displayName: Copy Load Tests Files
-
       - task: PublishBuildArtifacts@1
         inputs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -88,7 +81,7 @@ stages:
 - stage: DEV
   displayName: 'Release to devnet (Azure)'
   dependsOn: CI
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/feature/PAPI-171-LoadTesting')) # Don't run deployment for PRs against the branch.
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/feature/main')) # Don't run deployment for PRs against the branch.
   jobs:
   - template: ${{ variables.releaseTemplate }}
     parameters:
