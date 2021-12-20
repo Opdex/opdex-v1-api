@@ -76,7 +76,7 @@ stages:
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/test/k6/ci'
           Contents: '**'
-          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/k6'
         displayName: Copy Load Tests Files
 
       - task: PublishBuildArtifacts@1
@@ -119,7 +119,7 @@ stages:
     steps:
     - task: k6-load-test@0
       inputs:
-        filename: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/k6/test.js'
+        filename: '$(Pipeline.Workspace)/$(ARTIFACT_NAME)/k6/status/get-status.js'
         args: '-e api_base_url=https://app-opdex-test-api-staging.azurewebsites.net'
 
 - stage: MAIN
