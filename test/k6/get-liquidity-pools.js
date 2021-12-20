@@ -21,9 +21,10 @@ export let options = {
 
 const API_BASE_URL = __ENV.api_base_url;
 const MARKET = 't8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH';
+const WALLET = 'tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm';
 
 export default () => {
-    var authRequest = http.post(`${API_BASE_URL}/auth/authorize?wallet=tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm`);
+    var authRequest = http.post(`${API_BASE_URL}/auth/authorize?wallet=${WALLET}`);
 
     const params = { headers: { 'Authorization': `Bearer ${authRequest.body}` } };
     http.get(`${API_BASE_URL}/liquidity-pools?markets=${MARKET}&miningFilter=Enabled&orderBy=Liquidity&limit=4&direction=DESC`, params)
