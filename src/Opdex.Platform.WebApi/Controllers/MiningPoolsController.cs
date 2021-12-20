@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
 using Opdex.Platform.Common.Models;
@@ -10,6 +11,7 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
+using Opdex.Platform.WebApi.OpenApi.MiningPools;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,6 +57,7 @@ public class MiningPoolsController : ControllerBase
     /// <returns>Mining pool details.</returns>
     /// <response code="404">Mining pool not found.</response>
     [HttpGet("{address}")]
+    [OpenApiOperationProcessor(typeof(GetMiningPoolOperationProcessor))]
     [ProducesResponseType(typeof(MiningPoolResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -74,6 +77,7 @@ public class MiningPoolsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     /// <response code="404">Mining pool not found.</response>
     [HttpPost("{address}/start")]
+    [OpenApiOperationProcessor(typeof(StartMiningOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -96,6 +100,7 @@ public class MiningPoolsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     /// <response code="404">Mining pool not found.</response>
     [HttpPost("{address}/stop")]
+    [OpenApiOperationProcessor(typeof(StopMiningOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -117,6 +122,7 @@ public class MiningPoolsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     /// <response code="404">Mining pool not found.</response>
     [HttpPost("{address}/collect")]
+    [OpenApiOperationProcessor(typeof(CollectMiningRewardsOperationProcessor))]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]

@@ -11,6 +11,7 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens.Snapshots;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests;
@@ -151,6 +152,8 @@ public class TokensController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ApproveAllowance([FromRoute] Address address, [FromBody] ApproveAllowanceQuoteRequest request, CancellationToken cancellationToken)
     {
+        if (address == Address.Cirrus) throw new InvalidDataException(nameof(address), "Address must be SRC token address.");
+
         var response = await _mediator.Send(new CreateApproveAllowanceTransactionQuoteCommand(address, _context.Wallet, request.Spender, request.Amount),
                                             cancellationToken);
 
@@ -176,6 +179,8 @@ public class TokensController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Distribute([FromRoute] Address address, CancellationToken cancellationToken)
     {
+        if (address == Address.Cirrus) throw new InvalidDataException(nameof(address), "Address must be SRC token address.");
+
         var response = await _mediator.Send(new CreateDistributeTokensTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
 
         var quote = _mapper.Map<TransactionQuoteResponseModel>(response);
