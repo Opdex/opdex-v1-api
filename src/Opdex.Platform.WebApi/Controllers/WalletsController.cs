@@ -12,6 +12,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Allowances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Models.Requests.Wallets;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
@@ -35,11 +36,11 @@ public class WalletsController : ControllerBase
 
     /// <summary>Get Approved Allowance</summary>
     /// <remarks>Retrieve the allowance of a spender for tokens owned by another wallet.</remarks>
-    /// <param name="address">The address of the wallet.</param>
-    /// <param name="token">The address of the token.</param>
-    /// <param name="spender">The address for the spender of the allowance.</param>
+    /// <param name="address">Address of the wallet.</param>
+    /// <param name="token">Address of the token.</param>
+    /// <param name="spender">Address for the spender of the allowance.</param>
     /// <param name="cancellationToken">Cancellation Token</param>
-    /// <returns><see cref="ApprovedAllowanceResponseModel"/> summary</returns>
+    /// <returns>Approved allowance summary</returns>
     [HttpGet("{address}/allowance/{token}/approved/{spender}")]
     [OpenApiOperationProcessor(typeof(GetAllowanceOperationProcessor))]
     [ProducesResponseType(typeof(ApprovedAllowanceResponseModel), StatusCodes.Status200OK)]
@@ -51,6 +52,7 @@ public class WalletsController : ControllerBase
                                                                                  [FromRoute] Address spender,
                                                                                  CancellationToken cancellationToken)
     {
+        if (token == Address.Cirrus) throw new InvalidDataException(nameof(token), "Token must be network address for an SRC token.");
         var allowances = await _mediator.Send(new GetAddressAllowanceQuery(address, spender, token), cancellationToken);
         var response = _mapper.Map<ApprovedAllowanceResponseModel>(allowances);
         return Ok(response);
@@ -58,7 +60,7 @@ public class WalletsController : ControllerBase
 
     /// <summary>Get Balances</summary>
     /// <remarks>Retrieves token balances for an address.</remarks>
-    /// <param name="address">The address of the wallet.</param>
+    /// <param name="address">Address of the wallet.</param>
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A collection of address balance summaries by token.</returns>
@@ -79,11 +81,11 @@ public class WalletsController : ControllerBase
     }
 
     /// <summary>Get Balance</summary>
-    /// <remarks>Retrieves a wallet public key balance of a token.</remarks>
-    /// <param name="address">The address of the wallet.</param>
-    /// <param name="token">The token to get the balance of.</param>
+    /// <remarks>Retrieves the indexed balance of a token for an address.</remarks>
+    /// <param name="address">Address of the wallet.</param>
+    /// <param name="token">Address of the token to get the balance of, or CRS.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns><see cref="AddressBalanceResponseModel"/> balance summary</returns>
+    /// <returns>Address balance summary.</returns>
     [HttpGet("{address}/balance/{token}")]
     [OpenApiOperationProcessor(typeof(GetAddressBalanceByTokenOperationProcessor))]
     [ProducesResponseType(typeof(AddressBalanceResponseModel), StatusCodes.Status200OK)]
@@ -100,9 +102,9 @@ public class WalletsController : ControllerBase
     }
 
     /// <summary>Refresh Balance</summary>
-    /// <remarks>Retrieves and indexes the latest wallet public key balance for a token.</remarks>
-    /// <param name="address">The address of the wallet.</param>
-    /// <param name="token">The token to get the balance of.</param>
+    /// <remarks>Retrieves and indexes the latest balance of a token for an address.</remarks>
+    /// <param name="address">Address of the wallet.</param>
+    /// <param name="token">Address of the token to refresh the balance of, or CRS.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Address balance summary.</returns>
     [HttpPost("{address}/balance/{token}")]
@@ -123,7 +125,7 @@ public class WalletsController : ControllerBase
 
     /// <summary>Get Mining Positions</summary>
     /// <remarks>Retrieves the mining position of an address in all mining pools.</remarks>
-    /// <param name="address">The address of the wallet.</param>
+    /// <param name="address">Address of the wallet.</param>
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Mining position summaries</returns>
@@ -143,7 +145,7 @@ public class WalletsController : ControllerBase
 
     /// <summary>Get Mining Position</summary>
     /// <remarks>Retrieves the mining position of an address in a particular pool.</remarks>
-    /// <param name="address">The address of the wallet.</param>
+    /// <param name="address">Address of the wallet.</param>
     /// <param name="miningPool">The address of the mining pool.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Mining position summary</returns>
@@ -163,7 +165,7 @@ public class WalletsController : ControllerBase
 
     /// <summary>Get Staking Positions</summary>
     /// <remarks>Retrieves the staking position of an address in all staking pools.</remarks>
-    /// <param name="address">The address of the wallet.</param>
+    /// <param name="address">Address of the wallet.</param>
     /// <param name="filters">Filter parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Staking position summaries</returns>
@@ -185,7 +187,7 @@ public class WalletsController : ControllerBase
     /// <remarks>Retrieves the staking position of an address in a particular pool.</remarks>
     /// <param name="address">Address to lookup</param>
     /// <param name="liquidityPool">Liquidity pool to search</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Staking position summary</returns>
     [HttpGet("{address}/staking/{liquidityPool}")]
     [OpenApiOperationProcessor(typeof(GetStakingPositionByPoolOperationProcessor))]
