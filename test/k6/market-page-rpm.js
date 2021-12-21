@@ -20,6 +20,7 @@ export let options = {
 
 const API_BASE_URL = __ENV.api_base_url;
 const MARKET = 't8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH';
+const WALLET = 'tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm';
 const today = new Date();
 const lastWeekYesterday = new Date(today.valueOf());
 lastWeekYesterday.setUTCDate(today.getUTCDate() - 8);
@@ -29,7 +30,7 @@ lastYearToday.setUTCFullYear(today.getUTCFullYear() - 1);
 let yyyymmdd = date => date.toISOString().slice(0, 10);
 
 export default () => {
-    var authRequest = http.post(`${API_BASE_URL}/auth/authorize?wallet=tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm`);
+    var authRequest = http.post(`${API_BASE_URL}/auth/authorize?wallet=${WALLET}`);
 
     const params = { headers: { 'Authorization': `Bearer ${authRequest.body}` } };
     http.batch([

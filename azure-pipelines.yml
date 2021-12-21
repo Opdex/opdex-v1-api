@@ -94,7 +94,16 @@ stages:
   - template: ${{ variables.releaseTemplate }}
     parameters:
       environment: 'test'
-  - job: 
+  - job:
+    displayName: 'Load Testing'
+    steps:
+      - task: k6-load-test@0
+        inputs:
+          filename: 'test/k6/ci/status/get-status.js'
+          args: '-e api_base_url=https://app-opdex-test-api-staging.azurewebsites.net'
+        displayName: 'GET /status'
+    dependsOn: 'test' # template deployment name == parameters.environment
+  - job:
     displayName: 'ReadMe Docs'
     steps:
     - task: CmdLine@2
