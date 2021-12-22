@@ -81,9 +81,8 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
         tableSummaryJoinOptionsBuilder.Append($"ts.{nameof(TokenSummaryEntity.TokenId)} = t.{nameof(TokenEntity.Id)}");
         if (filterOnMarket) tableSummaryJoinOptionsBuilder.Append($"AND ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}");
 
-        var whereFilter = filterOnMarket
-            ? $" WHERE ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}"
-            : $" WHERE (ts.{nameof(TokenSummaryEntity.MarketId)} IS NULL OR ts.{nameof(TokenSummaryEntity.MarketId)} = 0)";
+        var whereFilterBuilder = new StringBuilder();
+        if (filterOnMarket) whereFilterBuilder.Append($" WHERE ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}");
 
         if (!request.Cursor.IsFirstRequest)
         {
@@ -103,32 +102,39 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
             var finisher = $"t.{nameof(TokenEntity.Id)}) {sortOperator} (@{nameof(SqlParams.OrderByValue)}, @{nameof(SqlParams.TokenId)})";
 
-            whereFilter += request.Cursor.OrderBy switch
+            whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : "AND");
+            var orderByFilter = request.Cursor.OrderBy switch
             {
-                TokenOrderByType.Name => $" AND (t.{nameof(TokenEntity.Name)}, {finisher}",
-                TokenOrderByType.Symbol => $" AND (t.{nameof(TokenEntity.Symbol)}, {finisher}",
-                TokenOrderByType.PriceUsd => $" AND (ts.{nameof(TokenSummaryEntity.PriceUsd)}, {finisher}",
-                TokenOrderByType.DailyPriceChangePercent => $" AND (ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}, {finisher}",
-                _ => $" AND t.{nameof(TokenEntity.Id)} {sortOperator} @{nameof(SqlParams.TokenId)}"
+                TokenOrderByType.Name => $" (t.{nameof(TokenEntity.Name)}, {finisher}",
+                TokenOrderByType.Symbol => $" (t.{nameof(TokenEntity.Symbol)}, {finisher}",
+                TokenOrderByType.PriceUsd => $" (ts.{nameof(TokenSummaryEntity.PriceUsd)}, {finisher}",
+                TokenOrderByType.DailyPriceChangePercent => $" (ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}, {finisher}",
+                _ => $" t.{nameof(TokenEntity.Id)} {sortOperator} @{nameof(SqlParams.TokenId)}"
             };
+            whereFilterBuilder.Append(orderByFilter);
         }
 
         if (request.Cursor.Tokens.Any())
         {
-            whereFilter += $" AND t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}";
+            whereFilterBuilder.Append($" AND t.{nameof(TokenEntity.Address)} IN @{nameof(SqlParams.Tokens)}");
         }
 
         if (request.Cursor.ProvisionalFilter != TokenProvisionalFilter.All)
         {
             var isProvisional = request.Cursor.ProvisionalFilter == TokenProvisionalFilter.Provisional;
-            whereFilter += $" AND t.{nameof(TokenEntity.IsLpt)} = {isProvisional}";
+            whereFilterBuilder.Append($" AND t.{nameof(TokenEntity.IsLpt)} = {isProvisional}");
         }
 
         if (request.Cursor.Keyword.HasValue())
         {
-            whereFilter += @$" AND (t.{nameof(TokenEntity.Name)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
-                                        t.{nameof(TokenEntity.Symbol)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
-                                        t.{nameof(TokenEntity.Address)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%'))";
+            whereFilterBuilder.Append(@$" AND (t.{nameof(TokenEntity.Name)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
+                                               t.{nameof(TokenEntity.Symbol)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%') OR
+                                               t.{nameof(TokenEntity.Address)} LIKE CONCAT('%', @{nameof(SqlParams.Keyword)}, '%'))");
+        }
+
+        if (!request.Cursor.IncludeZeroLiquidity)
+        {
+            whereFilterBuilder.Append($@"AND ts.{nameof(TokenSummaryEntity.PriceUsd)} > 0");
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -144,7 +150,9 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
         var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
-        var query = SqlQuery.Replace(WhereFilter, whereFilter)
+        var query = SqlQuery
+            .Replace(TableSummaryJoinOptions, tableSummaryJoinOptionsBuilder.ToString())
+            .Replace(WhereFilter, whereFilterBuilder.ToString())
             .Replace(OrderBy, orderBy)
             .Replace(Limit, limit);
 
@@ -152,7 +160,6 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
         // re-sort back into requested order
         return PagingBackwardQuery.Replace(InnerQuery, query)
-            .Replace(TableSummaryJoinOptions, tableSummaryJoinOptionsBuilder.ToString())
             .Replace(OrderBySort, OrderByBuilder(request.Cursor.OrderBy,
                                                  Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection),
                                                  reverse: true));
