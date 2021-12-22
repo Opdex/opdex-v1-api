@@ -20,7 +20,6 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
 
 public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWithFilterQuery, IEnumerable<Token>>
 {
-    private const string TableSummaryJoinOptions = "{TableSummaryJoinOptions}";
     private const string WhereFilter = "{WhereFilter}";
     private const string OrderBy = "{OrderBy}";
     private const string Limit = "{Limit}";
@@ -40,13 +39,12 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
                 AVG(ts.{nameof(TokenSummaryEntity.PriceUsd)}) AS {nameof(TokenSummaryEntity.PriceUsd)},
                 AVG(ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}) AS {nameof(TokenSummaryEntity.DailyPriceChangePercent)}
             FROM token t
-            LEFT JOIN token_attribute ta ON ta.TokenId = t.{nameof(TokenEntity.Id)}
             LEFT JOIN token_summary ts
-                ON {TableSummaryJoinOptions}
+                ON ts.{nameof(TokenSummaryEntity.TokenId)} = t.{nameof(TokenEntity.Id)}
             {WhereFilter}
+            GROUP BY t.{nameof(TokenEntity.Id)}
             {OrderBy}
-            {Limit}
-            GROUP BY t.{nameof(TokenEntity.Id)}, ts.{nameof(TokenSummaryEntity.Id)}".RemoveExcessWhitespace();
+            {Limit}".RemoveExcessWhitespace();
 
     private const string InnerQuery = "{InnerQuery}";
     private const string OrderBySort = "{OrderBySort}";
@@ -77,10 +75,6 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
     {
         var filterOnMarket = request.MarketId > 0;
 
-        var tableSummaryJoinOptionsBuilder = new StringBuilder();
-        tableSummaryJoinOptionsBuilder.Append($"ts.{nameof(TokenSummaryEntity.TokenId)} = t.{nameof(TokenEntity.Id)}");
-        if (filterOnMarket) tableSummaryJoinOptionsBuilder.Append($"AND ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}");
-
         var whereFilterBuilder = new StringBuilder();
         if (filterOnMarket) whereFilterBuilder.Append($" WHERE ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}");
 
@@ -102,7 +96,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
             var finisher = $"t.{nameof(TokenEntity.Id)}) {sortOperator} (@{nameof(SqlParams.OrderByValue)}, @{nameof(SqlParams.TokenId)})";
 
-            whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : "AND");
+            whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
             var orderByFilter = request.Cursor.OrderBy switch
             {
                 TokenOrderByType.Name => $" (t.{nameof(TokenEntity.Name)}, {finisher}",
@@ -134,7 +128,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
         if (!request.Cursor.IncludeZeroLiquidity)
         {
-            whereFilterBuilder.Append($@"AND ts.{nameof(TokenSummaryEntity.PriceUsd)} > 0");
+            whereFilterBuilder.Append($@" AND ts.{nameof(TokenSummaryEntity.PriceUsd)} > '0'");
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -151,7 +145,6 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
         var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
         var query = SqlQuery
-            .Replace(TableSummaryJoinOptions, tableSummaryJoinOptionsBuilder.ToString())
             .Replace(WhereFilter, whereFilterBuilder.ToString())
             .Replace(OrderBy, orderBy)
             .Replace(Limit, limit);
