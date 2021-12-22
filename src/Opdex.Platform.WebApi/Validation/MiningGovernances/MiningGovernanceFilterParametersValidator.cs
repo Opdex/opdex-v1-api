@@ -9,7 +9,7 @@ public class MiningGovernanceFilterParametersValidator : AbstractCursorValidator
 {
     public MiningGovernanceFilterParametersValidator()
     {
-        RuleFor(filter => filter.MinedToken).MustBeNetworkAddressOrEmpty().WithMessage("Mined token must be valid address or CRS.");
+        RuleFor(filter => filter.MinedToken).MustBeNetworkAddressOrEmpty().WithMessage("Mined token must be valid address.");
         RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }
 }

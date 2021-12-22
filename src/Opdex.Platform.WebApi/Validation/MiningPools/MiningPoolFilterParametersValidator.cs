@@ -10,7 +10,7 @@ public class MiningPoolFilterParametersValidator : AbstractCursorValidator<Minin
     public MiningPoolFilterParametersValidator()
     {
         RuleForEach(filter => filter.LiquidityPools).MustBeNetworkAddress().WithMessage($"Liquidity pool must be valid address.");
-        RuleFor(filter => filter.MiningStatus).MustBeValidEnumValue().WithMessage("Mining status filter must be valid for the enumeration values.");
+        RuleFor(filter => filter.MiningStatus).MustBeValidEnumValue().WithMessage("Mining status must be valid for the enumeration values.");
         RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }
 }
