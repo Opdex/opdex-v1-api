@@ -1,6 +1,7 @@
 using AutoMapper;
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models;
@@ -39,7 +40,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
         _mediatorMock = new Mock<IMediator>();
         _mapperMock = new Mock<IMapper>();
 
-        _handler = new GetMarketTokenSnapshotsWithFilterQueryHandler(_mediatorMock.Object, _mapperMock.Object);
+        _handler = new GetMarketTokenSnapshotsWithFilterQueryHandler(_mediatorMock.Object, _mapperMock.Object, new NullLogger<GetMarketTokenSnapshotsWithFilterQueryHandler>());
     }
 
     [Fact]

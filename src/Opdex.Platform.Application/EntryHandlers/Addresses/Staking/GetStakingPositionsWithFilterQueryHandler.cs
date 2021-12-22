@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
@@ -16,11 +17,14 @@ public class GetStakingPositionsWithFilterQueryHandler : EntryFilterQueryHandler
 {
     private readonly IMediator _mediator;
     private readonly IModelAssembler<AddressStaking, StakingPositionDto> _stakingPositionAssembler;
+    private readonly ILogger<GetStakingPositionsWithFilterQueryHandler> _logger;
 
-    public GetStakingPositionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<AddressStaking, StakingPositionDto> stakingPositionAssembler)
+    public GetStakingPositionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<AddressStaking, StakingPositionDto> stakingPositionAssembler, ILogger<GetStakingPositionsWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _stakingPositionAssembler = stakingPositionAssembler ?? throw new ArgumentNullException(nameof(stakingPositionAssembler));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public override async Task<StakingPositionsDto> Handle(GetStakingPositionsWithFilterQuery request, CancellationToken cancellationToken)
@@ -29,9 +33,15 @@ public class GetStakingPositionsWithFilterQueryHandler : EntryFilterQueryHandler
 
         var positionsResults = positions.ToList();
 
+        _logger.LogTrace("Retrieved queried staking positions");
+
         var cursorDto = BuildCursorDto(positionsResults, request.Cursor, pointerSelector: result => result.Id);
 
+        _logger.LogTrace("Returning {ResultCount} results", positionsResults.Count);
+
         var dtos = await Task.WhenAll(positionsResults.Select(position => _stakingPositionAssembler.Assemble(position)));
+
+        _logger.LogTrace("Assembled results");
 
         return new StakingPositionsDto { Positions = dtos, Cursor = cursorDto };
     }

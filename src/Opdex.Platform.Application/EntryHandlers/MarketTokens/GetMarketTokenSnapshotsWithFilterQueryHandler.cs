@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.MarketTokens;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
@@ -19,11 +20,14 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandler : EntryFilterQueryHan
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly ILogger<GetMarketTokenSnapshotsWithFilterQueryHandler> _logger;
 
-    public GetMarketTokenSnapshotsWithFilterQueryHandler(IMediator mediator, IMapper mapper)
+    public GetMarketTokenSnapshotsWithFilterQueryHandler(IMediator mediator, IMapper mapper, ILogger<GetMarketTokenSnapshotsWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public override async Task<MarketTokenSnapshotsDto> Handle(GetMarketTokenSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
@@ -37,9 +41,15 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandler : EntryFilterQueryHan
 
         var snapshotsResults = snapshots.ToList();
 
+        _logger.LogTrace("Retrieved queried token snapshots");
+
         var cursorDto = BuildCursorDto(snapshotsResults, request.Cursor, pointerSelector: result => (result.StartDate, result.Id));
 
+        _logger.LogTrace("Returning {ResultCount} results", snapshotsResults.Count);
+
         var assembledResults = snapshotsResults.Select(snapshot => _mapper.Map<TokenSnapshotDto>(snapshot)).ToList();
+
+        _logger.LogTrace("Assembled results");
 
         return new MarketTokenSnapshotsDto { Snapshots = assembledResults, Cursor = cursorDto };
     }

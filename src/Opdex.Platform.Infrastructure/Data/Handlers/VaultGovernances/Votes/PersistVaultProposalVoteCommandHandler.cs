@@ -52,7 +52,7 @@ public class PersistVaultProposalVoteCommandHandler : IRequestHandler<PersistVau
     public PersistVaultProposalVoteCommandHandler(IDbContext context, ILogger<PersistVaultProposalVoteCommandHandler> logger, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
     public async Task<ulong> Handle(PersistVaultProposalVoteCommand request, CancellationToken cancellationToken)

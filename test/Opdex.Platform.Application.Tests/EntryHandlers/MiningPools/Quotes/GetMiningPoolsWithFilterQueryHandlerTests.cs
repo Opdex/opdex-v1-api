@@ -1,5 +1,6 @@
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
 using Opdex.Platform.Application.Abstractions.Models;
@@ -34,7 +35,7 @@ public class GetMiningPoolsWithFilterQueryHandlerTests
         _mediatorMock = new Mock<IMediator>();
         _assemblerMock = new Mock<IModelAssembler<MiningPool, MiningPoolDto>>();
 
-        _handler = new GetMiningPoolsWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
+        _handler = new GetMiningPoolsWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object, new NullLogger<GetMiningPoolsWithFilterQueryHandler>());
     }
 
     [Fact]

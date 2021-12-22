@@ -64,9 +64,9 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
     {
         var sqlParams = new SqlParams(request.MarketId, request.Cursor.Pointer, request.Cursor.Keyword, request.Cursor.Tokens);
 
-        var command = DatabaseQuery.Create(QueryBuilder(request), sqlParams, cancellationToken);
+        var query = DatabaseQuery.Create(QueryBuilder(request), sqlParams, cancellationToken);
 
-        var tokenEntities = await _context.ExecuteQueryAsync<TokenEntity>(command);
+        var tokenEntities = await _context.ExecuteQueryAsync<TokenEntity>(query);
 
         return _mapper.Map<IEnumerable<Token>>(tokenEntities);
     }
@@ -128,7 +128,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
         if (!request.Cursor.IncludeZeroLiquidity)
         {
-            whereFilterBuilder.Append($@" AND ts.{nameof(TokenSummaryEntity.PriceUsd)} > '0'");
+            whereFilterBuilder.Append($@" AND ts.{nameof(TokenSummaryEntity.PriceUsd)} > 0");
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.

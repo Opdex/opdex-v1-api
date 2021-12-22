@@ -19,7 +19,7 @@ public abstract class ApiClientBase
     protected ApiClientBase(HttpClient httpClient, ILogger logger, JsonSerializerSettings serializerSettings = null)
     {
         _httpClient = httpClient;
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _serializerSettings = serializerSettings ?? Serialization.DefaultJsonSettings;
     }
 

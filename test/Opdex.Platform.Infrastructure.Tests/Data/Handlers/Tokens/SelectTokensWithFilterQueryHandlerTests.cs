@@ -41,17 +41,14 @@ public class SelectTokensWithFilterQueryHandlerTests
         Assert.Throws<ArgumentNullException>(Act).Message.Should().Contain("Tokens cursor must be provided.");
     }
 
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    public async Task Handle_Filter_MarketId(ulong marketId)
+    [Fact]
+    public async Task Handle_Filter_MarketId()
     {
         // Arrange
+        ulong marketId = 1;
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Default,
                                       SortDirectionType.ASC, 5, PagingDirection.Forward, default);
-        string expected = marketId > 0
-            ? "WHERE ts.MarketId = @MarketId"
-            : "WHERE (ts.MarketId IS NULL OR ts.MarketId = 0)";
+        string expected = "WHERE ts.MarketId = @MarketId";
 
         // Act
         await _handler.Handle(new SelectTokensWithFilterQuery(marketId, cursor), CancellationToken.None);
@@ -132,6 +129,34 @@ public class SelectTokensWithFilterQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_ShouldNotFilter_NoLiquidity()
+    {
+        // Arrange
+        var cursor = new TokensCursor("BTC", Enumerable.Empty<Address>(), TokenProvisionalFilter.All, true, TokenOrderByType.Default,
+            SortDirectionType.ASC, 5, PagingDirection.Forward, default);
+
+        // Act
+        await _handler.Handle(new SelectTokensWithFilterQuery(0, cursor), CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<TokenEntity>(It.Is<DatabaseQuery>(q => !q.Sql.Contains("ts.PriceUsd > 0"))), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldFilter_NoLiquidity()
+    {
+        // Arrange
+        var cursor = new TokensCursor("BTC", Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Default,
+            SortDirectionType.ASC, 5, PagingDirection.Forward, default);
+
+        // Act
+        await _handler.Handle(new SelectTokensWithFilterQuery(0, cursor), CancellationToken.None);
+
+        // Assert
+        _dbContext.Verify(callTo => callTo.ExecuteQueryAsync<TokenEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("ts.PriceUsd > 0"))), Times.Once);
+    }
+
+    [Fact]
     public async Task SelectTokensWithFilter_ByCursor_NextASC()
     {
         // Arrange
@@ -145,7 +170,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo =>
                               callTo.ExecuteQueryAsync<TokenEntity>(
-                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("AND t.Id > @TokenId") &&
+                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("t.Id > @TokenId") &&
                                                             q.Sql.Contains($"ORDER BY t.Id {orderBy}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
     }
@@ -164,7 +189,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo =>
                               callTo.ExecuteQueryAsync<TokenEntity>(
-                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("AND (t.Name, t.Id) < (@OrderByValue, @TokenId)") &&
+                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("(t.Name, t.Id) < (@OrderByValue, @TokenId)") &&
                                                             q.Sql.Contains($"ORDER BY t.Name {orderBy}, t.Id {orderBy}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
     }
@@ -183,7 +208,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo =>
                               callTo.ExecuteQueryAsync<TokenEntity>(
-                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("AND (t.Symbol, t.Id) > (@OrderByValue, @TokenId)") &&
+                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("(t.Symbol, t.Id) > (@OrderByValue, @TokenId)") &&
                                                             q.Sql.Contains($"ORDER BY t.Symbol {SortDirectionType.ASC}, t.Id {SortDirectionType.ASC}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
     }
@@ -202,7 +227,7 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo =>
                               callTo.ExecuteQueryAsync<TokenEntity>(
-                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("AND (ts.PriceUsd, t.Id) < (@OrderByValue, @TokenId)") &&
+                                  It.Is<DatabaseQuery>(q => q.Sql.Contains("(ts.PriceUsd, t.Id) < (@OrderByValue, @TokenId)") &&
                                                             q.Sql.Contains($"ORDER BY ts.PriceUsd {SortDirectionType.DESC}, t.Id {SortDirectionType.DESC}") &&
                                                             q.Sql.Contains($"LIMIT {limit + 1}"))), Times.Once);
     }
