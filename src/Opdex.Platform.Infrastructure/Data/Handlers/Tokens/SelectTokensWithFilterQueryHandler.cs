@@ -14,11 +14,13 @@ using System.Linq;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
+using System.Text;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
 
 public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWithFilterQuery, IEnumerable<Token>>
 {
+    private const string TableSummaryJoinOptions = "{TableSummaryJoinOptions}";
     private const string WhereFilter = "{WhereFilter}";
     private const string OrderBy = "{OrderBy}";
     private const string Limit = "{Limit}";
@@ -35,16 +37,16 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
                 t.{nameof(TokenEntity.TotalSupply)},
                 t.{nameof(TokenEntity.CreatedBlock)},
                 t.{nameof(TokenEntity.ModifiedBlock)},
-                ts.{nameof(TokenSummaryEntity.PriceUsd)},
-                ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}
+                AVG(ts.{nameof(TokenSummaryEntity.PriceUsd)}) AS {nameof(TokenSummaryEntity.PriceUsd)},
+                AVG(ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}) AS {nameof(TokenSummaryEntity.DailyPriceChangePercent)}
             FROM token t
             LEFT JOIN token_attribute ta ON ta.TokenId = t.{nameof(TokenEntity.Id)}
             LEFT JOIN token_summary ts
-                ON ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)} AND
-                   ts.{nameof(TokenSummaryEntity.TokenId)} = t.{nameof(TokenEntity.Id)}
+                ON {TableSummaryJoinOptions}
             {WhereFilter}
             {OrderBy}
-            {Limit}".RemoveExcessWhitespace();
+            {Limit}
+            GROUP BY t.{nameof(TokenEntity.Id)}, ts.{nameof(TokenSummaryEntity.Id)}".RemoveExcessWhitespace();
 
     private const string InnerQuery = "{InnerQuery}";
     private const string OrderBySort = "{OrderBySort}";
@@ -73,7 +75,13 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
     private static string QueryBuilder(SelectTokensWithFilterQuery request)
     {
-        var whereFilter = request.MarketId > 0
+        var filterOnMarket = request.MarketId > 0;
+
+        var tableSummaryJoinOptionsBuilder = new StringBuilder();
+        tableSummaryJoinOptionsBuilder.Append($"ts.{nameof(TokenSummaryEntity.TokenId)} = t.{nameof(TokenEntity.Id)}");
+        if (filterOnMarket) tableSummaryJoinOptionsBuilder.Append($"AND ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}");
+
+        var whereFilter = filterOnMarket
             ? $" WHERE ts.{nameof(TokenSummaryEntity.MarketId)} = @{nameof(SqlParams.MarketId)}"
             : $" WHERE (ts.{nameof(TokenSummaryEntity.MarketId)} IS NULL OR ts.{nameof(TokenSummaryEntity.MarketId)} = 0)";
 
@@ -144,6 +152,7 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
         // re-sort back into requested order
         return PagingBackwardQuery.Replace(InnerQuery, query)
+            .Replace(TableSummaryJoinOptions, tableSummaryJoinOptionsBuilder.ToString())
             .Replace(OrderBySort, OrderByBuilder(request.Cursor.OrderBy,
                                                  Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection),
                                                  reverse: true));
