@@ -84,8 +84,8 @@ public class RemoveLiquidityQuoteRequestValidatorTests
     }
 
     [Theory]
-    [ClassData(typeof(InvalidSRCAmountData))]
-    [ClassData(typeof(ZeroSRCAmountData))]
+    [ClassData(typeof(InvalidOLPTAmountData))]
+    [ClassData(typeof(ZeroOLPTAmountData))]
     public void Liquidity_Invalid(FixedDecimal amount)
     {
         // Arrange
@@ -107,7 +107,7 @@ public class RemoveLiquidityQuoteRequestValidatorTests
         // Arrange
         var request = new RemoveLiquidityQuoteRequest
         {
-            Liquidity = FixedDecimal.Parse("0.000000000000000001")
+            Liquidity = FixedDecimal.Parse("0.00000001")
         };
 
         // Act

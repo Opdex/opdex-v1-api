@@ -9,7 +9,7 @@ public class MiningQuoteValidator : AbstractValidator<MiningQuote>
     public MiningQuoteValidator()
     {
         RuleFor(request => request.Amount)
-            .MustBeValidSrcValue().WithMessage("Amount must contain 18 decimal places or less.")
+            .MustBeValidLptValue().WithMessage("Amount must contain 8 decimal places.")
             .GreaterThan(FixedDecimal.Zero).WithMessage("Amount must be greater than 0.");
     }
 }

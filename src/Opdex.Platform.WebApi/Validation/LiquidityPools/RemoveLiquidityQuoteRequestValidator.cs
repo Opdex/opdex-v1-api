@@ -15,7 +15,7 @@ public class RemoveLiquidityQuoteRequestValidator : AbstractValidator<RemoveLiqu
             .MustBeValidSrcValue().WithMessage("Minimum SRC amount must contain 18 decimal places or less.")
             .GreaterThan(FixedDecimal.Zero).WithMessage("Minimum SRC amount must be greater than 0.");
         RuleFor(request => request.Liquidity)
-            .MustBeValidSrcValue().WithMessage("Liquidity amount must contain 18 decimal places or less.")
+            .MustBeValidLptValue().WithMessage("Liquidity amount must contain 8 decimal places.")
             .GreaterThan(FixedDecimal.Zero).WithMessage("Liquidity amount must be greater than 0.");
         RuleFor(request => request.Recipient)
             .MustBeNetworkAddress().WithMessage("Recipient must be valid address.");

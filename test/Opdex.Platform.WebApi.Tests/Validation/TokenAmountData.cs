@@ -52,3 +52,24 @@ public class InvalidSRCAmountData : IEnumerable<object[]>
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
+
+/// <summary>
+/// Data for a 0 OLPT amount.
+/// </summary>
+public class ZeroOLPTAmountData : ZeroCRSAmountData { }
+
+/// <summary>
+/// Data for invalid OLPT amounts.
+/// </summary>
+public class InvalidOLPTAmountData : IEnumerable<object[]>
+{
+    public IEnumerator<object[]> GetEnumerator()
+    {
+        yield return new object[] { null };
+        yield return new object[] { FixedDecimal.Parse("1") }; // sats value
+        yield return new object[] { FixedDecimal.Parse("1.0000000") }; // 7 decimals
+        yield return new object[] { FixedDecimal.Parse("1.000000000") }; // 9 decimals
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+}
