@@ -9,7 +9,7 @@ public class VaultProposalVoteFilterParametersValidator : AbstractCursorValidato
 {
     public VaultProposalVoteFilterParametersValidator()
     {
-        RuleFor(filter => filter.Voter).MustBeNetworkAddressOrEmpty();
-        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit);
+        RuleFor(filter => filter.Voter).MustBeNetworkAddressOrEmpty().WithMessage("Voter must be valid address.");
+        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }
 }

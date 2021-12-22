@@ -9,7 +9,7 @@ public class AddressBalanceFilterParametersValidator : AbstractCursorValidator<A
 {
     public AddressBalanceFilterParametersValidator()
     {
-        RuleForEach(filter => filter.Tokens).MustBeNetworkAddress();
-        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit);
+        RuleForEach(filter => filter.Tokens).MustBeNetworkAddress().WithMessage("Token must be valid address.");
+        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }
 }

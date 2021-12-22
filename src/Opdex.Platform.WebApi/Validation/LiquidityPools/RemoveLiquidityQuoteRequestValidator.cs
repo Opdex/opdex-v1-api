@@ -8,9 +8,16 @@ public class RemoveLiquidityQuoteRequestValidator : AbstractValidator<RemoveLiqu
 {
     public RemoveLiquidityQuoteRequestValidator()
     {
-        RuleFor(request => request.AmountCrsMin).MustBeValidCrsValue().GreaterThan(FixedDecimal.Zero);
-        RuleFor(request => request.AmountSrcMin).MustBeValidSrcValue().GreaterThan(FixedDecimal.Zero);
-        RuleFor(request => request.Liquidity).MustBeValidSrcValue().GreaterThan(FixedDecimal.Zero);
-        RuleFor(request => request.Recipient).MustBeNetworkAddress();
+        RuleFor(request => request.AmountCrsMin)
+            .MustBeValidCrsValue().WithMessage("Minimum CRS amount must contain 8 decimal places.")
+            .GreaterThan(FixedDecimal.Zero).WithMessage("Minimum CRS amount must be greater than 0.");
+        RuleFor(request => request.AmountSrcMin)
+            .MustBeValidSrcValue().WithMessage("Minimum SRC amount must contain 18 decimal places or less.")
+            .GreaterThan(FixedDecimal.Zero).WithMessage("Minimum SRC amount must be greater than 0.");
+        RuleFor(request => request.Liquidity)
+            .MustBeValidSrcValue().WithMessage("Liquidity amount must contain 18 decimal places or less.")
+            .GreaterThan(FixedDecimal.Zero).WithMessage("Liquidity amount must be greater than 0.");
+        RuleFor(request => request.Recipient)
+            .MustBeNetworkAddress().WithMessage("Recipient must be valid address.");
     }
 }

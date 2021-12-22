@@ -7,7 +7,9 @@ public class RevokeCertificateVaultProposalQuoteRequestValidator : AbstractValid
 {
     public RevokeCertificateVaultProposalQuoteRequestValidator()
     {
-        RuleFor(request => request.Owner).MustBeNetworkAddress();
-        RuleFor(request => request.Description).NotEmpty().MaximumLength(200);
+        RuleFor(request => request.Owner).MustBeNetworkAddress().WithMessage("Owner must be valid address.");
+        RuleFor(request => request.Description)
+            .NotEmpty().WithMessage("Description must not be empty.")
+            .MaximumLength(200).WithMessage("Description can contain a maximum of 200 characters.");
     }
 }

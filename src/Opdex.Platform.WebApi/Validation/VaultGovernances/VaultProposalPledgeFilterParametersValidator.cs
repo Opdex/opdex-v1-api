@@ -9,7 +9,7 @@ public class VaultProposalPledgeFilterParametersValidator : AbstractCursorValida
 {
     public VaultProposalPledgeFilterParametersValidator()
     {
-        RuleFor(filter => filter.Pledger).MustBeNetworkAddressOrEmpty();
-        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit);
+        RuleFor(filter => filter.Pledger).MustBeNetworkAddressOrEmpty().WithMessage("Pledger must be valid address.");
+        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }
 }

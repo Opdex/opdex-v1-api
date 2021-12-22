@@ -8,6 +8,8 @@ public class VaultProposalPledgeQuoteRequestValidator : AbstractValidator<VaultP
 {
     public VaultProposalPledgeQuoteRequestValidator()
     {
-        RuleFor(request => request.Amount).MustBeValidCrsValue().GreaterThan(FixedDecimal.Zero);
+        RuleFor(request => request.Amount)
+            .MustBeValidCrsValue().WithMessage("Amount must contain 8 decimal places.")
+            .GreaterThan(FixedDecimal.Zero).WithMessage("Amount must be greater than 0.");
     }
 }

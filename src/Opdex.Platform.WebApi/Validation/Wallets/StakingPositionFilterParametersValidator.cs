@@ -9,7 +9,7 @@ public class StakingPositionFilterParametersValidator : AbstractCursorValidator<
 {
     public StakingPositionFilterParametersValidator()
     {
-        RuleForEach(filter => filter.LiquidityPools).MustBeNetworkAddress();
-        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit);
+        RuleForEach(filter => filter.LiquidityPools).MustBeNetworkAddress().WithMessage("Liquidity pool must be valid address");
+        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }
 }

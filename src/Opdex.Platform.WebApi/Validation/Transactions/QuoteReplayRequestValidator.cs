@@ -7,6 +7,8 @@ public class QuoteReplayRequestValidator : AbstractValidator<QuoteReplayRequest>
 {
     public QuoteReplayRequestValidator()
     {
-        RuleFor(request => request.Quote).NotEmpty().MustBeBase64Encoded();
+        RuleFor(request => request.Quote)
+            .NotEmpty().WithMessage("Quote must not be empty.")
+            .MustBeBase64Encoded().WithMessage("Quote must be valid base-64 encoded string.");
     }
 }
