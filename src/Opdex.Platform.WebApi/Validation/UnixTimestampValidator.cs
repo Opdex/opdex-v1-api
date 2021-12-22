@@ -8,7 +8,7 @@ public class UnixTimestampValidator<T> : PropertyValidator<T, long>, IUnixTimest
 {
     public override string Name => "UnixTimestamp";
 
-    public override bool IsValid(ValidationContext<T> context, long value) => value is >= 0 and <= 273402300800;
+    public override bool IsValid(ValidationContext<T> context, long value) => value is > 0 and < 273402300800;
 
     protected override string GetDefaultMessageTemplate(string errorCode) => "{PropertyName} must be unix timestamp.";
 }
