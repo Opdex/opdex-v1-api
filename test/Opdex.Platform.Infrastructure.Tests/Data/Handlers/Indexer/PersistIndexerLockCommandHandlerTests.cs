@@ -33,7 +33,7 @@ public class PersistIndexerLockCommandHandlerTests
         var token = CancellationToken.None;
 
         // Act
-        var result = await _handler.Handle(new PersistIndexerLockCommand(IndexLockReason.Deploy), token);
+        var result = await _handler.Handle(new PersistIndexerLockCommand(IndexLockReason.Deploying), token);
 
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteCommandAsync(It.Is<DatabaseQuery>(q => q.Token == token)), Times.Once);
@@ -48,7 +48,7 @@ public class PersistIndexerLockCommandHandlerTests
             .ReturnsAsync(0);
 
         // Act
-        var result = await _handler.Handle(new PersistIndexerLockCommand(IndexLockReason.Deploy), token);
+        var result = await _handler.Handle(new PersistIndexerLockCommand(IndexLockReason.Deploying), token);
 
         // Assert
         result.Should().BeFalse();
@@ -63,7 +63,7 @@ public class PersistIndexerLockCommandHandlerTests
             .ReturnsAsync(1);
 
         // Act
-        var result = await _handler.Handle(new PersistIndexerLockCommand(IndexLockReason.Deploy), token);
+        var result = await _handler.Handle(new PersistIndexerLockCommand(IndexLockReason.Deploying), token);
 
         // Assert
         result.Should().BeTrue();

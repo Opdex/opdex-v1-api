@@ -14,7 +14,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
 
 public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLockCommand, bool>
 {
-    private static readonly string SqlQuery =
+    private static readonly string LockSqlQuery =
         @$"UPDATE index_lock
                 SET
                     {nameof(IndexLockEntity.Locked)} = 1,
@@ -22,6 +22,11 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
                     {nameof(IndexLockEntity.InstanceId)} = @{nameof(SqlParams.InstanceId)},
                     {nameof(IndexLockEntity.Reason)} = @{nameof(SqlParams.Reason)}
                 WHERE {nameof(IndexLockEntity.Locked)} = 0;";
+
+    private static readonly string UpdateReasonSqlQuery =
+        @$"UPDATE index_lock
+                SET
+                    {nameof(IndexLockEntity.Reason)} = @{nameof(SqlParams.Reason)};";
 
     private readonly IDbContext _context;
     private readonly ILogger<PersistIndexerLockCommandHandler> _logger;
@@ -38,7 +43,8 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
     {
         try
         {
-            var command = DatabaseQuery.Create(SqlQuery, new SqlParams(_instanceId, request.Reason), CancellationToken.None);
+            var isNewLock = request.Reason is IndexLockReason.Deploying or IndexLockReason.Indexing or IndexLockReason.Searching;
+            var command = DatabaseQuery.Create(isNewLock ? LockSqlQuery : UpdateReasonSqlQuery, new SqlParams(_instanceId, request.Reason), CancellationToken.None);
             var result = await _context.ExecuteCommandAsync(command);
             return result == 1;
         }

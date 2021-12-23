@@ -22,5 +22,5 @@ public class IndexLock
 
 public enum IndexLockReason
 {
-    Rewind = 1, Index = 2, Deploy = 3
+    Deploying = 1, Indexing = 2, Searching = 3, Rewinding = 4, Resyncing = 5
 }

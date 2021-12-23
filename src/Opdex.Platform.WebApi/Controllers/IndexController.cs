@@ -14,10 +14,11 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Requests.Index;
 using System.Linq;
 using AutoMapper;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Indexer;
+using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
-using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Index;
 
 namespace Opdex.Platform.WebApi.Controllers;
@@ -69,25 +70,22 @@ public class IndexController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
     {
-        // Todo: Spike and implement separate market vs wallet in JWT. Markets are currently required, they should not be.
-        // If a new session starts, with no markets, a user cannot get authorized to hit this endpoint.
-        // var admin = await _mediator.Send(new GetAdminByAddressQuery(_context.Wallet, findOrThrow: false), cancellationToken);
-        // if (admin == null) return Unauthorized();
-
         var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
         if (markets.Any())
         {
             throw new AlreadyIndexedException("Markets already indexed.");
         }
 
-        var locked = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploy), CancellationToken.None);
+        var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), CancellationToken.None);
+
+        var locked = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploying), CancellationToken.None);
         if (!locked) throw new IndexingAlreadyRunningException();
 
         try
         {
             await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash), CancellationToken.None);
             await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash), CancellationToken.None);
-            await _mediator.Send(new ProcessLatestBlocksCommand(_network), CancellationToken.None);
+            await _mediator.Send(new ProcessLatestBlocksCommand(bestBlock, _network), CancellationToken.None);
         }
         finally
         {
@@ -107,13 +105,35 @@ public class IndexController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> Rewind(RewindRequest request)
     {
-        var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewind), CancellationToken.None);
+        var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Searching), CancellationToken.None);
         if (!tryLock) throw new IndexingAlreadyRunningException();
 
         try
         {
-            var rewound = await _mediator.Send(new CreateRewindToBlockCommand(request.Block), CancellationToken.None);
-            if (!rewound) throw new Exception("Indexer rewind unexpectedly failed.");
+            var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), CancellationToken.None);
+
+            // Get our latest synced block from the database
+            var currentBlock = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: true), CancellationToken.None);
+            var currentIndexedHeight = currentBlock.Height;
+
+            // Walk backward through our database blocks until we find one that can be found at the FN
+            ulong reorgLength = 0;
+            while (bestBlock is null && ++reorgLength < IndexerBackgroundService.MaxReorg)
+            {
+                currentBlock = await _mediator.Send(new RetrieveBlockByHeightQuery(currentIndexedHeight - reorgLength), CancellationToken.None);
+                bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(currentBlock.Hash, findOrThrow: false), CancellationToken.None);
+            }
+
+            if (bestBlock is null) throw new MaximumReorgException();
+
+            // Rewind our data back to the latest matching block
+            await _mediator.Send(new MakeIndexerLockReasonCommand(IndexLockReason.Rewinding), CancellationToken.None);
+            var rewound = await _mediator.Send(new CreateRewindToBlockCommand(bestBlock.Height), CancellationToken.None);
+            if (!rewound) throw new Exception($"Failure rewinding database to block height: {bestBlock.Height}");
+
+            // Begin resyncing
+            await _mediator.Send(new MakeIndexerLockReasonCommand(IndexLockReason.Resyncing), CancellationToken.None);
+            await _mediator.Send(new ProcessLatestBlocksCommand(bestBlock, _network), CancellationToken.None);
         }
         finally
         {

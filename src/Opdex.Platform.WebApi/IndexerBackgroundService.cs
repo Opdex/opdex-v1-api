@@ -12,11 +12,16 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Domain.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
+using Opdex.Platform.Application.Abstractions.Queries.Blocks;
+using Opdex.Platform.Common.Exceptions;
 
 namespace Opdex.Platform.WebApi;
 
 public class IndexerBackgroundService : BackgroundService
 {
+    public const int MaxReorg = 10_800;
+
     private readonly ILogger<IndexerBackgroundService> _logger;
     private readonly IOptionsMonitor<IndexerConfiguration> _indexerOptions;
     private readonly IServiceScopeFactory _scopeFactory;
@@ -69,7 +74,7 @@ public class IndexerBackgroundService : BackgroundService
 
                     if (indexLock.Locked)
                     {
-                        var isSameInstanceReprocessing = indexLock.Reason == IndexLockReason.Index &&
+                        var isSameInstanceReprocessing = indexLock.Reason == IndexLockReason.Indexing &&
                                                          indexLock.InstanceId == _opdexConfiguration.InstanceId;
 
                         var totalSecondsLocked = DateTime.UtcNow.Subtract(indexLock.ModifiedDate).TotalSeconds;
@@ -101,7 +106,11 @@ public class IndexerBackgroundService : BackgroundService
                         await mediator.Send(new MakeIndexerUnlockCommand(), CancellationToken.None);
                     }
 
-                    var tryLock = await mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Index), cancellationToken);
+                    // The latest synced block we have, if we don't have any, the tip of Cirrus chain, else null
+                    var bestBlock = await mediator.Send(new GetBestBlockReceiptQuery(), cancellationToken);
+                    var lockReason = bestBlock is null ? IndexLockReason.Searching : IndexLockReason.Indexing;
+
+                    var tryLock = await mediator.Send(new MakeIndexerLockCommand(lockReason), cancellationToken);
                     if (!tryLock)
                     {
                         _logger.LogWarning(IndexingAlreadyRunningLog);
@@ -110,7 +119,32 @@ public class IndexerBackgroundService : BackgroundService
 
                     try
                     {
-                        await mediator.Send(new ProcessLatestBlocksCommand(_opdexConfiguration.Network), cancellationToken);
+                        if (lockReason == IndexLockReason.Searching)
+                        {
+                            // Get our latest synced block from the database
+                            var currentBlock = await mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: true), CancellationToken.None);
+                            var currentIndexedHeight = currentBlock.Height;
+
+                            // Walk backward through our database blocks until we find one that can be found at the FN
+                            ulong reorgLength = 0;
+                            while (bestBlock is null && ++reorgLength < MaxReorg)
+                            {
+                                currentBlock = await mediator.Send(new RetrieveBlockByHeightQuery(currentIndexedHeight - reorgLength), CancellationToken.None);
+                                bestBlock = await mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(currentBlock.Hash, findOrThrow: false), CancellationToken.None);
+                            }
+
+                            if (bestBlock is null) throw new MaximumReorgException();
+
+                            // Rewind our data back to the latest matching block
+                            await mediator.Send(new MakeIndexerLockReasonCommand(IndexLockReason.Rewinding), CancellationToken.None);
+                            var rewound = await mediator.Send(new CreateRewindToBlockCommand(bestBlock.Height), CancellationToken.None);
+                            if (!rewound) throw new Exception($"Failure rewinding database to block height: {bestBlock.Height}");
+
+                            // Update to resyncing
+                            await mediator.Send(new MakeIndexerLockReasonCommand(IndexLockReason.Resyncing), CancellationToken.None);
+                        }
+
+                        await mediator.Send(new ProcessLatestBlocksCommand(bestBlock, _opdexConfiguration.Network), cancellationToken);
                     }
                     finally
                     {
@@ -123,6 +157,10 @@ public class IndexerBackgroundService : BackgroundService
                 {
                     // shutdown occurred
                     _logger.LogWarning("Indexing cancelled");
+                }
+                catch(MaximumReorgException ex)
+                {
+                    _logger.LogCritical("Encountered a reorg which exceeds max reorg limit");
                 }
                 catch (Exception ex)
                 {

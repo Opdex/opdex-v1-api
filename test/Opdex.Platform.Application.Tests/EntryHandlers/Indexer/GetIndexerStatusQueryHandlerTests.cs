@@ -63,7 +63,7 @@ public class GetIndexerStatusQueryHandlerTests
         using var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = new CancellationToken();
 
-        var indexLock = new IndexLock(true, true, Guid.NewGuid().ToString(), IndexLockReason.Index, DateTime.UtcNow);
+        var indexLock = new IndexLock(true, true, Guid.NewGuid().ToString(), IndexLockReason.Indexing, DateTime.UtcNow);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), CancellationToken.None))
             .ReturnsAsync(indexLock);
 
@@ -85,7 +85,7 @@ public class GetIndexerStatusQueryHandlerTests
         using var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = new CancellationToken();
 
-        var indexLock = new IndexLock(true, true, Guid.NewGuid().ToString(), IndexLockReason.Index, DateTime.UtcNow);
+        var indexLock = new IndexLock(true, true, Guid.NewGuid().ToString(), IndexLockReason.Indexing, DateTime.UtcNow);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), CancellationToken.None))
             .ReturnsAsync(indexLock);
 

@@ -598,6 +598,7 @@ public static class PlatformApplicationServiceCollectionExtensions
 
         // Indexer
         services.AddTransient<IRequestHandler<MakeIndexerLockCommand, bool>, MakeIndexerLockCommandHandler>();
+        services.AddTransient<IRequestHandler<MakeIndexerLockReasonCommand, Unit>, MakeIndexerLockReasonCommandHandler>();
         services.AddTransient<IRequestHandler<MakeIndexerUnlockCommand, Unit>, MakeIndexerUnlockCommandHandler>();
 
         // Tokens
