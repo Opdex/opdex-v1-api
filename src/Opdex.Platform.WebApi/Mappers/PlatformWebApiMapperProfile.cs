@@ -2,6 +2,7 @@ using AutoMapper;
 using Newtonsoft.Json;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
+using Opdex.Platform.Application.Abstractions.Models.Index;
 using Opdex.Platform.Application.Abstractions.Models.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots;
@@ -24,8 +25,9 @@ using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models;
 using Opdex.Platform.WebApi.Models.Responses;
-using Opdex.Platform.WebApi.Models.Responses.Blocks;
+using Opdex.Platform.WebApi.Models.Responses.Index;
 using Opdex.Platform.WebApi.Models.Responses.MiningGovernances;
 using Opdex.Platform.WebApi.Models.Responses.LiquidityPools;
 using Opdex.Platform.WebApi.Models.Responses.LiquidityPools.Snapshots;
@@ -345,6 +347,15 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
             .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time))
             .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<IndexerStatusDto, IndexerStatusResponseModel>()
+            .ForMember(dest => dest.Available, opt => opt.MapFrom(src => src.Available))
+            .ForMember(dest => dest.LatestBlock, opt => opt.MapFrom(src => src.LatestBlock))
+            .ForMember(dest => dest.Locked, opt => opt.MapFrom(src => src.Locked))
+            .ForMember(dest => dest.InstanceId, opt => opt.MapFrom(src => src.InstanceId))
+            .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.Reason.IsValid() ? src.Reason : (IndexLockReason?)null))
+            .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => src.ModifiedDate))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<CursorDto, CursorResponseModel>()
