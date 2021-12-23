@@ -1,5 +1,6 @@
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
@@ -23,7 +24,7 @@ public class GetBlockReceiptAtChainSplitCommandHandlerTests
     public GetBlockReceiptAtChainSplitCommandHandlerTests()
     {
         _mediatorMock = new Mock<IMediator>();
-        _handler = new GetBlockReceiptAtChainSplitCommandHandler(_mediatorMock.Object);
+        _handler = new GetBlockReceiptAtChainSplitCommandHandler(new NullLogger<GetBlockReceiptAtChainSplitCommandHandler>(), _mediatorMock.Object);
     }
 
     [Fact]

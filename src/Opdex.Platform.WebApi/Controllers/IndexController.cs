@@ -97,23 +97,28 @@ public class IndexController : ControllerBase
 
     /// <summary>Rewind to Block</summary>
     /// <param name="request">Request to rewind back to specific block.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="204">Indexer rewound.</response>
     [HttpPost("rewind")]
     [Authorize(Policy = "AdminOnly")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult> Rewind(RewindRequest request)
+    public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
     {
+        var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
+        if (latestSyncedBlock.Height <= request.Block) throw new InvalidDataException("block", "Block height must be less than current synced height.");
+
         var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewinding), CancellationToken.None);
         if (!tryLock) throw new IndexingAlreadyRunningException();
 
         try
         {
-            var chainSplitBlock = await _mediator.Send(new GetBlockReceiptAtChainSplitCommand(), CancellationToken.None);
-            var rewound = await _mediator.Send(new CreateRewindToBlockCommand(chainSplitBlock.Height), CancellationToken.None);
-            if (!rewound) throw new Exception($"Failure rewinding database to block height: {chainSplitBlock.Height}");
-            await _mediator.Send(new ProcessLatestBlocksCommand(chainSplitBlock, _network), CancellationToken.None);
+            var blockHash = await _mediator.Send(new RetrieveCirrusBlockHashByHeightQuery(request.Block), cancellationToken);
+            var rewindBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(blockHash), cancellationToken);
+            var rewound = await _mediator.Send(new CreateRewindToBlockCommand(request.Block), CancellationToken.None);
+            if (!rewound) throw new Exception($"Failure rewinding database to block height: {request.Block}");
+            await _mediator.Send(new ProcessLatestBlocksCommand(rewindBlock, _network), CancellationToken.None);
         }
         finally
         {

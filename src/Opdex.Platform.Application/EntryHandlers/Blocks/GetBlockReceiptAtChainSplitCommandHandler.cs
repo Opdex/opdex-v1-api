@@ -1,9 +1,11 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.Blocks;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,10 +15,12 @@ public class GetBlockReceiptAtChainSplitCommandHandler : IRequestHandler<GetBloc
 {
     public const int MaxReorg = 10_800;
 
+    private readonly ILogger<GetBlockReceiptAtChainSplitCommandHandler> _logger;
     private readonly IMediator _mediator;
 
-    public GetBlockReceiptAtChainSplitCommandHandler(IMediator mediator)
+    public GetBlockReceiptAtChainSplitCommandHandler(ILogger<GetBlockReceiptAtChainSplitCommandHandler> logger, IMediator mediator)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
@@ -30,13 +34,20 @@ public class GetBlockReceiptAtChainSplitCommandHandler : IRequestHandler<GetBloc
 
         // Walk backward through our database blocks until we find one that can be found at the FN
         ulong reorgLength = 0;
-        while (bestBlock is null && ++reorgLength < MaxReorg)
+        while (bestBlock is null)
         {
-            currentBlock = await _mediator.Send(new RetrieveBlockByHeightQuery(currentIndexedHeight - reorgLength), cancellationToken);
+            currentBlock = await _mediator.Send(new RetrieveBlockByHeightQuery(currentIndexedHeight - ++reorgLength), cancellationToken);
             bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(currentBlock.Hash, findOrThrow: false), cancellationToken);
         }
 
-        if (bestBlock is null) throw new MaximumReorgException();
+        using (_logger.BeginScope(new Dictionary<string, object>()
+            {
+               { "BlockHeight", bestBlock.Height },
+               { "ReorgLength", reorgLength },
+            }))
+        {
+            _logger.LogInformation("Chain split detected");
+        }
 
         return bestBlock;
     }
