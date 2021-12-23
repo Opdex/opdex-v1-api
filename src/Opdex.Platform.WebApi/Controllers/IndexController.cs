@@ -105,35 +105,15 @@ public class IndexController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> Rewind(RewindRequest request)
     {
-        var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Searching), CancellationToken.None);
+        var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewinding), CancellationToken.None);
         if (!tryLock) throw new IndexingAlreadyRunningException();
 
         try
         {
-            var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), CancellationToken.None);
-
-            // Get our latest synced block from the database
-            var currentBlock = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: true), CancellationToken.None);
-            var currentIndexedHeight = currentBlock.Height;
-
-            // Walk backward through our database blocks until we find one that can be found at the FN
-            ulong reorgLength = 0;
-            while (bestBlock is null && ++reorgLength < IndexerBackgroundService.MaxReorg)
-            {
-                currentBlock = await _mediator.Send(new RetrieveBlockByHeightQuery(currentIndexedHeight - reorgLength), CancellationToken.None);
-                bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(currentBlock.Hash, findOrThrow: false), CancellationToken.None);
-            }
-
-            if (bestBlock is null) throw new MaximumReorgException();
-
-            // Rewind our data back to the latest matching block
-            await _mediator.Send(new MakeIndexerLockReasonCommand(IndexLockReason.Rewinding), CancellationToken.None);
-            var rewound = await _mediator.Send(new CreateRewindToBlockCommand(bestBlock.Height), CancellationToken.None);
-            if (!rewound) throw new Exception($"Failure rewinding database to block height: {bestBlock.Height}");
-
-            // Begin resyncing
-            await _mediator.Send(new MakeIndexerLockReasonCommand(IndexLockReason.Resyncing), CancellationToken.None);
-            await _mediator.Send(new ProcessLatestBlocksCommand(bestBlock, _network), CancellationToken.None);
+            var chainSplitBlock = await _mediator.Send(new GetBlockReceiptAtChainSplitCommand(), CancellationToken.None);
+            var rewound = await _mediator.Send(new CreateRewindToBlockCommand(chainSplitBlock.Height), CancellationToken.None);
+            if (!rewound) throw new Exception($"Failure rewinding database to block height: {chainSplitBlock.Height}");
+            await _mediator.Send(new ProcessLatestBlocksCommand(chainSplitBlock, _network), CancellationToken.None);
         }
         finally
         {

@@ -23,11 +23,6 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
                     {nameof(IndexLockEntity.Reason)} = @{nameof(SqlParams.Reason)}
                 WHERE {nameof(IndexLockEntity.Locked)} = 0;";
 
-    private static readonly string UpdateReasonSqlQuery =
-        @$"UPDATE index_lock
-                SET
-                    {nameof(IndexLockEntity.Reason)} = @{nameof(SqlParams.Reason)};";
-
     private readonly IDbContext _context;
     private readonly ILogger<PersistIndexerLockCommandHandler> _logger;
     private readonly string _instanceId;
@@ -43,8 +38,7 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
     {
         try
         {
-            var isNewLock = request.Reason is IndexLockReason.Deploying or IndexLockReason.Indexing or IndexLockReason.Searching;
-            var command = DatabaseQuery.Create(isNewLock ? LockSqlQuery : UpdateReasonSqlQuery, new SqlParams(_instanceId, request.Reason), CancellationToken.None);
+            var command = DatabaseQuery.Create(LockSqlQuery, new SqlParams(_instanceId, request.Reason), CancellationToken.None);
             var result = await _context.ExecuteCommandAsync(command);
             return result == 1;
         }
@@ -55,7 +49,7 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
                 { "LockReason", request.Reason }
             }))
             {
-                _logger.LogError(ex, "Failed to persist indexer lock.");
+                _logger.LogError(ex, "Failed to persist indexer lock");
             }
             return false;
         }

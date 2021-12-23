@@ -32,7 +32,7 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
 
     public async Task<Unit> Handle(ProcessLatestBlocksCommand request, CancellationToken cancellationToken)
     {
-        var bestBlock = request.Block;
+        var bestBlock = request.CurrentBlock;
 
         try
         {
