@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Opdex.Platform.WebApi.Models.Responses.Blocks;
+namespace Opdex.Platform.WebApi.Models.Responses;
 
 /// <summary>
 /// Details for a block.

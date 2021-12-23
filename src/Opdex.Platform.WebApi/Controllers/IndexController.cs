@@ -13,11 +13,12 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Requests.Index;
 using System.Linq;
-using Opdex.Platform.WebApi.Models.Responses.Blocks;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using AutoMapper;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Indexer;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.WebApi.Models.Responses;
+using Opdex.Platform.WebApi.Models.Responses.Index;
 
 namespace Opdex.Platform.WebApi.Controllers;
 
@@ -36,21 +37,17 @@ public class IndexController : ControllerBase
         _network = opdexConfiguration?.Network ?? throw new ArgumentNullException(nameof(opdexConfiguration));
     }
 
-    /// <summary>Get Latest Block</summary>
-    /// <remarks>Retrieve the latest synced block.</remarks>
+    /// <summary>Get Indexer Status</summary>
+    /// <remarks>Retrieves status of the indexer.</remarks>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="200">Latest indexed block details.</response>
-    /// <response code="404">No blocks have been indexed.</response>
-    [HttpGet("latest-block")]
-    [Authorize]
-    [ProducesResponseType(typeof(BlockResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<BlockResponseModel>> GetLastSyncedBlock(CancellationToken cancellationToken)
+    /// <returns>Indexer status details.</returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(IndexerStatusResponseModel), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IndexerStatusResponseModel>> GetIndexerStatus(CancellationToken cancellationToken)
     {
-        var block = await _mediator.Send(new GetLatestBlockQuery(), cancellationToken);
+        var status = await _mediator.Send(new GetIndexerStatusQuery(), cancellationToken);
 
-        return Ok(_mapper.Map<BlockResponseModel>(block));
+        return Ok(_mapper.Map<IndexerStatusResponseModel>(status));
     }
 
     /// <summary>Resync From Deployment</summary>

@@ -49,6 +49,7 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Indexer;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.EntryQueries.LiquidityPools.Snapshots;
@@ -203,6 +204,8 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Cert
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Pledges;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Votes;
+using Opdex.Platform.Application.Abstractions.Models.Index;
+using Opdex.Platform.Application.EntryHandlers.Indexer;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Certificates;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Pledges;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Proposals;
@@ -288,8 +291,10 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<GetStakingPositionsWithFilterQuery, StakingPositionsDto>, GetStakingPositionsWithFilterQueryHandler>();
 
         // Blocks
-        services.AddTransient<IRequestHandler<GetLatestBlockQuery, BlockDto>, GetLatestBlockQueryHandler>();
         services.AddTransient<IRequestHandler<GetBestBlockReceiptQuery, BlockReceipt>, GetBestBlockReceiptQueryHandler>();
+
+        // Indexer
+        services.AddTransient<IRequestHandler<GetIndexerStatusQuery, IndexerStatusDto>, GetIndexerStatusQueryHandler>();
 
         // Transactions
         services.AddTransient<IRequestHandler<GetTransactionsWithFilterQuery, TransactionsDto>, GetTransactionsWithFilterQueryHandler>();

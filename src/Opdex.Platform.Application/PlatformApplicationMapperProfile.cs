@@ -2,6 +2,7 @@ using AutoMapper;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Models.Admins;
+using Opdex.Platform.Application.Abstractions.Models.Index;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools;
 using Opdex.Platform.Application.Abstractions.Models.LiquidityPools.Snapshots;
 using Opdex.Platform.Application.Abstractions.Models.Markets;
@@ -59,6 +60,14 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Hash, opt => opt.MapFrom(src => src.Hash))
             .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.Time))
             .ForMember(dest => dest.MedianTime, opt => opt.MapFrom(src => src.MedianTime))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<IndexLock, IndexerStatusDto>()
+            .ForMember(dest => dest.Available, opt => opt.MapFrom(src => src.Available))
+            .ForMember(dest => dest.Locked, opt => opt.MapFrom(src => src.Locked))
+            .ForMember(dest => dest.InstanceId, opt => opt.MapFrom(src => src.InstanceId))
+            .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.Reason))
+            .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(src => src.ModifiedDate))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<Market, MarketDto>()

@@ -1,5 +1,4 @@
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.WebApi.Models.Responses.Blocks;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
