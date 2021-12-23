@@ -11,7 +11,7 @@ public class Base64StringValidator<T> : PropertyValidator<T, string>, IBase64Str
 
     public override bool IsValid(ValidationContext<T> context, string value) => Base64Extensions.TryBase64Decode(value, out _);
 
-    protected override string GetDefaultMessageTemplate(string errorCode) => "{PropertyName} must be valid base-64 encoded string.";
+    protected override string GetDefaultMessageTemplate(string errorCode) => "{PropertyName} must be base-64 encoded string.";
 }
 
 public interface IBase64StringValidator : IPropertyValidator

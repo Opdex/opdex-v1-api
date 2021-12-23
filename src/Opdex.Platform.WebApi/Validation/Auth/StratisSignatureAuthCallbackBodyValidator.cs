@@ -7,7 +7,10 @@ public class StratisSignatureAuthCallbackBodyValidator : AbstractValidator<Strat
 {
     public StratisSignatureAuthCallbackBodyValidator()
     {
-        RuleFor(request => request.Signature).NotEmpty().MustBeBase64Encoded();
-        RuleFor(request => request.PublicKey).MustBeNetworkAddress();
+        RuleFor(request => request.Signature)
+            .NotEmpty().WithMessage("Signature must not be empty.")
+            .MustBeBase64Encoded().WithMessage("Signature must be base-64 encoded string.");
+        RuleFor(request => request.PublicKey)
+            .MustBeNetworkAddress().WithMessage("Public key must be a valid address.");
     }
 }

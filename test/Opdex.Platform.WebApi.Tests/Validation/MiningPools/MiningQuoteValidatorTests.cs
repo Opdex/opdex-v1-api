@@ -15,24 +15,26 @@ public class MiningQuoteValidatorTests
         _validator = new MiningQuoteValidator();
     }
 
-    [Fact]
-    public void Amount_Zero_Invalid()
+    [Theory]
+    [ClassData(typeof(InvalidOLPTAmountData))]
+    [ClassData(typeof(ZeroOLPTAmountData))]
+    public void Amount_Invalid(FixedDecimal amount)
     {
         // Arrange
         var request = new MiningQuote
         {
-            Amount = FixedDecimal.Zero,
+            Amount = amount
         };
 
         // Act
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(request => request.Amount);
+        result.ShouldHaveValidationErrorFor(r => r.Amount);
     }
 
     [Fact]
-    public void Amount_GreaterThanZero_Valid()
+    public void Amount_Valid()
     {
         // Arrange
         var request = new MiningQuote
@@ -44,6 +46,6 @@ public class MiningQuoteValidatorTests
         var result = _validator.TestValidate(request);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(request => request.Amount);
+        result.ShouldNotHaveValidationErrorFor(r => r.Amount);
     }
 }

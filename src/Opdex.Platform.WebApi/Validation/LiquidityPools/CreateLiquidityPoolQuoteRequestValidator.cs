@@ -7,7 +7,7 @@ public class CreateLiquidityPoolQuoteRequestValidator : AbstractValidator<Create
 {
     public CreateLiquidityPoolQuoteRequestValidator()
     {
-        RuleFor(request => request.Market).MustBeNetworkAddress();
-        RuleFor(request => request.Token).MustBeNetworkAddress();
+        RuleFor(request => request.Market).MustBeNetworkAddress().WithMessage("Market must be valid address.");
+        RuleFor(request => request.Token).MustBeNetworkAddress().WithMessage("Token must be valid address.");
     }
 }

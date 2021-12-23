@@ -8,7 +8,9 @@ public class ApproveAllowanceQuoteRequestValidator : AbstractValidator<ApproveAl
 {
     public ApproveAllowanceQuoteRequestValidator()
     {
-        RuleFor(request => request.Amount).MustBeValidSrcValue().GreaterThan(FixedDecimal.Zero);
-        RuleFor(request => request.Spender).MustBeNetworkAddress();
+        RuleFor(request => request.Amount)
+            .MustBeValidSrcValue().WithMessage("Amount must contain 18 decimal places or less.")
+            .GreaterThan(FixedDecimal.Zero).WithMessage("Amount must be greater than 0.");
+        RuleFor(request => request.Spender).MustBeNetworkAddress().WithMessage("Spender must be valid address.");
     }
 }

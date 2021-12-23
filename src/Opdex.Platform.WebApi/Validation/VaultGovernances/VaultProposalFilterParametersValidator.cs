@@ -9,8 +9,8 @@ public class VaultProposalFilterParametersValidator : AbstractCursorValidator<Va
 {
     public VaultProposalFilterParametersValidator()
     {
-        RuleFor(filter => filter.Status).MustBeValidEnumValueOrDefault();
-        RuleFor(filter => filter.Type).MustBeValidEnumValueOrDefault();
-        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit);
+        RuleFor(filter => filter.Status).MustBeValidEnumValueOrDefault().WithMessage("Status must be valid or the enumeration values.");
+        RuleFor(filter => filter.Type).MustBeValidEnumValueOrDefault().WithMessage("Type must be valid for the enumeration values.");
+        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }
 }

@@ -17,13 +17,13 @@ public class LiquidityPoolFilterParametersValidator : AbstractCursorValidator<Li
             .Must(keyword => !keyword.HasValue() || Alphanumeric.IsMatch(keyword))
             .WithMessage("Keyword must consist of letters, numbers and spaces only.");
 
-        RuleFor(filter => filter.OrderBy).MustBeValidEnumValue();
-        RuleFor(filter => filter.StakingFilter).MustBeValidEnumValue();
-        RuleFor(filter => filter.MiningFilter).MustBeValidEnumValue();
-        RuleFor(filter => filter.NominationFilter).MustBeValidEnumValue();
-        RuleForEach(filter => filter.Markets).MustBeNetworkAddress();
-        RuleForEach(filter => filter.LiquidityPools).MustBeNetworkAddress();
-        RuleForEach(filter => filter.Tokens).MustBeNetworkAddress();
-        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit);
+        RuleFor(filter => filter.OrderBy).MustBeValidEnumValue().WithMessage("Order must be valid for the enumeration values.");
+        RuleFor(filter => filter.StakingFilter).MustBeValidEnumValue().WithMessage("Staking status must be valid for the enumeration values.");
+        RuleFor(filter => filter.MiningFilter).MustBeValidEnumValue().WithMessage("Mining status must be valid for the enumeration values.");
+        RuleFor(filter => filter.NominationFilter).MustBeValidEnumValue().WithMessage("Nomination status must be valid for the enumeration values.");
+        RuleForEach(filter => filter.Markets).MustBeNetworkAddress().WithMessage("Market must be valid address.");
+        RuleForEach(filter => filter.LiquidityPools).MustBeNetworkAddress().WithMessage("Liquidity pool must be valid address.");
+        RuleForEach(filter => filter.Tokens).MustBeNetworkAddress().WithMessage("Token must be valid address.");
+        RuleFor(filter => filter.Limit).LessThanOrEqualTo(Cursor.DefaultMaxLimit).WithMessage($"Limit must be between 1 and {Cursor.DefaultMaxLimit}.");
     }
 }

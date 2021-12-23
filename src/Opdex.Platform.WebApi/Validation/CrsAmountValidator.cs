@@ -37,7 +37,7 @@ public class CrsAmountValidationRule : FluentValidationRule
 public static class CrsAmountValidatorExtensions
 {
     /// <summary>
-    /// Validates that the value is a valid token amount.
+    /// Validates that the value is a valid CRS amount.
     /// </summary>
     public static IRuleBuilderOptions<T, FixedDecimal> MustBeValidCrsValue<T>(this IRuleBuilder<T, FixedDecimal> ruleBuilder)
     {

@@ -7,6 +7,6 @@ public class SkimQuoteRequestValidator : AbstractValidator<SkimQuoteRequest>
 {
     public SkimQuoteRequestValidator()
     {
-        RuleFor(request => request.Recipient).MustBeNetworkAddress();
+        RuleFor(request => request.Recipient).MustBeNetworkAddress().WithMessage("Recipient must be valid address.");
     }
 }

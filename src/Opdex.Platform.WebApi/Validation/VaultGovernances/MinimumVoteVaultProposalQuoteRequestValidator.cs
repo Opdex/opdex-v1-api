@@ -8,7 +8,11 @@ public class MinimumVoteVaultProposalQuoteRequestValidator : AbstractValidator<M
 {
     public MinimumVoteVaultProposalQuoteRequestValidator()
     {
-        RuleFor(request => request.Amount).MustBeValidCrsValue().GreaterThan(FixedDecimal.Zero);
-        RuleFor(request => request.Description).NotEmpty().MaximumLength(200);
+        RuleFor(request => request.Amount)
+            .MustBeValidCrsValue().WithMessage("Amount must contain 8 decimal places.")
+            .GreaterThan(FixedDecimal.Zero).WithMessage("Amount must be greater than 0.");
+        RuleFor(request => request.Description)
+            .NotEmpty().WithMessage("Description must not be empty.")
+            .MaximumLength(200).WithMessage("Description can contain a maximum of 200 characters.");
     }
 }
