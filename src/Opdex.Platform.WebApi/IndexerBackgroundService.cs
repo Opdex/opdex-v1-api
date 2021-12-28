@@ -55,10 +55,8 @@ public class IndexerBackgroundService : BackgroundService
                 {
                     if (started)
                     {
-                        // delay 30 seconds when indexing services are unavailable
-                        // delay 8 to 12 seconds when indexing is available
-                        var seconds = unavailable ? 30 : new Random().Next(8, 13);
-                        await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken);
+                        // delay 30 seconds when indexing services are unavailable, 5 seconds otherwise
+                        await Task.Delay(TimeSpan.FromSeconds(unavailable ? 30 : 5), cancellationToken);
                     }
 
                     var indexLock = await mediator.Send(new RetrieveIndexerLockQuery(), cancellationToken);
@@ -78,7 +76,7 @@ public class IndexerBackgroundService : BackgroundService
 
                         if (!isSameInstanceReprocessing)
                         {
-                            using (_logger.BeginScope(new Dictionary<string, object>()
+                            using (_logger.BeginScope(new Dictionary<string, object>
                                    {
                                        {"TotalSecondsLocked", totalSecondsLocked}
                                    }))
@@ -89,7 +87,7 @@ public class IndexerBackgroundService : BackgroundService
                             continue;
                         }
 
-                        using (_logger.BeginScope(new Dictionary<string, object>()
+                        using (_logger.BeginScope(new Dictionary<string, object>
                                {
                                    { "TotalSecondsLocked", totalSecondsLocked },
                                    { "LockedReason", indexLock.Reason }

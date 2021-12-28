@@ -3,9 +3,9 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Indexer;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +20,7 @@ public class PersistIndexerUnlockCommandHandler : AsyncRequestHandler<PersistInd
                 {nameof(IndexLockEntity.ModifiedDate)} = UTC_TIMESTAMP(),
                 {nameof(IndexLockEntity.InstanceId)} = NULL,
                 {nameof(IndexLockEntity.Reason)} = NULL
-            WHERE {nameof(IndexLockEntity.InstanceId)} = @{nameof(IndexLockEntity.InstanceId)};";
+            WHERE {nameof(IndexLockEntity.InstanceId)} = @{nameof(IndexLockEntity.InstanceId)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly ILogger<PersistIndexerUnlockCommandHandler> _logger;

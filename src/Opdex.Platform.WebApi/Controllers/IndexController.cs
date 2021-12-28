@@ -106,18 +106,15 @@ public class IndexController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
     {
-        var latestSyncedBlock = await _mediator.Send(new RetrieveLatestBlockQuery(), cancellationToken);
-        if (latestSyncedBlock.Height <= request.Block) throw new InvalidDataException("block", "Block height must be less than current synced height.");
-
         var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewinding), CancellationToken.None);
         if (!tryLock) throw new IndexingAlreadyRunningException();
 
         try
         {
-            var blockHash = await _mediator.Send(new RetrieveCirrusBlockHashByHeightQuery(request.Block), cancellationToken);
-            var rewindBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(blockHash), cancellationToken);
             var rewound = await _mediator.Send(new CreateRewindToBlockCommand(request.Block), CancellationToken.None);
             if (!rewound) throw new Exception($"Failure rewinding database to block height: {request.Block}");
+            var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.Block), cancellationToken);
+            var rewindBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(block.Hash), cancellationToken);
             await _mediator.Send(new ProcessLatestBlocksCommand(rewindBlock, _network), CancellationToken.None);
         }
         finally

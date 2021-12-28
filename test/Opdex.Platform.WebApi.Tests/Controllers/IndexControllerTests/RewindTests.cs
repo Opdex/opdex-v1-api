@@ -39,23 +39,6 @@ public class RewindTests
     }
 
     [Fact]
-    public async Task Rewind_BlockNotLessThanCurrentHeight_ThrowInvalidDataException()
-    {
-        // Arrange
-        ulong blockHeight = 500000;
-
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>()))
-                 .ReturnsAsync(new Block(blockHeight, new Sha256(4234238947328), DateTime.UtcNow, DateTime.UtcNow));
-
-        // Act
-        Task Act() => _controller.Rewind(new RewindRequest { Block = blockHeight }, CancellationToken.None);
-
-        // Assert
-        var exception = await Assert.ThrowsAsync<InvalidDataException>(Act);
-        exception.PropertyName.Should().Be(nameof(RewindRequest.Block).ToLower());
-    }
-
-    [Fact]
     public async Task Rewind_Sends_MakeIndexerLockCommand()
     {
         // Arrange
@@ -155,10 +138,8 @@ public class RewindTests
         using var cancellationTokenSource = new CancellationTokenSource();
         var request = new RewindRequest { Block = 10 };
 
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Block(50000000000, new Sha256(4234238947328), DateTime.UtcNow, DateTime.UtcNow));
         _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveCirrusBlockHashByHeightQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Sha256(235983290483209));
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Block(request.Block, new Sha256(5340958239), DateTime.UtcNow, DateTime.UtcNow));
         var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveCirrusBlockReceiptByHashQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
 
@@ -181,7 +162,7 @@ public class RewindTests
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveLatestBlockQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Block(50000000000, new Sha256(4234238947328), DateTime.UtcNow, DateTime.UtcNow));
         _mediator.Setup(m => m.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveCirrusBlockHashByHeightQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Sha256(235983290483209));
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveBlockByHeightQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Block(request.Block, new Sha256(5340958239), DateTime.UtcNow, DateTime.UtcNow));
         var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveCirrusBlockReceiptByHashQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
 
