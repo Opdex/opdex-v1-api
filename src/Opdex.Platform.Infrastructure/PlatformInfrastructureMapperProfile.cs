@@ -139,6 +139,12 @@ public class PlatformInfrastructureMapperProfile : Profile
                                               src.AuthProviders, src.AuthTraders, src.TransactionFee, src.MarketFeeEnabled, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
+        CreateMap<MarketSummaryEntity, MarketSummary>()
+            .ConstructUsing(src => new MarketSummary(src.Id, src.MarketId, src.LiquidityUsd, src.DailyLiquidityUsdChangePercent, src.VolumeUsd, src.StakingWeight,
+                                src.DailyStakingWeightChangePercent, src.StakingUsd, src.DailyStakingUsdChangePercent, src.ProviderRewardsDailyUsd, src.MarketRewardsDailyUsd,
+                                src.CreatedBlock, src.ModifiedBlock))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
         CreateMap<MarketPermissionEntity, MarketPermission>()
             .ConstructUsing(src => new MarketPermission(src.Id, src.MarketId, src.User, (MarketPermissionType)src.Permission, src.IsAuthorized, src.Blame,
                                                         src.CreatedBlock, src.ModifiedBlock))
@@ -349,6 +355,22 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.DeployerId, opt => opt.MapFrom(src => src.DeployerId))
             .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
+            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
+            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<MarketSummary, MarketSummaryEntity>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.MarketId, opt => opt.MapFrom(src => src.MarketId))
+            .ForMember(dest => dest.LiquidityUsd, opt => opt.MapFrom(src => src.LiquidityUsd))
+            .ForMember(dest => dest.DailyLiquidityUsdChangePercent, opt => opt.MapFrom(src => src.DailyLiquidityUsdChangePercent))
+            .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
+            .ForMember(dest => dest.StakingWeight, opt => opt.MapFrom(src => src.StakingWeight))
+            .ForMember(dest => dest.DailyStakingWeightChangePercent, opt => opt.MapFrom(src => src.DailyStakingWeightChangePercent))
+            .ForMember(dest => dest.StakingUsd, opt => opt.MapFrom(src => (ulong)src.StakingUsd))
+            .ForMember(dest => dest.DailyStakingUsdChangePercent, opt => opt.MapFrom(src => src.DailyStakingUsdChangePercent))
+            .ForMember(dest => dest.ProviderRewardsDailyUsd, opt => opt.MapFrom(src => src.ProviderRewardsDailyUsd))
+            .ForMember(dest => dest.MarketRewardsDailyUsd, opt => opt.MapFrom(src => src.MarketRewardsDailyUsd))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());

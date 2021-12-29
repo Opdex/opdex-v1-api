@@ -82,7 +82,7 @@ public class ProcessDailySnapshotRefreshCommandHandler : IRequestHandler<Process
             }
 
             // Process market snapshot
-            await _mediator.Send(new ProcessMarketSnapshotsCommand(market, blockTime));
+            await _mediator.Send(new ProcessMarketSnapshotsCommand(market, blockTime, request.BlockHeight));
         }
 
         return Unit.Value;

@@ -7,9 +7,11 @@ using Opdex.Platform.Application.Abstractions.Commands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.MarketDeployers;
 using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Deployers;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
+using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Domain.Models.Markets;
 using Opdex.Platform.Domain.Models.TransactionLogs.MarketDeployers;
 
@@ -30,6 +32,8 @@ public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreat
     {
         try
         {
+            var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.BlockHeight), CancellationToken.None);
+
             // Get deployer
             var deployer = await _mediator.Send(new RetrieveDeployerByAddressQuery(request.Log.Contract, findOrThrow: false));
             if (deployer == null) return false;
@@ -50,6 +54,10 @@ public class ProcessCreateMarketLogCommandHandler : IRequestHandler<ProcessCreat
 
             var marketId = await _mediator.Send(new MakeMarketCommand(market, request.BlockHeight));
             if (marketId == 0) return false;
+
+            var snapshot = new MarketSnapshot(marketId, SnapshotType.Daily, block.MedianTime);
+            var marketSnapshot = await _mediator.Send(new MakeMarketSnapshotCommand(snapshot, request.BlockHeight), CancellationToken.None);
+            if (!marketSnapshot) _logger.LogWarning("Unexpected error creating new market snapshot.");
 
             // Create Router
             var router = await _mediator.Send(new RetrieveMarketRouterByAddressQuery(request.Log.Router, findOrThrow: false));

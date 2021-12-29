@@ -59,7 +59,7 @@ public class CreateRewindSnapshotsCommandHandler : IRequestHandler<CreateRewindS
         await ReplayTransactionsFromStartOfHour(startOfHour);
 
         // Process market daily snapshots with all of the latest rewind data
-        await RewindMarkets(marketList, startOfDay);
+        await RewindMarkets(marketList, startOfDay, rewindBlock.Height);
 
         return true;
     }
@@ -171,7 +171,7 @@ public class CreateRewindSnapshotsCommandHandler : IRequestHandler<CreateRewindS
         if (transactionReplayFailures > 0) _logger.LogError($"Failed to replay {transactionReplayFailures} transactions.");
     }
 
-    private async Task RewindMarkets(IList<Market> marketList, DateTime startOfDay)
+    private async Task RewindMarkets(IList<Market> marketList, DateTime startOfDay, ulong blockHeight)
     {
         _logger.LogDebug($"Rebuilding {marketList.Count} stale markets snapshots.");
 
@@ -181,7 +181,7 @@ public class CreateRewindSnapshotsCommandHandler : IRequestHandler<CreateRewindS
         {
             try
             {
-                await _mediator.Send(new ProcessMarketSnapshotsCommand(market, startOfDay));
+                await _mediator.Send(new ProcessMarketSnapshotsCommand(market, startOfDay, blockHeight));
             }
             catch (Exception)
             {

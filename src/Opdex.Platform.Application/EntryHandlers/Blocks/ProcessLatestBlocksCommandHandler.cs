@@ -105,7 +105,7 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
 
                     foreach (var market in markets)
                     {
-                        await _mediator.Send(new ProcessMarketSnapshotsCommand(market, currentBlock.MedianTime));
+                        await _mediator.Send(new ProcessMarketSnapshotsCommand(market, currentBlock.MedianTime, currentBlock.Height));
                     }
                 }
 
