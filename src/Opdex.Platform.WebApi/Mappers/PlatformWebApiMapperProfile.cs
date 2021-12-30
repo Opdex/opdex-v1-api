@@ -265,11 +265,15 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.LiquidityUsd, opt => opt.MapFrom(src => src.LiquidityUsd))
             .ForMember(dest => dest.DailyLiquidityUsdChangePercent, opt => opt.MapFrom(src => src.DailyLiquidityUsdChangePercent))
             .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
+            .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src.Staking))
+            .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<MarketStakingDto, MarketStakingResponseModel>()
             .ForMember(dest => dest.StakingWeight, opt => opt.MapFrom(src => src.StakingWeight))
             .ForMember(dest => dest.DailyStakingWeightChangePercent, opt => opt.MapFrom(src => src.DailyStakingWeightChangePercent))
             .ForMember(dest => dest.StakingUsd, opt => opt.MapFrom(src => src.StakingUsd))
             .ForMember(dest => dest.DailyStakingUsdChangePercent, opt => opt.MapFrom(src => src.DailyStakingUsdChangePercent))
-            .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.Rewards))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MarketSnapshotsDto, MarketSnapshotsResponseModel>()

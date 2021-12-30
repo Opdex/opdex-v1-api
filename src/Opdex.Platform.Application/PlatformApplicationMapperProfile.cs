@@ -43,6 +43,7 @@ using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Linq;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
+using System;
 
 namespace Opdex.Platform.Application;
 
@@ -79,7 +80,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
             .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
             .ForMember(dest => dest.MarketFeeEnabled, opt => opt.MapFrom(src => src.MarketFeeEnabled))
-            .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
+            .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee == 0 ? 0 : Math.Round((decimal)src.TransactionFee / 10, 1)))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MarketSummary, MarketSummaryDto>()
@@ -88,11 +89,15 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.LiquidityUsd, opt => opt.MapFrom(src => src.LiquidityUsd))
             .ForMember(dest => dest.DailyLiquidityUsdChangePercent, opt => opt.MapFrom(src => src.DailyLiquidityUsdChangePercent))
             .ForMember(dest => dest.VolumeUsd, opt => opt.MapFrom(src => src.VolumeUsd))
+            .ForMember(dest => dest.Staking, opt => opt.MapFrom(src => src))
+            .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src))
+            .ForAllOtherMembers(opt => opt.Ignore());
+
+        CreateMap<MarketSummary, MarketStakingDto>()
             .ForMember(dest => dest.StakingWeight, opt => opt.MapFrom(src => src.StakingWeight.ToDecimal(TokenConstants.Opdex.Decimals)))
             .ForMember(dest => dest.DailyStakingWeightChangePercent, opt => opt.MapFrom(src => src.DailyStakingWeightChangePercent))
             .ForMember(dest => dest.StakingUsd, opt => opt.MapFrom(src => src.StakingUsd))
             .ForMember(dest => dest.DailyStakingUsdChangePercent, opt => opt.MapFrom(src => src.DailyStakingUsdChangePercent))
-            .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MarketSummary, RewardsDto>()
@@ -265,7 +270,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.AuthPoolCreators, opt => opt.MapFrom(src => src.AuthPoolCreators))
             .ForMember(dest => dest.AuthProviders, opt => opt.MapFrom(src => src.AuthProviders))
             .ForMember(dest => dest.AuthTraders, opt => opt.MapFrom(src => src.AuthTraders))
-            .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee))
+            .ForMember(dest => dest.TransactionFee, opt => opt.MapFrom(src => src.TransactionFee == 0 ? 0 : Math.Round((decimal)src.TransactionFee / 10, 1)))
             .ForMember(dest => dest.StakingToken, opt => opt.MapFrom(src => src.StakingToken))
             .ForMember(dest => dest.EnableMarketFee, opt => opt.MapFrom(src => src.EnableMarketFee));
 
