@@ -9,7 +9,7 @@ public class MarketSummary : BlockAudit
 {
     public MarketSummary(ulong marketId, ulong createdBlock) : base(createdBlock, createdBlock)
     {
-        MarketId = marketId > 0 ? marketId : throw new ArgumentOutOfRangeException(nameof(marketId), "MarketId must be provided.");
+        MarketId = marketId > 0 ? marketId : throw new ArgumentOutOfRangeException(nameof(marketId), "MarketId must be greater than zero.");
     }
 
     public MarketSummary(ulong id, ulong marketId, decimal liquidityUsd, decimal dailyLiquidityUsdChangePercent, decimal volumeUsd, ulong stakingWeight,

@@ -78,10 +78,12 @@ public class MarketsController : ControllerBase
     /// <remarks>Retrieves a market.</remarks>
     /// <param name="address">The market address to retrieve.</param>
     /// <param name="cancellationToken">Cancellation Token</param>
-    /// <returns>Market</returns>
+    /// <returns>Market details with its daily summary</returns>
     [HttpGet("{address}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<MarketSnapshotResponseModel>> GetMarketDetails([FromRoute] Address address, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(MarketResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MarketResponseModel>> GetMarketDetails([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetMarketByAddressQuery(address), cancellationToken);
 

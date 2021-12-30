@@ -25,8 +25,6 @@ public class GetMarketByAddressQueryHandler : IRequestHandler<GetMarketByAddress
     {
         var market = await _mediator.Send(new RetrieveMarketByAddressQuery(request.MarketAddress), cancellationToken);
 
-        var marketDto = await _assembler.Assemble(market);
-
-        return marketDto;
+        return await _assembler.Assemble(market);
     }
 }
