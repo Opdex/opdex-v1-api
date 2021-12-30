@@ -129,6 +129,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queri
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Auth;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Summaries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Certificates;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Pledges;
@@ -136,6 +137,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.P
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Votes;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Transactions;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.VaultGovernances;
+using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Certificates;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Pledges;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Proposals;
@@ -174,6 +176,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<PersistMarketPermissionCommand, ulong>, PersistMarketPermissionCommandHandler>();
         services.AddTransient<IRequestHandler<PersistMarketSnapshotCommand, bool>, PersistMarketSnapshotCommandHandler>();
         services.AddTransient<IRequestHandler<PersistMarketRouterCommand, bool>, PersistMarketRouterCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistMarketSummaryCommand, ulong>, PersistMarketSummaryCommandHandler>();
 
         // Blocks
         services.AddTransient<IRequestHandler<PersistBlockCommand, bool>, PersistBlockCommandHandler>();
@@ -250,6 +253,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectAllMarketsQuery, IEnumerable<Market>>, SelectAllMarketsQueryHandler>();
         services.AddTransient<IRequestHandler<SelectMarketPermissionsByModifiedBlockQuery, IEnumerable<MarketPermission>>, SelectMarketPermissionsByModifiedBlockQueryHandler>();
         services.AddTransient<IRequestHandler<SelectMarketsByModifiedBlockQuery, IEnumerable<Market>>, SelectMarketsByModifiedBlockQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectMarketSummaryByMarketIdQuery, MarketSummary>, SelectMarketSummaryByMarketIdQueryHandler>();
 
         // Blocks
         services.AddTransient<IRequestHandler<SelectLatestBlockQuery, Block>, SelectLatestBlockQueryHandler>();

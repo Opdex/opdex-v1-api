@@ -42,6 +42,8 @@ public class MarketsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("standard")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CreateStandardMarketQuote([FromBody] CreateStandardMarketQuoteRequest request,
                                                                                              CancellationToken cancellationToken)
     {
@@ -64,6 +66,8 @@ public class MarketsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("staking")]
     [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CreateStakingMarketQuote([FromBody] CreateStakingMarketQuoteRequest request,
                                                                                             CancellationToken cancellationToken)
     {
@@ -78,10 +82,12 @@ public class MarketsController : ControllerBase
     /// <remarks>Retrieves a market.</remarks>
     /// <param name="address">The market address to retrieve.</param>
     /// <param name="cancellationToken">Cancellation Token</param>
-    /// <returns>Market</returns>
+    /// <returns>Market details with its daily summary</returns>
     [HttpGet("{address}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<MarketSnapshotResponseModel>> GetMarketDetails([FromRoute] Address address, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(MarketResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MarketResponseModel>> GetMarketDetails([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetMarketByAddressQuery(address), cancellationToken);
 
@@ -98,6 +104,9 @@ public class MarketsController : ControllerBase
     /// <returns>Market history with pagination.</returns>
     [HttpGet("{address}/history")]
     [ProducesResponseType(typeof(MarketSnapshotsResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MarketSnapshotsResponseModel>> GetMarketHistory([FromRoute] Address address,
                                                                                    [FromQuery] MarketSnapshotFilterParameters filters,
                                                                                    CancellationToken cancellationToken)
@@ -116,6 +125,9 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{address}/standard/set-ownership")]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SetOwnershipQuote([FromRoute] Address address,
                                                                                      [FromBody] SetMarketOwnerQuoteRequest request,
                                                                                      CancellationToken cancellationToken)
@@ -134,6 +146,9 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{address}/standard/claim-ownership")]
+    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> ClaimOwnershipQuote([FromRoute] Address address,
                                                                                        CancellationToken cancellationToken)
     {
@@ -195,6 +210,9 @@ public class MarketsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     [HttpPost("{address}/standard/collect-fees")]
+    [ProducesResponseType(typeof(IEnumerable<MarketPermissionType>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CollectFeesQuote([FromRoute] Address address,
                                                                                     [FromBody] CollectMarketFeesQuoteRequest request,
                                                                                     CancellationToken cancellationToken)

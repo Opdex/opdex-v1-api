@@ -66,7 +66,7 @@ public class ProcessMarketSnapshotsCommandHandler : IRequestHandler<ProcessMarke
         marketSnapshot.Update(snapshots);
 
         // Persist market snapshot
-        await _mediator.Send(new MakeMarketSnapshotCommand(marketSnapshot));
+        await _mediator.Send(new MakeMarketSnapshotCommand(marketSnapshot, request.BlockHeight));
 
         return Unit.Value;
     }

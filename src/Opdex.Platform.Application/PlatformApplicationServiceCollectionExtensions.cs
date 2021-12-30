@@ -210,6 +210,7 @@ using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Certificates;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Pledges;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Proposals;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Votes;
+using Opdex.Platform.Application.Handlers.Markets.Summaries;
 using System.Collections;
 
 namespace Opdex.Platform.Application;
@@ -483,6 +484,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveMarketPermissionsByModifiedBlockQuery, IEnumerable<MarketPermission>>, RetrieveMarketPermissionsByModifiedBlockQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveMarketContractSummaryQuery, MarketContractSummary>, RetrieveMarketContractSummaryQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveMarketContractPermissionSummaryQuery, MarketContractPermissionSummary>, RetrieveMarketContractPermissionSummaryQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveMarketSummaryByMarketIdQuery, MarketSummary>, RetrieveMarketSummaryByMarketIdQueryHandler>();
 
         // Liquidity Pools
         services.AddTransient<IRequestHandler<RetrieveLiquidityPoolsWithFilterQuery, IEnumerable<LiquidityPool>>, RetrieveLiquidityPoolsWithFilterQueryHandler>();
@@ -622,6 +624,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         // Markets
         services.AddTransient<IRequestHandler<MakeMarketCommand, ulong>, MakeMarketCommandHandler>();
         services.AddTransient<IRequestHandler<MakeMarketPermissionCommand, ulong>, MakeMarketPermissionCommandHandler>();
+        services.AddTransient<IRequestHandler<MakeMarketSummaryCommand, ulong>, MakeMarketSummaryCommandHandler>();
 
         services.AddTransient<IRequestHandler<MakeMarketRouterCommand, bool>, MakeMarketRouterCommandHandler>();
         services.AddTransient<IRequestHandler<MakeMarketSnapshotCommand, bool>, MakeMarketSnapshotCommandHandler>();
