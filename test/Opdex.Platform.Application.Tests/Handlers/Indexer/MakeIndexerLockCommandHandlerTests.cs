@@ -30,7 +30,7 @@ public class MakeIndexerLockCommandHandlerTests
     {
         // Arrange
         var token = CancellationToken.None;
-        var reason = IndexLockReason.Index;
+        var reason = IndexLockReason.Indexing;
 
         // Act
         try

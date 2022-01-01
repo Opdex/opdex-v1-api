@@ -9,13 +9,11 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens.Snapshots;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Snapshots;
 using Opdex.Platform.Common.Enums;
-using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.Application.EntryHandlers.Blocks;
@@ -24,7 +22,6 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
 {
     private readonly IMediator _mediator;
     private readonly ILogger<ProcessLatestBlocksCommandHandler> _logger;
-    private const int MaxReorg = 200;
     public ProcessLatestBlocksCommandHandler(IMediator mediator, ILogger<ProcessLatestBlocksCommandHandler> logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -33,34 +30,10 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
 
     public async Task<Unit> Handle(ProcessLatestBlocksCommand request, CancellationToken cancellationToken)
     {
+        var bestBlock = request.CurrentBlock;
+
         try
         {
-            // The latest synced block we have, if we don't have any, the tip of Cirrus chain, else null
-            var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), cancellationToken);
-
-            // Rewind when applicable, would mean our latest synced block cannot be found at the FN by block hash
-            if (bestBlock == null)
-            {
-                // Get our latest synced block from the database and attempt to retrieve it again from the FN
-                var dbLatestBlock = await _mediator.Send(new RetrieveLatestBlockQuery(findOrThrow: true));
-                bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
-
-                // Walk backward through our database blocks until we find one that can be found at the FN
-                int reorgLength = 0;
-                while (bestBlock == null && reorgLength < MaxReorg)
-                {
-                    dbLatestBlock = await _mediator.Send(new RetrieveBlockByHeightQuery(dbLatestBlock.Height - 1));
-                    bestBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(dbLatestBlock.Hash, findOrThrow: false));
-                    if (bestBlock == null) reorgLength++;
-                }
-
-                if (bestBlock == null) throw new MaximumReorgException();
-
-                // Rewind our data back to the latest matching block
-                var rewound = await _mediator.Send(new CreateRewindToBlockCommand(bestBlock.Height));
-                if (!rewound) throw new Exception($"Failure rewinding database to block height: {bestBlock.Height}");
-            }
-
             // Process each block until we reach the chain tip
             while (bestBlock.NextBlockHash != null && !cancellationToken.IsCancellationRequested)
             {
@@ -111,10 +84,6 @@ public class ProcessLatestBlocksCommandHandler : IRequestHandler<ProcessLatestBl
 
                 bestBlock = currentBlock;
             }
-        }
-        catch (MaximumReorgException ex)
-        {
-            _logger.LogCritical(ex, "Maximum reorg limit reached");
         }
         catch (Exception ex)
         {

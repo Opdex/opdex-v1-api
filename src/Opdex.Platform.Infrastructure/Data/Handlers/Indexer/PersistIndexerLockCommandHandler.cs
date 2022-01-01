@@ -14,7 +14,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Indexer;
 
 public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLockCommand, bool>
 {
-    private static readonly string SqlQuery =
+    private static readonly string LockSqlQuery =
         @$"UPDATE index_lock
                 SET
                     {nameof(IndexLockEntity.Locked)} = 1,
@@ -38,7 +38,7 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
     {
         try
         {
-            var command = DatabaseQuery.Create(SqlQuery, new SqlParams(_instanceId, request.Reason), CancellationToken.None);
+            var command = DatabaseQuery.Create(LockSqlQuery, new SqlParams(_instanceId, request.Reason), CancellationToken.None);
             var result = await _context.ExecuteCommandAsync(command);
             return result == 1;
         }
@@ -49,7 +49,7 @@ public class PersistIndexerLockCommandHandler : IRequestHandler<PersistIndexerLo
                 { "LockReason", request.Reason }
             }))
             {
-                _logger.LogError(ex, "Failed to persist indexer lock.");
+                _logger.LogError(ex, "Failed to persist indexer lock");
             }
             return false;
         }

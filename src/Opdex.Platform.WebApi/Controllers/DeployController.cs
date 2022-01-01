@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
 using Opdex.Platform.Common.Configurations;
@@ -68,7 +69,7 @@ public class DeployController : ControllerBase
             throw new Exception("Markets already exist");
         }
 
-        var locked = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploy), CancellationToken.None);
+        var locked = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploying), CancellationToken.None);
         if (!locked) throw new IndexingAlreadyRunningException();
 
         // Deploy governance token
@@ -164,7 +165,8 @@ public class DeployController : ControllerBase
 
         await CallAndWait(async () => await _mediator.Send(new CallCirrusCallSmartContractMethodCommand(callDto: createGovernanceTokenPoolRequest), cancellationToken));
 
-        await _mediator.Send(new ProcessLatestBlocksCommand(_network), CancellationToken.None);
+        var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), cancellationToken);
+        await _mediator.Send(new ProcessLatestBlocksCommand(bestBlock, _network), CancellationToken.None);
 
         await _mediator.Send(new MakeIndexerUnlockCommand());
 
