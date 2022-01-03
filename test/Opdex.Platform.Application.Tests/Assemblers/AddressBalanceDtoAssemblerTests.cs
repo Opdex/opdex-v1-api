@@ -71,7 +71,7 @@ public class AddressBalanceDtoAssemblerTests
     {
         // Arrange
         var dto = new AddressBalanceDto { Address = "PQFv8x66vXEQEjw7ZBi8kCavrz15S1ShcH" };
-        var token = new Token(5, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
+        var token = new Token(5, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), new TokenSummary(5, 10, 50), 5, 15);
         var source = new AddressBalance(5, 5, "PQFv8x66vXEQEjw7ZBi8kCavrz15S1ShcG", 500000000, 5, 50);
 
         _mapperMock.Setup(callTo => callTo.Map<AddressBalanceDto>(It.IsAny<AddressBalance>())).Returns(dto);

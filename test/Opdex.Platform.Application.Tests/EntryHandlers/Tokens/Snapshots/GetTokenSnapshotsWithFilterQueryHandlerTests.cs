@@ -71,7 +71,7 @@ public class GetTokenSnapshotsWithFilterQueryHandlerTests
 
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         // Act
@@ -95,7 +95,7 @@ public class GetTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 10, PagingDirection.Forward, default);
         var request = new GetTokenSnapshotsWithFilterQuery(tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var snapshots = new TokenSnapshot[]
@@ -121,7 +121,7 @@ public class GetTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 3, PagingDirection.Forward, (DateTime.UtcNow, 10));
         var request = new GetTokenSnapshotsWithFilterQuery(tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var snapshots = new TokenSnapshot[]
@@ -148,7 +148,7 @@ public class GetTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 10));
         var request = new GetTokenSnapshotsWithFilterQuery(tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var snapshots = new TokenSnapshot[]
@@ -176,7 +176,7 @@ public class GetTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 10));
         var request = new GetTokenSnapshotsWithFilterQuery(tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var snapshots = new TokenSnapshot[]
@@ -204,7 +204,7 @@ public class GetTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
         var request = new GetTokenSnapshotsWithFilterQuery(tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var snapshots = new TokenSnapshot[]
@@ -232,7 +232,7 @@ public class GetTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
         var request = new GetTokenSnapshotsWithFilterQuery(tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var snapshots = new TokenSnapshot[]
@@ -260,7 +260,7 @@ public class GetTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
         var request = new GetTokenSnapshotsWithFilterQuery(tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var snapshots = new TokenSnapshot[]
@@ -288,7 +288,7 @@ public class GetTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
         var request = new GetTokenSnapshotsWithFilterQuery(tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var snapshots = new TokenSnapshot[]
@@ -315,7 +315,7 @@ public class GetTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
         var request = new GetTokenSnapshotsWithFilterQuery(tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var snapshots = new TokenSnapshot[]

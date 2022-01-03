@@ -18,7 +18,6 @@ public class GetLiquidityPoolSnapshotsWithFilterQueryHandler : EntryFilterQueryH
 {
     private readonly IMediator _mediator;
     private readonly IModelAssembler<IList<LiquidityPoolSnapshot>, IEnumerable<LiquidityPoolSnapshotDto>> _assembler;
-    private readonly ILogger<GetLiquidityPoolSnapshotsWithFilterQueryHandler> _logger;
 
     public GetLiquidityPoolSnapshotsWithFilterQueryHandler(IMediator mediator,
                                                            IModelAssembler<IList<LiquidityPoolSnapshot>, IEnumerable<LiquidityPoolSnapshotDto>> assembler,
@@ -27,7 +26,6 @@ public class GetLiquidityPoolSnapshotsWithFilterQueryHandler : EntryFilterQueryH
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public override async Task<LiquidityPoolSnapshotsDto> Handle(GetLiquidityPoolSnapshotsWithFilterQuery request, CancellationToken cancellationToken)
@@ -38,15 +36,9 @@ public class GetLiquidityPoolSnapshotsWithFilterQueryHandler : EntryFilterQueryH
 
         var snapshotsResults = snapshots.ToList();
 
-        _logger.LogTrace("Retrieved queried liquidity pool snapshots");
-
         var cursorDto = BuildCursorDto(snapshotsResults, request.Cursor, pointerSelector: result => (result.StartDate, result.Id));
 
-        _logger.LogTrace("Returning {ResultCount} results", snapshotsResults.Count);
-
         var assembledResults = await _assembler.Assemble(snapshotsResults);
-
-        _logger.LogTrace("Assembled results");
 
         return new LiquidityPoolSnapshotsDto { Snapshots = assembledResults, Cursor = cursorDto };
     }

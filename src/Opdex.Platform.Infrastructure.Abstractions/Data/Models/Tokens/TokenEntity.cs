@@ -13,4 +13,5 @@ public class TokenEntity : AuditEntity
     public byte Decimals { get; set; }
     public ulong Sats { get; set; }
     public UInt256 TotalSupply { get; set; }
+    public TokenSummaryEntity TokenSummary { get; set; }
 }

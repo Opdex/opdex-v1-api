@@ -17,14 +17,12 @@ public class GetVaultProposalsWithFilterQueryHandler : EntryFilterQueryHandler<G
 {
     private readonly IMediator _mediator;
     private readonly IModelAssembler<VaultProposal, VaultProposalDto> _proposalAssembler;
-    private readonly ILogger<GetVaultProposalsWithFilterQueryHandler> _logger;
 
     public GetVaultProposalsWithFilterQueryHandler(IMediator mediator, IModelAssembler<VaultProposal, VaultProposalDto> proposalAssembler, ILogger<GetVaultProposalsWithFilterQueryHandler> logger)
         : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _proposalAssembler = proposalAssembler ?? throw new ArgumentNullException(nameof(proposalAssembler));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public override async Task<VaultProposalsDto> Handle(GetVaultProposalsWithFilterQuery request, CancellationToken cancellationToken)
@@ -35,15 +33,9 @@ public class GetVaultProposalsWithFilterQueryHandler : EntryFilterQueryHandler<G
 
         var proposalsResults = proposals.ToList();
 
-        _logger.LogTrace("Retrieved queried proposals");
-
         var cursorDto = BuildCursorDto(proposalsResults, request.Cursor, pointerSelector: result => (result.Expiration, result.PublicId));
 
-        _logger.LogTrace("Returning {ResultCount} results", proposalsResults.Count);
-
         var assembledResults = await Task.WhenAll(proposalsResults.Select(proposal => _proposalAssembler.Assemble(proposal)));
-
-        _logger.LogTrace("Assembled results");
 
         return new VaultProposalsDto { Proposals = assembledResults, Cursor = cursorDto };
     }

@@ -11,8 +11,8 @@ public class Token : TokenBase
     }
 
     public Token(ulong id, Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply,
-                 ulong createdBlock, ulong modifiedBlock)
-        : base(id, address, isLpt, name, symbol, decimals, sats, totalSupply, createdBlock, modifiedBlock)
+                 TokenSummary tokenSummary, ulong createdBlock, ulong modifiedBlock)
+        : base(id, address, isLpt, name, symbol, decimals, sats, totalSupply, tokenSummary, createdBlock, modifiedBlock)
     {
     }
 

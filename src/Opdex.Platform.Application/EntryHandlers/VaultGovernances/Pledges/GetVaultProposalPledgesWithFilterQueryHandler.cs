@@ -17,14 +17,12 @@ public class GetVaultProposalPledgesWithFilterQueryHandler : EntryFilterQueryHan
 {
     private readonly IMediator _mediator;
     private readonly IModelAssembler<VaultProposalPledge, VaultProposalPledgeDto> _pledgeAssembler;
-    private readonly ILogger<GetVaultProposalPledgesWithFilterQueryHandler> _logger;
 
     public GetVaultProposalPledgesWithFilterQueryHandler(IMediator mediator, IModelAssembler<VaultProposalPledge, VaultProposalPledgeDto> pledgeAssembler, ILogger<GetVaultProposalPledgesWithFilterQueryHandler> logger)
         : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _pledgeAssembler = pledgeAssembler ?? throw new ArgumentNullException(nameof(pledgeAssembler));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public override async Task<VaultProposalPledgesDto> Handle(GetVaultProposalPledgesWithFilterQuery request, CancellationToken cancellationToken)
@@ -35,15 +33,9 @@ public class GetVaultProposalPledgesWithFilterQueryHandler : EntryFilterQueryHan
 
         var pledgesResults = pledges.ToList();
 
-        _logger.LogTrace("Retrieved queried pledges");
-
         var cursorDto = BuildCursorDto(pledgesResults, request.Cursor, pointerSelector: result => result.Id);
 
-        _logger.LogTrace("Returning {ResultCount} results", pledgesResults.Count);
-
         var assembledResults = await Task.WhenAll(pledgesResults.Select(pledge => _pledgeAssembler.Assemble(pledge)));
-
-        _logger.LogTrace("Assembled results");
 
         return new VaultProposalPledgesDto { Pledges = assembledResults, Cursor = cursorDto };
     }

@@ -83,7 +83,7 @@ public class CreateDistributeTokensTransactionQuoteCommandHandlerTests
         var cancellationToken = new CancellationTokenSource().Token;
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), cancellationToken))
-            .ReturnsAsync(new Token(1, token, false, "Bitcoin", "BTC", 8, 100_000_000, 0, 1, 2));
+            .ReturnsAsync(new Token(1, token, false, "Bitcoin", "BTC", 8, 100_000_000, 0, new TokenSummary(5, 10, 50), 9, 10));
 
         // Act
         try
@@ -118,7 +118,7 @@ public class CreateDistributeTokensTransactionQuoteCommandHandlerTests
         var expectedQuote = new TransactionQuote(null, null, 23800, null, expectedRequest);
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), cancellationToken))
-            .ReturnsAsync(new Token(1, token, false, "Bitcoin", "BTC", 8, 100_000_000, 0, 1, 2));
+            .ReturnsAsync(new Token(1, token, false, "Bitcoin", "BTC", 8, 100_000_000, 0, new TokenSummary(5, 10, 50), 9, 10));
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<MakeTransactionQuoteCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedQuote);

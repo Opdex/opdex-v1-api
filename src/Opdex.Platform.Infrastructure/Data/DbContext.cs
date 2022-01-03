@@ -30,7 +30,7 @@ public class DbContext : IDbContext
 
     public async Task<IEnumerable<TReturn>> ExecuteQueryAsync<TFirst, TSecond, TReturn>(DatabaseQuery query,
                                                                                         Func<TFirst, TSecond, TReturn> map,
-                                                                                        string splitOn)
+                                                                                        string splitOn = "Id")
     {
         var command = BuildCommandDefinition(query);
         await using var connection = _databaseSettings.Create();

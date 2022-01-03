@@ -82,7 +82,8 @@ public class CreateAddressBalanceCommandHandlerTests
         try
         {
             await _handler.Handle(new CreateAddressBalanceCommand(walletAddress, token, blockHeight), CancellationToken.None);
-        } catch { }
+        }
+        catch { }
 
         // Assert
         _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveTokenByAddressQuery>(q => q.Address == token),
@@ -97,7 +98,7 @@ public class CreateAddressBalanceCommandHandlerTests
         Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
         const ulong blockHeight = 10;
 
-        var tokenResponse = new Token(1, token, false, "TokenName", "Symbol", 8, 100_000_00, 10000000000, 4, 5);
+        var tokenResponse = new Token(1, token, false, "TokenName", "Symbol", 8, 100_000_00, 10000000000, new TokenSummary(5, 10, 50), 4, 5);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(tokenResponse);
@@ -106,7 +107,8 @@ public class CreateAddressBalanceCommandHandlerTests
         try
         {
             await _handler.Handle(new CreateAddressBalanceCommand(walletAddress, token, blockHeight), CancellationToken.None);
-        } catch { }
+        }
+        catch { }
 
         // Assert
         _mediator.Verify(callTo => callTo.Send(It.Is<RetrieveAddressBalanceByOwnerAndTokenQuery>(q => q.Owner == walletAddress &&
@@ -124,7 +126,7 @@ public class CreateAddressBalanceCommandHandlerTests
         const ulong blockHeight = 10;
         const ulong balanceModifiedBlock = 11;
 
-        var tokenResponse = new Token(2, token, false, "TokenName", "Symbol", 8, 100_000_00, 10000000000, 4, 5);
+        var tokenResponse = new Token(2, token, false, "TokenName", "Symbol", 8, 100_000_00, 10000000000, new TokenSummary(5, 10, 50), 4, 5);
 
         var balance = new AddressBalance(1, tokenResponse.Id, walletAddress, 10, 3, balanceModifiedBlock);
 
@@ -150,7 +152,7 @@ public class CreateAddressBalanceCommandHandlerTests
         Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
         const ulong blockHeight = 10;
 
-        var tokenResponse = new Token(2, token, false, "TokenName", "Symbol", 8, 100_000_00, 10000000000, 4, 5);
+        var tokenResponse = new Token(2, token, false, "TokenName", "Symbol", 8, 100_000_00, 10000000000, new TokenSummary(5, 10, 50), 4, 5);
 
         var balance = new AddressBalance(1, tokenResponse.Id, walletAddress, 10, 3, blockHeight);
 
@@ -178,7 +180,7 @@ public class CreateAddressBalanceCommandHandlerTests
         Address token = "PBJPuCXfcNKdN28FQf5uJYUcmAsqAEgUXk";
         const ulong blockHeight = 10;
 
-        var tokenResponse = new Token(2, token, false, "TokenName", "Symbol", 8, 100_000_00, 10000000000, 4, 5);
+        var tokenResponse = new Token(2, token, false, "TokenName", "Symbol", 8, 100_000_00, 10000000000, new TokenSummary(5, 10, 50), 4, 5);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(tokenResponse);

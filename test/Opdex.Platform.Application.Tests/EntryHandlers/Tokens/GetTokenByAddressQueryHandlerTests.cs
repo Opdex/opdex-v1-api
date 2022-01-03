@@ -65,7 +65,7 @@ public class GetTokenByAddressQueryHandlerTests
     {
         // Arrange
         Address tokenAddress = "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm";
-        var token = new Token(1, tokenAddress, false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
+        var token = new Token(1, tokenAddress, false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), new TokenSummary(5, 10, 50), 9, 10);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 

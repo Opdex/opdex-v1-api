@@ -8,6 +8,7 @@ using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Application.EntryHandlers.MarketTokens;
 using Opdex.Platform.Application.EntryHandlers.Tokens;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
@@ -132,11 +133,11 @@ public class GetMarketTokensWithFilterTests
         // Arrange
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Default,
                                       SortDirectionType.ASC, 25, PagingDirection.Forward, ("50.00", 10));
-        var token = new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10);
+        var token = new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10);
         var market = GetMarket();
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
-        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new [] { token });
+        _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new[] { token });
 
         // Act
         try
@@ -155,11 +156,11 @@ public class GetMarketTokensWithFilterTests
         // Arrange
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC, 4, PagingDirection.Forward, ("50.00", 10));
-        var tokens = new []
+        var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(GetMarket);
@@ -169,8 +170,12 @@ public class GetMarketTokensWithFilterTests
         {
             var tokenDto = new MarketTokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -190,11 +195,11 @@ public class GetMarketTokensWithFilterTests
         // Arrange
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC, 2, PagingDirection.Backward, ("50.00", 10));
-        var tokens = new []
+        var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(GetMarket);
@@ -204,8 +209,12 @@ public class GetMarketTokensWithFilterTests
         {
             var tokenDto = new MarketTokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -225,11 +234,11 @@ public class GetMarketTokensWithFilterTests
         // Arrange
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false,
                                       TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 2, PagingDirection.Forward, ("50.00", 10));
-        var tokens = new []
+        var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(GetMarket);
@@ -239,8 +248,12 @@ public class GetMarketTokensWithFilterTests
         {
             var tokenDto = new MarketTokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -261,11 +274,11 @@ public class GetMarketTokensWithFilterTests
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC, 2, PagingDirection.Forward, default);
 
-        var tokens = new []
+        var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(GetMarket);
@@ -275,8 +288,12 @@ public class GetMarketTokensWithFilterTests
         {
             var tokenDto = new MarketTokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -298,11 +315,11 @@ public class GetMarketTokensWithFilterTests
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.DailyPriceChangePercent,
                                       SortDirectionType.ASC, 2, PagingDirection.Forward, ("10.12", 2));
 
-        var tokens = new []
+        var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(GetMarket);
@@ -312,8 +329,12 @@ public class GetMarketTokensWithFilterTests
         {
             var tokenDto = new MarketTokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -335,11 +356,11 @@ public class GetMarketTokensWithFilterTests
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Symbol,
                                       SortDirectionType.ASC, 2, PagingDirection.Backward, ("10.12", 2));
 
-        var tokens = new []
+        var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(GetMarket);
@@ -349,8 +370,12 @@ public class GetMarketTokensWithFilterTests
         {
             var tokenDto = new MarketTokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -371,10 +396,10 @@ public class GetMarketTokensWithFilterTests
         // Arrange
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.Name,
                                       SortDirectionType.ASC, 2, PagingDirection.Forward, ("10.12", 2));
-        var tokens = new []
+        var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(GetMarket);
@@ -384,8 +409,12 @@ public class GetMarketTokensWithFilterTests
         {
             var tokenDto = new MarketTokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;
@@ -406,10 +435,10 @@ public class GetMarketTokensWithFilterTests
         // Arrange
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false, TokenOrderByType.PriceUsd,
                                       SortDirectionType.ASC, 2, PagingDirection.Backward, ("10.12", 2));
-        var tokens = new []
+        var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(GetMarket);
@@ -419,8 +448,12 @@ public class GetMarketTokensWithFilterTests
         {
             var tokenDto = new MarketTokenDto
             {
-                Id = tokens[tokenAssembled].Id, Address = tokens[tokenAssembled].Address, Name = tokens[tokenAssembled].Name,
-                Symbol = tokens[tokenAssembled].Symbol, Decimals = tokens[tokenAssembled].Decimals, Sats = tokens[tokenAssembled].Sats,
+                Id = tokens[tokenAssembled].Id,
+                Address = tokens[tokenAssembled].Address,
+                Name = tokens[tokenAssembled].Name,
+                Symbol = tokens[tokenAssembled].Symbol,
+                Decimals = tokens[tokenAssembled].Decimals,
+                Sats = tokens[tokenAssembled].Sats,
                 Summary = new TokenSummaryDto { PriceUsd = 1.11m, DailyPriceChangePercent = 0.23m, ModifiedBlock = 10000 }
             };
             tokenAssembled++;

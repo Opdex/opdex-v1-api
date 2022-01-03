@@ -9,7 +9,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Tokens;
+namespace Opdex.Platform.Application.EntryHandlers.MarketTokens;
 
 public class GetMarketTokenByMarketAndTokenAddressQueryHandler : IRequestHandler<GetMarketTokenByMarketAndTokenAddressQuery, MarketTokenDto>
 {

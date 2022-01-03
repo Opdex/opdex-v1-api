@@ -102,8 +102,9 @@ public class TokenTests
         UInt256 totalSupply = 987654321;
         const ulong createdBlock = 3;
         const ulong modifiedBlock = 4;
+        TokenSummary summary = new TokenSummary(5, 10, 50);
 
-        var token = new Token(id, address, isLpt, name, symbol, decimals, sats, totalSupply, createdBlock, modifiedBlock);
+        var token = new Token(id, address, isLpt, name, symbol, decimals, sats, totalSupply, summary, createdBlock, modifiedBlock);
 
         token.Id.Should().Be(id);
         token.Address.Should().Be(address);
@@ -112,6 +113,7 @@ public class TokenTests
         token.Decimals.Should().Be(decimals);
         token.Sats.Should().Be(sats);
         token.TotalSupply.Should().Be(totalSupply);
+        token.TokenSummary.Should().Be(summary);
         token.CreatedBlock.Should().Be(createdBlock);
         token.ModifiedBlock.Should().Be(modifiedBlock);
     }

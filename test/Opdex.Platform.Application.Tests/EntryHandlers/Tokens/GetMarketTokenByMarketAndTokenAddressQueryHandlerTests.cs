@@ -6,6 +6,7 @@ using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Application.EntryHandlers.MarketTokens;
 using Opdex.Platform.Application.EntryHandlers.Tokens;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Common.Models.UInt;
@@ -108,7 +109,7 @@ public class GetMarketTokenByMarketAndTokenAddressQueryHandlerTests
         // Arrange
         Address marketAddress = "PGgMkN2kwXwmu3wuFYmBWQ38k7iYnkfGPP";
         Address tokenAddress = "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm";
-        var token = new Token(1, tokenAddress, false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
+        var token = new Token(1, tokenAddress, false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), new TokenSummary(5, 10, 50), 9, 10);
         var market = new Market(19, "kN2kwXwmu3wuFYmPBWQ38k7iYnkfGPPGgM", 2, 3, null, "nkfGPPGgMkN2kwXwmu3wuFYmPBWQ38k7iY", true, true, true, 3, true, 9, 10);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);

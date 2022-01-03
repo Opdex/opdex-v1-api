@@ -46,7 +46,7 @@ public abstract class TokenBase : BlockAudit
     }
 
     protected TokenBase(ulong id, Address address, bool isLpt, string name, string symbol, int decimals, ulong sats, UInt256 totalSupply,
-                        ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
+                        TokenSummary tokenSummary, ulong createdBlock, ulong modifiedBlock) : base(createdBlock, modifiedBlock)
     {
         Id = id;
         Address = address;
@@ -56,6 +56,7 @@ public abstract class TokenBase : BlockAudit
         Decimals = decimals;
         Sats = sats;
         TotalSupply = totalSupply;
+        TokenSummary = tokenSummary;
     }
 
     public ulong Id { get; }
@@ -66,4 +67,5 @@ public abstract class TokenBase : BlockAudit
     public int Decimals { get; }
     public ulong Sats { get; }
     public UInt256 TotalSupply { get; protected set; }
+    public TokenSummary TokenSummary { get; }
 }

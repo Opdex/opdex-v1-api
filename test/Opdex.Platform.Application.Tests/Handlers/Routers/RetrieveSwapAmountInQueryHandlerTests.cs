@@ -36,8 +36,8 @@ public class RetrieveSwapAmountInQueryHandlerTests
         SetupPools();
 
         var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
-        var tokenIn = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 10, 10);
-        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
+        var tokenIn = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 10, 10);
+        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
 
         var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
         var cancellationToken = new CancellationTokenSource().Token;
@@ -57,8 +57,8 @@ public class RetrieveSwapAmountInQueryHandlerTests
         SetupPools();
 
         var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
-        var tokenIn = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 10, 10);
-        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
+        var tokenIn = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 10, 10);
+        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
 
         var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
         var cancellationToken = new CancellationTokenSource().Token;
@@ -77,8 +77,8 @@ public class RetrieveSwapAmountInQueryHandlerTests
         SetupPools();
 
         var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
-        var tokenIn = new Token(5, new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), false, "Britcoin", "XGBP", 18, 1000000000000000000, UInt256.Parse("1000000000000000000000000000000000000"), 10, 10);
-        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
+        var tokenIn = new Token(5, new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), false, "Britcoin", "XGBP", 18, 1000000000000000000, UInt256.Parse("1000000000000000000000000000000000000"), new TokenSummary(5, 10, 50), 10, 10);
+        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
 
         var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
         var cancellationToken = new CancellationTokenSource().Token;
@@ -98,8 +98,8 @@ public class RetrieveSwapAmountInQueryHandlerTests
         SetupPools();
 
         var router = new MarketRouter(5, new Address("PEkFDLUw1aLjYCWoJ1jRehNfTXjgWuZsX3"), 5, true, 2, 200);
-        var tokenIn = new Token(5, new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), false, "Britcoin", "XGBP", 18, 1000000000000000000, UInt256.Parse("1000000000000000000000000000000000000"), 10, 10);
-        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, 50, 50);
+        var tokenIn = new Token(5, new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), false, "Britcoin", "XGBP", 18, 1000000000000000000, UInt256.Parse("1000000000000000000000000000000000000"), new TokenSummary(5, 10, 50), 10, 10);
+        var tokenOut = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
 
         var request = new RetrieveSwapAmountInQuery(router, tokenIn, tokenOut, 500000);
         var cancellationToken = new CancellationTokenSource().Token;

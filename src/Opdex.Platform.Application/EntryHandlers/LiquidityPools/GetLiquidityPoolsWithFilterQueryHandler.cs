@@ -18,14 +18,12 @@ public class GetLiquidityPoolsWithFilterQueryHandler : EntryFilterQueryHandler<G
 {
     private readonly IMediator _mediator;
     private readonly IModelAssembler<LiquidityPool, LiquidityPoolDto> _assembler;
-    private readonly ILogger<GetLiquidityPoolsWithFilterQueryHandler> _logger;
 
     public GetLiquidityPoolsWithFilterQueryHandler(IMediator mediator, IModelAssembler<LiquidityPool, LiquidityPoolDto> assembler, ILogger<GetLiquidityPoolsWithFilterQueryHandler> logger)
         : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public override async Task<LiquidityPoolsDto> Handle(GetLiquidityPoolsWithFilterQuery request, CancellationToken cancellationToken)
@@ -33,8 +31,6 @@ public class GetLiquidityPoolsWithFilterQueryHandler : EntryFilterQueryHandler<G
         var pools = await _mediator.Send(new RetrieveLiquidityPoolsWithFilterQuery(request.Cursor), cancellationToken);
 
         var dtos = await Task.WhenAll(pools.Select(pool => _assembler.Assemble(pool)));
-
-        _logger.LogTrace("Assembled queried liquidity pools");
 
         var dtoResults = dtos.ToList();
 
@@ -49,8 +45,6 @@ public class GetLiquidityPoolsWithFilterQueryHandler : EntryFilterQueryHandler<G
                 _ => (string.Empty, result.Id)
             };
         });
-
-        _logger.LogTrace("Returning {ResultCount} results", dtoResults.Count);
 
         return new LiquidityPoolsDto { LiquidityPools = dtoResults, Cursor = cursor };
     }

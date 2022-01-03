@@ -13,20 +13,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Tokens;
+namespace Opdex.Platform.Application.EntryHandlers.MarketTokens;
 
 public class GetMarketTokensWithFilterQueryHandler : EntryFilterQueryHandler<GetMarketTokensWithFilterQuery, MarketTokensDto>
 {
     private readonly IMediator _mediator;
     private readonly IModelAssembler<MarketToken, MarketTokenDto> _marketTokenAssembler;
-    private readonly ILogger<GetMarketTokensWithFilterQueryHandler> _logger;
 
     public GetMarketTokensWithFilterQueryHandler(IMediator mediator, IModelAssembler<MarketToken, MarketTokenDto> marketTokenAssembler, ILogger<GetMarketTokensWithFilterQueryHandler> logger)
         : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _marketTokenAssembler = marketTokenAssembler ?? throw new ArgumentNullException(nameof(marketTokenAssembler));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public override async Task<MarketTokensDto> Handle(GetMarketTokensWithFilterQuery request, CancellationToken cancellationToken)
@@ -36,8 +34,6 @@ public class GetMarketTokensWithFilterQueryHandler : EntryFilterQueryHandler<Get
         var tokens = await _mediator.Send(new RetrieveTokensWithFilterQuery(market.Id, request.Cursor), cancellationToken);
 
         var dtos = await Task.WhenAll(tokens.Select(token => _marketTokenAssembler.Assemble(new MarketToken(market, token))));
-
-        _logger.LogTrace("Assembled queried market tokens");
 
         var dtoResults = dtos.ToList();
 
@@ -52,8 +48,6 @@ public class GetMarketTokensWithFilterQueryHandler : EntryFilterQueryHandler<Get
                 _ => (string.Empty, result.Id)
             };
         });
-
-        _logger.LogTrace("Returning {ResultCount} results", dtoResults.Count);
 
         return new MarketTokensDto { Tokens = dtoResults, Cursor = cursor };
     }

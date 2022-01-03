@@ -41,7 +41,7 @@ public class MakeTokenCommandHandlerTests
     public void MakeTokenCommand_InvalidBlockHeight_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var token = new Token(1, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10);
+        var token = new Token(1, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10);
         const ulong blockHeight = 0;
 
         // Act
@@ -55,7 +55,7 @@ public class MakeTokenCommandHandlerTests
     public async Task MakeTokenCommand_Sends_CallCirrusGetStandardTokenContractSummaryQuery()
     {
         // Arrange
-        var token = new Token(1, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10);
+        var token = new Token(1, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10);
         const ulong blockHeight = 10;
 
         // Act
@@ -77,7 +77,7 @@ public class MakeTokenCommandHandlerTests
     public async Task MakeTokenCommand_Skips_CallCirrusGetStandardTokenContractSummaryQuery()
     {
         // Arrange
-        var token = new Token(1, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10);
+        var token = new Token(1, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10);
         const ulong blockHeight = 10;
 
         // Act
@@ -95,7 +95,7 @@ public class MakeTokenCommandHandlerTests
     public async Task MakeTokenCommand_Sends_PersistTokenCommand()
     {
         // Arrange
-        var token = new Token(1, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10);
+        var token = new Token(1, "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10);
         const ulong blockHeight = 10;
 
         UInt256 updatedTotalSupply = 5000000;
