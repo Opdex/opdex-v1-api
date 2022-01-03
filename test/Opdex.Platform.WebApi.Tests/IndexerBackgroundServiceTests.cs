@@ -5,10 +5,13 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.Indexer;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Blocks;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Indexer;
 using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Common.Enums;
+using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models;
+using Opdex.Platform.Domain.Models.Blocks;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,10 +66,13 @@ public class IndexerBackgroundServiceTests
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
-        var indexLock = new IndexLock(false, false, _primaryIdentity, IndexLockReason.Index, DateTime.UtcNow);
+        var indexLock = new IndexLock(false, false, _primaryIdentity, IndexLockReason.Indexing, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetBlockReceiptAtChainSplitCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         _indexerOptionsMonitorMock.Setup(callTo => callTo.CurrentValue).Returns(new IndexerConfiguration { Enabled = true });
 
@@ -85,10 +91,13 @@ public class IndexerBackgroundServiceTests
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
-        var indexLock = new IndexLock(true, false, _primaryIdentity, IndexLockReason.Index, DateTime.UtcNow);
+        var indexLock = new IndexLock(true, false, _primaryIdentity, IndexLockReason.Indexing, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetBlockReceiptAtChainSplitCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         _indexerOptionsMonitorMock.Setup(callTo => callTo.CurrentValue).Returns(new IndexerConfiguration { Enabled = false });
 
@@ -108,10 +117,13 @@ public class IndexerBackgroundServiceTests
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
         // _primaryIdentity trying to index when _otherIdentity already is
-        var indexLock = new IndexLock(true, true, _otherIdentity, IndexLockReason.Index, DateTime.UtcNow);
+        var indexLock = new IndexLock(true, true, _otherIdentity, IndexLockReason.Indexing, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetBlockReceiptAtChainSplitCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         _indexerOptionsMonitorMock.Setup(callTo => callTo.CurrentValue).Returns(new IndexerConfiguration { Enabled = true });
 
@@ -130,10 +142,13 @@ public class IndexerBackgroundServiceTests
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
-        var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Rewind, DateTime.UtcNow);
+        var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Rewinding, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetBlockReceiptAtChainSplitCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         _indexerOptionsMonitorMock.Setup(callTo => callTo.CurrentValue).Returns(new IndexerConfiguration { Enabled = true });
 
@@ -152,10 +167,13 @@ public class IndexerBackgroundServiceTests
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
-        var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Deploy, DateTime.UtcNow);
+        var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Deploying, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetBlockReceiptAtChainSplitCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         _indexerOptionsMonitorMock.Setup(callTo => callTo.CurrentValue).Returns(new IndexerConfiguration { Enabled = true });
 
@@ -174,10 +192,13 @@ public class IndexerBackgroundServiceTests
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
-        var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Index, DateTime.UtcNow);
+        var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Indexing, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetBlockReceiptAtChainSplitCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         _indexerOptionsMonitorMock.Setup(callTo => callTo.CurrentValue).Returns(new IndexerConfiguration { Enabled = true });
 
@@ -196,10 +217,13 @@ public class IndexerBackgroundServiceTests
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
-        var indexLock = new IndexLock(true, false, _primaryIdentity, IndexLockReason.Index, DateTime.UtcNow);
+        var indexLock = new IndexLock(true, false, _primaryIdentity, IndexLockReason.Indexing, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
+        var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetBlockReceiptAtChainSplitCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         _indexerOptionsMonitorMock.Setup(callTo => callTo.CurrentValue).Returns(new IndexerConfiguration { Enabled = true });
 
@@ -214,14 +238,71 @@ public class IndexerBackgroundServiceTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_BestBlockReceiptNotNull_PerformIndexing()
+    {
+        // Arrange
+        using var cancellationTokenSource = new CancellationTokenSource();
+        var indexLock = new IndexLock(true, false, _primaryIdentity, IndexLockReason.Indexing, DateTime.UtcNow);
+
+        var bestBlock = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>()))
+                 .ReturnsAsync(bestBlock);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+        _indexerOptionsMonitorMock.Setup(callTo => callTo.CurrentValue).Returns(new IndexerConfiguration { Enabled = true });
+
+        // Act
+        await _indexerService.StartAsync(cancellationTokenSource.Token);
+
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+        _mediator.Verify(callTo => callTo.Send(It.Is<MakeIndexerLockCommand>(q => q.Reason == IndexLockReason.Indexing), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>()), Times.Never());
+        _mediator.Verify(callTo => callTo.Send(It.Is<ProcessLatestBlocksCommand>(c => c.CurrentBlock == bestBlock), It.IsAny<CancellationToken>()), Times.Once());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), It.IsAny<CancellationToken>()), Times.Once());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_BestBlockReceiptNull_PerformReindexing()
+    {
+        // Arrange
+        using var cancellationTokenSource = new CancellationTokenSource();
+        var indexLock = new IndexLock(true, false, _primaryIdentity, IndexLockReason.Indexing, DateTime.UtcNow);
+
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetBestBlockReceiptQuery>(), It.IsAny<CancellationToken>()))
+                 .ReturnsAsync((BlockReceipt)null);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var chainSplitBlockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetBlockReceiptAtChainSplitCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(chainSplitBlockReceipt);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+        _indexerOptionsMonitorMock.Setup(callTo => callTo.CurrentValue).Returns(new IndexerConfiguration { Enabled = true });
+
+        // Act
+        await _indexerService.StartAsync(cancellationTokenSource.Token);
+
+        // Assert
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+        _mediator.Verify(callTo => callTo.Send(It.Is<MakeIndexerLockCommand>(q => q.Reason == IndexLockReason.Rewinding), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+        _mediator.Verify(callTo => callTo.Send(It.Is<CreateRewindToBlockCommand>(c => c.Block == chainSplitBlockReceipt.Height), It.IsAny<CancellationToken>()), Times.Once());
+        _mediator.Verify(callTo => callTo.Send(It.Is<ProcessLatestBlocksCommand>(c => c.CurrentBlock == chainSplitBlockReceipt), It.IsAny<CancellationToken>()), Times.Once());
+        _mediator.Verify(callTo => callTo.Send(It.IsAny<MakeIndexerUnlockCommand>(), It.IsAny<CancellationToken>()), Times.Once());
+    }
+
+    [Fact]
     public async Task ExecuteAsync_HappyPath()
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
-        var indexLock = new IndexLock(true, false, _primaryIdentity, IndexLockReason.Index, DateTime.UtcNow);
+        var indexLock = new IndexLock(true, false, _primaryIdentity, IndexLockReason.Indexing, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
         _mediator.Setup(callTo => callTo.Send(It.IsAny<MakeIndexerLockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var blockReceipt = new BlockReceipt(new Sha256(5340958239), 1, DateTime.UtcNow, DateTime.UtcNow, new Sha256(3343544543), new Sha256(34325), new Sha256(13249049), Array.Empty<Sha256>());
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<GetBlockReceiptAtChainSplitCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockReceipt);
+        _mediator.Setup(callTo => callTo.Send(It.IsAny<CreateRewindToBlockCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         _indexerOptionsMonitorMock.Setup(callTo => callTo.CurrentValue).Returns(new IndexerConfiguration { Enabled = true });
 
@@ -269,7 +350,7 @@ public class IndexerBackgroundServiceTests
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
-        var indexLock = new IndexLock(true, true, _otherIdentity, IndexLockReason.Index, DateTime.UtcNow);
+        var indexLock = new IndexLock(true, true, _otherIdentity, IndexLockReason.Indexing, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
 
@@ -285,7 +366,7 @@ public class IndexerBackgroundServiceTests
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
-        var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Index, DateTime.UtcNow);
+        var indexLock = new IndexLock(true, true, _primaryIdentity, IndexLockReason.Indexing, DateTime.UtcNow);
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveIndexerLockQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(indexLock);
 

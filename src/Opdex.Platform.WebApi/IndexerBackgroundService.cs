@@ -12,6 +12,8 @@ using Opdex.Platform.Common.Configurations;
 using Opdex.Platform.Domain.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
+using Opdex.Platform.Common.Exceptions;
 
 namespace Opdex.Platform.WebApi;
 
@@ -53,10 +55,8 @@ public class IndexerBackgroundService : BackgroundService
                 {
                     if (started)
                     {
-                        // delay 30 seconds when indexing services are unavailable
-                        // delay 8 to 12 seconds when indexing is available
-                        var seconds = unavailable ? 30 : new Random().Next(8, 13);
-                        await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken);
+                        // delay 30 seconds when indexing services are unavailable, 5 seconds otherwise
+                        await Task.Delay(TimeSpan.FromSeconds(unavailable ? 30 : 5), cancellationToken);
                     }
 
                     var indexLock = await mediator.Send(new RetrieveIndexerLockQuery(), cancellationToken);
@@ -69,14 +69,14 @@ public class IndexerBackgroundService : BackgroundService
 
                     if (indexLock.Locked)
                     {
-                        var isSameInstanceReprocessing = indexLock.Reason == IndexLockReason.Index &&
+                        var isSameInstanceReprocessing = indexLock.Reason == IndexLockReason.Indexing &&
                                                          indexLock.InstanceId == _opdexConfiguration.InstanceId;
 
                         var totalSecondsLocked = DateTime.UtcNow.Subtract(indexLock.ModifiedDate).TotalSeconds;
 
                         if (!isSameInstanceReprocessing)
                         {
-                            using (_logger.BeginScope(new Dictionary<string, object>()
+                            using (_logger.BeginScope(new Dictionary<string, object>
                                    {
                                        {"TotalSecondsLocked", totalSecondsLocked}
                                    }))
@@ -87,7 +87,7 @@ public class IndexerBackgroundService : BackgroundService
                             continue;
                         }
 
-                        using (_logger.BeginScope(new Dictionary<string, object>()
+                        using (_logger.BeginScope(new Dictionary<string, object>
                                {
                                    { "TotalSecondsLocked", totalSecondsLocked },
                                    { "LockedReason", indexLock.Reason }
@@ -101,7 +101,11 @@ public class IndexerBackgroundService : BackgroundService
                         await mediator.Send(new MakeIndexerUnlockCommand(), CancellationToken.None);
                     }
 
-                    var tryLock = await mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Index), cancellationToken);
+                    // The latest synced block we have, if we don't have any, the tip of Cirrus chain, else null
+                    var bestBlock = await mediator.Send(new GetBestBlockReceiptQuery(), cancellationToken);
+                    var lockReason = bestBlock is null ? IndexLockReason.Rewinding : IndexLockReason.Indexing;
+
+                    var tryLock = await mediator.Send(new MakeIndexerLockCommand(lockReason), cancellationToken);
                     if (!tryLock)
                     {
                         _logger.LogWarning(IndexingAlreadyRunningLog);
@@ -110,7 +114,14 @@ public class IndexerBackgroundService : BackgroundService
 
                     try
                     {
-                        await mediator.Send(new ProcessLatestBlocksCommand(_opdexConfiguration.Network), cancellationToken);
+                        if (lockReason == IndexLockReason.Rewinding)
+                        {
+                            bestBlock = await mediator.Send(new GetBlockReceiptAtChainSplitCommand(), CancellationToken.None);
+                            var rewound = await mediator.Send(new CreateRewindToBlockCommand(bestBlock.Height), CancellationToken.None);
+                            if (!rewound) throw new Exception($"Failure rewinding database to block height: {bestBlock.Height}");
+                        }
+
+                        await mediator.Send(new ProcessLatestBlocksCommand(bestBlock, _opdexConfiguration.Network), cancellationToken);
                     }
                     finally
                     {
@@ -123,6 +134,10 @@ public class IndexerBackgroundService : BackgroundService
                 {
                     // shutdown occurred
                     _logger.LogWarning("Indexing cancelled");
+                }
+                catch(MaximumReorgException ex)
+                {
+                    _logger.LogCritical("Encountered a reorg which exceeds max reorg limit");
                 }
                 catch (Exception ex)
                 {

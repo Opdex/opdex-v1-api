@@ -14,10 +14,11 @@ using Opdex.Platform.Common.Enums;
 using Opdex.Platform.WebApi.Models.Requests.Index;
 using System.Linq;
 using AutoMapper;
+using Opdex.Platform.Application.Abstractions.EntryQueries.Blocks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Indexer;
+using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models;
-using Opdex.Platform.WebApi.Models.Responses;
 using Opdex.Platform.WebApi.Models.Responses.Index;
 
 namespace Opdex.Platform.WebApi.Controllers;
@@ -69,25 +70,22 @@ public class IndexController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
     {
-        // Todo: Spike and implement separate market vs wallet in JWT. Markets are currently required, they should not be.
-        // If a new session starts, with no markets, a user cannot get authorized to hit this endpoint.
-        // var admin = await _mediator.Send(new GetAdminByAddressQuery(_context.Wallet, findOrThrow: false), cancellationToken);
-        // if (admin == null) return Unauthorized();
-
         var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
         if (markets.Any())
         {
             throw new AlreadyIndexedException("Markets already indexed.");
         }
 
-        var locked = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploy), CancellationToken.None);
+        var bestBlock = await _mediator.Send(new GetBestBlockReceiptQuery(), CancellationToken.None);
+
+        var locked = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Deploying), CancellationToken.None);
         if (!locked) throw new IndexingAlreadyRunningException();
 
         try
         {
             await _mediator.Send(new ProcessGovernanceDeploymentTransactionCommand(request.MinedTokenDeploymentHash), CancellationToken.None);
             await _mediator.Send(new ProcessCoreDeploymentTransactionCommand(request.MarketDeployerDeploymentTxHash), CancellationToken.None);
-            await _mediator.Send(new ProcessLatestBlocksCommand(_network), CancellationToken.None);
+            await _mediator.Send(new ProcessLatestBlocksCommand(bestBlock, _network), CancellationToken.None);
         }
         finally
         {
@@ -99,21 +97,25 @@ public class IndexController : ControllerBase
 
     /// <summary>Rewind to Block</summary>
     /// <param name="request">Request to rewind back to specific block.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="204">Indexer rewound.</response>
     [HttpPost("rewind")]
     [Authorize(Policy = "AdminOnly")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult> Rewind(RewindRequest request)
+    public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
     {
-        var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewind), CancellationToken.None);
+        var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewinding), CancellationToken.None);
         if (!tryLock) throw new IndexingAlreadyRunningException();
 
         try
         {
             var rewound = await _mediator.Send(new CreateRewindToBlockCommand(request.Block), CancellationToken.None);
-            if (!rewound) throw new Exception("Indexer rewind unexpectedly failed.");
+            if (!rewound) throw new Exception($"Failure rewinding database to block height: {request.Block}");
+            var block = await _mediator.Send(new RetrieveBlockByHeightQuery(request.Block), cancellationToken);
+            var rewindBlock = await _mediator.Send(new RetrieveCirrusBlockReceiptByHashQuery(block.Hash), cancellationToken);
+            await _mediator.Send(new ProcessLatestBlocksCommand(rewindBlock, _network), CancellationToken.None);
         }
         finally
         {
