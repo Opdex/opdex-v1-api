@@ -9,6 +9,8 @@ info:
   license:
     name: MIT
     url: https://github.com/Opdex/opdex-v1-api/blob/main/LICENSE
+servers:
+  - url: https://test-api.opdex.com
 tags:
   - name: Authentication
     description: Authenticate with the API
@@ -140,6 +142,8 @@ paths:
           schema:
             type: integer
             format: int64
+            minimum: 0
+            maximum: 273402300799
           example: 1641220000
       requestBody:
         description: The Stratis Signature Auth body
