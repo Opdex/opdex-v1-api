@@ -18,21 +18,23 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Pledges;
 
 public class SelectVaultProposalPledgesWithFilterQueryHandler : IRequestHandler<SelectVaultProposalPledgesWithFilterQuery, IEnumerable<VaultProposalPledge>>
 {
+    private const string TableJoins = "{TableJoins}";
     private const string WhereFilter = "{WhereFilter}";
     private const string OrderBy = "{OrderBy}";
     private const string Limit = "{Limit}";
 
     private static readonly string SqlQuery =
         @$"SELECT
-                {nameof(VaultProposalPledgeEntity.Id)},
-                {nameof(VaultProposalPledgeEntity.VaultGovernanceId)},
-                {nameof(VaultProposalPledgeEntity.ProposalId)},
-                {nameof(VaultProposalPledgeEntity.Pledger)},
-                {nameof(VaultProposalPledgeEntity.Pledge)},
-                {nameof(VaultProposalPledgeEntity.Balance)},
-                {nameof(VaultProposalPledgeEntity.CreatedBlock)},
-                {nameof(VaultProposalPledgeEntity.ModifiedBlock)}
-            FROM vault_proposal_pledge
+                p.{nameof(VaultProposalPledgeEntity.Id)},
+                p.{nameof(VaultProposalPledgeEntity.VaultGovernanceId)},
+                p.{nameof(VaultProposalPledgeEntity.ProposalId)},
+                p.{nameof(VaultProposalPledgeEntity.Pledger)},
+                p.{nameof(VaultProposalPledgeEntity.Pledge)},
+                p.{nameof(VaultProposalPledgeEntity.Balance)},
+                p.{nameof(VaultProposalPledgeEntity.CreatedBlock)},
+                p.{nameof(VaultProposalPledgeEntity.ModifiedBlock)}
+            FROM vault_proposal_pledge p
+            {TableJoins}
             {WhereFilter}
             {OrderBy}
             {Limit}".RemoveExcessWhitespace();
@@ -68,6 +70,7 @@ public class SelectVaultProposalPledgesWithFilterQueryHandler : IRequestHandler<
     private static string QueryBuilder(SelectVaultProposalPledgesWithFilterQuery request)
     {
         var whereFilterBuilder = new StringBuilder();
+        var joinsBuilder = new StringBuilder();
 
         var filterOnProposal = request.Cursor.ProposalId != 0;
         var filterOnPledger = request.Cursor.Pledger != Address.Empty;
@@ -92,21 +95,22 @@ public class SelectVaultProposalPledgesWithFilterQueryHandler : IRequestHandler<
         }
 
         whereFilterBuilder.Append(whereFilterBuilder.Length == 0 ? " WHERE" : " AND");
-        whereFilterBuilder.Append($" {nameof(VaultProposalPledgeEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}");
+        whereFilterBuilder.Append($" p.{nameof(VaultProposalPledgeEntity.VaultGovernanceId)} = @{nameof(SqlParams.VaultId)}");
 
         if (filterOnProposal)
         {
-            whereFilterBuilder.Append($" AND {nameof(VaultProposalPledgeEntity.ProposalId)} = @{nameof(SqlParams.ProposalId)}");
+            joinsBuilder.Append($" LEFT JOIN vault_proposal vp ON vp.{nameof(VaultProposalEntity.Id)} = p.{nameof(VaultProposalPledgeEntity.ProposalId)}");
+            whereFilterBuilder.Append($" AND vp.{nameof(VaultProposalEntity.PublicId)} = @{nameof(SqlParams.ProposalId)}");
         }
 
         if (filterOnPledger)
         {
-            whereFilterBuilder.Append($" AND {nameof(VaultProposalPledgeEntity.Pledger)} = @{nameof(SqlParams.Pledger)}");
+            whereFilterBuilder.Append($" AND p.{nameof(VaultProposalPledgeEntity.Pledger)} = @{nameof(SqlParams.Pledger)}");
         }
 
         if (!request.Cursor.IncludeZeroBalances)
         {
-            whereFilterBuilder.Append($" AND {nameof(VaultProposalPledgeEntity.Balance)} > 0");
+            whereFilterBuilder.Append($" AND p.{nameof(VaultProposalPledgeEntity.Balance)} > 0");
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -121,17 +125,19 @@ public class SelectVaultProposalPledgesWithFilterQueryHandler : IRequestHandler<
             direction = Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection);
         }
 
-        var orderBy = $" ORDER BY {nameof(VaultProposalPledgeEntity.Id)} {direction}";
+        var orderBy = $" ORDER BY p.{nameof(VaultProposalPledgeEntity.Id)} {direction}";
 
         var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
-        var query = SqlQuery.Replace(WhereFilter, whereFilterBuilder.ToString())
+        var query = SqlQuery.Replace(TableJoins, joinsBuilder.ToString())
+                            .Replace(WhereFilter, whereFilterBuilder.ToString())
                             .Replace(OrderBy, orderBy)
                             .Replace(Limit, limit);
 
         if (request.Cursor.PagingDirection == PagingDirection.Forward) return $"{query};";
         // re-sort back into requested order
-        else return PagingBackwardQuery.Replace(InnerQuery, query)
+
+        return PagingBackwardQuery.Replace(InnerQuery, query)
             .Replace(SortDirection, Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection));
     }
 
