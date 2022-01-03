@@ -46,6 +46,13 @@ components:
   responses:
     TooManyRequests:
       description: Too many requests
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 0
+            example: 30
+          description: Indicates how many seconds to wait before making a follow-up request
       content:
         application/problem+json:
           schema:
@@ -53,6 +60,7 @@ components:
           example:
             type: https://httpstatuses.com/429
             title: Too many requests.
+            detail: "Quota exceeded. Maximum allowed: 500 per 60s. Please try again in 30 second(s)."
             status: 429
             extensions:
               traceId: 00-00000000000000000000000000000000-0000000000000000-00
@@ -109,16 +117,10 @@ components:
               description: Contains invalid properties and associated error messages
     address:
       type: string
-      description: An address on the blockchain network
+      description: An address on the Cirrus network
       minLength: 30
       maxLength: 42
       pattern: ^[a-km-zA-HJ-NP-Z1-9]$
-    crs:
-      type: string
-      title: CRS
-      description: Defines a parameter for the CRS token
-      enum:
-        - CRS
 paths:
   /auth:
     post:
