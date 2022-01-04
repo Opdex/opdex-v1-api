@@ -138,6 +138,7 @@ public static class TransactionErrors
         private const string ExcessiveAmount = "EXCESSIVE_AMOUNT";
         private const string InvalidDescription = "INVALID_DESCRIPTION";
         private const string NotPayable = "NOT_PAYABLE";
+        private const string InsufficientDeposit = "INSUFFICIENT_DEPOSIT";
         private const string InsufficientWithdrawAmount = "INSUFFICIENT_WITHDRAW_AMOUNT";
         private const string InsufficientFunds = "INSUFFICIENT_FUNDS";
 
@@ -517,25 +518,25 @@ public static class TransactionErrors
                 (VaultClaimPendingOwnership, Unauthorized) => "Unable to claim vault ownership, unauthorized.",
 
                 // --- Vault Governance ---
-                (VaultCreateNewCertificateProposal, NotPayable) => "Unable to create new certificate proposal, message value expected to be zero.",
+                (VaultCreateNewCertificateProposal, InsufficientDeposit) => "Unable to create new certificate proposal, proposal deposit is required.",
                 (VaultCreateNewCertificateProposal, InvalidDescription) => "Unable to create new certificate proposal, invalid description.",
                 (VaultCreateNewCertificateProposal, InvalidAmount) => "Unable to create new certificate proposal, amount must be greater than zero.",
                 (VaultCreateNewCertificateProposal, CertificateExists) => "Unable to create new certificate proposal, recipient already has a certificate.",
                 (VaultCreateNewCertificateProposal, InsufficientVaultSupply) => "Unable to create new certificate proposal, requested value exceeds available vault supply.",
                 (VaultCreateNewCertificateProposal, RecipientProposalInProgress) => "Unable to create new certificate proposal, recipient already has an active proposal.",
 
-                (VaultCreateRevokeCertificateProposal, NotPayable) => "Unable to create revoke certificate proposal, message value expected to be zero.",
+                (VaultCreateRevokeCertificateProposal, InsufficientDeposit) => "Unable to create revoke certificate proposal, proposal deposit is required.",
                 (VaultCreateRevokeCertificateProposal, InvalidDescription) => "Unable to create revoke certificate proposal, invalid description.",
                 (VaultCreateRevokeCertificateProposal, InvalidAmount) => "Unable to create revoke certificate proposal, amount must be greater than zero.",
                 (VaultCreateRevokeCertificateProposal, InvalidCertificate) => "Unable to create revoke certificate proposal, certificate cannot be revoked.",
                 (VaultCreateRevokeCertificateProposal, RecipientProposalInProgress) => "Unable to create revoke certificate proposal, recipient already has an active proposal.",
 
-                (VaultCreateTotalPledgeMinimumProposal, NotPayable) => "Unable to create total pledge minimum proposal, message value expected to be zero.",
+                (VaultCreateTotalPledgeMinimumProposal, InsufficientDeposit) => "Unable to create total pledge minimum proposal, proposal deposit is required.",
                 (VaultCreateTotalPledgeMinimumProposal, InvalidDescription) => "Unable to create total pledge minimum proposal, invalid description.",
                 (VaultCreateTotalPledgeMinimumProposal, InvalidAmount) => "Unable to create total pledge minimum proposal, amount must be greater than zero.",
                 (VaultCreateTotalPledgeMinimumProposal, ExcessiveAmount) => "Unable to create total pledge minimum proposal, proposed amount too high.",
 
-                (VaultCreateTotalVoteMinimumProposal, NotPayable) => "Unable to create total vote minimum proposal, message value expected to be zero.",
+                (VaultCreateTotalVoteMinimumProposal, InsufficientDeposit) => "Unable to create total vote minimum proposal, proposal deposit is required.",
                 (VaultCreateTotalVoteMinimumProposal, InvalidDescription) => "Unable to create total vote minimum proposal, invalid description.",
                 (VaultCreateTotalVoteMinimumProposal, InvalidAmount) => "Unable to create total vote minimum proposal, amount must be greater than zero.",
                 (VaultCreateTotalVoteMinimumProposal, ExcessiveAmount) => "Unable to create total vote minimum proposal, proposed amount too high.",
