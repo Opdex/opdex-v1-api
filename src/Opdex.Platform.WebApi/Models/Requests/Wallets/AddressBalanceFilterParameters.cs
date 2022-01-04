@@ -1,4 +1,3 @@
-using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -20,7 +19,6 @@ public sealed class AddressBalanceFilterParameters : FilterParameters<AddressBal
     /// Specific tokens to lookup.
     /// </summary>
     /// <example>[ "tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3", "tPXUEzDyZDrR8YzQ6LiAJWhVuAKB8RUjyt" ]</example>
-    [NotNull]
     public IEnumerable<Address> Tokens { get; set; }
 
     /// <summary>

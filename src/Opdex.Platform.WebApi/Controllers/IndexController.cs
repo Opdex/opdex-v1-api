@@ -64,10 +64,6 @@ public class IndexController : ControllerBase
     /// <response code="403">You don't have permission to carry out this request.</response>
     [HttpPost("resync-from-deployment")]
     [Authorize(Policy = "AdminOnly")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ResyncFromDeployment(ResyncFromDeploymentRequest request, CancellationToken cancellationToken)
     {
         var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
@@ -101,9 +97,6 @@ public class IndexController : ControllerBase
     /// <response code="204">Indexer rewound.</response>
     [HttpPost("rewind")]
     [Authorize(Policy = "AdminOnly")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> Rewind(RewindRequest request, CancellationToken cancellationToken)
     {
         var tryLock = await _mediator.Send(new MakeIndexerLockCommand(IndexLockReason.Rewinding), CancellationToken.None);

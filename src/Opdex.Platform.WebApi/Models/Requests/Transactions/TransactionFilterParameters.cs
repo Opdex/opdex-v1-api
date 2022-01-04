@@ -1,4 +1,3 @@
-using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
@@ -26,14 +25,12 @@ public sealed class TransactionFilterParameters : FilterParameters<TransactionsC
     /// Optional list of smart contract addresses to filter transactions by.
     /// </summary>
     /// <example>[ "tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i" ]</example>
-    [NotNull]
     public IEnumerable<Address> Contracts { get; set; }
 
     /// <summary>
     /// Filter transactions based on event types included.
     /// </summary>
     /// <example>[ "CreateVaultCertificateEvent", "RevokeVaultCertificateEvent", "RedeemVaultCertificateEvent" ]</example>
-    [NotNull]
     public IEnumerable<TransactionEventType> EventTypes { get; set; }
 
     protected override TransactionsCursor InternalBuildCursor()

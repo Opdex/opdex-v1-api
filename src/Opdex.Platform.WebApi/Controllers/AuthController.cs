@@ -5,11 +5,8 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Opdex.Platform.WebApi.Auth;
-using System.Net;
 using Opdex.Platform.Common.Models;
 using System.Threading;
-using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Admins;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
@@ -54,8 +51,6 @@ public class AuthController : ControllerBase
     /// <response code="204">Signature was validated successfully.</response>
     /// <response code="400">The request is not valid.</response>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> StratisSignatureAuthCallback([FromQuery] StratisSignatureAuthCallbackQuery query,
                                                                   [FromBody] StratisSignatureAuthCallbackBody body, CancellationToken cancellationToken)
     {
@@ -107,9 +102,6 @@ public class AuthController : ControllerBase
     /// <param name="wallet">The wallet public key of the user</param>
     /// <returns>An access token</returns>
     [HttpPost("authorize")]
-    [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     public IActionResult Authorize([FromQuery] Address wallet)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.Opdex.SigningKey));

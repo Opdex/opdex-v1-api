@@ -43,8 +43,6 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns><see cref="MarketTokensResponseModel"/> results response with pagination.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(MarketTokensResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<MarketTokensResponseModel>> GetMarketTokens([FromRoute] Address marketAddress,
                                                                                [FromQuery] TokenFilterParameters filters,
                                                                                CancellationToken cancellationToken)
@@ -63,9 +61,6 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">cancellation token.</param>
     /// <returns>A market token response.</returns>
     [HttpGet("{tokenAddress}")]
-    [ProducesResponseType(typeof(MarketTokenResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MarketTokenResponseModel>> GetMarketToken([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
                                                                              CancellationToken cancellationToken)
     {
@@ -85,10 +80,6 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Paged market snapshot data for the given token.</returns>
     [HttpGet("{tokenAddress}/history")]
-    [ProducesResponseType(typeof(MarketTokenSnapshotsResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MarketTokenSnapshotsResponseModel>> GetMarketTokenHistory([FromRoute] Address marketAddress,
                                                                                              [FromRoute] Address tokenAddress,
                                                                                              [FromQuery] SnapshotFilterParameters filters,
@@ -110,9 +101,6 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A token swap transaction quote.</returns>
     [HttpPost("{tokenAddress}/swap")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> Swap([FromRoute] Address marketAddress, [FromRoute] Address tokenAddress,
                                                                         [FromBody] SwapRequest request, CancellationToken cancellationToken)
     {
@@ -134,9 +122,6 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The amount of tokens to be input.</returns>
     [HttpPost("{tokenIn}/swap/amount-in")]
-    [ProducesResponseType(typeof(SwapAmountInQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SwapAmountInQuoteResponseModel>> SwapAmountIn([FromRoute] Address marketAddress,
                                                                                  [FromRoute] Address tokenIn,
                                                                                  [FromBody] SwapAmountInQuoteRequestModel request,
@@ -157,9 +142,6 @@ public class MarketTokensController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The amount of tokens to be output.</returns>
     [HttpPost("{tokenOut}/swap/amount-out")]
-    [ProducesResponseType(typeof(SwapAmountOutQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SwapAmountOutQuoteResponseModel>> SwapAmountOut([FromRoute] Address marketAddress,
                                                                                    [FromRoute] Address tokenOut,
                                                                                    [FromBody] SwapAmountOutQuoteRequestModel request,

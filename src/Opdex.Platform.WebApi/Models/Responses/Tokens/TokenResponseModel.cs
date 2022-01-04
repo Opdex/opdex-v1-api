@@ -1,4 +1,3 @@
-using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,28 +12,24 @@ public class TokenResponseModel
     /// Address of the token.
     /// </summary>
     /// <example>tFPedNjm3q8N9HD7wSVTNK5Kvw96332P1o</example>
-    [NotNull]
     public Address Address { get; set; }
 
     /// <summary>
     /// Name of the token.
     /// </summary>
     /// <example>Opdex Fan Token</example>
-    [NotNull]
     public string Name { get; set; }
 
     /// <summary>
     /// Ticker symbol for the token.
     /// </summary>
     /// <example>OFT</example>
-    [NotNull]
     public string Symbol { get; set; }
 
     /// <summary>
     /// The total number of decimal places the token has.
     /// </summary>
     /// <example>8</example>
-    [NotNull]
     [Range(0, double.MaxValue)]
     public int Decimals { get; set; }
 
@@ -42,7 +37,6 @@ public class TokenResponseModel
     /// The total number of satoshis per full token.
     /// </summary>
     /// <example>100000000</example>
-    [NotNull]
     [Range(0, double.MaxValue)]
     public ulong Sats { get; set; }
 
@@ -50,7 +44,6 @@ public class TokenResponseModel
     /// The total supply of the token as stored in contract.
     /// </summary>
     /// <example>"2100000000000000"</example>
-    [NotNull]
     public FixedDecimal TotalSupply { get; set; }
 
     /// <summary>

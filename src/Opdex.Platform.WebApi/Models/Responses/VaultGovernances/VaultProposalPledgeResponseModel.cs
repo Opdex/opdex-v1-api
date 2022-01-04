@@ -1,4 +1,3 @@
-using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,14 +12,12 @@ public class VaultProposalPledgeResponseModel
     /// Address of the vault.
     /// </summary>
     /// <example>tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i</example>
-    [NotNull]
     public Address Vault { get; set; }
 
     /// <summary>
     /// Id of the proposal stored by the vault.
     /// </summary>
     /// <example>5</example>
-    [NotNull]
     [Range(1, double.MaxValue)]
     public ulong ProposalId { get; set; }
 
@@ -28,7 +25,6 @@ public class VaultProposalPledgeResponseModel
     /// Address of the pledger.
     /// </summary>
     /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
-    [NotNull]
     public Address Pledger { get; set; }
 
     /// <summary>

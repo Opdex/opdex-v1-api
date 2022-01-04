@@ -38,9 +38,6 @@ public class MiningGovernancesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Mining miningGovernance results with paging.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(MiningGovernancesResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<MiningGovernancesResponseModel>> GetMiningGovernances([FromQuery] MiningGovernanceFilterParameters filters,
                                                                                          CancellationToken cancellationToken)
     {
@@ -55,10 +52,6 @@ public class MiningGovernancesController : ControllerBase
     /// <returns><see cref="MiningGovernanceResponseModel"/> summary</returns>
     /// <response code="404">Mining governance contract not found.</response>
     [HttpGet("{address}")]
-    [ProducesResponseType(typeof(MiningGovernanceResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MiningGovernanceResponseModel>> GetMiningGovernance([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var miningGovernanceDto = await _mediator.Send(new GetMiningGovernanceByAddressQuery(address), cancellationToken);
@@ -76,10 +69,6 @@ public class MiningGovernancesController : ControllerBase
     /// <returns>Quote a stop staking transaction.</returns>
     /// <response code="404">Mining governance contract not found.</response>
     [HttpPost("{address}/reward-mining-pools")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RewardMiningPools([FromRoute] Address address,
                                                        [FromBody] RewardMiningPoolsRequest request,
                                                        CancellationToken cancellationToken)

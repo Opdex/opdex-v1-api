@@ -22,7 +22,6 @@ namespace Opdex.Platform.WebApi.Controllers;
 [ApiController]
 [Authorize]
 [Route("liquidity-pools")]
-[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
 public class LiquidityPoolsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -45,9 +44,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="400">The request is not valid.</response>
     /// <response code="401">Unauthorized.</response>
     [HttpGet]
-    [ProducesResponseType(typeof(LiquidityPoolsResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<LiquidityPoolsResponseModel>> LiquidityPools([FromQuery] LiquidityPoolFilterParameters filters,
                                                                                 CancellationToken cancellationToken)
     {
@@ -91,10 +87,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
     [HttpGet("{address}")]
-    [ProducesResponseType(typeof(LiquidityPoolResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<LiquidityPoolResponseModel>> LiquidityPool([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetLiquidityPoolByAddressQuery(address), cancellationToken);
@@ -117,10 +109,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
     [HttpGet("{address}/history")]
-    [ProducesResponseType(typeof(LiquidityPoolSnapshotsResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<LiquidityPoolSnapshotsResponseModel>> GetLiquidityPoolHistory([FromRoute] Address address,
                                                                                                  [FromQuery] SnapshotFilterParameters filters,
                                                                                                  CancellationToken cancellationToken)
@@ -143,10 +131,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{address}/add")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> AddLiquidityQuote([FromRoute] Address address, [FromBody] AddLiquidityQuoteRequest request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateAddLiquidityTransactionQuoteCommand(address, _context.Wallet, request.AmountCrs, request.AmountSrc,
@@ -169,10 +153,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{address}/add/amount-in")]
-    [ProducesResponseType(typeof(AddLiquidityAmountInQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AddLiquidityAmountInQuoteResponseModel>> LiquidityAmountInQuote([FromRoute] Address address,
                                                                                                    [FromBody] CalculateAddLiquidityAmountsRequestModel request,
                                                                                                    CancellationToken cancellationToken)
@@ -197,10 +177,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{address}/remove")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> RemoveLiquidityQuote([FromRoute] Address address, [FromBody] RemoveLiquidityQuoteRequest request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateRemoveLiquidityTransactionQuoteCommand(address, _context.Wallet, request.Liquidity, request.AmountCrsMin,
@@ -221,10 +197,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{address}/sync")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SyncQuote([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateSyncTransactionQuoteCommand(address, _context.Wallet), cancellationToken);
@@ -245,10 +217,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{address}/skim")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SkimQuote([FromRoute] Address address, [FromBody] SkimQuoteRequest request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateSkimTransactionQuoteCommand(address, _context.Wallet, request.Recipient), cancellationToken);
@@ -269,10 +237,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{address}/staking/start")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StartStakingQuote([FromRoute] Address address, [FromBody] StartStakingQuoteRequest request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateStartStakingTransactionQuoteCommand(address, _context.Wallet, request.Amount), cancellationToken);
@@ -293,10 +257,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{address}/staking/stop")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StopStakingQuote([FromRoute] Address address, [FromBody] StopStakingQuoteRequest request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateStopStakingTransactionQuoteCommand(address, _context.Wallet, request.Amount, request.Liquidate), cancellationToken);
@@ -317,10 +277,6 @@ public class LiquidityPoolsController : ControllerBase
     /// <response code="401">Unauthorized.</response>
     /// <response code="404">Liquidity pool not found.</response>
     [HttpPost("{address}/staking/collect")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CollectStakingRewardsQuote([FromRoute] Address address, [FromBody] CollectStakingRewardsQuoteRequest request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateCollectStakingRewardsTransactionQuoteCommand(address, _context.Wallet, request.Liquidate), cancellationToken);

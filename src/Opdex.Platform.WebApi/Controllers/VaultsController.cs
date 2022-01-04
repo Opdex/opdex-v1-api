@@ -40,9 +40,6 @@ public class VaultsController : ControllerBase
     /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>Vaults paging results.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(VaultsResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<VaultsResponseModel>> GetVaults([FromQuery] VaultFilterParameters filters,
                                                                    CancellationToken cancellationToken)
     {
@@ -57,10 +54,6 @@ public class VaultsController : ControllerBase
     /// <returns>Vault details</returns>
     /// <response code="404">The vault does not exist.</response>
     [HttpGet("{address}")]
-    [ProducesResponseType(typeof(VaultResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<VaultResponseModel>> GetVaultByAddress([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var vault = await _mediator.Send(new GetVaultByAddressQuery(address), cancellationToken);
@@ -75,10 +68,6 @@ public class VaultsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     /// <response code="404">The vault does not exist.</response>
     [HttpPost("{address}/set-ownership")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> SetOwnerQuote([FromRoute] Address address,
                                                                                  SetVaultOwnerQuoteRequest request,
                                                                                  CancellationToken cancellationToken)
@@ -98,10 +87,6 @@ public class VaultsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     /// <response code="404">The vault does not exist.</response>
     [HttpPost("{address}/claim-ownership")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> ClaimOwnershipQuote([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateClaimPendingVaultOwnershipTransactionQuoteCommand(address, _context.Wallet),
@@ -120,10 +105,6 @@ public class VaultsController : ControllerBase
     /// <returns>Vault certificates</returns>
     /// <response code="404">The vault does not exist.</response>
     [HttpGet("{address}/certificates")]
-    [ProducesResponseType(typeof(VaultCertificatesResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<VaultCertificatesResponseModel>> GetVaultCertificates([FromRoute] Address address,
                                                                                          [FromQuery] VaultCertificateFilterParameters filters,
                                                                                          CancellationToken cancellationToken)
@@ -140,10 +121,6 @@ public class VaultsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     /// <response code="404">The vault does not exist.</response>
     [HttpPost("{address}/certificates")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CreateCertificateQuote([FromRoute] Address address,
                                                                                           CreateVaultCertificateQuoteRequest request,
                                                                                           CancellationToken cancellationToken)
@@ -163,10 +140,6 @@ public class VaultsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     /// <response code="404">The vault does not exist.</response>
     [HttpPost("{address}/certificates/redeem")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> RedeemCertificatesQuote([FromRoute] Address address,
                                                                                            CancellationToken cancellationToken)
     {
@@ -185,10 +158,6 @@ public class VaultsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     /// <response code="404">The vault does not exist.</response>
     [HttpPost("{address}/certificates/revoke")]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> RevokeCertificatesQuote([FromRoute] Address address,
                                                                                            RevokeVaultCertificatesQuoteRequest request,
                                                                                            CancellationToken cancellationToken)

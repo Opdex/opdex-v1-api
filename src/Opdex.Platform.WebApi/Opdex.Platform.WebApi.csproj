@@ -2,9 +2,8 @@
 
     <PropertyGroup>
       <TargetFramework>net6.0</TargetFramework>
-      <GenerateDocumentationFile>true</GenerateDocumentationFile>
-      <NoWarn>$(NoWarn);1591</NoWarn>
       <UserSecretsId>432e3a90-205c-4086-bc58-0bf8d6a3ff75</UserSecretsId>
+      <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
 
     <ItemGroup>
@@ -22,8 +21,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
         <PackageReference Include="Microsoft.Azure.SignalR" Version="1.13.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
-        <PackageReference Include="NSwag.AspNetCore" Version="13.14.7" />
         <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
         <PackageReference Include="Serilog.Enrichers.AspNetCore.HttpContext" Version="1.0.1" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
@@ -31,7 +30,7 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.0" />
         <PackageReference Include="SSAS.NET" Version="1.0.0-beta.5" />
-        <PackageReference Include="ZymLabs.NSwag.FluentValidation" Version="0.5.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>
@@ -42,11 +41,9 @@
       <ProjectReference Include="..\Opdex.Platform.Application\Opdex.Platform.Application.csproj" />
       <ProjectReference Include="..\Opdex.Platform.Infrastructure\Opdex.Platform.Infrastructure.csproj" />
     </ItemGroup>
-    
-    <Target Name="_ResolveCopyLocalNuGetPkgXmls" AfterTargets="ResolveReferences">
-      <ItemGroup><!-- Copy XML files from all PackageReferences to output dir, used for OpenAPI definitions -->
-        <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)'!='' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
-      </ItemGroup>
-    </Target>
+
+    <ItemGroup>
+      <EmbeddedResource Include="..\..\docs\openapi.yml" />
+    </ItemGroup>
 
 </Project>

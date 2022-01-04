@@ -1,9 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools.Quotes;
 using Opdex.Platform.Application.Abstractions.EntryQueries.MiningPools;
 using Opdex.Platform.Common.Models;
@@ -11,7 +9,6 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.MiningPools;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
-using Opdex.Platform.WebApi.OpenApi.MiningPools;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,9 +37,6 @@ public class MiningPoolsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Details of mining pools with paging.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(MiningPoolsResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<MiningPoolsResponseModel>> GetMiningPools([FromQuery] MiningPoolFilterParameters filters,
                                                                              CancellationToken cancellationToken)
     {
@@ -57,11 +51,6 @@ public class MiningPoolsController : ControllerBase
     /// <returns>Mining pool details.</returns>
     /// <response code="404">Mining pool not found.</response>
     [HttpGet("{address}")]
-    [OpenApiOperationProcessor(typeof(GetMiningPoolOperationProcessor))]
-    [ProducesResponseType(typeof(MiningPoolResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MiningPoolResponseModel>> GetMiningPool([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var dto = await _mediator.Send(new GetMiningPoolByAddressQuery(address), cancellationToken);
@@ -77,11 +66,6 @@ public class MiningPoolsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     /// <response code="404">Mining pool not found.</response>
     [HttpPost("{address}/start")]
-    [OpenApiOperationProcessor(typeof(StartMiningOperationProcessor))]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StartMining([FromRoute] Address address, [FromBody] MiningQuote request,
                                                                                CancellationToken cancellationToken)
     {
@@ -100,11 +84,6 @@ public class MiningPoolsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     /// <response code="404">Mining pool not found.</response>
     [HttpPost("{address}/stop")]
-    [OpenApiOperationProcessor(typeof(StopMiningOperationProcessor))]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> StopMining([FromRoute] Address address, [FromBody] MiningQuote request,
                                                                               CancellationToken cancellationToken)
     {
@@ -122,11 +101,6 @@ public class MiningPoolsController : ControllerBase
     /// <returns><see cref="TransactionQuoteResponseModel"/> with the quoted result and the properties used to obtain the quote.</returns>
     /// <response code="404">Mining pool not found.</response>
     [HttpPost("{address}/collect")]
-    [OpenApiOperationProcessor(typeof(CollectMiningRewardsOperationProcessor))]
-    [ProducesResponseType(typeof(TransactionQuoteResponseModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TransactionQuoteResponseModel>> CollectMiningRewards([FromRoute] Address address, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CreateCollectMiningRewardsTransactionQuoteCommand(address, _context.Wallet), cancellationToken);

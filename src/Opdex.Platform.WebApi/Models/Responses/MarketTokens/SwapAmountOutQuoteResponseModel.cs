@@ -1,4 +1,3 @@
-using NJsonSchema.Annotations;
 using Opdex.Platform.Common.Models;
 
 namespace Opdex.Platform.WebApi.Models.Responses.MarketTokens;
@@ -12,6 +11,5 @@ public class SwapAmountOutQuoteResponseModel
     /// The output amount of tokens after a swap.
     /// </summary>
     /// <example>"10000.00000000"</example>
-    [NotNull]
     public FixedDecimal AmountOut { get; set; }
 }

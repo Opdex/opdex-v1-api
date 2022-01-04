@@ -58,9 +58,6 @@ public class DeployController : ControllerBase
     [HttpPost("dev-contracts")]
     [Authorize(Policy = "AdminOnly")]
     [Network(NetworkType.DEVNET)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeployDevModeEnvironment(LocalWalletCredentials request, CancellationToken cancellationToken)
     {
         var markets = await _mediator.Send(new RetrieveAllMarketsQuery(), cancellationToken);
