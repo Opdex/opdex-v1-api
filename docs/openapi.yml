@@ -44,6 +44,31 @@ components:
       bearerFormat: JWT
       description: Authorize with a bearer token obtained from SignalR
   responses:
+    MarketNotFound:
+      description: Market not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/problemDetails"
+          example:
+            type: https://httpstatuses.com/404
+            title: Not Found
+            status: 404
+            extensions:
+              traceId: 00-00000000000000000000000000000000-0000000000000000-00
+    MarketOrTokenNotFound:
+      description: Market or token not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/problemDetails"
+          example:
+            type: https://httpstatuses.com/404
+            title: Not Found
+            detail: Token not found.
+            status: 404
+            extensions:
+              traceId: 00-00000000000000000000000000000000-0000000000000000-00
     TooManyRequests:
       description: Too many requests
       headers:
@@ -59,7 +84,7 @@ components:
             $ref: "#/components/schemas/problemDetails"
           example:
             type: https://httpstatuses.com/429
-            title: Too many requests.
+            title: Too Many Requests
             detail: "Quota exceeded. Maximum allowed: 500 per 60s. Please try again in 30 second(s)."
             status: 429
             extensions:
@@ -72,7 +97,7 @@ components:
             $ref: "#/components/schemas/problemDetails"
           example:
             type: https://httpstatuses.com/500
-            title: Unexpected error occurred.
+            title: Internal Server Error
             status: 500
             extensions:
               traceId: 00-00000000000000000000000000000000-0000000000000000-00
@@ -121,6 +146,361 @@ components:
       minLength: 30
       maxLength: 42
       pattern: ^[a-km-zA-HJ-NP-Z1-9]$
+    crs:
+      type: string
+      enum:
+        - CRS
+      title: CRS
+    fixedDecimal:
+      type: string
+      description: Decimal value with uncapped precision and size
+      pattern: ^\d*\.\d{1,18}$
+    tokenOrderByType:
+      type: string
+      description: Property to sort tokens by
+      enum:
+        - Name
+        - Symbol
+        - DailyPriceChangePercent
+        - PriceUsd
+    tokenType:
+      type: string
+      description: Token type filter
+      enum:
+        - All
+        - Provisional
+        - NonProvisional
+    interval:
+      type: string
+      description: Snapshot step interval
+      enum:
+        - 1H
+        - 1D
+    sortDirection:
+      type: string
+      description: Sort order
+      enum:
+        - ASC
+        - DESC
+    transactionEventType:
+      type: string
+      description: Opdex event type identifier
+      enum:
+        - CreateMarketEvent
+        - SetPendingDeployerOwnershipEvent
+        - ClaimPendingDeployerOwnershipEvent
+        - CreateLiquidityPoolEvent
+        - SetPendingMarketOwnershipEvent
+        - ClaimPendingMarketOwnershipEvent
+        - ChangeMarketPermissionEvent
+        - AddLiquidityEvent
+        - RemoveLiquidityEvent
+        - SwapEvent
+        - StartStakingEvent
+        - StopStakingEvent
+        - CollectStakingRewardsEvent
+        - StartMiningEvent
+        - StopMiningEvent
+        - CollectMiningRewardsEvent
+        - EnableMiningEvent
+        - ApprovalEvent
+        - TransferEvent
+        - DistributionEvent
+        - RewardMiningPoolEvent
+        - NominationEvent
+        - CreateVaultCertificateEvent
+        - RevokeVaultCertificateEvent
+        - RedeemVaultCertificateEvent
+        - SetPendingVaultOwnershipEvent
+        - ClaimPendingVaultOwnershipEvent
+        - CreateVaultProposalEvent
+        - CompleteVaultProposalEvent
+        - VaultProposalPledgeEvent
+        - VaultProposalWithdrawPledgeEvent
+        - VaultProposalVoteEvent
+        - VaultProposalWithdrawVoteEvent
+    transferEvent:
+      type: object
+      description: Indicates a transfer happened
+      properties:
+        from:
+          $ref: "#/components/schemas/address"
+          description: Address tokens were transferred from
+        to:
+          $ref: "#/components/schemas/address"
+          description: Address tokens were transferred to
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Token amount transferred
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the contract performing the transfer
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    swapEvent:
+      type: object
+      description: Indicates a token swap happened
+      properties:
+        sender:
+          $ref: "#/components/schemas/address"
+          description: Address of the market router
+        to:
+          $ref: "#/components/schemas/address"
+          description: Address tokens were transferred to
+        amountCrsIn:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS tokens input
+        amountSrcIn:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of SRC tokens input
+        amountCrsOut:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS tokens output
+        amountSrcOut:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of SRC tokens output
+        srcToken:
+          $ref: "#/components/schemas/address"
+          description: Address of the token swapped
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the liquidity pool
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    quoteSwapTransactionRequest:
+      type: object
+      description: Request to retrieve a token swap call quote
+      required:
+        - tokenOut
+        - tokenInAmount
+        - tokenOutAmount
+        - tokenInExactAmount
+        - tokenInMaximumAmount
+        - tokenOutMinimumAmount
+        - recipient
+      properties:
+        tokenOut:
+          oneOf:
+            - $ref: "#/components/schemas/address"
+            - $ref: "#/components/schemas/crs"
+          description: Address of the output token
+        tokenInAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens to input
+        tokenOutAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens expected to receive
+        tokenInExactAmount:
+          type: boolean
+          description: Token in amount is exact when true, otherwise token out amount is exact
+        tokenInMaximumAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Maximum amount of tokens willing to input
+        tokenOutMinimumAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Minimum amount of tokens acceptable to receive
+        recipient:
+          $ref: "#/components/schemas/address"
+          description: Receipient of the swapped tokens
+        deadline:
+          type: number
+          description: Block height the transaction should be mined at, which if not met causes the transaction to fail
+          minimum: 0
+    swapAmountInQuoteRequest:
+      type: object
+      description: Request to quote the expected amount of input tokens, to receive a desired output
+      required:
+        - tokenOut
+        - tokenOutAmount
+      properties:
+        tokenOut:
+          oneOf:
+            - $ref: "#/components/schemas/address"
+            - $ref: "#/components/schemas/crs"
+          description: Address of the output token
+        tokenOutAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens desired to receive
+    swapAmountOutQuoteRequest:
+      type: object
+      description: Request to quote the expected amount of output tokens, given a specific input
+      required:
+        - tokenIn
+        - tokenInAmount
+      properties:
+        tokenIn:
+          oneOf:
+            - $ref: "#/components/schemas/address"
+            - $ref: "#/components/schemas/crs"
+          description: Address of the input token
+        tokenInAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens to input
+    marketTokensResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/marketTokenResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    marketTokenResponse:
+      type: object
+      description: Details of a token within a market
+      properties:
+        market:
+          $ref: "#/components/schemas/address"
+          description: Address of the market
+        liquidityPool:
+          $ref: "#/components/schemas/address"
+          description: Address of the liquidity pool
+        address:
+          $ref: "#/components/schemas/address"
+          description: Address of the token
+        name:
+          type: string
+          description: Name of the token
+        symbol:
+          type: string
+          description: Token ticker symbol
+        decimals:
+          type: integer
+          format: int32
+          description: Number of decimals of precision for token values
+          minimum: 0
+        sats:
+          type: number
+          description: Number of parts which make up one whole token
+          minimum: 1
+        totalSupply:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total supply for the entire token
+        summary:
+          $ref: "#/components/schemas/tokenSummaryResponse"
+    tokenSummaryResponse:
+      type: object
+      description: Point in time pricing summary for a token
+      properties:
+        priceUsd:
+          type: number
+          description: USD token price
+          minimum: 0.00
+        dailyPriceChangePercent:
+          type: number
+          description: Price change percentage for the current day, reset at 00:00 UTC
+        modifiedBlock:
+          type: integer
+          description: Block number at which price was last updated
+          minimum: 1
+    tokenSnapshotsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/tokenSnapshotResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    tokenSnapshotResponse:
+      type: object
+      description: Interval pricing snapshot for a token
+      properties:
+        price:
+          $ref: "#/components/schemas/ohlcDecimalResponse"
+          description: Pricing details
+        timestamp:
+          type: string
+          format: date-time
+          description: Start time of the snapshot
+    ohlcDecimalResponse:
+      type: object
+      description: Open, high, low, close values within a time interval
+      properties:
+        open:
+          type: number
+          description: Value at the start of the time interval
+          minimum: 0.00
+        high:
+          type: number
+          description: Highest value during the time interval
+          minimum: 0.00
+        low:
+          type: number
+          description: Lowest value during the time interval
+          minimum: 0.00
+        close:
+          type: number
+          description: Value at the end of the time interval
+          minimum: 0.00
+    pagingResponse:
+      type: object
+      description: Paging cursors
+      properties:
+        next:
+          type: string
+          description: Cursor referencing the next page
+        previous:
+          type: string
+          description: Cursor referencing the previous page
+    transactionQuoteResponse:
+      type: object
+      description: Quote for submitting a smart contract transaction
+      properties:
+        result:
+          description: Value which is returned by the quoted smart contract call
+        error:
+          type: string
+          description: Smart contract call error details
+        gasUsed:
+          type: integer
+          minimum: 0
+          description: Total amount of gas consumed in the quoted smart contract call
+        events:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/transferEvent"
+              - $ref: "#/components/schemas/swapEvent"
+          discriminator:
+            propertyName: eventType
+        request:
+          type: string
+          description: Encoded transaction request, which can be used to replay or broadcast the transaction
+    swapAmountInQuoteResponse:
+      type: object
+      description: Details the estimated token input required for a given swap output
+      properties:
+        amountIn:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Estimated token input amount
+    swapAmountOutQuoteResponse:
+      type: object
+      description: Details the estimated token output for a given swap input
+      properties:
+        amountIn:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Estimated token output amount
+    statusResponse:
+      type: object
+      description: Status of the API instance
+      properties:
+        commit:
+          type: string
+          description: The commit hash for the version of the code that is running
+        identifier:
+          type: string
+          description: Globally unique identifier of the current API instance
 paths:
   /auth:
     post:
@@ -168,7 +548,6 @@ paths:
               example:
                 signature: H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc=
                 publicKey: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
-
       responses:
         204:
           description: Signature was validated successfully
@@ -187,6 +566,526 @@ paths:
                     - Expiration date must be a unix timestamp.
                 extensions:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /markets/{market}/tokens:
+    get:
+      tags:
+        - Market Tokens
+      summary: Get Market Tokens
+      description: Retrieves details of tokens tracked within a specified market. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      parameters:
+        - name: market
+          in: path
+          description: Address of the market
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+        - name: tokenType
+          in: query
+          description: Token type filter
+          schema:
+            $ref: "#/components/schemas/tokenType"
+          example: All
+        - name: tokens
+          in: query
+          description: Specific tokens to include
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/address"
+              description: Address of a token
+        - name: keyword
+          in: query
+          description: Keyword search against token address, name and ticker symbol
+          schema:
+            type: string
+        - name: orderBy
+          in: query
+          description: Property by which to sort results
+          schema:
+            $ref: "#/components/schemas/tokenOrderByType"
+          example: PriceUsd
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Market token results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/marketTokensResponse"
+              example:
+                properties:
+                  results:
+                    - market: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+                      liqudityPool: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+                      address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                      name: Bitcoin (Wrapped)
+                      symbol: TBTC
+                      decimals: 8
+                      sats: 100000000
+                      totalSupply: "21000000.00000000"
+                      summary:
+                        priceUsd: 54827.48328399
+                        dailyPriceChangePercent: 2.42
+                        modifiedBlock: 2963822
+                    - market: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+                      liqudityPool: tLrMcU1csbN7RxGjBMEnJeLoae3PxmQ9cr
+                      address: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
+                      name: ETH (Wrapped)
+                      symbol: TETH
+                      decimals: 18
+                      sats: 1000000000000000000
+                      totalSupply: "100000000.000000000000000000"
+                      summary:
+                        priceUsd: 3822.23819994
+                        dailyPriceChangePercent: 1.98
+                        modifiedBlock: 2963691
+                  paging:
+                    next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MTA7cGFnaW5nOkZvcndhcmQ7cHJvdmlzaW9uYWw6QWxsO2tleXdvcmQ6O29yZGVyQnk6UHJpY2VVc2Q7cG9pbnRlcjpLREF1TkRBMk1ETXpPREFzSURRcDs=
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  tokenType:
+                    - The value 'New' is not valid for TokenType.
+                    - Filters cannot be provided alongside cursor.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/MarketNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /markets/{market}/tokens/{token}:
+    get:
+      tags:
+        - Market Tokens
+      summary: Get Market Token
+      description: Retrieves details of a token, that is tracked within a specified market.
+      parameters:
+        - name: market
+          in: path
+          description: Address of the market
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+        - name: token
+          in: path
+          description: Address of the token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+      responses:
+        200:
+          description: Market token found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/marketTokenResponse"
+              example:
+                market: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+                liqudityPool: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+                address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                name: Bitcoin (Wrapped)
+                symbol: TBTC
+                decimals: 8
+                sats: 100000000
+                totalSupply: "21000000.00000000"
+                summary:
+                  priceUsd: 54827.48328399
+                  dailyPriceChangePercent: 2.42
+                  modifiedBlock: 2963822
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  token:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/MarketOrTokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /markets/{market}/tokens/{token}/history:
+    get:
+      tags:
+        - Market Tokens
+      summary: Get Market Token History
+      description: Retrieves historical pricing data for a token tracked within a specified market. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      parameters:
+        - name: market
+          in: path
+          description: Address of the market
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+        - name: token
+          in: path
+          description: Address of the token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+        - name: interval
+          in: query
+          description: Time range between each snapshot
+          schema:
+            $ref: "#/components/schemas/interval"
+          example: 1D
+        - name: startDateTime
+          in: query
+          description: Start time for which to retrieve snapshots
+          required: true
+          schema:
+            type: string
+            format: date-time
+          example: 2022-01-01T00:00:00Z
+        - name: endDateTime
+          in: query
+          description: End time for which to retrieve snapshots
+          required: true
+          schema:
+            type: string
+            format: date-time
+          example: 2022-12-31T23:59:59
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 750
+          example: 100
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Market token results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokenSnapshotsResponse"
+              example:
+                properties:
+                  results:
+                    - price:
+                        open: 54274.35344481
+                        high: 55172.00419378
+                        low: 54239.99642473
+                        close: 55000.14239378
+                      timestamp: 2022-01-04T00:00:00Z
+                    - price:
+                        open: 52159.53226778
+                        high: 54463.33523111
+                        low: 52159.53226778
+                        close: 54274.35344481
+                      timestamp: 2022-01-03T00:00:00Z
+                    - price:
+                        open: 53163.84322264
+                        high: 54339.99180028
+                        low: 52101.00022178
+                        close: 52159.53226778
+                      timestamp: 2022-01-02T00:00:00Z
+                    - price:
+                        open: 54293.91289928
+                        high: 54333.91319534
+                        low: 52983.129000420
+                        close: 53163.84322264
+                      timestamp: 2022-01-01T00:00:00Z
+                  paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  interval:
+                    - Filters cannot be provided alongside cursor.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/MarketOrTokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /markets/{market}/tokens/{token}/swap:
+    post:
+      tags:
+        - Market Tokens
+      summary: Quote Swap Tokens Transaction
+      description: Builds a quote for a token swap transaction. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      parameters:
+        - name: market
+          in: path
+          description: Address of the market
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+        - name: token
+          in: path
+          description: Address of the input token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/quoteSwapTransactionRequest"
+            example:
+              tokenOut: CRS
+              tokenInAmount: "0.00250000"
+              tokenOutAmount: "61.53143554"
+              tokenInExactAmount: true
+              tokenInMaximumAmount: "0.00250250"
+              tokenOutMinimumAmount: "61.46990411"
+              recipient: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+              deadline: 100000000
+      responses:
+        200:
+          description: Built swap transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                result: 6153143554
+                gasUsed: 60139
+                events:
+                  - from: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    to: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+                    amount: "0.00250000"
+                    eventType: TransferEvent
+                    contract: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    sortOrder: 0
+                  - sender: t8XpH1pNYDgCnqk91ZQKLgpUVeJ7XmomLT
+                    to: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amountCrsIn: "0.00000000"
+                    amountSrcIn: "0.00250000"
+                    amountCrsOut: "61.53142554"
+                    amountSrcOut: "0.00000000"
+                    srcToken: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    eventType: SwapEvent
+                    contract: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+                    sortOrder: 2
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0OFhwSDFwTllEZ0NucWs5MVpRS0xncFVWZUo3WG1vbUxUIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlN3YXBFeGFjdFNyY0ZvckNycyIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiQW1vdW50IEluIiwidmFsdWUiOiIxMiMyNTAwMDAifSx7ImxhYmVsIjoiTWluaW11bSBBbW91bnQgT3V0IiwidmFsdWUiOiI3IzYxNDY5OTA0MTEifSx7ImxhYmVsIjoiVG9rZW4gSW4iLCJ2YWx1ZSI6IjkjdEdTazJkVkVOdXFBUTJyTlhidWkzN1hIdXVyRkNUcWFkRCJ9LHsibGFiZWwiOiJSZWNpcGllbnQiLCJ2YWx1ZSI6IjkjdFE5UnVrWnNCNmJCc2VuSG5HU28xcTY5Q0p6V0dueG9obSJ9LHsibGFiZWwiOiJEZWFkbGluZSIsInZhbHVlIjoiNyMyOTYwNDY0In1dLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  market:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/MarketOrTokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /markets/{market}/tokens/{token}/swap/amount-in:
+    post:
+      tags:
+        - Market Tokens
+      summary: Swap Amount In Quote
+      description: Retrieves an estimate for the amount of tokens to be input, given a swap output.
+      parameters:
+        - name: market
+          in: path
+          description: Address of the market
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+        - name: token
+          in: path
+          description: Address of the input token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/swapAmountInQuoteRequest"
+            example:
+              tokenOut: CRS
+              tokenOutAmount: "10.00000000"
+      responses:
+        200:
+          description: Swap amount in quote retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/swapAmountInQuoteResponse"
+              example:
+                amountIn: "0.00038271"
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  market:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/MarketOrTokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /markets/{market}/tokens/{token}/swap/amount-out:
+    post:
+      tags:
+        - Market Tokens
+      summary: Swap Amount Out Quote
+      description: Retrieves an estimate for the amount of tokens output, given a swap input.
+      parameters:
+        - name: market
+          in: path
+          description: Address of the market
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+        - name: token
+          in: path
+          description: Address of the input token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/swapAmountOutQuoteRequest"
+            example:
+              tokenIn: CRS
+              tokenInAmount: "1000.00000000"
+      responses:
+        200:
+          description: Swap amount out quote retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/swapAmountOutQuoteResponse"
+              example:
+                amountOut: "0.15319188"
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  market:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/MarketOrTokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /status:
+    get:
+      tags:
+        - Status
+      summary: Get Status
+      description: Retrieves status details for the running instance of the API.
+      responses:
+        200:
+          description: Status details found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/statusResponse"
+              example:
+                commit: 92ec53dc8388bc835eae5a892b29cb9519de7d97
+                identifier: ae89af2a-9774-4956-aa40-507edd38d200
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:
