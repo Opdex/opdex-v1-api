@@ -80,7 +80,7 @@ public class GetTokensWithFilterTests
         // Arrange
         var cursor = new TokensCursor(null, Enumerable.Empty<Address>(), TokenProvisionalFilter.All, false,
                                       TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 25, PagingDirection.Forward, ("50.00", 10));
-        var token = new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10);
+        var token = new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10);
         var tokens = new[] { token };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(tokens);
 
@@ -103,9 +103,9 @@ public class GetTokensWithFilterTests
                                       TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 4, PagingDirection.Forward, ("50.00", 10));
         var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(tokens);
@@ -141,9 +141,9 @@ public class GetTokensWithFilterTests
                                       TokenOrderByType.Default, SortDirectionType.ASC, 2, PagingDirection.Backward, ("50.00", 10));
         var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
         };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(tokens);
         int tokenAssembled = 0;
@@ -178,9 +178,9 @@ public class GetTokensWithFilterTests
                                       TokenOrderByType.DailyPriceChangePercent, SortDirectionType.ASC, 2, PagingDirection.Forward, ("50.00", 10));
         var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
         };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(tokens);
         int tokenAssembled = 0;
@@ -216,9 +216,9 @@ public class GetTokensWithFilterTests
 
         var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(tokens);
@@ -256,9 +256,9 @@ public class GetTokensWithFilterTests
 
         var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(tokens);
@@ -296,9 +296,9 @@ public class GetTokensWithFilterTests
 
         var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10),
+            new Token(3, "fjjc9U4kqdrc4hYPeLPSqkCUMpPykkfL3X", true, "Binance", "BNB", 8, 100_000_000, 3_100_000_000_000_000, 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(tokens);
@@ -336,8 +336,8 @@ public class GetTokensWithFilterTests
 
         var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(tokens);
@@ -375,8 +375,8 @@ public class GetTokensWithFilterTests
 
         var tokens = new[]
         {
-            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10),
-            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10)
+            new Token(1, "PSqkCUMpPykkfL3XhYPefjjc9U4kqdrc4L", true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10),
+            new Token(2, "Pefjjc9U4kqdrc4LPSqkCUMpPykkfL3XhY", true, "Ethereum", "ETH", 18, 1_000_000_000_000_000_000, 21_000_000_000_000_000, 9, 10)
         };
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokensWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(tokens);

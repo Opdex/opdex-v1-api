@@ -34,7 +34,7 @@ public class MarketTokenDtoAssemblerTests
     public async Task Assemble_RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery_Send()
     {
         // Arrange
-        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), new TokenSummary(5, 10, 50), 9, 10);
+        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
         var market = new Market(19, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 2, 3, null, "nkfGPPGgMkN2kwXwmu3wuFYmPBWQ38k7iY", true, true, true, 3, true, 9, 10);
         var marketToken = new MarketToken(market, token);
 
@@ -58,7 +58,7 @@ public class MarketTokenDtoAssemblerTests
     public async Task Assemble_RetrieveLiquidityPoolByAddressQuery_Send()
     {
         // Arrange
-        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", true, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), new TokenSummary(5, 10, 50), 9, 10);
+        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", true, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
         var market = new Market(19, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 2, 3, null, "nkfGPPGgMkN2kwXwmu3wuFYmPBWQ38k7iY", true, true, true, 3, true, 9, 10);
         var marketToken = new MarketToken(market, token);
 
@@ -82,9 +82,11 @@ public class MarketTokenDtoAssemblerTests
     public async Task Assemble_HappyPath_Map()
     {
         // Arrange
-        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), new TokenSummary(5, 10, 50), 9, 10);
+        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
+        token.SetSummary(new TokenSummary(5, 10, 15, -5.00m, 23.53m, 50, 50));
         var market = new Market(19, "kN2kwXwmu3wuFYmPBWQ38k7iYnkfGPPGgM", 2, 3, null, "nkfGPPGgMkN2kwXwmu3wuFYmPBWQ38k7iY", true, true, true, 3, true, 9, 10);
         var marketToken = new MarketToken(market, token);
+        marketToken.SetSummary(token.Summary);
         var liquidityPool = new LiquidityPool(5, "PX2J4s4UHLfwZbDRJSvPoskKD25xQBHWYi", "STRAX-CRS", token.Id, 15, market.Id, 500, 505);
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery>(), It.IsAny<CancellationToken>()))
@@ -101,9 +103,9 @@ public class MarketTokenDtoAssemblerTests
         tokenDto.Decimals.Should().Be(token.Decimals);
         tokenDto.Sats.Should().Be(token.Sats);
         tokenDto.TotalSupply.Should().Be(token.TotalSupply.ToDecimal(token.Decimals));
-        tokenDto.Summary.PriceUsd.Should().Be(token.TokenSummary.PriceUsd);
-        tokenDto.Summary.DailyPriceChangePercent.Should().Be(token.TokenSummary.DailyPriceChangePercent);
-        tokenDto.Summary.ModifiedBlock.Should().Be(token.TokenSummary.ModifiedBlock);
+        tokenDto.Summary.PriceUsd.Should().Be(token.Summary.PriceUsd);
+        tokenDto.Summary.DailyPriceChangePercent.Should().Be(token.Summary.DailyPriceChangePercent);
+        tokenDto.Summary.ModifiedBlock.Should().Be(token.Summary.ModifiedBlock);
         tokenDto.LiquidityPool.Should().Be(liquidityPool.Address);
         tokenDto.Market.Should().Be(market.Address);
     }

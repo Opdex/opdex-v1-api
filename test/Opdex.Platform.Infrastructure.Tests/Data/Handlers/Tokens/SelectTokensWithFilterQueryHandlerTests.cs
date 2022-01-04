@@ -4,6 +4,7 @@ using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
+using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -56,8 +57,8 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
                 It.Is<DatabaseQuery>(q => q.Sql.Contains(expected)),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, TokenEntity>>(),
-                nameof(TokenSummaryEntity.Id)),
+                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
+                "Split"),
             Times.Once);
     }
 
@@ -77,8 +78,8 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
                 It.Is<DatabaseQuery>(q => q.Sql.Contains(expected)),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, TokenEntity>>(),
-                nameof(TokenSummaryEntity.Id)),
+                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
+                "Split"),
             Times.Once);
     }
 
@@ -99,8 +100,8 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
                 It.Is<DatabaseQuery>(q => q.Sql.Contains(expected)),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, TokenEntity>>(),
-                nameof(TokenSummaryEntity.Id)),
+                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
+                "Split"),
             Times.Once);
     }
 
@@ -119,8 +120,8 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
                 It.Is<DatabaseQuery>(q => !q.Sql.Contains(notExpected)),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, TokenEntity>>(),
-                nameof(TokenSummaryEntity.Id)),
+                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
+                "Split"),
             Times.Once);
     }
 
@@ -141,8 +142,8 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
                 It.Is<DatabaseQuery>(q => q.Sql.Contains(name) && q.Sql.Contains(symbol) &&  q.Sql.Contains(address)),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, TokenEntity>>(),
-                nameof(TokenSummaryEntity.Id)),
+                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
+                "Split"),
             Times.Once);
     }
 
@@ -159,8 +160,8 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
             It.Is<DatabaseQuery>( q => !q.Sql.Contains("ts.PriceUsd > 0")),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, TokenEntity>>(),
-                nameof(TokenSummaryEntity.Id)),
+                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
+                "Split"),
             Times.Once);
     }
 
@@ -177,8 +178,8 @@ public class SelectTokensWithFilterQueryHandlerTests
         // Assert
         _dbContext.Verify(callTo => callTo.ExecuteQueryAsync(
             It.Is<DatabaseQuery>(q => q.Sql.Contains("ts.PriceUsd > 0")),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, TokenEntity>>(),
-                nameof(TokenSummaryEntity.Id)),
+                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
+                "Split"),
             Times.Once);
     }
 
@@ -198,8 +199,8 @@ public class SelectTokensWithFilterQueryHandlerTests
                 It.Is<DatabaseQuery>(q => q.Sql.Contains("t.Id > @TokenId") &&
                                           q.Sql.Contains($"ORDER BY t.Id {orderBy}") &&
                                           q.Sql.Contains($"LIMIT {limit + 1}")),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, TokenEntity>>(),
-                nameof(TokenSummaryEntity.Id)),
+                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
+                "Split"),
             Times.Once);
     }
 
@@ -219,8 +220,8 @@ public class SelectTokensWithFilterQueryHandlerTests
                 It.Is<DatabaseQuery>(q => q.Sql.Contains("(t.Name, t.Id) < (@OrderByValue, @TokenId)") &&
                                           q.Sql.Contains($"ORDER BY t.Name {orderBy}, t.Id {orderBy}") &&
                                           q.Sql.Contains($"LIMIT {limit + 1}")),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, TokenEntity>>(),
-                nameof(TokenSummaryEntity.Id)),
+                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
+                "Split"),
             Times.Once);
     }
 
@@ -240,8 +241,8 @@ public class SelectTokensWithFilterQueryHandlerTests
                 It.Is<DatabaseQuery>(q => q.Sql.Contains("(t.Symbol, t.Id) > (@OrderByValue, @TokenId)") &&
                                           q.Sql.Contains($"ORDER BY t.Symbol {SortDirectionType.ASC}, t.Id {SortDirectionType.ASC}") &&
                                           q.Sql.Contains($"LIMIT {limit + 1}")),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, TokenEntity>>(),
-                nameof(TokenSummaryEntity.Id)),
+                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
+                "Split"),
             Times.Once);
     }
 
@@ -261,8 +262,8 @@ public class SelectTokensWithFilterQueryHandlerTests
                 It.Is<DatabaseQuery>(q =>  q.Sql.Contains("(ts.PriceUsd, t.Id) < (@OrderByValue, @TokenId)") &&
                                                q.Sql.Contains($"ORDER BY AVG(ts.PriceUsd) {SortDirectionType.DESC}, t.Id {SortDirectionType.DESC}") &&
                                                q.Sql.Contains($"LIMIT {limit + 1}")),
-                It.IsAny<Func<TokenEntity, TokenSummaryEntity, TokenEntity>>(),
-                nameof(TokenSummaryEntity.Id)),
+                It.IsAny<Func<TokenEntity, TokenSummaryEntity, Token>>(),
+                "Split"),
             Times.Once);
     }
 }

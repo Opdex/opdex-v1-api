@@ -56,7 +56,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenEntity, Token>()
-            .ConstructUsing((src, ctx) => new Token(src.Id, src.Address, src.IsLpt, src.Name, src.Symbol, src.Decimals, src.Sats, src.TotalSupply, ctx.Mapper.Map<TokenSummary>(src.TokenSummary), src.CreatedBlock, src.ModifiedBlock))
+            .ConstructUsing((src, ctx) => new Token(src.Id, src.Address, src.IsLpt, src.Name, src.Symbol, src.Decimals, src.Sats, src.TotalSupply, src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<TokenSummaryEntity, TokenSummary>()
@@ -426,7 +426,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Symbol))
             .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
             .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
-            .ForMember(dest => dest.TokenSummary, opt => opt.MapFrom(src => src.TokenSummary))
+            .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply))
             .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
             .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());

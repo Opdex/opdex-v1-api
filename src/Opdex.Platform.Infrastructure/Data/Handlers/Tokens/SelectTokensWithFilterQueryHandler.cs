@@ -20,6 +20,8 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Tokens;
 
 public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWithFilterQuery, IEnumerable<Token>>
 {
+    private const string Split = "Split";
+
     private const string WhereFilter = "{WhereFilter}";
     private const string OrderBy = "{OrderBy}";
     private const string Limit = "{Limit}";
@@ -36,10 +38,10 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
                 t.{nameof(TokenEntity.TotalSupply)},
                 MAX(t.{nameof(TokenEntity.CreatedBlock)}) AS {nameof(TokenEntity.CreatedBlock)},
                 MAX(t.{nameof(TokenEntity.ModifiedBlock)}) AS {nameof(TokenEntity.ModifiedBlock)},
+                true as {Split},
                 ANY_VALUE(ts.{nameof(TokenSummaryEntity.Id)}) AS Id,
-                ANY_VALUE(ts.{nameof(TokenSummaryEntity.MarketId)}),
-                AVG(ts.{nameof(TokenSummaryEntity.PriceUsd)}) AS {nameof(TokenSummaryEntity.PriceUsd)},
-                AVG(ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}) AS {nameof(TokenSummaryEntity.DailyPriceChangePercent)},
+                ROUND(AVG(ts.{nameof(TokenSummaryEntity.PriceUsd)}), 8) AS {nameof(TokenSummaryEntity.PriceUsd)},
+                ROUND(AVG(ts.{nameof(TokenSummaryEntity.DailyPriceChangePercent)}), 8) AS {nameof(TokenSummaryEntity.DailyPriceChangePercent)},
                 MAX(ts.{nameof(TokenSummaryEntity.CreatedBlock)}) AS {nameof(TokenSummaryEntity.CreatedBlock)},
                 MAX(ts.{nameof(TokenSummaryEntity.ModifiedBlock)}) AS {nameof(TokenSummaryEntity.ModifiedBlock)}
             FROM token t
@@ -70,14 +72,16 @@ public class SelectTokensWithFilterQueryHandler : IRequestHandler<SelectTokensWi
 
         var query = DatabaseQuery.Create(QueryBuilder(request), sqlParams, cancellationToken);
 
-        var tokenEntities = await _context.ExecuteQueryAsync<TokenEntity, TokenSummaryEntity, TokenEntity>(query,
-            (token, summary) =>
+        var tokens = await _context.ExecuteQueryAsync<TokenEntity, TokenSummaryEntity, Token>(query,
+            (tokenEntity, summary) =>
             {
-                token.TokenSummary = summary;
+                var token = _mapper.Map<Token>(tokenEntity);
+                // if there is no summary Id will be 0
+                if (summary.Id > 0) token.SetSummary(_mapper.Map<TokenSummary>(summary));
                 return token;
-            });
+            }, splitOn: Split);
 
-        return _mapper.Map<IEnumerable<Token>>(tokenEntities);
+        return tokens;
     }
 
     private static string QueryBuilder(SelectTokensWithFilterQuery request)

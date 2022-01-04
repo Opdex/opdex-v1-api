@@ -31,7 +31,7 @@ public class TokenDtoAssemblerTests
     public async Task Assemble_RetrieveTokenSummaryByMarketAndTokenIdQuery_Send()
     {
         // Arrange
-        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), new TokenSummary(5, 10, 50), 9, 10);
+        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
 
         // Act
         await _assembler.Assemble(token);
@@ -46,7 +46,7 @@ public class TokenDtoAssemblerTests
     public async Task Assemble_HappyPath_Map()
     {
         // Arrange
-        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), new TokenSummary(5, 10, 50), 9, 10);
+        var token = new Token(1, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", false, "STRAX", "STRAX", 8, 100_000_000, new UInt256("10000000000000000"), 9, 10);
         var tokenSummary = new TokenSummary(1, 0, token.Id, 1.12m, 3.45m, 9, 10);
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenSummaryByMarketAndTokenIdQuery>(), It.IsAny<CancellationToken>()))

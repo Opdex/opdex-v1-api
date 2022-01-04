@@ -32,8 +32,8 @@ public class GetSwapAmountInQueryHandlerTests
     public async Task Handle_RetrieveTokenByAddressQuery_SendForTokenIn()
     {
         // Arrange
-        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
-        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
+        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, 50, 50);
+        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 50, 50);
         SetupDomain(tokenIn, tokenOut);
 
         var request = new GetSwapAmountInQuery(new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), tokenIn.Address, tokenOut.Address,
@@ -51,8 +51,8 @@ public class GetSwapAmountInQueryHandlerTests
     public async Task Handle_RetrieveTokenByAddressQuery_SendForTokenOut()
     {
         // Arrange
-        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
-        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
+        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, 50, 50);
+        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 50, 50);
         SetupDomain(tokenIn, tokenOut);
 
         var request = new GetSwapAmountInQuery(new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), tokenIn.Address, tokenOut.Address,
@@ -70,8 +70,8 @@ public class GetSwapAmountInQueryHandlerTests
     public async Task Handle_RetrieveMarketByAddressQuery_Send()
     {
         // Arrange
-        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
-        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
+        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, 50, 50);
+        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 50, 50);
         SetupDomain(tokenIn, tokenOut);
 
         var request = new GetSwapAmountInQuery(new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), tokenIn.Address, tokenOut.Address,
@@ -91,8 +91,8 @@ public class GetSwapAmountInQueryHandlerTests
         // Arrange
         var market = new Market(88, new Address("PWbQLxNnYdyUBLmeEL3ET1WdNx7dvbH8mi"), 20, 25, Address.Empty,
                                 new Address("PVwyqbwu5CazeACoAMRonaQSyRvTHZvAUh"), false, false, false, 3, true, 2, 250);
-        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
-        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
+        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, 50, 50);
+        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 50, 50);
         SetupDomain(tokenIn, tokenOut, market);
 
         var request = new GetSwapAmountInQuery(new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), tokenIn.Address, tokenOut.Address,
@@ -110,8 +110,8 @@ public class GetSwapAmountInQueryHandlerTests
     public async Task Handle_RetrieveSwapAmountInQuery_Send()
     {
         // Arrange
-        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
-        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
+        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, 50, 50);
+        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 50, 50);
         SetupDomain(tokenIn, tokenOut);
 
         var request = new GetSwapAmountInQuery(new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), tokenIn.Address, tokenOut.Address,
@@ -129,8 +129,8 @@ public class GetSwapAmountInQueryHandlerTests
     public async Task Handle_RetrieveSwapAmountInQuery_ReturnDecimal()
     {
         // Arrange
-        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
-        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, new TokenSummary(5, 10, 50), 50, 50);
+        var tokenIn = new Token(10, new Address("PBcSmxbEwFHegzPirfirViDjAedV8S2aVi"), false, "Salami", "LAMI", 6, 1000000000, 21000000000000000, 50, 50);
+        var tokenOut = new Token(5, Address.Cirrus, false, "Cirrus", "CRS", 8, 1000000000, 21000000000000000, 50, 50);
         SetupDomain(tokenIn, tokenOut);
 
         var request = new GetSwapAmountInQuery(new Address("PSxx8BBVDpB5qHKmm7RGLDVaEL8p9NWbZW"), tokenIn.Address, tokenOut.Address, FixedDecimal.Parse("34209.34821118"));

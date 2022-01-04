@@ -133,7 +133,7 @@ public class RetrieveAddressBalanceByOwnerAndTokenQueryHandlerTests
 
         _mediatorMock
             .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-            .ReturnsAsync(new Token(tokenId, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), new TokenSummary(5, 10, 50), 1, 2));
+            .ReturnsAsync(new Token(tokenId, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
 
         // Act
         await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
@@ -158,7 +158,7 @@ public class RetrieveAddressBalanceByOwnerAndTokenQueryHandlerTests
 
         _mediatorMock
             .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-            .ReturnsAsync(new Token(tokenId, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), new TokenSummary(5, 10, 50), 1, 2));
+            .ReturnsAsync(new Token(tokenId, "PBSH3FTVne6gKiSgVBL4NRTJ31QmGShjMy", false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
 
         _mediatorMock
             .Setup(callTo => callTo.Send(It.IsAny<SelectAddressBalanceByOwnerAndTokenIdQuery>(), cancellationToken))
@@ -182,7 +182,7 @@ public class RetrieveAddressBalanceByOwnerAndTokenQueryHandlerTests
 
         _mediatorMock
             .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-            .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, 100, new TokenSummary(5, 10, 50), 1, 2));
+            .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, 100, 1, 2));
 
         // Act
         await _handler.Handle(new RetrieveAddressBalanceByOwnerAndTokenQuery(address, tokenId, findOrThrow: findOrThrow), cancellationToken);
@@ -207,7 +207,7 @@ public class RetrieveAddressBalanceByOwnerAndTokenQueryHandlerTests
 
         _mediatorMock
             .Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), cancellationToken))
-            .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), new TokenSummary(5, 10, 50), 1, 2));
+            .ReturnsAsync(new Token(tokenId, Address.Cirrus, false, "name", "symbol", 8, 100_000_000, UInt256.Parse("100"), 1, 2));
 
         _mediatorMock
             .Setup(callTo => callTo.Send(It.IsAny<CallCirrusGetAddressCrsBalanceQuery>(), cancellationToken))

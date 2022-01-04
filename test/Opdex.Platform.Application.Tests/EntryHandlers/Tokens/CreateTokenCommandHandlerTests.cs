@@ -107,7 +107,7 @@ public class CreateTokenCommandHandlerTests
         const ulong tokenId = 999;
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Token(tokenId, tokenAddress, true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, new TokenSummary(5, 10, 50), 9, 10));
+            .ReturnsAsync(new Token(tokenId, tokenAddress, true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10));
 
         // Act
         var response = await _handler.Handle(new CreateTokenCommand(tokenAddress, blockHeight), CancellationToken.None);

@@ -87,7 +87,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Decimals, opt => opt.MapFrom(src => src.Decimals))
             .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply.ToDecimal(src.Decimals)))
-            .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.TokenSummary))
+            .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<MarketToken, MarketTokenDto>()
@@ -99,7 +99,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Sats, opt => opt.MapFrom(src => src.Sats))
             .ForMember(dest => dest.TotalSupply, opt => opt.MapFrom(src => src.TotalSupply.ToDecimal(src.Decimals)))
             .ForMember(dest => dest.Market, opt => opt.MapFrom(src => src.Market.Address))
-            .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.TokenSummary))
+            .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<LiquidityPool, LiquidityPoolDto>()

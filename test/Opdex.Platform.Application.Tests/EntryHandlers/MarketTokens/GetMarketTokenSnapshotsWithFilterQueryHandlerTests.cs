@@ -120,7 +120,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
 
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
         var market = new Market(10, marketAddress, 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
@@ -147,7 +147,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 10, PagingDirection.Forward, default);
         var request = new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
         var market = new Market(10, marketAddress, 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
@@ -176,7 +176,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 3, PagingDirection.Forward, (DateTime.UtcNow, 10));
         var request = new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
         var market = new Market(10, marketAddress, 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
@@ -206,7 +206,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 10));
         var request = new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
         var market = new Market(10, marketAddress, 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
@@ -237,7 +237,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 10));
         var request = new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
         var market = new Market(10, marketAddress, 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
@@ -268,7 +268,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, default);
         var request = new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
         var market = new Market(10, marketAddress, 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
@@ -299,7 +299,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
         var request = new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
         var market = new Market(10, marketAddress, 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
@@ -330,7 +330,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
         var request = new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
         var market = new Market(10, marketAddress, 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
@@ -361,7 +361,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Forward, (DateTime.UtcNow, 50));
         var request = new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
         var market = new Market(10, marketAddress, 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);
@@ -391,7 +391,7 @@ public class GetMarketTokenSnapshotsWithFilterQueryHandlerTests
         var cursor = new SnapshotCursor(Interval.OneHour, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow, SortDirectionType.ASC, 2, PagingDirection.Backward, (DateTime.UtcNow, 50));
         var request = new GetMarketTokenSnapshotsWithFilterQuery(marketAddress, tokenAddress, cursor);
 
-        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), new TokenSummary(5, 10, 50), 20, 25);
+        var token = new Token(5, tokenAddress, false, "Governance", "GOV", 8, 100000000, UInt256.Parse("500000000000000000000"), 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
         var market = new Market(10, marketAddress, 1, 5, Address.Empty, new Address("tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i"), false, false, false, 3, true, 20, 25);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveMarketByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(market);

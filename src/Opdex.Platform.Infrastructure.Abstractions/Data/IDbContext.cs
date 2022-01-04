@@ -11,6 +11,6 @@ public interface IDbContext
     Task<IEnumerable<TEntity>> ExecuteQueryAsync<TEntity>(DatabaseQuery query);
     Task<IEnumerable<TReturn>> ExecuteQueryAsync<TFirst, TSecond, TReturn>(DatabaseQuery query,
                                                                            Func<TFirst, TSecond, TReturn> map,
-                                                                           string splitOn = "Id");
+                                                                           string splitOn);
     Task<int> ExecuteCommandAsync(DatabaseQuery query);
 }

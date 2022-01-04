@@ -72,7 +72,7 @@ public class VaultDtoAssemblerTests
     {
         // Arrange
         var vault = new Vault(5, "PBWQ38k7iYnkfGPPGgMkN2kwXwmu3wuFYm", 15, Address.Empty, "P8zHy2c8Nydkh2r6Wv6K6kacxkDcZyfaLy", 500, UInt256.Parse("100000000"), 505, 510);
-        var token = new Token(15, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), new TokenSummary(5, 10, 50), 5, 15);
+        var token = new Token(15, "PHrN1DPvMcp17i5YL4yUzUCVcH2QimMvHi", false, "Wrapped Bitcoin", "WBTC", 8, 2100000000000000, UInt256.Parse("21000000"), 5, 15);
 
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 

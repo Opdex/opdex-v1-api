@@ -24,6 +24,12 @@ public class MarketTokenDtoAssembler : IModelAssembler<MarketToken, MarketTokenD
     {
         var marketTokenDto = _mapper.Map<MarketTokenDto>(token);
 
+        if (marketTokenDto.Summary is null)
+        {
+            var summary = await _mediator.Send(new RetrieveTokenSummaryByMarketAndTokenIdQuery(token.Market.Id, token.Id, findOrThrow: false));
+            if (summary is not null) marketTokenDto.Summary = _mapper.Map<TokenSummaryDto>(summary);
+        }
+
         var liquidityPool = token.IsLpt
             ? await _mediator.Send(new RetrieveLiquidityPoolByAddressQuery(token.Address))
             : await _mediator.Send(new RetrieveLiquidityPoolBySrcTokenIdAndMarketIdQuery(token.Id, token.Market.Id));
