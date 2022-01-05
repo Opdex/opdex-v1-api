@@ -44,6 +44,18 @@ components:
       bearerFormat: JWT
       description: Authorize with a bearer token obtained from SignalR
   responses:
+    TokenNotFound:
+      description: Token not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/problemDetails"
+          example:
+            type: https://httpstatuses.com/404
+            title: Not Found
+            status: 404
+            extensions:
+              traceId: 00-00000000000000000000000000000000-0000000000000000-00
     MarketNotFound:
       description: Market not found
       content:
@@ -67,6 +79,18 @@ components:
             title: Not Found
             detail: Token not found.
             status: 404
+            extensions:
+              traceId: 00-00000000000000000000000000000000-0000000000000000-00
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/problemDetails"
+          example:
+            type: https://httpstatuses.com/401
+            title: Unauthorized
+            status: 401
             extensions:
               traceId: 00-00000000000000000000000000000000-0000000000000000-00
     TooManyRequests:
@@ -219,6 +243,60 @@ components:
         - VaultProposalWithdrawPledgeEvent
         - VaultProposalVoteEvent
         - VaultProposalWithdrawVoteEvent
+    approvalEvent:
+      type: object
+      description: Indicates a token spending approval happened
+      properties:
+        owner:
+          $ref: "#/components/schemas/address"
+          description: Address of the token holder
+        spender:
+          $ref: "#/components/schemas/address"
+          description: Address approved to spend the tokens
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens approved to spend
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    distributionEvent:
+      type: object
+      description: Indicates governance token distribution took place
+      properties:
+        vaultAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Address approved to spend the tokens
+        miningGovernanceAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Address of the token holder
+        periodIndex:
+          type: number
+          minimum: 0
+          description: Distribution number
+        totalSupply:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of governance tokens distributed
+        nextDistributionBlock:
+          type: number
+          minimum: 1
+          description: Block number of the next distribution
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
     transferEvent:
       type: object
       description: Indicates a transfer happened
@@ -346,6 +424,15 @@ components:
         tokenInAmount:
           $ref: "#/components/schemas/fixedDecimal"
           description: Amount of tokens to input
+    addTokenRequest:
+      type: object
+      description: Request to add a token to the Opdex indexer so that it can be tracked
+      required:
+        - tokenAddress
+      properties:
+        tokenAddress:
+          $ref: "#/components/schemas/address"
+          description: Address of the token to add
     marketTokensResponse:
       type: object
       properties:
@@ -359,12 +446,29 @@ components:
       type: object
       description: Details of a token within a market
       properties:
-        market:
-          $ref: "#/components/schemas/address"
-          description: Address of the market
-        liquidityPool:
-          $ref: "#/components/schemas/address"
-          description: Address of the liquidity pool
+        allOf:
+          $ref: "#/components/schemas/tokenResponse"
+          type: object
+          properties:
+            market:
+              $ref: "#/components/schemas/address"
+              description: Address of the market
+            liquidityPool:
+              $ref: "#/components/schemas/address"
+              description: Address of the liquidity pool
+    tokensResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/tokenResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    tokenResponse:
+      type: object
+      description: Details of a token
+      properties:
         address:
           $ref: "#/components/schemas/address"
           description: Address of the token
@@ -470,6 +574,8 @@ components:
           type: array
           items:
             oneOf:
+              - $ref: "#/components/schemas/approvalEvent"
+              - $ref: "#/components/schemas/distributionEvent"
               - $ref: "#/components/schemas/transferEvent"
               - $ref: "#/components/schemas/swapEvent"
           discriminator:
@@ -637,34 +743,33 @@ paths:
               schema:
                 $ref: "#/components/schemas/marketTokensResponse"
               example:
-                properties:
-                  results:
-                    - market: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
-                      liqudityPool: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
-                      address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
-                      name: Bitcoin (Wrapped)
-                      symbol: TBTC
-                      decimals: 8
-                      sats: 100000000
-                      totalSupply: "21000000.00000000"
-                      summary:
-                        priceUsd: 54827.48328399
-                        dailyPriceChangePercent: 2.42
-                        modifiedBlock: 2963822
-                    - market: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
-                      liqudityPool: tLrMcU1csbN7RxGjBMEnJeLoae3PxmQ9cr
-                      address: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
-                      name: ETH (Wrapped)
-                      symbol: TETH
-                      decimals: 18
-                      sats: 1000000000000000000
-                      totalSupply: "100000000.000000000000000000"
-                      summary:
-                        priceUsd: 3822.23819994
-                        dailyPriceChangePercent: 1.98
-                        modifiedBlock: 2963691
-                  paging:
-                    next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MTA7cGFnaW5nOkZvcndhcmQ7cHJvdmlzaW9uYWw6QWxsO2tleXdvcmQ6O29yZGVyQnk6UHJpY2VVc2Q7cG9pbnRlcjpLREF1TkRBMk1ETXpPREFzSURRcDs=
+                results:
+                  - market: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+                    liqudityPool: tMdZ2UfwJorAyErDvqNdVU8kmiLaykuE5L
+                    address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    name: Bitcoin (Wrapped)
+                    symbol: TBTC
+                    decimals: 8
+                    sats: 100000000
+                    totalSupply: "21000000.00000000"
+                    summary:
+                      priceUsd: 54827.48328399
+                      dailyPriceChangePercent: 2.42090338
+                      modifiedBlock: 2963822
+                  - market: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+                    liqudityPool: tLrMcU1csbN7RxGjBMEnJeLoae3PxmQ9cr
+                    address: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
+                    name: ETH (Wrapped)
+                    symbol: TETH
+                    decimals: 18
+                    sats: 1000000000000000000
+                    totalSupply: "100000000.000000000000000000"
+                    summary:
+                      priceUsd: 3822.23819994
+                      dailyPriceChangePercent: 1.98192833
+                      modifiedBlock: 2963691
+                paging:
+                  next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MTA7cGFnaW5nOkZvcndhcmQ7cHJvdmlzaW9uYWw6QWxsO2tleXdvcmQ6O29yZGVyQnk6UHJpY2VVc2Q7cG9pbnRlcjpLREF1TkRBMk1ETXpPREFzSURRcDs=
         400:
           description: The request is not valid
           content:
@@ -726,7 +831,7 @@ paths:
                 totalSupply: "21000000.00000000"
                 summary:
                   priceUsd: 54827.48328399
-                  dailyPriceChangePercent: 2.42
+                  dailyPriceChangePercent: 2.42580923
                   modifiedBlock: 2963822
         400:
           description: The request is not valid
@@ -872,7 +977,7 @@ paths:
     post:
       tags:
         - Market Tokens
-      summary: Quote Swap Tokens Transaction
+      summary: Build Swap Tokens Transaction Quote
       description: Builds a quote for a token swap transaction. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
       parameters:
         - name: market
@@ -890,6 +995,7 @@ paths:
             $ref: "#/components/schemas/address"
           example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -903,6 +1009,8 @@ paths:
               tokenOutMinimumAmount: "61.46990411"
               recipient: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
               deadline: 100000000
+      security:
+        - opdexAuth: []
       responses:
         200:
           description: Built swap transaction quote
@@ -974,6 +1082,7 @@ paths:
             $ref: "#/components/schemas/address"
           example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -1033,6 +1142,7 @@ paths:
             $ref: "#/components/schemas/address"
           example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -1086,6 +1196,452 @@ paths:
               example:
                 commit: 92ec53dc8388bc835eae5a892b29cb9519de7d97
                 identifier: ae89af2a-9774-4956-aa40-507edd38d200
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /tokens:
+    get:
+      tags:
+        - Tokens
+      summary: Get Tokens
+      description: Retrieves details of all tracked tokens across markets. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      parameters:
+        - name: tokenType
+          in: query
+          description: Token type filter
+          schema:
+            $ref: "#/components/schemas/tokenType"
+          example: All
+        - name: tokens
+          in: query
+          description: Specific tokens to include
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/address"
+              description: Address of a token
+        - name: keyword
+          in: query
+          description: Keyword search against token address, name and ticker symbol
+          schema:
+            type: string
+        - name: orderBy
+          in: query
+          description: Property by which to sort results
+          schema:
+            $ref: "#/components/schemas/tokenOrderByType"
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Token results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokensResponse"
+              example:
+                results:
+                  - address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                    name: Bitcoin (Wrapped)
+                    symbol: TBTC
+                    decimals: 8
+                    sats: 100000000
+                    totalSupply: "21000000.00000000"
+                    summary:
+                      priceUsd: 54911.53361129
+                      dailyPriceChangePercent: 2.37290288
+                      modifiedBlock: 2963825
+                  - address: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
+                    name: ETH (Wrapped)
+                    symbol: TETH
+                    decimals: 18
+                    sats: 1000000000000000000
+                    totalSupply: "100000000.000000000000000000"
+                    summary:
+                      priceUsd: 3827.34621953
+                      dailyPriceChangePercent: 2.01006408
+                      modifiedBlock: 2963712
+                paging:
+                  next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6MTA7cGFnaW5nOkZvcndhcmQ7cHJvdmlzaW9uYWw6QWxsO2tleXdvcmQ6O29yZGVyQnk6UHJpY2VVc2Q7cG9pbnRlcjpLREF1TkRBMk1ETXpPREFzSURRcDs=
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  tokenType:
+                    - The value 'New' is not valid for TokenType.
+                    - Filters cannot be provided alongside cursor.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - Tokens
+      summary: Add Token
+      description: Adds an SRC token to the Opdex indexer, so that it can be tracked and used within markets.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/addTokenRequest"
+            example:
+              tokenAddress: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
+      security:
+        - opdexAuth: []
+      responses:
+        201:
+          description: Token was added to the indexer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokenResponse"
+              example:
+                address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                name: Bitcoin (Wrapped)
+                symbol: TBTC
+                decimals: 8
+                sats: 100000000
+                totalSupply: "21000000.00000000"
+          headers:
+            Location:
+              schema:
+                type: string
+                example: /tokens/tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
+              description: Request location to retrieve details of the added token
+        303:
+          description: Token is already indexed
+          headers:
+            Location:
+              schema:
+                type: string
+                example: /tokens/tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
+              description: Request location to retrieve details of the added token
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  tokenAddress:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /tokens/{token}:
+    get:
+      tags:
+        - Tokens
+      summary: Get Token
+      description: Retrieves details of a token tracked by the Opdex indexer.
+      parameters:
+        - name: token
+          in: path
+          description: Address of the token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+      responses:
+        200:
+          description: Token details found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokenResponse"
+              example:
+                address: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+                name: Bitcoin (Wrapped)
+                symbol: TBTC
+                decimals: 8
+                sats: 100000000
+                totalSupply: "21000000.00000000"
+                summary:
+                  priceUsd: 54911.53361129
+                  dailyPriceChangePercent: 2.37290288
+                  modifiedBlock: 2963825
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  token:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/TokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /tokens/{token}/history:
+    get:
+      tags:
+        - Tokens
+      summary: Get Token History
+      description: Retrieves historical pricing data for a token tracked by the Opdex indexer. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      parameters:
+        - name: token
+          in: path
+          description: Address of the token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+        - name: interval
+          in: query
+          description: Time range between each snapshot
+          schema:
+            $ref: "#/components/schemas/interval"
+          example: 1D
+        - name: startDateTime
+          in: query
+          description: Start time for which to retrieve snapshots
+          required: true
+          schema:
+            type: string
+            format: date-time
+          example: 2022-01-01T00:00:00Z
+        - name: endDateTime
+          in: query
+          description: End time for which to retrieve snapshots
+          required: true
+          schema:
+            type: string
+            format: date-time
+          example: 2022-12-31T23:59:59
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 750
+          example: 100
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Token results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokenSnapshotsResponse"
+              example:
+                properties:
+                  results:
+                    - price:
+                        open: 54193.34115385
+                        high: 55199.32820982
+                        low: 54187.23589023
+                        close: 55063.99234829
+                      timestamp: 2022-01-04T00:00:00Z
+                    - price:
+                        open: 52402.45948025
+                        high: 54362.13294822
+                        low: 52351.34292224
+                        close: 54193.34115385
+                      timestamp: 2022-01-03T00:00:00Z
+                    - price:
+                        open: 53135.84898883
+                        high: 54339.34298819
+                        low: 52217.00424382
+                        close: 52402.45948025
+                      timestamp: 2022-01-02T00:00:00Z
+                    - price:
+                        open: 54284.23999384
+                        high: 54300.22222003
+                        low: 53025.42828821
+                        close: 53135.84898883
+                      timestamp: 2022-01-01T00:00:00Z
+                  paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  token:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/TokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /tokens/{token}/approve:
+    post:
+      tags:
+        - Tokens
+      summary: Build Approve Allowance Transaction Quote
+      description: Builds a quote for an allowance approval transaction. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      parameters:
+        - name: token
+          in: path
+          description: Address of the token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tGSk2dVENuqAQ2rNXbui37XHuurFCTqadD
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built approve allowance transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                result: true
+                gasUsed: 12923
+                events:
+                  - owner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    spender: t8XpH1pNYDgCnqk91ZQKLgpUVeJ7XmomLT
+                    amount: "0.020000000000000000"
+                    eventType: ApprovalEvent
+                    contract: tF83sdXXt2nTkL7UyEYDVFMK4jTuYMbmR3
+                    sortOrder: 0
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0Rjgzc2RYWHQyblRrTDdVeUVZRFZGTUs0alR1WU1ibVIzIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkFwcHJvdmUiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlNwZW5kZXIiLCJ2YWx1ZSI6IjkjdDhYcEgxcE5ZRGdDbnFrOTFaUUtMZ3BVVmVKN1htb21MVCJ9LHsibGFiZWwiOiJDdXJyZW50IEFsbG93YW5jZSIsInZhbHVlIjoiMTIjMjAwMDAwMDAwMDAwMDAwMCJ9LHsibGFiZWwiOiJOZXcgQWxsb3dhbmNlIiwidmFsdWUiOiIxMiMyMDAwMDAwMDAwMDAwMDAwMCJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  token:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/TokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /tokens/{token}/distribute:
+    post:
+      tags:
+        - Tokens
+      summary: Build Distribute Tokens Transaction Quote
+      description: Builds a quote for a transaction to distribute governance tokens, to the mining governance and vault. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      parameters:
+        - name: token
+          in: path
+          description: Address of the governance token
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built distribute tokens transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                gasUsed: 99064
+                events:
+                  - vaultAmount: "100000000.00000000"
+                    miningGovernanceAmount: "300000000.00000000"
+                    periodIndex: 0
+                    totalSupply: "400000000.00000000"
+                    nextDistributionBlock: 4629775
+                    eventType: DistributionEvent
+                    contract: "tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L"
+                    sortOrder: 0
+                request: eyJzZW5kZXIiOiJ0SFlIZW03Y0xLZ29Ma2ViNzkyeW40V2F5cUt6THJqSmFrIiwidG8iOiJ0QmVZMlVBVnNiSG9TOWp3RW5UMmtNbVJzSndVSEsxajFMIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkRpc3RyaWJ1dGUiLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  token:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/TokenNotFound"
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:
