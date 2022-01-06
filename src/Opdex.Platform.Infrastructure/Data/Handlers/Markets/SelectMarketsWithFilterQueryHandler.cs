@@ -18,6 +18,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.Markets;
 
 public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarketsWithFilterQuery, IEnumerable<Market>>
 {
+    private const string PrimaryOrderColumn = "{PrimaryOrderColumn}";
     private const string TableJoins = "{TableJoins}";
     private const string WhereFilter = "{WhereFilter}";
     private const string OrderBy = "{OrderBy}";
@@ -25,6 +26,7 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
 
     private static readonly string SqlQuery =
         $@"SELECT
+                {PrimaryOrderColumn}
                 m.{nameof(MarketEntity.Id)},
                 m.{nameof(MarketEntity.Address)},
                 m.{nameof(MarketEntity.DeployerId)},
@@ -73,6 +75,7 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
     {
         var whereFilterBuilder = new WhereFilterBuilder();
         var tableJoins = string.Empty;
+        var primaryOrderColumn = string.Empty;
 
         if (!request.Cursor.IsFirstRequest)
         {
@@ -119,6 +122,21 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
         if (request.Cursor.OrderBy != MarketOrderByType.Default)
         {
             tableJoins += " LEFT JOIN market_summary ms ON m.Id = ms.MarketId";
+            var columnName = request.Cursor.OrderBy switch
+            {
+                MarketOrderByType.LiquidityUsd => nameof(MarketSummary.LiquidityUsd),
+                MarketOrderByType.StakingUsd => nameof(MarketSummary.StakingUsd),
+                MarketOrderByType.StakingWeight => nameof(MarketSummary.StakingWeight),
+                MarketOrderByType.VolumeUsd => nameof(MarketSummary.VolumeUsd),
+                MarketOrderByType.MarketRewardsDailyUsd => nameof(MarketSummary.MarketRewardsDailyUsd),
+                MarketOrderByType.ProviderRewardsDailyUsd => nameof(MarketSummary.ProviderRewardsDailyUsd),
+                MarketOrderByType.DailyLiquidityUsdChangePercent => nameof(MarketSummary.DailyLiquidityUsdChangePercent),
+                MarketOrderByType.DailyStakingUsdChangePercent => nameof(MarketSummary.DailyStakingUsdChangePercent),
+                MarketOrderByType.DailyStakingWeightChangePercent => nameof(MarketSummary.DailyStakingWeightChangePercent),
+                _ => throw new InvalidOperationException()
+            };
+
+            primaryOrderColumn = $"COALESCE(ms.{columnName}, 0) AS {columnName},";
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -130,43 +148,49 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
             _ => Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection)
         };
 
-        var orderBy = OrderByBuilder(request.Cursor.OrderBy, direction);
+        var orderBy = OrderByBuilder(request.Cursor.OrderBy, direction, false);
 
         var limit = $" LIMIT {request.Cursor.Limit + 1}";
 
-        var query = SqlQuery.Replace(WhereFilter, whereFilterBuilder.ToString())
+        var query = SqlQuery
+            .Replace(PrimaryOrderColumn, primaryOrderColumn)
+            .Replace(WhereFilter, whereFilterBuilder.ToString())
             .Replace(TableJoins, tableJoins)
             .Replace(OrderBy, orderBy)
             .Replace(Limit, limit).RemoveExcessWhitespace();
 
-        // return request.Cursor.PagingDirection == PagingDirection.Forward
-        //     ? $"{query};"
-        //     : PagingBackwardQuery.Replace(InnerQuery, query)
-        //                          .Replace(OrderBySort);
+        return request.Cursor.PagingDirection == PagingDirection.Forward
+            ? $"{query};"
+            : PagingBackwardQuery.Replace(InnerQuery, query)
+                                 .Replace(OrderBySort, OrderByBuilder(request.Cursor.OrderBy,
+                                     Enum.GetName(typeof(SortDirectionType), request.Cursor.SortDirection),
+                                     reverse: true));
 
-        return $"{query}";
     }
 
-    private static string OrderByBuilder(MarketOrderByType cursorOrderBy, string direction)
+    private static string OrderByBuilder(MarketOrderByType cursorOrderBy, string direction, bool reverse)
     {
+        var summaryPrefix = reverse ? "r" : "ms";
+        var marketPrefix = reverse ? "r" : "m";
+
         var sortPart = cursorOrderBy switch
         {
             // we coalesce as market summary may be null, if the market has recently been created
-            MarketOrderByType.LiquidityUsd => $"COALESCE(ms.{nameof(MarketSummaryEntity.LiquidityUsd)}, 0) {direction},",
-            MarketOrderByType.StakingUsd => $"COALESCE(ms.{nameof(MarketSummaryEntity.StakingUsd)}, 0) {direction},",
-            MarketOrderByType.StakingWeight => $"COALESCE(ms.{nameof(MarketSummaryEntity.StakingWeight)}, 0) {direction},",
-            MarketOrderByType.VolumeUsd => $"COALESCE(ms.{nameof(MarketSummaryEntity.VolumeUsd)}, 0) {direction},",
-            MarketOrderByType.MarketRewardsDailyUsd => $"COALESCE(ms.{nameof(MarketSummaryEntity.MarketRewardsDailyUsd)}, 0) {direction},",
-            MarketOrderByType.ProviderRewardsDailyUsd => $"COALESCE(ms.{nameof(MarketSummaryEntity.ProviderRewardsDailyUsd)}, 0) {direction},",
-            MarketOrderByType.DailyLiquidityUsdChangePercent => $"COALESCE(ms.{nameof(MarketSummaryEntity.DailyLiquidityUsdChangePercent)}, 0) {direction},",
-            MarketOrderByType.DailyStakingUsdChangePercent => $"COALESCE(ms.{nameof(MarketSummaryEntity.DailyStakingUsdChangePercent)}, 0) {direction},",
-            MarketOrderByType.DailyStakingWeightChangePercent => $"COALESCE(ms.{nameof(MarketSummaryEntity.DailyStakingWeightChangePercent)}, 0) {direction},",
+            MarketOrderByType.LiquidityUsd => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.LiquidityUsd)}, 0) {direction},",
+            MarketOrderByType.StakingUsd => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.StakingUsd)}, 0) {direction},",
+            MarketOrderByType.StakingWeight => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.StakingWeight)}, 0) {direction},",
+            MarketOrderByType.VolumeUsd => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.VolumeUsd)}, 0) {direction},",
+            MarketOrderByType.MarketRewardsDailyUsd => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.MarketRewardsDailyUsd)}, 0) {direction},",
+            MarketOrderByType.ProviderRewardsDailyUsd => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.ProviderRewardsDailyUsd)}, 0) {direction},",
+            MarketOrderByType.DailyLiquidityUsdChangePercent => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.DailyLiquidityUsdChangePercent)}, 0) {direction},",
+            MarketOrderByType.DailyStakingUsdChangePercent => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.DailyStakingUsdChangePercent)}, 0) {direction},",
+            MarketOrderByType.DailyStakingWeightChangePercent => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.DailyStakingWeightChangePercent)}, 0) {direction},",
             _ => ""
         };
 
         var stringBuilder = new StringBuilder();
         stringBuilder.Append(" ORDER BY ").Append(sortPart);
-        stringBuilder.Append(" m.").Append(nameof(MarketEntity.Id)).Append(' ').Append(direction);
+        stringBuilder.Append(' ').Append(marketPrefix).Append('.').Append(nameof(MarketEntity.Id)).Append(' ').Append(direction);
 
         return stringBuilder.ToString();
     }
