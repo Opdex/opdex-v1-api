@@ -237,6 +237,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<GetAdminByAddressQuery, AdminDto>, GetAdminByAddressQueryHandler>();
 
         // Markets
+        services.AddTransient<IRequestHandler<GetMarketsWithFilterQuery, MarketsDto>, GetMarketsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<GetMarketByAddressQuery, MarketDto>, GetMarketByAddressQueryHandler>();
         services.AddTransient<IRequestHandler<GetMarketSnapshotsWithFilterQuery, MarketSnapshotsDto>, GetMarketSnapshotsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<GetMarketPermissionsForAddressQuery, IEnumerable<MarketPermissionType>>, GetMarketPermissionsForAddressQueryHandler>();
@@ -471,6 +472,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveDeployerContractSummaryQuery, DeployerContractSummary>, RetrieveDeployerContractSummaryQueryHandler>();
 
         // Markets
+        services.AddTransient<IRequestHandler<RetrieveMarketsWithFilterQuery, IEnumerable<Market>>, RetrieveMarketsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveMarketSnapshotWithFilterQuery, MarketSnapshot>, RetrieveMarketSnapshotWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveMarketSnapshotsWithFilterQuery, IEnumerable<MarketSnapshot>>, RetrieveMarketSnapshotsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveMarketByAddressQuery, Market>, RetrieveMarketByAddressQueryHandler>();

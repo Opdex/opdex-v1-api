@@ -32,16 +32,19 @@ public class MarketDtoAssembler : IModelAssembler<Market, MarketDto>
     public async Task<MarketDto> Assemble(Market market)
     {
         var marketDto = _mapper.Map<MarketDto>(market);
-        var summary = await _mediator.Send(new RetrieveMarketSummaryByMarketIdQuery(market.Id), CancellationToken.None);
 
-        marketDto.Summary = _mapper.Map<MarketSummaryDto>(summary);
+        var summary = await _mediator.Send(new RetrieveMarketSummaryByMarketIdQuery(market.Id, findOrThrow: false), CancellationToken.None);
+        if (summary is not null) marketDto.Summary = _mapper.Map<MarketSummaryDto>(summary);
+
         marketDto.CrsToken = await AssembleToken(Address.Cirrus);
 
-        if (market.IsStakingMarket)
+        if (!market.IsStakingMarket)
         {
-            var stakingToken = await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId), CancellationToken.None);
-            marketDto.StakingToken = await AssembleMarketToken(stakingToken.Id, market);
+            return marketDto;
         }
+
+        var stakingToken = await _mediator.Send(new RetrieveTokenByIdQuery(market.StakingTokenId), CancellationToken.None);
+        marketDto.StakingToken = await AssembleMarketToken(stakingToken.Id, market);
 
         return marketDto;
     }
