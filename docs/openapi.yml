@@ -179,6 +179,12 @@ components:
       type: string
       description: Decimal value with uncapped precision and size
       pattern: ^\d*\.\d{1,18}$
+    sha256:
+      type: string
+      description: SHA256 hash value
+      pattern: ^[A-Fa-f0-9]{64}$
+      minLength: 64
+      maxLength: 64
     tokenOrderByType:
       type: string
       description: Property to sort tokens by
@@ -191,9 +197,27 @@ components:
       type: string
       description: Token type filter
       enum:
-        - All
         - Provisional
         - NonProvisional
+    marketOrderByType:
+      type: string
+      description: Property to sort markets by
+      enum:
+        - LiquidityUsd
+        - StakingUsd
+        - StakingWeight
+        - VolumeUsd
+        - MarketRewardsDailyUsd
+        - ProviderRewardsDailyUsd
+        - DailyLiquidityUsdChangePercent
+        - DailyStakingUsdChangePercent
+        - DailyStakingWeightChangePercent
+    marketType:
+      type: string
+      description: Market type filter
+      enum:
+        - Staking
+        - Standard
     interval:
       type: string
       description: Snapshot step interval
@@ -355,6 +379,19 @@ components:
           type: integer
           minimum: 0
           description: Index to sort event order
+    stratisSignatureAuthRequest:
+      type: object
+      required:
+        - signature
+        - publicKey
+      properties:
+        signature:
+          type: string
+          format: byte
+          description: Signed Stratis ID
+        publicKey:
+          $ref: "#/components/schemas/address"
+          description: Address of the message signer
     quoteSwapTransactionRequest:
       type: object
       description: Request to retrieve a token swap call quote
@@ -433,6 +470,125 @@ components:
         tokenAddress:
           $ref: "#/components/schemas/address"
           description: Address of the token to add
+    notifyBroadcastRequest:
+      type: object
+      description: Request to notify that a transaction has been broadcast
+      required:
+        - transactionHash
+      properties:
+        transactionHash:
+          $ref: "#/components/schemas/sha256"
+          description: SHA-256 hash of the transaction
+    replayQuoteRequest:
+      type: object
+      description: Request to replay a previous quote at the current point in time
+      required:
+        - quote
+      properties:
+        quote:
+          type: string
+          description: Previously received encoded transaction quote
+    marketsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/marketResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    marketResponse:
+      type: object
+      properties:
+        address:
+          $ref: "#/components/schemas/address"
+          description: Address of the market
+        pendingOwner:
+          $ref: "#/components/schemas/address"
+          description: Address of the pending market owner
+        owner:
+          $ref: "#/components/schemas/address"
+          description: Address of the market owner
+        crsToken:
+          $ref: "#/components/schemas/tokenResponse"
+          description: Details of the CRS token
+        stakingToken:
+          $ref: "#/components/schemas/tokenResponse"
+          description: Details of the staking token
+        authPoolCreators:
+          type: boolean
+          description: Whether the market owner authorizes liquidity pool creators
+        authTraders:
+          type: boolean
+          description: Whether the market owner authorizes traders
+        authProviders:
+          type: boolean
+          description: Whether the market owner authorizes liquidity providers
+        marketFeeEnabled:
+          type: boolean
+          description: Whether the market fee is enabled
+        transactionFee:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+          description: Percentage fee for a trade
+        summary:
+          $ref: "#/components/schemas/marketSummary"
+          description: Financial summary for the market
+    marketSummary:
+      type: object
+      properties:
+        liquidityUsd:
+          type: number
+          minimum: 0.00000000
+          description: Total liquidity USD amount
+        dailyLiquidityUsdChangePercent:
+          type: number
+          minimum: -100.00000000
+          description: Percentage change of the liquidity USD amount from the previous day
+        volumeUsd:
+          type: number
+          minimum: 0.00000000
+          description: Total volume USD amount
+        staking:
+          $ref: "#/components/schemas/stakingSummary"
+          description: Staking summary
+        rewards:
+          $ref: "#/components/schemas/rewardSummary"
+          description: Rewards summary
+    stakingSummary:
+      type: object
+      properties:
+        stakingWeight:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total staking weight in all pools
+        dailyStakingWeightChangePercent:
+          type: number
+          minimum: 0.00000000
+          description: Percentage change of the staking weight amount from the previous day
+        stakingUsd:
+          type: number
+          minimum: 0.00000000
+          description: Total staking weight USD amount
+        dailyStakingUsdChangePercent:
+          type: number
+          minimum: 0.00000000
+          description: Percentage change of the staking USD amount from the previous day
+    rewardSummary:
+      type: object
+      properties:
+        providerDailyUsd:
+          type: number
+          minimum: 0.00000000
+          description: USD value of rewards distributed to liquidity providers for the day
+        marketDailyUsd:
+          type: number
+          minimum: 0.00000000
+          description: USD value of rewards distributed to the market for the day
+        totalDailyUsd:
+          type: number
+          minimum: 0.00000000
+          description: Total USD value of rewards distributed for the day
     marketTokensResponse:
       type: object
       properties:
@@ -502,6 +658,7 @@ components:
           minimum: 0.00
         dailyPriceChangePercent:
           type: number
+          minimum: -100.00000000
           description: Price change percentage for the current day, reset at 00:00 UTC
         modifiedBlock:
           type: integer
@@ -527,6 +684,68 @@ components:
           type: string
           format: date-time
           description: Start time of the snapshot
+    transactionsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/transactionResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    transactionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the transaction succeeded
+        hash:
+          $ref: "#/components/schemas/sha256"
+          description: SHA-256 hash of the transaction
+        newContractAddress:
+          $ref: "#/components/schemas/address"
+          description: Address of the newly created contract, if transaction is a Create transaction
+        block:
+          $ref: "#/components/schemas/blockResponse"
+          description: Details of the block that the transaction was included in
+        gasUsed:
+          type: integer
+          minimum: 10000
+          maximum: 250000
+          description: Quantity of gas consumed
+        from:
+          $ref: "#/components/schemas/address"
+          description: Address of transaction sender
+        to:
+          $ref: "#/components/schemas/address"
+          description: Address of smart contract
+        events:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/approvalEvent"
+              - $ref: "#/components/schemas/distributionEvent"
+              - $ref: "#/components/schemas/transferEvent"
+              - $ref: "#/components/schemas/swapEvent"
+    blockResponse:
+      type: object
+      description: Details about a block
+      properties:
+        hash:
+          $ref: "#/components/schemas/sha256"
+          description: SHA-256 hash of the block
+        height:
+          type: integer
+          minimum: 1
+          description: Block number
+        time:
+          type: string
+          format: date-time
+          description: Block timestamp as determined by the block producer
+        medianTime:
+          type: string
+          format: date-time
+          description: Network-adjusted timestamp
     ohlcDecimalResponse:
       type: object
       description: Open, high, low, close values within a time interval
@@ -639,18 +858,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - signature
-                - publicKey
-              properties:
-                signature:
-                  type: string
-                  format: byte
-                  description: Signed Stratis ID
-                publicKey:
-                  $ref: "#/components/schemas/address"
-                  description: Address of the message signer
+              $ref: "#/components/schemas/stratisSignatureAuthRequest"
               example:
                 signature: H9xjfnvqucCmi3sfEKUes0qL4mD9PrZ/al78+Ka440t6WH5Qh0AIgl5YlxPa2cyuXdwwDa2OYUWR/0ocL6jRZLc=
                 publicKey: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
@@ -676,6 +884,109 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         500:
           $ref: "#/components/responses/InternalServerError"
+  /markets:
+    get:
+      tags:
+        - Markets
+      summary: Get Markets
+      description: Retrieves details for the tracked markets. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      parameters:
+        - name: marketType
+          in: query
+          description: Market type filter
+          schema:
+            $ref: "#/components/schemas/marketType"
+          example: Staking
+        - name: orderBy
+          in: query
+          description: Property by which to sort results
+          schema:
+            $ref: "#/components/schemas/marketOrderByType"
+          example: DailyLiquidityUsdChangePercent
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Market results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/marketsResponse"
+              example:
+                results:
+                  - address: t8kAxvbaFzpPTWDE8f2bdgV7V1276xu2VH
+                    owner: tHYHem7cLKgoLkeb792yn4WayqKzLrjJak
+                    authPoolCreators: false
+                    authTraders: false
+                    authProviders: false
+                    marketFeeEnabled: true
+                    transactionFee: 0.3
+                    crsToken:
+                      address: CRS
+                      name: Cirrus
+                      symbol: TCRS
+                      decimals: 8
+                      sats: 100000000
+                      totalSupply: "130000000.00000000"
+                    stakingToken:
+                      address: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+                      name: Testnet Opdex Token
+                      symbol: TODX
+                      decimals: 8
+                      sats: 100000000
+                      totalSupply: "40000000000000000.00000000"
+                    summary:
+                      liquidityUsd: 2490080.59003948
+                      dailyLiquidityUsdChangePercent: 4.32891108
+                      volumeUsd: 482002.55832901
+                      staking:
+                        stakingWeight: "54883992.33820003"
+                        dailyStakingWeightChangePercent: 7.33825455
+                        stakingUsd: 8713399.088810338
+                        dailyStakingUsdChangePercent: 9.58339281
+                      rewards:
+                        providerDailyUsd: 1205.00639582
+                        marketDailyUsd: 241.00127916
+                        totalDailyUsd: 1446.00767498
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  marketType:
+                    - The value 'New' is not valid for MarketType.
+                    - Filters cannot be provided alongside cursor.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
   /markets/{market}/tokens:
     get:
       tags:
@@ -695,7 +1006,7 @@ paths:
           description: Token type filter
           schema:
             $ref: "#/components/schemas/tokenType"
-          example: All
+          example: Provisional
         - name: tokens
           in: query
           description: Specific tokens to include
@@ -1212,7 +1523,7 @@ paths:
           description: Token type filter
           schema:
             $ref: "#/components/schemas/tokenType"
-          example: All
+          example: Provisional
         - name: tokens
           in: query
           description: Specific tokens to include
@@ -1642,6 +1953,312 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         404:
           $ref: "#/components/responses/TokenNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /transactions:
+    get:
+      tags:
+        - Transactions
+      summary: Get Transactions
+      description: Retrieves details for tracked Opdex transactions. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      parameters:
+        - name: wallet
+          in: query
+          description: Filter transactions by wallet address
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: contracts
+          in: query
+          description: Smart contract addresses to include
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/address"
+        - name: eventTypes
+          in: query
+          description: Filter to include transactions with event types
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/transactionEventType"
+          example:
+            - AddLiquidityEvent
+            - RemoveLiquidityEvent
+            - SwapEvent
+            - StartStakingEcvent
+            - StopStakingEvent
+            - StartMiningEvent
+            - StopMiningEvent
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Transaction results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionsResponse"
+              example:
+                results:
+                  - success: true
+                    hash: f5f3dda5a419a699018800fae7938216a6d9f6df6767bc2fb7e847e7c01a0cd5
+                    block:
+                      hash: 71473cf8bc8553676565f878e965a8e3c5070a7f3ef77c32be2460d1ff1e62d8
+                      height: 2962935
+                      time: 2022-01-05T11:32:48Z
+                      medianTime: 2022-01-05T11:30:24Z
+                    gasUsed: 64275
+                    from: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    to: t8WntmWKiLs1BdzoqPGXmPAYzUTpPb3DBw
+                    events:
+                      - from: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                        to: t8WntmWKiLs1BdzoqPGXmPAYzUTpPb3DBw
+                        amount: "3500000.00000000"
+                        eventType: TransferEvent
+                        contract: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+                        sortOrder: 0
+                      - staker: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                        amount: "3500000.00000000"
+                        stakerBalance: "5000000.00000000"
+                        totalStaked: "5010000.00000000"
+                        eventType: StartStakingEvent
+                        contract: t8WntmWKiLs1BdzoqPGXmPAYzUTpPb3DBw
+                        sortOrder: 1
+                      - stakingPool: t8WntmWKiLs1BdzoqPGXmPAYzUTpPb3DBw
+                        miningPool: tT9qtdXVvaf9fti7eUttnvaE7aSTrBgWPz
+                        weight: "5010000.00000000"
+                        eventType: NominationEvent
+                        contract: tVfGTqrToiTU9bfnvD5UDC5ZQVY4oj4jrc
+                        sortOrder: 2
+                  - success: true
+                    hash: eb71dc3c295d66b9cf0c2459f0dc1e68a333b4c6637165c288fd364416ec9182
+                    block:
+                      hash: 61b94e910186b3738ceef13835a7d6ee2bce020fb67573120a27041491460999
+                      height: 2962932
+                      time: 2022-01-05T11:31:28Z
+                      medianTime: 2022-01-05T11:29:04Z
+                    gasUsed: 61380
+                    from: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    to: t8XpH1pNYDgCnqk91ZQKLgpUVeJ7XmomLT
+                    events:
+                      - from: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                        to: tLfFeV1C4NLcH6sYGrSgi9ZuHtfvSkn3Xp
+                        amount: "27088.68664829"
+                        eventType: TransferEvent
+                        contract: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+                        sortOrder: 0
+                      - from: t6vc3nrbAurGs3i17HJUavZuw4ioKTiFCE
+                        to: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                        amount: "3669.87304155"
+                        eventType: TransferEvent
+                        contract: tLfFeV1C4NLcH6sYGrSgi9ZuHtfvSkn3Xp
+                        sortOrder: 1
+                      - amountCrs: "500.00000000"
+                        amountSrc: "27088.68664829"
+                        amountLpt: "3669.87304155"
+                        tokenSrc: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+                        tokenLp: tLfFeV1C4NLcH6sYGrSgi9ZuHtfvSkn3Xp
+                        tokenLpTotalSupply: "39459.73310927"
+                        eventType: AddLiquidityEvent
+                        contract: tLfFeV1C4NLcH6sYGrSgi9ZuHtfvSkn3Xp
+                        sortOrder: 2
+                paging:
+                  next: ZGlyZWN0aW9uOkRFU0M7bGltaXQ6NTtwYWdpbmc6Rm9yd2FyZDt3YWxsZXQ6dFE5UnVrWnNCNmJCc2VuSG5HU28xcTY5Q0p6V0dueG9obTtldmVudFR5cGVzOkFkZExpcXVpZGl0eUV2ZW50O2V2ZW50VHlwZXM6UmVtb3ZlTGlxdWlkaXR5RXZlbnQ7ZXZlbnRUeXBlczpTd2FwRXZlbnQ7ZXZlbnRUeXBlczpTdGFydFN0YWtpbmdFdmVudDtldmVudFR5cGVzOlN0b3BTdGFraW5nRXZlbnQ7ZXZlbnRUeXBlczpTdGFydE1pbmluZ0V2ZW50O2V2ZW50VHlwZXM6U3RvcE1pbmluZ0V2ZW50O3BvaW50ZXI6TmpjNTs=
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  wallet:
+                    - Invalid address.
+                    - Filters cannot be provided alongside cursor.
+                  eventTypes:
+                    - Filters cannot be provided alongside cursor.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - Transactions
+      summary: Notify Broadcast
+      description: Sends notifications to a user about broadcast transactions. This endpoint is intended to be called by a Stratis Transaction Handoff Broadcastor, as a way to notify a user that their transaction has been broadcast. See the [specification](https://github.com/Opdex/STHS) for further details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/notifyBroadcastRequest"
+            example:
+              transactionHash: 402aa2241adb7b04d07d4dbc89f8aae72fa1c11f9bd2bd9013222cd774ed39fe
+      responses:
+        204:
+          description: The broadcast notification was sent
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  transactionHash:
+                    - Transaction already mined.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /transaction/{hash}:
+    get:
+      tags:
+        - Transactions
+      summary: Get Transaction
+      description: Retrieves details for a tracked Opdex transaction with the supplied hash.
+      parameters:
+        - name: hash
+          in: path
+          description: The SHA256 hash of the transaction to look up
+          required: true
+          schema:
+            $ref: "#/components/schemas/sha256"
+          example: 0132da001ca719cc8d98610fbd8493e92c7943c6e0c0844a819f4c90531fd3a6
+      responses:
+        200:
+          description: Transaction found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionResponse"
+              example:
+                - success: true
+                  hash: 0132da001ca719cc8d98610fbd8493e92c7943c6e0c0844a819f4c90531fd3a6
+                  block:
+                    hash: dd0eab2a346652a396a601d4b9ff17831ca30d9bfb186b586d10be51290868ce
+                    height: 2658775
+                    time: 2021-10-11T17:50:40Z
+                    medianTime: 2021-10-11T17:49:04Z
+                  gasUsed: 99064
+                  from: tHYHem7cLKgoLkeb792yn4WayqKzLrjJak
+                  to: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+                  events:
+                    - vaultAmount: "100000000.00000000"
+                      miningGovernanceAmount: "300000000.00000000"
+                      periodIndex: 0
+                      totalSupply: "400000000.00000000"
+                      nextDistributionBlock: 4629775
+                      eventType: "DistributionEvent"
+                      contract: "tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L"
+                      sortOrder: 0
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  hash:
+                    - Invalid hash.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          description: Transaction not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/404
+                title: Not Found
+                status: 404
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /transaction/replay-quote:
+    post:
+      tags:
+        - Transactions
+      summary: Replay Transaction Quote
+      description: Replays a previous transaction quote at the current point in time.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/replayQuoteRequest"
+            example:
+              quote: eyJzZW5kZXIiOiJ0SFlIZW03Y0xLZ29Ma2ViNzkyeW40V2F5cUt6THJqSmFrIiwidG8iOiJ0QmVZMlVBVnNiSG9TOWp3RW5UMmtNbVJzSndVSEsxajFMIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkRpc3RyaWJ1dGUiLCJjYWxsYmFjayI6Imh0dHBzOi8vdGVzdC1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Transaction quote replayed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                error: Unable to distribute, not yet ready.
+                gasUsed: 10118
+                events: []
+                request: eyJzZW5kZXIiOiJ0SFlIZW03Y0xLZ29Ma2ViNzkyeW40V2F5cUt6THJqSmFrIiwidG8iOiJ0QmVZMlVBVnNiSG9TOWp3RW5UMmtNbVJzSndVSEsxajFMIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkRpc3RyaWJ1dGUiLCJwYXJhbWV0ZXJzIjpbXSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  quote:
+                    - Quote must be base-64 encoded string.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:
