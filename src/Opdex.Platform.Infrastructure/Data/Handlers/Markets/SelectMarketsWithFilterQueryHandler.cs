@@ -49,7 +49,22 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
     private const string InnerQuery = "{InnerQuery}";
     private const string OrderBySort = "{OrderBySort}";
 
-    private static readonly string PagingBackwardQuery = @$"SELECT * FROM ({InnerQuery}) r {OrderBySort};";
+    private static readonly string PagingBackwardQuery =
+        @$"SELECT
+                {nameof(MarketEntity.Id)},
+                {nameof(MarketEntity.Address)},
+                {nameof(MarketEntity.DeployerId)},
+                {nameof(MarketEntity.StakingTokenId)},
+                {nameof(MarketEntity.PendingOwner)},
+                {nameof(MarketEntity.Owner)},
+                {nameof(MarketEntity.AuthPoolCreators)},
+                {nameof(MarketEntity.AuthProviders)},
+                {nameof(MarketEntity.AuthTraders)},
+                {nameof(MarketEntity.TransactionFee)},
+                {nameof(MarketEntity.MarketFeeEnabled)},
+                {nameof(MarketEntity.CreatedBlock)},
+                {nameof(MarketEntity.ModifiedBlock)}
+            FROM ({InnerQuery}) r {OrderBySort};";
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
@@ -97,15 +112,15 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
             var pointerCondition = request.Cursor.OrderBy switch
             {
                 // we coalesce as market summary may be null, if the market has recently been created
-                MarketOrderByType.LiquidityUsd => $"(COALESCE(ms.{nameof(MarketSummaryEntity.LiquidityUsd)}, 0), {suffix}",
-                MarketOrderByType.StakingUsd => $"(COALESCE(ms.{nameof(MarketSummaryEntity.StakingUsd)}, 0), {suffix}",
-                MarketOrderByType.StakingWeight => $"(COALESCE(ms.{nameof(MarketSummaryEntity.StakingWeight)}, 0), {suffix}",
-                MarketOrderByType.VolumeUsd => $"(COALESCE(ms.{nameof(MarketSummaryEntity.VolumeUsd)}, 0), {suffix}",
-                MarketOrderByType.MarketRewardsDailyUsd => $"(COALESCE(ms.{nameof(MarketSummaryEntity.MarketRewardsDailyUsd)}, 0), {suffix}",
-                MarketOrderByType.ProviderRewardsDailyUsd => $"(COALESCE(ms.{nameof(MarketSummaryEntity.ProviderRewardsDailyUsd)}, 0), {suffix}",
-                MarketOrderByType.DailyLiquidityUsdChangePercent => $"(COALESCE(ms.{nameof(MarketSummaryEntity.DailyLiquidityUsdChangePercent)}, 0), {suffix}",
-                MarketOrderByType.DailyStakingUsdChangePercent => $"(COALESCE(ms.{nameof(MarketSummaryEntity.DailyStakingUsdChangePercent)}, 0), {suffix}",
-                MarketOrderByType.DailyStakingWeightChangePercent => $"(COALESCE(ms.{nameof(MarketSummaryEntity.DailyStakingWeightChangePercent)}, 0), {suffix}",
+                MarketOrderByType.LiquidityUsd => $"(ms.{nameof(MarketSummaryEntity.LiquidityUsd)}, {suffix}",
+                MarketOrderByType.StakingUsd => $"(ms.{nameof(MarketSummaryEntity.StakingUsd)}, {suffix}",
+                MarketOrderByType.StakingWeight => $"(ms.{nameof(MarketSummaryEntity.StakingWeight)}, {suffix}",
+                MarketOrderByType.VolumeUsd => $"(ms.{nameof(MarketSummaryEntity.VolumeUsd)}, {suffix}",
+                MarketOrderByType.MarketRewardsDailyUsd => $"(ms.{nameof(MarketSummaryEntity.MarketRewardsDailyUsd)}, {suffix}",
+                MarketOrderByType.ProviderRewardsDailyUsd => $"(ms.{nameof(MarketSummaryEntity.ProviderRewardsDailyUsd)}, {suffix}",
+                MarketOrderByType.DailyLiquidityUsdChangePercent => $"(ms.{nameof(MarketSummaryEntity.DailyLiquidityUsdChangePercent)}, {suffix}",
+                MarketOrderByType.DailyStakingUsdChangePercent => $"(ms.{nameof(MarketSummaryEntity.DailyStakingUsdChangePercent)}, {suffix}",
+                MarketOrderByType.DailyStakingWeightChangePercent => $"(ms.{nameof(MarketSummaryEntity.DailyStakingWeightChangePercent)}, {suffix}",
                 _ => $"m.{nameof(MarketEntity.Id)} {sortOperator} @{nameof(SqlParams.MarketIdPointer)}"
             };
 
@@ -136,7 +151,7 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
                 _ => throw new InvalidOperationException()
             };
 
-            primaryOrderColumn = $"COALESCE(ms.{columnName}, 0) AS {columnName},";
+            primaryOrderColumn = $"ms.{columnName} AS {columnName},";
         }
 
         // Set the direction, moving backwards with previous requests, the sort order must be reversed first.
@@ -176,15 +191,15 @@ public class SelectMarketsWithFilterQueryHandler : IRequestHandler<SelectMarkets
         var sortPart = cursorOrderBy switch
         {
             // we coalesce as market summary may be null, if the market has recently been created
-            MarketOrderByType.LiquidityUsd => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.LiquidityUsd)}, 0) {direction},",
-            MarketOrderByType.StakingUsd => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.StakingUsd)}, 0) {direction},",
-            MarketOrderByType.StakingWeight => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.StakingWeight)}, 0) {direction},",
-            MarketOrderByType.VolumeUsd => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.VolumeUsd)}, 0) {direction},",
-            MarketOrderByType.MarketRewardsDailyUsd => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.MarketRewardsDailyUsd)}, 0) {direction},",
-            MarketOrderByType.ProviderRewardsDailyUsd => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.ProviderRewardsDailyUsd)}, 0) {direction},",
-            MarketOrderByType.DailyLiquidityUsdChangePercent => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.DailyLiquidityUsdChangePercent)}, 0) {direction},",
-            MarketOrderByType.DailyStakingUsdChangePercent => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.DailyStakingUsdChangePercent)}, 0) {direction},",
-            MarketOrderByType.DailyStakingWeightChangePercent => $"COALESCE({summaryPrefix}.{nameof(MarketSummaryEntity.DailyStakingWeightChangePercent)}, 0) {direction},",
+            MarketOrderByType.LiquidityUsd => $"{summaryPrefix}.{nameof(MarketSummaryEntity.LiquidityUsd)} {direction},",
+            MarketOrderByType.StakingUsd => $"{summaryPrefix}.{nameof(MarketSummaryEntity.StakingUsd)} {direction},",
+            MarketOrderByType.StakingWeight => $"{summaryPrefix}.{nameof(MarketSummaryEntity.StakingWeight)} {direction},",
+            MarketOrderByType.VolumeUsd => $"{summaryPrefix}.{nameof(MarketSummaryEntity.VolumeUsd)} {direction},",
+            MarketOrderByType.MarketRewardsDailyUsd => $"{summaryPrefix}.{nameof(MarketSummaryEntity.MarketRewardsDailyUsd)} {direction},",
+            MarketOrderByType.ProviderRewardsDailyUsd => $"{summaryPrefix}.{nameof(MarketSummaryEntity.ProviderRewardsDailyUsd)} {direction},",
+            MarketOrderByType.DailyLiquidityUsdChangePercent => $"{summaryPrefix}.{nameof(MarketSummaryEntity.DailyLiquidityUsdChangePercent)} {direction},",
+            MarketOrderByType.DailyStakingUsdChangePercent => $"{summaryPrefix}.{nameof(MarketSummaryEntity.DailyStakingUsdChangePercent)} {direction},",
+            MarketOrderByType.DailyStakingWeightChangePercent => $"{summaryPrefix}.{nameof(MarketSummaryEntity.DailyStakingWeightChangePercent)} {direction},",
             _ => ""
         };
 
