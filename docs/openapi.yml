@@ -81,6 +81,30 @@ components:
             status: 404
             extensions:
               traceId: 00-00000000000000000000000000000000-0000000000000000-00
+    VaultNotFound:
+      description: Vault not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/problemDetails"
+          example:
+            type: https://httpstatuses.com/404
+            title: Not Found
+            status: 404
+            extensions:
+              traceId: 00-00000000000000000000000000000000-0000000000000000-00
+    VaultOrProposalNotFound:
+      description: Vault or proposal not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/problemDetails"
+          example:
+            type: https://httpstatuses.com/404
+            title: Not Found
+            status: 404
+            extensions:
+              traceId: 00-00000000000000000000000000000000-0000000000000000-00
     Unauthorized:
       description: Unauthorized
       content:
@@ -252,11 +276,18 @@ components:
         - TotalVoteMinimum
     proposalStatus:
       type: string
-      description: Status of a vault proposal
+      description: Status of vault proposal
       enum:
         - Pledge
         - Vote
         - Complete
+    certificateStatus:
+      type: string
+      description: Status of vault certificate
+      enum:
+        - Vesting
+        - Redeemed
+        - Revoked
     transactionEventType:
       type: string
       description: Opdex event type identifier
@@ -625,14 +656,14 @@ components:
           $ref: "#/components/schemas/fixedDecimal"
           description: Address of the token holder
         periodIndex:
-          type: number
+          type: integer
           minimum: 0
           description: Distribution number
         totalSupply:
           $ref: "#/components/schemas/fixedDecimal"
           description: Total amount of governance tokens distributed
         nextDistributionBlock:
-          type: number
+          type: integer
           minimum: 1
           description: Block number of the next distribution
         eventType:
@@ -973,7 +1004,7 @@ components:
       description: Indicates a vault proposal was created
       properties:
         proposalId:
-          type: number
+          type: integer
           minimum: 1
           description: Identifier for the proposal
         wallet:
@@ -1011,7 +1042,7 @@ components:
       description: Indicates a vault proposal was completed
       properties:
         proposalId:
-          type: number
+          type: integer
           minimum: 1
           description: Identifier for the proposal
         approved:
@@ -1032,7 +1063,7 @@ components:
       description: Indicates a pledge was made to a vault proposal
       properties:
         proposalId:
-          type: number
+          type: integer
           minimum: 1
           description: Identifier for the proposal
         pledger:
@@ -1065,7 +1096,7 @@ components:
       description: Indicates a pledge was withdrawn from a vault proposal
       properties:
         proposalId:
-          type: number
+          type: integer
           minimum: 1
           description: Identifier for the proposal
         pledger:
@@ -1098,7 +1129,7 @@ components:
       description: Indicates a vote was made on a vault proposal
       properties:
         proposalId:
-          type: number
+          type: integer
           minimum: 1
           description: Identifier for the proposal
         voter:
@@ -1134,7 +1165,7 @@ components:
       description: Indicates a vote was withdrawn from a vault proposal
       properties:
         proposalId:
-          type: number
+          type: integer
           minimum: 1
           description: Identifier for the proposal
         voter:
@@ -1212,7 +1243,7 @@ components:
           $ref: "#/components/schemas/address"
           description: Receipient of the swapped tokens
         deadline:
-          type: number
+          type: integer
           description: Block height the transaction should be mined at, which if not met causes the transaction to fail
           minimum: 0
     swapAmountInQuoteRequest:
@@ -1420,7 +1451,7 @@ components:
           description: Number of decimals of precision for token values
           minimum: 0
         sats:
-          type: number
+          type: integer
           description: Number of parts which make up one whole token
           minimum: 1
         totalSupply:
@@ -1596,6 +1627,191 @@ components:
         identifier:
           type: string
           description: Globally unique identifier of the current API instance
+    vaultsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/vaultResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    vaultResponse:
+      type: object
+      properties:
+        vault:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
+        token:
+          $ref: "#/components/schemas/address"
+          description: Address of the governance token stored in the vault
+        tokensUnassigned:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of governance tokens that can be put toward new proposals
+        tokensProposed:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of governance tokens currently locked for active proposals
+        tokensLocked:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of governance tokens in the vault
+        totalPledgeMinimum:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Minimum amount of CRS tokens required to be pledged, for a proposal to move to a vote
+        totalVoteMinimum:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Minimum amount of CRS tokens required to be voted with, for a proposal to be considered
+        vestingDuration:
+          type: integer
+          minimum: 0
+          description: Number of blocks that a certificate is vested for, before it can be redeemed
+    certificatesResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/certificateResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    certificateResponse:
+      type: object
+      properties:
+        owner:
+          $ref: "#/components/schemas/address"
+          description: Address of the certificate owner
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total value of the certificate, over the duration of the vesting period
+        vestingStartBlock:
+          type: integer
+          minimum: 1
+          description: Block that the vesting period starts
+        vestingEndBlock:
+          type: integer
+          minimum: 1
+          description: Block that the vesting period ends
+        redeemed:
+          type: boolean
+          description: Whether the certificate has been redeemed by the certificate owner
+        revoked:
+          type: boolean
+          description: Whether the certificate was revoked by the vault owner
+    pledgesResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/pledgeResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    pledgeResponse:
+      type: object
+      properties:
+        vault:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
+        proposalId:
+          type: integer
+          minimum: 1
+          description: Id of the proposal stored by the vault
+        pledger:
+          $ref: "#/components/schemas/address"
+          description: Address of the pledger
+        pledge:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS pledged to the proposal
+        balance:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Currently pledged CRS balance
+    proposalsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/proposalResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    proposalResponse:
+      type: object
+      properties:
+        vault:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
+        token:
+          $ref: "#/components/schemas/address"
+          description: Address of the governance token stored in the vault
+        proposalId:
+          type: integer
+          minimum: 1
+          description: Id of the proposal stored by the vault
+        creator:
+          $ref: "#/components/schemas/address"
+          description: Address of the proposal creator
+        wallet:
+          $ref: "#/components/schemas/address"
+          description: Address of the beneficiary if a certificate proposal, otherwise the proposal creator
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Proposal token amount
+        description:
+          type: string
+          minLength: 200
+          description: Description for the proposal
+        type:
+          $ref: "#/components/schemas/proposalType"
+          description: Type of vault proposal
+        status:
+          $ref: "#/components/schemas/proposalStatus"
+          description: Status of vault proposal
+        expiration:
+          type: integer
+          minimum: 1
+          description: Block number that the proposal status expires, for an active proposal
+        yesAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Yes vote CRS weight
+        noAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: No vote CRS weight
+        pledgeAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Pledged CRS amount
+        approved:
+          type: boolean
+          description: Whether the proposal has been approved
+    votesResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/voteResponse"
+        paging:
+          $ref: "#/components/schemas/pagingResponse"
+    voteResponse:
+      type: object
+      properties:
+        vault:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
+        proposalId:
+          type: integer
+          minimum: 1
+          description: Id of the proposal stored by the vault
+        voter:
+          $ref: "#/components/schemas/address"
+          description: Address of the voter
+        vote:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS voted with on the proposal
+        balance:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Currently voting CRS balance
+        inFavor:
+          type: boolean
+          description: Whether the vote is in favor of the proposal
 paths:
   /auth:
     post:
@@ -1605,6 +1821,7 @@ paths:
       description: >
         Responds to a request from a Stratis Signature Auth Signer.
         See the [specification](https://github.com/Opdex/SSAS) for futher detail.
+      operationId: authenticate
       parameters:
         - name: uid
           in: query
@@ -1660,6 +1877,7 @@ paths:
         - Markets
       summary: Get Markets
       description: Retrieves details for the tracked markets. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getMarkets
       parameters:
         - name: marketType
           in: query
@@ -1763,6 +1981,7 @@ paths:
         - Market Tokens
       summary: Get Market Tokens
       description: Retrieves details of tokens tracked within a specified market. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getMarketTokens
       parameters:
         - name: market
           in: path
@@ -1879,6 +2098,7 @@ paths:
         - Market Tokens
       summary: Get Market Token
       description: Retrieves details of a token, that is tracked within a specified market.
+      operationId: getMarketToken
       parameters:
         - name: market
           in: path
@@ -1941,6 +2161,7 @@ paths:
         - Market Tokens
       summary: Get Market Token History
       description: Retrieves historical pricing data for a token tracked within a specified market. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getMarketTokenHistory
       parameters:
         - name: market
           in: path
@@ -2060,6 +2281,7 @@ paths:
         - Market Tokens
       summary: Build Swap Tokens Transaction Quote
       description: Builds a quote for a token swap transaction. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: swap
       parameters:
         - name: market
           in: path
@@ -2147,6 +2369,7 @@ paths:
         - Market Tokens
       summary: Swap Amount In Quote
       description: Retrieves an estimate for the amount of tokens to be input, given a swap output.
+      operationId: getSwapAmountInQuote
       parameters:
         - name: market
           in: path
@@ -2207,6 +2430,7 @@ paths:
         - Market Tokens
       summary: Swap Amount Out Quote
       description: Retrieves an estimate for the amount of tokens output, given a swap input.
+      operationId: getSwapAmountOutQuote
       parameters:
         - name: market
           in: path
@@ -2267,6 +2491,7 @@ paths:
         - Status
       summary: Get Status
       description: Retrieves status details for the running instance of the API.
+      operationId: getStatus
       responses:
         200:
           description: Status details found
@@ -2287,6 +2512,7 @@ paths:
         - Tokens
       summary: Get Tokens
       description: Retrieves details of all tracked tokens across markets. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getTokens
       parameters:
         - name: tokenType
           in: query
@@ -2388,6 +2614,7 @@ paths:
         - Tokens
       summary: Add Token
       description: Adds an SRC token to the Opdex indexer, so that it can be tracked and used within markets.
+      operationId: addToken
       requestBody:
         required: true
         content:
@@ -2453,6 +2680,7 @@ paths:
         - Tokens
       summary: Get Token
       description: Retrieves details of a token tracked by the Opdex indexer.
+      operationId: getToken
       parameters:
         - name: token
           in: path
@@ -2506,6 +2734,7 @@ paths:
         - Tokens
       summary: Get Token History
       description: Retrieves historical pricing data for a token tracked by the Opdex indexer. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getTokenHistory
       parameters:
         - name: token
           in: path
@@ -2618,6 +2847,7 @@ paths:
         - Tokens
       summary: Build Approve Allowance Transaction Quote
       description: Builds a quote for an allowance approval transaction. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildApproveAllowanceQuote
       parameters:
         - name: token
           in: path
@@ -2675,6 +2905,7 @@ paths:
         - Tokens
       summary: Build Distribute Tokens Transaction Quote
       description: Builds a quote for a transaction to distribute governance tokens, to the mining governance and vault. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildDistributeTokensQuote
       parameters:
         - name: token
           in: path
@@ -2733,6 +2964,7 @@ paths:
         - Transactions
       summary: Get Transactions
       description: Retrieves details for tracked Opdex transactions. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getTransactions
       parameters:
         - name: wallet
           in: query
@@ -2882,6 +3114,7 @@ paths:
         - Transactions
       summary: Notify Broadcast
       description: Sends notifications to a user about broadcast transactions. This endpoint is intended to be called by a Stratis Transaction Handoff Broadcastor, as a way to notify a user that their transaction has been broadcast. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: notifyTransactionBroadcast
       requestBody:
         required: true
         content:
@@ -2918,6 +3151,7 @@ paths:
         - Transactions
       summary: Get Transaction
       description: Retrieves details for a tracked Opdex transaction with the supplied hash.
+      operationId: getTransaction
       parameters:
         - name: hash
           in: path
@@ -2989,7 +3223,8 @@ paths:
       tags:
         - Transactions
       summary: Replay Transaction Quote
-      description: Replays a previous transaction quote at the current point in time.
+      description: Replays a previous transaction quote at the current point in time. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: replayQuote
       requestBody:
         required: true
         content:
@@ -3029,6 +3264,1324 @@ paths:
                   traceId: 00-00000000000000000000000000000000-0000000000000000-00
         401:
           $ref: "#/components/responses/Unauthorized"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances:
+    get:
+      tags:
+        - Vaults
+      summary: Get Vaults
+      description: Retrieves details for tracked Opdex vaults. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getVaults
+      parameters:
+        - name: lockedToken
+          in: query
+          description: Address of the token locked in the vault
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Vault results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/vaultsResponse"
+              example:
+                results:
+                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    token: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+                    tokensUnassigned: "99984399.37597504"
+                    tokensProposed: "0.00000000"
+                    tokensLocked: "100000000.00000000"
+                    totalPledgeMinimum: "1000.00000000"
+                    totalVoteMinimum: "2000.00000000"
+                    vestingDuration: 1080000
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  lockedToken:
+                    - Filters cannot be provided alongside cursor.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}:
+    get:
+      tags:
+        - Vaults
+      summary: Get Vault
+      description: Retrieves details of a vault tracked by the Opdex indexer.
+      operationId: getVault
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+      responses:
+        200:
+          description: Vault found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/vaultResponse"
+              example:
+                vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                token: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+                tokensUnassigned: "99984399.37597504"
+                tokensProposed: "0.00000000"
+                tokensLocked: "100000000.00000000"
+                totalPledgeMinimum: "1000.00000000"
+                totalVoteMinimum: "2000.00000000"
+                vestingDuration: 1080000
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/VaultNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/certificates:
+    get:
+      tags:
+        - Vaults
+      summary: Get Vault Certificates
+      description: Retrieves details for certificates existing within tracked Opdex vaults. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getCertificates
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: holder
+          in: query
+          description: Address of the certificate holder
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: status
+          in: query
+          description: Status of the certificates
+          schema:
+            $ref: "#/components/schemas/certificateStatus"
+          example: Vesting
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Certificate results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/certificatesResponse"
+              example:
+                results:
+                  - owner: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "5000000.00000000"
+                    vestingStartBlock: 825020
+                    vestingEndBlock: 1905020
+                    redeemed: false
+                    revoked: false
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/VaultNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/certificates/redeem:
+    post:
+      tags:
+        - Vaults
+      summary: Build Redeem Vault Certificate Transaction Quote
+      description: Builds a quote for a transaction to redeem a vault certificate. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildRedeemCertificateQuote
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built redeem certificate transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                error: Unable to redeem certificate, not found.
+                gasUsed: 10218
+                events: []
+                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IlJlZGVlbUNlcnRpZmljYXRlIiwicGFyYW1ldGVycyI6W10sImNhbGxiYWNrIjoiaHR0cHM6Ly9kZXYtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/VaultNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/pledges:
+    get:
+      tags:
+        - Vaults
+      summary: Get Vault Proposal Pledges
+      description: Retrieves details for pledges that have been made to proposals within tracked Opdex vaults. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getPledges
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: proposalId
+          in: query
+          description: Id of the proposal in the vault
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+        - name: pledger
+          in: query
+          description: Address of the pledger
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: includeZeroBalances
+          in: query
+          description: Includes zero balances if true, otherwise filters out zero balances if false
+          schema:
+            type: boolean
+          example: true
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Pledge results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/pledgesResponse"
+              example:
+                results:
+                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    proposalId: 2
+                    pledger: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    pledge: "2000.00000000"
+                    balance: "2000.00000000"
+                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    proposalId: 1
+                    pledger: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    pledge: "10000.00000000"
+                    balance: "10000.00000000"
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/VaultNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals:
+    get:
+      tags:
+        - Vaults
+      summary: Get Vault Proposals
+      description: Retrieves details for proposals existing within tracked Opdex vaults. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getProposals
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: status
+          in: query
+          description: Status of the proposal
+          schema:
+            $ref: "#/components/schemas/proposalStatus"
+          example: Complete
+        - name: type
+          in: query
+          description: Type of proposal
+          schema:
+            $ref: "#/components/schemas/proposalType"
+          example: Create
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Proposal results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/proposalsResponse"
+              example:
+                results:
+                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    token: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+                    proposalId: 2
+                    creator: tTJuvSKZ7bMJwKNmC6vGYyVQUPUpiPTW5p
+                    wallet: tEtBQhXDFo5yWR1WizqXSbrZzMq6sBmhSU
+                    amount: "100000.00000000"
+                    description: "OVP-2: This person should have their certificate revoked."
+                    type: Revoke
+                    status: Complete
+                    expiration: 1025889
+                    yesAmount: "15000.34338002"
+                    noAmount: "37900.00009881"
+                    pledgeAmount: "10200.00540309"
+                    approved: false
+                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    token: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+                    proposalId: 1
+                    creator: tJyppxPeKs9rbsidSi3pqCYitkdGYjo57r
+                    wallet: tEtBQhXDFo5yWR1WizqXSbrZzMq6sBmhSU
+                    amount: "5000000.00000000"
+                    description: "OVP-1: Request for certificate. View details at: https://example.com."
+                    type: Create
+                    status: Complete
+                    expiration: 945889
+                    yesAmount: "200600.4932824"
+                    noAmount: "17534.53831111"
+                    pledgeAmount: "10000.00000000"
+                    approved: true
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/VaultNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/create-certificate:
+    post:
+      tags:
+        - Vaults
+      summary: Build Propose Create Certificate Transaction Quote
+      description: Builds a quote for a transaction to create a proposal for creating a vault certificate. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildProposeCreateCertificateQuote
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built propose create certificate transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                result: 7
+                gasUsed: 14733
+                events:
+                  - proposalId: 7
+                    wallet: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "2500000.00000000"
+                    type: Create
+                    status: Pledge
+                    expiration: 959117
+                    description: "OVP-1: Request to create certificate. See https://www.example.com for details."
+                    eventType: CreateVaultProposalEvent
+                    contract: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    sortOrder: 0
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZU5ld0NlcnRpZmljYXRlUHJvcG9zYWwiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IkFtb3VudCIsInZhbHVlIjoiMTIjMjUwMDAwMDAwMDAwMDAwIn0seyJsYWJlbCI6IlJlY2lwaWVudCIsInZhbHVlIjoiOSN0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIn0seyJsYWJlbCI6IkRlc2NyaXB0aW9uIiwidmFsdWUiOiI0I09WUC0xOiBSZXF1ZXN0IHRvIGNyZWF0ZSBjZXJ0aWZpY2F0ZS4gU2VlIGh0dHBzOi8vd3d3LmV4YW1wbGUuY29tIGZvciBkZXRhaWxzLiJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/VaultNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/revoke-certificate:
+    post:
+      tags:
+        - Vaults
+      summary: Build Propose Revoke Certificate Transaction Quote
+      description: Builds a quote for a transaction to create a proposal for revoking a vault certificate. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildProposeRevokeCertificateQuote
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built propose revoke certificate transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                error: Unable to propose revoking certificate, invalid certificate.
+                gasUsed: 10164
+                events: []
+                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVJldm9rZUNlcnRpZmljYXRlUHJvcG9zYWwiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlJlY2lwaWVudCIsInZhbHVlIjoiOSNQQVZWMmM5TXVrOUV1NHdpOEZxZG1tNTVmZnpoQUZQZmZWIn0seyJsYWJlbCI6IkRlc2NyaXB0aW9uIiwidmFsdWUiOiI0I09WUC0xOiBSZXF1ZXN0IHRvIHJldm9rZSBjZXJ0aWZpY2F0ZS4gU2VlIGh0dHBzOi8vd3d3LmV4YW1wbGUuY29tIGZvciBkZXRhaWxzLiJ9XSwiY2FsbGJhY2siOiJodHRwczovL2Rldi1hcGkub3BkZXguY29tL3RyYW5zYWN0aW9ucyJ9
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/VaultNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/minimum-pledge:
+    post:
+      tags:
+        - Vaults
+      summary: Build Propose Change Minimum Pledge Transaction Quote
+      description: Builds a quote for a transaction to create a proposal for changing the minimum pledge amount. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildProposeChangeMinimumPledgeQuote
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built propose change minimum pledge transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                result: 8
+                gasUsed: 12728
+                events:
+                  - proposalId: 8
+                    wallet: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "50000.00000000"
+                    type: TotalPledgeMinimum
+                    status: Pledge
+                    expiration: 959140
+                    description: "OVP-1: Request to change minimum pledge amount. See https://www.example.com for details."
+                    eventType: CreateVaultProposalEvent
+                    contract: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    sortOrder: 0
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVRvdGFsUGxlZGdlTWluaW11bVByb3Bvc2FsIiwicGFyYW1ldGVycyI6W3sibGFiZWwiOiJBbW91bnQiLCJ2YWx1ZSI6IjEyIzUwMDAwMDAwMDAwMDAifSx7ImxhYmVsIjoiRGVzY3JpcHRpb24iLCJ2YWx1ZSI6IjQjT1ZQLTE6IFJlcXVlc3QgdG8gY2hhbmdlIG1pbmltdW0gcGxlZGdlIGFtb3VudC4gU2VlIGh0dHBzOi8vd3d3LmV4YW1wbGUuY29tIGZvciBkZXRhaWxzLiJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/VaultNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/minimum-vote:
+    post:
+      tags:
+        - Vaults
+      summary: Build Propose Change Minimum Vote Transaction Quote
+      description: Builds a quote for a transaction to create a proposal for changing the minimum vote threshold. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildProposeChangeMinimumVoteQuote
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built propose change minimum vote transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                result: 9
+                gasUsed: 12726
+                events:
+                  - proposalId: 9
+                    wallet: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    amount: "50000.00000000"
+                    type: TotalPledgeVote
+                    status: Pledge
+                    expiration: 959153
+                    description: "OVP-1: Request to change minimum vote amount. See https://www.example.com for details."
+                    eventType: CreateVaultProposalEvent
+                    contract: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    sortOrder: 0
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNyZWF0ZVRvdGFsVm90ZU1pbmltdW1Qcm9wb3NhbCIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiQW1vdW50IiwidmFsdWUiOiIxMiM1MDAwMDAwMDAwMDAifSx7ImxhYmVsIjoiRGVzY3JpcHRpb24iLCJ2YWx1ZSI6IjQjT1ZQLTE6IFJlcXVlc3QgdG8gY2hhbmdlIG1pbmltdW0gdm90ZSBhbW91bnQuIFNlZSBodHRwczovL3d3dy5leGFtcGxlLmNvbSBmb3IgZGV0YWlscy4ifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly90ZXN0LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/VaultNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/{proposalId}:
+    get:
+      tags:
+        - Vaults
+      summary: Get Vault Proposal
+      description: Retrieves a proposal that exists in a tracked Opdex vault.
+      operationId: getVaultProposal
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: proposalId
+          in: path
+          description: Id of the proposal
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      responses:
+        200:
+          description: Proposal found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/proposalResponse"
+              example:
+                vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                token: tBeY2UAVsbHoS9jwEnT2kMmRsJwUHK1j1L
+                proposalId: 1
+                creator: tJyppxPeKs9rbsidSi3pqCYitkdGYjo57r
+                wallet: tEtBQhXDFo5yWR1WizqXSbrZzMq6sBmhSU
+                amount: "5000000.00000000"
+                description: "OVP-1: Request for certificate. View details at: https://example.com."
+                type: Create
+                status: Complete
+                expiration: 945889
+                yesAmount: "200600.4932824"
+                noAmount: "17534.53831111"
+                pledgeAmount: "10000.00000000"
+                approved: true
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/VaultOrProposalNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/{proposalId}/complete:
+    post:
+      tags:
+        - Vaults
+      summary: Build Complete Proposal Transaction Quote
+      description: Builds a quote for a transaction to complete a vault proposal. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildCompleteProposalQuote
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: proposalId
+          in: path
+          description: Id of the proposal
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built complete proposal transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                error: Unable to complete proposal, not yet expired.
+                gasUsed: 10213
+                events: []
+                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IkNvbXBsZXRlUHJvcG9zYWwiLCJwYXJhbWV0ZXJzIjpbeyJsYWJlbCI6IlByb3Bvc2FsIElkIiwidmFsdWUiOiI3IzcifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly9kZXYtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/VaultOrProposalNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/{proposalId}/pledges:
+    post:
+      tags:
+        - Vaults
+      summary: Build Make Pledge Transaction Quote
+      description: Builds a quote for a transaction to make a pledge to a vault proposal. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildPledgeQuote
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: proposalId
+          in: path
+          description: Id of the proposal
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built pledge transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                gasUsed: 13674
+                events:
+                  - proposalId: 7
+                    pledger: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    pledgeAmount: "5000.00000000"
+                    pledgerAmount: "5000.00000000"
+                    proposalPledgeAmount: "10000.00000000"
+                    "totalPledgeMinimumMet": true,
+                    eventType: VaultProposalPledgeEvent
+                    contract: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    sortOrder: 0
+                request: eyJzZW5kZXIiOiJ0UTlSdWtac0I2YkJzZW5IbkdTbzFxNjlDSnpXR254b2htIiwidG8iOiJ0UzFQRUdDNFZzb3ZrRGdpYjFNRDNlWU52NUJMMkZBQzNpIiwiYW1vdW50IjoiNTAwMC4wMDAwMDAwMCIsIm1ldGhvZCI6IlBsZWRnZSIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiUHJvcG9zYWwgSWQiLCJ2YWx1ZSI6IjcjNyJ9XSwiY2FsbGJhY2siOiJodHRwczovL3Rlc3QtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/VaultOrProposalNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/{proposalId}/pledges/withdraw:
+    post:
+      tags:
+        - Vaults
+      summary: Build Withdraw Pledge Transaction Quote
+      description: Builds a quote for a transaction to withdraw a pledge from a vault proposal. If the proposal is expired or the minimum pledge threshold is met, this will not affect the proposal. Otherwise, the pledge will be negated from the total pledge amount. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildWithdrawPledgeQuote
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: proposalId
+          in: path
+          description: Id of the proposal
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built withdraw pledge transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                error: Value overflow.
+                gasUsed: 10283
+                events: []
+                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IldpdGhkcmF3Vm90ZSIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiUHJvcG9zYWwgSWQiLCJ2YWx1ZSI6IjcjNyJ9LHsibGFiZWwiOiJXaXRoZHJhd2FsIEFtb3VudCIsInZhbHVlIjoiNyMxMDAwMDAwMDAwIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vZGV2LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/VaultOrProposalNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/{proposalId}/pledges/{pledger}:
+    get:
+      tags:
+        - Vaults
+      summary: Get Vault Proposal Pledge Position
+      description: Retrieves details for a pledgers position on a vault proposal.
+      operationId: getPledgePosition
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: proposalId
+          in: path
+          description: Id of the proposal
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+        - name: pledger
+          in: path
+          description: Address of the pledger
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+      responses:
+        200:
+          description: Pledge position found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/pledgeResponse"
+              example:
+                vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                proposalId: 1
+                pledger: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                pledge: "10000.00000000"
+                balance: "10000.00000000"
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          description: Vault, proposal or pledger not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/problemDetails"
+              example:
+                type: https://httpstatuses.com/404
+                title: Not Found
+                status: 404
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/{proposalId}/votes:
+    post:
+      tags:
+        - Vaults
+      summary: Build Cast Vote Transaction Quote
+      description: Builds a quote for a transaction to make a vote on a vault proposal. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildVoteQuote
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: proposalId
+          in: path
+          description: Id of the proposal
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built vote transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                error: Unable to vote, invalid status
+                gasUsed: 13674
+                events: []
+                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMTAwMDAuMDAwMDAwMDAiLCJtZXRob2QiOiJWb3RlIiwicGFyYW1ldGVycyI6W3sibGFiZWwiOiJQcm9wb3NhbCBJZCIsInZhbHVlIjoiNyM3In0seyJsYWJlbCI6IkluIEZhdm9yIiwidmFsdWUiOiIxI1RydWUifV0sImNhbGxiYWNrIjoiaHR0cHM6Ly9kZXYtYXBpLm9wZGV4LmNvbS90cmFuc2FjdGlvbnMifQ==
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/VaultOrProposalNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/{proposalId}/votes/withdraw:
+    post:
+      tags:
+        - Vaults
+      summary: Build Withdraw Vote Transaction Quote
+      description: Builds a quote for a transaction to withdraw a vote from a vault proposal. If the proposal is completed or expired, this will not affect the proposal. Otherwise, the vote will be negated from the current voting weights. The quote can be broadcast by a Stratis Transaction Handoff Broadcastor. See the [specification](https://github.com/Opdex/STHS) for further details.
+      operationId: buildWithdrawVoteQuote
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: proposalId
+          in: path
+          description: Id of the proposal
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      security:
+        - opdexAuth: []
+      responses:
+        200:
+          description: Built withdraw vote transaction quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transactionQuoteResponse"
+              example:
+                error: Value overflow.
+                gasUsed: 10290
+                events: []
+                request: eyJzZW5kZXIiOiJQVnd5cWJ3dTVDYXplQUNvQU1Sb25hUVN5UnZUSFp2QVVoIiwidG8iOiJQVkM2RDZkZTZHNEVNdzdjaWJReXR6YjFEWWNZRjRNTEx1IiwiYW1vdW50IjoiMCIsIm1ldGhvZCI6IldpdGhkcmF3Vm90ZSIsInBhcmFtZXRlcnMiOlt7ImxhYmVsIjoiUHJvcG9zYWwgSWQiLCJ2YWx1ZSI6IjcjNyJ9LHsibGFiZWwiOiJXaXRoZHJhd2FsIEFtb3VudCIsInZhbHVlIjoiNyMxMDAwMDAwMDAwIn1dLCJjYWxsYmFjayI6Imh0dHBzOi8vZGV2LWFwaS5vcGRleC5jb20vdHJhbnNhY3Rpb25zIn0=
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/VaultOrProposalNotFound"
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/proposals/{proposalId}/votes/{voter}:
+    get:
+      tags:
+        - Vaults
+      summary: Get Vault Proposal Vote Position
+      description: Retrieves details for a voters position on a vault proposal.
+      operationId: getVotePosition
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: proposalId
+          in: path
+          description: Id of the proposal
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+        - name: voter
+          in: path
+          description: Address of the voter
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+      responses:
+        200:
+          description: Vote position found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/voteResponse"
+              example:
+                vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                proposalId: 1
+                voter: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                vote: "30000.00000000"
+                balance: "30000.00000000"
+                inFavor: true
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          description: Vault, proposal or voter not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/problemDetails"
+              example:
+                type: https://httpstatuses.com/404
+                title: Not Found
+                status: 404
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        429:
+          $ref: "#/components/responses/TooManyRequests"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /vault-governances/{vault}/votes:
+    get:
+      tags:
+        - Vaults
+      summary: Get Vault Proposal Votes
+      description: Retrieves details for votes that have been made against proposals within tracked Opdex vaults. This is a [paginated endpoint](https://docs.opdex.com/reference/using-the-opdex-platform-api#paginated-endpoints), so a request will retrieve a single page of results. It is recommended to supply filters to your query, to reduce the total number of requests that you may have to make.
+      operationId: getVotes
+      parameters:
+        - name: vault
+          in: path
+          description: Address of the vault
+          required: true
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+        - name: proposalId
+          in: query
+          description: Id of the proposal in the vault
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+        - name: voter
+          in: query
+          description: Address of the voter
+          schema:
+            $ref: "#/components/schemas/address"
+          example: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+        - name: includeZeroBalances
+          in: query
+          description: Includes zero balances if true, otherwise filters out zero balances if false
+          schema:
+            type: boolean
+          example: true
+        - name: direction
+          in: query
+          description: Order direction of the results
+          schema:
+            $ref: "#/components/schemas/sortDirection"
+          example: DESC
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 50
+          example: 10
+        - name: cursor
+          in: query
+          description: Reference of the requested page, returned by a previous call
+          schema:
+            type: string
+      responses:
+        200:
+          description: Vote results found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/votesResponse"
+              example:
+                results:
+                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    proposalId: 2
+                    voter: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    vote: "8000.00000000"
+                    balance: "8000.00000000"
+                    inFavor: false
+                  - vault: tS1PEGC4VsovkDgib1MD3eYNv5BL2FAC3i
+                    proposalId: 1
+                    voter: tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm
+                    vote: "30000.00000000"
+                    balance: "0.00000000"
+                    inFavor: true
+                paging: {}
+        400:
+          description: The request is not valid
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/validationProblemDetails"
+              example:
+                type: https://httpstatuses.com/400
+                title: One or more validation errors occurred.
+                status: 400
+                errors:
+                  vault:
+                    - Invalid address.
+                extensions:
+                  traceId: 00-00000000000000000000000000000000-0000000000000000-00
+        404:
+          $ref: "#/components/responses/VaultNotFound"
         429:
           $ref: "#/components/responses/TooManyRequests"
         500:
