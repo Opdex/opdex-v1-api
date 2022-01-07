@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
@@ -17,7 +18,8 @@ public class GetVaultCertificatesWithFilterQueryHandler : EntryFilterQueryHandle
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
 
-    public GetVaultCertificatesWithFilterQueryHandler(IMapper mapper, IMediator mediator)
+    public GetVaultCertificatesWithFilterQueryHandler(IMapper mapper, IMediator mediator, ILogger<GetVaultCertificatesWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

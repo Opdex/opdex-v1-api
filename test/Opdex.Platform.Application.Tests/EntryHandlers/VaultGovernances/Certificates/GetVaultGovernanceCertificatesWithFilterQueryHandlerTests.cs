@@ -1,6 +1,7 @@
 using AutoMapper;
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Certificates;
 using Opdex.Platform.Application.Abstractions.Models;
@@ -37,7 +38,7 @@ public class GetVaultGovernanceCertificatesWithFilterQueryHandlerTests
         _mapperMock = new Mock<IMapper>();
         _mediatorMock = new Mock<IMediator>();
 
-        _handler = new GetVaultGovernanceCertificatesWithFilterQueryHandler(_mapperMock.Object, _mediatorMock.Object);
+        _handler = new GetVaultGovernanceCertificatesWithFilterQueryHandler(_mapperMock.Object, _mediatorMock.Object, new NullLogger<GetVaultGovernanceCertificatesWithFilterQueryHandler>());
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Models;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
@@ -11,6 +12,13 @@ namespace Opdex.Platform.Application.EntryHandlers;
 
 public abstract class EntryFilterQueryHandler<T, TK> : IRequestHandler<T, TK> where T : IRequest<TK>
 {
+    private readonly ILogger<EntryFilterQueryHandler<T, TK>> _logger;
+
+    protected EntryFilterQueryHandler(ILogger<EntryFilterQueryHandler<T, TK>> logger)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
     public abstract Task<TK> Handle(T request, CancellationToken cancellationToken);
 
     /// <summary>
@@ -23,6 +31,8 @@ public abstract class EntryFilterQueryHandler<T, TK> : IRequestHandler<T, TK> wh
     protected CursorDto BuildCursorDto<TResult, TPointer>(IList<TResult> results, Cursor<TPointer> cursor, Func<TResult, TPointer> pointerSelector)
         where TPointer : IEquatable<TPointer>
     {
+        _logger.LogTrace("Attempting to build next and previous cursor");
+
         // The count can change if we remove the + 1 record, we want the original
         var resultsCount = results.Count;
         var limitPlusOne = cursor.Limit + 1;
@@ -37,33 +47,45 @@ public abstract class EntryFilterQueryHandler<T, TK> : IRequestHandler<T, TK> wh
         var dto = new CursorDto();
 
         // With no results there can be no pagination
-        if (resultsCount == 0) return dto;
+        if (resultsCount == 0)
+        {
+            _logger.LogTrace("Cursors not built as there was no results");
+            return dto;
+        }
 
         // Gather first and last values of the response set to build cursors after the + 1 has been removed.
         var firstResultPointer = pointerSelector.Invoke(results[0]);
-        var lastResultPointer = pointerSelector.Invoke(results[results.Count - 1]);
+        var lastResultPointer = pointerSelector.Invoke(results[^1]);
 
         // If there is an extra result, we can always create a next cursor
         if (resultsCount == limitPlusOne)
         {
+            _logger.LogDebug("Building next cursor from pointer {Pointer}", lastResultPointer);
             dto.Next = cursor.Turn(PagingDirection.Forward, lastResultPointer).ToString().Base64Encode();
 
             // We never want to create a previous cursor on the first request
-            if (!cursor.IsFirstRequest)
+            if (cursor.IsFirstRequest)
             {
-                dto.Previous = cursor.Turn(PagingDirection.Backward, firstResultPointer).ToString().Base64Encode();
+                return dto;
             }
+
+            _logger.LogDebug("Building previous cursor from pointer {Pointer}", firstResultPointer);
+            dto.Previous = cursor.Turn(PagingDirection.Backward, firstResultPointer).ToString().Base64Encode();
         }
+
         // If we have already retrieved up to the max number of results on the first request, don't return a cursor
         else if (!cursor.IsFirstRequest)
         {
-            if (cursor.PagingDirection == PagingDirection.Backward)
+            switch (cursor.PagingDirection)
             {
-                dto.Next = cursor.Turn(PagingDirection.Forward, lastResultPointer).ToString().Base64Encode();
-            }
-            else if (cursor.PagingDirection == PagingDirection.Forward)
-            {
-                dto.Previous = cursor.Turn(PagingDirection.Backward, firstResultPointer).ToString().Base64Encode();
+                case PagingDirection.Backward:
+                    _logger.LogDebug("Building next cursor from pointer {Pointer}", lastResultPointer);
+                    dto.Next = cursor.Turn(PagingDirection.Forward, lastResultPointer).ToString().Base64Encode();
+                    break;
+                case PagingDirection.Forward:
+                    _logger.LogDebug("Building previous cursor from pointer {Pointer}", firstResultPointer);
+                    dto.Previous = cursor.Turn(PagingDirection.Backward, firstResultPointer).ToString().Base64Encode();
+                    break;
             }
         }
 

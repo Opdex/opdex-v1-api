@@ -111,7 +111,7 @@ public class CreateCollectStandardMarketFeesTransactionQuoteCommandHandlerTests
         var command = new CreateCollectStandardMarketFeesTransactionQuoteCommand(market, owner, tokenAddress, amount);
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var token = new Token(5, "PNEPCzpKSXns3jWtVfkF7WJeZKdNeEZTBK", false, "Opdex", "dODX", 8, 10000000000, 50000000000000, 500, 501);
+        var token = new Token(5, "PNEPCzpKSXns3jWtVfkF7WJeZKdNeEZTBK", false, "Opdex", "dODX", 8, 10000000000, 50000000000000, 9, 10);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var expectedParameters = new List<TransactionQuoteRequestParameter>
@@ -149,7 +149,7 @@ public class CreateCollectStandardMarketFeesTransactionQuoteCommandHandlerTests
         var command = new CreateCollectStandardMarketFeesTransactionQuoteCommand(market, owner, tokenAddress, amount);
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var token = new Token(5, "PNEPCzpKSXns3jWtVfkF7WJeZKdNeEZTBK", false, "Opdex", "dODX", 8, 10000000000, 500000000000, 500, 501);
+        var token = new Token(5, "PNEPCzpKSXns3jWtVfkF7WJeZKdNeEZTBK", false, "Opdex", "dODX", 8, 10000000000, 500000000000, 9, 10);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
 
         var expectedRequest = new TransactionQuoteRequest(market, owner, FixedDecimal.Zero, StandardMarketConstants.Methods.CollectMarketFees, _config.WalletTransactionCallback);

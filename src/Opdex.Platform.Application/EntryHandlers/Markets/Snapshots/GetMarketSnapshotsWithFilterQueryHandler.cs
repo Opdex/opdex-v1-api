@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Markets;
 using Opdex.Platform.Application.Abstractions.Models.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
@@ -16,7 +17,8 @@ public class GetMarketSnapshotsWithFilterQueryHandler : EntryFilterQueryHandler<
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public GetMarketSnapshotsWithFilterQueryHandler(IMediator mediator, IMapper mapper)
+    public GetMarketSnapshotsWithFilterQueryHandler(IMediator mediator, IMapper mapper, ILogger<GetMarketSnapshotsWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

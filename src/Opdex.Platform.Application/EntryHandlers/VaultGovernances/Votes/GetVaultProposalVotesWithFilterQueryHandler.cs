@@ -1,10 +1,10 @@
 
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Votes;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Votes;
-using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using System;
@@ -19,7 +19,8 @@ public class GetVaultProposalVotesWithFilterQueryHandler : EntryFilterQueryHandl
     private readonly IMediator _mediator;
     private readonly IModelAssembler<VaultProposalVote, VaultProposalVoteDto> _voteAssembler;
 
-    public GetVaultProposalVotesWithFilterQueryHandler(IMediator mediator, IModelAssembler<VaultProposalVote, VaultProposalVoteDto> voteAssembler)
+    public GetVaultProposalVotesWithFilterQueryHandler(IMediator mediator, IModelAssembler<VaultProposalVote, VaultProposalVoteDto> voteAssembler, ILogger<GetVaultProposalVotesWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _voteAssembler = voteAssembler ?? throw new ArgumentNullException(nameof(voteAssembler));

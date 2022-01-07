@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
@@ -16,7 +17,8 @@ public class GetVaultGovernancesWithFilterQueryHandler : EntryFilterQueryHandler
     private readonly IMediator _mediator;
     private readonly IModelAssembler<VaultGovernance, VaultGovernanceDto> _vaultAssembler;
 
-    public GetVaultGovernancesWithFilterQueryHandler(IMediator mediator, IModelAssembler<VaultGovernance, VaultGovernanceDto> vaultAssembler)
+    public GetVaultGovernancesWithFilterQueryHandler(IMediator mediator, IModelAssembler<VaultGovernance, VaultGovernanceDto> vaultAssembler, ILogger<GetVaultGovernancesWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _vaultAssembler = vaultAssembler ?? throw new ArgumentNullException(nameof(vaultAssembler));

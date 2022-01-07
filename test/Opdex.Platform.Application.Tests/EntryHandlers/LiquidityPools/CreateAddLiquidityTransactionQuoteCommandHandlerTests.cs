@@ -36,7 +36,7 @@ public class CreateAddLiquidityTransactionQuoteCommandHandlerTests
 
     public CreateAddLiquidityTransactionQuoteCommandHandlerTests()
     {
-        _config = new OpdexConfiguration {ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions"};
+        _config = new OpdexConfiguration { ApiUrl = "https://dev-api.opdex.com", WalletTransactionCallback = "/transactions" };
         _mediatorMock = new Mock<IMediator>();
         _assemblerMock = new Mock<IModelAssembler<TransactionQuote, TransactionQuoteDto>>();
         _handler = new CreateAddLiquidityTransactionQuoteCommandHandler(_assemblerMock.Object, _mediatorMock.Object, _config);

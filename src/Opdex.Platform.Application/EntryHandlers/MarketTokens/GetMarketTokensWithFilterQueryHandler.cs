@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
@@ -7,18 +8,20 @@ using Opdex.Platform.Application.Assemblers;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Tokens;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Opdex.Platform.Application.EntryHandlers.Tokens;
+namespace Opdex.Platform.Application.EntryHandlers.MarketTokens;
 
 public class GetMarketTokensWithFilterQueryHandler : EntryFilterQueryHandler<GetMarketTokensWithFilterQuery, MarketTokensDto>
 {
     private readonly IMediator _mediator;
     private readonly IModelAssembler<MarketToken, MarketTokenDto> _marketTokenAssembler;
 
-    public GetMarketTokensWithFilterQueryHandler(IMediator mediator, IModelAssembler<MarketToken, MarketTokenDto> marketTokenAssembler)
+    public GetMarketTokensWithFilterQueryHandler(IMediator mediator, IModelAssembler<MarketToken, MarketTokenDto> marketTokenAssembler, ILogger<GetMarketTokensWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _marketTokenAssembler = marketTokenAssembler ?? throw new ArgumentNullException(nameof(marketTokenAssembler));
@@ -40,8 +43,8 @@ public class GetMarketTokensWithFilterQueryHandler : EntryFilterQueryHandler<Get
             {
                 TokenOrderByType.Name => (result.Name, result.Id),
                 TokenOrderByType.Symbol => (result.Symbol, result.Id),
-                TokenOrderByType.PriceUsd => (result.Summary.PriceUsd.ToString(), result.Id),
-                TokenOrderByType.DailyPriceChangePercent => (result.Summary.DailyPriceChangePercent.ToString(), result.Id),
+                TokenOrderByType.PriceUsd => (result.Summary.PriceUsd.ToString(CultureInfo.InvariantCulture), result.Id),
+                TokenOrderByType.DailyPriceChangePercent => (result.Summary.DailyPriceChangePercent.ToString(CultureInfo.InvariantCulture), result.Id),
                 _ => (string.Empty, result.Id)
             };
         });

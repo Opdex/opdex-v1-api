@@ -104,7 +104,7 @@ public class CreateTokenCommandHandlerTests
         // Arrange
         Address tokenAddress = "PNG9Xh2WU8q87nq2KGFTtoSPBDE7FiEUa8";
         const ulong blockHeight = 10;
-        const  ulong tokenId = 999;
+        const ulong tokenId = 999;
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveTokenByAddressQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Token(tokenId, tokenAddress, true, "Bitcoin", "BTC", 8, 100_000_000, 2_100_000_000_000_000, 9, 10));

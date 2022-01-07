@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Mining;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Mining;
@@ -17,7 +17,8 @@ public class GetMiningPositionsWithFilterQueryHandler : EntryFilterQueryHandler<
     private readonly IMediator _mediator;
     private readonly IModelAssembler<AddressMining, MiningPositionDto> _miningPositionAssembler;
 
-    public GetMiningPositionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<AddressMining, MiningPositionDto> miningPositionAssembler)
+    public GetMiningPositionsWithFilterQueryHandler(IMediator mediator, IModelAssembler<AddressMining, MiningPositionDto> miningPositionAssembler, ILogger<GetMiningPositionsWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _miningPositionAssembler = miningPositionAssembler ?? throw new ArgumentNullException(nameof(miningPositionAssembler));

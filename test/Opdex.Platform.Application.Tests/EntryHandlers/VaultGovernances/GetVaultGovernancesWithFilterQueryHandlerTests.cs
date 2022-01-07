@@ -1,5 +1,6 @@
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Models;
@@ -33,7 +34,7 @@ public class GetVaultGovernancesWithFilterQueryHandlerTests
         _mediatorMock = new Mock<IMediator>();
         _assemblerMock = new Mock<IModelAssembler<VaultGovernance, VaultGovernanceDto>>();
 
-        _handler = new GetVaultGovernancesWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
+        _handler = new GetVaultGovernancesWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object, new NullLogger<GetVaultGovernancesWithFilterQueryHandler>());
     }
 
     [Fact]

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Staking;
 using Opdex.Platform.Application.Abstractions.Models;
@@ -34,7 +35,7 @@ public class GetStakingPositionsWithFilterQueryHandlerTests
         _mediatorMock = new Mock<IMediator>();
         _assemblerMock = new Mock<IModelAssembler<AddressStaking, StakingPositionDto>>();
 
-        _handler = new GetStakingPositionsWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object);
+        _handler = new GetStakingPositionsWithFilterQueryHandler(_mediatorMock.Object, _assemblerMock.Object, new NullLogger<GetStakingPositionsWithFilterQueryHandler>());
     }
 
     [Fact]

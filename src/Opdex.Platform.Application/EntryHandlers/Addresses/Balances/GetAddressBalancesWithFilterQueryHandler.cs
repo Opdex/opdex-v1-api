@@ -1,9 +1,11 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses;
 using Opdex.Platform.Application.Abstractions.EntryQueries.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.Models.Addresses;
 using Opdex.Platform.Application.Abstractions.Queries.Addresses.Balances;
 using Opdex.Platform.Application.Assemblers;
+using Opdex.Platform.Application.EntryHandlers.Tokens;
 using Opdex.Platform.Domain.Models.Addresses;
 using System;
 using System.Linq;
@@ -17,7 +19,8 @@ public class GetAddressBalancesWithFilterQueryHandler : EntryFilterQueryHandler<
     private readonly IMediator _mediator;
     private readonly IModelAssembler<AddressBalance, AddressBalanceDto> _assembler;
 
-    public GetAddressBalancesWithFilterQueryHandler(IMediator mediator, IModelAssembler<AddressBalance, AddressBalanceDto> assembler)
+    public GetAddressBalancesWithFilterQueryHandler(IMediator mediator, IModelAssembler<AddressBalance, AddressBalanceDto> assembler, ILogger<GetAddressBalancesWithFilterQueryHandler> logger)
+        : base(logger)
     {
         _mediator = mediator;
         _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
