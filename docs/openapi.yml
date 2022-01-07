@@ -172,9 +172,13 @@ components:
       pattern: ^[a-km-zA-HJ-NP-Z1-9]$
     crs:
       type: string
-      enum:
-        - CRS
+      pattern: CRS
       title: CRS
+    tokenAddress:
+      description: Either CRS or an SRC token
+      oneOf:
+        - $ref: "#/components/schemas/address"
+        - $ref: "#/components/schemas/crs"
     fixedDecimal:
       type: string
       description: Decimal value with uncapped precision and size
@@ -267,6 +271,20 @@ components:
         - VaultProposalWithdrawPledgeEvent
         - VaultProposalVoteEvent
         - VaultProposalWithdrawVoteEvent
+    transactionEvent:
+      description: An Opdex transaction event produced by contract execution
+      oneOf:
+        - $ref: "#/components/schemas/approvalEvent"
+        - $ref: "#/components/schemas/distributionEvent"
+        - $ref: "#/components/schemas/transferEvent"
+        - $ref: "#/components/schemas/swapEvent"
+      discriminator:
+        propertyName: eventType
+        mapping:
+          approvalEvent: "#/components/schemas/approvalEvent"
+          distributionEvent: "#/components/schemas/distributionEvent"
+          transferEvent: "#/components/schemas/transferEvent"
+          swapEvent: "#/components/schemas/swapEvent"
     approvalEvent:
       type: object
       description: Indicates a token spending approval happened
@@ -405,9 +423,7 @@ components:
         - recipient
       properties:
         tokenOut:
-          oneOf:
-            - $ref: "#/components/schemas/address"
-            - $ref: "#/components/schemas/crs"
+          $ref: "#/components/schemas/tokenAddress"
           description: Address of the output token
         tokenInAmount:
           $ref: "#/components/schemas/fixedDecimal"
@@ -439,9 +455,7 @@ components:
         - tokenOutAmount
       properties:
         tokenOut:
-          oneOf:
-            - $ref: "#/components/schemas/address"
-            - $ref: "#/components/schemas/crs"
+          $ref: "#/components/schemas/tokenAddress"
           description: Address of the output token
         tokenOutAmount:
           $ref: "#/components/schemas/fixedDecimal"
@@ -454,9 +468,7 @@ components:
         - tokenInAmount
       properties:
         tokenIn:
-          oneOf:
-            - $ref: "#/components/schemas/address"
-            - $ref: "#/components/schemas/crs"
+          $ref: "#/components/schemas/tokenAddress"
           description: Address of the input token
         tokenInAmount:
           $ref: "#/components/schemas/fixedDecimal"
@@ -722,11 +734,7 @@ components:
         events:
           type: array
           items:
-            oneOf:
-              - $ref: "#/components/schemas/approvalEvent"
-              - $ref: "#/components/schemas/distributionEvent"
-              - $ref: "#/components/schemas/transferEvent"
-              - $ref: "#/components/schemas/swapEvent"
+            $ref: "#/components/schemas/transactionEvent"
     blockResponse:
       type: object
       description: Details about a block
@@ -792,13 +800,7 @@ components:
         events:
           type: array
           items:
-            oneOf:
-              - $ref: "#/components/schemas/approvalEvent"
-              - $ref: "#/components/schemas/distributionEvent"
-              - $ref: "#/components/schemas/transferEvent"
-              - $ref: "#/components/schemas/swapEvent"
-          discriminator:
-            propertyName: eventType
+            $ref: "#/components/schemas/transactionEvent"
         request:
           type: string
           description: Encoded transaction request, which can be used to replay or broadcast the transaction
