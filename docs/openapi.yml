@@ -234,6 +234,29 @@ components:
       enum:
         - ASC
         - DESC
+    marketPermission:
+      type: string
+      description: Market permission type
+      enum:
+        - CreatePool
+        - Trade
+        - Provide
+        - SetPermissions
+    proposalType:
+      type: string
+      description: Type of vault proposal
+      enum:
+        - Create
+        - Revoke
+        - TotalPledgeMinimum
+        - TotalVoteMinimum
+    proposalStatus:
+      type: string
+      description: Status of a vault proposal
+      enum:
+        - Pledge
+        - Vote
+        - Complete
     transactionEventType:
       type: string
       description: Opdex event type identifier
@@ -274,17 +297,300 @@ components:
     transactionEvent:
       description: An Opdex transaction event produced by contract execution
       oneOf:
-        - $ref: "#/components/schemas/approvalEvent"
-        - $ref: "#/components/schemas/distributionEvent"
-        - $ref: "#/components/schemas/transferEvent"
+        - $ref: "#/components/schemas/createMarketEvent"
+        - $ref: "#/components/schemas/setPendingDeployerOwnershipEvent"
+        - $ref: "#/components/schemas/claimPendingDeployerOwnershipEvent"
+        - $ref: "#/components/schemas/createLiquidityPoolEvent"
+        - $ref: "#/components/schemas/setPendingMarketOwnershipEvent"
+        - $ref: "#/components/schemas/claimPendingMarketOwnershipEvent"
+        - $ref: "#/components/schemas/changeMarketPermissionEvent"
+        - $ref: "#/components/schemas/addLiquidityEvent"
+        - $ref: "#/components/schemas/removeLiquidityEvent"
         - $ref: "#/components/schemas/swapEvent"
+        - $ref: "#/components/schemas/startStakingEvent"
+        - $ref: "#/components/schemas/stopStakingEvent"
+        - $ref: "#/components/schemas/collectStakingRewardsEvent"
+        - $ref: "#/components/schemas/startMiningEvent"
+        - $ref: "#/components/schemas/stopMiningEvent"
+        - $ref: "#/components/schemas/collectMiningRewardsEvent"
+        - $ref: "#/components/schemas/enableMiningEvent"
+        - $ref: "#/components/schemas/approvalEvent"
+        - $ref: "#/components/schemas/transferEvent"
+        - $ref: "#/components/schemas/distributionEvent"
+        - $ref: "#/components/schemas/rewardMiningPoolEvent"
+        - $ref: "#/components/schemas/nominationEvent"
+        - $ref: "#/components/schemas/createVaultCertificateEvent"
+        - $ref: "#/components/schemas/revokeVaultCertificateEvent"
+        - $ref: "#/components/schemas/createVaultProposalEvent"
+        - $ref: "#/components/schemas/completeVaultProposalEvent"
+        - $ref: "#/components/schemas/vaultProposalPledgeEvent"
+        - $ref: "#/components/schemas/vaultProposalWithdrawPledgeEvent"
+        - $ref: "#/components/schemas/vaultProposalVoteEvent"
+        - $ref: "#/components/schemas/vaultProposalWithdrawVoteEvent"
       discriminator:
         propertyName: eventType
         mapping:
-          approvalEvent: "#/components/schemas/approvalEvent"
-          distributionEvent: "#/components/schemas/distributionEvent"
-          transferEvent: "#/components/schemas/transferEvent"
+          createMarketEvent: "#/components/schemas/createMarketEvent"
+          setPendingDeployerOwnershipEvent: "#/components/schemas/setPendingDeployerOwnershipEvent"
+          claimPendingDeployerOwnershipEvent: "#/components/schemas/claimPendingDeployerOwnershipEvent"
+          createLiquidityPoolEvent: "#/components/schemas/createLiquidityPoolEvent"
+          setPendingMarketOwnershipEvent: "#/components/schemas/setPendingMarketOwnershipEvent"
+          claimPendingMarketOwnershipEvent: "#/components/schemas/claimPendingMarketOwnershipEvent"
+          changeMarketPermissionEvent: "#/components/schemas/changeMarketPermissionEvent"
+          addLiquidityEvent: "#/components/schemas/addLiquidityEvent"
+          removeLiquidityEvent: "#/components/schemas/removeLiquidityEvent"
           swapEvent: "#/components/schemas/swapEvent"
+          startStakingEvent: "#/components/schemas/startStakingEvent"
+          stopStakingEvent: "#/components/schemas/stopStakingEvent"
+          collectStakingRewardsEvent: "#/components/schemas/collectStakingRewardsEvent"
+          startMiningEvent: "#/components/schemas/startMiningEvent"
+          stopMiningEvent: "#/components/schemas/stopMiningEvent"
+          collectMiningRewardsEvent: "#/components/schemas/collectMiningRewardsEvent"
+          enableMiningEvent: "#/components/schemas/enableMiningEvent"
+          approvalEvent: "#/components/schemas/approvalEvent"
+          transferEvent: "#/components/schemas/transferEvent"
+          distributionEvent: "#/components/schemas/distributionEvent"
+          rewardMiningPoolEvent: "#/components/schemas/rewardMiningPoolEvent"
+          nominationEvent: "#/components/schemas/nominationEvent"
+          createVaultCertificateEvent: "#/components/schemas/createVaultCertificateEvent"
+          revokeVaultCertificateEvent: "#/components/schemas/revokeVaultCertificateEvent"
+          createVaultProposalEvent: "#/components/schemas/createVaultProposalEvent"
+          completeVaultProposalEvent: "#/components/schemas/completeVaultProposalEvent"
+          vaultProposalPledgeEvent: "#/components/schemas/vaultProposalPledgeEvent"
+          vaultProposalWithdrawPledgeEvent: "#/components/schemas/vaultProposalWithdrawPledgeEvent"
+          vaultProposalVoteEvent: "#/components/schemas/vaultProposalVoteEvent"
+          vaultProposalWithdrawVoteEvent: "#/components/schemas/vaultProposalWithdrawVoteEvent"
+    createMarketEvent:
+      type: object
+      description: Indicates a market was created
+      properties:
+        market:
+          $ref: "#/components/schemas/address"
+          description: Address of the new market
+        owner:
+          $ref: "#/components/schemas/address"
+          description: Address of the market owner
+        router:
+          $ref: "#/components/schemas/address"
+          description: Address of the market router
+        authPoolCreators:
+          type: boolean
+          description: Whether the market requires authorization to create a pool
+        authProviders:
+          type: boolean
+          description: Whether the market requires authorization to provide liquidity
+        authTraders:
+          type: boolean
+          description: Whether the market requires authorization to swap
+        transactionFee:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 10
+          description: Swap fee amount equivalent to the percentage fee multiplied by 10
+        stakingToken:
+          $ref: "#/components/schemas/address"
+          description: Address of the staking token
+        enableMarketFee:
+          type: boolean
+          description: Whether the market fee is enabled
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the market deployer
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    setPendingDeployerOwnershipEvent:
+      type: object
+      description: Indicates a change in pending owner for a market deployer
+      properties:
+        from:
+          $ref: "#/components/schemas/address"
+          description: Address of previous pending owner
+        to:
+          $ref: "#/components/schemas/address"
+          description: Address of the new pending owner
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the market deployer
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    claimPendingDeployerOwnershipEvent:
+      type: object
+      description: Indicates a change in owner for a market deployer
+      properties:
+        from:
+          $ref: "#/components/schemas/address"
+          description: Address of previous owner
+        to:
+          $ref: "#/components/schemas/address"
+          description: Address of the new owner
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the market deployer
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    createLiquidityPoolEvent:
+      type: object
+      description: Indicates a new liquidity pool was created
+      properties:
+        token:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token in the pool
+        liquidityPool:
+          $ref: "#/components/schemas/address"
+          description: Address of the newly created liquidity pool
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the market
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    setPendingMarketOwnershipEvent:
+      type: object
+      description: Indicates a change in pending owner for a market
+      properties:
+        from:
+          $ref: "#/components/schemas/address"
+          description: Address of previous pending owner
+        to:
+          $ref: "#/components/schemas/address"
+          description: Address of the new pending owner
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the market
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    claimPendingMarketOwnershipEvent:
+      type: object
+      description: Indicates a change in owner for a market
+      properties:
+        from:
+          $ref: "#/components/schemas/address"
+          description: Address of previous owner
+        to:
+          $ref: "#/components/schemas/address"
+          description: Address of the new owner
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the market
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    changeMarketPermissionEvent:
+      type: object
+      description: Indicates a change in permissions for a user address
+      properties:
+        address:
+          $ref: "#/components/schemas/address"
+          description: Address for which permissions were updated
+        permission:
+          $ref: "#/components/schemas/marketPermission"
+          description: Permission type
+        isAuthorized:
+          type: boolean
+          description: If the address is granted the permission
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the market
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    addLiquidityEvent:
+      type: object
+      description: Indicates liquidity was provided to a pool
+      properties:
+        amountCrs:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS tokens provided
+        amountSrc:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of SRC tokens provided
+        amountLpt:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of OLPT tokens received
+        tokenSrc:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
+        tokenLp:
+          $ref: "#/components/schemas/address"
+          description: Address of the OLPT token
+        tokenLpTotalSupply:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total supply of the OLPT token
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the liquidity pool
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    removeLiquidityEvent:
+      type: object
+      description: Indicates liquidity was removed from a pool
+      properties:
+        amountCrs:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS tokens removed
+        amountSrc:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of SRC tokens removed
+        amountLpt:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of OLPT tokens burned
+        tokenSrc:
+          $ref: "#/components/schemas/address"
+          description: Address of the SRC token
+        tokenLp:
+          $ref: "#/components/schemas/address"
+          description: Address of the OLPT token
+        tokenLpTotalSupply:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total supply of the OLPT token
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the liquidity pool
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
     approvalEvent:
       type: object
       description: Indicates a token spending approval happened
@@ -393,6 +699,468 @@ components:
         contract:
           $ref: "#/components/schemas/address"
           description: Address of the liquidity pool
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    startStakingEvent:
+      type: object
+      description: Indicates an address began staking in a liquidity pool
+      properties:
+        staker:
+          $ref: "#/components/schemas/address"
+          description: Address of the staker
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of staking tokens added
+        stakerBalance:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total staking balance in the pool for the staker
+        totalStaked:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of tokens staking in the pool
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the liquidity pool
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    stopStakingEvent:
+      type: object
+      description: Indicates an address stopped staking in a liquidity pool
+      properties:
+        staker:
+          $ref: "#/components/schemas/address"
+          description: Address of the staker
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of staking tokens removed
+        stakerBalance:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total staking balance in the pool for the staker
+        totalStaked:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of tokens staking in the pool
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the liquidity pool
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    collectStakingRewardsEvent:
+      type: object
+      description: Indicates a staker collected rewards from a liquidity pool
+      properties:
+        staker:
+          $ref: "#/components/schemas/address"
+          description: Address of the staker
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Staking reward
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the liquidity pool
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    startMiningEvent:
+      type: object
+      description: Indicates an address started mining in a mining pool
+      properties:
+        staker:
+          $ref: "#/components/schemas/address"
+          description: Address of the miner
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of mining tokens added
+        minerBalance:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total mining balance in the pool for the miner
+        totalSupply:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of tokens mining in the pool
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the mining pool
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    stopMiningEvent:
+      type: object
+      description: Indicates an address stopped mining in a mining pool
+      properties:
+        staker:
+          $ref: "#/components/schemas/address"
+          description: Address of the miner
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of mining tokens removed
+        minerBalance:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total mining balance in the pool for the miner
+        totalSupply:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of tokens mining in the pool
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the mining pool
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    collectMiningRewardsEvent:
+      type: object
+      description: Indicates a miner collected rewards from a mining pool
+      properties:
+        staker:
+          $ref: "#/components/schemas/address"
+          description: Address of the miner
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Mining reward
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the mining pool
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    enableMiningEvent:
+      type: object
+      description: Indicates a liquidity mining was enabled for a liquidity pool
+      properties:
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens rewarded to the pool to be mined
+        rewardRate:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens mined per block
+        miningPeriodEndBlock:
+          type: integer
+          minimum: 1
+          description: Block number that the mining period ends
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the mining pool
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    rewardMiningPoolEvent:
+      type: object
+      description: Indicates a mining pool was rewarded with tokens
+      properties:
+        stakingPool:
+          $ref: "#/components/schemas/address"
+          description: Address of the staking pool
+        miningPool:
+          $ref: "#/components/schemas/address"
+          description: Address of the mining pool
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of tokens rewarded
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the mining governance
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    nominationEvent:
+      type: object
+      description: Indicates a liquidity pool was nominated for mining
+      properties:
+        stakingPool:
+          $ref: "#/components/schemas/address"
+          description: Address of the staking pool
+        miningPool:
+          $ref: "#/components/schemas/address"
+          description: Address of the mining pool
+        weight:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Nomination staking weight
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the mining governance
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    createVaultCertificateEvent:
+      type: object
+      description: Indicates a vault certificate was created
+      properties:
+        owner:
+          $ref: "#/components/schemas/address"
+          description: Address of the certificate owner
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Governance token certificate value
+        vestedBlock:
+          type: integer
+          minimum: 1
+          description: Block number that the certificate is vested until
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    revokeVaultCertificateEvent:
+      type: object
+      description: Indicates a vault certificate was revoked
+      properties:
+        owner:
+          $ref: "#/components/schemas/address"
+          description: Address of the certificate owner
+        oldAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Previous governance token certificate value
+        newAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Remaining governance token certificate value
+        vestedBlock:
+          type: integer
+          minimum: 1
+          description: Block number that the certificate is vested until
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    createVaultProposalEvent:
+      type: object
+      description: Indicates a vault proposal was created
+      properties:
+        proposalId:
+          type: number
+          minimum: 1
+          description: Identifier for the proposal
+        wallet:
+          $ref: "#/components/schemas/address"
+          description: Address of the proposal target
+        amount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Proposed governance token amount
+        description:
+          type: string
+          maxLength: 200
+          description: Description of the proposal
+        type:
+          $ref: "#/components/schemas/proposalType"
+          description: Type of proposal
+        status:
+          $ref: "#/components/schemas/proposalStatus"
+          description: Status of the proposal
+        expiration:
+          type: integer
+          minimum: 1
+          description: Block number that the proposal expires
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    completeVaultProposalEvent:
+      type: object
+      description: Indicates a vault proposal was completed
+      properties:
+        proposalId:
+          type: number
+          minimum: 1
+          description: Identifier for the proposal
+        approved:
+          type: boolean
+          description: Whether the proposal was approved
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    vaultProposalPledgeEvent:
+      type: object
+      description: Indicates a pledge was made to a vault proposal
+      properties:
+        proposalId:
+          type: number
+          minimum: 1
+          description: Identifier for the proposal
+        pledger:
+          $ref: "#/components/schemas/address"
+          description: Address of the pledger
+        pledgeAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS pledged in this transaction
+        pledgerAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of CRS pledged by the pledger
+        proposalPledgeAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of CRS pledged to the proposal
+        totalPledgeMinimumMet:
+          type: boolean
+          description: Whether the proposal has met the minimum pledge requirement
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    vaultProposalWithdrawPledgeEvent:
+      type: object
+      description: Indicates a pledge was withdrawn from a vault proposal
+      properties:
+        proposalId:
+          type: number
+          minimum: 1
+          description: Identifier for the proposal
+        pledger:
+          $ref: "#/components/schemas/address"
+          description: Address of the pledger
+        withdrawAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS withdrawn in this transaction
+        pledgerAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of CRS pledged by the pledger
+        proposalPledgeAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of CRS pledged to the proposal
+        pledgeWithdrawn:
+          type: boolean
+          description: Whether the proposal is active and status is pledge
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    vaultProposalVoteEvent:
+      type: object
+      description: Indicates a vote was made on a vault proposal
+      properties:
+        proposalId:
+          type: number
+          minimum: 1
+          description: Identifier for the proposal
+        voter:
+          $ref: "#/components/schemas/address"
+          description: Address of the voter
+        inFavor:
+          type: boolean
+          description: Whether the vote is in favor or against the proposal
+        voteAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS voted with in this transaction
+        voterAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of CRS voted with on the proposal by the voter
+        proposalYesAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of CRS voted with in favor of the proposal
+        proposalNoAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of CRS voted with against the proposal
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Index to sort event order
+    vaultProposalWithdrawVoteEvent:
+      type: object
+      description: Indicates a vote was withdrawn from a vault proposal
+      properties:
+        proposalId:
+          type: number
+          minimum: 1
+          description: Identifier for the proposal
+        voter:
+          $ref: "#/components/schemas/address"
+          description: Address of the voter
+        withdrawAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Amount of CRS withdrawn in this transaction
+        voterAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of CRS voted with on the proposal by the voter
+        proposalYesAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of CRS voted with in favor of the proposal
+        proposalNoAmount:
+          $ref: "#/components/schemas/fixedDecimal"
+          description: Total amount of CRS voted with against the proposal
+        voteWithdrawn:
+          type: boolean
+          description: Whether the proposal is active and not completed
+        eventType:
+          $ref: "#/components/schemas/transactionEventType"
+          description: Event discriminator
+        contract:
+          $ref: "#/components/schemas/address"
+          description: Address of the vault
         sortOrder:
           type: integer
           minimum: 0
