@@ -20,7 +20,6 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Tokens;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.Vault;
 using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
-using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
@@ -47,7 +46,6 @@ using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Mini
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Tokens;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.Vault;
 using Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents.VaultGovernances;
-using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Wallet;
 
@@ -330,20 +328,6 @@ public class PlatformWebApiMapperProfile : Profile
 
         CreateMap<MiningGovernancesDto, MiningGovernancesResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.MiningGovernances))
-            .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
-
-        CreateMap<VaultDto, VaultResponseModel>()
-            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-            .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
-            .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
-            .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
-            .ForMember(dest => dest.TokensLocked, opt => opt.MapFrom(src => src.TokensLocked))
-            .ForMember(dest => dest.TokensUnassigned, opt => opt.MapFrom(src => src.TokensUnassigned))
-            .ForMember(dest => dest.LockedToken, opt => opt.MapFrom(src => src.LockedToken))
-            .ForAllOtherMembers(opt => opt.Ignore());
-
-        CreateMap<VaultsDto, VaultsResponseModel>()
-            .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Vaults))
             .ForMember(dest => dest.Paging, opt => opt.MapFrom(src => src.Cursor));
 
         CreateMap<BlockDto, BlockResponseModel>()

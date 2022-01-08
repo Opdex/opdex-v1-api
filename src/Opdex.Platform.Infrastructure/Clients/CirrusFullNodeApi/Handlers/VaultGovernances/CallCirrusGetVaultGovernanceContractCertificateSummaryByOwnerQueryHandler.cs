@@ -1,7 +1,7 @@
 using MediatR;
 using Opdex.Platform.Common.Constants.SmartContracts;
 using Opdex.Platform.Domain.Models.Transactions;
-using Opdex.Platform.Domain.Models.Vaults;
+using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Modules;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.VaultGovernances;

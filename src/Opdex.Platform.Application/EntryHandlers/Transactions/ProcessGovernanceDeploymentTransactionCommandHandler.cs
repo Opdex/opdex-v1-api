@@ -8,7 +8,7 @@ using Opdex.Platform.Application.Abstractions.Commands.Transactions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Tokens;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
+using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Transactions;
@@ -66,8 +66,8 @@ public class ProcessGovernanceDeploymentTransactionCommandHandler : IRequestHand
                                                                                                         includeMiningGovernance: true));
 
             // Get and/or create vault
-            var vault = await _mediator.Send(new CreateVaultCommand(stakingTokenSummary.Vault.GetValueOrDefault(),
-                                                                    stakingTokenId, transaction.From, transaction.BlockHeight));
+            var vault = await _mediator.Send(new CreateVaultGovernanceCommand(stakingTokenSummary.Vault.GetValueOrDefault(),
+                                                                              stakingTokenId, transaction.BlockHeight));
 
             // Get and/or create mining governance
             var miningGovernanceId = await _mediator.Send(new CreateMiningGovernanceCommand(stakingTokenSummary.MiningGovernance.GetValueOrDefault(),

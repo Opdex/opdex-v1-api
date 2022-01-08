@@ -1,5 +1,5 @@
 using MediatR;
-using Opdex.Platform.Domain.Models.Vaults;
+using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Certificates;
 using System;
 using System.Collections.Generic;

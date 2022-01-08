@@ -1,7 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.VaultGovernances;
-using Opdex.Platform.Domain.Models.Vaults;
 using System;
 using System.Collections.Generic;
 

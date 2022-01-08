@@ -1,11 +1,11 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Certificates;
-using Opdex.Platform.Application.Abstractions.Models.Vaults;
+using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Certificates;
 using Opdex.Platform.Application.Assemblers;
-using Opdex.Platform.Domain.Models.Vaults;
+using Opdex.Platform.Domain.Models.VaultGovernances;
 using System;
 using System.Linq;
 using System.Threading;

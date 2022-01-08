@@ -2,7 +2,7 @@ using FluentAssertions;
 using Opdex.Platform.Common.Enums;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
-using Opdex.Platform.WebApi.Models.Requests.Vaults;
+using Opdex.Platform.WebApi.Models.Requests.VaultGovernances;
 using Xunit;
 
 namespace Opdex.Platform.WebApi.Tests.Models.Requests.Vaults;
@@ -14,11 +14,11 @@ public class VaultCertificatesFilterParametersTests
     {
         // Arrange
         // Act
-        var filters = new VaultCertificateFilterParameters();
+        var filters = new VaultGovernanceCertificateFilterParameters();
 
         // Assert
         filters.Holder.Should().Be(Address.Empty);
-        filters.Direction.Should().Be(default(SortDirectionType));
+        filters.Direction.Should().Be(default);
         filters.Limit.Should().Be(default);
     }
 
@@ -26,7 +26,7 @@ public class VaultCertificatesFilterParametersTests
     public void BuildCursor_CursorStringNotProvided_ReturnFiltered()
     {
         // Arrange
-        var filters = new VaultCertificateFilterParameters
+        var filters = new VaultGovernanceCertificateFilterParameters
         {
             Holder = new Address("tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm"),
             Limit = 20,
@@ -49,7 +49,7 @@ public class VaultCertificatesFilterParametersTests
     public void BuildCursor_NotABase64CursorString_ReturnNull()
     {
         // Arrange
-        var filters = new VaultCertificateFilterParameters { EncodedCursor = "NOT_BASE_64_****" };
+        var filters = new VaultGovernanceCertificateFilterParameters { EncodedCursor = "NOT_BASE_64_****" };
 
         // Act
         var cursor = filters.BuildCursor();
@@ -62,7 +62,7 @@ public class VaultCertificatesFilterParametersTests
     public void BuildCursor_NotAValidCursorString_ReturnNull()
     {
         // Arrange
-        var filters = new VaultCertificateFilterParameters { EncodedCursor = "Tk9UX1ZBTElE" };
+        var filters = new VaultGovernanceCertificateFilterParameters { EncodedCursor = "Tk9UX1ZBTElE" };
 
         // Act
         var cursor = filters.BuildCursor();
@@ -75,7 +75,7 @@ public class VaultCertificatesFilterParametersTests
     public void BuildCursor_ValidCursorString_ReturnCursor()
     {
         // Arrange
-        var filters = new VaultCertificateFilterParameters { EncodedCursor = "ZGlyZWN0aW9uOkRFU0M7bGltaXQ6NTtwYWdpbmc6Rm9yd2FyZDtwb2ludGVyOk13PT07" };
+        var filters = new VaultGovernanceCertificateFilterParameters { EncodedCursor = "aG9sZGVyOjtzdGF0dXM6QWxsO2RpcmVjdGlvbjpERVNDO2xpbWl0OjU7cGFnaW5nOkZvcndhcmQ7cG9pbnRlcjpNdz09Ow==" };
 
         // Act
         var cursor = filters.BuildCursor();

@@ -11,14 +11,12 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Prop
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Votes;
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.WebApi.Controllers;
 using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.VaultGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
-using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

@@ -14,7 +14,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Permissions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Application.EntryHandlers.Blocks;
 using Opdex.Platform.Common.Exceptions;
@@ -236,8 +235,6 @@ public class CreateRewindToBlockCommandHandlerTests
         _mediator.Setup(m => m.Send(It.IsAny<CreateRewindStakingPositionsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mediator.Setup(m => m.Send(It.IsAny<CreateRewindDeployersCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMiningGovernancesAndNominationsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _mediator.Setup(m => m.Send(It.IsAny<CreateRewindVaultsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _mediator.Setup(m => m.Send(It.IsAny<CreateRewindVaultCertificatesCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMiningPoolsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMarketsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mediator.Setup(m => m.Send(It.IsAny<CreateRewindMarketPermissionsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);

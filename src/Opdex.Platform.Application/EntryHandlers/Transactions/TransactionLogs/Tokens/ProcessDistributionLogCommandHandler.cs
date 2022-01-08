@@ -7,18 +7,15 @@ using Opdex.Platform.Application.Abstractions.Commands.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens;
 using Opdex.Platform.Application.Abstractions.Commands.Tokens.Distribution;
 using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Addresses.Balances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Tokens;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances.Nominations;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens.Distribution;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Domain.Models.Tokens;
 using Opdex.Platform.Domain.Models.TransactionLogs.Tokens;
-using Opdex.Platform.Domain.Models.VaultGovernances;
 
 namespace Opdex.Platform.Application.EntryHandlers.Transactions.TransactionLogs.Tokens;
 
@@ -42,13 +39,8 @@ public class ProcessDistributionLogCommandHandler : IRequestHandler<ProcessDistr
             var token = await _mediator.Send(new RetrieveTokenByAddressQuery(request.Log.Contract, findOrThrow: false));
             if (token == null) return false;
 
-            VaultGovernance vaultGovernance = null;
-            var vault = await _mediator.Send(new RetrieveVaultByTokenIdQuery(token.Id, findOrThrow: false));
-            if (vault == null)
-            {
-                vaultGovernance = await _mediator.Send(new RetrieveVaultGovernanceByTokenIdQuery(token.Id, findOrThrow: false));
-                if (vaultGovernance == null) return false;
-            }
+            var vault = await _mediator.Send(new RetrieveVaultGovernanceByTokenIdQuery(token.Id, findOrThrow: false));
+            if (vault == null) return false;
 
             var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByTokenIdQuery(token.Id, findOrThrow: false));
             if (miningGovernance == null) return false;
@@ -97,8 +89,7 @@ public class ProcessDistributionLogCommandHandler : IRequestHandler<ProcessDistr
             }
 
             // try to process vault balances
-            var vaultAddress = vaultGovernance?.Address ?? vault.Address;
-            var vaultResult = await _mediator.Send(new CreateAddressBalanceCommand(vaultAddress, token.Address, request.BlockHeight));
+            var vaultResult = await _mediator.Send(new CreateAddressBalanceCommand(vault.Address, token.Address, request.BlockHeight));
             if (vaultResult == 0)
             {
                 _logger.LogWarning($"Unknown error updating vault {vault.Id} balance during distribution");
@@ -112,28 +103,13 @@ public class ProcessDistributionLogCommandHandler : IRequestHandler<ProcessDistr
             }
 
             // try to refresh the vault
-            if (vaultGovernance == null)
+            if (request.BlockHeight >= vault.ModifiedBlock)
             {
-                if (request.BlockHeight >= vault.ModifiedBlock)
+                var vaultId = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight,
+                                                                                  refreshUnassignedSupply: true));
+                if (vaultId == 0)
                 {
-                    var vaultId = await _mediator.Send(new MakeVaultCommand(vault, request.BlockHeight, refreshSupply: true,
-                                                                            refreshGenesis: initialDistribution));
-                    if (vaultId == 0)
-                    {
-                        _logger.LogWarning($"Unknown error updating vault {vault.Id} details during distribution");
-                    }
-                }
-            }
-            else
-            {
-                if (request.BlockHeight >= vaultGovernance.ModifiedBlock)
-                {
-                    var vaultId = await _mediator.Send(new MakeVaultGovernanceCommand(vaultGovernance, request.BlockHeight,
-                                                                                      refreshUnassignedSupply: true));
-                    if (vaultId == 0)
-                    {
-                        _logger.LogWarning($"Unknown error updating vault {vaultGovernance.Id} details during distribution");
-                    }
+                    _logger.LogWarning($"Unknown error updating vault {vault.Id} details during distribution");
                 }
             }
 

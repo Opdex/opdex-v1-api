@@ -1,6 +1,6 @@
 using MediatR;
 using Opdex.Platform.Common.Models;
-using Opdex.Platform.Domain.Models.Vaults;
+using Opdex.Platform.Domain.Models.VaultGovernances;
 using System;
 
 namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Queries.VaultGovernances;

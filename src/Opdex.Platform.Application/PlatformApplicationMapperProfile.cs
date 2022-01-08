@@ -22,7 +22,6 @@ using Opdex.Platform.Application.Abstractions.Models.TransactionEvents.VaultGove
 using Opdex.Platform.Application.Abstractions.Models.Transactions;
 using Opdex.Platform.Domain.Models.Addresses;
 using Opdex.Platform.Domain.Models.Blocks;
-using Opdex.Platform.Application.Abstractions.Models.Vaults;
 using Opdex.Platform.Common.Constants;
 using Opdex.Platform.Common.Extensions;
 using Opdex.Platform.Common.Models;
@@ -40,7 +39,6 @@ using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.VaultGovernances;
-using Opdex.Platform.Domain.Models.Vaults;
 using System.Linq;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 using System;
@@ -189,13 +187,6 @@ public class PlatformApplicationMapperProfile : Profile
         CreateMap<AddressAllowance, AddressAllowanceDto>()
             .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.Spender, opt => opt.MapFrom(src => src.Spender))
-            .ForAllOtherMembers(opt => opt.Ignore());
-
-        CreateMap<Vault, VaultDto>()
-            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-            .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
-            .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
-            .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         // Todo: Can be wiped when the original Vault is removed, new vault will use assembler

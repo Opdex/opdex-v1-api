@@ -12,7 +12,6 @@ using Opdex.Platform.Application.Abstractions.EntryCommands.Markets;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Markets.Permissions;
 using Opdex.Platform.Application.Abstractions.EntryCommands.MiningPools;
 using Opdex.Platform.Application.Abstractions.EntryCommands.VaultGovernances;
-using Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Blocks;
 using Opdex.Platform.Common.Exceptions;
 using System;
@@ -58,8 +57,6 @@ public class CreateRewindToBlockCommandHandler : IRequestHandler<CreateRewindToB
         rewound = await _mediator.Send(new CreateRewindStakingPositionsCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindDeployersCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindMiningGovernancesAndNominationsCommand(request.Block), CancellationToken.None) && rewound;
-        rewound = await _mediator.Send(new CreateRewindVaultsCommand(request.Block), CancellationToken.None) && rewound;
-        rewound = await _mediator.Send(new CreateRewindVaultCertificatesCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindMiningPoolsCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindMarketsCommand(request.Block), CancellationToken.None) && rewound;
         rewound = await _mediator.Send(new CreateRewindMarketPermissionsCommand(request.Block), CancellationToken.None) && rewound;

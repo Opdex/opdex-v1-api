@@ -3,7 +3,7 @@ using MediatR;
 using Moq;
 using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
 using Opdex.Platform.Application.Handlers.VaultGovernances.Certificates;
-using Opdex.Platform.Domain.Models.Vaults;
+using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.VaultGovernances;
 using System.Threading;
 using System.Threading.Tasks;

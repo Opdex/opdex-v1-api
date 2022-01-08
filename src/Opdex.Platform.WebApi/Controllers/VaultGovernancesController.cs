@@ -15,7 +15,6 @@ using Opdex.Platform.WebApi.Models;
 using Opdex.Platform.WebApi.Models.Requests.VaultGovernances;
 using Opdex.Platform.WebApi.Models.Responses.Transactions;
 using Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
-using Opdex.Platform.WebApi.Models.Responses.Vaults;
 using Opdex.Platform.WebApi.OpenApi.VaultsGovernances;
 using System;
 using System.Threading;

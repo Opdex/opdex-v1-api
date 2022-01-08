@@ -22,7 +22,7 @@ using Opdex.Platform.Application.Abstractions.Queries.MiningGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.Markets;
 using Opdex.Platform.Application.Abstractions.Queries.MiningPools;
 using Opdex.Platform.Application.Abstractions.Queries.Tokens;
-using Opdex.Platform.Application.Abstractions.Queries.Vaults;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.SignalR.Commands;
@@ -115,7 +115,7 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
         var miningGovernance = await _mediator.Send(new RetrieveMiningGovernanceByAddressQuery(to, findOrThrow));
         if (miningGovernance != null) return true;
 
-        var vault = await _mediator.Send(new RetrieveVaultByAddressQuery(to, findOrThrow));
+        var vault = await _mediator.Send(new RetrieveVaultGovernanceByAddressQuery(to, findOrThrow));
         if (vault != null) return true;
 
         var market = await _mediator.Send(new RetrieveMarketByAddressQuery(to, findOrThrow));

@@ -23,7 +23,6 @@ using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
 using Opdex.Platform.Domain.Models.Transactions;
 using Opdex.Platform.Domain.Models.VaultGovernances;
-using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Addresses;
@@ -37,7 +36,6 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Tokens;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions.TransactionLogs;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Transactions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries;
 using System;
 
@@ -172,11 +170,6 @@ public class PlatformInfrastructureMapperProfile : Profile
                                                              ctx.Mapper.Map<StakingSnapshot>(src.Staking),
                                                              ctx.Mapper.Map<RewardsSnapshot>(src.Rewards),
                                                              (SnapshotType)src.SnapshotTypeId, src.StartDate, src.EndDate))
-            .ForAllOtherMembers(opt => opt.Ignore());
-
-        CreateMap<VaultEntity, Vault>()
-            .ConstructUsing(src => new Vault(src.Id, src.Address, src.TokenId, src.PendingOwner, src.Owner, src.Genesis, src.UnassignedSupply,
-                                             src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultCertificateEntity, VaultCertificate>()
@@ -613,18 +606,6 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
             .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.SerializeLogDetails()))
             .ForMember(dest => dest.LogTypeId, opt => opt.MapFrom(src => (int)src.LogType))
-            .ForAllOtherMembers(opt => opt.Ignore());
-
-        CreateMap<Vault, VaultEntity>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-            .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
-            .ForMember(dest => dest.PendingOwner, opt => opt.MapFrom(src => src.PendingOwner))
-            .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
-            .ForMember(dest => dest.Genesis, opt => opt.MapFrom(src => src.Genesis))
-            .ForMember(dest => dest.UnassignedSupply, opt => opt.MapFrom(src => src.UnassignedSupply))
-            .ForMember(dest => dest.CreatedBlock, opt => opt.MapFrom(src => src.CreatedBlock))
-            .ForMember(dest => dest.ModifiedBlock, opt => opt.MapFrom(src => src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultCertificate, VaultCertificateEntity>()

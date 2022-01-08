@@ -3,7 +3,7 @@ using FluentAssertions;
 using Moq;
 using Opdex.Platform.Common.Models;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
-using Opdex.Platform.Infrastructure.Abstractions.Data.Models.Vaults;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Certificates;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Certificates;
 using System.Collections.Generic;
