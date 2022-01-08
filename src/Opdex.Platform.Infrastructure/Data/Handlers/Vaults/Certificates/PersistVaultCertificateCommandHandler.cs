@@ -16,6 +16,7 @@ public class PersistVaultCertificateCommandHandler : IRequestHandler<PersistVaul
     private static readonly string InsertSqlCommand =
         $@"INSERT INTO vault_certificate (
                 {nameof(VaultCertificateEntity.VaultId)},
+                {nameof(VaultCertificateEntity.ProposalId)},
                 {nameof(VaultCertificateEntity.Owner)},
                 {nameof(VaultCertificateEntity.Amount)},
                 {nameof(VaultCertificateEntity.VestedBlock)},
@@ -25,6 +26,7 @@ public class PersistVaultCertificateCommandHandler : IRequestHandler<PersistVaul
                 {nameof(VaultCertificateEntity.ModifiedBlock)}
               ) VALUES (
                 @{nameof(VaultCertificateEntity.VaultId)},
+                @{nameof(VaultCertificateEntity.ProposalId)},
                 @{nameof(VaultCertificateEntity.Owner)},
                 @{nameof(VaultCertificateEntity.Amount)},
                 @{nameof(VaultCertificateEntity.VestedBlock)},

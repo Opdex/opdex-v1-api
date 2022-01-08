@@ -684,6 +684,7 @@ public static class PlatformApplicationServiceCollectionExtensions
 
         // Vaults
         services.AddTransient<IModelAssembler<Vault, VaultDto>, VaultDtoAssembler>();
+        services.AddTransient<IModelAssembler<VaultCertificate, VaultCertificateDto>, VaultCertificateDtoAssembler>();
 
         // Vault Governances
         services.AddTransient<IModelAssembler<VaultGovernance, VaultGovernanceDto>, VaultGovernanceDtoAssembler>();

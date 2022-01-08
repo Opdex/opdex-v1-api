@@ -27,7 +27,7 @@ public class MakeVaultGovernanceCertificateCommandHandlerTests
     {
         // Arrange
         using var cancellationTokenSource = new CancellationTokenSource();
-        var certificate = new VaultCertificate(5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
+        var certificate = new VaultCertificate(5, 99, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
         var request = new MakeVaultGovernanceCertificateCommand(certificate);
 
         // Act
@@ -41,7 +41,7 @@ public class MakeVaultGovernanceCertificateCommandHandlerTests
     public async Task Handle_OncePersisted_ReturnResult()
     {
         // Arrange
-        var certificate = new VaultCertificate(5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
+        var certificate = new VaultCertificate(5, 99, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
         var request = new MakeVaultGovernanceCertificateCommand(certificate);
 
         ulong result = 25;

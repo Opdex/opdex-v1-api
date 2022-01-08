@@ -4,6 +4,7 @@ namespace Opdex.Platform.Application.Abstractions.Models.Vaults;
 
 public class VaultCertificateDto
 {
+    public ulong ProposalId { get; set; }
     public Address Owner { get; set; }
     public FixedDecimal Amount { get; set; }
     public ulong VestingStartBlock { get; set; }

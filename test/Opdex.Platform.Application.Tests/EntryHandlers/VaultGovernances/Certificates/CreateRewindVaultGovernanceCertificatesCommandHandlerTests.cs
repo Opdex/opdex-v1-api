@@ -66,7 +66,7 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandlerTests
         const ulong rewindHeight = 10;
         const ulong vaultId = 1;
 
-        var certificates = new List<VaultCertificate> { new(1, vaultId, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, true, 5, 6) };
+        var certificates = new List<VaultCertificate> { new(1, vaultId, 9, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, true, 5, 6) };
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceCertificatesByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(certificates);
@@ -91,7 +91,7 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandlerTests
         const ulong vaultId = 1;
         var vault = new VaultGovernance(vaultId, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, 3, 4, 5, 6, 7, 8, 9);
 
-        var certificates = new List<VaultCertificate> { new(1, vaultId, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, true, 5, 10), new(2, vaultId, "PzHqqART1GLsMrwmoh61iU9EjmXXNMivLg", 4, 5, true, true, 6, 10) };
+        var certificates = new List<VaultCertificate> { new(1, vaultId, 11, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, true, 5, 10), new(2, vaultId, 99, "PzHqqART1GLsMrwmoh61iU9EjmXXNMivLg", 4, 5, true, true, 6, 10) };
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultGovernanceCertificatesByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(certificates);
@@ -128,8 +128,8 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandlerTests
         var vault = new VaultGovernance(vaultId, "PXXNMivLgqqART1GLsMroh6zwmH1iU9Ejm", 2, 3, 4, 5, 6, 7, 8, 9);
 
         var certificates = new List<VaultCertificate> {
-            new(1, vaultId, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, false, 5, 10),
-            new(2, vaultId, "PzHqqART1GLsMrwmoh61iU9EjmXXNMivLg", 4, 5, true, true, 6, 10)
+            new(1, vaultId, 99, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, false, 5, 10),
+            new(2, vaultId, 100, "PzHqqART1GLsMrwmoh61iU9EjmXXNMivLg", 4, 5, true, true, 6, 10)
         };
 
         var summaries = new List<VaultContractCertificateSummary> { new(3, 4, false), new(2, 5, false) };

@@ -8,9 +8,11 @@ using Opdex.Platform.Application.Abstractions.Commands.Vaults;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Certificates;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults;
 using Opdex.Platform.Application.Abstractions.Queries.Vaults.Certificates;
 using Opdex.Platform.Domain.Models.TransactionLogs.Vaults;
+using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Domain.Models.Vaults;
 using System.Linq;
 
@@ -50,7 +52,9 @@ public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<Pr
                     return true;
                 }
 
-                var vaultCertificate = new VaultCertificate(vault.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
+                // Not inserted, only used to satisfy model while old vault is around for a bit longer
+                const ulong proposalId = 1;
+                var vaultCertificate = new VaultCertificate(vault.Id, proposalId, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
 
                 return await _mediator.Send(new MakeVaultCertificateCommand(vaultCertificate));
             }
@@ -76,7 +80,13 @@ public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<Pr
                 return true;
             }
 
-            var cert = new VaultCertificate(vaultGovernance.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
+            var proposalsAtHeight = await _mediator.Send(new RetrieveVaultProposalsByModifiedBlockQuery(request.BlockHeight));
+            var proposal = proposalsAtHeight.First(proposal => proposal.Status == VaultProposalStatus.Complete &&
+                                                               proposal.Approved &&
+                                                               proposal.Wallet == request.Log.Owner &&
+                                                               proposal.Amount == request.Log.Amount);
+
+            var cert = new VaultCertificate(vaultGovernance.Id, proposal.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
 
             return await _mediator.Send(new MakeVaultGovernanceCertificateCommand(cert)) > 0;
         }

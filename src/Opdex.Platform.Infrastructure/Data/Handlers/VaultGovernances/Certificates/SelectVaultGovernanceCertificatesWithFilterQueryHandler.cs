@@ -26,6 +26,7 @@ public class SelectVaultGovernanceCertificatesWithFilterQueryHandler : IRequestH
         @$"SELECT
                 c.{nameof(VaultCertificateEntity.Id)},
                 c.{nameof(VaultCertificateEntity.VaultId)},
+                c.{nameof(VaultCertificateEntity.ProposalId)},
                 c.{nameof(VaultCertificateEntity.Owner)},
                 c.{nameof(VaultCertificateEntity.Amount)},
                 c.{nameof(VaultCertificateEntity.VestedBlock)},

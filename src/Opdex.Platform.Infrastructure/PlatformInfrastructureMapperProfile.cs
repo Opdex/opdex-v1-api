@@ -180,7 +180,7 @@ public class PlatformInfrastructureMapperProfile : Profile
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultCertificateEntity, VaultCertificate>()
-            .ConstructUsing(src => new VaultCertificate(src.Id, src.VaultId, src.Owner, src.Amount, src.VestedBlock, src.Redeemed, src.Revoked,
+            .ConstructUsing(src => new VaultCertificate(src.Id, src.VaultId, src.ProposalId, src.Owner, src.Amount, src.VestedBlock, src.Redeemed, src.Revoked,
                                                         src.CreatedBlock, src.ModifiedBlock))
             .ForAllOtherMembers(opt => opt.Ignore());
 
@@ -630,6 +630,7 @@ public class PlatformInfrastructureMapperProfile : Profile
         CreateMap<VaultCertificate, VaultCertificateEntity>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.VaultId, opt => opt.MapFrom(src => src.VaultId))
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
             .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock))

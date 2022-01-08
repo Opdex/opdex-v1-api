@@ -68,7 +68,7 @@ public class CreateRewindVaultCertificatesCommandHandlerTests
 
         var certificates = new List<VaultCertificate>
         {
-            new VaultCertificate(1, vaultId, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, true, 5, 6)
+            new VaultCertificate(1, vaultId, 1, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, true, 5, 6)
         };
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
@@ -96,8 +96,8 @@ public class CreateRewindVaultCertificatesCommandHandlerTests
 
         var certificates = new List<VaultCertificate>
         {
-            new VaultCertificate(1, vaultId, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, true, 5, 10),
-            new VaultCertificate(2, vaultId, "PzHqqART1GLsMrwmoh61iU9EjmXXNMivLg", 4, 5, true, true, 6, 10)
+            new VaultCertificate(1, vaultId, 1, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, true, 5, 10),
+            new VaultCertificate(2, vaultId, 1, "PzHqqART1GLsMrwmoh61iU9EjmXXNMivLg", 4, 5, true, true, 6, 10)
         };
 
         _mediator.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesByModifiedBlockQuery>(), It.IsAny<CancellationToken>()))
@@ -136,8 +136,8 @@ public class CreateRewindVaultCertificatesCommandHandlerTests
 
         var certificates = new List<VaultCertificate>
         {
-            new VaultCertificate(1, vaultId, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, false, 5, 10),
-            new VaultCertificate(2, vaultId, "PzHqqART1GLsMrwmoh61iU9EjmXXNMivLg", 4, 5, true, true, 6, 10)
+            new VaultCertificate(1, vaultId, 1, "PzwmH1iU9EjmXXNMivLgqqART1GLsMroh6", 3, 4, false, false, 5, 10),
+            new VaultCertificate(2, vaultId, 1, "PzHqqART1GLsMrwmoh61iU9EjmXXNMivLg", 4, 5, true, true, 6, 10)
         };
 
         var summaries = new List<VaultContractCertificateSummary>

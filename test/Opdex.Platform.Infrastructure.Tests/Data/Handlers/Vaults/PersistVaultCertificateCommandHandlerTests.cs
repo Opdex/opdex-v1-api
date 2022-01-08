@@ -5,7 +5,6 @@ using Moq;
 using Opdex.Platform.Domain.Models.Vaults;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Commands.Vaults;
-using Opdex.Platform.Infrastructure.Data.Handlers.Vaults;
 using Opdex.Platform.Infrastructure.Data.Handlers.Vaults.Certificates;
 using System;
 using System.Threading;
@@ -31,7 +30,7 @@ public class PersistVaultCertificateCommandHandlerTests
     [Fact]
     public async Task Insert_VaultCertificate_Success()
     {
-        var allowance = new VaultCertificate(1, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1234, 10000, 123);
+        var allowance = new VaultCertificate(1, 1, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1234, 10000, 123);
         var command = new PersistVaultCertificateCommand(allowance);
 
         _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
@@ -45,7 +44,7 @@ public class PersistVaultCertificateCommandHandlerTests
     [Fact]
     public async Task Update_VaultCertificate_Success()
     {
-        var allowance = new VaultCertificate(10, 1, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1234, 10000, true, false, 123, 423);
+        var allowance = new VaultCertificate(10, 1, 1, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1234, 10000, true, false, 123, 423);
         var command = new PersistVaultCertificateCommand(allowance);
 
         _dbContext.Setup(db => db.ExecuteCommandAsync(It.IsAny<DatabaseQuery>()))
@@ -59,7 +58,7 @@ public class PersistVaultCertificateCommandHandlerTests
     [Fact]
     public async Task PersistsVaultCertificate_Fail()
     {
-        var allowance = new VaultCertificate(10, 1, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1234, 10000, true, false, 123, 322);
+        var allowance = new VaultCertificate(10, 1, 1, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 1234, 10000, true, false, 123, 322);
         var command = new PersistVaultCertificateCommand(allowance);
 
         _dbContext.Setup(db => db.ExecuteScalarAsync<ulong>(It.IsAny<DatabaseQuery>()))

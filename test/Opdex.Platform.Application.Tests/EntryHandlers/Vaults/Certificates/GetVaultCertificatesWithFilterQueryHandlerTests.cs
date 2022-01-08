@@ -112,9 +112,9 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
         var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
         var certificates = new VaultCertificate[]
         {
-            new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(15, 10, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
+            new VaultCertificate(5, 10, 97, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(10, 10, 98, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(15, 10, 99, "PXResSytiRhJwNiD1DS9aZinPjEUvk8BuX", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
         };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -138,9 +138,9 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
         var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
         var certificates = new VaultCertificate[]
         {
-            new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(15, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
+            new VaultCertificate(5, 10, 97, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(10, 10, 98, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(15, 10, 99, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
         };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -151,9 +151,6 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
         var dto = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        _mapperMock.Verify(callTo => callTo.Map<IEnumerable<VaultCertificateDto>>(It.Is<IEnumerable<VaultCertificate>>(
-                                                                                      input => !input.Any(certificate => certificate == certificates.First())
-                                                                                  )));
         dto.Certificates.Count().Should().Be(certificates.Length - 1);
     }
 
@@ -167,9 +164,9 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
         var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
         var certificates = new VaultCertificate[]
         {
-            new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(15, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
+            new VaultCertificate(5, 10, 97, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(10, 10, 98, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(15, 10, 99, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
         };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -180,9 +177,6 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
         var dto = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        _mapperMock.Verify(callTo => callTo.Map<IEnumerable<VaultCertificateDto>>(It.Is<IEnumerable<VaultCertificate>>(
-                                                                                      input => !input.Any(certificate => certificate == certificates.Last())
-                                                                                  )));
         dto.Certificates.Count().Should().Be(certificates.Length - 1);
     }
 
@@ -196,9 +190,9 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
         var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
         var certificates = new VaultCertificate[]
         {
-            new VaultCertificate(5, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(10, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(15, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
+            new VaultCertificate(5, 10, 97, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(10, 10, 98, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(15, 10, 99, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
         };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -223,9 +217,9 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
         var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
         var certificates = new VaultCertificate[]
         {
-            new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(65, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
+            new VaultCertificate(55, 10, 97, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(60, 10, 98, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(65, 10, 99, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
         };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -250,9 +244,9 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
         var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
         var certificates = new VaultCertificate[]
         {
-            new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(65, 10, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
+            new VaultCertificate(55, 10, 97, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(60, 10, 98, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(65, 10, 99, "P9vqymoKE6JbeLmnbDS9HsZ68QZf15ed71", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
         };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -277,8 +271,8 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
         var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
         var certificates = new VaultCertificate[]
         {
-            new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
+            new VaultCertificate(55, 10, 97, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(60, 10, 98, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
         };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);
@@ -303,8 +297,8 @@ public class GetVaultCertificatesWithFilterQueryHandlerTests
         var vault = new Vault(5, "PGZPZpB4iW4LHVEPMKehXfJ6u1yzNPDw7u", 10, Address.Empty, "PKRQitdLu4FGWuJKbrCVLqnVPQtYyRwN76", 15, UInt256.Parse("10000000000"), 500, 505);
         var certificates = new VaultCertificate[]
         {
-            new VaultCertificate(55, 10, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
-            new VaultCertificate(60, 10, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
+            new VaultCertificate(55, 10, 97, "PHUzrtkLfffDZMd2v8QULRZvBCY5RwrrQK", UInt256.Parse("1000000000"), 10500, false, false, 500, 505),
+            new VaultCertificate(60, 10, 98, "PAVV2c9Muk9Eu4wi8Fqdmm55ffzhAFPffV", UInt256.Parse("1000000000"), 10500, false, false, 500, 505)
         };
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultByAddressQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(vault);
         _mediatorMock.Setup(callTo => callTo.Send(It.IsAny<RetrieveVaultCertificatesWithFilterQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(certificates);

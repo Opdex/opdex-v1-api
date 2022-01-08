@@ -368,6 +368,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForAllOtherMembers(opt => opt.Ignore());
 
         CreateMap<VaultCertificateDto, VaultCertificateResponseModel>()
+            .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))
             .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
             .ForMember(dest => dest.VestingStartBlock, opt => opt.MapFrom(src => src.VestingStartBlock))
