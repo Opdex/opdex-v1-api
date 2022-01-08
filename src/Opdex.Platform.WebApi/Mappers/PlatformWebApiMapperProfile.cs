@@ -589,12 +589,6 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight));
 
         // Vaults Transaction Events
-        CreateMap<ClaimPendingVaultOwnershipEventDto, ClaimPendingVaultOwnershipEvent>()
-            .IncludeBase<OwnershipEventDto, OwnershipEvent>();
-
-        CreateMap<SetPendingVaultOwnershipEventDto, SetPendingVaultOwnershipEvent>()
-            .IncludeBase<OwnershipEventDto, OwnershipEvent>();
-
         CreateMap<CreateVaultCertificateEventDto, CreateVaultCertificateEvent>()
             .IncludeBase<TransactionEventDto, TransactionEvent>()
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))

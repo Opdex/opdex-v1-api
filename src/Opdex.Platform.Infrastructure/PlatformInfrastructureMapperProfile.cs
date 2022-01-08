@@ -251,8 +251,6 @@ public class PlatformInfrastructureMapperProfile : Profile
                     (int)TransactionLogType.NominationLog => new NominationLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
                     // Vault
-                    (int)TransactionLogType.SetPendingVaultOwnershipLog => new SetPendingVaultOwnershipLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
-                    (int)TransactionLogType.ClaimPendingVaultOwnershipLog => new ClaimPendingVaultOwnershipLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.CreateVaultCertificateLog => new CreateVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.RevokeVaultCertificateLog => new RevokeVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.RedeemVaultCertificateLog => new RedeemVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
@@ -312,8 +310,6 @@ public class PlatformInfrastructureMapperProfile : Profile
                     nameof(RewardMiningPoolLog) => new RewardMiningPoolLog(src.Log.Data, src.Address, src.SortOrder),
 
                     // Vaults
-                    nameof(SetPendingVaultOwnershipLog) => new SetPendingVaultOwnershipLog(src.Log.Data, src.Address, src.SortOrder),
-                    nameof(ClaimPendingVaultOwnershipLog) => new ClaimPendingVaultOwnershipLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(CreateVaultCertificateLog) => new CreateVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(RevokeVaultCertificateLog) => new RevokeVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(RedeemVaultCertificateLog) => new RedeemVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),

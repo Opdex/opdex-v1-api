@@ -38,8 +38,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.Transactions.TransactionEvents;
 [KnownType(typeof(SetPendingDeployerOwnershipEvent))]
 [KnownType(typeof(ClaimPendingMarketOwnershipEvent))]
 [KnownType(typeof(SetPendingMarketOwnershipEvent))]
-[KnownType(typeof(ClaimPendingVaultOwnershipEvent))]
-[KnownType(typeof(SetPendingVaultOwnershipEvent))]
 [KnownType(typeof(ApprovalEvent))]
 [KnownType(typeof(DistributionEvent))]
 [KnownType(typeof(TransferEvent))]

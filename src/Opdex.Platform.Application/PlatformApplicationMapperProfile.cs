@@ -354,12 +354,6 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.ToDecimal(TokenConstants.Opdex.Decimals)));
 
         // Vault Events
-        CreateMap<SetPendingVaultOwnershipLog, SetPendingVaultOwnershipEventDto>()
-            .IncludeBase<OwnershipLog, OwnershipEventDto>();
-
-        CreateMap<ClaimPendingVaultOwnershipLog, ClaimPendingVaultOwnershipEventDto>()
-            .IncludeBase<OwnershipLog, OwnershipEventDto>();
-
         CreateMap<CreateVaultCertificateLog, CreateVaultCertificateEventDto>()
             .IncludeBase<TransactionLog, TransactionEventDto>()
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.ToDecimal(TokenConstants.Opdex.Decimals)))

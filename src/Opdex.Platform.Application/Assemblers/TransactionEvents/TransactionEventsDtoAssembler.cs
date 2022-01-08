@@ -91,8 +91,6 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
                 TransactionLogType.RewardMiningPoolLog => _mapper.Map<RewardMiningPoolEventDto>((RewardMiningPoolLog)log),
 
                 // Vaults
-                TransactionLogType.ClaimPendingVaultOwnershipLog => _mapper.Map<ClaimPendingVaultOwnershipEventDto>((ClaimPendingVaultOwnershipLog)log),
-                TransactionLogType.SetPendingVaultOwnershipLog => _mapper.Map<SetPendingVaultOwnershipEventDto>((SetPendingVaultOwnershipLog)log),
                 TransactionLogType.CreateVaultCertificateLog => _mapper.Map<CreateVaultCertificateEventDto>((CreateVaultCertificateLog)log),
                 TransactionLogType.RedeemVaultCertificateLog => _mapper.Map<RedeemVaultCertificateEventDto>((RedeemVaultCertificateLog)log),
                 TransactionLogType.RevokeVaultCertificateLog => _mapper.Map<RevokeVaultCertificateEventDto>((RevokeVaultCertificateLog)log),

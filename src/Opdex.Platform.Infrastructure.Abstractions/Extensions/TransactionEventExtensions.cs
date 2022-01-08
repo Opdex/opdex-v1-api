@@ -40,8 +40,6 @@ public static class TransactionEventExtensions
             TransactionEventType.NominationEvent => new[] { TransactionLogType.NominationLog },
             TransactionEventType.RewardMiningPoolEvent => new[] { TransactionLogType.RewardMiningPoolLog },
             // Vaults
-            TransactionEventType.ClaimPendingVaultOwnershipEvent => new[] { TransactionLogType.ClaimPendingVaultOwnershipLog },
-            TransactionEventType.SetPendingVaultOwnershipEvent => new[] { TransactionLogType.SetPendingVaultOwnershipLog },
             TransactionEventType.CreateVaultCertificateEvent => new[] { TransactionLogType.CreateVaultCertificateLog },
             TransactionEventType.RedeemVaultCertificateEvent => new[] { TransactionLogType.RedeemVaultCertificateLog },
             TransactionEventType.RevokeVaultCertificateEvent => new[] { TransactionLogType.RevokeVaultCertificateLog },
