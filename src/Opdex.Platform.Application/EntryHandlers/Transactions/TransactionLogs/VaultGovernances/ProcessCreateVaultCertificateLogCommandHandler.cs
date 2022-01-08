@@ -49,13 +49,14 @@ public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<Pr
                 return true;
             }
 
-            var proposalsAtHeight = await _mediator.Send(new RetrieveVaultProposalsByModifiedBlockQuery(request.BlockHeight));
-            var proposal = proposalsAtHeight.First(proposal => proposal.Status == VaultProposalStatus.Complete &&
-                                                               proposal.Approved &&
-                                                               proposal.Wallet == request.Log.Owner &&
-                                                               proposal.Amount == request.Log.Amount);
+            // Todo: Certificates still need to find the proposal as below, insert to vault_proposals_certificates table
+            // var proposalsAtHeight = await _mediator.Send(new RetrieveVaultProposalsByModifiedBlockQuery(request.BlockHeight));
+            // var proposal = proposalsAtHeight.First(proposal => proposal.Status == VaultProposalStatus.Complete &&
+            //                                                    proposal.Approved &&
+            //                                                    proposal.Wallet == request.Log.Owner &&
+            //                                                    proposal.Amount == request.Log.Amount);
 
-            var cert = new VaultCertificate(vaultGovernance.Id, proposal.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
+            var cert = new VaultCertificate(vaultGovernance.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
 
             return await _mediator.Send(new MakeVaultGovernanceCertificateCommand(cert)) > 0;
         }

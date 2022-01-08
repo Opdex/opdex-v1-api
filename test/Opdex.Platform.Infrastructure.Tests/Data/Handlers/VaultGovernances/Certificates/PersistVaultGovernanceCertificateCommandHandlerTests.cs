@@ -31,7 +31,7 @@ public class PersistVaultGovernanceCertificateCommandHandlerTests
     public async Task Insert_VaultGovernanceCertificate_Success()
     {
         const ulong expectedId = 10ul;
-        var certificate = new VaultCertificate(5, 7, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
+        var certificate = new VaultCertificate(5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
         var command = new PersistVaultGovernanceCertificateCommand(certificate);
 
         _mapperMock.Setup(callTo => callTo.Map<VaultCertificateEntity>(certificate)).Returns(new VaultCertificateEntity());
@@ -46,7 +46,7 @@ public class PersistVaultGovernanceCertificateCommandHandlerTests
     public async Task Update_VaultCertificate_Success()
     {
         const ulong expectedId = 10ul;
-        var certificate = new VaultCertificate(expectedId, 5, 7, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, false, false, 50, 100);
+        var certificate = new VaultCertificate(expectedId, 5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, false, false, 50, 100);
         var command = new PersistVaultGovernanceCertificateCommand(certificate);
 
         _mapperMock.Setup(callTo => callTo.Map<VaultCertificateEntity>(certificate)).Returns(new VaultCertificateEntity());
@@ -61,7 +61,7 @@ public class PersistVaultGovernanceCertificateCommandHandlerTests
     public async Task PersistsVaultCertificate_Fail()
     {
         const ulong expectedId = 0;
-        var certificate = new VaultCertificate(5, 7, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
+        var certificate = new VaultCertificate(5, "PMU9EjmivLgqqARwmH1iT1GLsMroh6zXXN", 500000000000, 100000, 50);
         var command = new PersistVaultGovernanceCertificateCommand(certificate);
 
         _mapperMock.Setup(callTo => callTo.Map<VaultCertificateEntity>(certificate)).Returns(new VaultCertificateEntity());

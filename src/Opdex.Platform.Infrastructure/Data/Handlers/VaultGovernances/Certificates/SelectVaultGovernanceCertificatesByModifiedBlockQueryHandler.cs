@@ -19,7 +19,6 @@ public class SelectVaultGovernanceCertificatesByModifiedBlockQueryHandler
         $@"SELECT
                 {nameof(VaultCertificateEntity.Id)},
                 {nameof(VaultCertificateEntity.VaultId)},
-                {nameof(VaultCertificateEntity.ProposalId)},
                 {nameof(VaultCertificateEntity.Owner)},
                 {nameof(VaultCertificateEntity.Amount)},
                 {nameof(VaultCertificateEntity.VestedBlock)},

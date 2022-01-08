@@ -8,16 +8,11 @@ namespace Opdex.Platform.Domain.Models.VaultGovernances;
 
 public class VaultCertificate : BlockAudit
 {
-    public VaultCertificate(ulong vaultId, ulong proposalId, Address owner, UInt256 amount, ulong vestedBlock, ulong createdBlock) : base(createdBlock)
+    public VaultCertificate(ulong vaultId, Address owner, UInt256 amount, ulong vestedBlock, ulong createdBlock) : base(createdBlock)
     {
         if (vaultId < 1)
         {
             throw new ArgumentOutOfRangeException(nameof(vaultId), "Vault id must be greater than 0.");
-        }
-
-        if (proposalId < 1)
-        {
-            throw new ArgumentOutOfRangeException(nameof(proposalId), "Proposal id must be greater than 0.");
         }
 
         if (owner == Address.Empty)
@@ -36,7 +31,6 @@ public class VaultCertificate : BlockAudit
         }
 
         VaultId = vaultId;
-        ProposalId = proposalId;
         Owner = owner;
         Amount = amount;
         VestedBlock = vestedBlock;
@@ -44,12 +38,11 @@ public class VaultCertificate : BlockAudit
         Revoked = false;
     }
 
-    public VaultCertificate(ulong id, ulong vaultId, ulong proposalId, Address owner, UInt256 amount, ulong vestedBlock, bool redeemed, bool revoked, ulong createdBlock, ulong modifiedBlock)
+    public VaultCertificate(ulong id, ulong vaultId, Address owner, UInt256 amount, ulong vestedBlock, bool redeemed, bool revoked, ulong createdBlock, ulong modifiedBlock)
         : base(createdBlock, modifiedBlock)
     {
         Id = id;
         VaultId = vaultId;
-        ProposalId = proposalId;
         Owner = owner;
         Amount = amount;
         VestedBlock = vestedBlock;
@@ -59,7 +52,6 @@ public class VaultCertificate : BlockAudit
 
     public ulong Id { get; }
     public ulong VaultId { get; }
-    public ulong ProposalId { get; }
     public Address Owner { get; }
     public UInt256 Amount { get; private set; }
     public bool Revoked { get; private set; }

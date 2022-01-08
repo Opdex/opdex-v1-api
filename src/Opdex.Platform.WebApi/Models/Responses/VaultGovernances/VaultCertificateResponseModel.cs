@@ -9,12 +9,6 @@ namespace Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
 public class VaultCertificateResponseModel
 {
     /// <summary>
-    /// The Id number in the vault contract of the proposal that created the certificate.
-    /// </summary>
-    /// <example>1</example>
-    public ulong ProposalId { get; set; }
-
-    /// <summary>
     /// Address of the certificate owner.
     /// </summary>
     /// <example>tQ9RukZsB6bBsenHnGSo1q69CJzWGnxohm</example>
