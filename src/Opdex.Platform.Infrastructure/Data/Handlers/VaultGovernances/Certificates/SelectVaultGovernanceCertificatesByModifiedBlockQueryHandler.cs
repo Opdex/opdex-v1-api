@@ -26,7 +26,7 @@ public class SelectVaultGovernanceCertificatesByModifiedBlockQueryHandler
                 {nameof(VaultCertificateEntity.Revoked)},
                 {nameof(VaultCertificateEntity.CreatedBlock)},
                 {nameof(VaultCertificateEntity.ModifiedBlock)}
-            FROM vault_governance_certificate
+            FROM vault_certificate
             WHERE {nameof(VaultCertificateEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;

@@ -48,7 +48,7 @@ public class SelectVaultGovernanceByAddressQueryHandlerTests
 
         var command = new SelectVaultGovernanceByAddressQuery(address);
 
-        _dbContext.Setup(db => db.ExecuteFindAsync<VaultGovernanceEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault_governance"))))
+        _dbContext.Setup(db => db.ExecuteFindAsync<VaultGovernanceEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault"))))
             .Returns(() => Task.FromResult(expectedEntity));
 
         var result = await _handler.Handle(command, CancellationToken.None);

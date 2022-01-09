@@ -63,7 +63,7 @@ public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandlerTests
 
         var command = new SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery(vaultId, owner);
 
-        _dbContext.Setup(db => db.ExecuteQueryAsync<VaultCertificateEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault_governance_certificate"))))
+        _dbContext.Setup(db => db.ExecuteQueryAsync<VaultCertificateEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault_certificate"))))
             .ReturnsAsync(expected.ToArray());
 
         var results = await _handler.Handle(command, CancellationToken.None);

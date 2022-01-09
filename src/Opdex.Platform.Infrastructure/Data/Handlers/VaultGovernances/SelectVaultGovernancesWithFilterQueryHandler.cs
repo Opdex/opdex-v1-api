@@ -36,7 +36,7 @@ public class SelectVaultGovernancesWithFilterQueryHandler : IRequestHandler<Sele
                 v.{nameof(VaultGovernanceEntity.TotalVoteMinimum)},
                 v.{nameof(VaultGovernanceEntity.CreatedBlock)},
                 v.{nameof(VaultGovernanceEntity.ModifiedBlock)}
-            FROM vault_governance v
+            FROM vault v
             {TableJoins}
             {WhereFilter}
             {OrderBy}

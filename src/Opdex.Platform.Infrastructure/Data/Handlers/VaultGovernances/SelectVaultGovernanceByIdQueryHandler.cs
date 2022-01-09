@@ -26,7 +26,7 @@ public class SelectVaultGovernanceByIdQueryHandler : IRequestHandler<SelectVault
                 {nameof(VaultGovernanceEntity.TotalVoteMinimum)},
                 {nameof(VaultGovernanceEntity.CreatedBlock)},
                 {nameof(VaultGovernanceEntity.ModifiedBlock)}
-            FROM vault_governance
+            FROM vault
             WHERE {nameof(VaultGovernanceEntity.Id)} = @{nameof(SqlParams.VaultId)}
             LIMIT 1;".RemoveExcessWhitespace();
 

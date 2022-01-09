@@ -33,7 +33,7 @@ public class SelectVaultGovernanceCertificatesWithFilterQueryHandler : IRequestH
                 c.{nameof(VaultCertificateEntity.Revoked)},
                 c.{nameof(VaultCertificateEntity.CreatedBlock)},
                 c.{nameof(VaultCertificateEntity.ModifiedBlock)}
-            FROM vault_governance_certificate c
+            FROM vault_certificate c
             {WhereFilter}
             {OrderBy}
             {Limit}".RemoveExcessWhitespace();

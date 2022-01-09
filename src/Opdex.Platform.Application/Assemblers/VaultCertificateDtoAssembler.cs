@@ -1,9 +1,10 @@
 using AutoMapper;
 using MediatR;
 using Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.ProposalCertificates;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Domain.Models.VaultGovernances;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Application.Assemblers;
@@ -23,10 +24,13 @@ public class VaultCertificateDtoAssembler: IModelAssembler<VaultCertificate, Vau
     {
         var certificateDto = _mapper.Map<VaultCertificateDto>(certificate);
 
-        // Todo: Would look up vault_proposals_certificates based on the internal certificate ID
-        // Todo: Records returned would include internal ProposalIds
-        // Todo: Fetch Public Proposal Ids by internal Ids -- add list to certificate DTO
-        // -- The list will include all proposals that affect the certificate, one create + 0 or many revoke
+        var proposalCertificates = await _mediator.Send(new RetrieveVaultProposalCertificatesByCertificateIdQuery(certificate.Id));
+
+        var proposals = await Task.WhenAll(proposalCertificates
+                                               .Select(proposalCertificate =>
+                                                           _mediator.Send(new RetrieveVaultProposalByIdQuery(proposalCertificate.ProposalId))));
+
+        certificateDto.Proposals = proposals.Select(proposal => proposal.PublicId);
 
         return certificateDto;
     }

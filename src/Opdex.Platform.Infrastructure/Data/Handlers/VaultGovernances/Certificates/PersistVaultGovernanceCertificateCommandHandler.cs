@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Certifica
 public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<PersistVaultGovernanceCertificateCommand, ulong>
 {
     private static readonly string InsertSqlCommand =
-        $@"INSERT INTO vault_governance_certificate (
+        $@"INSERT INTO vault_certificate (
                 {nameof(VaultCertificateEntity.VaultId)},
                 {nameof(VaultCertificateEntity.Owner)},
                 {nameof(VaultCertificateEntity.Amount)},
@@ -37,7 +37,7 @@ public class PersistVaultGovernanceCertificateCommandHandler : IRequestHandler<P
               SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
-        $@"UPDATE vault_governance_certificate
+        $@"UPDATE vault_certificate
                 SET
                     {nameof(VaultCertificateEntity.Amount)} = @{nameof(VaultCertificateEntity.Amount)},
                     {nameof(VaultCertificateEntity.Revoked)} = @{nameof(VaultCertificateEntity.Revoked)},

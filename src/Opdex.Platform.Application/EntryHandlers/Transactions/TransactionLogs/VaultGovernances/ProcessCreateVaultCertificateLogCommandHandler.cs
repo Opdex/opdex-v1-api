@@ -49,16 +49,33 @@ public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<Pr
                 return true;
             }
 
-            // Todo: Certificates still need to find the proposal as below, insert to vault_proposals_certificates table
-            // var proposalsAtHeight = await _mediator.Send(new RetrieveVaultProposalsByModifiedBlockQuery(request.BlockHeight));
-            // var proposal = proposalsAtHeight.First(proposal => proposal.Status == VaultProposalStatus.Complete &&
-            //                                                    proposal.Approved &&
-            //                                                    proposal.Wallet == request.Log.Owner &&
-            //                                                    proposal.Amount == request.Log.Amount);
-
             var cert = new VaultCertificate(vaultGovernance.Id, request.Log.Owner, request.Log.Amount, request.Log.VestedBlock, request.BlockHeight);
 
-            return await _mediator.Send(new MakeVaultGovernanceCertificateCommand(cert)) > 0;
+            var certificateId = await _mediator.Send(new MakeVaultGovernanceCertificateCommand(cert));
+
+            if (certificateId == 0)
+            {
+                _logger.LogWarning($"Unexpected error making vault certificate");
+                return false;
+            }
+
+            var proposalsAtHeight = await _mediator.Send(new RetrieveVaultProposalsByModifiedBlockQuery(request.BlockHeight));
+            var proposal = proposalsAtHeight.FirstOrDefault(proposal => proposal.Status == VaultProposalStatus.Complete &&
+                                                                        proposal.Approved &&
+                                                                        proposal.Wallet == request.Log.Owner &&
+                                                                        proposal.Amount == request.Log.Amount);
+
+            if (proposal == null)
+            {
+                _logger.LogWarning($"Cannot find matching proposal to certificate {certificateId}");
+                return false;
+            }
+
+            var proposalCertificate = new VaultProposalCertificate(proposal.Id, certificateId, request.BlockHeight);
+
+            var proposalCertificateId = await _mediator.Send(new MakeVaultProposalCertificateCommand(proposalCertificate));
+
+            return proposalCertificateId > 0;
         }
         catch (Exception ex)
         {

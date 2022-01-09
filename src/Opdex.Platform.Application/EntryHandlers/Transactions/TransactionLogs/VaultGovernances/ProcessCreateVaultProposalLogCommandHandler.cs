@@ -3,10 +3,12 @@ using Microsoft.Extensions.Logging;
 using Opdex.Platform.Application.Abstractions.Commands.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.EntryCommands.Transactions.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Certificates;
 using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Domain.Models.TransactionLogs.VaultGovernances;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,14 +41,37 @@ public class ProcessCreateVaultProposalLogCommandHandler : IRequestHandler<Proce
                 return true;
             }
 
-            var proposalUpdated =  await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight)) > 0;
+            var proposalUpdated = await _mediator.Send(new MakeVaultProposalCommand(proposal, request.BlockHeight)) > 0;
 
             if (proposal.Type == VaultProposalType.Create)
             {
-                var vaultUpdated = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight,
-                                                                                       refreshProposedSupply: true)) > 0;
+                var vaultUpdated = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight, refreshProposedSupply: true)) > 0;
 
                 if (!vaultUpdated) _logger.LogError("Failure updating the vault governance for proposed amount.");
+            }
+
+            if (proposal.Type == VaultProposalType.Revoke)
+            {
+                var certificates = await _mediator.Send(new RetrieveVaultGovernanceCertificatesByVaultIdAndOwnerQuery(proposal.VaultGovernanceId, proposal.Wallet));
+                var certificate = certificates.SingleOrDefault(certificate => certificate.Amount == proposal.Amount &&
+                                                                              !certificate.Redeemed &&
+                                                                              !certificate.Revoked);
+
+                if (certificate == null)
+                {
+                    _logger.LogWarning($"Failure finding a matching certificate to revoke proposal {proposal.Id}");
+                    return false;
+                }
+
+                var proposalCertificate = new VaultProposalCertificate(proposal.Id, certificate.Id, request.BlockHeight);
+
+                var proposalCertificateId = await _mediator.Send(new MakeVaultProposalCertificateCommand(proposalCertificate));
+
+                if (proposalCertificateId == 0)
+                {
+                    _logger.LogError($"Unexpected error persisting proposal certificate for proposal {proposal.Id} and certificate {certificate.Id}");
+                    return false;
+                }
             }
 
             return proposalUpdated;

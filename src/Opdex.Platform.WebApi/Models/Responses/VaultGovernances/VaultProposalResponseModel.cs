@@ -108,4 +108,9 @@ public class VaultProposalResponseModel
     /// <example>false</example>
     [NotNull]
     public bool Approved { get; set; }
+
+    /// <summary>
+    /// A vault certificate either created or revoked by the proposal if exists.
+    /// </summary>
+    public VaultCertificateResponseModel Certificate { get; set; }
 }

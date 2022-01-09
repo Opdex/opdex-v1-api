@@ -125,6 +125,7 @@ using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Markets.Summaries;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Certificates;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Pledges;
+using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.ProposalCertificates;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Proposals;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Votes;
 using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.Transactions;
@@ -132,6 +133,7 @@ using Opdex.Platform.Infrastructure.Clients.CirrusFullNodeApi.Handlers.VaultGove
 using Opdex.Platform.Infrastructure.Data.Handlers.Markets.Summaries;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Certificates;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Pledges;
+using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.ProposalCertificates;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Proposals;
 using Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Votes;
 
@@ -210,6 +212,7 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<PersistVaultProposalCommand, ulong>, PersistVaultProposalCommandHandler>();
         services.AddTransient<IRequestHandler<PersistVaultProposalPledgeCommand, ulong>, PersistVaultProposalPledgeCommandHandler>();
         services.AddTransient<IRequestHandler<PersistVaultProposalVoteCommand, ulong>, PersistVaultProposalVoteCommandHandler>();
+        services.AddTransient<IRequestHandler<PersistVaultProposalCertificateCommand, ulong>, PersistVaultProposalCertificateCommandHandler>();
 
         // Addresses
         services.AddTransient<IRequestHandler<PersistAddressBalanceCommand, ulong>, PersistAddressBalanceCommandHandler>();
@@ -309,6 +312,9 @@ public static class PlatformInfrastructureServiceCollectionExtensions
         services.AddTransient<IRequestHandler<SelectVaultProposalsWithFilterQuery, IEnumerable<VaultProposal>>, SelectVaultProposalsWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultProposalPledgesWithFilterQuery, IEnumerable<VaultProposalPledge>>, SelectVaultProposalPledgesWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<SelectVaultProposalVotesWithFilterQuery, IEnumerable<VaultProposalVote>>, SelectVaultProposalVotesWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultProposalCertificateByProposalIdQuery, VaultProposalCertificate>, SelectVaultProposalCertificateByProposalIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultProposalCertificatesByCertificateIdQuery, IEnumerable<VaultProposalCertificate>>, SelectVaultProposalCertificatesByCertificateIdQueryHandler>();
+        services.AddTransient<IRequestHandler<SelectVaultCertificateByIdQuery, VaultCertificate>, SelectVaultCertificateByIdQueryHandler>();
 
         // Addresses
         services.AddTransient<IRequestHandler<SelectAddressBalanceByOwnerAndTokenIdQuery, AddressBalance>, SelectAddressBalanceByOwnerAndTokenIdQueryHandler>();

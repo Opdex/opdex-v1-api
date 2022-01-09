@@ -49,7 +49,7 @@ public class SelectVaultGovernancesByModifiedBlockQueryHandlerTests
 
         var command = new SelectVaultGovernancesByModifiedBlockQuery(modifiedBlock);
 
-        _dbContext.Setup(db => db.ExecuteQueryAsync<VaultGovernanceEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault_governance") &&
+        _dbContext.Setup(db => db.ExecuteQueryAsync<VaultGovernanceEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault") &&
                                                                                                      q.Sql.Contains("ModifiedBlock = @ModifiedBlock"))))
             .ReturnsAsync(expectedList);
 

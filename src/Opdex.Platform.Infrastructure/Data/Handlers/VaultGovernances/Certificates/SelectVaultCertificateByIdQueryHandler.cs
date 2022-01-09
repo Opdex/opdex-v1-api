@@ -1,20 +1,18 @@
 using AutoMapper;
 using MediatR;
-using Opdex.Platform.Common.Models;
+using Opdex.Platform.Common.Exceptions;
 using Opdex.Platform.Domain.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Extensions;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Models.VaultGovernances;
 using Opdex.Platform.Infrastructure.Abstractions.Data.Queries.VaultGovernances.Certificates;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances.Certificates;
 
-public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler
-    : IRequestHandler<SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery, IEnumerable<VaultCertificate>>
+public class SelectVaultCertificateByIdQueryHandler: IRequestHandler<SelectVaultCertificateByIdQuery, VaultCertificate>
 {
     private static readonly string SqlQuery =
         @$"SELECT
@@ -22,43 +20,45 @@ public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler
                 {nameof(VaultCertificateEntity.VaultId)},
                 {nameof(VaultCertificateEntity.Owner)},
                 {nameof(VaultCertificateEntity.Amount)},
-                {nameof(VaultCertificateEntity.Revoked)},
-                {nameof(VaultCertificateEntity.Redeemed)},
                 {nameof(VaultCertificateEntity.VestedBlock)},
+                {nameof(VaultCertificateEntity.Redeemed)},
+                {nameof(VaultCertificateEntity.Revoked)},
                 {nameof(VaultCertificateEntity.CreatedBlock)},
                 {nameof(VaultCertificateEntity.ModifiedBlock)}
             FROM vault_certificate
-            WHERE {nameof(VaultCertificateEntity.VaultId)} = @{nameof(SqlParams.VaultId)}
-                AND {nameof(VaultCertificateEntity.Owner)} = @{nameof(SqlParams.Owner)}".RemoveExcessWhitespace();
+            WHERE {nameof(VaultCertificateEntity.Id)} = @{nameof(SqlParams.CertificateId)}
+            LIMIT 1;".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;
     private readonly IMapper _mapper;
 
-    public SelectVaultGovernanceCertificatesByVaultIdAndOwnerQueryHandler(IDbContext context, IMapper mapper)
+    public SelectVaultCertificateByIdQueryHandler(IDbContext context, IMapper mapper)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IEnumerable<VaultCertificate>> Handle(SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery request,
-                                                            CancellationToken cancellationToken)
+    public async Task<VaultCertificate> Handle(SelectVaultCertificateByIdQuery request, CancellationToken cancellationToken)
     {
-        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.VaultId, request.Owner), cancellationToken);
+        var query = DatabaseQuery.Create(SqlQuery, new SqlParams(request.CertificateId), cancellationToken);
 
-        var result = await _context.ExecuteQueryAsync<VaultCertificateEntity>(query);
+        var result = await _context.ExecuteFindAsync<VaultCertificateEntity>(query);
 
-        return _mapper.Map<IEnumerable<VaultCertificate>>(result);
+        if (request.FindOrThrow && result == null)
+        {
+            throw new NotFoundException($"{nameof(VaultCertificate)} not found.");
+        }
+
+        return result == null ? null : _mapper.Map<VaultCertificate>(result);
     }
 
     private sealed class SqlParams
     {
-        internal SqlParams(ulong vaultId, Address owner)
+        internal SqlParams(ulong certificateId)
         {
-            VaultId = vaultId;
-            Owner = owner;
+            CertificateId = certificateId;
         }
 
-        public ulong VaultId { get; }
-        public Address Owner { get; }
+        public ulong CertificateId { get; }
     }
 }

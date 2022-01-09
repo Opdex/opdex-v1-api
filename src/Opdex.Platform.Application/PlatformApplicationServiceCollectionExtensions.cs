@@ -190,12 +190,14 @@ using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Pled
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Proposals;
 using Opdex.Platform.Application.Abstractions.EntryQueries.VaultGovernances.Votes;
 using Opdex.Platform.Application.Abstractions.Models.Index;
+using Opdex.Platform.Application.Abstractions.Queries.VaultGovernances.ProposalCertificates;
 using Opdex.Platform.Application.EntryHandlers.Indexer;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Certificates;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Pledges;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Proposals;
 using Opdex.Platform.Application.EntryHandlers.VaultGovernances.Votes;
 using Opdex.Platform.Application.Handlers.Markets.Summaries;
+using Opdex.Platform.Application.Handlers.VaultGovernances.ProposalCertificates;
 
 namespace Opdex.Platform.Application;
 
@@ -515,6 +517,9 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<RetrieveVaultProposalPledgesWithFilterQuery, IEnumerable<VaultProposalPledge>>, RetrieveVaultProposalPledgesWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveVaultProposalVotesWithFilterQuery, IEnumerable<VaultProposalVote>>, RetrieveVaultProposalVotesWithFilterQueryHandler>();
         services.AddTransient<IRequestHandler<RetrieveVaultGovernanceCertificatesWithFilterQuery, IEnumerable<VaultCertificate>>, RetrieveVaultGovernanceCertificatesWithFilterQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveVaultProposalCertificatesByCertificateIdQuery, IEnumerable<VaultProposalCertificate>>, RetrieveVaultProposalCertificatesByCertificateIdQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveVaultProposalCertificateByProposalIdQuery, VaultProposalCertificate>, RetrieveVaultProposalCertificateByProposalIdQueryHandler>();
+        services.AddTransient<IRequestHandler<RetrieveVaultCertificateByIdQuery, VaultCertificate>, RetrieveVaultCertificateByIdQueryHandler>();
 
         // Transactions
         services.AddTransient<IRequestHandler<RetrieveCirrusTransactionByHashQuery, Transaction>, RetrieveCirrusTransactionByHashQueryHandler>();
@@ -596,6 +601,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         services.AddTransient<IRequestHandler<MakeVaultProposalCommand, ulong>, MakeVaultProposalCommandHandler>();
         services.AddTransient<IRequestHandler<MakeVaultProposalPledgeCommand, ulong>, MakeVaultProposalPledgeCommandHandler>();
         services.AddTransient<IRequestHandler<MakeVaultProposalVoteCommand, ulong>, MakeVaultProposalVoteCommandHandler>();
+        services.AddTransient<IRequestHandler<MakeVaultProposalCertificateCommand, ulong>, MakeVaultProposalCertificateCommandHandler>();
 
         // Wallet Address
         services.AddTransient<IRequestHandler<MakeAddressBalanceCommand, ulong>, MakeAddressBalanceCommandHandler>();

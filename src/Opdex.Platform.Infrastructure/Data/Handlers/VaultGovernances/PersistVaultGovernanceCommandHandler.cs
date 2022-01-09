@@ -15,7 +15,7 @@ namespace Opdex.Platform.Infrastructure.Data.Handlers.VaultGovernances;
 public class PersistVaultGovernanceCommandHandler : IRequestHandler<PersistVaultGovernanceCommand, ulong>
 {
     private static readonly string InsertSqlCommand =
-        $@"INSERT INTO vault_governance (
+        $@"INSERT INTO vault (
                 {nameof(VaultGovernanceEntity.TokenId)},
                 {nameof(VaultGovernanceEntity.Address)},
                 {nameof(VaultGovernanceEntity.UnassignedSupply)},
@@ -39,7 +39,7 @@ public class PersistVaultGovernanceCommandHandler : IRequestHandler<PersistVault
               SELECT LAST_INSERT_ID()".RemoveExcessWhitespace();
 
     private static readonly string UpdateSqlCommand =
-        $@"UPDATE vault_governance
+        $@"UPDATE vault
                 SET
                     {nameof(VaultGovernanceEntity.UnassignedSupply)} = @{nameof(VaultGovernanceEntity.UnassignedSupply)},
                     {nameof(VaultGovernanceEntity.ProposedSupply)} = @{nameof(VaultGovernanceEntity.ProposedSupply)},

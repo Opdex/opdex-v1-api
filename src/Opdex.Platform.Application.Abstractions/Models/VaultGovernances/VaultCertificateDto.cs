@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Models;
+using System.Collections.Generic;
 
 namespace Opdex.Platform.Application.Abstractions.Models.VaultGovernances;
 
@@ -10,4 +11,5 @@ public class VaultCertificateDto
     public ulong VestingEndBlock { get; set; }
     public bool Redeemed { get; set; }
     public bool Revoked { get; set; }
+    public IEnumerable<ulong> Proposals { get; set; }
 }

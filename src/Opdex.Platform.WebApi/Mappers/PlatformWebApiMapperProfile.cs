@@ -357,7 +357,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.VestingStartBlock, opt => opt.MapFrom(src => src.VestingStartBlock))
             .ForMember(dest => dest.VestingEndBlock, opt => opt.MapFrom(src => src.VestingEndBlock))
             .ForMember(dest => dest.Redeemed, opt => opt.MapFrom(src => src.Redeemed))
-            .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked));
+            .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked))
+            .ForMember(dest => dest.Proposals, opt => opt.MapFrom(src => src.Proposals));
 
         CreateMap<VaultCertificatesDto, VaultCertificatesResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Certificates))
@@ -391,7 +392,8 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.YesAmount, opt => opt.MapFrom(src => src.YesAmount))
             .ForMember(dest => dest.NoAmount, opt => opt.MapFrom(src => src.NoAmount))
             .ForMember(dest => dest.PledgeAmount, opt => opt.MapFrom(src => src.PledgeAmount))
-            .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved));
+            .ForMember(dest => dest.Approved, opt => opt.MapFrom(src => src.Approved))
+            .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.Certificate));
 
         CreateMap<VaultProposalsDto, VaultProposalsResponseModel>()
             .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.Proposals))

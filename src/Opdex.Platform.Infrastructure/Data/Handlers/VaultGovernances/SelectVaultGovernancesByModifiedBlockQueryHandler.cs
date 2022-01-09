@@ -26,7 +26,7 @@ public class SelectVaultGovernancesByModifiedBlockQueryHandler : IRequestHandler
                 {nameof(VaultGovernanceEntity.TotalVoteMinimum)},
                 {nameof(VaultGovernanceEntity.CreatedBlock)},
                 {nameof(VaultGovernanceEntity.ModifiedBlock)}
-            FROM vault_governance
+            FROM vault
             WHERE {nameof(VaultGovernanceEntity.ModifiedBlock)} = @{nameof(SqlParams.ModifiedBlock)};".RemoveExcessWhitespace();
 
     private readonly IDbContext _context;

@@ -47,7 +47,7 @@ public class SelectVaultGovernanceByTokenIdQueryHandlerTests
 
         var command = new SelectVaultGovernanceByTokenIdQuery(tokenId);
 
-        _dbContext.Setup(db => db.ExecuteFindAsync<VaultGovernanceEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault_governance") &&
+        _dbContext.Setup(db => db.ExecuteFindAsync<VaultGovernanceEntity>(It.Is<DatabaseQuery>(q => q.Sql.Contains("vault") &&
                                                                                                     q.Sql.Contains("TokenId = @TokenId"))))
             .Returns(() => Task.FromResult(expectedEntity));
 

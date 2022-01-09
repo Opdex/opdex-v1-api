@@ -1,4 +1,5 @@
 using Opdex.Platform.Common.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Opdex.Platform.WebApi.Models.Responses.VaultGovernances;
@@ -45,4 +46,10 @@ public class VaultCertificateResponseModel
     /// </summary>
     /// <example>false</example>
     public bool Revoked { get; set; }
+
+    /// <summary>
+    /// A list of proposal Id's affecting the certificate, consisting of create or revoke certificate proposals.
+    /// </summary>
+    /// <example>[12, 14, 23]</example>
+    public IEnumerable<ulong> Proposals { get; set; }
 }
