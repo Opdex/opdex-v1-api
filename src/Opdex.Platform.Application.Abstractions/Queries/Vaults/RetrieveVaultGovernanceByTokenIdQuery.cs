@@ -5,12 +5,12 @@ using System;
 namespace Opdex.Platform.Application.Abstractions.Queries.Vaults;
 
 /// <summary>
-/// Retrieve a vault governance by the Id of the token it locks.
+/// Retrieve a vault by the Id of the token it locks.
 /// </summary>
 public class RetrieveVaultGovernanceByTokenIdQuery : FindQuery<VaultGovernance>
 {
     /// <summary>
-    /// Constructor to create a retrieve vault governance by token id query.
+    /// Constructor to create a retrieve vault by token id query.
     /// </summary>
     /// <param name="tokenId">The internal Id of the token to lookup the vault by.</param>
     /// <param name="findOrThrow">Find or throw, defaults to true, when true throws not found exception if no record is found.</param>

@@ -61,7 +61,7 @@ public class ProcessCompleteVaultProposalLogCommandHandler : IRequestHandler<Pro
                                                                                    refreshProposedSupply: refreshProposedSupply,
                                                                                    refreshUnassignedSupply: refreshUnassignedSupply)) > 0;
 
-            if (!vaultUpdated) _logger.LogError("Failure updating the vault governance with proposal changes.");
+            if (!vaultUpdated) _logger.LogError("Failure updating the vault with proposal changes.");
 
             return proposalUpdated;
         }

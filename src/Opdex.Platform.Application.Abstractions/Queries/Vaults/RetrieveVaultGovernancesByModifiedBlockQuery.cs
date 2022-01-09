@@ -6,12 +6,12 @@ using System.Collections.Generic;
 namespace Opdex.Platform.Application.Abstractions.Queries.Vaults;
 
 /// <summary>
-/// Retrieve vault governances by their modified block.
+/// Retrieve vaults by their modified block.
 /// </summary>
 public class RetrieveVaultGovernancesByModifiedBlockQuery : IRequest<IEnumerable<VaultGovernance>>
 {
     /// <summary>
-    /// Constructor to initialize a retrieve vault governances by modified block query.
+    /// Constructor to initialize a retrieve vaults by modified block query.
     /// </summary>
     /// <param name="blockHeight">The block height the records were modified at.</param>
     public RetrieveVaultGovernancesByModifiedBlockQuery(ulong blockHeight)

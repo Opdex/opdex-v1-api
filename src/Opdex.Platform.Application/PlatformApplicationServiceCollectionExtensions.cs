@@ -636,7 +636,7 @@ public static class PlatformApplicationServiceCollectionExtensions
         // Mining Governances
         services.AddTransient<IModelAssembler<MiningGovernance, MiningGovernanceDto>, MiningGovernanceDtoAssembler>();
 
-        // Vault Governances
+        // Vaults
         services.AddTransient<IModelAssembler<VaultCertificate, VaultCertificateDto>, VaultCertificateDtoAssembler>();
         services.AddTransient<IModelAssembler<VaultGovernance, VaultGovernanceDto>, VaultDtoAssembler>();
         services.AddTransient<IModelAssembler<VaultProposal, VaultProposalDto>, VaultProposalDtoAssembler>();

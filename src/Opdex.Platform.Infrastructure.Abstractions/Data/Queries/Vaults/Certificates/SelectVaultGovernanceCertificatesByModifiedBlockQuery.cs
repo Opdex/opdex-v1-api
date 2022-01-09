@@ -11,7 +11,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certifi
 public class SelectVaultGovernanceCertificatesByModifiedBlockQuery : IRequest<IEnumerable<VaultCertificate>>
 {
     /// <summary>
-    /// Constructor to initialize a select vault governance certificates by modified block query.
+    /// Constructor to initialize a select vault certificates by modified block query.
     /// </summary>
     /// <param name="blockHeight">The block height to select modified certificates at.</param>
     public SelectVaultGovernanceCertificatesByModifiedBlockQuery(ulong blockHeight)

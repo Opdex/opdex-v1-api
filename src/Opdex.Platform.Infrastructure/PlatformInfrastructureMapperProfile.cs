@@ -258,7 +258,7 @@ public class PlatformInfrastructureMapperProfile : Profile
                     (int)TransactionLogType.RevokeVaultCertificateLog => new RevokeVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.RedeemVaultCertificateLog => new RedeemVaultCertificateLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
 
-                    // Vault Governance
+                    // Vault
                     (int)TransactionLogType.CompleteVaultProposalLog => new CompleteVaultProposalLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.CreateVaultProposalLog => new CreateVaultProposalLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
                     (int)TransactionLogType.VaultProposalPledgeLog => new VaultProposalPledgeLog(src.Id, src.TransactionId, src.Contract, src.SortOrder, src.Details),
@@ -317,7 +317,7 @@ public class PlatformInfrastructureMapperProfile : Profile
                     nameof(RevokeVaultCertificateLog) => new RevokeVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(RedeemVaultCertificateLog) => new RedeemVaultCertificateLog(src.Log.Data, src.Address, src.SortOrder),
 
-                    // Vault Governance
+                    // Vault
                     nameof(CompleteVaultProposalLog) => new CompleteVaultProposalLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(CreateVaultProposalLog) => new CreateVaultProposalLog(src.Log.Data, src.Address, src.SortOrder),
                     nameof(VaultProposalPledgeLog) => new VaultProposalPledgeLog(src.Log.Data, src.Address, src.SortOrder),

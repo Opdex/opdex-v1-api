@@ -93,8 +93,6 @@ public class TransactionEventsDtoAssembler : IModelAssembler<IEnumerable<Transac
                 TransactionLogType.CreateVaultCertificateLog => _mapper.Map<CreateVaultCertificateEventDto>((CreateVaultCertificateLog)log),
                 TransactionLogType.RedeemVaultCertificateLog => _mapper.Map<RedeemVaultCertificateEventDto>((RedeemVaultCertificateLog)log),
                 TransactionLogType.RevokeVaultCertificateLog => _mapper.Map<RevokeVaultCertificateEventDto>((RevokeVaultCertificateLog)log),
-
-                // Vault Governance
                 TransactionLogType.CreateVaultProposalLog => _mapper.Map<CreateVaultProposalEventDto>((CreateVaultProposalLog)log),
                 TransactionLogType.CompleteVaultProposalLog => _mapper.Map<CompleteVaultProposalEventDto>((CompleteVaultProposalLog)log),
                 TransactionLogType.VaultProposalPledgeLog => _mapper.Map<VaultProposalPledgeEventDto>((VaultProposalPledgeLog)log),

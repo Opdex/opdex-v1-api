@@ -28,7 +28,7 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandler : IRequestHan
         var certificatesList = certificates.ToList();
         var staleCount = certificatesList.Count;
 
-        _logger.LogDebug($"Found {staleCount} stale vault governance certificates.");
+        _logger.LogDebug($"Found {staleCount} stale vault certificates.");
 
         int refreshFailureCount = 0;
 
@@ -67,9 +67,9 @@ public class CreateRewindVaultGovernanceCertificatesCommandHandler : IRequestHan
             }
         }
 
-        _logger.LogDebug($"Refreshed {staleCount - refreshFailureCount} vault governance certificates.");
+        _logger.LogDebug($"Refreshed {staleCount - refreshFailureCount} vault certificates.");
 
-        if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale vault governance certificates.");
+        if (refreshFailureCount > 0) _logger.LogError($"Failed to refresh {refreshFailureCount} stale vault certificates.");
 
         return refreshFailureCount == 0;
     }

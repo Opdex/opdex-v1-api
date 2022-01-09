@@ -39,7 +39,7 @@ public class ProcessCreateVaultCertificateLogCommandHandler : IRequestHandler<Pr
                 var vaultId = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight,
                                                                                   refreshUnassignedSupply: true,
                                                                                   refreshProposedSupply: true));
-                if (vaultId == 0) _logger.LogWarning($"Unexpected error updating vault governance supply by address: {vault.Address}");
+                if (vaultId == 0) _logger.LogWarning($"Unexpected error updating vault supply by address: {vault.Address}");
             }
 
             // Validate that we don't already have this vault certificate inserted.

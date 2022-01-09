@@ -7,12 +7,12 @@ using System.Collections.Generic;
 namespace Opdex.Platform.Infrastructure.Abstractions.Data.Queries.Vaults.Certificates;
 
 /// <summary>
-/// Select vault governance certificates by the vault they're assigned in and the owner they're assigned to.
+/// Select vault certificates by the vault they're assigned in and the owner they're assigned to.
 /// </summary>
 public class SelectVaultGovernanceCertificatesByVaultIdAndOwnerQuery : IRequest<IEnumerable<VaultCertificate>>
 {
     /// <summary>
-    /// Constructor to create the select vault governance certificates by vault id and owner query.
+    /// Constructor to create the select vault certificates by vault id and owner query.
     /// </summary>
     /// <param name="vaultId">The Id of the vault to lookup certificates by.</param>
     /// <param name="owner">The owner's address of the certificates to look up.</param>

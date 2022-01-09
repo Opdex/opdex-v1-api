@@ -43,7 +43,6 @@ public static class TransactionEventExtensions
             TransactionEventType.CreateVaultCertificateEvent => new[] { TransactionLogType.CreateVaultCertificateLog },
             TransactionEventType.RedeemVaultCertificateEvent => new[] { TransactionLogType.RedeemVaultCertificateLog },
             TransactionEventType.RevokeVaultCertificateEvent => new[] { TransactionLogType.RevokeVaultCertificateLog },
-            // Vault Governance
             TransactionEventType.CompleteVaultProposalEvent => new[] { TransactionLogType.CompleteVaultProposalLog },
             TransactionEventType.CreateVaultProposalEvent => new[] { TransactionLogType.CreateVaultProposalLog },
             TransactionEventType.VaultProposalPledgeEvent => new[] { TransactionLogType.VaultProposalPledgeLog },

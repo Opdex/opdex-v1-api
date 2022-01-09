@@ -11,7 +11,7 @@ namespace Opdex.Platform.Infrastructure.Abstractions.Clients.CirrusFullNodeApi.Q
 public class CallCirrusGetVaultGovernanceContractCertificateSummaryByOwnerQuery : IRequest<VaultContractCertificateSummary>
 {
     /// <summary>
-    /// Constructor to initialize a call cirrus get vault governance contract certificate summary by owner query.
+    /// Constructor to initialize a call cirrus get vault contract certificate summary by owner query.
     /// </summary>
     /// <param name="vault">The address of the vault to check.</param>
     /// <param name="owner">The certificate owner's address.</param>

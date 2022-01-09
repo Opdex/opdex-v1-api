@@ -13,7 +13,7 @@ public class VaultProposalPledge : BlockAudit
     public VaultProposalPledge(ulong vaultId, ulong proposalId, Address pledger, ulong pledge, ulong balance, ulong createdBlock)
         : base(createdBlock)
     {
-        VaultId = vaultId > 0 ? vaultId : throw new ArgumentOutOfRangeException(nameof(vaultId), "Vault governance id must be greater than zero.");
+        VaultId = vaultId > 0 ? vaultId : throw new ArgumentOutOfRangeException(nameof(vaultId), "Vault id must be greater than zero.");
         ProposalId = proposalId > 0 ? proposalId : throw new ArgumentOutOfRangeException(nameof(proposalId), "ProposalId must be greater than zero.");
         Pledger = pledger != Address.Empty ? pledger : throw new ArgumentNullException(nameof(pledger), "Pledger must be provided.");
         Pledge = pledge > 0 ? pledge : throw new ArgumentNullException(nameof(pledge), "Pledge must be greater than zero.");

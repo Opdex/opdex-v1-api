@@ -6,7 +6,7 @@ using System;
 namespace Opdex.Platform.Application.Abstractions.Queries.Vaults;
 
 /// <summary>
-/// Retrieves the summary of a vault governance contract, with selected retrievable properties.
+/// Retrieves the summary of a vault contract, with selected retrievable properties.
 /// </summary>
 public class RetrieveVaultGovernanceContractSummaryQuery : IRequest<VaultGovernanceContractSummary>
 {
@@ -14,7 +14,7 @@ public class RetrieveVaultGovernanceContractSummaryQuery : IRequest<VaultGoverna
                                                        bool includeUnassignedSupply = false, bool includeProposedSupply = false,
                                                        bool includeTotalPledgeMinimum = false, bool includeTotalVoteMinimum = false)
     {
-        if (vault == Address.Empty) throw new ArgumentNullException(nameof(vault), "Vault governance address must be provided.");
+        if (vault == Address.Empty) throw new ArgumentNullException(nameof(vault), "Vault address must be provided.");
         if (blockHeight == 0) throw new ArgumentOutOfRangeException(nameof(blockHeight), "Block height must be greater than zero.");
 
         VaultGovernance = vault;

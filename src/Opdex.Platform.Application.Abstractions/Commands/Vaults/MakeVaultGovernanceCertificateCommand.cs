@@ -10,7 +10,7 @@ namespace Opdex.Platform.Application.Abstractions.Commands.Vaults;
 public class MakeVaultGovernanceCertificateCommand : IRequest<ulong>
 {
     /// <summary>
-    /// Constructor to initialize the make vault governance certificate command.
+    /// Constructor to initialize the make vault certificate command.
     /// </summary>
     /// <param name="certificate">The certificate to be persisted.</param>
     public MakeVaultGovernanceCertificateCommand(VaultCertificate certificate)

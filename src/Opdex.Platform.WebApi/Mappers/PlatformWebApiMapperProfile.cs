@@ -617,7 +617,7 @@ public class PlatformWebApiMapperProfile : Profile
             .ForMember(dest => dest.Request, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Request).Base64Encode()))
             .ForAllOtherMembers(opt => opt.Ignore());
 
-        // Vault Governances
+        // Vaults
         CreateMap<CompleteVaultProposalEventDto, CompleteVaultProposalEvent>()
             .IncludeBase<TransactionEventDto, TransactionEvent>()
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))

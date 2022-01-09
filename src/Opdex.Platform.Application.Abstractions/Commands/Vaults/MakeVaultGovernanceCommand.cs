@@ -5,12 +5,12 @@ using System;
 namespace Opdex.Platform.Application.Abstractions.Commands.Vaults;
 
 /// <summary>
-/// Updates a vault governance.
+/// Updates a vault.
 /// </summary>
 public class MakeVaultGovernanceCommand : IRequest<ulong>
 {
     /// <summary>
-    /// Constructor to initialize the make vault governance command.
+    /// Constructor to initialize the make vault command.
     /// </summary>
     /// <param name="vault">The vault to persist.</param>
     /// <param name="blockHeight">The block height used when refreshing vault property values.</param>

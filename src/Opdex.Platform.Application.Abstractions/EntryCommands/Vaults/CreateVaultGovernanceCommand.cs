@@ -5,12 +5,12 @@ using System;
 namespace Opdex.Platform.Application.Abstractions.EntryCommands.Vaults;
 
 /// <summary>
-/// Create a new vault governance record if one does not already exist.
+/// Create a new vault record if one does not already exist.
 /// </summary>
 public class CreateVaultGovernanceCommand : IRequest<ulong>
 {
     /// <summary>
-    /// Constructor to initialize the create vault governance command.
+    /// Constructor to initialize the create vault command.
     /// </summary>
     /// <param name="vault">The address of the vault smart contract.</param>
     /// <param name="tokenId">The tokenId of the locked vault token.</param>

@@ -371,7 +371,7 @@ public class PlatformApplicationMapperProfile : Profile
             .ForMember(dest => dest.Holder, opt => opt.MapFrom(src => src.Owner))
             .ForMember(dest => dest.VestedBlock, opt => opt.MapFrom(src => src.VestedBlock));
 
-        // Vault Governance Events
+        // Vault Events
         CreateMap<CompleteVaultProposalLog, CompleteVaultProposalEventDto>()
             .IncludeBase<TransactionLog, TransactionEventDto>()
             .ForMember(dest => dest.ProposalId, opt => opt.MapFrom(src => src.ProposalId))

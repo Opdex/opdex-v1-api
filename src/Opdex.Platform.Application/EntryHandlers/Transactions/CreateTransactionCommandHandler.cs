@@ -174,7 +174,7 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
                     TransactionLogType.CreateVaultCertificateLog => await _mediator.Send(new ProcessCreateVaultCertificateLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.RevokeVaultCertificateLog => await _mediator.Send(new ProcessRevokeVaultCertificateLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.RedeemVaultCertificateLog => await _mediator.Send(new ProcessRedeemVaultCertificateLogCommand(log, tx.From, tx.BlockHeight)),
-                    // Vault Governance
+                    // Vault
                     TransactionLogType.CompleteVaultProposalLog => await _mediator.Send(new ProcessCompleteVaultProposalLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.CreateVaultProposalLog => await _mediator.Send(new ProcessCreateVaultProposalLogCommand(log, tx.From, tx.BlockHeight)),
                     TransactionLogType.VaultProposalPledgeLog => await _mediator.Send(new ProcessVaultProposalPledgeLogCommand(log, tx.From, tx.BlockHeight)),

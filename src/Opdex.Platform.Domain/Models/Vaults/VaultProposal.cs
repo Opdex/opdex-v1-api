@@ -16,7 +16,7 @@ public class VaultProposal : BlockAudit
                          VaultProposalType type, VaultProposalStatus status, ulong expiration, ulong createdBlock) : base(createdBlock)
     {
         PublicId = publicId > 0 ? publicId : throw new ArgumentOutOfRangeException(nameof(publicId), "Public Id must be greater than zero.");
-        VaultId = vaultId > 0 ? vaultId : throw new ArgumentOutOfRangeException(nameof(vaultId), "Vault governance Id must be greater than zero.");
+        VaultId = vaultId > 0 ? vaultId : throw new ArgumentOutOfRangeException(nameof(vaultId), "Vault Id must be greater than zero.");
         Creator = creator != Address.Empty ? creator : throw new ArgumentNullException(nameof(creator), "Creator must be set.");
         Wallet = wallet != Address.Empty ? wallet : throw new ArgumentNullException(nameof(wallet), "Wallet must be set.");
         Amount = amount > 0 ? amount : throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than zero.");

@@ -47,7 +47,7 @@ public class ProcessCreateVaultProposalLogCommandHandler : IRequestHandler<Proce
             {
                 var vaultUpdated = await _mediator.Send(new MakeVaultGovernanceCommand(vault, request.BlockHeight, refreshProposedSupply: true)) > 0;
 
-                if (!vaultUpdated) _logger.LogError("Failure updating the vault governance for proposed amount.");
+                if (!vaultUpdated) _logger.LogError("Failure updating the vault for proposed amount.");
             }
 
             if (proposal.Type == VaultProposalType.Revoke)
